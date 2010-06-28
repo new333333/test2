@@ -54,6 +54,8 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -93,6 +95,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 					m_finderControl.hideSearchResults();
 					m_finderControl.setInitialSearchString("");
 					m_finderControl.setSearchType(searchType);
+					setFocusOnSearch();
 				}
 			});
 			addStyleName("searchOptionsDlg_FindersRadio mediumtext");
@@ -144,6 +147,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.addStyleName("searchOptionsDlg_Content");
 		addHeader();
 		addContent();
+		setFocusOnSearch();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget(m_mainPanel);
@@ -369,5 +373,18 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 				}
 			}
 		});
+	}
+	
+	/*
+	 * Moves the input focus to the people, places and tags INPUT
+	 * widget.
+	 */
+	private void setFocusOnSearch() {
+        DeferredCommand.addCommand(
+        	new Command() {
+        		public void execute() {
+        			m_finderControl.getFocusWidget().setFocus(true);
+        		}
+        });		
 	}
 }
