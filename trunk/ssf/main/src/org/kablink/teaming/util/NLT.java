@@ -128,11 +128,15 @@ public class NLT implements ApplicationContextAware {
 	}
 	
 	private String getMessageWithTagAsDefault(String tag, Object[] args, Locale locale) {
-		return getMessageWithDefault(tag, args, tag, locale);
+		return getMessageWithDefault(tag, args, tag, locale, false);
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, String text) {
 		return getMessageWithTextAsDefault(tag, null, text, getLocale());
+	}
+	
+	private String getMessageWithTextAsDefault(String tag, String text, Boolean silent) {
+		return getMessageWithTextAsDefault(tag, null, text, getLocale(), false);
 	}
 	
 	private String getMessageWithTextAsDefault(String tag, Object[] args, String text) {
@@ -143,17 +147,21 @@ public class NLT implements ApplicationContextAware {
 		return getMessageWithTextAsDefault(tag, null, text, locale);
 	}
 	
-	private String getMessageWithTextAsDefault(String tag, Object[] args, String text, Locale locale) {
-		return getMessageWithDefault(tag, args, text, locale);
+	private String getMessageWithTextAsDefault(String tag, Object[] args, String text, Locale locale, Boolean silent) {
+		return getMessageWithDefault(tag, args, text, locale, silent);
 	}
 	
-	private String getMessageWithDefault(String tag, Object[] args, String defaultMessage, Locale locale) {
+	private String getMessageWithTextAsDefault(String tag, Object[] args, String text, Locale locale) {
+		return getMessageWithDefault(tag, args, text, locale, false);
+	}
+	
+	private String getMessageWithDefault(String tag, Object[] args, String defaultMessage, Locale locale, Boolean silent) {
     	String translation = "";
     	if (tag == null || tag.equals("")) return defaultMessage;
     	try {
     		translation = getApplicationContext().getMessage(tag, args, locale);
     	} catch (NoSuchMessageException e) {
-    	    logger.warn(e);
+    	    if (!silent) logger.warn(e);
     		translation = defaultMessage;
     	}
     	return translation;				
@@ -198,6 +206,10 @@ public class NLT implements ApplicationContextAware {
 
 	public static String get(String tag, String text) {
 		return getInstance().getMessageWithTextAsDefault(tag, text);
+	}
+	
+	public static String get(String tag, String text, Boolean silent) {
+		return getInstance().getMessageWithTextAsDefault(tag, text, silent);
 	}
 	
 	public static String get(String tag, Object[] args,  String text) {

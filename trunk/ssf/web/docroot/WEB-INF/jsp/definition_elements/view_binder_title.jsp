@@ -93,7 +93,7 @@
 		value="${ssDefinitionEntry.owner.creation.principal.id}"/><ssf:param name="newTab" 
 		value="1" /></ssf:url>" <ssf:title tag="title.goto.profile.page" />>
 		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_small" 
-			photos="${ssDefinitionEntry.owner.customAttributes['picture'].value}" 
+			user="${ssDefinitionEntry.owner}" 
 			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}" />
 	</a>
  </div>

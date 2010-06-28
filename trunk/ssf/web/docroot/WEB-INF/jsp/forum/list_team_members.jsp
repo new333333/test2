@@ -93,7 +93,7 @@
 					<tr>
 						<td class="picture">
 							<ssf:buddyPhoto style="ss_thumbnail_small_buddies_list" 
-							photos="${member.customAttributes['picture'].value}" 
+							user="${member}" 
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
 						<td>

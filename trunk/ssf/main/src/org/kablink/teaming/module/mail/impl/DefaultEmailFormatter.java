@@ -83,6 +83,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
@@ -472,7 +473,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	protected void doEntry(Element element, FolderEntry entry, Notify notifyDef, boolean hasChanges) {
 		HistoryStamp stamp;
 		String title = null;
-		if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) title = entry.getCreation().getPrincipal().getTitle();
+		if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
+			Principal p = entry.getCreation().getPrincipal();
+			p = Utils.fixProxy(p);
+			title = p.getTitle();
+		}
 		if (Validator.isNull(title)) element.addAttribute("notifyFrom",NLT.get("entry.noTitle", notifyDef.getLocale()));
 		else element.addAttribute("notifyFrom", title);
 		if (hasChanges) {
@@ -494,6 +499,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 		if (stamp == null) stamp = new HistoryStamp();
 		Principal p = stamp.getPrincipal();
+		p = Utils.fixProxy(p);
 		title = null;
 		if (p != null) title = p.getTitle();
 		if (Validator.isNull(title)) element.addAttribute("notifyBy",NLT.get("entry.noTitle", notifyDef.getLocale()));

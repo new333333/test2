@@ -46,7 +46,7 @@
 			  <a href="<ssf:url action="view_ws_listing" binderId="${ssBinder.owner.workspaceId}" />" 
 			  title="<ssf:userTitle user="${ssBinder.owner}"/>"><ssf:buddyPhoto 
 			                style="ss_thumbnail_standalone ss_thumbnail_standalone_miniblog" 
-							photos="${ssBinder.owner.customAttributes['picture'].value}" 
+							user="${ssBinder.owner}" 
 							folderId="${ssBinder.owner.parentBinder.id}" entryId="${ssBinder.owner.id}" /></a>
 		</td>
 		<td valign="top">

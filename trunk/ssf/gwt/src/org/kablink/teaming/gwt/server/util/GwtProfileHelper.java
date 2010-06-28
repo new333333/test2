@@ -19,6 +19,7 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -40,6 +41,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -67,12 +69,14 @@ public class GwtProfileHelper {
 		//get the binder
 		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
+		owner = Utils.fixProxy(owner);
 		
 		if (owner != null) {
 			//User u = user;
 			User u;
 			//if (!user.getId().equals(owner.getId())) {
 				u = (User) bs.getProfileModule().getEntry(owner.getId());
+				u = (User)Utils.fixProxy(u);
 				profile.setUserId(u.getId().toString());
 				
 				Document doc = u.getEntryDef().getDefinition();
@@ -139,11 +143,13 @@ public class GwtProfileHelper {
 		//get the binder
 		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
+		owner = Utils.fixProxy(owner);
 		
 		if (owner != null) {
 			//User u = user;
 			User u = (User) bs.getProfileModule().getEntry(owner.getId());
-				
+			u = (User)Utils.fixProxy(u);
+			
 			//Get the Elements name - which is the attribute name
 			String attrName = "picture";
 			attribute.setName(attrName);
@@ -182,12 +188,14 @@ public class GwtProfileHelper {
 		//get the binder
 		Binder binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
+		owner = Utils.fixProxy(owner);
 		
 		if (owner != null) {
 			//User u = user;
 			User u;
 			//if (!user.getId().equals(owner.getId())) {
 				u = (User) bs.getProfileModule().getEntry(owner.getId());
+				u = (User)Utils.fixProxy(u);
 				Document doc = u.getEntryDef().getDefinition();
 				Element configElement = doc.getRootElement();
 				
@@ -215,7 +223,7 @@ public class GwtProfileHelper {
 								attr.setDataName(attrName);
 								
 								//Now get the title for this attribute
-								attr.setTitle(NLT.get("profile.abv.element."+attrName, attrName));
+								attr.setTitle(NLT.get("profile.abv.element."+attrName, attrName, false));
 								cat.add(attr);
 							}
 							
@@ -438,6 +446,7 @@ public class GwtProfileHelper {
 
 		//Get the Owner of the binder
 		Principal p = binder.getOwner();
+		p = Utils.fixProxy(p);
 		Long workspaceId = p.getWorkspaceId();
 
 		//We need to match the binder to the correct user, so we can read the miniblog from the correct user
@@ -450,7 +459,10 @@ public class GwtProfileHelper {
 
 				Collection<Principal> principals;
 				principals = bs.getProfileModule().getPrincipalsByName(names);
-				if (!principals.isEmpty()) p = (Principal)principals.iterator().next();
+				if (!principals.isEmpty()) {
+					p = (Principal)principals.iterator().next();
+					p = Utils.fixProxy(p);
+				}
 			}
 		} 
 		
@@ -477,7 +489,10 @@ public class GwtProfileHelper {
 		//Get the User object for this principle
 		SortedSet<User> users = bs.getProfileModule().getUsers(userIds);
 		User u = null;
-		if (!users.isEmpty()) u = users.iterator().next();
+		if (!users.isEmpty()) {
+			u = users.iterator().next();
+			u = (User)Utils.fixProxy(u);
+		}
 		
 		//If we have a user then lets get the microBlogId.
 		if(u != null) {
@@ -510,7 +525,10 @@ public class GwtProfileHelper {
 		//Get the User object for this principle
 		SortedSet<User> users = bs.getProfileModule().getUsers(userIds);
 		User u = null;
-		if (!users.isEmpty()) u = users.iterator().next();
+		if (!users.isEmpty()) {
+			u = users.iterator().next();
+			u = (User)Utils.fixProxy(u);
+		}
 		
 		//Check this user object to see if they cleared their status, don't display a status if cleared.
 		if(u != null) {
@@ -564,6 +582,7 @@ public class GwtProfileHelper {
 			
 			try {
 				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
+				principal = Utils.fixProxy(principal);
 				Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
 				
 				// Yes!  Construct a GwtUser object for it.

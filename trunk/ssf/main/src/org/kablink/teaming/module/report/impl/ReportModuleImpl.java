@@ -98,6 +98,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.search.Constants;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -835,7 +836,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		for (FolderEntry e : hiddenEntries) {
 			Map he = new HashMap();
 			he.put("id", e.getId());
-			he.put("creator", e.getCreation().getPrincipal());
+			Principal p = e.getCreation().getPrincipal();
+			p = Utils.fixProxy(p);
+			he.put("creator", p);
 			he.put("creationDate", e.getCreation().getDate());
 			hiddenEntryData.add(he);
 		}

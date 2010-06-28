@@ -43,10 +43,12 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.dom4j.Document;
 import org.kablink.teaming.dao.ProfileDao;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -60,7 +62,7 @@ import org.kablink.util.servlet.StringServletResponse;
  */
 public class BuddyPhotoTag extends BodyTagSupport {
 
-	private Set photos = null;
+	private Principal user = null;
 	
 	private String folderId = null;
 	
@@ -84,8 +86,12 @@ public class BuddyPhotoTag extends BodyTagSupport {
 					.getResponse();
 						
 			httpReq.setAttribute("thumbnail", null);
+			this.user = Utils.fixProxy(user);
+			Set photos = null;
+			CustomAttribute ca = this.user.getCustomAttribute("picture");
+			if (ca != null) photos = ca.getValueSet();
 			if (photos != null) {
-				httpReq.setAttribute("thumbnail", this.photos.iterator().next());
+				httpReq.setAttribute("thumbnail", photos.iterator().next());
 			}
 //			TODO: depends on user access rights we can create here link to upload user photo			
 //			else if (folderId != null) {				
@@ -109,7 +115,7 @@ public class BuddyPhotoTag extends BodyTagSupport {
 		} catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
-			this.photos = null;
+			this.user = null;
 			this.style = null;
 			this.folderId = null;
 			this.entryId = null;
@@ -126,8 +132,8 @@ public class BuddyPhotoTag extends BodyTagSupport {
 		this.folderId = folderId;
 	}
 
-	public void setPhotos(Set photos) {
-		this.photos = photos;
+	public void setUser(Principal user) {
+		this.user = user;
 	}
 
 	public void setStyle(String style) {
