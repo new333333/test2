@@ -97,7 +97,7 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
   <tr>
   <td valign="top" align="center">
 	  <ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_small" 
-					photos="${ss_miniblog_user.customAttributes['picture'].value}" 
+					user="${ss_miniblog_user}" 
 					folderId="${ss_miniblog_user.parentBinder.id}" entryId="${ss_miniblog_user.id}" />
   </td>
   <td valign="top" style="padding-left:10px;">

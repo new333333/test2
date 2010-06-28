@@ -59,10 +59,10 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>photos</name>
+			<name>user</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Set</type>
+			<type>org.kablink.teaming.domain.Principal</type>
 		</attribute>
 		<attribute>
 			<name>folderId</name>

@@ -2170,6 +2170,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private void setComponentOrganizer(Component component, DefinableEntity entry) {
 
 		Principal principal = (Principal) entry.getCreation().getPrincipal();
+		principal = Utils.fixProxy(principal);
 		ParameterList organizerParams = new ParameterList();
 		organizerParams.add(new Cn(Utils.getUserTitle(principal)));
 

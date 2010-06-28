@@ -285,7 +285,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		try {
 			checkAccess(entry, operation);
 			return true;
-		} catch (AccessControlException ac) {
+		} catch (Exception ac) {
 			return false;
 		}
 	}

@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -76,6 +77,7 @@ import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -627,7 +629,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";
 
-		ret += "<author>" + entry.getCreation().getPrincipal().getName()
+		Principal p = entry.getCreation().getPrincipal();
+		p = Utils.fixProxy(p);
+		ret += "<author>" + p.getName()
 				+ "</author>\n";
 
 		Date eDate = entry.getModification().getDate();
@@ -727,7 +731,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		//subtitle = "<![CDATA[ " + subtitle + "]]>";
 		ret += "<subtitle>" + subtitle + "</subtitle>\n";
 
-		ret += "<author><name>" + entry.getCreation().getPrincipal().getName()
+		Principal p = entry.getCreation().getPrincipal();
+		p = Utils.fixProxy(p);
+		ret += "<author><name>" + p.getName()
 				+ "</name></author>\n";
 
 		Date eDate = entry.getModification().getDate();

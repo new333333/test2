@@ -113,6 +113,17 @@ public class Utils {
 			throw new IllegalArgumentException(uncheckedException);
 	}
 	
+	public static Principal fixProxy(Principal p) {
+		//See if this is a proxy object for the user. If so, get the real object so it can be redacted if necessary.
+		if (EntityType.user.equals(p.getEntityType())) {
+			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+			User user = (User)profileDao.loadUserPrincipal(p.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+			return user;
+		} else {
+			return p;
+		}
+	}
+	
 	public static String getUserName(Principal p) {
 		if (p instanceof User) {
 			return p.getName();
