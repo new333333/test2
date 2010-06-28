@@ -34,6 +34,7 @@
 %>
 <% //Description view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="margintop1"></div>
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <%
 	//Get the user's desired region view (if set)
@@ -54,7 +55,7 @@
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.description.text}">
     <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' || ssDefinitionEntry.top}">
-    <div id="descriptionRegionImg${ss_divCounter}" align="right" style="display:none; width:100%;">
+    <div id="descriptionRegionImg${ss_divCounter}" class="margintop2" align="right" style="display:none; width:100%;">
       <a href="javascript: ;" 
         onClick="ss_toggleRegion(this, 'descriptionRegion${ss_divCounter}', 'descriptionRegion', 'wg-description-content', 200);return false;" 
         alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"

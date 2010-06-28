@@ -458,16 +458,16 @@ div.ss_entryContent a:hover {
   	color: ${ss_style_metadata_color};
   	}
 .ss_entryDescription {
+	position: relative;
   	color: #333;
-  	font-family: Arial, Helvetica, sans-serif; 
+	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
 	line-height: 17px;
-  	margin-top: 10px;
   	padding-left: 15px;
   	padding-right: 25px;
   	padding-top: 10px;
   	padding-bottom: 5px;
-  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5	 !important; */
+  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 !important; */
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
@@ -541,17 +541,13 @@ div.ss_editableTab a, div.ss_editableTab a:hover {
 
 
 div.ss_replies .ss_editableTab {
-	background-color: ${ss_style_background_color_opaque};
 	}
 div.ss_workflow { 
   	border: 1px #999 solid;
   	padding: 2px;
 	}
 .ss_replies .ss_entryDescription {
-  	padding-left: 15px;
-  	padding-right: 15px;
-  	padding-top: 5px;
-  	padding-bottom: 5px;
+  	padding: 5px;
 	} 
 .ss_entryDescriptionLead {
 	display: inline;
@@ -2290,9 +2286,7 @@ div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     margin-right: 5px;    
 	}
 .ss_thumbnail_standalone_signature img {
-    width: 70px;
-    height: 70px;
-    margin-top: 36px;
+    width: 40px;
 	}
 .ss_thumbnail_standalone_miniblog img {
     width: 70px;
@@ -3494,8 +3488,23 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 /* styles used in the version history comparisons */
+
+.ss_diff_content {
+	margin-top: 20px;
+	background-color: #f6f6f6;
+	padding: 10px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	}
+.ss_diff_content .head2 {
+	font-family: ${ss_style_title_font_family};
+	font-size: ${ss_style_font_largestprint};
+	font-weight: bold;
+	}
+
 .ss_diff_added {
 	background-color:${ss_diff_color_added};
+	padding: 2px;
 }
 .ss_diff_deleted {
 	background-color:${ss_diff_color_deleted};

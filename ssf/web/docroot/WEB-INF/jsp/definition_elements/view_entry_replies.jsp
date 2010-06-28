@@ -43,10 +43,10 @@
   <c:if test="${!empty property_caption}">
     <span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
   </c:if>
-	<div class="ss_replies_indent">
+	<div>
 	<c:forEach var="reply" items="${ssFolderEntryDescendants}">
 	  <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
-	  <div class="ss_entryContent ss_replies">
+	  <div class="ss_entryContent ss_replies wg-comment">
 	
 	  <c:if test="${!empty reply.entryDef}">
 	 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 

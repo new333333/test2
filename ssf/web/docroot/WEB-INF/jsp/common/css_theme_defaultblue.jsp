@@ -268,7 +268,7 @@
   --
   -- REPLYS
   --
---%><c:set var="ss_replies_background_color" value="#DBE6F2" scope="request"/><%--
+--%><c:set var="ss_replies_background_color" value="#e9f1f1" scope="request"/><%--
 --%><%--
   --
   -- TITLE
