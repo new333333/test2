@@ -269,7 +269,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			String jsString = tbi.getQualifierValue("onClick");
 			if (GwtClientHelper.hasString(jsString))
 				 GwtClientHelper.jsEvalString(           url, jsString);
-			else GwtClientHelper.jsLoadUrlInContentFrame(url);
+			else GwtClientHelper.loadUrlInContentFrame(url);
 		}
 		
 		// Return true to close the dialog.

@@ -33,7 +33,10 @@
 
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
+
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -233,9 +236,10 @@ public class GwtClientHelper {
 	 * 
 	 * @param url
 	 */
-	public static native void jsLoadUrlInContentFrame(String url) /*-{
-		window.top.gwtContentIframe.location.href = url;
-	}-*/;
+	public static void loadUrlInContentFrame(String url)
+	{
+		GwtMainPage.m_contentCtrl.setUrl( url );
+	}
 
 	/**
 	 * Loads a URL into the top window.
