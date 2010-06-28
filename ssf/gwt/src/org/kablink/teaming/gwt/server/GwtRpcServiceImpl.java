@@ -1007,18 +1007,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			if ( !(ObjectKeys.GUEST_USER_INTERNALID.equals( user.getInternalId() ) ) )
 			{
 				String displayStyle;
-				boolean showToolTips;
 				
 				// No
 				// Get the user's display style preference
 				displayStyle = user.getDisplayStyle();
 				personalPrefs.setDisplayStyle( displayStyle );
-				
-				// If the display style equals "accessible" then tool tips are on.
-				showToolTips = false;
-				if ( displayStyle.equalsIgnoreCase( "accessible" ) )
-					showToolTips = true;
-				personalPrefs.setShowToolTips( showToolTips );
 				
 				// Get the tutorial panel state.
 				{
@@ -2428,13 +2421,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					updates = new HashMap<String,Object>();
 					
 					newDisplayStyle = personalPrefs.getDisplayStyle();
-					
-					// For some reason I don't understand the "tooltips preference" and the
-					// "entry display style" setting are both stored in the "displayStyle" field.
-					// If "tooltips" are turned on we need to put the word "accessible" in the
-					// "displayStyle" field.
-					if ( personalPrefs.getShowToolTips() == true )
-						newDisplayStyle = "accessible";
 					
 					// Only allow "word" characters (such as a-z_0-9 )
 					if ( newDisplayStyle.equals("") || !newDisplayStyle.matches( "^.*[\\W]+.*$" ) )

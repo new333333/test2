@@ -38,7 +38,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class is used to hold Teamin personal preferences such as Entry Display Style, Editor Configuration,
- * Tooltip Preference, Video Tutorial Panel.
+ * Video Tutorial Panel.
  * @author jwootton
  *
  */
@@ -46,7 +46,6 @@ public class GwtPersonalPreferences
 	implements IsSerializable
 {
 	private String m_displayStyle = null;
-	private boolean m_showToolTips = false;
 	private boolean m_showTutorialPanel = false;
 	private int m_numEntriesPerPage = 0;
 	
@@ -78,15 +77,6 @@ public class GwtPersonalPreferences
 	{
 		return m_numEntriesPerPage;
 	}// end getNumEntriesPerPage()
-	
-	
-	/**
-	 * 
-	 */
-	public boolean getShowToolTips()
-	{
-		return m_showToolTips;
-	}// end geShowtToolTips()
 	
 	
 	/**
@@ -134,15 +124,6 @@ public class GwtPersonalPreferences
 	}// end setNumEntriesPerPage()
 	
 	
-	/**
-	 * 
-	 */
-	public void setShowToolTips( boolean showToolTips )
-	{
-		m_showToolTips = showToolTips;
-	}// end setShowToolTips()
-
-
 	/**
 	 * 
 	 */

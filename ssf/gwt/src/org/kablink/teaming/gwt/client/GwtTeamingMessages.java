@@ -239,6 +239,7 @@ public interface GwtTeamingMessages extends Messages
 	String loginDlgUserId();
 	
 	// Strings used in the personal preferences dialog.
+	String accessibleMode();
 	String editorOverridesLabel();
 	String entryDisplayStyleLabel();
 	String numEntriesPerPageCannotBeBlank();

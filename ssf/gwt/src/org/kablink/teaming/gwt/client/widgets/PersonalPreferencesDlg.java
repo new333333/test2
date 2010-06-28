@@ -72,7 +72,6 @@ public class PersonalPreferencesDlg extends DlgBox
 {
 	private ListBox m_entryDisplayStyleListbox;
 	private TextBox m_numEntriesPerPageTxtBox;
-	private CheckBox m_showToolTips;
 	private Anchor m_editorOverridesAnchor;
 	
 
@@ -125,6 +124,7 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInPopupWnd(), "popup" );
+			m_entryDisplayStyleListbox.addItem( messages.accessibleMode(), "accessible" );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
 			++nextRow;
@@ -139,13 +139,6 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_numEntriesPerPageTxtBox.addKeyPressHandler( this );
 			m_numEntriesPerPageTxtBox.setVisibleLength( 3 );
 			table.setWidget( nextRow, 1, m_numEntriesPerPageTxtBox );
-			++nextRow;
-		}
-		
-		// Create the controls for "show tooltips".
-		{
-			m_showToolTips = new CheckBox( messages.showToolTips() );
-			table.setWidget( nextRow, 0, m_showToolTips );
 			++nextRow;
 		}
 		
@@ -283,10 +276,6 @@ public class PersonalPreferencesDlg extends DlgBox
 			}
 		}
 		
-		// Get the value of "Show tooltips".
-		value = m_showToolTips.getValue();
-		personalPrefs.setShowToolTips( value.booleanValue() );
-		
 		return personalPrefs;
 	}// end getDataFromDlg()
 	
@@ -325,8 +314,6 @@ public class PersonalPreferencesDlg extends DlgBox
 		initEntryDisplayStyleControls( personalPrefs );
 		
 		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
-		
-		m_showToolTips.setValue( personalPrefs.getShowToolTips() );
 		
 		// Show/hide the "Define editor overrides..." button depending on whether or not
 		// "editor overrides" are supported.
