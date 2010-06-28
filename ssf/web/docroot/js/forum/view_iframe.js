@@ -187,27 +187,37 @@ function ss_positionEntryDiv(moveTop) {
 		    if (document.body.scrollHeight > parseInt(ss_getWindowHeight())) windowIsScrolling = true;
 		    
 		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-		    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
-			    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
-			    ss_entryHeightHighWaterMark = entryHeight;
-			    
-			    if (entryHeight > parseInt(ss_getWindowHeight())) {
-			    	//Start by resetting the window to a size big enough to not turn off scrolling
-			    	//This makes the entry div smaller, but not enough to jump around.
-			    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-					ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-				}
-				
-				ss_setObjectHeight(wObj3, entryHeight);
-			} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
-				ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-				ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-			} else {
-				if (entryHeight < parseInt(ss_getWindowHeight()) && 
-						ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
+		    if (0 == 1) {
+			    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
+				    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
+				    ss_entryHeightHighWaterMark = entryHeight;
+				    
+				    if (entryHeight > parseInt(ss_getWindowHeight())) {
+				    	//Start by resetting the window to a size big enough to not turn off scrolling
+				    	//This makes the entry div smaller, but not enough to jump around.
+				    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+						ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+					}
+					
 					ss_setObjectHeight(wObj3, entryHeight);
+				} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
+					ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+					ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+				} else {
+					if (entryHeight < parseInt(ss_getWindowHeight()) && 
+							ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
+						ss_setObjectHeight(wObj3, entryHeight);
+					}
 				}
-			}
+		    } else {
+		    	//Set the size to fit in the window
+		    	var entryDivTop = ss_getObjectTop(wObj3);
+		    	//Get maximum size
+		    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
+		    	if (entryHeight > entryDivMaxSize) entryHeight = entryDivMaxSize;
+		    	ss_setObjectHeight(wObj3, entryHeight);
+		    }
+		    
 			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
 				//See if the entry runs off the bottom of the screen and should be moved up some
 				if (ss_entryWindowTop + entryHeight > parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight())) {
@@ -402,7 +412,9 @@ function ss_entryClearDrag() {
 	if (lightBox != null) {
 		//ss_debug('remove lightbox')
 		ss_setOpacity(lightBox, 1);
-		lightBox.style.visibility = "hidden"
+		lightBox.style.visibility = "hidden";
+		lightBox.style.height = "1px";
+		lightBox.style.display = "none";
 	}
 }
 
