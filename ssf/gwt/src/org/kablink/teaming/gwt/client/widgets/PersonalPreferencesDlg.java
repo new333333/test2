@@ -123,7 +123,6 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
-			m_entryDisplayStyleListbox.addItem( messages.showEntriesInPopupWnd(), "popup" );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
 			++nextRow;
