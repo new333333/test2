@@ -124,6 +124,30 @@ function ss_iframeOnloadSetHeight() {
 		ss_setEntryDivHeight();
 }
 
+function ss_setIframeDivHeight() {
+	try {
+	    var wObj3 = self.document.getElementById('ss_showentryframe');
+	    if (wObj3 != null && window.ss_showentryframe && window.ss_showentryframe.document && 
+				window.ss_showentryframe.document.body) {
+		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
+		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
+		    
+	    	//Set the size to fit in the window
+	    	var entryDivTop = ss_getObjectTop(wObj3);
+	    	//Get maximum size
+	    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
+	    	if (entryHeight > entryDivMaxSize) {
+	    		entryHeight = entryDivMaxSize;
+	    	}
+	    	if (parseInt(ss_getObjectHeight(wObj3)) != parseInt(entryHeight)) {
+	    		wObj3.style.height = parseInt(entryHeight) + 'px';
+	    	}
+		}
+	} catch(e) {
+		alert("iframe resize failure: "+e)
+	}
+}
+
 function ss_positionEntryDiv(moveTop) {
 	if (typeof moveTop == 'undefined') moveTop = false;
 	//ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
@@ -211,11 +235,7 @@ function ss_positionEntryDiv(moveTop) {
 				}
 		    } else {
 		    	//Set the size to fit in the window
-		    	var entryDivTop = ss_getObjectTop(wObj3);
-		    	//Get maximum size
-		    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
-		    	if (entryHeight > entryDivMaxSize) entryHeight = entryDivMaxSize;
-		    	ss_setObjectHeight(wObj3, entryHeight);
+		    	ss_setIframeDivHeight();
 		    }
 		    
 			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
@@ -251,6 +271,7 @@ function ss_repositionEntryDiv() {
 }
 
 //ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
+ss_createOnLayoutChangeObj('ss_setIframeDivHeight', ss_setIframeDivHeight)
 ss_createOnResizeObj('ss_repositionEntryDiv', ss_repositionEntryDiv)
 
 var ss_divDragObj = null
