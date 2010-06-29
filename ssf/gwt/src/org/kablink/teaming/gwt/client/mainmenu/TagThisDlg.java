@@ -509,6 +509,13 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 				return "";
 			}
 
+			// If the tag contains underscores...
+			if (0 <= reply.indexOf("_")) {
+				// ...tell the user that's not valid and bail.
+				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasUnderscores());
+				return "";
+			}
+
 			// If the tag is too long...
 			if (MAX_TAG_LENGTH < reply.length()) {
 				// ...tell the user and truncate it.
