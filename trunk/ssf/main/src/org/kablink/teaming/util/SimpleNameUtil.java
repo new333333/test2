@@ -142,16 +142,9 @@ public class SimpleNameUtil {
 	
 	protected static String getURL(boolean isSecure, String hostname, int port, Long binderId, String entityType) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true, isSecure, hostname, port);
-		if (entityType.equals(EntityIdentifier.EntityType.folder.name())) {
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		} else if (entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		} else if (entityType.equals(EntityIdentifier.EntityType.profiles.name())) {
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		} else {
-			throw new IllegalArgumentException("Unsupported entity type " + entityType);
-		}
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 		return adapterUrl.toString();
 	}
 	
