@@ -1199,7 +1199,7 @@ public class WorkspaceTreeHelper {
 		// GWT UI.  Note that these need to be last in the toolbar
 		// building sequence because they access things in the
 		// model to construct toolbars specific to the GWT UI.
-		GwtUIHelper.buildGwtMiscToolbar(bs, request, user, workspace, model, gwtMiscToolbar);
+		GwtUIHelper.buildGwtMiscToolbar(bs, request,       workspace, model, gwtMiscToolbar);
 		GwtUIHelper.buildGwtUIToolbar(  bs, request, user, workspace, model, gwtUIToolbar);
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());

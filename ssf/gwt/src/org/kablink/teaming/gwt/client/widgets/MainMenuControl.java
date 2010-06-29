@@ -504,11 +504,11 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 								// Handle inSearch vs. not inSearch.
 								addManageToContext(      toolbarItemList, tmi);
 								addRecentPlacesToContext(toolbarItemList);
-								addActionsToContext(     toolbarItemList);
 								if (inSearch) {
 									addTopRankedToContext();
 									addManageSavedSearchesToContext(searchTabId);
 								}
+								addActionsToContext(toolbarItemList);
 							}
 						});
 					}
