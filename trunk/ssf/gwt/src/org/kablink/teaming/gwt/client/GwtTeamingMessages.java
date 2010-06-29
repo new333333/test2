@@ -320,6 +320,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuTagThisDlgErrorDuplicateTag();
 	String mainMenuTagThisDlgErrorTagHasPunctuation();
 	String mainMenuTagThisDlgErrorTagHasSpaces();
+	String mainMenuTagThisDlgErrorTagHasUnderscores();
 	String mainMenuTagThisDlgHeaderFolder();
 	String mainMenuTagThisDlgHeaderWorkspace();
 	String mainMenuTagThisDlgNoTags();
