@@ -40,6 +40,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,6 +56,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.TextVerificationException;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -366,11 +368,32 @@ public class WebHelper {
 			return null;
 		MultipartFile file = (MultipartFile) fileMap.values().iterator().next();
 		String fileName = file.getOriginalFilename();
+		if(!validateFilenameForSafeLeaf(fileName))
+			throw new UncheckedIOException(new IOException("Illegal file name for this operation"));
 		// Encode the original file name into the prefix.
 		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
 		File destFile = TempFileUtil.createTempFile(prefix);
 		file.transferTo(destFile);
 		return destFile.getName();
+	}
+	
+	public static boolean validateFilenameForSafeLeaf(String filename) throws UnsupportedEncodingException {
+		// Written to address the concern expressed in bug #618390
+		
+		// Check against a null byte
+		byte[] bytes = filename.getBytes("UTF-8");
+		for(int b:bytes) {
+			if(b == 0x00)
+				return false;
+		}
+		
+		// Check against non-leaf file spec.
+		if(filename.contains("/"))
+			return false;
+		if(filename.contains("\\"))
+			return false;
+		
+		return true;
 	}
 	
 	/**
