@@ -757,7 +757,7 @@ public class GwtMainPage extends Composite
 		case HELP:
 			String url;
 			
-			url = "http://www.novell.com/documentation/teaming21/team21_user/data/bookinfo.html#bookinfo";
+			url = "http://www.novell.com/documentation/teaming3/team3_user/data/bookinfo.html";
 			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
