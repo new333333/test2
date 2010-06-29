@@ -33,7 +33,6 @@
 package org.kablink.teaming.portlet.binder;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,10 +40,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -65,12 +61,10 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Clipboard;
@@ -79,8 +73,6 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.Toolbar;
-import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.util.search.Constants;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -93,6 +85,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	public static final String NEW_TAB_VALUE = "1";
 		
+	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		
 		// set form data for the render method
@@ -100,6 +93,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		response.setRenderParameters(formData);
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
+	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//ajax requests
@@ -196,6 +190,7 @@ public class AdvancedSearchController extends AbstractBinderController {
         		}
         		model.put(WebKeys.SEARCH_FILTER_MAP, options);
         	}
+        	buildGwtMiscToolbar(model, request);
         	
     		//Build a reload url
     		PortletURL reloadUrl = response.createRenderURL();
@@ -206,6 +201,7 @@ public class AdvancedSearchController extends AbstractBinderController {
         }
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void addPropertiesForFolderView(Map model) {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -225,10 +221,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}	
 
 	
+	@SuppressWarnings("unchecked")
 	protected void buildToolbars(Map model, RenderRequest request) {
-		model.put(WebKeys.FOOTER_TOOLBAR,  buildFooterToolbar(model, request).getToolbar());
+		model.put(WebKeys.FOOTER_TOOLBAR, buildFooterToolbar( model, request).getToolbar());
+		buildGwtMiscToolbar(model, request);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private Toolbar buildFooterToolbar(Map model, RenderRequest request) {
 		Toolbar footerToolbar = new Toolbar();
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE + "_all"));
@@ -237,7 +236,15 @@ public class AdvancedSearchController extends AbstractBinderController {
 		addStartMeetingOption(footerToolbar, request, contributorIds);
 		return footerToolbar;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private void buildGwtMiscToolbar(Map model, RenderRequest request) {
+		Toolbar gwtMiscToolbar = new Toolbar();
+		GwtUIHelper.buildGwtMiscToolbar(this, request, null, model, gwtMiscToolbar);
+		model.put(WebKeys.GWT_MISC_TOOLBAR, gwtMiscToolbar.getToolbar());
+	}
 
+	@SuppressWarnings("unchecked")
 	private void addStartMeetingOption(Toolbar footerToolbar, RenderRequest request, String[] contributorIds) {
 		if (getIcBrokerModule().isEnabled()) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -251,6 +258,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	private void addClipboardOption(Toolbar toolbar, String[] contributorIds, Map model) {
 		// clipboard
 		Map qualifiers = new HashMap();
@@ -267,6 +275,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.TOOLBAR_CLIPBOARD_SHOW, Boolean.TRUE);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private String[] collectContributorIds(List entries) {
 		Set principals = new HashSet();
 		
@@ -283,6 +292,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return as;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxGetEntryAttributes(RenderRequest request, RenderResponse response) {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
 		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
@@ -333,6 +343,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		return new ModelAndView("forum/json/find_entry_attributes_value_widget", model);
  	}
+	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxGetEntryAttributeValue(RenderRequest request, RenderResponse response) {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
 		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");

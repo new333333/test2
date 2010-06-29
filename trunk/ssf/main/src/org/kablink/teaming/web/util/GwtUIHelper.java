@@ -113,6 +113,21 @@ public class GwtUIHelper {
 	}
 	
 	/*
+	 * Adds an about item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addAboutToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Toolbar tb) {
+		// Construct an About... toolbar item.
+		HashMap qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showAbout( 'ss_aboutBoxDiv' ); return false;");
+		tb.addToolbarMenu(
+			"about",
+			NLT.get("misc.about"),
+			"#",
+			qualifiers);
+	}
+	
+	/*
 	 * Adds a clipboard item to the toolbar.
 	 */
 	@SuppressWarnings("unchecked")
@@ -432,12 +447,16 @@ public class GwtUIHelper {
 	 * @param gwtMiscToolbar
 	 */
 	@SuppressWarnings("unchecked")
-	public static void buildGwtMiscToolbar(AllModulesInjected bs, RenderRequest request, User user, Binder binder, Map model, Toolbar gwtMiscToolbar) {
+	public static void buildGwtMiscToolbar(AllModulesInjected bs, RenderRequest request, Binder binder, Map model, Toolbar gwtMiscToolbar) {
 		// We only add the GWT miscellaneous toolbar items if the GWT
 		// UI is active.  Is it?
 		if (isGwtUIActive(request)) {
-			// Yes!  Are we running as other than guest?
-			if (!(isCurrentUserGuest())) {
+			// Yes!  Add an about toolbar item.
+			addAboutToToolbar( bs, request, model, gwtMiscToolbar);
+			
+			// Do we have a binder and are we running as other than
+			// guest?
+			if ((null != binder) && (!(isCurrentUserGuest()))) {
 				// Yes!  Is the binder we're on other than the profiles
 				// container?
 				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {

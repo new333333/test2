@@ -62,6 +62,7 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 
 	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
+	private ToolbarItem m_aboutTBI;					// The about      toolbar item, if found.
 	private ToolbarItem m_clipboardTBI;				// The clipboard  toolbar item, if found.
 	private ToolbarItem m_sendEmailTBI;				// The send email toolbar item, if found.
 	private ToolbarItem m_trashTBI;					// The trash      toolbar item, if found.
@@ -124,6 +125,7 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 			ToolbarItem tbi = tbiIT.next();
 			String tbName = tbi.getName();
 			if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_aboutTBI     = tbi.getNestedToolbarItem("about");
 				m_clipboardTBI = tbi.getNestedToolbarItem("clipboard");
 				m_sendEmailTBI = tbi.getNestedToolbarItem("sendEmail");
 				m_trashTBI     = tbi.getNestedToolbarItem("trash");
@@ -133,7 +135,8 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 		// Return true if we found any of the actions menu items and
 		// false otherwise.
 		return
-			((null != m_clipboardTBI) ||
+			((null != m_aboutTBI)     ||
+			 (null != m_clipboardTBI) ||
 			 (null != m_sendEmailTBI) ||
 			 (null != m_trashTBI));
 	}
@@ -157,6 +160,12 @@ public class ActionsMenuPopup extends MenuBarPopupBase {
 			addContextMenuItem(IDBASE, m_sendEmailTBI);
 			addContextMenuItem(IDBASE, m_clipboardTBI);
 			addContextMenuItem(IDBASE, m_trashTBI);
+			if (null != m_aboutTBI) {
+				if (isSpacerNeeded()) {
+					addSpacerMenuItem();
+				}
+				addContextMenuItem(IDBASE, m_aboutTBI);
+			}
 		}
 					
 		// ...and show it.

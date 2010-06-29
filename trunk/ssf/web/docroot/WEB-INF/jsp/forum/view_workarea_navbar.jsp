@@ -700,15 +700,6 @@ ss_createEventObj('ss_navbarUnload', 'unload', ss_navbarUnload);
 	         	  alt="<ssf:nlt tag="navigation.about"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>"/>
        		</c:if>
          </a>
-         <div id="ss_aboutBoxDiv" 
-           style="position:absolute; display:none; border:1px solid #cecece; background-color:#fff;">
-             <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-             	<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
-			 </c:if>
-             <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-               <img src="<html:rootPath/>images/pics/masthead/kablink_about_screen.png" border="0"/>
-             </c:if>
-          </div>
        </td>
       </tr><!-- kablink: ss_banner_guy_ka.gif -->
     </tbody>
@@ -848,4 +839,13 @@ ss_workarea_showPseudoPortal${renderResponse.namespace}()
 <div style="visibility:hidden;position:absolute;">
 <iframe id="ss_signalingIframe" style="height:0px;" src="<html:rootPath/>js/forum/null.html" 
 title="<ssf:nlt tag = "navigation.emptyFrame"/>" role="presentation" >xxx</iframe>
+</div>
+
+<div id="ss_aboutBoxDiv" style="position:absolute; display:none; border:1px solid #cecece; background-color:#fff;">
+	<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
+		<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
+ 	</c:if>
+	<c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
+		<img src="<html:rootPath/>images/pics/masthead/kablink_about_screen.png" border="0"/>
+	</c:if>
 </div>
