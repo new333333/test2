@@ -1225,10 +1225,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		function.addOperation(WorkAreaOperation.CREATE_FOLDERS);
-		function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
-		function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		//function.addOperation(WorkAreaOperation.CREATE_FOLDERS);
+		//function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
+		//function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
+		//function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
