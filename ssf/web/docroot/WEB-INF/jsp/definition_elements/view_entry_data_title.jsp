@@ -43,7 +43,7 @@
 <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
                     !empty ssDefinitionEntry.parentEntry}">
-<div style="padding-bottom:10px;">
+<div style="padding-bottom:2px;">
 <c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
 <jsp:useBean id="parentEntry" type="java.lang.Object" />
 <%
@@ -56,7 +56,7 @@
 		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
 %>
 <c:set var="nextEntry" value="<%= nextEntry %>"/>
-<div style="padding-bottom:10px;">
+<div style="padding-bottom:8px;">
 <span style="ss_fineprint ss_light">
 <a
   href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"

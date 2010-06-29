@@ -171,7 +171,7 @@
   --
 --%><c:set var="ss_help_spot_background_color" value="#E9EDF3" scope="request"/><%--
 --%><c:set var="ss_help_panel_background_color" value="transparent" scope="request"/><%--
---%><c:set var="ss_lightBox_background_color" value="#ECECEC" scope="request"/><%--	
+--%><c:set var="ss_lightBox_background_color" value="#000" scope="request"/><%--	
 --%><%--
   --
   -- HEADER COLORS

@@ -40,8 +40,8 @@
 </ssf:ifadapter>
 
 <style type="text/css">
-del { font-weight: normal; text-decoration: none; color: #fff; background-color: #990033; }
-ins { font-weight: normal; text-decoration: none; color: #fff; background-color: #009933; }
+del { font-weight: normal; text-decoration: line-through; color: #000; background-color: #e0e0e0; -moz-border-radius: 3px; -webkit-border-radius: 3px;}
+ins { font-weight: normal; text-decoration: none; color: #fff; background-color: #83bf30;-moz-border-radius: 3px; -webkit-border-radius: 3px; }
 </style>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
@@ -414,18 +414,18 @@ function ss_resizeIframeArea() {
 
 	<div id ="diff" class="ss_diff_content" style="display:none;">
 		<div id="diff-header" class="head2"><ssf:nlt tag="entry.comparison">
-		  <ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
-		  <ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
-		  </ssf:nlt>
-		</div>
-		<div id="diff-key" class="marginleft1">
-			<span style="padding: 3px;"><ssf:nlt tag="entry.comparison.key"/></span>
-			<span><ssf:nlt tag="entry.comparison.note"/>></span>
+			<ssf:param name="value" value="<span id=\"versionNumberA\">x</span>"/>
+		  	<ssf:param name="value" value="<span id=\"versionNumberB\">x</span>"/>
+			</ssf:nlt>
+			<span style="padding: 3px; margin-left: 1em; font-weight: normal;"><ssf:nlt tag="entry.comparison.key"/></span>
+			<div id="diff-key" class="margintop1" style="font-weight: normal; font-size: 12px; color: #666;">
+				<span ><ssf:nlt tag="entry.comparison.note"/></span>
+			</div>
 		</div>
 	
-		<div class="head2 margintop3"><ssf:nlt tag="general.title"/></div>
+		<div class="head2 margintop3" style="color: #666"><ssf:nlt tag="general.title"/></div>
 		<div id="diff-title" class="ss_entryTitle"></div>
-		<div class="head2 margintop2"><ssf:nlt tag="__description"/></div>
+		<div class="head2 margintop2" style="color: #666"><ssf:nlt tag="__description"/></div>
 		<div id="diff-desc" class="ss_entryContent ss_entryDescription"></div>
 	</div>
 

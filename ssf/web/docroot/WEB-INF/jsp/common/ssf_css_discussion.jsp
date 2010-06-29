@@ -678,10 +678,9 @@ div.ssPageNavi {
 /*******replies -s comments*****************/	
 div.ss_entryContent {
 	margin-left: 0px;
-	margin-top: 2px;
+	margin-top: 4px;
 	}
 div.ss_replies{	
-	border-right: 2px dotted #E9F1F1;
 	}
 div.ss_replies_indent {
 	margin-left:20px;
