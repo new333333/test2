@@ -366,6 +366,9 @@ function ss_divDrag(evt) {
         ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;
         if (dObjTop <= 0) dObjTop = 1;
+        if (dObjLeft + ss_divOffsetX > parseInt(ss_getWindowWidth())) {
+        	dObjLeft = parseInt(ss_getWindowWidth()) - ss_divOffsetX;
+        }
         if (ss_divDragMoveType == 'resize') {
 	        var deltaW = parseInt(parseInt(dObjLeft) - parseInt(ss_divDragObj.style.left))
 	        ss_entryWindowWidth = parseInt(parseInt(ss_divDragObj.style.width) - deltaW)
