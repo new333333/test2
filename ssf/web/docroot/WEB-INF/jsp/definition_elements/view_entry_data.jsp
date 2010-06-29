@@ -49,8 +49,14 @@
 		if (item.attributeValue("name", "").equals("descriptionView")) itemType = "description";
 	}
 	if (itemType.equals("title")) {
+		String thisEntryId = "";
+		if (ssDefinitionEntry instanceof DefinableEntity) {
+			thisEntryId = ((DefinableEntity)ssDefinitionEntry).getId().toString();
+		}
 		%>
-		<c:if test="${!ss_entryAttributesSeen['title']}">
+		<c:set var="thisEntryId" value="<%= thisEntryId %>" />
+		<c:set var="thisTitle" value="title${thisEntryId}"/>
+		<c:if test="${empty ss_entryAttributesSeen[thisTitle]}">
 		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_title.jsp" />
 		</c:if>
 		<%

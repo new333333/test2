@@ -35,10 +35,13 @@
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <%
 	Map<String,Boolean> ss_entryAttributesSeen = new java.util.HashMap<String,Boolean>();
+	String thisEntryId = ssDefinitionEntry.getId().toString();
 %>
 <c:set var="ss_entryAttributesSeen" value="<%= ss_entryAttributesSeen %>" scope="request" />
+<c:set var="thisEntryId" value="<%= thisEntryId %>" />
 
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
@@ -74,7 +77,7 @@
   <c:forEach var="selection" items="${selections}" varStatus="status">
     <c:if test="${status.first}">
 <%
-	ss_entryAttributesSeen.put("title", true);
+	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
@@ -112,11 +115,12 @@
     </c:if>
   </c:forEach>
 </c:if>
-<c:if test="${!ss_entryAttributesSeen['title']}">
+<c:set var="thisTitle" value="title${thisEntryId}"/>
+<c:if test="${!ss_entryAttributesSeen[thisTitle]}">
   <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" varStatus="status">
     <c:if test="${status.first}">
 <%
-	ss_entryAttributesSeen.put("title", true);
+	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
@@ -139,9 +143,10 @@
     </c:if>
   </c:forEach>
 </c:if>
-<c:if test="${!ss_entryAttributesSeen['title']}">
+<c:set var="thisTitle" value="title${thisEntryId}"/>
+<c:if test="${!ss_entryAttributesSeen[thisTitle]}">
 <%
-	ss_entryAttributesSeen.put("title", true);
+	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
 	<div class="ss_entryTitleFile">
 	<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
