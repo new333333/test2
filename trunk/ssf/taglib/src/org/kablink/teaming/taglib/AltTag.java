@@ -71,7 +71,7 @@ public class AltTag extends BodyTagSupport implements ParamAncestorTag {
 	public int doEndTag() throws JspTagException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		User user = null;
-		boolean isAccessible = false;
+		boolean isAccessible = true;  //This tag now always shows the alt text.
 		if (rc != null) user = rc.getUser();
 		if (user != null) {
 			String displayStyle = user.getDisplayStyle();
