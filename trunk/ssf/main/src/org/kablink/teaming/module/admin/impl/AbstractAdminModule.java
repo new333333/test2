@@ -1027,7 +1027,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   filter.add("entityId", entityIdentifier.getEntityId());
 	   filter.add("entityType", entityIdentifier.getEntityType().name());
 	   OrderBy order = new OrderBy();
-	   order.addColumn("operationDate");	   
+	   order.addColumn("operationDate", OrderBy.DESCENDING);	   
 	   filter.setOrderBy(order);
 	   
 	   List<ChangeLog> changeLogs = getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId()); 
