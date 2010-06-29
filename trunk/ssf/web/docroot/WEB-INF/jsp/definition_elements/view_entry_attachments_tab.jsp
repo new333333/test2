@@ -62,12 +62,12 @@ var ss_labelButtonCancel = "<ssf:nlt tag="button.cancel"/>";
 var ss_labelEntryChooseFileWarning = "<ssf:nlt tag="entry.chooseFileWarningMessage"/>";
 var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>";
 </script>
-<div class="ss_entryContent" style="padding-top:10px;">
+<div class="ss_entryContent"">
 
 <table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <c:if test="${!empty ss_pseudoEntity}">
 <tr>
-	<td valign="top" style="padding-left: 9px;" nowrap>
+	<td valign="top" style="padding-left: 9px; white-space: nowrap">
 		<c:if test="${!empty ss_pseudoEntityRevert}">
 		  <br/>
 		  <span class="ss_style ss_smallprint"><ssf:nlt tag="entry.revert.select"/>
@@ -77,7 +77,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 </c:if>
 <c:if test="${empty ss_pseudoEntity}">
 <tr>
-	<td valign="top" style="padding-left: 19px;" nowrap>
+	<td valign="top" style="padding-left: 19px; white-space: nowrap">
 		<!-- We need the following image so the help spot has an initial position. -->
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" class="ss_style ss_bold ss_smallprint">
 		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments" offsetX="-20" offsetY="-5"
@@ -93,8 +93,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 			<% if (isAppletSupported) { %>
-				<li style="float:left; padding:1px 10px 4px 0px;">
-				<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+				<li style="float:right; padding:1px 10px 4px 0px;">
+				<a class="ss_nowrap" 
 				id="ss_dropbox_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				href="javascript: ;" 
 				<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
@@ -116,8 +116,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	<% if (org.kablink.teaming.web.util.BinderHelper.isWebdavSupported(request)) { %>
 	<c:if test="${ss_folderViewStyle == 'blog' && !empty ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}">
 		<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-		<li style="float:left; padding:1px 10px 4px 0px;">
-		<a class="ss_tinyButton ss_fineprint ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
+		<li style="float:right; padding:1px 10px 4px 0px;">
+		<a class="ss_nowrap" title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" 
 		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
@@ -134,8 +134,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		</li>
 	</c:if>
 	<c:if test="${ss_folderViewStyle != 'blog' && !empty ssWebDavURL}">
-		<li style="float:left; padding:1px 10px 4px 0px;">
-		<a class="ss_tinyButton ss_fineprint ss_nowrap"  
+		<li style="float:right; padding:1px 10px 4px 0px;">
+		<a class="ss_nowrap"  
 		  title="<ssf:nlt tag="entry.AttachFilesByWebDav"/>"
 		  style="behavior: url(#default#AnchorClick);" 
 		  folder="${ssWebDavURL}<%= webdavSuffix %>"
@@ -155,8 +155,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	<% } %>
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	  <li style="float:left; padding:1px 10px 4px 0px;">
-		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+	  <li style="float:right; padding:1px 10px 4px 0px;">
+		<a class="ss_nowrap" 
 		  title="<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>" href="javascript: ;" 
 		  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
 		    onClick='ss_showAddAttachmentBrowse("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
@@ -171,8 +171,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	
 	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 	<% if (presence_service_enabled) { %>
-	  <li style="float:left; padding:1px 10px 4px 0px;">
-	  <a class="ss_tinyButton ss_fineprint ss_nowrap" 
+	  <li style="float:right; padding:1px 10px 4px 0px;">
+	  <a class="ss_nowrap" 
 	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
 	    href="javascript: ;" 
 		<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
@@ -189,8 +189,8 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</c:if>	
 
 	<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-	  <li style="float:left; padding:1px 10px 4px 0px;">
-		<a class="ss_tinyButton ss_fineprint ss_nowrap" 
+	  <li style="float:right; padding:1px 10px 4px 0px;">
+		<a class="ss_nowrap" 
 		  title="<ssf:nlt tag="entry.DownloadAllAttachmentsAsZip"/>" 
 		  href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}"/>" 
 		  ><ssf:nlt tag="entry.DownloadAllAttachments"/></a>

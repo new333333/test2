@@ -795,9 +795,14 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	padding: 0px;
 	}
 .wg-comment {
-	background-color: #f6f6f6;
-	padding: 5px;
+	background-color: #fff;
+	padding: 7px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}	
+.wg-comment .ss_entryTitle {
+	margin-left: 0px;
+	}
 
 /* Teaming - Tabs */
 

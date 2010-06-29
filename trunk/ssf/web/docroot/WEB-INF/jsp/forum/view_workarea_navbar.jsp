@@ -512,11 +512,11 @@ ss_createEventObj('ss_navbarUnload', 'unload', ss_navbarUnload);
 						</a>
 					</div>
 				</td>
-				<td>
-					&nbsp;
+				<td>&nbsp;
+					
 				</td>
-				<td>
-					&nbsp;
+				<td>&nbsp;
+					
 				</td>
 			  </tr>
 			  <tr>
@@ -841,7 +841,7 @@ ss_workarea_showPseudoPortal${renderResponse.namespace}()
 title="<ssf:nlt tag = "navigation.emptyFrame"/>" role="presentation" >xxx</iframe>
 </div>
 
-<div id="ss_aboutBoxDiv" style="position:absolute; display:none; border:1px solid #cecece; background-color:#fff;">
+<div id="ss_aboutBoxDiv" style="position:absolute; display:none; background-color:#fff;">
 	<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 		<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
  	</c:if>

@@ -441,7 +441,6 @@ div.ss_editorHints {
   	margin: 0px;
   	padding: 2px;
   	padding-left: 2px;
-  	background-color:inherit;
   	font-style: normal !important;
   	}
 div.ss_entryContent a {
@@ -458,16 +457,12 @@ div.ss_entryContent a:hover {
   	color: ${ss_style_metadata_color};
   	}
 .ss_entryDescription {
-	position: relative;
   	color: #333;
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
 	line-height: 17px;
-  	padding-left: 15px;
-  	padding-right: 25px;
-  	padding-top: 10px;
-  	padding-bottom: 5px;
-  	background-color: #E9F1F1;  /* switch back to this: #A6C5C5 !important; */
+  	padding: 2px 15px;
+  	background-color: #E9F1F1;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
@@ -547,7 +542,7 @@ div.ss_workflow {
   	padding: 2px;
 	}
 .ss_replies .ss_entryDescription {
-  	padding: 5px;
+  	padding: 2px 10px;
 	} 
 .ss_entryDescriptionLead {
 	display: inline;
