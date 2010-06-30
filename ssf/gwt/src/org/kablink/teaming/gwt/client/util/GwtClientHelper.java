@@ -280,9 +280,7 @@ public class GwtClientHelper {
 	 * Set the javascript variable, ss_userDisplayStyle, to the given value.
 	 */
 	public static native void jsSetEntryDisplayStyle( String style ) /*-{
-		$wnd.alert( $wnd.top.ss_userDisplayStyle );
 		$wnd.top.ss_userDisplayStyle = style;
-		$wnd.alert( $wnd.top.ss_userDisplayStyle );
 	}-*/;
 
 	/**
