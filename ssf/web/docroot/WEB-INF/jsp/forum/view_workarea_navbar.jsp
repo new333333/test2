@@ -204,7 +204,7 @@ ss_setObjectLeft(document.getElementById("ss_mastheadWatermark${renderResponse.n
 if (self != self.parent) {
 	//Check if this page is a full Teaming page inside a frame inside Teaming
 	try {
-		if ( window.name == 'gwtContentIframe' )
+		if ( window.name == 'gwtContentIframe' || window.name == 'ss_showentryframe')
 		{
 			// Nothing to do.  We are running inside the GWT frame and that is ok.
 		}

@@ -277,8 +277,8 @@ function ss_loadEntryUrl(url,id) {
 	</c:if>
 	
 <%
-	//See if this is the Popup view
-	if (ObjectKeys.USER_DISPLAY_STYLE_POPUP.equals(ssUser.getDisplayStyle())) {
+	//See if this is the Popup view (Popup mode has been turned off)
+	if (0 == 1 && ObjectKeys.USER_DISPLAY_STYLE_POPUP.equals(ssUser.getDisplayStyle())) {
 %>
 		<script type="text/javascript">
 		var ss_viewEntryResizeHappened = 0;

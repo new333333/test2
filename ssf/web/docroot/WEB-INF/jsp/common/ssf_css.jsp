@@ -1629,6 +1629,20 @@ div.ss_box_top_rounded {
 	width: 14px;
 }
 
+/* "newpage" box styles */
+.ss_newpage_box {
+}
+.ss_newpage_box_header {
+	padding:2px; 
+	margin:0px; 
+	border-bottom:1px solid #aaa; 
+	background:#ccc;
+}
+.ss_newpage_box_close {
+}
+.ss_newpage_box_title {
+}
+
 .ss_plus {
   width:16px;
   height:16px;

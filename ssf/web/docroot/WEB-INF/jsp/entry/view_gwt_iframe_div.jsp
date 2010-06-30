@@ -62,31 +62,51 @@
 
 <div id="ss_showentrydiv" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; visibility:hidden; 
-  width:600px; display:none;">
-  <ssf:box>
-    <ssf:param name="box_id" value="ss_iframe_box_div" />
-    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
-    <ssf:param name="box_width" value="400" />
-    <ssf:param name="box_color" value="${ss_entry_border_color}" />
-    <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />
-    <ssf:param name="box_show_resize_icon" value="true" />
-    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
-    <ssf:param name="box_show_resize_gif" value="icons/resize_east_west.gif" />
-    <ssf:param name="box_show_move_icon" value="true" />
-    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
-    <ssf:param name="box_show_close_icon" value="true" />
-    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <div id="ss_iframe_holder_div" style="padding: 0 4px;">
-  <iframe id="ss_showentryframe"
-  	title="<ssf:nlt tag = "iframe.entry"/>" 
-    name="ss_showentryframe" style="width:100%; 
-    display:block; padding:0px 4px;"
-    src="<html:rootPath/>js/forum/null.html" 
-    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
-    frameBorder="0" >xxx</iframe>
-  </div>
-  </ssf:box>
+  style="position:absolute; visibility:hidden; display:none;">
+  <c:if test="${ssUser.displayStyle != 'newpage'}">
+	  <ssf:box>
+	    <ssf:param name="box_id" value="ss_iframe_box_div" />
+	    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
+	    <ssf:param name="box_width" value="400" />
+	    <ssf:param name="box_color" value="${ss_entry_border_color}" />
+	    <ssf:param name="box_canvas_color" value="${ss_style_background_color_opaque}" />
+	    <ssf:param name="box_show_resize_icon" value="true" />
+	    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
+	    <ssf:param name="box_show_resize_gif" value="icons/resize_east_west.gif" />
+	    <ssf:param name="box_show_move_icon" value="true" />
+	    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
+	    <ssf:param name="box_show_close_icon" value="true" />
+	    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
+		  <div id="ss_iframe_holder_div" style="padding: 0 4px;">
+		  <iframe id="ss_showentryframe"
+		  	title="<ssf:nlt tag = "iframe.entry"/>" 
+		    name="ss_showentryframe" style="width:100%; 
+		    display:block;"
+		    src="<html:rootPath/>js/forum/null.html" 
+		    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
+		    frameBorder="0" >xxx</iframe>
+		  </div>
+	  </ssf:box>
+  </c:if>
+  <c:if test="${ssUser.displayStyle == 'newpage'}">
+	  <div class="ss_newpage_box" id="ss_iframe_box_div">
+	    <div id="ss_iframe_holder_div">
+	      <div class="ss_newpage_box_header" >
+	        <span class="ss_newpage_box_close">
+	          <a href="javascript: ;" onClick="ss_hideEntryDiv();return false;"><ssf:nlt tag="button.close"/></a>
+	        </span>
+	        <span class="ss_newpage_box_title" id="ss_showEntryDivTitle" style="padding-left:20px;"></span>
+	      </div>
+	      <iframe id="ss_showentryframe"
+	  	    title="<ssf:nlt tag = "iframe.entry"/>" 
+	        name="ss_showentryframe" style="width:100%; 
+	        display:block;"
+	        src="<html:rootPath/>js/forum/null.html" 
+	        onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
+	        frameBorder="0" >xxx</iframe>
+	    </div>
+	  </div>
+  </c:if>
 </div>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" 

@@ -46,7 +46,7 @@ var ss_entryLastScrollTop = 0
 	//ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
-	var boxTitle = "";
+	var boxTitle = ss_noTitleMessage;
 	try {
 		if (typeof window.ss_showentryframe != "undefined" && 
 				typeof window.ss_showentryframe.document.title != "undefined") {
@@ -68,7 +68,7 @@ function ss_showForumEntryInIframe(url) {
 			return false;
 		}
 	} catch(e) {}
-		
+
 	//ss_debug('show url in frame = '+url)
 	ss_positionEntryDiv(true);
     var wObj = self.document.getElementById('ss_showentryframe')
@@ -85,8 +85,8 @@ function ss_showForumEntryInIframe(url) {
         iframeObj.setAttribute("id", "ss_showentryframe");
         iframeObj.setAttribute("name", "ss_showentryframe");
         iframeObj.style.display = "block"
-        iframeObj.style.position = "relative"
-        iframeObj.style.left = "5px"
+        //iframeObj.style.position = "relative"
+        //iframeObj.style.left = "5px"
         iframeObj.style.width = "99%"
         iframeObj.style.height = "99%"
         iframeObj.frameBorder = "0"
@@ -94,6 +94,8 @@ function ss_showForumEntryInIframe(url) {
 		wObj2.appendChild(iframeObj);
 		wObj = self.document.getElementById('ss_showentryframe')
     }
+    //Size the div if necessary
+    ss_setEntryPopupIframeSize();
 	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
@@ -101,7 +103,11 @@ function ss_showForumEntryInIframe(url) {
     wObj1.style.visibility = "visible";
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
 
-    if (wObj.src && wObj.src == url) {
+	var blankhtml = "<div style=\"text-align: center;\">" + ss_loadingMessage + "</div>";
+	try {
+		window.frames['ss_showentryframe'].document.body.innerHTML = blankhtml;
+	} catch(e) {}
+	if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
     	wObj.src = ss_forumRefreshUrl;
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
@@ -110,7 +116,7 @@ function ss_showForumEntryInIframe(url) {
     	wObj.src = url
     }
     wObj.focus();
-
+    
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
@@ -120,31 +126,51 @@ function ss_showForumEntryInIframe(url) {
 function ss_iframeOnloadSetHeight() {
 	if (self.ss_setEntryDivHeight && 
 			self.document.getElementById('ss_showentrydiv') && 
-			self.document.getElementById('ss_showentrydiv').style.display != 'none') 
+			self.document.getElementById('ss_showentrydiv').style.display != 'none') {
 		ss_setEntryDivHeight();
+	}
 }
 
+var ss_minViewableIframeDiv = 50;
 function ss_setIframeDivHeight() {
-	try {
-	    var wObj3 = self.document.getElementById('ss_showentryframe');
-	    if (wObj3 != null && window.ss_showentryframe && window.ss_showentryframe.document && 
-				window.ss_showentryframe.document.body) {
-		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
-		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-		    
-	    	//Set the size to fit in the window
-	    	var entryDivTop = ss_getObjectTop(wObj3);
-	    	//Get maximum size
-	    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
-	    	if (entryHeight > entryDivMaxSize) {
-	    		entryHeight = entryDivMaxSize;
-	    	}
-	    	if (parseInt(ss_getObjectHeight(wObj3)) != parseInt(entryHeight)) {
-	    		wObj3.style.height = parseInt(entryHeight) + 'px';
-	    	}
+	if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
+		if (typeof self.parent.ss_setEntryPopupIframeSize != "undefined") {
+			self.parent.ss_setEntryPopupIframeSize();
 		}
-	} catch(e) {
-		alert("iframe resize failure: "+e)
+	} else {
+		try {
+		    var wObj3 = self.document.getElementById('ss_showentryframe');
+		    if (wObj3 != null && window.ss_showentryframe && window.ss_showentryframe.document && 
+					window.ss_showentryframe.document.body) {
+			    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
+			    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
+			    
+		    	//Set the size to fit in the window
+		    	var entryDivTop = ss_getObjectTop(wObj3);
+		    	//Get maximum size
+		    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
+		    	if (entryHeight > entryDivMaxSize) {
+		    		entryHeight = entryDivMaxSize;
+		    	}
+		    	if (parseInt(ss_getObjectHeight(wObj3)) != parseInt(entryHeight)) {
+		    		wObj3.style.height = parseInt(entryHeight) + 'px';
+		    	}
+		    	
+		    	//Check that the frame is somewhat in sight
+		    	var top = parseInt(ss_getObjectTopAbs(wObj3));
+		    	var left = parseInt(ss_getObjectLeftAbs(wObj3));
+		    	if (top > parseInt(ss_getWindowHeight()) - ss_minViewableIframeDiv) {
+		    		top = parseInt(ss_getWindowHeight()) - ss_minViewableIframeDiv;
+		    		wObj3.style.top = parseInt(top) + 'px';
+		    	}
+		    	if (left > parseInt(ss_getWindowWidth()) - ss_minViewableIframeDiv) {
+		    		left = parseInt(ss_getWindowWidth()) - ss_minViewableIframeDiv;
+		    		wObj3.style.left = parseInt(left) + 'px';
+		    	}
+			}
+		} catch(e) {
+			alert("iframe resize failure: "+e)
+		}
 	}
 }
 
@@ -177,7 +203,7 @@ function ss_positionEntryDiv(moveTop) {
     	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
     }
-	if (moveTop) {
+	if (moveTop && ss_userDisplayStyle != "newpage") {
 		if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1])) {
 			ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
 		} else if (ss_entryWindowTop > parseInt(parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
@@ -192,9 +218,11 @@ function ss_positionEntryDiv(moveTop) {
 	}
     if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
 
-    ss_setObjectLeft(wObj1, ss_entryWindowLeft);
-    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
-    if (wObj2 != null) ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    if (ss_userDisplayStyle != "newpage") {
+    	ss_setObjectLeft(wObj1, ss_entryWindowLeft);
+	    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
+	    if (wObj2 != null) ss_setObjectWidth(wObj2, ss_entryWindowWidth);
+    }
     
     //Trying to set the property to "inherit" or something that is not a actual color values
     //causes JS to fail on IE so we are setting the background to a empty value, for the 
@@ -203,61 +231,63 @@ function ss_positionEntryDiv(moveTop) {
     wObj1.style.background = "";
     
     //Allow the entry section to grow to as large as needed to show the entry
-	try {
-		if (window.ss_showentryframe && window.ss_showentryframe.document && 
-				window.ss_showentryframe.document.body) {
-		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
-		    var windowIsScrolling = false;
-		    if (document.body.scrollHeight > parseInt(ss_getWindowHeight())) windowIsScrolling = true;
-		    
-		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-		    if (0 == 1) {
-			    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
-				    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
-				    ss_entryHeightHighWaterMark = entryHeight;
-				    
-				    if (entryHeight > parseInt(ss_getWindowHeight())) {
-				    	//Start by resetting the window to a size big enough to not turn off scrolling
-				    	//This makes the entry div smaller, but not enough to jump around.
-				    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-						ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-					}
-					
-					ss_setObjectHeight(wObj3, entryHeight);
-				} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
-					ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-					ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-				} else {
-					if (entryHeight < parseInt(ss_getWindowHeight()) && 
-							ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
+	if (ss_userDisplayStyle != "newpage") {
+		try {
+			if (window.ss_showentryframe && window.ss_showentryframe.document && 
+					window.ss_showentryframe.document.body) {
+			    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
+			    var windowIsScrolling = false;
+			    if (document.body.scrollHeight > parseInt(ss_getWindowHeight())) windowIsScrolling = true;
+			    
+			    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
+			    if (0 == 1) {
+				    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
+					    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
+					    ss_entryHeightHighWaterMark = entryHeight;
+					    
+					    if (entryHeight > parseInt(ss_getWindowHeight())) {
+					    	//Start by resetting the window to a size big enough to not turn off scrolling
+					    	//This makes the entry div smaller, but not enough to jump around.
+					    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+							ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+						}
+						
 						ss_setObjectHeight(wObj3, entryHeight);
+					} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
+						ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
+						ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
+					} else {
+						if (entryHeight < parseInt(ss_getWindowHeight()) && 
+								ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
+							ss_setObjectHeight(wObj3, entryHeight);
+						}
 					}
-				}
-		    } else {
-		    	//Set the size to fit in the window
-		    	ss_setIframeDivHeight();
-		    }
-		    
-			if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
-				//See if the entry runs off the bottom of the screen and should be moved up some
-				if (ss_entryWindowTop + entryHeight > parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight())) {
-					//Try to move the div up so it can be completely seen
-					ss_entryWindowTop = parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - entryHeight - ss_entryDivTopDelta - ss_entryDivBottomDelta;
-					//But not higher than where the last click was
-					if (ss_entryWindowTop < ss_getClickPositionY() + ss_entryClickPositionDelta) 
-						ss_entryWindowTop = ss_getClickPositionY() + ss_entryClickPositionDelta;
-				}
-				if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset)) {
-					ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
-				}
-				if (ss_entryWindowTop < parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)) {
-					//If it got moved too high, reset it to the minimum
-					ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)
-				}
-	    		ss_setObjectTop(wObj1, ss_entryWindowTop)
-	    	}
-		}
-	} catch(e) {}
+			    } else {
+			    	//Set the size to fit in the window
+			    	ss_setIframeDivHeight();
+			    }
+			    
+				if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
+					//See if the entry runs off the bottom of the screen and should be moved up some
+					if (ss_entryWindowTop + entryHeight > parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight())) {
+						//Try to move the div up so it can be completely seen
+						ss_entryWindowTop = parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - entryHeight - ss_entryDivTopDelta - ss_entryDivBottomDelta;
+						//But not higher than where the last click was
+						if (ss_entryWindowTop < ss_getClickPositionY() + ss_entryClickPositionDelta) 
+							ss_entryWindowTop = ss_getClickPositionY() + ss_entryClickPositionDelta;
+					}
+					if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset)) {
+						ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
+					}
+					if (ss_entryWindowTop < parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)) {
+						//If it got moved too high, reset it to the minimum
+						ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta)
+					}
+		    		ss_setObjectTop(wObj1, ss_entryWindowTop)
+		    	}
+			}
+		} catch(e) {}
+	}
 	ss_entryLastScrollTop = ss_getScrollXY()[1];
 }
 

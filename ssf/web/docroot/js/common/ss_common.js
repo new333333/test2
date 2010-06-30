@@ -1972,31 +1972,41 @@ function ss_getObjectTopAbs(obj) {
 }
 
 function ss_setObjectWidth(obj, width) {
-	if (obj && parseInt(width) > 0) obj.style.width = parseInt(width) + 'px';
+	var oldWidth = 0;
+	if (obj && parseInt(width) > 0) {
+		oldWidth = obj.style.width;
+		obj.style.width = parseInt(width) + 'px';
+	}
 
     //Call the routines that want to be called on layout changes
-    if (obj && obj.style && !obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (obj && obj.style && parseInt(oldWidth) != parseInt(width) &&
+    		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
 	if (obj == null) return;
-
+	var oldHeight = obj.style.height;
     if (obj && parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
     //Call the routines that want to be called on layout changes
-    if (obj && obj.style && !obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (obj && obj.style && parseInt(oldHeight) != parseInt(height) && 
+    		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
 function ss_setObjectLeft(obj, value) {
+	var oldLeft = obj.style.left;
     obj.style.left = parseInt(value) + "px";
     //Call the routines that want to be called on layout changes
-    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (parseInt(oldLeft) != parseInt(value) &&
+    		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
 function ss_setObjectTop(obj, value) {
+	var oldTop = obj.style.top;
     obj.style.top = parseInt(value) + "px";
     //Call the routines that want to be called on layout changes
-    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (parseInt(oldTop) != parseInt(value) && (
+    		!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
 function ss_getWindowWidth() {
@@ -4158,8 +4168,8 @@ function ss_showEntryDivInitialization(namespace) {
 	iframeObj.name = "ss_showentryframe";
 	divObj.id = "ss_showentrydiv";
 	if (formObj != null) formObj.id = "ss_saveEntryWidthForm";
-	boxObj.id = "ss_iframe_box_div";
-	holderObj.id = "ss_iframe_holder_div";
+	if (boxObj != null) boxObj.id = "ss_iframe_box_div";
+	if (holderObj != null) holderObj.id = "ss_iframe_holder_div";
 }
 
 function ss_hideEntryDivOnLoad() {
@@ -4378,10 +4388,8 @@ function ss_showForumEntry(url, isDashboard) {
 		return false;
 	}
 	if (isDashboard == "yes") {
-		if (ss_userDisplayStyle == 'popup') {
-			return ss_showForumEntryInIframe_Popup(url);	
-		} else if (ss_userDisplayStyle == 'newpage') {
-			return ss_showForumEntryInIframe_Newpage(url);	
+		if (ss_userDisplayStyle == 'newpage') {
+			return ss_showForumEntryInIframe_Overlay(url);	
 		} else {
 			return ss_showForumEntryInIframe_Overlay(url);
 		}
@@ -4425,7 +4433,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
         iframeObj.setAttribute("name", "ss_showentryframe");
         iframeObj.style.display = "block"
         iframeObj.style.position = "relative"
-        iframeObj.style.left = "5px"
+        //iframeObj.style.left = "5px"
         iframeObj.style.width = "99%"
         iframeObj.style.height = "99%"
         iframeObj.frameBorder = "0"
