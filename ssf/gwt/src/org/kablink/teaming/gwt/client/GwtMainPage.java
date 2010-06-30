@@ -34,7 +34,6 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
-import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -589,12 +588,15 @@ public class GwtMainPage extends Composite
 					m_editPersonalPrefsSuccessHandler = new EditSuccessfulHandler()
 					{
 						private AsyncCallback<Boolean> rpcSaveCallback = null;
+						private GwtPersonalPreferences personalPrefs = null;
 						
 						/**
 						 * This method gets called when user user presses ok in the "Personal Preferences" dialog.
 						 */
 						public boolean editSuccessful( Object obj )
 						{
+							personalPrefs = (GwtPersonalPreferences) obj;
+							
 							// Create the callback that will be used when we issue an ajax request to save the personal preferences.
 							if ( rpcSaveCallback == null )
 							{
@@ -623,6 +625,13 @@ public class GwtMainPage extends Composite
 										// The personal preferences affect how things are displayed in the content frame.
 										// So we need to reload the page in the content frame.
 										reloadContentPanel();
+										
+										// The main page has a javascript variable, ss_userDisplayStyle, that needs to
+										// be updated with the current entry display style.
+										if ( personalPrefs != null )
+										{
+											GwtClientHelper.jsSetEntryDisplayStyle( personalPrefs.getDisplayStyle() );
+										}
 									}// end onSuccess()
 								};
 							}
@@ -635,7 +644,7 @@ public class GwtMainPage extends Composite
 								
 								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
 								// be called when we get the response back.
-								rpcService.savePersonalPreferences( (GwtPersonalPreferences)obj, rpcSaveCallback );
+								rpcService.savePersonalPreferences( personalPrefs, rpcSaveCallback );
 							}
 							
 							return true;
