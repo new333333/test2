@@ -105,8 +105,39 @@
 						}
 					}
 				}
+				//Also resize the entry iframe if needed
+				ss_setEntryPopupIframeSize();
 			} catch(e) {
 				//alert('Error during frame resizing: ' + e)
+			}
+		}
+
+		//Routine to set the size and position of the entry popup frame in the "newpage" mode
+		var ss_entryPopupBottomMargin = 46;
+		function ss_setEntryPopupIframeSize() {
+			if (ss_userDisplayStyle == "newpage") {
+				try {
+					var contentIframe = document.getElementById('contentControl');
+					var startOfContent = ss_getObjectTop(contentIframe);
+					var entryIframeDiv = document.getElementById('ss_showentrydiv');
+					var entryIframeFrame = document.getElementById('ss_showentryframe');
+					if (entryIframeDiv == null || entryIframeFrame == null) return;
+					var top = ss_getObjectTop(contentIframe);
+					var left = ss_getObjectLeft(contentIframe);
+					ss_setObjectTop(entryIframeDiv, top);
+					ss_setObjectLeft(entryIframeDiv, left);
+					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
+					var windowHeight = window.innerHeight != null? window.innerHeight: document.body != null? document.body.clientHeight:null;
+					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
+					if (iframeMinimum < 100) iframeMinimum = 100;
+					if (window.frames['ss_showentryframe'] != null) {
+						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
+							entryIframeFrame.style.height = parseInt(iframeMinimum) + "px";
+						}
+					}
+				} catch(e) {
+					alert('Error during frame resizing: ' + e)
+				}
 			}
 		}
 

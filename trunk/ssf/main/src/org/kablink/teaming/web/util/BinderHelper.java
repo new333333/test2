@@ -1177,9 +1177,9 @@ public class BinderHelper {
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) {
-				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_NEWPAGE;
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && accessible_simple_ui) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
@@ -1199,9 +1199,9 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE)) {
-			viewListingJspName = WebKeys.VIEW_LISTING_NEWPAGE;
+			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
+			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && accessible_simple_ui) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
@@ -3694,7 +3694,8 @@ public class BinderHelper {
 			
 			//iframe
 			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
+					userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
 				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -3714,17 +3715,6 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE);
 			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_newpage"), url, qualifiers);
-			//popup
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
 	}
 

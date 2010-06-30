@@ -119,12 +119,15 @@ var ss_baseRootPathUrl = '<html:rootPath/>';
 
 var ss_userDisplayStyle = "${ssUser.displayStyle}";
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-		ss_userDisplayStyle = "iframe";	
+  ss_userDisplayStyle = "iframe";	
 </c:if>
 <c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'accessible'}">
-	<% if (!accessible_simple_ui) { %>
-		ss_userDisplayStyle = "iframe";	
-	<% } %>
+<% if (!accessible_simple_ui) { %>
+	ss_userDisplayStyle = "iframe";	
+<% } %>
+</c:if>
+<c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'popup'}">
+	ss_userDisplayStyle = "iframe";
 </c:if>
 var ss_entryViewStyle = "${ss_entryViewStyle}";
 
@@ -136,6 +139,12 @@ var ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="
 
 //Not logged in message
 var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+	
+//Loading message
+var ss_loadingMessage = "<ssf:nlt tag="Loading"/>";
+
+//No Title
+var ss_noTitleMessage = "--<ssf:nlt tag="entry.noTitle"/>--";
 	
 // RTC client not installed
 var ss_rtc_not_configured = "<ssf:nlt tag="rtc.client.not.configured"/>";
