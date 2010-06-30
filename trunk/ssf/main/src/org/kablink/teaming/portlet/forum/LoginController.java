@@ -49,6 +49,7 @@ import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -155,30 +156,7 @@ public class LoginController  extends SAbstractControllerRetry {
 			model.put( "promptForLogin", "true" );
 			
 			// Add the user's name to the response.
-			{
-				String firstName;
-				String lastName;
-				String fullName;
-				
-				// Add the user's name.
-				firstName = user.getFirstName();
-				lastName = user.getLastName();
-				if ( firstName != null )
-				{
-					fullName = firstName;
-					if ( lastName != null )
-						fullName += " " + lastName;
-				}
-				else if ( lastName != null )
-				{
-					fullName = lastName;
-				}
-				else
-					fullName = user.getName();
-					
-				fullName += " (" + user.getName() + ")";
-				model.put( "userFullName", fullName );
-			}
+			model.put( "userFullName", Utils.getUserTitle( user ) );
 			
 			// Add the "my workspace" url to the response.
 			{

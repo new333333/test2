@@ -63,6 +63,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -578,31 +579,7 @@ public class ViewPermalinkController  extends SAbstractController {
 					model.put( "promptForLogin", "false" );
 
 					// Add the user's name to the response.
-					{
-						String firstName;
-						String lastName;
-						String fullName;
-						
-						// Add the user's name.
-						firstName = user.getFirstName();
-						lastName = user.getLastName();
-						if ( firstName != null )
-						{
-							fullName = firstName;
-							if ( lastName != null )
-								fullName += " " + lastName;
-						}
-						else if ( lastName != null )
-						{
-							fullName = lastName;
-						}
-						else
-							fullName = user.getName();
-							
-						fullName += " (" + user.getName() + ")";
-						
-						model.put( "userFullName", fullName );
-					}
+					model.put( "userFullName", Utils.getUserTitle( user ) );
 
 					// Does this user have rights to view the permalink?
 					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
