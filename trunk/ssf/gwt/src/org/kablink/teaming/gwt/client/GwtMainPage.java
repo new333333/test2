@@ -53,6 +53,8 @@ import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
@@ -1145,7 +1147,14 @@ public class GwtMainPage extends Composite
 			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
 			registerActionHandler( breadCrumbTree );
 
+			final Element bodyElement = RootPanel.getBodyElement();
+			bodyElement.addClassName( "gwtUI_ss_forceVerticalScroller" );
 			m_breadCrumbBrowser = new PopupPanel(true);
+			m_breadCrumbBrowser.addCloseHandler( new CloseHandler<PopupPanel>() {
+				public void onClose( CloseEvent<PopupPanel> event ) {
+					bodyElement.removeClassName( "gwtUI_ss_forceVerticalScroller" );
+				}
+			});
 			GwtClientHelper.rollDownPopup(m_breadCrumbBrowser);
 			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
 			m_breadCrumbBrowser.setWidget( breadCrumbTree );
