@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -274,6 +273,16 @@ public class GwtClientHelper {
 	 */
 	public static native void jsResizeGwtContent(String reason) /*-{
 		window.top.resizeGwtContent(reason);
+	}-*/;
+
+
+	/**
+	 * Set the javascript variable, ss_userDisplayStyle, to the given value.
+	 */
+	public static native void jsSetEntryDisplayStyle( String style ) /*-{
+		$wnd.alert( $wnd.top.ss_userDisplayStyle );
+		$wnd.top.ss_userDisplayStyle = style;
+		$wnd.alert( $wnd.top.ss_userDisplayStyle );
 	}-*/;
 
 	/**
