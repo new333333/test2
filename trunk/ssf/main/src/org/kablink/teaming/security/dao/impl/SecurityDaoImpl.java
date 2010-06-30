@@ -269,8 +269,8 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		long begin = System.currentTimeMillis();
 		
 		int retryCount = 0;
-		//The loop will retry up to 2 times if it fails the first time
-		while(retryCount < 3) {
+		//The loop will retry up to 5 times if it fails the first time
+		while(retryCount < 5) {
 			try {
 		    	List matches = (List) getHibernateTemplate().execute(
 		                new HibernateCallback() {
@@ -289,21 +289,21 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		    	return matches;
 	    	} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
 				++retryCount;
-				if (retryCount >= 3) {
+				if (retryCount >= 5) {
 					throw ol;
 				}
 				try {
 					//wait a couple .2 ms
-					Thread.sleep(200);
+					Thread.sleep(300);
 				} catch (InterruptedException e) {}
 			} catch (StaleObjectStateException os) {
 				++retryCount;
-				if (retryCount >= 3) {
+				if (retryCount >= 5) {
 					throw os;
 				}
 				try {
 					//wait a couple .2 ms
-					Thread.sleep(200);
+					Thread.sleep(300);
 				} catch (InterruptedException e) {}
 			}
 	    	finally {
