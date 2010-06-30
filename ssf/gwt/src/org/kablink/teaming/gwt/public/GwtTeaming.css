@@ -1827,25 +1827,20 @@ a.ss_new_thread {
 .qViewMain {
 }
 .qViewLeft {
-	margin: 0px 10px 20px;
+	margin: -15px 10px 10px;
 	width: 100px;
 }
 .qViewRight {
 	margin:5px 0 0;
 }
 .qViewPhoto {
-	height: 80px;
 	position: relative;
 	margin-bottom: 10px;
 }
 .qViewActions {
 }
 .qViewPhoto img {
-	height: 100px;
-	top: -20px;
-	position: absolute;
 	width: 100px;
-	margin-bottom: 5px;
 }
 .qViewPhoto_No {
 	margin-left:25px;
