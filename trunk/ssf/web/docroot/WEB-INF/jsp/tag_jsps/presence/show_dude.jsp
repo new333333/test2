@@ -33,9 +33,27 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
+
+<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
+<script type="text/javascript">
+	function ss_launchSimpleProfile(element, workspaceId, userName) 
+	{
+		if(window.ss_invokeSimpleProfile != null ) {
+			window.ss_invokeSimpleProfile(element, workspaceId, userName);
+		} else {
+			alert("Quick Profile View not found");
+		}
+		return;
+	}
+</script>
+<div id="gwtShowQuickProfileDiv"></div>
+
+
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
@@ -43,7 +61,7 @@
 <c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
  onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"
-><img border="0" align="absmiddle" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
 
@@ -65,7 +83,6 @@
 	<c:set var="presence_user_skypeId" value="${ss_presence_user.skypeId}"/>  	
 </c:if>
 <jsp:useBean id="presence_user_skypeId" type="java.lang.String" />
-
 <jsp:useBean id="presence_user_title" type="java.lang.String" />
 <jsp:useBean id="presence_user_zonName" type="java.lang.String" />
 <jsp:useBean id="presence_user_emailAddress" type="java.lang.String" />
@@ -89,6 +106,8 @@
 	}
 	
 %>
+
+
 <c:set var="current" value=""/>
 <c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 <c:set var="current" value="current"/>
@@ -96,8 +115,8 @@
 <a href="javascript: ;"
  title="<c:out value="${ss_presence_text}"/>"
  class="ss_presence_dude"
- onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
-><img border="0" align="absmiddle" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+ onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
+><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
@@ -110,7 +129,7 @@
 		  <a 
 		  <c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 		  href="<ssf:permalink entity="${ss_presence_user}"/>"
-		  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
+		  onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
 		  ><span id="${ss_presence_user.id}" 
 		    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 		  </c:if>
@@ -140,7 +159,7 @@
 	  <a href="<ssf:url windowState="maximized"><ssf:param 
 	  	name="action" value="view_ws_listing"/><ssf:param 
 	  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
-	  onClick="window.top.ss_invokeSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
+	  onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>');return false;"
 	  ><span id="${ss_presence_user.id}"  
 	    class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle user="${ss_presence_user}"/></span></a>
 	  </c:if>
