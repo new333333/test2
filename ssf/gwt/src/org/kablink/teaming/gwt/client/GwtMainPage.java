@@ -126,9 +126,6 @@ public class GwtMainPage extends Composite
 		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
 		initRequestActionHandler( this );
 		
-		// Initialize JavaScript to perform Popup for User Profile
-		initSimpleUserProfileJS( this );
-		
 		// Initialize JavaScript that handles the landing page options
 		initHandleLandingPageOptionsJS( this );
 		
@@ -308,16 +305,6 @@ public class GwtMainPage extends Composite
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::registerActionHandler(Lorg/kablink/teaming/gwt/client/util/ActionRequestor;)( actionRequestor );
 		}//end ss_registerActionHanler
 	}-*/;
-
-	/*
-	 * Invoke the Simple User Profile or Quick View
-	 */
-	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
-		}//end ss_invokeSimpleProfile
-	}-*/;	
 
 	/*
 	 * Copies the <title> text from the GWT content IFRAME to the
@@ -1504,33 +1491,4 @@ public class GwtMainPage extends Composite
 		actionRequestor.addActionHandler( this );
 	}// end registerActionHandler()
 	
-	/*
-	 * Invoke the Simple Profile Dialog
-	 */
-	@SuppressWarnings("unused")
-	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
-
-		final int x = element.getAbsoluteLeft() + 40; 
-		final int y = element.getAbsoluteTop() - 90;
-		
-		final GwtQuickViewDlg dlg;
-		PopupPanel.PositionCallback posCallback;
-		
-		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
-		this.registerActionHandler(dlg);
-		
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			public void setPosition(int offsetWidth, int offsetHeight)
-			{
-				//Window.alert("Absolute Left: "+ m_contentCtrl.getAbsoluteLeft() + " Offset: "+x + "Absolute Top: "+ m_contentCtrl.getAbsoluteTop() + " Offset: "+y);
-				
-				int posX = m_contentCtrl.getAbsoluteLeft() + x;
-				int posY = m_contentCtrl.getAbsoluteTop() + y;
-				
-				dlg.setPopupPosition( posX, posY );
-			}// end setPosition()
-		};
-		dlg.setPopupPositionAndShow( posCallback );
-	}
 }// end GwtMainPage

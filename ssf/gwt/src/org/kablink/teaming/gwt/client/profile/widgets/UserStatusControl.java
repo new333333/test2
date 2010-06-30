@@ -47,6 +47,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 	public UserStatusControl () {
 		
+		//Window.alert("User status control.");
 		String userStatus = "";
 
 		FlowPanel mainPanel = new FlowPanel();
@@ -169,6 +170,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		
 		//get the status of the current user
 		getUserStatus();
+		
+		//initialize gwtshowProfileView
+		GwtShowProfileView showProfileView = new GwtShowProfileView();
 		
 		initWidget(mainPanel);
 	}
