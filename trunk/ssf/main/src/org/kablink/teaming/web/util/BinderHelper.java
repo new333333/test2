@@ -1081,7 +1081,7 @@ public class BinderHelper {
 		// via request object. For now, this information is fixed (hard-coded). 
 
    		// Get the "sort by" value from the request.  If it is not there we default to sort-by-relevence.
-		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, "sortByRelevence" );
+		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, "sortByRelevance" );
 
 		options.put( ObjectKeys.SEARCH_SORT_BY, sortBy );
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
