@@ -858,7 +858,7 @@ body, table td, select
 	border: 0px;
 	padding: 0px;
 	right: 20px;
-	z-index: 310;
+	z-index: 351;
 }
 .breadCrumb_Browser
 {
@@ -1006,7 +1006,7 @@ body, table td, select
 	background-color: #000;
 	filter: alpha(opacity=0);
 	opacity: 0.0;
-	z-index: 299;
+	z-index: 350;
 }
 .mainMenuPopup
 {
@@ -1101,7 +1101,7 @@ body, table td, select
 	background: url(images/trans70_black.png) repeat;
 	border: 0px;
 	padding: 0px;
-	z-index: 310;
+	z-index: 351;
 }
 .mainMenuSearchOptions_Button
 {
@@ -1928,6 +1928,14 @@ position:absolute;
 top:100px;
 }
 
+.gwtUI_ss_forceHorizontalScroller
+{
+	overflow-x: auto !important;
+}
+.gwtUI_ss_forceBothScrollers
+{
+	overflow: auto !important;
+}
 .gwtUI_ss_forceVerticalScroller
 {
 	overflow-y: auto !important;

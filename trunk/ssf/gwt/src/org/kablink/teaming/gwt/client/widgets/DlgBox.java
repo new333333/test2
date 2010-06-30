@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -327,6 +328,10 @@ public abstract class DlgBox extends PopupPanel
 			++m_numDlgsVisible;
 		
 		m_visible = true;
+		
+		// Add a vertical scroll bar to the outer most frame to address
+		// the dialog not being completely visible.
+		GwtClientHelper.scrollUIForPopup( this );
 		
 		// Show this dialog.
 		super.show();
