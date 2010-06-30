@@ -767,13 +767,14 @@ function onUnloadEventHandler()
 function removeExistingLdapSyncResults()
 {
 	var	input;
-	var	id;
+	var	id = null;
 	var url;
 	var obj;
 
 	// Get the id of the sync results we are looking for.
 	input = document.getElementById( 'ldapSyncResultsId' );
-	id = input.value;
+	if ( input != null )
+		id = input.value;
 
 	// Do we have an ldap sync results?
 	if ( id != null && id.length > 0 )
@@ -964,8 +965,10 @@ function updateElementsTextNode(
 ssPage = {
 	m_invalidBaseDnMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidBaseDn"/></ssf:escapeJavaScript>',
 	m_isBaseDnValid : true,
-	m_baseDnCtrl : null,
+	m_invalidCtrl : null,
 	m_idOfInvalidConfiguration : null,
+	m_invalidMappingsMsg : null,
+	m_areMappingsValid : true,
 	m_ldapGuidAttributeNameChanged : false,
 	m_origLdapGuidAttributeNames : new Array(),
 	nextId : 1,
@@ -1101,6 +1104,7 @@ ssPage = {
 	validateAllLdapConfigurations : function()
 	{
 		var validateBaseDn;
+		var validateMappings;
 		
 		validateBaseDn = function()
 		{
@@ -1120,7 +1124,7 @@ ssPage = {
 			{
 				// Get the id of the invalid configuration
 				ssPage.m_idOfInvalidConfiguration = $this.parent().parent().parent().parent().parent().attr( "id" );				
-				ssPage.m_baseDnCtrl = $baseDn;
+				ssPage.m_invalidCtrl = $baseDn;
 				ssPage.m_isBaseDnValid = false;
 			}
 		};
@@ -1128,12 +1132,88 @@ ssPage = {
 		// Make sure the user has entered something for every base dn.
 		ssPage.m_idOfInvalidConfiguration = null;
 		ssPage.m_isBaseDnValid = true;
-		ssPage.m_baseDnCtrl = null;
+		ssPage.m_invalidCtrl = null;
 		jQuery( '#funkyDiv .ldapUserSearches .ldapSearch' ).each( validateBaseDn );
 		if ( !ssPage.m_isBaseDnValid )
 		{
 			// No, tell the user the base dn cannot be empty.
 			alert( ssPage.m_invalidBaseDnMsg );
+
+			// Show the configuration that has the error.
+			if ( ssPage.m_idOfInvalidConfiguration != null )
+				setTimeout( ssPage.showInvalidLdapConfig, 50 );
+
+			return false;
+		}
+
+		// This function will check the ldap mappings.  The "title" field cannot be sync'd.
+		validateMappings = function()
+		{
+			var $mappingsTextarea;
+			var mappings;
+			
+			// If we already found an invalid mapping, there is no need to continue.
+			if ( ssPage.m_areMappingsValid == false )
+				return;
+
+			// Get the mappings the user entered.
+			$mappingsTextarea = jQuery( this );
+			mappings = $mappingsTextarea.val();
+			if ( mappings != null && mappings.length > 0 )
+			{
+				var arrayOfMaps;
+
+				// Split the mappings into their key=value pairs.
+				arrayOfMaps = mappings.split( '\n' );
+				if ( arrayOfMaps != null && arrayOfMaps.length > 0 )
+				{
+					var i;
+
+					for (i = 0; i < arrayOfMaps.length && ssPage.m_areMappingsValid == true; ++i)
+					{
+						var map;
+
+						map = arrayOfMaps[i];
+						if ( map != null && map.length > 0 )
+						{
+							var value;
+
+							value = map.split( '=' );
+							if ( value != null && value.length == 2 )
+							{
+								var fldName;
+								
+								// Remove whitespace from the front and end of the field name.
+								fldName = value[0].toLowerCase();
+								fldName = fldName.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+
+								// Is the user trying to sync the "title" field?
+								if ( fldName == 'title' )
+								{
+									// Yes
+									// Get the id of the invalid configuration
+									ssPage.m_idOfInvalidConfiguration = $mappingsTextarea.parent().parent().parent().attr( "id" );
+									ssPage.m_invalidCtrl = $mappingsTextarea;
+									ssPage.m_areMappingsValid = false;
+									ssPage.m_invalidMappingsMsg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.cant.sync.title" /></ssf:escapeJavaScript>';
+								}
+							}
+						}
+					}
+				}
+			}
+		};
+
+		// Make sure the ldap mappings are valid.
+		ssPage.m_idOfInvalidConfiguration = null;
+		ssPage.m_invalidMappingsMsg = null;
+		ssPage.m_areMappingsValid = true;
+		ssPage.m_invalidCtrl = null;
+		jQuery( '#funkyDiv .ldapMappings' ).each( validateMappings );
+		if ( ssPage.m_areMappingsValid == false)
+		{
+			// No, tell the user the mappings are not valid.
+			alert( ssPage.m_invalidMappingsMsg );
 
 			// Show the configuration that has the error.
 			if ( ssPage.m_idOfInvalidConfiguration != null )
@@ -1203,7 +1283,8 @@ ssPage = {
 			ssPage.selectLdapConfigurationById( ssPage.m_idOfInvalidConfiguration );
 		
 			// Give the focus to the appropriate control.
-			ssPage.m_baseDnCtrl.focus();
+			if ( ssPage.m_invalidCtrl != null )
+				ssPage.m_invalidCtrl.focus();
 		}
 	},// end showInvalidLdapConfig()
 
