@@ -36,9 +36,12 @@ package org.kablink.teaming.gwt.client.util;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 
 
 /**
@@ -53,6 +56,12 @@ public class GwtClientHelper {
 	
 	// Marker string used to recognize the format of a URL.
 	private final static String PERMALINK_MARKER = "view_permalink";
+
+	public enum ScrollType {
+		BOTH,
+		HORIZONTAL,
+		VERTICAL,
+	}
 	
 	/*
 	 * Inhibits this class from being instantiated. 
@@ -342,4 +351,35 @@ public class GwtClientHelper {
 		eTD.colSpan = 2;
 		eTD.width = "100%";
 	}-*/;
+
+
+	/**
+	 * Adds scroll bars to the main content panel for the duration of a
+	 * PopupPanel.
+	 *  
+	 * @param popup
+	 * @param scrollType
+	 */	
+	public static void scrollUIForPopup(PopupPanel popup, ScrollType scrollType) {
+		final String scrollStyle;
+		switch (scrollType) {
+		default:
+		case VERTICAL:    scrollStyle = "gwtUI_ss_forceVerticalScroller";   break;
+		case BOTH:        scrollStyle = "gwtUI_ss_forceBothScrollers";      break;
+		case HORIZONTAL:  scrollStyle = "gwtUI_ss_forceHorizontalScroller"; break;
+		}
+		
+		final Element bodyElement = RootPanel.getBodyElement();
+		bodyElement.addClassName(scrollStyle);
+		
+		popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+			public void onClose(CloseEvent<PopupPanel> event) {
+				bodyElement.removeClassName(scrollStyle);
+			}
+		});
+	}
+	
+	public static void scrollUIForPopup(PopupPanel popup) {
+		scrollUIForPopup(popup, ScrollType.VERTICAL);
+	}
 }

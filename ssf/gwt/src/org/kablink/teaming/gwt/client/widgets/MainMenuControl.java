@@ -133,6 +133,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);
 				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
 				soPopup.setWidget(searchOptionsComposite);
+				soPopup.setGlassEnabled(true);
+				soPopup.setGlassStyleName("mainMenuPopup_Glass");
 				
 				// ...and position and show it as per the position of
 				// ...the search panel on the menu.

@@ -266,12 +266,15 @@ public abstract class MenuBarPopupBase extends PopupPanel {
 		// Show the menu...
 		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
 		
-		// ...and tell its box that its got an open popup menu
+		// ...tell its box that its got an open popup menu
 		// ...associated with it...
 		m_menuBarBox = menuBarBox;
 		addAutoHidePartner(m_menuBarBox.getElement());
 		m_menuBarBox.popupMenuOpened();
 		
+		// ...and add vertical scrolling to the main frame for the
+		// ...duration of the popup.
+		GwtClientHelper.scrollUIForPopup(this);
 	}
 	
 	/**
