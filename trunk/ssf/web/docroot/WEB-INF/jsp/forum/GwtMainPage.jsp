@@ -94,20 +94,8 @@
 				if (iframeMinimum < 100) iframeMinimum = 100;
 				if (window.frames['gwtContentIframe'] != null) {
 					var iframeHeight = window.gwtContentIframe.document.body.scrollHeight;
-					if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
-						if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
-							iframeDiv.style.height = parseInt(iframeMinimum) + "px";
-						}
-					} else {
-						if (iframeHeight > iframeMinimum) {
-							if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight)) {
-								iframeDiv.style.height = parseInt(iframeHeight) + "px";
-							}
-						} else {
-							if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
-								iframeDiv.style.height = parseInt(iframeMinimum) + "px";
-							}
-						}
+					if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
+						iframeDiv.style.height = parseInt(iframeMinimum) + "px";
 					}
 				}
 				//Also resize the entry iframe if needed
