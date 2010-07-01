@@ -361,25 +361,35 @@ public class GwtClientHelper {
 	 * @param scrollType
 	 */	
 	public static void scrollUIForPopup(PopupPanel popup, ScrollType scrollType) {
-		final String scrollStyle;
+		// What class name do we use for the requested scroll type?
+		final String scrollClass;
 		switch (scrollType) {
 		default:
-		case VERTICAL:    scrollStyle = "gwtUI_ss_forceVerticalScroller";   break;
-		case BOTH:        scrollStyle = "gwtUI_ss_forceBothScrollers";      break;
-		case HORIZONTAL:  scrollStyle = "gwtUI_ss_forceHorizontalScroller"; break;
+		case VERTICAL:    scrollClass = "gwtUI_ss_forceVerticalScroller";   break;
+		case BOTH:        scrollClass = "gwtUI_ss_forceBothScrollers";      break;
+		case HORIZONTAL:  scrollClass = "gwtUI_ss_forceHorizontalScroller"; break;
 		}
-		
+
+		// If the <body> doesn't currently have this class...
 		final Element bodyElement = RootPanel.getBodyElement();
-		bodyElement.addClassName(scrollStyle);
-		
-		popup.addCloseHandler(new CloseHandler<PopupPanel>() {
-			public void onClose(CloseEvent<PopupPanel> event) {
-				bodyElement.removeClassName(scrollStyle);
-			}
-		});
+		String className = bodyElement.getClassName();
+		if ((!(hasString(className))) || (0 > className.indexOf(scrollClass))) {
+			// ...add it...
+			bodyElement.addClassName(scrollClass);
+
+			// ...and when the popup closes...
+			popup.addCloseHandler(new CloseHandler<PopupPanel>() {
+				public void onClose(CloseEvent<PopupPanel> event) {
+					// ...remove it.
+					bodyElement.removeClassName(scrollClass);
+				}
+			});
+		}
 	}
 	
 	public static void scrollUIForPopup(PopupPanel popup) {
+		// Always use the initial form of the method, defaulting to a
+		// vertical scroll bar only.
 		scrollUIForPopup(popup, ScrollType.VERTICAL);
 	}
 }
