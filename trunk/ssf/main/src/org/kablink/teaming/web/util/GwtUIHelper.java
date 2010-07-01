@@ -49,8 +49,10 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -125,6 +127,35 @@ public class GwtUIHelper {
 			NLT.get("misc.about"),
 			"#",
 			qualifiers);
+	}
+	
+	/*
+	 * Adds a branding item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addBrandingToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
+		// If we don't have a binder...
+		if (null == binder) {
+			// ...it can't be branded.
+			return;
+		}
+
+		// Does the user have rights to brand this binder?
+		if (bs.getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
+			// Yes!  Add the appropriate toolbar item. 
+			String menuKey = "toolbar.menu.brand.";
+			if      (binder instanceof Workspace) menuKey += "workspace";
+			else if (binder instanceof Folder)    menuKey += "folder";
+			else                                  return;
+			
+			addTeamingActionToToolbar(
+				tb,
+				"branding",
+				"EDIT_BRANDING",
+				NLT.get(menuKey),
+				"#",
+				null);
+		}
 	}
 	
 	/*
@@ -459,9 +490,10 @@ public class GwtUIHelper {
 			if ((null != binder) && (!(isCurrentUserGuest()))) {
 				// Yes!  Is the binder we're on other than the profiles
 				// container?
+				addBrandingToToolbar(bs, request, model, binder, gwtMiscToolbar);
 				if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
-					// Yes!  Add toolbar items to track and share the
-					// binder.
+					// Yes!  Add the various binder based toolbar
+					// items.
 					addClipboardToToolbar(       bs, request, model, binder, gwtMiscToolbar);
 					addConfigureColumnsToToolbar(bs, request, model, binder, gwtMiscToolbar);
 					addSendEmailToToolbar(       bs, request, model, binder, gwtMiscToolbar);

@@ -70,6 +70,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem> m_teamBucket;			// List of team          items for the context based menu.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
+	private ToolbarItem m_brandingTBI;				// The branding                  toolbar item, if found.
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
 	private ToolbarItem m_configureColumnsTBI;		// The configure columns         toolbar item, if found.
@@ -248,11 +249,9 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		if (null != m_shareThisTBI)   m_miscBucket.add(m_shareThisTBI);
 		
 		// ...and finally, the configuration section.
-		localTBI = new ToolbarItem();
-		localTBI.setName("brand");
-		localTBI.setTitle(m_currentBinder.isBinderWorkspace() ? m_messages.mainMenuManageBrandWorkspace() : m_messages.mainMenuManageBrandFolder());
-		localTBI.setTeamingAction(TeamingAction.EDIT_BRANDING);
-		m_configBucket.add(localTBI);
+		if (null != m_brandingTBI) {
+			m_configBucket.add(m_brandingTBI);
+		}
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_definitions");
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "config_email");
 		
@@ -377,6 +376,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
+				m_brandingTBI         = tbi.getNestedToolbarItem("branding");
 				m_configureColumnsTBI = tbi.getNestedToolbarItem("configureColumns");
 				m_shareThisTBI        = tbi.getNestedToolbarItem("share");
 				m_trackBinderTBI      = tbi.getNestedToolbarItem("track");
@@ -388,6 +388,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// false otherwise.
 		boolean reply =
 			((null != m_configureColumnsTBI)                                                 ||
+			 (null != m_brandingTBI)                                                         ||
 			 (null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
 			 (null != m_trackBinderTBI)                                                      ||
