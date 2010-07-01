@@ -4178,6 +4178,8 @@ function ss_hideEntryDivOnLoad() {
 			window.name == 'gwtContentIframe' || 
 			window.name == 'adminContentControl') {
 		ss_hideEntryDiv();
+		//Make sure the content div is visible
+		ss_showDiv('contentControl');
 	}
 }
 function ss_hideEntryDiv() {
@@ -4188,6 +4190,7 @@ function ss_hideEntryDiv() {
 		// in window.top.document and one that's in self.document
 		// (which would be the GWT UI content IFRAME.)
 	    ss_hideEntryDivImpl(window.top.document.getElementById('ss_showentrydiv'));
+	    ss_showContentFrame();
 	}
 	
 	// The remainder of this code is unchanged from what was here
@@ -4195,14 +4198,6 @@ function ss_hideEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     if (wObj1 != null) {
     	ss_hideEntryDivImpl(wObj1);
-    	var wObj3 = self.document.getElementById('ss_iframe_holder_div')
-    	if (0 == 1 && wObj3 != null) {
-    		//Turned off because it doesn't work yet
-    		//Delete the iframe obj; it will get recreated again
-    		var iframeObj = self.document.getElementById('ss_showentryframe')
-    		if (iframeObj != null) iframeObj.parentNode.removeChild(iframeObj);
-    		ss_setObjectHeight(wObj3, "200px");
-    	}
     }
     ss_showSpannedAreas();
 }
@@ -4212,6 +4207,15 @@ function ss_hideEntryDivImpl(eDIV) {
     	eDIV.style.visibility = "hidden";
     	eDIV.style.display = "none";
 	}
+}
+
+//Routine to show the content frame
+function ss_showContentFrame() {
+	if (self != self.parent && typeof self.parent.ss_showContentFrame != "undefined") {
+		self.parent.ss_showContentFrame();
+		return;
+	}
+	ss_showDiv("contentControl");
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
@@ -8783,6 +8787,7 @@ function resizeGwtContent(reason) {
 //			alert("resizeGwtContent( reason:  '" + reason + "' )");
 			window.top.ss_setWorkareaIframeSize();
 		}
+		ss_showContentFrame();
 	}
 }
 

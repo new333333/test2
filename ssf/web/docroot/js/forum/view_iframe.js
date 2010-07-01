@@ -68,6 +68,8 @@ function ss_showForumEntryInIframe(url) {
 			return false;
 		}
 	} catch(e) {}
+	
+	if (typeof ss_hideContentFrame != "undefined") ss_hideContentFrame();
 
 	//ss_debug('show url in frame = '+url)
 	ss_positionEntryDiv(true);

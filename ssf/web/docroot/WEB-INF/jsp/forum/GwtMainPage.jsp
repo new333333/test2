@@ -81,8 +81,7 @@
 			topWSId: '${topWSId}'
 		};
 
-		var ss_workareaIframeOffset = 30;
-		var ss_workareaIframeMinOffset = 20;
+		var ss_workareaIframeMinOffset = 12;
 		function ss_setWorkareaIframeSize() {
 			//If possible, try to directly set the size of the iframe
 			//This may fail if the iframe is showing something in another domain
@@ -95,13 +94,19 @@
 				if (iframeMinimum < 100) iframeMinimum = 100;
 				if (window.frames['gwtContentIframe'] != null) {
 					var iframeHeight = window.gwtContentIframe.document.body.scrollHeight;
-					if (0 == 1 && iframeHeight > iframeMinimum) {
-						if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight)) {
-							iframeDiv.style.height = parseInt(iframeHeight) + "px";
-						}
-					} else {
+					if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
 						if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
 							iframeDiv.style.height = parseInt(iframeMinimum) + "px";
+						}
+					} else {
+						if (iframeHeight > iframeMinimum) {
+							if (parseInt(iframeDiv.style.height) != parseInt(iframeHeight)) {
+								iframeDiv.style.height = parseInt(iframeHeight) + "px";
+							}
+						} else {
+							if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
+								iframeDiv.style.height = parseInt(iframeMinimum) + "px";
+							}
 						}
 					}
 				}
@@ -115,7 +120,7 @@
 		//Routine to set the size and position of the entry popup frame in the "newpage" mode
 		var ss_entryPopupBottomMargin = 46;
 		function ss_setEntryPopupIframeSize() {
-			if (ss_userDisplayStyle == "newpage") {
+			if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
 				try {
 					var contentIframe = document.getElementById('contentControl');
 					var startOfContent = ss_getObjectTop(contentIframe);
@@ -137,6 +142,16 @@
 					}
 				} catch(e) {
 					alert('Error during frame resizing: ' + e)
+				}
+			}
+		}
+
+		//Routine to hide the content frame if necessary
+		function ss_hideContentFrame() {
+			if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
+				var contentIframe = document.getElementById('contentControl');
+				if (contentIframe != null) {
+					contentIframe.style.visibility = "hidden";
 				}
 			}
 		}
