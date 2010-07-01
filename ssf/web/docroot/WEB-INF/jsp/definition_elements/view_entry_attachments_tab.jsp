@@ -64,7 +64,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 </script>
 <div class="ss_entryContent"">
 
-<table width="90%" border="0" valign="top" cellpadding="1" cellspacing="0">
+<table width="99%" border="0" cellpadding="0" cellspacing="0" class="marginbottom2">
 <c:if test="${!empty ss_pseudoEntity}">
 <tr>
 	<td valign="top" style="padding-left: 9px; white-space: nowrap">
@@ -77,7 +77,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 </c:if>
 <c:if test="${empty ss_pseudoEntity}">
 <tr>
-	<td valign="top" style="padding-left: 19px; white-space: nowrap">
+	<td style="padding-left: 19px; white-space: nowrap">
 		<!-- We need the following image so the help spot has an initial position. -->
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}${ss_attachments_namespace}" class="ss_style ss_bold ss_smallprint">
 		  	<ssHelpSpot helpId="workspaces_folders/entries/attachments" offsetX="-20" offsetY="-5"
@@ -87,7 +87,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		</span>
 	</td>
 
-	<td valign="top" width="100%" align="left">
+	<td width="100%" align="left">
 	<ul class="ss_nobullet">
 	<ssf:ifnotaccessible>
 	
@@ -201,25 +201,29 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	</td>
 </tr>
 <tr>
-	<td style="padding-left: 30px;" colspan="2" align="left" width="100%">
-					<div id="ss_div_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-					  class="ss_border_light" style="width:400px; visibility:hidden;display:none;">
-						<div align="right" width="100%">
+	<td style="padding-left: 30px;" colspan="2">
+	
+		<!-- Drag and Drop dialog. -->
+		<div id="ss_div_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" class="teamingDlgBox" style="position: absolute; visibility:hidden; display:none;">
+			<div class="popupContent" style="width:400px;">
+				<div class="teamingDlgBoxHeader"><ssf:nlt tag="entry.AttachFilesByApplet"/>
+					<div class="closebutton">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
-						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
-						</div>	
-						<iframe title="<ssf:nlt tag="entry.AttachFilesByApplet" />" frameborder="0" 
-						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-						  src="<html:rootPath/>js/forum/null.html" 
-						  height="150" width="95%" 
-						  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
-					    <div align="right" style="padding:10px;">
-						  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
-						  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/fileUploadHints"/>
-					    </div>
-					</div>
-
+					  	border="0" align="absmiddle" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_teal16.png"/></a>
+					</div>	
+				</div>	
+				<iframe style="margin-top: 20px; margin-left: 10px;" title="<ssf:nlt tag="entry.AttachFilesByApplet" />" frameborder="0" 
+				  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+				  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+				  src="<html:rootPath/>js/forum/null.html" 
+				  height="150" width="95%" 
+				  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
+				<div align="right" style="padding:10px;">
+				  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
+				  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/fileUploadHints"/>
+				</div>
+			</div>
+		</div>
 					<div id="ss_div_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 					  class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">

@@ -452,15 +452,15 @@ div.ss_entryContent a:hover {
   background-color:inherit;
   	}
 .ss_entrySignature {
-  	font-size: 10px;
+  	font-size: 11px;
   	padding-left: 5px;
   	color: ${ss_style_metadata_color};
   	}
 .ss_entryDescription {
   	color: #333;
 	font-family: ${ss_style_title_font_family};
-  	font-size: 13px;
-	line-height: 17px;
+  	font-size: 14px;
+	line-height: 18px;
   	padding: 2px 15px;
   	background-color: #E9F1F1;
 	-moz-border-radius: 5px;
@@ -1341,7 +1341,6 @@ table.ss_attachments_list {
 	empty-cells: show;
 	}
 table.ss_attachments_list td.ss_att_title {
-	font-size: 10px;
 	font-weight: bold;
 	padding-left: 0px;
 	}
@@ -1351,17 +1350,15 @@ table.ss_attachments_list hr.ss_att_divider {
 	height: 0px;
 	}
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
-	font-size: 10px;
 	font-weight: normal;
 	white-space: nowrap;
-	padding-left: 5px;
-	color: ${ss_style_metadata_color};
+	padding-right: 5px;
 	}
 tr.ss_attachments_list_primary_file, tr.ss_attachments_list_primary_file td {
     background-color: #cccccc;
 }
 .ss_att_meta_wrap {
-	font-size: 10px !important;
+	font-size: 11px !important;
 	padding-left: 5px;
 	color: ${ss_style_metadata_color};
 	}
@@ -1369,9 +1366,14 @@ table.ss_attachments_list td.ss_att_space {
     padding-left: 10px;
 	}
 table.ss_attachments_list td.ss_att_description {
-	font-size: 10px;
+	font-size: 11px;
     padding: 0px 0px;
+	background-color: #fff;
 	}
+table.ss_attachments_list td.ss_att_description p{
+	margin: 4px 10px 4px 0px;
+	}
+
 .ss_subhead2 {
 	color: ${ss_style_text_color};
 	}
@@ -3527,7 +3529,7 @@ tr.ss_tab_table_columnhead td {
 	color: #333; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
-	padding-left: .5em;
+	padding-left: 2px;
 	padding-right: .5em;
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
@@ -4591,7 +4593,6 @@ span.ss_infoDivValue {
 	font-family: ${ss_style_font_family};
 	color: ${ss_form_element_text_color};
 }
-
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />

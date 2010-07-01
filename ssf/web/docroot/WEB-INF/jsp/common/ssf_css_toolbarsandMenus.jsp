@@ -901,3 +901,61 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	-moz-border-radius: 40px;
 	-webkit-border-radius: 40px;
 	}
+	
+	
+/* Styles for dialog boxes */
+.teamingDlgBox {
+	font-family: Arial,Helvetica,sans-serif;
+	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
+	padding: 5px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	z-index: 1001;
+	}
+.teamingDlgBox_Glass {
+	background-color: #000;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+	overflow: hidden;
+	z-index: 1000;
+	}
+.teamingDlgBox .popupContent {
+	background-color: #f6f6f6;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
+/* Styles for the content of a dialog box. */
+.teamingDlgBoxContent{
+	margin: 10px;
+	}
+/* Styles for the footer of a dialog box. */
+.teamingDlgBoxFooter {
+	background-color: #EAEBE8;
+	border-top: 1px solid #BABDB6;
+	margin-top: 0.5em;
+	padding: 0.5em;
+	text-align: right;
+	vertical-align: middle;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	}
+/* Styles for the header in a dialog box. */
+.teamingDlgBoxHeader {
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	padding: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+	}
+.teamingDlgBoxHeader .closebutton {
+	position: absolute;
+	top: 8px;
+	right: 10px;
+	}	
+	

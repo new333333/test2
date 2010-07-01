@@ -83,66 +83,69 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:if test="${versionCount >= 1}">
     <c:set var="thumbRowSpan" value="2"/>
   </c:if>
-     <tr class="${ss_attachedFileRowClass}"><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
-	  <tr class="${ss_attachedFileRowClass}">
-		<td valign="top" width="80" rowspan="${thumbRowSpan}">
+	  <tr class="ss_tab_table_row">
+		<td rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
 	    </div>
 		</td>
 		
-		<td valign="top" style="height:20px;" class="ss_att_title" width="27%">
+		<td class="ss_att_title" style="border: 0px;">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
 		</td>
-		<td valign="top" class="ss_att_meta" nowrap width="3%">
-		  <span style="padding:0px 4px;"><ssf:nlt tag="file.versionNumber"><ssf:param
-			name="value" value="${selection.fileVersion}"/></ssf:nlt></span>
+		<td class="ss_att_meta" style="border: 0px;">
+		  <ssf:nlt tag="file.versionNumber"><ssf:param name="value" value="${selection.fileVersion}"/></ssf:nlt>
 		</td>
 
-		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		<td class="ss_att_meta" style="border: 0px;">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 		</td>
 		
-		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<td class="ss_att_meta" style="border: 0px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="date" 
-					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+					 dateStyle="medium" />&nbsp;&nbsp;<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
-					 timeStyle="short"/></span></td>
-		<td valign="top" class="ss_att_meta" nowrap width="5%">
+					 timeStyle="short"/>
+		</td>
+		<td class="ss_att_meta" style="border: 0px;">
 		  <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber value="${selection.fileItem.lengthKB}"/> 
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%"><ssf:showUser user="${selection.modification.principal}"/></td>
-		<td valign="top" class="ss_att_meta" width="20%">
+		<td class="ss_att_meta_wrap" style="border: 0px;"><ssf:showUser user="${selection.modification.principal}"/></td>
+		<td class="ss_att_meta" style="border: 0px;">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
+		<td width="100%" style="border: 0px;">&nbsp;</td>
 	</tr>
-	<tr class="${ss_attachedFileRowClass}">
-	  <td valign="top" colspan="7" class="ss_att_description" width="100%">
-	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
+
+	<tr class="ss_tab_table_row">
+	  <td colspan="8" class="ss_att_description" style="white-space: normal;">
+	    <ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
 	  </td>
 	</tr>	
+
 	<c:if test="${!ss_showPrimaryFileAttachmentOnly}">
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr class="${ss_attachedFileRowClass}"><td valign="top" style="height:10px;" class="ss_att_title" colspan="8">
-          <hr class="ss_att_divider" noshade="noshade" /></td></tr>
-		<tr class="${ss_attachedFileRowClass}">
-		  <td valign="top" class="ss_att_title ss_subhead2" colspan="8">
+        <tr class="ss_tab_table_row">
+			<td class="ss_att_title" style="border: 0px;" colspan="8"></td>
+		</tr>
+		<tr class="ss_tab_table_row">
+		  <td class="ss_att_title ss_subhead2" style="border: 0px;" colspan="8">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    </c:if>
 		    <ssf:expandableArea title="${previousVersionsText}" titleClass="ss_normal" 
 		      toggleClass="ss_expandable_area_toggle_indent20">
-			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
+			  <table class="ss_attachments_list" cellpadding="0" cellspacing="0">
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
 	String vfn = selection.getFileItem().getName();
@@ -163,58 +166,58 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 	          	<c:choose>
 		          	<c:when test="${status.count == 4}">
-						 <tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_row${status.count}n"
+						 <tr class="ss_tab_table_row" id="${ss_attachments_namespace}att_row${status.count}n"
 						   style="display: block; visibility: visible; ">
-						    <td width="80">
+						    <td>
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 4, 9);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>
 		          	<c:when test="${status.count == 10}">
-						 <tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_row${status.count}n" 
+						 <tr class="ss_tab_table_row" id="${ss_attachments_namespace}att_row${status.count}n" 
 						   style="display: none; visibility: hidden; ">
-						    <td width="80">
+						    <td>
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
 							<a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 10, 20);" 
 							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
 		          	<c:when test="${status.count == 21}">
-						 <tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
+						 <tr class="ss_tab_table_row" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td>
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 21, 40);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
 						 </tr>
 			 	    </c:when>	
 		          	<c:when test="${status.count == 41}">
-						 <tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
+						 <tr class="ss_tab_table_row" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td>
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="7" 
+							<td valign="top" colspan="8" 
 							  style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 41, 80);" 
@@ -222,14 +225,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						 </tr>
 			 	    </c:when>
 		          	<c:when test="${status.count == 81}">
-						 <tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
-						    <td width="80">
+						 <tr class="ss_tab_table_row" id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+						    <td>
 						      <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 						        <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="7" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 81);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -237,7 +240,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			 	    </c:when>				 	    
 		 	    </c:choose>	 	    
 		 	    
-				<tr class="${ss_attachedFileRowClass}" 
+				<tr class="ss_tab_table_row" 
 				<c:choose>
 					<c:when test="${status.count <= 3}">
 						style="display: block; visibility: visible;">
@@ -248,13 +251,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</c:choose>	
 				>					
 						
-				<td width="80">
+				<td>
 				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 				    <img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 				      src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-				<td valign="top" class="ss_att_title" width="27%" style="font-weight: normal;">
+				<td class="ss_att_title" style="font-weight: normal; border: 0px;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
@@ -266,32 +269,37 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						><%= vfnBr %></a>
 				</c:if>
 				</td>
-				<td valign="top" class="ss_att_meta" nowrap width="3%"><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
-						name="value" value="${fileVersion.fileVersion}"/></ssf:nlt></span>
+				<td class="ss_att_meta" style="border: 0px;"><ssf:nlt tag="file.versionNumber"><ssf:param
+						name="value" value="${fileVersion.fileVersion}"/></ssf:nlt>
 				</td>
 
-				<td valign="top" class="ss_att_meta" nowrap width="5%">
+				<td class="ss_att_meta" style="border: 0px;">
 		          <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
 		          <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
 		          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 				</td>
 		
-				<td valign="top" width="20%">
-				  <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				<td class="ss_att_meta" style="border: 0px;">
+				  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="date" 
-					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+					 dateStyle="medium" />&nbsp;&nbsp;<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="time" 
-					 timeStyle="short" /></span></td>
-				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%">
-				  <ssf:showUser user="${fileVersion.modification.principal}"/></td>
-				<td valign="top" class="ss_att_meta" width="20%">
+					 timeStyle="short" />
+				</td>
+				<td class="ss_att_meta" style="border: 0px;">
+					<fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/>
+				</td>
+				<td class="ss_att_meta_wrap" style="border: 0px;">
+				  <ssf:showUser user="${fileVersion.modification.principal}"/>
+				 </td>
+				<td class="ss_att_meta" style="border: 0px;">
 		          <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
 		          <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
 		          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
-				</td>	
+				</td>
+				<td width="100%" style="border: 0px">&nbsp;</td>	
 			  </tr>	
-			  <tr class="${ss_attachedFileRowClass}" 
+			  <tr class="ss_tab_table_row" 
 			  <c:choose>
 				<c:when test="${status.count <= 3}">
 					style="display: block; visibility: visible;"
@@ -301,14 +309,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</c:otherwise>
 			  </c:choose>
 			  >						
-				<td width="80">
+				<td>
 				  <div class="ss_thumbnail_gallery ss_thumbnail_tiny">
 					<img border="0" style="border:0px none #fff; width:35px;height:1px;" 
 					  src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-			    <td valign="top" width="100%" colspan="7" class="ss_att_description">
-			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
+			    <td colspan="8" class="ss_att_description" style="white-space: normal;">
+			      <ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup>
 			    </td>
 			  </tr>	
 				

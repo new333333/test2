@@ -36,17 +36,18 @@
 
 <div id="${ss_viewEntryAttachmentDivId}">
 
-<table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
+<table class="ss_attachments_list" cellpadding="0" cellspacing="0">
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-<tr>
-  <th colspan="2" style="padding-left:56px;"><ssf:nlt tag="file.name"/></th>
-  <th align="center" style="padding-right:4px;"><ssf:nlt tag="entry.Version"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="file.status"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="file.date"/></th>
-  <th align="center" style="padding:0px 4px;"><ssf:nlt tag="file.size"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="entry.modifiedBy"/></th>
-  <th><ssf:nlt tag="toolbar.actions"/></th>
+<tr class="ss_tab_table_columnhead">
+  <td>&nbsp;</td>
+  <td><ssf:nlt tag="file.name"/></td>
+  <td><ssf:nlt tag="entry.Version"/></td>
+  <td><ssf:nlt tag="file.status"/></td>
+  <td><ssf:nlt tag="file.date"/></td>
+  <td><ssf:nlt tag="file.size"/></td>
+  <td><ssf:nlt tag="entry.modifiedBy"/></td>
+  <td colspan="2"><ssf:nlt tag="toolbar.actions"/></td>
 </tr>
 </c:if>
 
@@ -78,9 +79,6 @@
       <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_list_item.jsp" />
     </c:if>
 </c:forEach>
-<c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
-</c:if>
 </tbody>
 </table>
 
