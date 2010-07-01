@@ -38,7 +38,7 @@
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
-
+<c:if test="${empty ss_gwtTeamingNocacheLoaded}">
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <script type="text/javascript">
 	function ss_launchSimpleProfile(element, workspaceId, userName) 
@@ -52,6 +52,8 @@
 	}
 </script>
 <div id="gwtShowQuickProfileDiv"></div>
+<c:set var="ss_gwtTeamingNocacheLoaded" value="true" scope="request"/>
+</c:if>
 
 
 <portletadapter:defineObjects1/>
