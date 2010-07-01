@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
@@ -435,18 +436,20 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 
 		Entry entry = (Entry) objMap.get(ENTRY);
 		if (entry == null) {
-			// Get a list of entries
-			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-			Map folderEntries = bs.getFolderModule().getEntries(
-					binder.getId(), options);
-			List entries = (ArrayList) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-			for (int i = 0; i < entries.size(); i++) {
-				Map ent = (Map) entries.get(i);
-				String entryIdString = (String) ent
-						.get(Constants.DOCID_FIELD);
-				if (Validator.isNotNull(entryIdString))
-					children.add(entryIdString);
+			// Get a list of entries if the binder represents a folder
+			if(EntityType.folder.equals(binder.getEntityType())) {
+				Map options = new HashMap();
+				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
+				Map folderEntries = bs.getFolderModule().getEntries(
+						binder.getId(), options);
+				List entries = (ArrayList) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+				for (int i = 0; i < entries.size(); i++) {
+					Map ent = (Map) entries.get(i);
+					String entryIdString = (String) ent
+							.get(Constants.DOCID_FIELD);
+					if (Validator.isNotNull(entryIdString))
+						children.add(entryIdString);
+				}
 			}
 			return children.toArray(new String[children.size()]);
 		}
