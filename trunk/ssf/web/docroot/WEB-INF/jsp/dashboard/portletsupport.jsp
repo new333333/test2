@@ -38,21 +38,59 @@
 
 <%
 int entryWindowWidth = 0;
-if (ssUserProperties.containsKey("folderEntryWidth")) {
-	entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
-}
 int entryWindowTop = 0;
-if (ssUserProperties.containsKey("folderEntryTop")) {
-	entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
-}
 int entryWindowLeft = 0;
-if (ssUserProperties.containsKey("folderEntryLeft")) {
-	entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
-}
 int entryWindowHeight = 0;
-if (ssUserProperties.containsKey("folderEntryHeight")) {
-	entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+String width;
+
+try
+{
+	if (ssUserProperties.containsKey("folderEntryWidth")) {
+		width = (String) ssUserProperties.get("folderEntryWidth");
+		if ( width != null && width.length() > 0 )
+			entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
+	}
 }
+catch (Exception ex)
+{
+}
+
+try
+{
+	if (ssUserProperties.containsKey("folderEntryTop")) {
+		width = (String) ssUserProperties.get("folderEntryTop");
+		if ( width != null && width.length() > 0 )
+			entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
+	}
+}
+catch (Exception ex)
+{
+}
+
+try
+{
+	if (ssUserProperties.containsKey("folderEntryLeft")) {
+		width = (String) ssUserProperties.get("folderEntryLeft");
+		if ( width != null && width.length() > 0 )
+			entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
+	}
+}
+catch (Exception ex)
+{
+}
+
+try
+{
+	if (ssUserProperties.containsKey("folderEntryHeight")) {
+		width = (String) ssUserProperties.get("folderEntryRight");
+		if ( width != null && width.length() > 0 )
+			entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+	}
+}
+catch (Exception ex)
+{
+}
+
 String autoScroll = "true";
 request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));
 request.setAttribute("ss_entryWindowTop", new Integer(entryWindowTop));

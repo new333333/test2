@@ -463,11 +463,18 @@ public class BrandingPanel extends Composite
 				bgColor = brandingData.getBgColor();
 				if ( bgColor != null && bgColor.length() > 0 )
 				{
-					// Yes, set the color of the branding panel background to the appropriate color.
-					bgPanelStyle.setBackgroundColor( bgColor );
-
-					// No need to use the default background image since a background color was specified.
-					useDefaultBgImg = false;
+					try
+					{
+						// Yes, set the color of the branding panel background to the appropriate color.
+						bgPanelStyle.setBackgroundColor( bgColor );
+					
+						// No need to use the default background image since a background color was specified.
+						useDefaultBgImg = false;
+					}
+					catch( Exception ex)
+					{
+						// Nothing to do
+					}
 				}
 				
 				// Do we need to use the default background image?

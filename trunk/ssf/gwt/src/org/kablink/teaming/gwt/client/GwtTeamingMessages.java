@@ -217,6 +217,8 @@ public interface GwtTeamingMessages extends Messages
 	String displayColorPicker();
 	String editAdvancedBranding();
 	String imgNone();
+	String invalidBackgroundColor( String color );
+	String invalidTextColor( String color );
 	String kablinkTeaming();
 	String noImagesAvailable();
 	String novellTeaming();
