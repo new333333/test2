@@ -46,11 +46,6 @@
 <div class="ss_style ss_portlet_style ss_portlet">
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
-<% // Navigation links %>
-<div id="ss_entry_view_navigation_links" style="display:none">
-  <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</div>
-
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
 <tr><td valign="top" width="95%">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 

@@ -67,11 +67,6 @@
 </tr>
 </table>
 
-<% // Navigation links %>
-<div id="ss_entry_view_navigation_links" style="display:none">
-  <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-</div>
-
 <c:if test="${empty ss_entryLinkCounter}"><c:set var="ss_entryLinkCounter" value="0" scope="request"/></c:if>
 <c:set var="ss_entryLinkCounter" value="${ss_entryLinkCounter + 1}" scope="request"/>
 <div id="ss_entryTop${ss_entryLinkCounter}" >

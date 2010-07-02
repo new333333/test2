@@ -816,7 +816,9 @@ ss_createEventObj('ss_navbarUnload', 'unload', ss_navbarUnload);
 </c:if>
 <c:if test="${!ss_mashupHideMasthead || ss_mashupShowNavigation}">
 <div style="padding-bottom:0px;"></div>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
+  <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+<% } %>
 <div style="padding-bottom:2px;"></div>
 </c:if>
 <div class="ss_clear_float"></div>
