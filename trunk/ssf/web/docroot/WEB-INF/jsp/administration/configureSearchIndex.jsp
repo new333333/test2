@@ -134,12 +134,12 @@ function ss_getOperationStatus()
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
-function ss_submitIndexingForm(formName) {
+function ss_submitIndexingForm( formName, callbackName ) {
 	var formObj = document.forms[formName];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
-		ss_submitFormViaAjax(formName, 'ss_indexingDone');
+		ss_submitFormViaAjax(formName, callbackName );
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {
@@ -154,6 +154,21 @@ function ss_indexingDone() {
 	ss_stopSpinner();
 	ss_showPopupDivCentered('ss_indexing_done_div');
 }
+
+
+/**
+ * Display the "Optimization has finished" div.
+ */
+function ss_optimizationDone()
+{
+	if ( ss_indexTimeout )
+	{
+		clearTimeout(ss_indexTimeout);
+	}
+
+	ss_stopSpinner();
+	ss_showPopupDivCentered( 'ss_optimization_done_div' );
+}// end ss_optimizationDone()
 
 
 function <%= wsTreeName %>_showId(id, obj, action) {
@@ -194,7 +209,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	method="post" 
 	name="${renderResponse.namespace}fm"
 	id="${renderResponse.namespace}fm"
-	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm');" >
+	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm', 'ss_indexingDone' );" >
 <input type="hidden" name="operation" value="index"/>
 
 <div class="ss_buttonBarRight">
@@ -254,7 +269,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	method="post" 
 	name="${renderResponse.namespace}fm2"
 	id="${renderResponse.namespace}fm2"
-	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm2');" >
+	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm2', 'ss_optimizationDone' );" >
 <input type="hidden" name="operation" value="optimize"/>
 <br>
 <c:if test="${empty ssSearchNodes}">
@@ -301,11 +316,19 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </div>
 
 <div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;">
-<span><ssf:nlt tag="index.finished"/></span>
-<br/>
-<br/>
-<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
+	<span><ssf:nlt tag="index.finished"/></span>
+	<br/>
+	<br/>
+	<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
 </div>
+
+<div id="ss_optimization_done_div" style="position:absolute;display:none;background-color:#fff;">
+	<span><ssf:nlt tag="index.optimization.finished"/></span>
+	<br/>
+	<br/>
+	<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
+</div>
+
 </ssf:form>
 </div>
 </div>
