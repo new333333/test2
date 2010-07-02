@@ -4,7 +4,7 @@
  * $Date: 2006/02/10 16:29:37 $
  *
  * @author Moxiecode
- * @copyright Copyright © 2004-2006, Moxiecode Systems AB, All rights reserved.
+ * @copyright Copyright ï¿½ 2004-2006, Moxiecode Systems AB, All rights reserved.
  */
 
 (function() {
@@ -20,6 +20,7 @@
 						file : url + '/image.htm',
 						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
 						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
+						scrollbars : true,
 						inline : 1
 					}, {
 						plugin_url : url
@@ -30,6 +31,7 @@
 						file : url + '/image_no.htm',
 						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
 						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
+						scrollbars : true,
 						inline : 1
 					}, {
 						plugin_url : url
