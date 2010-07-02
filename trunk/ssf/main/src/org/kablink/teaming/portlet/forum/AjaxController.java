@@ -1260,10 +1260,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String entryLeft = PortletRequestUtils.getStringParameter(request, "entry_left");
 
 		Map values = new HashMap();
-		if (Validator.isNotNull(entryWidth)) values.put(WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
-		if (Validator.isNotNull(entryHeight)) values.put(WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
-		if (Validator.isNotNull(entryTop)) values.put(WebKeys.FOLDER_ENTRY_TOP, entryTop);
-		if (Validator.isNotNull(entryLeft)) values.put(WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
+		if (Validator.isNumber(entryWidth)) values.put(WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+		if (Validator.isNumber(entryHeight)) values.put(WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		if (Validator.isNumber(entryTop)) values.put(WebKeys.FOLDER_ENTRY_TOP, entryTop);
+		if (Validator.isNumber(entryLeft)) values.put(WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
 		getProfileModule().setUserProperties(null, values);
 		
 		response.setContentType("text/json");

@@ -33,7 +33,7 @@
 //Routines used by folder views
 
 function ss_highlightLineById(id) {
-	if (ss_userDisplayStyle == "accessible") {return;}
+	if (ss_getUserDisplayStyle() == "accessible") {return;}
     if (id == "") {return;}
     var obj = self.document.getElementById(id)
     if (obj == null) {

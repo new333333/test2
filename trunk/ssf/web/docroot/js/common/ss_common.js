@@ -194,6 +194,17 @@ function ss_isInteger(val) {
 	return true;
 }
 
+function ss_getUserDisplayStyle() {
+	if (self != self.parent && typeof self.parent.ss_getUserDisplayStyle != "undefined") {
+		return self.parent.ss_getUserDisplayStyle();
+	}
+	if (typeof ss_userDisplayStyle != "undefined") {
+		return ss_userDisplayStyle;
+	} else {
+		return "";
+	}
+}
+
 //Routines to support Ajax
 //suggest moving towards ss_get_url so errors can be handled consistantly
 //Updated to dojo, result is text/plain
@@ -974,7 +985,7 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		//If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
@@ -1039,7 +1050,7 @@ function ss_showFolderPageIndex(hrefUrl, binderId, currentPageIndex, divId, cTag
 	var page = parseInt(currentPageIndex);
 	
 	var divObj = self.document.getElementById(divId);
-	if (divObj == null || ss_userDisplayStyle == "accessible") {
+	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
 		//In accessible mode, redraw the whole page
 		self.location.href = hrefUrl;
 	} else {
@@ -1061,7 +1072,7 @@ function ss_showWikiFolderPage(hrefUrl, binderId, currentPageIndex, divId, cTag,
 	var page = parseInt(currentPageIndex);
 	
 	var divObj = self.document.getElementById(divId);
-	if (divObj == null || ss_userDisplayStyle == "accessible") {
+	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
 		//In accessible mode, redraw the whole page
 		self.location.href = hrefUrl;
 	} else {
@@ -1077,7 +1088,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
 	
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		//In accessible mode, redraw the whole page
 		var url = "";
 		eval("url = ss_relevanceAjaxUrl"+namespace);
@@ -1106,7 +1117,7 @@ function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId,
 	var page = parseInt(currentPage);
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		//In accessible mode, redraw the whole page
 		var url = obj.href;
 		self.location.href = url;
@@ -1131,7 +1142,7 @@ function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, d
 	var page = parseInt(currentPage);
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		//In accessible mode, redraw the whole page
 		var url = obj.href;
 		self.location.href = url;
@@ -4219,7 +4230,7 @@ function ss_showContentFrame() {
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
@@ -4272,7 +4283,7 @@ var ss_loadEntryInPlaceLastId = null;
 var ss_loadEntryInPlaceNextId = 0;
 //Note: this routine can be called (below) with obj = null
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		if (obj != null) self.location.href = obj.href;
 		return false;
 	}
@@ -4387,12 +4398,12 @@ function ss_setCurrentIframeHeight() {
 }
 
 function ss_showForumEntry(url, isDashboard) {	
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		self.location.href = url;
 		return false;
 	}
 	if (isDashboard == "yes") {
-		if (ss_userDisplayStyle == 'newpage') {
+		if (ss_getUserDisplayStyle() == 'newpage') {
 			return ss_showForumEntryInIframe_Overlay(url);	
 		} else {
 			return ss_showForumEntryInIframe_Overlay(url);

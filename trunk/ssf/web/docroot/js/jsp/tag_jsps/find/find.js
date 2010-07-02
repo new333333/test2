@@ -410,7 +410,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
 			if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 		}
-		if (ss_userDisplayStyle == 'accessible') {
+		if (ss_getUserDisplayStyle() == 'accessible') {
 			that._searchAccessible(searchText, crFound);
 			searchInProgress = false;
 			return;

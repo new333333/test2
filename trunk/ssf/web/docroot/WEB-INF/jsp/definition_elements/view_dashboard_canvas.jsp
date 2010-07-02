@@ -52,19 +52,27 @@
 		
 		int entryWindowWidth = 0;
 		if (ssUserProperties.containsKey("folderEntryWidth")) {
-			entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
+			try {
+				entryWindowWidth = Integer.parseInt((String) ssUserProperties.get("folderEntryWidth"));
+			} catch(Exception e) {}
 		}
 		int entryWindowTop = 0;
 		if (ssUserProperties.containsKey("folderEntryTop")) {
-			entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
+			try {
+				entryWindowTop = Integer.parseInt((String) ssUserProperties.get("folderEntryTop"));
+			} catch(Exception e) {}
 		}
 		int entryWindowLeft = 0;
 		if (ssUserProperties.containsKey("folderEntryLeft")) {
-			entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
+			try {
+				entryWindowLeft = Integer.parseInt((String) ssUserProperties.get("folderEntryLeft"));
+			} catch(Exception e) {}
 		}
 		int entryWindowHeight = 0;
 		if (ssUserProperties.containsKey("folderEntryHeight")) {
-			entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+			try {
+				entryWindowHeight = Integer.parseInt((String) ssUserProperties.get("folderEntryHeight"));
+			} catch(Exception e) {}
 		}
 		String autoScroll = "true";
 		request.setAttribute("ss_entryWindowWidth", new Integer(entryWindowWidth));

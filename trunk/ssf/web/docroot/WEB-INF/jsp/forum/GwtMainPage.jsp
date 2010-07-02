@@ -108,7 +108,7 @@
 		//Routine to set the size and position of the entry popup frame in the "newpage" mode
 		var ss_entryPopupBottomMargin = 46;
 		function ss_setEntryPopupIframeSize() {
-			if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
+			if (ss_getUserDisplayStyle() == "newpage") {
 				try {
 					var contentIframe = document.getElementById('contentControl');
 					var startOfContent = ss_getObjectTop(contentIframe);
@@ -136,7 +136,7 @@
 
 		//Routine to hide the content frame if necessary
 		function ss_hideContentFrame() {
-			if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
+			if (ss_getUserDisplayStyle() == "newpage") {
 				var contentIframe = document.getElementById('contentControl');
 				if (contentIframe != null) {
 					contentIframe.style.visibility = "hidden";

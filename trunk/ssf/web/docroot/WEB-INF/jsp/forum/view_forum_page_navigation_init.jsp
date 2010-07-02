@@ -101,7 +101,7 @@ function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
 
 function ss_autoGoToPage${renderResponse.namespace}(formId, page) {
 	var formObj = document.getElementById(formId);
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		if (ss_goToPage_${renderResponse.namespace}(formObj)) {
 			formObj.submit();
 		}
