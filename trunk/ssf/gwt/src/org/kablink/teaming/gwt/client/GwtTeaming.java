@@ -35,21 +35,13 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
-import org.kablink.teaming.gwt.client.profile.widgets.GwtShowProfileView;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.widgets.MastHead;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Frame;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -172,6 +164,7 @@ public class GwtTeaming implements EntryPoint
 			return;
 		}
 
+		
 		// Are we loading the profile page?
 		rootPanel = RootPanel.get( "gwtUserStatusDiv" );
 		if ( rootPanel != null )
@@ -183,20 +176,7 @@ public class GwtTeaming implements EntryPoint
 					
 			return;
 		}
-		
-		// Are we loading the profile page?
-		rootPanel = RootPanel.get( "gwtShowQuickProfileDiv" );
-		if ( rootPanel != null )
-		{
-			GwtShowProfileView qViewProfile;
-			
-			qViewProfile = new GwtShowProfileView();
-			rootPanel.add( qViewProfile );
-			
-			return;
-		}
-		
-		
+
 	}// end onModuleLoad()
 
 
