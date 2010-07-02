@@ -156,7 +156,7 @@ var ss_currentEntryId = "";
 
 
 function ss_loadEntryUrl(url,id) {
-	if (ss_userDisplayStyle == "accessible") {
+	if (ss_getUserDisplayStyle() == "accessible") {
 		self.location.href = url;
 		return false;
 	}

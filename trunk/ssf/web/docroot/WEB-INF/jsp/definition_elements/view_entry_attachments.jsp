@@ -111,7 +111,7 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
     </c:if>
   </div>
   </td>
-  <c:if test="${ssDefinitionEntry.top}">
+  <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewEntryHistory${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -147,7 +147,7 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
 
-<c:if test="${ssDefinitionEntry.top}">
+<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
   <div id="viewEntryHistory${ss_tabDivCount}loading" 
     style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
