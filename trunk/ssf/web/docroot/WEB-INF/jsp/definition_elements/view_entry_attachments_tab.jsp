@@ -203,9 +203,9 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <tr>
 	<td style="padding-left: 30px;" colspan="2">
 	
-		<!-- Drag and Drop dialog. -->
+		<!-- Drag and Drop dialog -->
 		<div id="ss_div_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" class="teamingDlgBox" style="position: absolute; visibility:hidden; display:none;">
-			<div class="popupContent" style="width:400px;">
+			<div class="popupContent" style="width:400px; background-color: #fff;">
 				<div class="teamingDlgBoxHeader"><ssf:nlt tag="entry.AttachFilesByApplet"/>
 					<div class="closebutton">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
@@ -224,18 +224,23 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				</div>
 			</div>
 		</div>
-					<div id="ss_div_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-					  class="ss_border_light" style="visibility:hidden;display:none;">
-						<div align="right">
+
+		<!-- Upload a Single File dialog -->
+		<div id="ss_div_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" class="teamingDlgBox" style="position: absolute; visibility:hidden; display:none;">
+			<div class="popupContent" style="width:400px; background-color: #fff;">
+				<div class="teamingDlgBoxHeader"><ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
+					<div class="closebutton">
 						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
-						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
-						</div>	
-						<iframe title="<ssf:nlt tag="entry.AttachFilesByWebBrowse" />" frameborder="0"  
-						  id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-							name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-							src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 
-							height="150" width="95%">xxx</iframe>
+						border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_teal16.png"/></a>
 					</div>
+				</div>		
+				<iframe title="<ssf:nlt tag="entry.AttachFilesByWebBrowse" />" frameborder="0"  
+					id="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+					name="ss_iframe_browse${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+					src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 
+					height="150" width="95%">xxx</iframe>
+			</div>	
+		</div>
 					
 					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 					  style="position:relative; display: none; padding: 5px; z-index:10;" class="ss_border_light">
