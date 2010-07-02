@@ -122,7 +122,9 @@ p {
 
 body.ss_style_body {
 	margin: 0px 0px 0px 0px;
-	background-color: #FFFFFF; 	    /* this is the blue we want to use later:  background-color: #526394; */
+	background-color: #fff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .ss_style {
@@ -418,31 +420,30 @@ div.ss_editorHints {
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
   margin-top: 4px;
-  margin-left: 15px;
   margin-right: 10px;
   }
 .ss_entryTitleFile {
   font-weight: bold;
-  font-size: ${ss_style_font_largestprint};
+  font-size: ${ss_style_font_evenlargerprint};
   font-family: ${ss_style_title_font_family};
-  margin-bottom: 10px;
+  margin-bottom: 3px;
   padding: 0px 6px;
   }
 .ss_entryTitleFileVersion {
   font-weight: normal;
   font-size: ${ss_style_font_normalprint};
   font-family: ${ss_style_title_font_family};
-  margin-bottom: 10px;
   padding: 0px 6px;
   }
 /* container for entry content: description, signature, attachments, data gathered from entry form */
 
 .ss_entryContent {
   	margin: 0px;
-  	padding: 2px;
-  	padding-left: 2px;
   	font-style: normal !important;
   	}
+#ss_entryTop1 {
+	margin-left: 5px;
+	}	
 div.ss_entryContent a {
   	color:#135c8f !important;
 	}
@@ -1633,17 +1634,29 @@ div.ss_box_top_rounded {
 
 /* "newpage" box styles */
 .ss_newpage_box {
-}
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	}
 .ss_newpage_box_header {
-	padding:2px; 
-	margin:0px; 
-	border-bottom:1px solid #aaa; 
-	background:#ccc;
+	position: relative;
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	padding: 5px;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 }
 .ss_newpage_box_close {
-}
+	position: absolute;
+	top: 5px;
+	right: 8px;
+	}
 .ss_newpage_box_title {
-}
+	padding-left: 5px;
+	}
 
 .ss_plus {
   width:16px;
