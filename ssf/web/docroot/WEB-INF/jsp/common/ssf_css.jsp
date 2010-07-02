@@ -2283,6 +2283,14 @@ div.ss_thumbnail_small_no_text a:hover img {
     	filter:alpha(opacity=100);
 	</c:if>
 	}
+div.ss_thumbnail_profile div {
+    width: 75px;
+    margin-left:   5px;
+    margin-right:  5px;
+	}
+div.ss_thumbnail_profile img {
+    width: 75px;
+	}    	
 div.ss_thumbnail_small img {
     width: 75px;
     height: 75px;
