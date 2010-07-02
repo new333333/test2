@@ -55,6 +55,7 @@
 --%><c:set var="ss_style_font_largeprint" value="13px" scope="request"/><%--
 --%><c:set var="ss_style_font_largerprint" value="14px" scope="request"/><%--
 --%><c:set var="ss_style_font_largestprint" value="15px" scope="request"/><%--
+--%><c:set var="ss_style_font_evenlargerprint" value="16px" scope="request"/><%--
 --%><c:set var="ss_style_font_input_size" value="11px" scope="request"/><%--
 
 --%><c:set var="ss_style_brightest" value="1.0" scope="request"/><%--

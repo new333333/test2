@@ -109,8 +109,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 </script>
 
 <div class="ss_entryContent">
-<div style="text-align: left; margin: 0px; border: 0pt none;" 
-  class="wg-tabs margintop3 marginbottom2">
+<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
   <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
   <c:if test="${empty ss_pseudoEntity}">

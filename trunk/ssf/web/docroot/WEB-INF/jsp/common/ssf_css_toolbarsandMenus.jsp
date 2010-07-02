@@ -849,6 +849,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .wg-tab-content-clipped {
 	background:none repeat scroll 0 0 #E6E6E4;
 	border: 0px;
+	border-bottom: 1px solid #bbbbb9;
 	height: 300px;
 	overflow: auto;
 	display: block;

@@ -678,14 +678,16 @@ div.ssPageNavi {
 /*******replies -s comments*****************/	
 div.ss_entryContent {
 	margin-left: 0px;
-	margin-top: 4px;
 	}
 div.ss_replies{	
+	margin-top: 4px;
 	}
 div.ss_replies_indent {
 	margin-left:20px;
 	}
 div.ss_replies_indent_picture {
+	width: 140px;
+	overflow: hidden;
 	}
 .ss_topic_replies{
 	padding-left: 10px;
