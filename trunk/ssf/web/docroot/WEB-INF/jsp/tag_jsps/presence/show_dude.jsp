@@ -33,25 +33,21 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <c:if test="${empty ss_gwtTeamingNocacheLoaded}">
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <script type="text/javascript">
 	function ss_launchSimpleProfile(element, workspaceId, userName) 
 	{
-		if(window.ss_invokeSimpleProfile != null ) {
-			window.ss_invokeSimpleProfile(element, workspaceId, userName);
+		if(window.top.ss_invokeSimpleProfile != null ) {
+			window.top.ss_invokeSimpleProfile(element, workspaceId, userName);
 		} else {
 			alert("Quick Profile View not found");
 		}
 		return;
 	}
 </script>
-<div id="gwtShowQuickProfileDiv"></div>
 <c:set var="ss_gwtTeamingNocacheLoaded" value="true" scope="request"/>
 </c:if>
 
