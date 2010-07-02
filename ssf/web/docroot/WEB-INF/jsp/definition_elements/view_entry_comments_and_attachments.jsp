@@ -34,6 +34,11 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${ssEntry != ssDefinitionEntry}" >
+  <% // This is a reply in the replies list, don't show the tabs %>
+  <jsp:include page="/WEB-INF/jsp/definition_elements/view_reply_attachments.jsp" />
+</c:if>
+<c:if test="${ssEntry == ssDefinitionEntry}" >
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <script type="text/javascript">
 var ss_entryHistoryLoaded${ss_divCounter} = false;
@@ -136,7 +141,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
     </c:if>
   </div>
   </td>
-  <c:if test="${ssDefinitionEntry.top}">
+  <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewEntryHistory${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -159,7 +164,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </td>
   </c:if>
   <td valign="middle" align="right" width="97%" nowrap>&nbsp;
-    <c:if test="${ssDefinitionEntry.top}">
+    <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
     <div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
     <a href="javascript: ;" 
       onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion', 'wg-tab-content', 300);return false;" 
@@ -171,7 +176,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
   </tr>
   </table>
 </div>
-<c:if test="${ssDefinitionEntry.top}">
+<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 <script type="text/javascript">
 ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
 	ss_toggleRegionInit('commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegionImg${ss_divCounter}', 300, '${regionClass}');
@@ -188,7 +193,7 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
 
-<c:if test="${ssDefinitionEntry.top}">
+<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
   <div id="viewEntryHistory${ss_tabDivCount}loading" 
     style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
@@ -203,10 +208,12 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 </script>
 </c:if>
 
+<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
 </div>
+</c:if>
 
 <c:if test="${empty ss_pseudoEntity}">
 <div id="viewComments${ss_tabDivCount}Div" style="display:block;">
@@ -217,3 +224,4 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 </div>
 
 </div>
+</c:if>

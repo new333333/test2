@@ -135,8 +135,8 @@ function ss_iframeOnloadSetHeight() {
 
 var ss_minViewableIframeDiv = 50;
 function ss_setIframeDivHeight() {
-	if (typeof ss_userDisplayStyle != "undefined" && ss_userDisplayStyle == "newpage") {
-		if (typeof self.parent.ss_setEntryPopupIframeSize != "undefined") {
+	if (ss_getUserDisplayStyle() == "newpage") {
+		if (self != self.parent && typeof self.parent.ss_setEntryPopupIframeSize != "undefined") {
 			self.parent.ss_setEntryPopupIframeSize();
 		}
 	} else {
@@ -205,7 +205,7 @@ function ss_positionEntryDiv(moveTop) {
     	ss_entryWindowTop = parseInt(ss_getDivTop('ss_showfolder') + ss_entryDivTopDelta);
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
     }
-	if (moveTop && ss_userDisplayStyle != "newpage") {
+	if (moveTop && ss_getUserDisplayStyle() != "newpage") {
 		if (ss_entryWindowTop < parseInt(ss_getScrollXY()[1])) {
 			ss_entryWindowTop = parseInt(ss_getScrollXY()[1] + ss_scrollTopOffset);
 		} else if (ss_entryWindowTop > parseInt(parseInt(ss_getScrollXY()[1]) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
@@ -220,7 +220,7 @@ function ss_positionEntryDiv(moveTop) {
 	}
     if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
 
-    if (ss_userDisplayStyle != "newpage") {
+    if (ss_getUserDisplayStyle() != "newpage") {
     	ss_setObjectLeft(wObj1, ss_entryWindowLeft);
 	    ss_setObjectWidth(wObj1, ss_entryWindowWidth);
 	    if (wObj2 != null) ss_setObjectWidth(wObj2, ss_entryWindowWidth);
@@ -233,7 +233,7 @@ function ss_positionEntryDiv(moveTop) {
     wObj1.style.background = "";
     
     //Allow the entry section to grow to as large as needed to show the entry
-	if (ss_userDisplayStyle != "newpage") {
+	if (ss_getUserDisplayStyle() != "newpage") {
 		try {
 			if (window.ss_showentryframe && window.ss_showentryframe.document && 
 					window.ss_showentryframe.document.body) {

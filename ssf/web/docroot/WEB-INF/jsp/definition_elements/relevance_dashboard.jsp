@@ -47,7 +47,7 @@
 var ss_relevanceAjaxUrl${renderResponse.namespace};
 var ss_relevanceOverviewUrl${renderResponse.namespace};
 var ss_relevanceTaskAndCalendarsUrl${renderResponse.namespace};
-if (ss_userDisplayStyle != "accessible") {
+if (ss_getUserDisplayStyle() != "accessible") {
    ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
   		adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 

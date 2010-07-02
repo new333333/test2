@@ -45,7 +45,7 @@ function ssAccessControl(namespace, workAreaId, workAreaType) {
 			formObj.appendChild(inputObj);
 		}
 		formObj.btnClicked.value = "addPrincipal";
-		if (ss_userDisplayStyle == 'accessible') {
+		if (ss_getUserDisplayStyle() == 'accessible') {
 			selectPrincipalAccessible();
 		} else {
 			if (ss_isIE) {
@@ -77,7 +77,7 @@ function ssAccessControl(namespace, workAreaId, workAreaType) {
 		var formObj = document.getElementById(rolesFormName);
 		formObj.btnClicked.value = "addRole";
 		formObj.roleIdToAdd.value = id;
-		if (ss_userDisplayStyle == 'accessible') {
+		if (ss_getUserDisplayStyle() == 'accessible') {
 			selectPrincipalAccessible();
 		} else {
 			if (ss_isIE) {
