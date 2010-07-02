@@ -80,7 +80,9 @@
 </ssf:ifnotaccessible>
 
 <% // Navigation links %>
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+<% } %>
 
 <% // Toolbar %>
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
