@@ -69,19 +69,20 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 	<table border="0" cellspacing="0" cellpadding="0" valign="top" height="100%" width="100%">
 		<tr><td align="center">
 			<div id="ss_divDropTargetLoading${ssEntryId}${ss_namespace}">
+				
 				<ssf:nlt tag="Loading"/>
 			</div>
 			<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 			<c:if test="<%= isIE %>">
 			<object id="dropboxobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
-			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
+			  WIDTH = "96" HEIGHT = "80" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
 			  codebase="https://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIE %>">
 			<applet CODE = "org.kablink.teaming.applets.droptarget.TopFrame" name="dropboxobj${ssEntryId}${ss_namespace}"
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "droptarget/kablink-teaming-droptarget-applet.jar" 
-			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
+			  WIDTH = "96" HEIGHT = "80" MAYSCRIPT>
 			</c:if>
 			    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
@@ -117,7 +118,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 		</td></tr>
 		<tr>
-			<td class="ss_entrySignature">
+			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
 				<ssf:nlt tag="entry.dropboxAddAttachmentHelpText"/>
 			</td>
 		</tr>

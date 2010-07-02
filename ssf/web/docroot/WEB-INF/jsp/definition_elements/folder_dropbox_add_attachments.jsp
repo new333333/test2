@@ -147,14 +147,14 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 			<c:if test="<%= isIE %>">
 			<object id="folderdropboxobj${ssBinderId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
-			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
+			  WIDTH = "96" HEIGHT = "80" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
 			  codebase="https://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIE %>">
 			<applet CODE = "org.kablink.teaming.applets.droptarget.TopFrame" 
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "droptarget/kablink-teaming-droptarget-applet.jar" 
-			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
+			  WIDTH = "96" HEIGHT = "80" MAYSCRIPT>
 			</c:if>
 			    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
@@ -198,7 +198,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			
 		</td></tr>
 		<tr>
-			<td class="ss_entrySignature">
+			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
 				<div id="ss_divFolderFilesLoading${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
 					<ssf:nlt tag="loading.files"/>
 				</div>
@@ -211,7 +211,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
-			<td class="ss_entrySignature">
+			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
 				<div id="ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
 				<c:if test="${ssBinderIsLibrary == 'false'}">
 					<b><ssf:nlt tag="note"/>:</b> <ssf:nlt tag="folder.dropboxAddNonLibraryFolderHelpText"/>
