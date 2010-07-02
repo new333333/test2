@@ -45,7 +45,7 @@ public class LinkToFolderPaletteItem extends PaletteItem
 	 */
 	public LinkToFolderPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkFolder(), GwtTeaming.getMessages().lpeLinkFolderWS() );
+		super( GwtTeaming.getImageBundle().landingPageEditorLinkFolder(), GwtTeaming.getMessages().lpeLinkFolderWS(), GwtTeaming.getMessages().lpeAltLinkFolderWorkspace() );
 	}// end LinkToFolderPaletteItem()
 
 

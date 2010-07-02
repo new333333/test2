@@ -45,7 +45,7 @@ public class CustomJspPaletteItem extends PaletteItem
 	 */
 	public CustomJspPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorCustomJsp(), GwtTeaming.getMessages().lpeCustomJSP() );
+		super( GwtTeaming.getImageBundle().landingPageEditorCustomJsp(), GwtTeaming.getMessages().lpeCustomJSP(), GwtTeaming.getMessages().lpeAltCustomJsp() );
 	}// end CustomJspPaletteItem()
 	
 	

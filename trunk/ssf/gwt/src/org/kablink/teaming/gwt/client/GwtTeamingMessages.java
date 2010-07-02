@@ -82,6 +82,16 @@ public interface GwtTeamingMessages extends Messages
 	String selectGraphicLabel();
 	
 	// lpe stands for Landing Page Editor
+	String lpeAltCustomJsp();
+	String lpeAltEntry();
+	String lpeAltFolder();
+	String lpeAltGraphic();
+	String lpeAltLinkEntry();
+	String lpeAltLinkFolderWorkspace();
+	String lpeAltLinkURL();
+	String lpeAltList();
+	String lpeAltTable();
+	String lpeAltUtilityElement();
 	String lpeCustomJSP();
 	String lpeDeleteWidget();
 	String lpeEntry();

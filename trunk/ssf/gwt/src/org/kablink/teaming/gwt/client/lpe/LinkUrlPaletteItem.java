@@ -45,7 +45,7 @@ public class LinkUrlPaletteItem extends PaletteItem
 	 */
 	public LinkUrlPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
+		super( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL(), GwtTeaming.getMessages().lpeAltLinkURL() );
 	}// end LinkUrlPaletteItem()
 
 

@@ -100,7 +100,7 @@ public abstract class PaletteItem extends Composite
 	/**
 	 * 
 	 */
-	public PaletteItem( ImageResource imageResource, String text )
+	public PaletteItem( ImageResource imageResource, String text, String altText )
 	{
 		FlowPanel	panel;
 		InlineLabel	label;
@@ -108,6 +108,7 @@ public abstract class PaletteItem extends Composite
 		
 		// Create a FlowPanel for the palette items to live in.
 		panel = new FlowPanel();
+		panel.setTitle( altText );
 
 		// Associate the panel with its stylesheet.
 		panel.addStyleName( "lpePaletteItem" );

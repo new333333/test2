@@ -45,7 +45,7 @@ public class GraphicPaletteItem extends PaletteItem
 	 */
 	public GraphicPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorGraphic(), GwtTeaming.getMessages().lpeGraphic() );
+		super( GwtTeaming.getImageBundle().landingPageEditorGraphic(), GwtTeaming.getMessages().lpeGraphic(), GwtTeaming.getMessages().lpeAltGraphic() );
 	}// end GraphicPaletteItem()
 
 

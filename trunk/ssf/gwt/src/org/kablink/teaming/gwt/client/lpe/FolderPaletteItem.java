@@ -45,7 +45,7 @@ public class FolderPaletteItem extends PaletteItem
 	 */
 	public FolderPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorFolder(), GwtTeaming.getMessages().lpeFolder() );
+		super( GwtTeaming.getImageBundle().landingPageEditorFolder(), GwtTeaming.getMessages().lpeFolder(), GwtTeaming.getMessages().lpeAltFolder() );
 	}// end FolderPaletteItem()
 
 
