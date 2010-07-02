@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
+import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -124,6 +125,9 @@ public class GwtMainPage extends Composite
 		// Initialize ReguestActionHandler as native JavaScript to allow any content to register
 		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
 		initRequestActionHandler( this );
+		
+		// Initialize JavaScript to perform Popup for User Profile
+		initSimpleUserProfileJS( this );
 		
 		// Initialize JavaScript that handles the landing page options
 		initHandleLandingPageOptionsJS( this );
@@ -304,6 +308,16 @@ public class GwtMainPage extends Composite
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::registerActionHandler(Lorg/kablink/teaming/gwt/client/util/ActionRequestor;)( actionRequestor );
 		}//end ss_registerActionHanler
 	}-*/;
+
+	/*
+	 * Invoke the Simple User Profile or Quick View
+	 */
+	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
+		}//end ss_invokeSimpleProfile
+	}-*/;	
 
 	/*
 	 * Copies the <title> text from the GWT content IFRAME to the
@@ -1500,4 +1514,31 @@ public class GwtMainPage extends Composite
 		actionRequestor.addActionHandler( this );
 	}// end registerActionHandler()
 	
+	/*
+	 * Invoke the Simple Profile Dialog
+	 */
+	@SuppressWarnings("unused")
+	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
+
+		final GwtQuickViewDlg dlg;
+		PopupPanel.PositionCallback posCallback;
+		
+		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
+		this.registerActionHandler(dlg);
+		
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			public void setPosition(int offsetWidth, int offsetHeight)
+			{
+				int x;
+				int y;
+				
+				x = (Window.getClientWidth() - offsetWidth) / 2;
+				y = (Window.getClientHeight() - offsetHeight) / 3;
+				
+				dlg.setPopupPosition( x, y );
+			}// end setPosition()
+		};
+		dlg.setPopupPositionAndShow( posCallback );
+	}
 }// end GwtMainPage
