@@ -763,6 +763,7 @@ public class EditBrandingDlg extends DlgBox
 	{
 		GwtBrandingData brandingData;
 		String imgName;
+		String color;
 		int index;
 		
 		brandingData = new GwtBrandingData();
@@ -822,10 +823,32 @@ public class EditBrandingDlg extends DlgBox
 		brandingData.setBgImageStretchValue( m_stretchBgImgCb.getValue() );
 		
 		// Get the background color from the dia)log
-		brandingData.setBgColor( m_backgroundColorTextbox.getText() );
+		color = m_backgroundColorTextbox.getText();
+		if ( color != null && color.length() > 0 )
+		{
+			// Is this background color valid?
+			if ( isColorValid( color ) == false )
+			{
+				// No, tell the user about the problem.
+				Window.alert( GwtTeaming.getMessages().invalidBackgroundColor( color ) );
+				return null;
+			}
+		}
+		brandingData.setBgColor( color );
 		
 		// Get the font color from the dialog.
-		brandingData.setFontColor( m_textColorTextbox.getText() );
+		color = m_textColorTextbox.getText();
+		if ( color != null && color.length() > 0 )
+		{
+			// Is this font color valid?
+			if ( isColorValid( color ) == false )
+			{
+				// No, tell the user about the problem.
+				Window.alert( GwtTeaming.getMessages().invalidTextColor( color ) );
+				return null;
+			}
+		}
+		brandingData.setFontColor( color );
 		
 		// Are we dealing with site branding?
 		if ( m_origBrandingData.isSiteBranding() )
@@ -1168,6 +1191,49 @@ public class EditBrandingDlg extends DlgBox
 
 
 	/**
+	 * Validate that the given color is valid.
+	 */
+	private boolean isColorValid( String color )
+	{
+		Element element;
+		Style style;
+		String origColor;
+		boolean valid;
+		
+		if ( color == null )
+			return false;
+		
+		element = m_sampleText.getElement();
+		style = element.getStyle();
+		origColor = style.getBackgroundColor();
+		
+		try
+		{
+			String tmpColor;
+			
+			valid = true;
+			
+			// On IE, setBackgroundColor() will throw an exception if the color is not valid.
+			style.setBackgroundColor( color );
+			
+			// Get the background color.  If it is not the same as the color that was passed to
+			// us then the browser rejected the color as invalid.
+			tmpColor = style.getBackgroundColor();
+			if ( color.equalsIgnoreCase( tmpColor ) == false )
+				valid = false;
+			
+			style.setBackgroundColor( origColor );
+		}
+		catch( Exception ex )
+		{
+			valid = false;
+		}
+		
+		return valid;
+	}// end isColorValid()
+	
+	
+	/**
 	 * Remove the styles that were added to the given widget when the user moved the mouse over the widget.
 	 */
 	private void removeMouseOverStyles( Widget widget )
@@ -1304,7 +1370,16 @@ public class EditBrandingDlg extends DlgBox
 		color = m_backgroundColorTextbox.getText();
 		style.clearBackgroundColor();
 		if ( color != null && color.length() > 0 )
-			style.setBackgroundColor( color );
+		{
+			try
+			{
+				style.setBackgroundColor( color );
+			}
+			catch (Exception ex)
+			{
+				// Nothing to do
+			}
+		}
 	}// end updateSampleTextBgColor()
 	
 	
@@ -1324,6 +1399,15 @@ public class EditBrandingDlg extends DlgBox
 		color = m_textColorTextbox.getText();
 		style.clearColor();
 		if ( color != null && color.length() > 0 )
-			style.setColor( color );
+		{
+			try
+			{
+				style.setColor( color );
+			}
+			catch( Exception ex )
+			{
+				// Nothing to do.
+			}
+		}
 	}// end updateSampleTextColor()
 }// end EditBrandingDlg
