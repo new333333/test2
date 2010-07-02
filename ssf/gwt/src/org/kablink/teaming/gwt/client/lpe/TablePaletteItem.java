@@ -45,7 +45,7 @@ public class TablePaletteItem extends PaletteItem
 	 */
 	public TablePaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorTable(), GwtTeaming.getMessages().lpeTable() );
+		super( GwtTeaming.getImageBundle().landingPageEditorTable(), GwtTeaming.getMessages().lpeTable(), GwtTeaming.getMessages().lpeAltTable() );
 	}// end TablePaletteItem()
 
 

@@ -45,7 +45,7 @@ public class EntryPaletteItem extends PaletteItem
 	 */
 	public EntryPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorEntry(), GwtTeaming.getMessages().lpeEntry() );
+		super( GwtTeaming.getImageBundle().landingPageEditorEntry(), GwtTeaming.getMessages().lpeEntry(), GwtTeaming.getMessages().lpeAltEntry() );
 	}// end EntryPaletteItem()
 
 

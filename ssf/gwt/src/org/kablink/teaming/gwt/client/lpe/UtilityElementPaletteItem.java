@@ -45,7 +45,7 @@ public class UtilityElementPaletteItem extends PaletteItem
 	 */
 	public UtilityElementPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorUtilityElement(), GwtTeaming.getMessages().lpeUtilityElement() );
+		super( GwtTeaming.getImageBundle().landingPageEditorUtilityElement(), GwtTeaming.getMessages().lpeUtilityElement(), GwtTeaming.getMessages().lpeAltUtilityElement() );
 	}// end UtilityElementPaletteItem()
 
 

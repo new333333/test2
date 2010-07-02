@@ -45,7 +45,7 @@ public class LinkToEntryPaletteItem extends PaletteItem
 	 */
 	public LinkToEntryPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLinkEntry(), GwtTeaming.getMessages().lpeLinkEntry() );
+		super( GwtTeaming.getImageBundle().landingPageEditorLinkEntry(), GwtTeaming.getMessages().lpeLinkEntry(), GwtTeaming.getMessages().lpeAltLinkEntry() );
 	}// end LinkToEntryPaletteItem()
 
 
