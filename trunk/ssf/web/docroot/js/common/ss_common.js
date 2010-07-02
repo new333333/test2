@@ -194,10 +194,17 @@ function ss_isInteger(val) {
 	return true;
 }
 
+var ss_lastUserDisplayStyle = null;
 function ss_getUserDisplayStyle() {
 	if (self != self.parent && typeof self.parent.ss_getUserDisplayStyle != "undefined") {
 		return self.parent.ss_getUserDisplayStyle();
 	}
+	if (ss_lastUserDisplayStyle != null && ss_userDisplayStyle != ss_lastUserDisplayStyle) {
+		try {
+			self.location.reload();	  	
+		} catch (e) {alert(e);}
+	}
+	ss_lastUserDisplayStyle = ss_userDisplayStyle;
 	if (typeof ss_userDisplayStyle != "undefined") {
 		return ss_userDisplayStyle;
 	} else {
