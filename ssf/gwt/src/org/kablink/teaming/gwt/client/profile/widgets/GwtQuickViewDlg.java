@@ -111,13 +111,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		panel = new FlowPanel();
 		panel.addStyleName("qViewDlg");
 
-		Panel arrow = new FlowPanel();
-		arrow.addStyleName("qView-arrow");
-		panel.add(arrow);
-		
-		Image img = new Image(GwtTeaming.getImageBundle().arrowTrans50Left());
-		arrow.add(img);
-		
 		// Add the header.
 		header = createHeader(caption);
 		panel.add(header);
