@@ -4411,7 +4411,11 @@ function ss_showForumEntry(url, isDashboard) {
 	}
 	if (isDashboard == "yes") {
 		if (ss_getUserDisplayStyle() == 'newpage') {
-			return ss_showForumEntryInIframe_Overlay(url);	
+			if (ss_isGwtUIActive) {
+				return ss_showForumEntryInIframe_Overlay(url);	
+			} else {
+				return ss_showForumEntryInIframe_Newpage(url);	
+			}
 		} else {
 			return ss_showForumEntryInIframe_Overlay(url);
 		}
