@@ -28,7 +28,7 @@ public class ProfileAttributeWidget  {
 	
 	private void createWidget(ProfileAttribute attr){
 		
-		widget = new Label("");
+		widget = new Label("..");
 		
 		if(isEditMode){
 			if(attr.getValue() != null) {
@@ -76,7 +76,9 @@ public class ProfileAttributeWidget  {
 					case ProfileAttribute.DATE:
 						if(attr.getValue() != null) {
 							String s = attr.getValue().toString();
-							widget = new HTML(s);
+							if(GwtClientHelper.hasString(s)){
+								widget = new HTML(s);
+							}
 						}
 						break;
 					case ProfileAttribute.LIST:
@@ -101,7 +103,7 @@ public class ProfileAttributeWidget  {
 											anchor.getElement().appendChild(img.getElement());
 										}
 									} else {
-										String val = "";
+										String val = "..";
 										if(valItem.getValue() != null) {
 											val = valItem.getValue().toString();
 										}
@@ -113,7 +115,7 @@ public class ProfileAttributeWidget  {
 						} 
 						break;
 					default: 
-						widget = new Label("");
+						widget = new Label("..");
 						break;
 				}
 
