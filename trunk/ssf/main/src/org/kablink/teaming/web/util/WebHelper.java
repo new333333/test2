@@ -369,7 +369,7 @@ public class WebHelper {
 		MultipartFile file = (MultipartFile) fileMap.values().iterator().next();
 		String fileName = file.getOriginalFilename();
 		if(!validateFilenameForSafeLeaf(fileName))
-			throw new UncheckedIOException(new IOException("Illegal file name for this operation"));
+			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
 		// Encode the original file name into the prefix.
 		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
 		File destFile = TempFileUtil.createTempFile(prefix);
@@ -414,6 +414,8 @@ public class WebHelper {
 			return null;
 		MultipartFile mpfile = (MultipartFile) fileMap.values().iterator().next();
 		String fileName = mpfile.getOriginalFilename();
+		if(!validateFilenameForSafeLeaf(fileName))
+			throw new UncheckedIOException(new IOException("Illegal file name [" + fileName + "]"));
 		BufferedReader breader = new BufferedReader(new InputStreamReader (mpfile.getInputStream()));
 		
 		// Encode the original file name into the prefix.
