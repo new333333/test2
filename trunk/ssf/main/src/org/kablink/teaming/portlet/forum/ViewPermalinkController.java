@@ -43,16 +43,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
@@ -226,6 +230,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
+		Boolean loginUrl = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_LOGIN_URL, false);
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
 		DefinableEntity entity = null;
 		try {
@@ -233,6 +238,29 @@ public class ViewPermalinkController  extends SAbstractController {
 		} catch(Exception ignore) {
 			logger.debug("ViewPermalinkController.ProcessRequest(Exception:  '" + MiscUtil.exToString(ignore) + "'):  Ignored");
 		};
+		
+		//Is this a login url that needs to be processed?
+		if (loginUrl) {
+			Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+			HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
+			if (homePageConfig != null && homePageConfig.getDefaultHomePageId() != null) {
+				//The admin has defined a default home page. See if it is accessible
+				Long newBinderId = homePageConfig.getDefaultHomePageId();
+				try {
+					//See if this binder exists and is accessible. 
+					//  If not, go to the user workspace page instead
+					Binder binder = getBinderModule().getBinder(newBinderId);
+					binderId = binder.getId().toString();
+					entityType = binder.getEntityType();
+					entryId = "";
+					fileId = "";
+					fileName = "";
+					showTrash = "";
+					entryTitle = "";
+				} catch(Exception e) {}
+			}
+		}
+
 		
 		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
  		
@@ -526,6 +554,7 @@ public class ViewPermalinkController  extends SAbstractController {
 
 				// Add the binder id to the response.
 				model.put( WebKeys.URL_BINDER_ID, binderId );
+				model.put( WebKeys.URL_ENTITY_TYPE, entityType );
 
 				// Add the adapted portlet url to the reponse.
 				urlStr = PortletRequestUtils.getStringParameter( request, "adaptedUrl", "" );

@@ -66,7 +66,11 @@
 			errMsg : '${errMsg}',
 			isNovellTeaming : ${isNovellTeaming},
 			language : '${ssUser.locale.language}',
-			loginRefererUrl : '${ssUrl}',
+			loginRefererUrl : '<ssf:url action="view_permalink" 
+					  binderId="${binderId}">
+					  <ssf:param name="entityType" value="${entityType}"/>
+					  <ssf:param name="login" value="true"/>
+					  </ssf:url>',
 			loginPostUrl : '<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 			isUserLoggedIn : ${isUserLoggedIn},
 			promptForLogin : ${promptForLogin},

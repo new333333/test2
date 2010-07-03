@@ -135,6 +135,7 @@ public class WebKeys {
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DELETE_SOURCE="deleteSource";
 	public static final String URL_DESCRIPTION="description";
+	public static final String URL_LOGIN_URL="login";
 	public static final String URL_PURGE_IMMEDIATELY="purgeImmediately";
 	public static final String URL_DIRECTION="direction";
 	public static final String URL_DISPLAY_TYPE="displayType";
