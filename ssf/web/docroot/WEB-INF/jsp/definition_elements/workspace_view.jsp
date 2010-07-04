@@ -39,7 +39,8 @@
 
 <c:if test="${propertyValues_type[0] == 'team_root' && !empty ssAddTeamWorkspaceUrl}">
 <div>
-<a class="ss_linkButton" target="_blank" href="${ssAddTeamWorkspaceUrl}"><ssf:nlt tag="team.addTeam"/></a>
+<a class="ss_linkButton" href="${ssAddTeamWorkspaceUrl}"
+  onClick="ss_openUrlInPortlet(this.href, true, 800, 800);return false;"><ssf:nlt tag="team.addTeam"/></a>
 <br/>
 <br/>
 </div>
