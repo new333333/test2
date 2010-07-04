@@ -100,19 +100,22 @@ public class EntryVersionController extends  SAbstractController {
 					VersionAttachment fileVer = null;
 					if (key.startsWith("file_revert_")) {
 						String fileId = key.substring(12);
-						for (Attachment attachment : attachments) {
-							if (attachment instanceof FileAttachment) {
-								if (attachment.getId().equals(fileId)) {
-									fileAtt = (FileAttachment)attachment;
-									break;
+						String[] values = (String[]) formData.get(key);
+						if (values[0].equals(("true"))) {
+							for (Attachment attachment : attachments) {
+								if (attachment instanceof FileAttachment) {
+									if (attachment.getId().equals(fileId)) {
+										fileAtt = (FileAttachment)attachment;
+										break;
+									}
+									fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
+									fileAtt = fileVer;
+									if (fileAtt != null) break;
 								}
-								fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
-								fileAtt = fileVer;
-								if (fileAtt != null) break;
 							}
-						}
-						if (fileVer != null) {
-							getFileModule().revertFileVersion(entity, fileVer);
+							if (fileVer != null) {
+								getFileModule().revertFileVersion(entity, fileVer);
+							}
 						}
 					}
 				}
