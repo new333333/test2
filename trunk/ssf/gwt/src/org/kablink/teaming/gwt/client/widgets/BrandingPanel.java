@@ -328,7 +328,7 @@ public class BrandingPanel extends Composite
 		height = Math.max( wrapperPanelHeight, contentPanelHeight );
 		if ( height < 50 )
 			height = 50;
-		heightStr = Integer.toString( height );
+		heightStr = Integer.toString( height ) + "px";
 		
 		// Are we using a background image?
 		if ( m_bgImg != null )
@@ -355,7 +355,7 @@ public class BrandingPanel extends Composite
 					if ( bgImgHeight > height )
 					{
 						// Yes, use the height of the bg image for the height of the branding panel.
-						heightStr = Integer.toString( bgImgHeight );
+						heightStr = Integer.toString( bgImgHeight ) + "px";
 					}
 				}
 			}
