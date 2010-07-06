@@ -440,6 +440,8 @@ public class BrandingPanel extends Composite
 				bgPanelStyle = bgPanelElement.getStyle();
 				bgPanelStyle.clearBackgroundColor();
 
+				m_bgImg = null;
+				
 				// Is a background image specified in the branding data?
 				bgImgUrl = brandingData.getBgImageUrl();
 				if ( bgImgUrl != null && bgImgUrl.length() > 0 )
