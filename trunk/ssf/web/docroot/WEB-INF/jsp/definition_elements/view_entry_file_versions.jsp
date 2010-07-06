@@ -57,11 +57,35 @@ if (isIECheck) strBrowserType = "ie";
 boolean isAppletSupportedCheck = SsfsUtil.supportApplets(request);
 String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
+<script type="text/javascript">
+var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersions.confirm'/>\n<ssf:nlt tag='file.deleteConfirm2'/>";
+</script>
+<form method="post" name="ss_deleteFilesForm" id="ss_deleteFilesForm"
+	action="<ssf:url
+	    adapter="true" 
+	    portletName="ss_forum" 
+	    action="modify_file" 
+	    actionUrl="true" 
+	    ><ssf:param name="entityId" value="${ssDefinitionEntry.id}"/><ssf:param 
+	    name="entityType" value="${ssDefinitionEntry.entityType}"/><ssf:param 
+	    name="operation" value="deleteMultipleVersions"/></ssf:url>"
+>
+<div align="right">
+	<ul class="ss_nobullet">
+	  <li style="float:right; padding:1px 10px 4px 0px;">
+	    <a href="javascript: ;" onClick="return(ss_deleteMultipleFileVersions('ss_deleteFilesForm', ss_deleteFileVersionsConfirmText));">
+	      <span><ssf:nlt tag="file.command.deleteVersions"/></span>
+	    </a>
+	  </li>
+	</ul>
+	<div class="ss_clear"></div>
+</div>
 
 <table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-<tr>
+<tr class="ss_tab_table_columnhead">
+  <th></th>
   <th style="padding-right:4px;"><ssf:nlt tag="file.name"/></th>
   <th align="center" style="padding:0px 4px;"><ssf:nlt tag="entry.Version"/></th>
   <th style="padding:0px 4px;"><ssf:nlt tag="file.status"/></th>
@@ -105,3 +129,4 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 </c:if>
 </tbody>
 </table>
+</form>

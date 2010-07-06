@@ -390,6 +390,7 @@ public class WebKeys {
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
  	public static final String OPERATION_REVERT = "revert";
     public static final String OPERATION_DELETE="delete";
+    public static final String OPERATION_DELETE_MULTIPLE_VERSIONS="deleteMultipleVersions";
     public static final String OPERATION_DISABLE="disable";
     public static final String OPERATION_ENABLE="enable";
     public static final String OPERATION_MODIFY="modify";

@@ -1796,7 +1796,7 @@ function m_setLayoutRoutine(layoutRoutine) {
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
-        	ss_debug("ssf_onLayoutChange executing routine: " + ss_onLayoutChangeList[i].name)
+        	//alert("ssf_onLayoutChange executing routine: " + ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -2475,18 +2475,23 @@ function ss_hideDiv(divName) {
 	ss_hideDivObj(divObj);
 }
 function ss_hideDivObj(divObj) {
+	var doLayoutChange = false;
 	if (divObj != null) {
-		divObj.style.visibility = "hidden";
-		divObj.style.display = "none";
+		if (typeof divObj.style.display == "undefined" || divObj.style.display != "none") {
+			divObj.style.visibility = "hidden";
+			divObj.style.display = "none";
+			doLayoutChange = true;
+		}
     	ss_divToBeDelayHidden[divObj.id] = null;
     }
     ss_divBeingShown = null;
     ss_hideBackgroundIFrame("ss_background_iframe");
 	//Signal that the layout changed
-	if (divObj == null || 
-	    	divObj.style.position != "absolute") {
-		ssf_onLayoutChange();
-		//ss_debug("ss_hideDiv: " + divObj.id)
+	if (divObj != null && divObj.style.position != "absolute") {
+		if (doLayoutChange) {
+			ssf_onLayoutChange();
+			//alert("ss_hideDiv: " + divObj.id)
+		}
 	}
 }
 
@@ -4040,7 +4045,6 @@ function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
 function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
 	var divId = 'ss_div_attach_meeting_records' + entryId + namespace;
 	var divObj = document.getElementById(divId);
-	divObj.style.display = "none";
 	ss_hideDiv(divId);
 
 	try {
@@ -4396,7 +4400,9 @@ function ss_setCurrentIframeHeight() {
 	if (iframeHeight > 0) {
 		try {
 			var parentIframeObj = parent.document.getElementById(iframeId);
-			if (parentIframeObj != null) {
+			if (parentIframeObj != null && 
+					parseInt(parentIframeObj.style.height) != parseInt(iframeHeight + ss_entryInPlaceIframeOffset)) {
+				//alert(parseInt(parentIframeObj.style.height) +", "+ parseInt(iframeHeight + ss_entryInPlaceIframeOffset))
 				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
 				//Signal that the layout changed
 				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
@@ -8824,6 +8830,16 @@ function preContextSwitch() {
 	if (typeof window.top.ss_preContextSwitch != "undefined") {
 		// ...call it.
 		window.top.ss_preContextSwitch();
+	}
+}
+
+//Routine to confirm the deletion of multiple file versions
+function ss_deleteMultipleFileVersions(formId, confirmText) {
+	var formObj = self.document.getElementById(formId);
+	if (confirm(ss_deleteFileVersionsConfirmText)) {
+		formObj.submit();
+	} else {
+		return false;
 	}
 }
 

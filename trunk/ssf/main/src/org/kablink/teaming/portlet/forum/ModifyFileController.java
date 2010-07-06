@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.portlet.forum;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -148,6 +149,33 @@ public class ModifyFileController extends SAbstractController {
 					}
 				}
 			
+			} else if (op.equals(WebKeys.OPERATION_DELETE_MULTIPLE_VERSIONS) && WebHelper.isMethodPost(request)) {
+				//Get the file version
+				Set<Attachment> attachments2 = entity.getAttachments();
+				Set<String> formDataKeySet = formData.keySet();
+				for (String key : formDataKeySet) {
+					if (key.indexOf("delete_version_") == 0) {
+						String fileId2 = key.substring(15);
+						FileAttachment fileAtt2 = null;
+						VersionAttachment fileVer2 = null;
+						for (Attachment attachment : attachments2) {
+							if (attachment instanceof FileAttachment) {
+								if (attachment.getId().equals(fileId2)) {
+									fileAtt2 = (FileAttachment)attachment;
+									break;
+								}
+								fileVer2 = ((FileAttachment)attachment).findFileVersionById(fileId2);
+								fileAtt2 = fileVer2;
+								if (fileAtt2 != null) break;
+							}
+						}
+						//Delete multiple versions (but not the top version)
+						if (fileAtt2 != null && fileAtt2 instanceof VersionAttachment) {
+							getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt2);
+						}
+					}
+				}
+				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileAtt != null) {
