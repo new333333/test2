@@ -3794,9 +3794,10 @@ public class BinderHelper {
 	 * @return
 	 */
 	public static boolean isPersonTracked(AllModulesInjected bs, Long binderId) {
+
+		boolean reply = false;
 		// Is the binder a user workspace?
-		boolean reply = isBinderUserWorkspace(bs, binderId);
-		if (reply) {
+		if (isBinderUserWorkspace(bs, binderId)) {
 			// Yes!  Are we tracking it as a person?
 			User user = RequestContextHolder.getRequestContext().getUser();
 			Long userWorkspaceId = user.getWorkspaceId();
