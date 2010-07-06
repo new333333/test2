@@ -69,7 +69,7 @@
 
 --%><ssf:ifadapter><%--
 	--%><c:if test="${ssf_support_files_loaded_flag == '1'}"><%--
-		--%><c:if test="${empty ssf_snippet}"><%--
+		--%><c:if test="${empty ssf_snippet && empty ss_skip_head_close}"><%--
 			--%></head><%--
 		--%></c:if><%--
 	--%></c:if><%--

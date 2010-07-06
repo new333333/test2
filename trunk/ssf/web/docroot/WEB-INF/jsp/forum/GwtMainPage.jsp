@@ -32,26 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
-<!-- above set at the top of the file will set     -->
-<!-- the browser's rendering engine into           -->
-<!-- "Quirks Mode". Replacing this declaration     -->
-<!-- with a "Standards Mode" doctype is supported, -->
-<!-- but may lead to some differences in layout.   -->
-
-<!-- Modified December 31, 2009 9:42 (GWT) -->
-
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value="${ssProductName}" scope="request"/>
+<c:set var="ss_skip_head_close" value="true" scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
-<html>
-  <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
-    <title>${ssProductName}</title>
-    
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 	
 	<script type="text/javascript" language="javascript">
