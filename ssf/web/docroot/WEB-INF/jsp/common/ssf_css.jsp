@@ -3546,7 +3546,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 	background-color:${ss_diff_color_same};
 }
 
-tr.ss_tab_table_columnhead td {
+tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
 	color: #333; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;

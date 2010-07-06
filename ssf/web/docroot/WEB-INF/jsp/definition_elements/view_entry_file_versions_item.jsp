@@ -87,9 +87,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
-     <tr class="${ss_attachedFileRowClass}"><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+     <tr class="${ss_attachedFileRowClass}">
+       <td valign="top" colspan="8">
+         <hr class="ss_att_divider" noshade="noshade" />
+       </td>
+     </tr>
 	  <tr class="${ss_attachedFileRowClass}">		
-		<td valign="top" style="height:20px;" class="ss_att_title" width="27%">
+		<td valign="top" colspan="2" style="height:20px;" class="ss_att_title" width="27%">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		%>
@@ -190,13 +194,17 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
+	  <td></td>
 	  <td valign="top" colspan="7" class="ss_att_description" style="padding-left:50px;">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
 	</tr>	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr class="${ss_attachedFileRowClass}"><td valign="top" style="height:10px;" class="ss_att_title" colspan="7">
-          <hr class="ss_att_divider" noshade="noshade" style="margin:0px 0px 0px 10px;"/></td></tr>
+        <tr class="${ss_attachedFileRowClass}">
+          <td valign="top" style="height:10px;" class="ss_att_title" colspan="8">
+            <hr class="ss_att_divider" noshade="noshade" style="margin:0px 0px 0px 10px;"/>
+          </td>
+        </tr>
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
 	String vfn = selection.getFileItem().getName();
@@ -216,6 +224,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	}
 %>
 			<tr class="${ss_attachedFileRowClass}">
+			    <td valign="top">
+			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
+			    </td>
 				<td valign="top" class="ss_att_title" width="27%" style="padding-left:10px; font-weight: normal;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
@@ -262,7 +273,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<c:otherwise>						
 					<tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_desc_row${status.count}" style="display: none; visibility: hidden; ">
 				</c:otherwise>
-			  </c:choose>						
+			  </c:choose>
+			    <td></td>
 			    <td valign="top" colspan="7" class="ss_att_description" style="padding-left:50px;">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
