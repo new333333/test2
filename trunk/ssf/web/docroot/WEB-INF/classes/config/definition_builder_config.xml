@@ -1118,10 +1118,22 @@
 				<option name="form" caption="__profile_form_simple" />
 			</property>
 		</properties>
-		<options optionCaption="__standard_entry_options">
+		<options optionCaption="__profile_options">
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
-			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="description"/>
+				<exclude name="selectbox"/>
+				<exclude name="checkbox"/>
+				<exclude name="hidden"/>
+				<exclude name="graphic"/>
+				<exclude name="file"/>
+				<exclude name="radio"/>
+				<exclude name="user_list"/>
+				<exclude name="group_list"/>
+				<exclude name="team_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
 			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
@@ -2024,8 +2036,8 @@
 		</jsps>
 	</item>
 	
-	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
-		    category="profileEntryViewData" display="view">
+	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item"
+	category="profileEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
