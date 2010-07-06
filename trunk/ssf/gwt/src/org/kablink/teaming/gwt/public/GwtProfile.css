@@ -330,6 +330,9 @@ padding: 3px;
 color:#1C5894 !important;
 }
 .profile-value {}
+.profile-value p{
+margin: 0;
+}
 .profile-anchor:hover {
 color: #5691a6;
 background: #cce9ee;
