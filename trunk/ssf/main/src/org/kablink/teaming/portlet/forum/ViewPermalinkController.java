@@ -409,7 +409,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_USER_ID_PLACE_HOLDER);
 				}
 	 		} else {
-	 			Long workspaceId  = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
+	 			Long workspaceId = getProfileModule().getEntryWorkspaceId(Long.valueOf(entryId));
 	 			if (workspaceId == null) {
 					if (isMobile) {
 						url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
@@ -524,10 +524,14 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (Validator.isNotNull(entityType)) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 		if (Validator.isNotNull(fileId)) url.setParameter(WebKeys.URL_FILE_ID, fileId);
 		if (Validator.isNotNull(fileName)) url.setParameter(WebKeys.URL_FILE_NAME, fileName);
-		if("true".equals(captive))
+		if("true".equals(captive)) {
 			url.setParameter(WebKeys.URL_CAPTIVE, "true");
-		else if("false".equals(captive))
+		} else if("false".equals(captive)) {
 			url.setParameter(WebKeys.URL_CAPTIVE, "false");
+		}
+		if (!WebHelper.isUserLoggedIn(request) || WebHelper.isGuestLoggedIn(request)) {
+			url.setParameter(WebKeys.URL_LOGIN_URL, "true");
+		}
 		model.put(WebKeys.URL, url.toString());
 
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
