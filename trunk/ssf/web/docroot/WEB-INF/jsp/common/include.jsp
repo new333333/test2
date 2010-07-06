@@ -55,6 +55,7 @@
 --%><c:set var="ss_watermark" value="" scope="request"/><%--
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
 <!-- Mimic Internet Explorer 7 (Needed to make dojo work in IE8) -->
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
