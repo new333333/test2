@@ -76,6 +76,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 
 /**
@@ -127,7 +128,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_soButton = new MenuBarButton(m_images.searchOptions(), m_messages.mainMenuAltSearchOptions(), new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				m_soButton.removeStyleName("subhead-control-bg2");
-				final PopupPanel soPopup = new PopupPanel(true, false);
+				final TeamingPopupPanel soPopup = new TeamingPopupPanel(true, false);
 				GwtClientHelper.rollDownPopup(soPopup);
 				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
 				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);

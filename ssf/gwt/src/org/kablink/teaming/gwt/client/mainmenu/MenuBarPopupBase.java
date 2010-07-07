@@ -49,6 +49,7 @@ import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -58,7 +59,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public abstract class MenuBarPopupBase extends PopupPanel {
+public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	protected ActionTrigger					m_actionTrigger;	// Used to trigger actions from the popup.
 	private   boolean						m_spacerNeeded;		// false -> The last widget added was a spacer.  true -> It was something else.
 	protected GwtTeamingMainMenuImageBundle	m_images;			// The menu's images.

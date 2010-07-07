@@ -42,6 +42,7 @@ import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 
 /**
@@ -293,20 +294,21 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Sets a PopupPanel to use roll-down animation to open.  Currently
-	 * the GWT API for this is inaccessible.  Once it becomes
-	 * available, this method needs to be changed to enable animations
-	 * and set their type to ROLL_DOWN.
+	 * Sets a TeamingPopupPanel to use roll-down animation to open.
 	 * 
 	 * @param popup
 	 */
-	public static void rollDownPopup(PopupPanel popup) {
-		popup.setAnimationEnabled(false);
-//!		popup.setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+	public static void rollDownPopup(TeamingPopupPanel popup) {
+		popup.setAnimationEnabled(true);
+		popup.setAnimationTypeToRollDown();
 	}
 	
 	/**
-	 * For the given listbox, select the item in the listbox that has the given value.
+	 * For the given list box, select the item in the list box that has
+	 * the given value.
+	 * 
+	 * @param listbox
+	 * @param value
 	 */
 	public static int selectListboxItemByValue( ListBox listbox, String value )
 	{

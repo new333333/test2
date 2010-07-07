@@ -65,6 +65,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 
 /**
@@ -90,7 +91,7 @@ public class GwtMainPage extends Composite
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
-	private PopupPanel m_breadCrumbBrowser;
+	private TeamingPopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 
@@ -1158,7 +1159,7 @@ public class GwtMainPage extends Composite
 			breadCrumbTree = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.HORIZONTAL );
 			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
 			registerActionHandler( breadCrumbTree );
-			m_breadCrumbBrowser = new PopupPanel(true);
+			m_breadCrumbBrowser = new TeamingPopupPanel(true);
 			GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
 			GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
 			m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
