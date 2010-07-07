@@ -421,11 +421,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	 * object. 
 	 */
 	private void init(Object props) {
-
-		getUserStatus();
 		createProfileInfoSections();
-		
-		updateFollowingStatus();
 	}// end init()
 
 	
@@ -443,8 +439,32 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		// the state:
 		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>() {
 			public void onFailure(Throwable t) {
-				// display error
-				Window.alert("Error: " + t.getMessage());
+				String errMsg;
+				String cause = "";
+				GwtTeamingMessages	messages = GwtTeaming.getMessages();
+				
+				if ( t instanceof GwtTeamingException )	{
+					ExceptionType type;
+				
+					// Determine what kind of exception happened.
+					type = ((GwtTeamingException)t).getExceptionType();
+					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
+						cause = messages.errorAccessToEntryDenied( binderId );
+					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
+						cause = messages.errorFolderDoesNotExist( binderId );
+					else
+						cause = messages.errorUnknownException();
+				}
+				else {
+					cause = t.getLocalizedMessage();
+					if ( cause == null )
+						cause = t.toString();
+				}
+				
+				hide();
+				
+				errMsg = messages.getStatusRPCFailed( cause );
+				Window.alert( errMsg );
 			}
 
 			public void onSuccess(ProfileInfo profile) {
@@ -475,6 +495,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					row = ProfileClientUtil.createProfileInfoSection(cat, grid,	row, false, false);
 				}
 
+				
+				getUserStatus();
+				updateFollowingStatus();
 			}
 		};
 
@@ -578,7 +601,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					// Determine what kind of exception happened.
 					type = ((GwtTeamingException)t).getExceptionType();
 					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( binderId );
+						cause = messages.errorAccessToEntryDenied( binderId );
 					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
 						cause = messages.errorFolderDoesNotExist( binderId );
 					else
@@ -641,7 +664,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 						// Determine what kind of exception happened.
 						type = ((GwtTeamingException)t).getExceptionType();
 						if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-							cause = messages.errorAccessToFolderDenied( binderId );
+							cause = messages.errorAccessToEntryDenied( binderId );
 						else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
 							cause = messages.errorFolderDoesNotExist( binderId );
 						else

@@ -113,6 +113,7 @@ import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -1836,31 +1837,42 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
  	 */
 	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
-		Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-		
-		// Does the user have rights to run the "site administration" page?
-		if ( p != null )
-		{
-			AdaptedPortletURL adapterUrl;
+		try {
 			
-			Long random = System.currentTimeMillis();
+			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
 			
-			// Yes
-			adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
-			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST );
-			adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_MINIBLOG );
-			adapterUrl.setParameter( WebKeys.URL_USER_ID, p.getId().toString() );
-			adapterUrl.setParameter( WebKeys.URL_PAGE, "0" );
-			adapterUrl.setParameter( "randomNumber", Long.toString(random) );
+			// Does the user have rights to run the "site administration" page?
+			if ( p != null )
+			{
+				AdaptedPortletURL adapterUrl;
+				
+				Long random = System.currentTimeMillis();
+				
+				// Yes
+				adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
+				adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST );
+				adapterUrl.setParameter( WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_MINIBLOG );
+				adapterUrl.setParameter( WebKeys.URL_USER_ID, p.getId().toString() );
+				adapterUrl.setParameter( WebKeys.URL_PAGE, "0" );
+				adapterUrl.setParameter( "randomNumber", Long.toString(random) );
+				
+				return adapterUrl.toString();
+			}
+		
+			GwtTeamingException ex;
 			
-			return adapterUrl.toString();
-		}
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+			
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} 
 		
-		GwtTeamingException ex;
-		
-		ex = new GwtTeamingException();
-		ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-		throw ex;
 	}// end getSiteAdministrationUrl()
 	
 	/**
@@ -1886,63 +1898,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
  	 */
 	public String getImUrl( String binderId ) throws GwtTeamingException
 	{
-		Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-
-		if ( p != null )
-		{
-			//Get a user object from the principal
-			User user = null;
-			if (p != null) {
-				if (user instanceof User) {
-					user = (User) p;
-				} else {
-					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-					try {
-						user = profileDao.loadUser(p.getId(), p.getZoneId());
-					}
-					catch(Exception e) {}
-				}
-			}
-
-			if (user != null) {
-				PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
-				if (presenceService != null)
-				{
-					String userID = "";
-					CustomAttribute attr = user.getCustomAttribute("presenceID");
-					if (attr != null)
-					{
-						userID = (String)attr.getValue();
-					}
-					if (userID != null && userID.length() > 0)
-					{
-						return presenceService.getIMProtocolString(userID);
-					}
-				}
-			}
-			return "";
-		}
- 
-		GwtTeamingException ex;
-
-		ex = new GwtTeamingException();
-		ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-		throw ex;
-	}// end getImUrl
-
-	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException
-	{
-		User userAsking = GwtServerHelper.getCurrentUser();
-		GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
-
-		// Can't get presence if we are a guest
-		if ( userAsking != null && !(ObjectKeys.GUEST_USER_INTERNALID.equals( userAsking.getInternalId() ) ) )
-		{
+		try {
 			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-
 			if ( p != null )
 			{
-				// Get a user object from the principal
+				//Get a user object from the principal
 				User user = null;
 				if (p != null) {
 					if (user instanceof User) {
@@ -1960,56 +1920,131 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
 					if (presenceService != null)
 					{
-						PresenceInfo pi = null;
-						int userStatus =  PresenceInfo.STATUS_UNKNOWN;
-
 						String userID = "";
 						CustomAttribute attr = user.getCustomAttribute("presenceID");
 						if (attr != null)
 						{
 							userID = (String)attr.getValue();
 						}
-						  
-						String userIDAsking = "";
-						attr = userAsking.getCustomAttribute("presenceID");
-						if (attr != null)
+						if (userID != null && userID.length() > 0)
 						{
-							userIDAsking = (String)attr.getValue();
+							return presenceService.getIMProtocolString(userID);
 						}
+					}
+				}
+				
+				return "";
+			}
+			
+			GwtTeamingException ex;
 
-						if (userID != null && userID.length() > 0 && userIDAsking != null && userIDAsking.length() > 0)
-						{
-							pi = presenceService.getPresenceInfo(userIDAsking, userID);
-							if (pi != null) {
-								gwtPresence.setStatusText(pi.getStatusText());
-								userStatus = pi.getStatus();
-							}	
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+			
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} 
+	}// end getImUrl
+
+	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException
+	{
+		try {
+			User userAsking = GwtServerHelper.getCurrentUser();
+			GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
+
+			// Can't get presence if we are a guest
+			if ( userAsking != null && !(ObjectKeys.GUEST_USER_INTERNALID.equals( userAsking.getInternalId() ) ) )
+			{
+				Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+
+				if ( p != null )
+				{
+					// Get a user object from the principal
+					User user = null;
+					if (p != null) {
+						if (user instanceof User) {
+							user = (User) p;
+						} else {
+							ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+							try {
+								user = profileDao.loadUser(p.getId(), p.getZoneId());
+							}
+							catch(Exception e) {}
 						}
-						switch (userStatus) {
-							case PresenceInfo.STATUS_AVAILABLE:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE);
-								break;
-							case PresenceInfo.STATUS_AWAY:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);
-								break;
-							case PresenceInfo.STATUS_IDLE:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);
-								break;
-							case PresenceInfo.STATUS_BUSY:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);
-								break;
-							case PresenceInfo.STATUS_OFFLINE:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);
-								break;
-							default:
-								gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);
+					}
+
+					if (user != null) {
+						PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+						if (presenceService != null)
+						{
+							PresenceInfo pi = null;
+							int userStatus =  PresenceInfo.STATUS_UNKNOWN;
+
+							String userID = "";
+							CustomAttribute attr = user.getCustomAttribute("presenceID");
+							if (attr != null)
+							{
+								userID = (String)attr.getValue();
+							}
+							  
+							String userIDAsking = "";
+							attr = userAsking.getCustomAttribute("presenceID");
+							if (attr != null)
+							{
+								userIDAsking = (String)attr.getValue();
+							}
+
+							if (userID != null && userID.length() > 0 && userIDAsking != null && userIDAsking.length() > 0)
+							{
+								pi = presenceService.getPresenceInfo(userIDAsking, userID);
+								if (pi != null) {
+									gwtPresence.setStatusText(pi.getStatusText());
+									userStatus = pi.getStatus();
+								}	
+							}
+							switch (userStatus) {
+								case PresenceInfo.STATUS_AVAILABLE:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE);
+									break;
+								case PresenceInfo.STATUS_AWAY:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);
+									break;
+								case PresenceInfo.STATUS_IDLE:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);
+									break;
+								case PresenceInfo.STATUS_BUSY:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);
+									break;
+								case PresenceInfo.STATUS_OFFLINE:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);
+									break;
+								default:
+									gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);
+							}
 						}
 					}
 				}
 			}
-		}
 
-		return gwtPresence;
+			return gwtPresence;
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+	
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} catch (Exception e) {
+			GwtTeamingException ex;
+	
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
 	}// end getPresenceInfo
 
 	/**
@@ -2514,14 +2549,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Get the profile information for the Quick View based on the binder Id passed in.
 	 */
-	public ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) {
+	public ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		
-		Long binderIdL = Long.valueOf(binderId);
-		
-		//get the binder
-		ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(getRequest( ri ), this, binderIdL);
-		
-		return profile;
+		try {
+			Long binderIdL = Long.valueOf(binderId);
+			
+			//get the binder
+			ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(getRequest( ri ), this, binderIdL);
+			
+			return profile;
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} catch (Exception e) {
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+
+			m_logger.warn( "GwtRpcServiceImpl.getQuickViewInfo() unknown exception" );
+			throw ex;
+		}
 	}
 	
 	/**
@@ -2530,21 +2581,31 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param binderId  The binderId of the workspace being viewed
 	 * 
 	 * @return
+	 * @throws GwtTeamingException 
 	 */
-	public List<TeamInfo> getTeams( HttpRequestInfo ri, String binderId )
+	public List<TeamInfo> getTeams( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
-		Long userId = null;
-		Principal p = null;
+		try {
+			Long userId = null;
+			Principal p = null;
 
-		if (binderId != null) {
-			p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
-		}
+			if (binderId != null) {
+				p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+			}
+			
+			if (p != null){
+				userId = p.getId();
+			}
+			
+			return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} 
 		
-		if (p != null){
-			userId = p.getId();
-		}
-		
-		return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
 	}// end getMyTeams()
 
 	/**
