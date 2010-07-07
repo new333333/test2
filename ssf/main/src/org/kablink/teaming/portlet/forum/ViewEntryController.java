@@ -838,6 +838,9 @@ public class ViewEntryController extends  SAbstractController {
 				WebKeys.URL_REPORT_TYPE + "=entry&forumOkBtn=OK"; 
 				toolbar.addToolbarMenuItem("6_reports", "", NLT.get("toolbar.reports.activity"), servletUrl, qualifiers);
 				
+				qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("popup", Boolean.TRUE);
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WORKFLOW_HISTORY);
 				adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entryId);
