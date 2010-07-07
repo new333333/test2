@@ -2851,7 +2851,9 @@ function ss_showNotLoggedInMsg() {
 
 function ss_showLightbox(id, zIndex, opacity, className) {
 	ss_hideSpannedAreas();
-	if (ss_isGwtUIActive) ss_hideEntryDiv();
+	if (ss_isGwtUIActive && window.name != "ss_showentryframe") {
+		ss_hideEntryDiv();
+	}
 	if (id == null) id = "ss_light_box";
 	if (zIndex == null) zIndex = ssLightboxZ;
 	if (opacity == null) opacity = .5;
@@ -5065,7 +5067,9 @@ function ss_showPopupDivCentered(divId, focusId, cancelable) {
     ss_moveObjectToBody(divObj); 
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	ss_setupPopupDiv(divObj);
-	if (ss_isGwtUIActive) ss_hideEntryDiv();
+	if (ss_isGwtUIActive && window.name != "ss_showentryframe") {
+		ss_hideEntryDiv();
+	}
 	if (focusId && (focusId != '')) {
 		try {document.getElementById(focusId).focus();} catch(e){}
 	}
