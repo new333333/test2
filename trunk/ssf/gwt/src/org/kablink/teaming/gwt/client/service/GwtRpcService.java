@@ -171,11 +171,11 @@ public interface GwtRpcService extends RemoteService
 	public ProfileInfo 		getProfileInfo(HttpRequestInfo ri, String binderId);
 	public ProfileStats     getProfileStats(HttpRequestInfo ri, String binderId);
 	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId);
-	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId);
-	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId);
-	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	public Boolean isPresenceEnabled();
-	public String getImUrl( String binderId ) throws GwtTeamingException;
+	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
+	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
+	public String 			getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
+	public Boolean 			isPresenceEnabled();
+	public String 			getImUrl( String binderId ) throws GwtTeamingException;
 	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException;
 
 	// The following are used in the implementation of the

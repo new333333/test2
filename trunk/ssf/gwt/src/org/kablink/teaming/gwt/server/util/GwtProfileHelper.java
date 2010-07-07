@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -215,7 +216,7 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return ProfileInfo  The main class that contains other helper classes
 	 */
-	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
+	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) throws OperationAccessControlExceptionNoName {
 		ProfileInfo profile = new ProfileInfo();
 
 		//get the binder
@@ -472,7 +473,7 @@ public class GwtProfileHelper {
 	 * @param sbinderId
 	 * @return
 	 */
-	public static Principal getPrincipalByBinderId(AllModulesInjected bs, String sbinderId){
+	public static Principal getPrincipalByBinderId(AllModulesInjected bs, String sbinderId) throws OperationAccessControlExceptionNoName {
 		//Convert binderID to Long
 		Long binderId = Long.valueOf(sbinderId);
 		Binder binder = bs.getBinderModule().getBinder(binderId);
@@ -510,7 +511,7 @@ public class GwtProfileHelper {
 	 * @param sbinderId
 	 * @return Long - The microBlogId
 	 */
-	public static Long getMicroBlogId(AllModulesInjected bs, String sbinderId) {
+	public static Long getMicroBlogId(AllModulesInjected bs, String sbinderId) throws OperationAccessControlExceptionNoName {
 		
 		Long microBlogId = null;
 		
@@ -546,7 +547,7 @@ public class GwtProfileHelper {
 	 * @param sbinderId
 	 * @return
 	 */
-	public static UserStatus getUserStatus(AllModulesInjected bs, String sbinderId) {
+	public static UserStatus getUserStatus(AllModulesInjected bs, String sbinderId) throws OperationAccessControlExceptionNoName {
 		//This is the object that is streamed back to the client
 		UserStatus userStatus = new UserStatus();
 		
