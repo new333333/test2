@@ -35,31 +35,30 @@
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
-<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
- <tr>
-  <td style="padding-left:10px;">
-    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
-  </td>
-  <td style="padding-left:15px;">
-  <c:set var="property_caption" value=""/>
-    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
-  </td>
- </tr>
-</table>
+	<table cellspacing="0" cellpadding="0" class="margintop1">
+		<tr>
+			<td>
+				<span class="ss_entryContent ss_entrySignature"><ssf:nlt tag="entry.createdBy"/></span>
+	  		</td>
+			<td>
+				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+			</td>
+			<td>
+			  <c:set var="property_caption" value=""/>
+				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
+			</td>
+		</tr>
 
   <c:if test="${!empty ssDefinitionEntry.modification.principal && 
     ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
-	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
 	 <tr>
-	  <td style="padding-left:30px;">
-		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
-	
-		  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
-	
-		</div>
+	  <td>
+		<div class="ss_entryContent ss_entrySignature" style="padding-right:5px;"><ssf:nlt tag="entry.modifiedBy"/></div>
 	  </td>
-	  <td style="padding-left:15px;">
+	  <td>
+		<div class="ss_entryContent ss_entrySignature"><ssf:showUser user="${ssDefinitionEntry.modification.principal}"/></div>
+	  </td>
+	  <td>
 		<div class="ss_entryContent ss_entrySignature">
 		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
@@ -67,20 +66,19 @@
 		</div>
 	  </td>
 	 </tr>
-	</table>
   </c:if>
 
   <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
+	<table cellspacing="0" cellpadding="0">
 	 <tr>
-	  <td style="padding-left:30px;">
-		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;">
-		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
-		    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+	  <td>
+		<div class="ss_entryContent ss_entrySignature margintop1">
+		  <span style="padding-right:5px;">
+		  <img <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		  <b><ssf:nlt tag="entry.reservedBy"/></b>
 		  </span>
 		  
-		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/></b>
 		</div>
 	  </td>
 	 </tr>
@@ -93,9 +91,9 @@
   </c:if>
 </c:if>
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
-<table>
+<table cellspacing="0" cellpadding="0">
 <tr>
-<td>
+<td valign="top">
   <c:if test="${property_showPicture && !empty ssDefinitionEntry.top}">
     <div 
       <c:if test="${!ssDefinitionEntry.top}">class="ss_replies_indent_picture" </c:if>
@@ -113,51 +111,51 @@
 			user="${ssDefinitionEntry.creation.principal}" 
 			folderId="${ssDefinitionEntry.creation.principal.parentBinder.id}" 
 			entryId="${ssDefinitionEntry.creation.principal.id}" />
-	</a><br/>
+	</a>
   </c:if>
-<table cellspacing="0" cellpadding="0">
- <tr>
-  <td>
-    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
-  </td>
- </tr>
- <tr>
-  <td>
-  <c:set var="property_caption" value=""/>
-    <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
-  </td>
- </tr>
-  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
-    ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
-   <tr>
-    <td>
-		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span><br/>
-		  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
-		</div>
-		<div class="ss_entryContent ss_entrySignature">
-		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-		     value="${ssDefinitionEntry.modification.date}" type="both" 
-			 timeStyle="short" dateStyle="medium" />
-		</div>
-	</td>
-   </tr>
-  </c:if>
-
-  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-   <tr>
-    <td>
-		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;">
-		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
-		    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
-		  </span><br/>
-		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
-		</div>
-	</td>
-   </tr>
-  </c:if>
-</table>
+		<table cellspacing="0" cellpadding="0" class="margintop1">
+		 <tr>
+		  <td>
+			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+		  </td>
+		 </tr>
+		 <tr>
+		  <td style="padding-left: 20px;">
+		  <c:set var="property_caption" value=""/>
+			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
+		  </td>
+		 </tr>
+		  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
+			ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+		   <tr>
+			<td>
+				<div class="ss_entryContent ss_entrySignature margintop2">
+				  <div style="padding-right:8px; font-weight: bold;"><ssf:nlt tag="entry.modifiedBy"/></div>
+				  <div><ssf:showUser user="${ssDefinitionEntry.modification.principal}"/></div>
+				</div>
+				<div class="ss_entryContent ss_entrySignature" style="padding-left: 20px;">
+				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+					 value="${ssDefinitionEntry.modification.date}" type="both" 
+					 timeStyle="short" dateStyle="medium" />
+				</div>
+			</td>
+		   </tr>
+		  </c:if>
+		
+		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+		   <tr>
+			<td>
+				<div class="ss_entryContent ss_entrySignature">
+				  <span style="padding-right:8px;">
+				  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
+					src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+				  </span><br/>
+				  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+				</div>
+			</td>
+		   </tr>
+		  </c:if>
+		</table>
 
   <c:if test="${property_showPicture}">
     </div>
@@ -225,7 +223,7 @@
 	<td>
 	  <div class="ss_entrySignature">
 	    <img <ssf:alt tag="alt.locked"/> 
-	      src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+	      align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 	    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 	  </div>
 	</td>
@@ -237,7 +235,7 @@
 </table>
 </td>
 <td align="right">
-  <div style="padding-top:8px;">
+  <div style="padding-top:5px;">
     <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
   </div>
 </td>

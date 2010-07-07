@@ -109,71 +109,71 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 </script>
 
 <div class="ss_entryContent">
-<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
-  <table cellspacing="0" cellpadding="0" width="100%">
-  <tr>
-  <c:if test="${empty ss_pseudoEntity}">
-  <td valign="middle" width="1%" nowrap>
-  <div id="viewComments${ss_tabDivCount}Tab" class="wg-tab roundcornerSM on" 
-    onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
-    <ssf:nlt tag="__entry_comments"/>
-    <c:if test="${ssDefinitionEntry.top}">
-      <span class="ss_smallprint">(${fn:length(ssFolderEntryDescendants)})</span>
-    </c:if>
-  </div>
-  </td>
-  </c:if>
-  <td valign="middle" width="1%" nowrap>
-  <div id="viewAttachments${ss_tabDivCount}Tab" 
-    class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
-    onMouseOver="ss_hoverOverTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
-    <ssf:nlt tag="__entry_attachments"/>
-    <c:if test="${empty ssPrimaryFileAttribute}">
-      <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
-    </c:if>
-    <c:if test="${!empty ssPrimaryFileAttribute && !empty ssDefinitionEntry.fileAttachments}">
-      <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments) - 1})</span>
-    </c:if>
-  </div>
-  </td>
-  <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
-  <td valign="middle" width="1%" nowrap>
-  <div id="viewEntryHistory${ss_tabDivCount}Tab" 
-    class="wg-tab roundcornerSM" 
-    onMouseOver="ss_hoverOverTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onMouseOut="ss_hoverOverTabStopped('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');ss_showHideEntryHistoryDiv${ss_divCounter}('viewEntryHistory${ss_tabDivCount}Iframe');return false;">
-    <ssf:nlt tag="entry.versionHistory"/>
-  </div>
-  </td>
-  </c:if>
-  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
-  <td valign="middle" width="1%" nowrap>
-  <div id="viewFileVersions${ss_tabDivCount}Tab" 
-    class="wg-tab roundcornerSM" 
-    onMouseOver="ss_hoverOverTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onMouseOut="ss_hoverOverTabStopped('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
-    <ssf:nlt tag="__entry_file_versions"/>
-  </div>
-  </td>
-  </c:if>
-  <td valign="middle" align="right" width="97%" nowrap>&nbsp;
-    <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
-    <div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
-    <a href="javascript: ;" 
-      onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion', 'wg-tab-content', 300);return false;" 
-      alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
-    ><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
-    </div>
-    </c:if>
-  </td>
-  </tr>
-  </table>
+	<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
+	  <table cellspacing="0" cellpadding="0" width="100%">
+	  <tr>
+	  <c:if test="${empty ss_pseudoEntity}">
+	  <td valign="middle" width="1%" nowrap>
+	  <div id="viewComments${ss_tabDivCount}Tab" class="wg-tab roundcornerSM on" 
+		onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
+		<ssf:nlt tag="__entry_comments"/>
+		<c:if test="${ssDefinitionEntry.top}">
+		  <span class="ss_smallprint">(${fn:length(ssFolderEntryDescendants)})</span>
+		</c:if>
+	  </div>
+	  </td>
+	  </c:if>
+	  <td valign="middle" width="1%" nowrap>
+	  <div id="viewAttachments${ss_tabDivCount}Tab" 
+		class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
+		onMouseOver="ss_hoverOverTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
+		<ssf:nlt tag="__entry_attachments"/>
+		<c:if test="${empty ssPrimaryFileAttribute}">
+		  <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments)})</span>
+		</c:if>
+		<c:if test="${!empty ssPrimaryFileAttribute && !empty ssDefinitionEntry.fileAttachments}">
+		  <span class="ss_smallprint">(${fn:length(ssDefinitionEntry.fileAttachments) - 1})</span>
+		</c:if>
+	  </div>
+	  </td>
+	  <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
+	  <td valign="middle" width="1%" nowrap>
+	  <div id="viewEntryHistory${ss_tabDivCount}Tab" 
+		class="wg-tab roundcornerSM" 
+		onMouseOver="ss_hoverOverTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onMouseOut="ss_hoverOverTabStopped('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onClick="ss_showTab('viewEntryHistory${ss_tabDivCount}', '${ss_tabDivCount}');ss_showHideEntryHistoryDiv${ss_divCounter}('viewEntryHistory${ss_tabDivCount}Iframe');return false;">
+		<ssf:nlt tag="entry.versionHistory"/>
+	  </div>
+	  </td>
+	  </c:if>
+	  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
+	  <td valign="middle" width="1%" nowrap>
+	  <div id="viewFileVersions${ss_tabDivCount}Tab" 
+		class="wg-tab roundcornerSM" 
+		onMouseOver="ss_hoverOverTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onMouseOut="ss_hoverOverTabStopped('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onClick="ss_showTab('viewFileVersions${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
+		<ssf:nlt tag="__entry_file_versions"/>
+	  </div>
+	  </td>
+	  </c:if>
+	  <td valign="middle" align="right" width="97%" nowrap>&nbsp;
+		<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
+		<div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
+		<a href="javascript: ;" 
+		  onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion', 'wg-tab-content', 300);return false;" 
+		  alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
+		><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
+		</div>
+		</c:if>
+	  </td>
+	  </tr>
+	</table>
 </div>
 <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 <script type="text/javascript">

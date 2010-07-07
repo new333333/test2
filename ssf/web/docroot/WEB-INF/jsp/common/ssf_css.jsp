@@ -454,8 +454,9 @@ div.ss_entryContent a:hover {
   	}
 .ss_entrySignature {
   	font-size: 11px;
-  	padding-left: 5px;
+  	padding-right: 5px;
   	color: ${ss_style_metadata_color};
+	white-space: nowrap;
   	}
 .ss_entryDescription {
   	color: #333;
@@ -1354,10 +1355,27 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-weight: normal;
 	white-space: nowrap;
 	padding-right: 5px;
+	}	
+tr.ss_attachments_list_primary_file td {
+    background-color: #fff;
+	padding: 4px 10px 4px 3px;
+	white-space: nowrap;
+	font-size: ${ss_style_largest_print};
 	}
-tr.ss_attachments_list_primary_file, tr.ss_attachments_list_primary_file td {
-    background-color: #cccccc;
-}
+tr.ss_attachments_list_primary_file td.ss_att_description {
+	background-color: #fff;
+	border-bottom: 1px solid #bbbbb9;
+	}
+tr.ss_attachments_list_file td {
+    background-color: #f6f6f6;
+	padding: 4px 10px 4px 3px;
+	white-space: nowrap;
+	font-size: ${ss_style_largest_print};
+	}
+tr.ss_attachments_list_file td.ss_att_description {
+	background-color: #f6f6f6;
+	border-bottom: 1px solid #d2d5d1;
+	}
 .ss_att_meta_wrap {
 	font-size: 11px !important;
 	padding-left: 5px;
@@ -1369,7 +1387,6 @@ table.ss_attachments_list td.ss_att_space {
 table.ss_attachments_list td.ss_att_description {
 	font-size: 11px;
     padding: 0px 0px;
-	background-color: #fff;
 	}
 table.ss_attachments_list td.ss_att_description p{
 	margin: 4px 10px 4px 0px;

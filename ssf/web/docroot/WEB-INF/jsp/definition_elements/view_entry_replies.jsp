@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <% // Process the replies only if this is the top level entry being displayed %>
-<c:if test="${ssEntry == ssDefinitionEntry}" >
+<c:if test="${ssEntry == ssDefinitionEntry}">
   <c:if test="${!empty ssFolderEntryDescendants}">
 
 <div class="ss_entryContent">

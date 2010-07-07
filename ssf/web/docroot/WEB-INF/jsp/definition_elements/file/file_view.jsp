@@ -47,12 +47,12 @@
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
 <table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
-<tr><td valign="top" width="95%">
+<tr><td width="95%">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
 <ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
 </td>
-<td valign="top" align="right" width="5%" nowrap style="padding-top:5px">
+<td align="right" width="5%" style="padding-top:5px; white-space: nowrap">
   <ssf:ifadapter>
   	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
@@ -66,7 +66,7 @@
 </tr>
 </table>
 
-<div style="padding: 0px 0.4em;">
+<div>
 <c:if test="${!empty ssPrimaryFileAttribute}">
   <c:set var="selections" value="${ssDefinitionEntry.customAttributes[ssPrimaryFileAttribute].valueSet}" />
   <c:forEach var="selection" items="${selections}" varStatus="status">
@@ -74,31 +74,31 @@
 <%
 	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
 %>
-      <table cellspacing="0" cellpadding="0">
+      <table cellspacing="0" cellpadding="0" style="margin-left: 5px;">
       <tr>
-        <td valign="bottom">
+        <td>
           <div class="ss_thumbnail_tiny ss_thumbnail_standalone">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
           </div>
         </td>
-        <td valign="bottom">
+        <td >
 	      <div class="ss_entryTitleFile">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </div>
         </td>
-	    <td valign="bottom" nowrap>
+	    <td  style="white-space: nowrap">
 		  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
 		</td>
-		<td valign="bottom" nowrap>
+		<td style="white-space: nowrap">
           <div class="ss_entryTitleFileVersion">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
           </div>
 		</td>
-		<td valign="bottom" nowrap>
+		<td style="white-space: nowrap">
           <div class="ss_entryTitleFileVersion">
             <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
@@ -119,13 +119,13 @@
 %>
       <table cellspacing="0" cellpadding="0">
       <tr>
-      <td valign="bottom">
+      <td>
       <div class="ss_thumbnail_tiny">
         <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
       </div>
       </td>
-      <td valign="bottom">
+      <td>
 	  <div class="ss_entryTitleFile">
       <a target="_blank" 
       href="<ssf:fileUrl file="${selection}"/>" 
