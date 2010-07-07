@@ -893,17 +893,33 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				if ( 1 <= users.length )
 				{
 					Long wsId;
-					
+
+					// Does this user have a workspace ID?
 					user = users[0];
 					wsId = user.getWorkspaceId();
 					if ( null != wsId )
 					{
-						binder = bm.getBinder( user.getWorkspaceId() );
+						try
+						{
+							// Yes!  Can we access it?
+							binder = bm.getBinder( user.getWorkspaceId() );
+						}
+						catch ( Exception ex )
+						{
+							// No!  Simply ignore it as this is a
+							// permissible condition if the user
+							// performing the search does NOT have
+							// access to the workspace in question.
+							binder = null;
+						}
 					}
 					
 					// Note:  Cases where a user won't have a workspace
 					//    ID include special user IDs such as the email
-					//    posting agent and others.
+					//    posting agent and others as well as users
+					//    that have never logged in.  At some point,
+					//    we'll need to fix bug 612167 and show users
+					//    that don't have a workspace.
 				}
 			}
 			if (( null != binder ) && ( null != user ))
@@ -934,7 +950,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ex.setExceptionType( ExceptionType.UNKNOWN );
 			throw ex;
 		}
-		
+	
 		return reply;
 	}// end getGwtUser()
 	
