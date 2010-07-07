@@ -161,8 +161,8 @@ public class UtilityElementWidgetDlgBox extends DlgBox
 			}
 		}
 		
-		// We should never get here but if we do, return "video tutorial" as the selected utility element.
-		return UtilityElement.VIDEO_TUTORIAL; 
+		// We should never get here but if we do, return "link to my workspace" as the selected utility element.
+		return UtilityElement.LINK_TO_MYWORKSPACE; 
 	}// end getSelectedUtilityElement()
 	
 	
