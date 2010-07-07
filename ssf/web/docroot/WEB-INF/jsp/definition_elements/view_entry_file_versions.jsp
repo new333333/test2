@@ -120,7 +120,7 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
   <c:if test="${selection.id != primaryFileId}">
     <c:set var="ss_attachedFileSelection" value="${selection}" scope="request"/>
-    <c:set var="ss_attachedFileRowClass" value="" scope="request"/>
+    <c:set var="ss_attachedFileRowClass" value="ss_attachments_list_regular_file" scope="request"/>
     <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions_item.jsp" />
   </c:if>
 </c:forEach>
