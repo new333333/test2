@@ -47,8 +47,7 @@ public enum UtilityElement
 	LINK_TO_MYWORKSPACE( GwtTeaming.getMessages().utilityElementLinkToMyWorkspace(), "myWorkspace" ),
 	LINK_TO_SHARE_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToShareFolderOrWorkspace(), "shareThis" ),
 	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace(), "trackThis" ),
-	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm(), "signInForm" ),
-	VIDEO_TUTORIAL( GwtTeaming.getMessages().utilityElementVideoTutorials(), "gettingStarted" );
+	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm(), "signInForm" );
 
 	private final String m_localizedText;
 	private final String m_identifier;

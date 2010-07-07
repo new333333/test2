@@ -79,8 +79,8 @@ public class UtilityElementConfig extends ConfigItem
 								m_properties.setType( UtilityElement.LINK_TO_TRACK_FOLDER_OR_WORKSPACE );
 							else if ( type.equalsIgnoreCase( "shareThis" ) )
 								m_properties.setType( UtilityElement.LINK_TO_SHARE_FOLDER_OR_WORKSPACE );
-							else if ( type.equalsIgnoreCase( "gettingStarted" ) )
-								m_properties.setType( UtilityElement.VIDEO_TUTORIAL );
+//							else if ( type.equalsIgnoreCase( "gettingStarted" ) )
+//								m_properties.setType( UtilityElement.VIDEO_TUTORIAL );
 							else if ( type.equalsIgnoreCase( "signInForm" ) )
 								m_properties.setType( UtilityElement.SIGNIN_FORM );
 						}
