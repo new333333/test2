@@ -93,9 +93,10 @@
 	    <div id="ss_iframe_holder_div">
 	      <div class="ss_newpage_box_header" >
 	        <span class="ss_newpage_box_close">
-	          <a href="javascript: ;" onClick="ss_hideEntryDiv();return false;"><ssf:nlt tag="button.close"/></a>
+	          <a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
+					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a>
 	        </span>
-	        <span class="ss_newpage_box_title" id="ss_showEntryDivTitle" style="padding-left:20px;"></span>
+	        <span class="ss_newpage_box_title" id="ss_showEntryDivTitle""></span>
 	      </div>
 	      <iframe id="ss_showentryframe"
 	  	    title="<ssf:nlt tag = "iframe.entry"/>" 
