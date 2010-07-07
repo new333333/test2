@@ -1344,17 +1344,11 @@ table.ss_attachments_list {
 	}
 table.ss_attachments_list td.ss_att_title {
 	font-weight: bold;
-	padding-left: 0px;
-	}
-table.ss_attachments_list hr.ss_att_divider {
-	border-top: 1px solid ${ss_generic_border_color};
-	border-bottom: none;
-	height: 0px;
+	padding-left: 5px;
 	}
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-weight: normal;
 	white-space: nowrap;
-	padding-right: 5px;
 	}	
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;

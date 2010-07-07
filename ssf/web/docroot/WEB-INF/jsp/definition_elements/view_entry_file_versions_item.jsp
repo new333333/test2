@@ -87,13 +87,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
-     <tr class="${ss_attachedFileRowClass}">
-       <td valign="top" colspan="8">
-         <hr class="ss_att_divider" noshade="noshade" />
-       </td>
-     </tr>
 	  <tr class="${ss_attachedFileRowClass}">		
-		<td valign="top" colspan="2" style="height:20px;" class="ss_att_title" width="27%">
+		<td colspan="2" class="ss_att_title">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		%>
@@ -163,48 +158,44 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			</c:if>
 		</td>
 		
-		<td valign="top" class="ss_att_meta" nowrap width="3%">
+		<td class="ss_att_meta">
 		  <span style="padding:0px 4px;"><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></span>
 		</td>
 
-		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		<td class="ss_att_meta">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 		</td>
 		
-		<td valign="top" width="20%"><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<td><span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="time" 
 					 timeStyle="short"/></span></td>
-		<td valign="top" class="ss_att_meta" nowrap width="5%">
+		<td class="ss_att_meta">
 		  <fmt:setLocale value="${ssUser.locale}"/>
 		  <fmt:formatNumber value="${selection.fileItem.lengthKB}"/> 
 		  <ssf:nlt tag="file.sizeKB" text="KB"/>
 		</td>
 		
-		<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%"
-		><ssf:userTitle user="${selection.modification.principal}"/></td>
-		<td valign="top" class="ss_att_meta" width="20%">
+		<td class="ss_att_meta_wrap ss_att_space">
+			<ssf:userTitle user="${selection.modification.principal}"/>
+		</td>
+		<td class="ss_att_meta">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
-	  <td></td>
-	  <td valign="top" colspan="7" class="ss_att_description" style="padding-left:50px;">
+	  <td colspan="8" class="ss_att_description" style="padding-left: 25px;">
 	    <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup></div>
 	  </td>
-	</tr>	
+	</tr>
+	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr class="${ss_attachedFileRowClass}">
-          <td valign="top" style="height:10px;" class="ss_att_title" colspan="8">
-            <hr class="ss_att_divider" noshade="noshade" style="margin:0px 0px 0px 10px;"/>
-          </td>
-        </tr>
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 <%
 	String vfn = selection.getFileItem().getName();
@@ -224,10 +215,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	}
 %>
 			<tr class="${ss_attachedFileRowClass}">
-			    <td valign="top">
+			    <td>
 			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
 			    </td>
-				<td valign="top" class="ss_att_title" width="27%" style="padding-left:10px; font-weight: normal;">
+				<td class="ss_att_title" style="font-weight: normal;">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 
@@ -240,27 +231,27 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				</c:if>
 				</td>
 				
-				<td valign="top" class="ss_att_meta" nowrap width="3%">
+				<td class="ss_att_meta">
 				  <span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
 					name="value" value="${fileVersion.fileVersion}"/></ssf:nlt></span>
 				</td>
 
-				<td valign="top" class="ss_att_meta" nowrap width="5%">
+				<td class="ss_att_meta">
           		  <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
           		  <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
           		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
 				</td>
 		
-				<td valign="top" width="20%">
+				<td>
 				  <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="date" 
 					 dateStyle="medium" /></span> <span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${fileVersion.modification.date}" type="time" 
 					 timeStyle="short" /></span></td>
-				<td valign="top" class="ss_att_meta" nowrap width="5%"><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
-				<td valign="top" class="ss_att_meta_wrap ss_att_space" width="20%"
-				><ssf:userTitle user="${fileVersion.modification.principal}"/></td>
-				<td valign="top" class="ss_att_meta" width="20%">
+				<td class="ss_att_meta" ><fmt:setLocale value="${ssUser.locale}"/><fmt:formatNumber value="${fileVersion.fileItem.lengthKB}"/> <ssf:nlt tag="file.sizeKB" text="KB"/></td>
+				<td class="ss_att_meta_wrap ss_att_space">
+					<ssf:userTitle user="${fileVersion.modification.principal}"/></td>
+				<td class="ss_att_meta">
           		  <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
           		  <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
           		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
@@ -274,8 +265,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_desc_row${status.count}" style="display: none; visibility: hidden; ">
 				</c:otherwise>
 			  </c:choose>
-			    <td></td>
-			    <td valign="top" colspan="7" class="ss_att_description" style="padding-left:50px;">
+			    <td colspan="8" class="ss_att_description" style="padding-left: 25px;">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
