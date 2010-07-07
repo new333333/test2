@@ -124,9 +124,6 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
     <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions_item.jsp" />
   </c:if>
 </c:forEach>
-<c:if test="${selectionCount > 0}">
-     <tr><td valign="top" colspan="7"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
-</c:if>
 </tbody>
 </table>
 </form>
