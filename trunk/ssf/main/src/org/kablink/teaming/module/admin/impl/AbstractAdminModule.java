@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
@@ -96,6 +97,7 @@ import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
@@ -109,8 +111,10 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -930,8 +934,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			return result;			
 		}
     	Map message = new HashMap();
+   		String fromEMA = null;
        	try {
-       		InternetAddress ia = new InternetAddress(user.getEmailAddress());
+       		fromEMA = MiscUtil.getFromOverride();
+       		if (!(MiscUtil.hasString(fromEMA))) {
+       			fromEMA = user.getEmailAddress();
+       		}
+       		InternetAddress ia = new InternetAddress(fromEMA);
        		String userName = Utils.getUserTitle(user);
        		if ((null != userName) && (0 < userName.length())) {
        			ia.setPersonal(userName);
@@ -939,7 +948,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		message.put(MailModule.FROM, ia);
     	} catch (Exception ex) {
 			String errorMsg = ex.getLocalizedMessage();
-			String emailAddr = user.getEmailAddress();
+			String emailAddr = fromEMA;
 			if (emailAddr == null || emailAddr.equals("")) {
 				emailAddr = "";
 				errorMsg = NLT.get("sendMail.noEmailAddress");
@@ -1157,5 +1166,5 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		} finally {
 			luceneSession.close();
 		}
-	} 
+	}
 }
