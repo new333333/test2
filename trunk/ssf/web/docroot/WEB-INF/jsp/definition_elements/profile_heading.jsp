@@ -40,10 +40,8 @@
 		Element item = (Element) request.getAttribute("item");
 		String itemCaption = (String) item.attributeValue("caption", "");
 		
-		System.out.println(item.asXML());
-		System.out.println(itemCaption);
-		
-		
+		//System.out.println(item.asXML());
+		//System.out.println(itemCaption);
 %>
 
 <c:set var="ssItemCaption" value="<%= itemCaption %>" scope="request" />
