@@ -129,7 +129,7 @@ function ss_iframeOnloadSetHeight() {
 	if (self.ss_setEntryDivHeight && 
 			self.document.getElementById('ss_showentrydiv') && 
 			self.document.getElementById('ss_showentrydiv').style.display != 'none') {
-		ss_setEntryDivHeight();
+		setTimeout("ss_setEntryDivHeight();", 100);
 	}
 }
 
@@ -151,6 +151,7 @@ function ss_setIframeDivHeight() {
 		    	var entryDivTop = ss_getObjectTop(wObj3);
 		    	//Get maximum size
 		    	var entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
+		    	entryDivMaxSize += -10;   //Take a little off the size so it floats above the bottom of the screen a bit.
 		    	if (entryHeight > entryDivMaxSize) {
 		    		entryHeight = entryDivMaxSize;
 		    	}
