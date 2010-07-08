@@ -293,6 +293,14 @@ public class GwtClientHelper {
 		$wnd.top.ss_userDisplayStyle = style;
 	}-*/;
 
+
+	/**
+	 * Call ss_setEntryPopupIframeSize() to set the size and position of the view entry popup div.
+	 */
+	public static native void jsSetEntryPopupIframeSize() /*-{
+		$wnd.top.ss_setEntryPopupIframeSize();
+	}-*/;
+
 	/**
 	 * Sets a TeamingPopupPanel to use roll-down animation to open.
 	 * 

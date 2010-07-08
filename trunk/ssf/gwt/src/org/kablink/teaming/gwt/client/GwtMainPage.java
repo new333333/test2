@@ -1475,6 +1475,9 @@ public class GwtMainPage extends Composite
 				// Yes
 				m_wsTreeCtrl.relayoutPage();
 			}
+			
+			// Set the size and position of the entry popup div.
+			GwtClientHelper.jsSetEntryPopupIframeSize();
 		}
 		else
 		{
