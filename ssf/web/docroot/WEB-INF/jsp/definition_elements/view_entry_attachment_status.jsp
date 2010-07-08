@@ -45,35 +45,32 @@
       <c:if test="${ss_attachedFile.fileStatus == 0}"><ssf:nlt tag="file.statusNoStatus"/></c:if>
       </span><img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
-  <div id="ss_fileStatusMenu${ss_divCounter}_${ss_attachedFile.id}" 
-    style="position:absolute; display:none; background:#fff; border:1px #ccc solid;">
-    <div><span class="ss_bold"><ssf:nlt tag="file.setStatus"/></span></div>
-    <ul style="margin:0px;padding:0px 10px 0px 10px;">
-	  <li>
+  <div id="ss_fileStatusMenu${ss_divCounter}_${ss_attachedFile.id}" class="ss_actions_bar_submenu" style="position:absolute; display:none;">
+    <div><span class="ss_bold" style="padding: 5px; color: #999;"><ssf:nlt tag="file.setStatus"/></span></div>
+	  <div class="ss_inline_menu">
 	    <a href="javascript: ;" 
 	      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${ss_attachedFile.id}', '${ss_divCounter}', '0');return false;">
 	      <ssf:nlt tag="file.statusNone"/>
 	    </a>
-	  </li>
-	  <li>
+	  </div>
+	  <div class="ss_inline_menu">
 	    <a href="javascript: ;" 
 	      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${ss_attachedFile.id}', '${ss_divCounter}', '1');return false;">
 	      <ssf:nlt tag="file.status1"/>
 	    </a>
-	  </li>
-	  <li>
+	  </div>
+	  <div class="ss_inline_menu">
 	    <a href="javascript: ;" 
 	      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${ss_attachedFile.id}', '${ss_divCounter}', '2');return false;">
 	      <ssf:nlt tag="file.status2"/>
 	    </a>
-	  </li>
-	  <li>
+	  </div>
+	  <div class="ss_inline_menu">
 	    <a href="javascript: ;" 
 	      onClick="ss_setFileStatus('${ssDefinitionEntry.id}', '${ssDefinitionEntry.entityType}', '${ss_attachedFile.id}', '${ss_divCounter}', '3');return false;">
 	      <ssf:nlt tag="file.status3"/>
 	    </a>
-	  </li>
-	</ul>
+	  </div>
   </div>
  </c:if>
  <c:if test="${!ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
