@@ -540,8 +540,11 @@ div.ss_editableTab a, div.ss_editableTab a:hover {
 div.ss_replies .ss_editableTab {
 	}
 div.ss_workflow { 
-  	border: 1px #999 solid;
-  	padding: 2px;
+  	border: 1px solid #D2D5D1;
+  	padding: 4px;
+	margin: 4px 0 4px 0;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 .ss_replies .ss_entryDescription {
   	padding: 2px 10px;
@@ -1344,30 +1347,27 @@ table.ss_attachments_list {
 	}
 table.ss_attachments_list td.ss_att_title {
 	font-weight: bold;
-	padding-left: 5px;
+	padding-left: 8px;
 	}
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-weight: normal;
 	white-space: nowrap;
-	}	
+	}
+tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
+	padding: 5px 10px 5px 0px;
+	white-space: nowrap;
+	font-size: ${ss_style_largest_print};
+	}
 tr.ss_attachments_list_primary_file td {
     background-color: #fff;
-	padding: 4px 10px 4px 3px;
-	white-space: nowrap;
-	font-size: ${ss_style_largest_print};
+	}
+tr.ss_attachments_list_regular_file td {
+    background-color: #f6f6f6;
 	}
 tr.ss_attachments_list_primary_file td.ss_att_description {
-	background-color: #fff;
-	border-bottom: 1px solid #bbbbb9;
+	border-bottom: 1px solid #d2d5d1;
 	}
-tr.ss_attachments_list_file td {
-    background-color: #f6f6f6;
-	padding: 4px 10px 4px 3px;
-	white-space: nowrap;
-	font-size: ${ss_style_largest_print};
-	}
-tr.ss_attachments_list_file td.ss_att_description {
-	background-color: #f6f6f6;
+tr.ss_attachments_list_regular_file td.ss_att_description {
 	border-bottom: 1px solid #d2d5d1;
 	}
 .ss_att_meta_wrap {
@@ -1383,7 +1383,7 @@ table.ss_attachments_list td.ss_att_description {
     padding: 0px 0px;
 	}
 table.ss_attachments_list td.ss_att_description p{
-	margin: 4px 10px 4px 0px;
+	margin: 0px 10px 5px 0px;
 	}
 
 .ss_subhead2 {
@@ -3559,10 +3559,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
 	color: #333; 
-	padding-top: 0.2em; 
-	padding-bottom: 0.2em;
-	padding-left: 2px;
-	padding-right: .5em;
+	padding: 4px 5px 4px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
 	background:url(<html:imagesPath/>pics/gray_blend7_28.png) repeat-x;

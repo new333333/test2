@@ -118,7 +118,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 		</td></tr>
 		<tr>
-			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
+			<td align="center" style="padding-top: 15px;">
 				<ssf:nlt tag="entry.dropboxAddAttachmentHelpText"/>
 			</td>
 		</tr>

@@ -290,17 +290,19 @@ ul.ss_actions_bar4 li {
 	}
 div.ss_actions_bar_submenu {
 /* background-color: ${ss_style_background_color_side_panel}; */
-	margin:0px;
-	padding:0px;
+	margin: 0;
+	padding: 5px;
 	text-align:left;
 	position:absolute;
 	display:none;
 	z-index:500;
 	white-space: nowrap;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   /* background-color: ${ss_toolbar1_dropdown_menu_color}; */
-  	background-color: #CCFFFF;
+  	background-color: #414648;
   	background-image: none !important;
   	opacity: 0.95;
   	border:	1px dotted #333;
@@ -311,7 +313,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
  /* background-color: #E9F1F1; */
-  	background-color: #CCFFFF;
+  	background-color: #414648;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
   	filter: alpha(opacity=95);
@@ -344,7 +346,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
  </c:if>
 	margin-top:0px;
 	margin-left:0px;	
-	background-color: #CCFFFF;
+	background-color: #414648;
 	border:none;	
 	padding: 1px 1px;
 	}
@@ -387,12 +389,24 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 .ss_actions_bar3 li:hover, .ss_actions_bar1 a:hover {
 	background-image: url(<html:imagesPath/>pics/background_actionbar4.gif);
 	}
-.ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
-	color:${ss_style_text_color};
-	background-color: #cccccc;
+.ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover, .ss_inline_menu a:hover {
+	color: #81B2BD !important;
+	background-color: #505354;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	}
+.ss_inline_menu {
+	padding: 3px 5px;
+	}
+div.ss_inline_menu a {
+	color: #fff !important;
+	padding: 3px 5px;
+	}
+.ss_inline_menu a:hover {
+	background-image: none;
 	}
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
-	color:${ss_style_text_color};
+	color:${ss_box_title_color};
 	}
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {
@@ -774,12 +788,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	font-weight: bold;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
-	padding: 0px 2px;
+	padding: 0px 3px;
 	}
-.ss_actions_bar13 li{
-	border-right: 1px solid white;
-	}		
-
 
 /* Description region */
 .wg-description-content {
@@ -855,6 +865,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	display: block;
 	margin: 0px 0px 10px 0px;
 	padding: 10px;
+	-moz-border-radius-topleft: 5px;
+	-webkit-border-top-left-radius: 5px;
 	}	
 .wg-tab-iframe {
 	height: 290px;
