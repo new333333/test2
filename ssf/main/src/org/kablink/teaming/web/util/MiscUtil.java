@@ -45,15 +45,19 @@ import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -400,4 +404,42 @@ public final class MiscUtil
 				((null == s1) ? "" : s1),
 				((null == s2) ? "" : s2) );
    }
+	
+	/**
+	 * Called to determine if there is an override specified for the
+	 * from email address for eMails.  If there is, it is returned.
+	 * If there isn't, null is returned.
+	 * 
+	 * For implementation details an logic, see the comments describing
+	 * the 'ssf.outgoing.from.address' setting in the ssf.properties
+	 * file.
+	 * 
+	 * @return
+	 */
+	public static String getFromOverride() {
+		// Can we access the current zone name?
+		ZoneModule zoneModule = ((ZoneModule) SpringContextUtil.getBean("zoneModule"));
+		ZoneInfo zoneInfo = zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
+		String reply = zoneInfo.getZoneName();
+		if (MiscUtil.hasString(reply)) {
+			// Yes!  Check for a zone specific setting.
+			reply = SPropsUtil.getString((SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), ""); 
+		}
+
+		// Do we have a zone specific setting?
+		if (!(MiscUtil.hasString(reply))) {
+			// No!  Check for a global setting.
+			reply = SPropsUtil.getString(SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "");
+		}
+
+		// Do we have a global setting?
+		if (!(MiscUtil.hasString(reply))) {
+			// No!  Then ensure we return null.
+			reply = null;
+		}
+
+		// If we get here, reply refers to the from override or is
+		// null if there wasn't one.  Return it.
+		return reply;
+	}
 }// end MiscUtil
