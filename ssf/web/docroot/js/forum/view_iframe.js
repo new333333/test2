@@ -171,7 +171,7 @@ function ss_setIframeDivHeight() {
 		    	}
 			}
 		} catch(e) {
-			alert("iframe resize failure: "+e)
+			//alert("iframe resize failure: "+e)
 		}
 	}
 }
