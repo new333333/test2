@@ -77,7 +77,7 @@
 			try {
 				var iframeDiv = document.getElementById('contentControl')
 				var startOfContent = ss_getObjectTop(iframeDiv);
-				var windowHeight = window.innerHeight != null? window.innerHeight: document.body != null? document.body.clientHeight:null;
+				var windowHeight = ss_getWindowHeight();
 				var iframeMinimum = parseInt(windowHeight - startOfContent - ss_workareaIframeMinOffset);
 				if (iframeMinimum < 100) iframeMinimum = 100;
 				if (window.frames['gwtContentIframe'] != null) {
@@ -108,7 +108,7 @@
 					ss_setObjectTop(entryIframeDiv, top);
 					ss_setObjectLeft(entryIframeDiv, left);
 					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
-					var windowHeight = window.innerHeight != null? window.innerHeight: document.body != null? document.body.clientHeight:null;
+					var windowHeight = ss_getWindowHeight();
 					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
@@ -117,7 +117,7 @@
 						}
 					}
 				} catch(e) {
-					alert('Error during frame resizing: ' + e)
+					//alert('Error during frame resizing: ' + e)
 				}
 			}
 		}
