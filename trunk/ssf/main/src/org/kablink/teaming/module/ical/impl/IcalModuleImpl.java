@@ -2353,7 +2353,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 		}
 
-		setComponentDescription(vEvent, entry.getDescription().getText());
+		if (entry.getDescription() != null) {
+			setComponentDescription(vEvent, entry.getDescription().getText());
+		}
 		setComponentUID(vEvent, entry, event);
 		setComponentAttendee(vEvent, entry);
 		setComponentOrganizer(vEvent, entry);

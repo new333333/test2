@@ -75,6 +75,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	Locale locale;
 	TimeZone timezone;
 	boolean sendAttachments=false;
+	boolean redacted=false;
 	boolean sendVTODO;
 	IcalModule icalModule;
 	Notify notify;
@@ -103,6 +104,9 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	}
 	public void setSendAttachments(boolean sendAttachments) {
 		this.sendAttachments = sendAttachments;
+	}
+	public void setRedacted(boolean redacted) {
+		this.redacted = redacted;
 	}
 	public void setEntries(Collection entries) {
 		this.entries = entries;
@@ -148,6 +152,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		//make sure nothing saved yet
 		notify = new Notify(messageType, locale, timezone, startDate);
 		notify.setAttachmentsIncluded(sendAttachments);
+		notify.setRedacted(redacted);
 				
 		message = null;
 		Map result=null;

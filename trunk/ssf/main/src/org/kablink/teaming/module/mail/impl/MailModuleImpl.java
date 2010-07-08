@@ -537,28 +537,53 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 							}
 							//still have to add in notifications, so continue event if subscriptions is empty
 							// Users wanting individual, message style email with attachments
-							Map<Locale, Collection> messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+							Map<Locale, Collection> messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, false);
+							Map<Locale, Collection> messageResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, true);
 							// Users wanting individual, message style email without attachments
-							Map<Locale, Collection> messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+							Map<Locale, Collection> messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, false);
+							Map<Locale, Collection> messageNoAttsResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, true);
 							// Users wanting individual, text message email
-							Map<Locale, Collection> messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+							Map<Locale, Collection> messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, false);
+							Map<Locale, Collection> messageTxtResultsRedacted = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, true);
 							mHelper.setEntry(entry);
 							mHelper.setStartDate(eStatus.getLastFullSent());
 							if (!messageTxtResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.text);
+								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(false);
 								doSubscription (transport, currentFolder, mailSender, mHelper, messageTxtResults);
 							}	
 							if (!messageNoAttsResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
+								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(false);
 								doSubscription (transport, currentFolder, mailSender, mHelper, messageNoAttsResults);
 							}
 				   		   					
 							if (!messageResults.isEmpty()) {
 								mHelper.setType(Notify.NotifyType.full);
+								mHelper.setRedacted(false);
 								mHelper.setSendAttachments(true);
 								doSubscription (transport, currentFolder, mailSender, mHelper, messageResults);
+							}
+							if (!messageTxtResultsRedacted.isEmpty()) {
+								mHelper.setType(Notify.NotifyType.text);
+								mHelper.setRedacted(true);
+								mHelper.setSendAttachments(false);
+								doSubscription (transport, currentFolder, mailSender, mHelper, messageTxtResultsRedacted);
+							}	
+							if (!messageNoAttsResultsRedacted.isEmpty()) {
+								mHelper.setType(Notify.NotifyType.full);
+								mHelper.setRedacted(true);
+								mHelper.setSendAttachments(false);
+								doSubscription (transport, currentFolder, mailSender, mHelper, messageNoAttsResultsRedacted);
+							}
+				   		   					
+							if (!messageResultsRedacted.isEmpty()) {
+								mHelper.setType(Notify.NotifyType.full);
+								mHelper.setRedacted(true);
+								mHelper.setSendAttachments(true);
+								doSubscription (transport, currentFolder, mailSender, mHelper, messageResultsRedacted);
 							}
 						}
 						values.put("p2", ids);
@@ -590,7 +615,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return last;
 	}
 	
-	private void doSubscription (Transport transport, Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, Map<Locale, Collection> results) {
+	private void doSubscription (Transport transport, Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, 
+			Map<Locale, Collection> results) {
 		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
 			Map.Entry<Locale, Collection> e = (Map.Entry)iter.next();
@@ -681,7 +707,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						//get folder specific helper to build message
 						processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
 						folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());
-						List<Object[]> digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
+						List<Object[]> digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, false);		
+						List<Object[]> digestResultsRedacted = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, true);		
 						mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
 						mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 						mHelper.setTimeZone(timeZone);
@@ -691,6 +718,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 							if (msgs.isEmpty()) continue; //didn't have access
 							mHelper.setEntries(msgs);
 							mHelper.setType(Notify.NotifyType.summary);
+							mHelper.setRedacted(false);
+							mHelper.setSendAttachments(false);
+							doSubscription(transport, currentFolder, mailSender, mHelper, (Map)row[1]);
+						}
+						for (int i=0; i<digestResultsRedacted.size(); ++i) {
+							Object row[] = (Object [])digestResultsRedacted.get(i);
+							Collection msgs = (Collection)row[0];
+							if (msgs.isEmpty()) continue; //didn't have access
+							mHelper.setEntries(msgs);
+							mHelper.setType(Notify.NotifyType.summary);
+							mHelper.setRedacted(true);
 							mHelper.setSendAttachments(false);
 							doSubscription(transport, currentFolder, mailSender, mHelper, (Map)row[1]);
 						}

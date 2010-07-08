@@ -145,10 +145,18 @@ public class NotifyVisitor {
 		return PermaLinkUtil.getFilePermalink(attachment);
 	}
 	public String getUserTitle(Principal p) {
-		return Utils.getUserTitle(p);
+		if (this.notifyDef.isRedacted()) {
+			return NLT.get("user.redacted.title");
+		} else {
+			return Utils.getUserTitle(p);
+		}
 	}
 	public String getUserName(Principal p) {
-		return Utils.getUserName(p);
+		if (this.notifyDef.isRedacted()) {
+			return NLT.get("user.redacted.title");
+		} else {
+			return Utils.getUserName(p);
+		}
 	}
 
 }

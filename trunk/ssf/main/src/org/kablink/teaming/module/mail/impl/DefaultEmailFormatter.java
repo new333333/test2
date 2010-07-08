@@ -138,11 +138,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
 	 */
-	public Map<Locale, Collection> buildDistributionList(Entry entry, Collection subscriptions, int style) {
+	public Map<Locale, Collection> buildDistributionList(Entry entry, Collection subscriptions, int style, boolean redacted) {
 		FolderEntry fEntry = (FolderEntry)entry;
 		List entries = new ArrayList();
 		entries.add(entry);
-		Map<User, String[]> userMap = getUserList(fEntry.getRootFolder(), entries, subscriptions,  style);
+		Map<User, String[]> userMap = getUserList(fEntry.getRootFolder(), entries, subscriptions, style, redacted);
 		Map languageMap = new HashMap();
 		//check access to folder/entry and build lists of users to receive mail
 		Set email = new HashSet();
@@ -150,14 +150,17 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			try {
 				User u = me.getKey();
 				AccessUtils.readCheck(u, entry);
-				email = (Set)languageMap.get(u.getLocale());
-				if (email != null) {
-					addAddresses(email, u, me.getValue(), style);
-				} else {
-					email = new HashSet();
-					addAddresses(email, u, me.getValue(), style);
-					if (0 < email.size()) {
-						languageMap.put(u.getLocale(), email);
+				boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers(u);
+				if ((redacted && limitedView) || (!redacted && !limitedView)) {
+					email = (Set)languageMap.get(u.getLocale());
+					if (email != null) {
+						addAddresses(email, u, me.getValue(), style);
+					} else {
+						email = new HashSet();
+						addAddresses(email, u, me.getValue(), style);
+						if (0 < email.size()) {
+							languageMap.put(u.getLocale(), email);
+						}
 					}
 				}
 			} catch (Exception ex) {};
@@ -227,10 +230,10 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the digest message	
 	 */
-	public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style) {
+	public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style, boolean redacted) {
 		Folder folder = (Folder)binder;
 		List result = new ArrayList();
-		Map<User, String[]> userMap = getUserList(folder, entries, subscriptions,  style);
+		Map<User, String[]> userMap = getUserList(folder, entries, subscriptions, style, redacted);
 		if (!userMap.isEmpty()) {
 			//check access to folder/entry and build lists of users to receive mail
 			List checkList = new ArrayList();
@@ -251,32 +254,49 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 		return result;
 	}
-	private Map<User, String[]> getUserList(Folder folder, Collection entries, Collection subscriptions, int style) {
+	private Map<User, String[]> getUserList(Folder folder, Collection entries, Collection subscriptions, int style, boolean redacted) {
 		if (folder.getNotificationDef().getStyle() == style) {
 			Set userIds = new HashSet();
 			Set groupIds = new HashSet();
 			for (Iterator iter=folder.getNotificationDef().getDistribution().iterator(); iter.hasNext();) {
 				Principal p = (Principal)iter.next();
-				if (p.getEntityType().equals(EntityType.group))
+				if (p.getEntityType().equals(EntityType.group)) {
 					groupIds.add(p.getId());
-				else
-					userIds.add(p.getId());
+				} else {
+					boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+					if ((redacted && limitedView) || (!redacted && !limitedView)) {
+						userIds.add(p.getId());
+					}
+				}
 			}
 			if (folder.getNotificationDef().isTeamOn()) {
 				Set teamIds = folder.getTeamMemberIds();
 				List team = getProfileDao().loadUserPrincipals(teamIds, folder.getZoneId(), true);
 				for (Iterator iter=team.iterator(); iter.hasNext();) {
 					Principal p = (Principal)iter.next();
-					if (p.getEntityType().equals(EntityType.group))
+					if (p.getEntityType().equals(EntityType.group)) {
 						groupIds.add(p.getId());
-					else
-						userIds.add(p.getId());
+					} else {
+						boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+						if ((redacted && limitedView) || (!redacted && !limitedView)) {
+							userIds.add(p.getId());
+						}
+					}
 				}
 				
 			}
 			//expand groups so we can remove users
 			boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
-			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId(), sendingToAllUsersIsAllowed));
+			Set<Long> explodedGroups = getProfileDao().explodeGroups(groupIds, folder.getZoneId(), sendingToAllUsersIsAllowed);
+			List<Principal> principals = getProfileDao().loadPrincipals(explodedGroups, folder.getZoneId(), true);
+			for (Principal p : principals) {
+				if (p.getEntityType().equals(EntityType.user)) {
+					boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+					if ((redacted && limitedView) || (!redacted && !limitedView)) {
+						userIds.add(p.getId());
+					}
+				}
+			}
 			Map<Long, String[]> userSubs = new HashMap();
 			//Remove users wanting nothing first.  The user could appear 2X in the list, 1 for folder subscription, 1 for entry
 			//so process removes first
@@ -290,9 +310,15 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			for (Subscription notify: (Collection<Subscription>)subscriptions) {
 				//user may reenable - who knows
 				if (notify.hasStyle(style)) {
-					userIds.add(notify.getId().getPrincipalId());
-					//The first in the list takes priority - should be entry subscription
-					if (!userSubs.containsKey(notify.getId().getPrincipalId())) userSubs.put(notify.getId().getPrincipalId(), notify.getEmailTypes(style));
+					Principal p = getProfileDao().loadPrincipal(notify.getId().getPrincipalId(), folder.getZoneId(), true);
+					if (p.getEntityType().equals(EntityType.user)) {
+						boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+						if ((redacted && limitedView) || (!redacted && !limitedView)) {
+							userIds.add(p.getId());
+							//The first in the list takes priority - should be entry subscription
+							if (!userSubs.containsKey(p.getId())) userSubs.put(p.getId(), notify.getEmailTypes(style));
+						}
+					}
 				} 
 			}
 			List<User> us = getProfileDao().loadUsers(userIds, folder.getZoneId());

@@ -132,7 +132,8 @@ public class NotifyBuilderUtil implements InitializingBean {
 		}
 
     }
-    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, NotifyVisitor.WriterType writerType,  Map params, boolean processItem) {
+    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, 
+    		NotifyVisitor.WriterType writerType, Map params, boolean processItem) {
         String flagElementPath = "./notify";
         List<Element> items;
         if (processItem) {  //starting point
