@@ -44,7 +44,7 @@
 	<c:when test="${ssFindListType == 'group'}">
 		<c:set var="accessibilityText" value="navigation.findGroup" />
 	</c:when>
-	<c:when test="${ssFindListType == 'team'}">
+	<c:when test="${ssFindListType == 'teams'}">
 		<c:set var="accessibilityText" value="navigation.findTeam" />
 	</c:when>	
 	<c:when test="${ssFindListType == 'application'}">
@@ -108,7 +108,7 @@
 			    <c:if test="${ssFindListType == 'group'}">
 			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
 			    </c:if>
-			    <c:if test="${ssFindListType == 'team'}">
+			    <c:if test="${ssFindListType == 'teams'}">
 			      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findTeam"/></span></div>
 			    </c:if>    
 			    <c:if test="${ssFindListType == 'application'}">
