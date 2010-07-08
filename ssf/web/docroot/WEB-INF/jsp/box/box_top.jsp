@@ -124,7 +124,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	
 	  <c:if test="${!empty ss_boxTitle}">
 	    <td class="ss_title_bar" nowrap>
-	      <div class="ss_title_bar" style="margin:0px; padding:0px;">
+	      <div style="margin:0px; padding:0px;">
 	        <span style="padding-left: 10px;" id="${ss_boxTitleId}">${ss_boxTitle}</span>
 	      </div>
 	    </td>
