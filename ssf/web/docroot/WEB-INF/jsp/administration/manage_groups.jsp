@@ -60,6 +60,20 @@
 	<%	} %>
 	
 	}// end handleCloseBtn()
+
+
+	/**
+	 *
+	 */
+	function handleDeleteGroupBtn( groupTitle )
+	{
+		var msg;
+
+		// Ask the user if they really want to delete this group.
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="administration.delete.group.prompt" /></ssf:escapeJavaScript>';
+		msg = msg.replace( '{0}', groupTitle );
+		return window.confirm( msg );
+	}// end handleDeleteGroupBtn()
 </script>
 
 <body class="ss_style_body tundra">
@@ -143,6 +157,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 <span class="ss_bold ss_largerprint">${ssGroup.title}</span> <span class="ss_smallprint">(${ssGroup.name})</span>
 <br/>
 <br/>
+
 <form name="ss_groupForm" id="ss_groupForm" method="post"
   action="<ssf:url action="manage_groups" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -157,6 +172,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 	<textarea name="description" wrap="virtual" rows="4" cols="40">${ssGroup.description}</textarea><br/><br/>
 		
 </ssf:expandableArea>
+
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.modifyGroupMembership" /></span>
@@ -184,7 +200,7 @@ function ${renderResponse.namespace}_onsub(obj) {
 </table>
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>">
+<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>" onClick="return handleDeleteGroupBtn( '${ssGroup.title}' );">
  
 </form>
 </div>
