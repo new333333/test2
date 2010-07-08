@@ -198,11 +198,11 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			
 		</td></tr>
 		<tr>
-			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
-				<div id="ss_divFolderFilesLoading${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
+			<td align="center" style="padding-top: 20px">
+				<div id="ss_divFolderFilesLoading${ssBinderId}${ss_namespace}" style="visibility:hidden; display:none;">
 					<ssf:nlt tag="loading.files"/>
 				</div>
-				<div id="ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
+				<div id="ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden; display:none;">
 					<ssf:nlt tag="folder.dropboxAddFolderAttachmentHelpText"/>
 				</div>
 			</td>
@@ -211,8 +211,8 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
-			<td class="ss_entrySignature" align="center" style="padding-top: 20px">
-				<div id="ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
+			<td align="center" style="padding-top: 15px;">
+				<div id="ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden; display:none;">
 				<c:if test="${ssBinderIsLibrary == 'false'}">
 					<b><ssf:nlt tag="note"/>:</b> <ssf:nlt tag="folder.dropboxAddNonLibraryFolderHelpText"/>
 				</c:if>

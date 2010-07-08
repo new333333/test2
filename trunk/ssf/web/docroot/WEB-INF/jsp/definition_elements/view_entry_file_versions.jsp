@@ -72,7 +72,7 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 >
 <div align="right">
 	<ul class="ss_nobullet">
-	  <li style="float:right; padding:1px 10px 4px 0px;">
+	  <li style="float:right; padding:0px 20px 6px 0px;">
 	    <a href="javascript: ;" onClick="return(ss_deleteMultipleFileVersions('ss_deleteFilesForm', ss_deleteFileVersionsConfirmText));">
 	      <span><ssf:nlt tag="file.command.deleteVersions"/></span>
 	    </a>
@@ -81,18 +81,18 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 	<div class="ss_clear"></div>
 </div>
 
-<table class="ss_attachments_list" cellpadding="0" cellspacing="0" width="100%">
+<table class="ss_attachments_list" cellpadding="0" cellspacing="0">
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr class="ss_tab_table_columnhead">
-  <th></th>
-  <th style="padding-right:4px;"><ssf:nlt tag="file.name"/></th>
-  <th align="center" style="padding:0px 4px;"><ssf:nlt tag="entry.Version"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="file.status"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="file.date"/></th>
-  <th align="center" style="padding:0px 4px;"><ssf:nlt tag="file.size"/></th>
-  <th style="padding:0px 4px;"><ssf:nlt tag="entry.modifiedBy"/></th>
-  <th><ssf:nlt tag="toolbar.actions"/></th>
+  <td>&nbsp;</td>
+  <td><ssf:nlt tag="file.name"/></td>
+  <td><ssf:nlt tag="entry.Version"/></td>
+  <td><ssf:nlt tag="file.status"/></td>
+  <td><ssf:nlt tag="file.date"/></td>
+  <td><ssf:nlt tag="file.size"/></td>
+  <td><ssf:nlt tag="entry.modifiedBy"/></td>
+  <td colspan="2"><ssf:nlt tag="toolbar.actions"/></td>
 </tr>
 </c:if>
 

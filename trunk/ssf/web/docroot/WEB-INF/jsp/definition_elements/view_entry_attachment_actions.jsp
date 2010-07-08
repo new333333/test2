@@ -84,10 +84,8 @@
     ><ssf:nlt tag="file.actions"/>
     <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
-  <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" 
-    style="position:absolute; display:none; background:#fff; border:1px #ccc solid;">
-    <ul style="margin:0px;padding:0px 10px 0px 10px;">
-	  <li>
+  <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" class="ss_actions_bar_submenu" style="position:absolute; display:none;">
+	<div class="ss_inline_menu">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		%>
@@ -123,11 +121,11 @@
 				><span><ssf:nlt tag="file.view"/></span></a>
 			</ssf:editorTypeToUseForEditInPlace>
 		<%  }  %>
-	  </li>
+	  </div>
 
       <c:if test="${!ss_attachedFileIsVersion}">
 	  <ssf:ifSupportsViewAsHtml relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
-		<li>
+		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" href="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
@@ -138,7 +136,7 @@
 	    	<ssf:param name="viewType" value="html"/>
 	    	</ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
 	       ><span><ssf:nlt tag="file.viewAsHtml" /></span></a>
-	    </li>
+	    </div>
 	  </ssf:ifSupportsViewAsHtml>
 	  </c:if>
 
@@ -149,42 +147,42 @@
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 					<ssf:isFileEditorConfiguredForOS relativeFilePath="${ss_attachedFile.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 						<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-						  <li>
+						  <div class="ss_inline_menu">
 						    <a href="javascript: ;" 
 							  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
 							    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
 								"${ss_attachedFile.id}");
 								return false;'
 						    ><span><ssf:nlt tag="file.editFile"/></span></a>
-						  </li>
+						  </div>
 						</c:if>
 						<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-						  <li>
+						  <div class="ss_inline_menu">
 						  <a href="javascript: ;" 
 							onClick='alert("${ss_quotaMessage}");return false;'
 						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						  </li>
+						  </div>
 						</c:if>
 					</ssf:isFileEditorConfiguredForOS>
 				</ssf:editorTypeToUseForEditInPlace>
 					
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
 					  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-					    <li>
+					    <div class="ss_inline_menu">
 					      <a href="<ssf:ssfsInternalAttachmentUrl 
 							binder="${ssDefinitionEntry.parentBinder}"
 							entity="${ssDefinitionEntry}"
 							fileAttachment="${ss_attachedFile}"/>"
 						  <c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
 						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						</li>
+						</div>
 					  </c:if>
 					  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-					    <li>
+					    <div class="ss_inline_menu">
 						  <a href="javascript: ;" 
 							onClick='alert("${ss_quotaMessage}");return false;'
 						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						</li>
+						</div>
 					  </c:if>
 				</ssf:editorTypeToUseForEditInPlace>
 			
@@ -193,14 +191,14 @@
 		  </c:if>
 		  </c:if>
 		
-		<li>
+		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" 
 		    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${ss_attachedFile.id}" />" 
 	       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
-		</li>
+		</div>
 		
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		  <li>
+		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
 			    portletName="ss_forum" 
@@ -212,12 +210,12 @@
 			    name="operation" value="modify_file_description"/></ssf:url>"
 		      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			><span><ssf:nlt tag="file.addComment"/></span></a>
-		  </li>
+		  </div>
 		</c:if>
 
 		<c:if test="${!ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		  <li>
+		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
 			    portletName="ss_forum" 
@@ -229,13 +227,13 @@
 			    name="operation" value="modify_file_major_version"/></ssf:url>"
 		      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			><span><ssf:nlt tag="file.command.incrementMajorVersion"/></span></a>
-		  </li>
+		  </div>
 		</c:if>
 		</c:if>
 		
 		<c:if test="${ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		  <li>
+		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
 			    portletName="ss_forum" 
@@ -247,12 +245,12 @@
 			    name="operation" value="modify_file_revert"/></ssf:url>"
 		      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			><span><ssf:nlt tag="file.command.revertVersion"/></span></a>
-		  </li>
+		  </div>
 		</c:if>
 		</c:if>
 
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
-		  <li>
+		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
 			    portletName="ss_forum" 
@@ -264,7 +262,7 @@
 			    name="operation" value="delete"/></ssf:url>"
 		      onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			><span><ssf:nlt tag="file.command.deleteVersion"/></span></a>
-		  </li>
+		  </div>
 		</c:if>
 
 	</ul>
