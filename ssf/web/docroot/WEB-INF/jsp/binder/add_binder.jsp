@@ -243,7 +243,7 @@ function ss_checkForm(obj) {
 	</label></span>
     <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
-	<input type="text" class="ss_text" size="70" name="title" id="title" 
+	<input type="text" class="ss_text" size="70" name="title" id="title" maxlength="255"
 	  onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'title_label', 'ss_titleCheck');"><br/><br/>
 
 <c:if test="${!empty ssBinderConfigs}">
