@@ -68,6 +68,7 @@ public class Notify {
 	protected Map<DefinableEntity, Set> events= null;// sorted by entry
 	protected Timestamp startTs;
 	protected boolean includeAttachments=false;
+	protected boolean redacted=false;
 	protected TimeZone timezone;
 	public Notify(NotifyType type, Locale locale, TimeZone timezone, Date startDate) {
 		this.type = type;
@@ -103,6 +104,12 @@ public class Notify {
 	}
 	public void setAttachmentsIncluded(boolean includeAttachments) {
 		this.includeAttachments = includeAttachments;
+	}
+	public boolean isRedacted() {
+		return redacted;
+	}
+	public void setRedacted(boolean redacted) {
+		this.redacted = redacted;
 	}
 	public Map<DefinableEntity, Set> getEvents() {
 		if (events == null) events = new HashMap();

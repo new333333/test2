@@ -49,8 +49,8 @@ public interface EmailFormatter {
     public static final String TEXT="text";
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";
-    public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style);
-	public Map buildDistributionList(Entry entry, Collection subscriptions, int style);
+    public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style, boolean redacted);
+	public Map buildDistributionList(Entry entry, Collection subscriptions, int style, boolean redacted);
 	public Map buildMessage(Binder binder, Collection entries, Notify notify);
 	public Map buildMessage(Binder binder, Entry entry, Notify notify);
 	public String getSubject(Binder binder, Entry entry, Notify notify);
