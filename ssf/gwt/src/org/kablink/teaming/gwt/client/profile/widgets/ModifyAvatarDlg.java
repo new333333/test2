@@ -48,6 +48,10 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
@@ -196,11 +200,17 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		formPanel.getElement().setId("form1");
 		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
 		
-		Anchor setDefaultAvatar = new Anchor();
+		final Anchor setDefaultAvatar = new Anchor();
 		content.add(setDefaultAvatar);
 		setDefaultAvatar.addStyleName("qView-a");
 		setDefaultAvatar.addStyleName("qView-action");
 		setDefaultAvatar.setText("Set as default avatar");
+		
+		final Anchor removeAvatar = new Anchor();
+		content.add(removeAvatar);
+		removeAvatar.addStyleName("qView-a");
+		removeAvatar.addStyleName("qView-action");
+		removeAvatar.setText("Remove avatar");
 		
 		setDefaultAvatar.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
@@ -210,18 +220,33 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 				formPanel.submit();
 			}
 		});
-		
-		Anchor removeAvatar = new Anchor();
-		content.add(removeAvatar);
-		removeAvatar.addStyleName("qView-a");
-		removeAvatar.addStyleName("qView-action");
-		removeAvatar.setText("Remove avatar");
-		
+
 		removeAvatar.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {
 				Hidden hidden = new Hidden("_delete_"+ attach.getId(), "");
 				formPanel.add(hidden);
 				formPanel.submit();
+			}});
+		
+		
+		setDefaultAvatar.addMouseOverHandler(new MouseOverHandler() {
+			public void onMouseOver(MouseOverEvent event) {
+				setDefaultAvatar.addStyleName("qView-action2");
+			}});
+		
+		setDefaultAvatar.addMouseOutHandler(new MouseOutHandler(){
+			public void onMouseOut(MouseOutEvent event) {
+				setDefaultAvatar.removeStyleName("qView-action2");
+			}});
+		
+		removeAvatar.addMouseOverHandler(new MouseOverHandler() {
+			public void onMouseOver(MouseOverEvent event) {
+				removeAvatar.addStyleName("qView-action2");
+			}});
+		
+		removeAvatar.addMouseOutHandler(new MouseOutHandler(){
+			public void onMouseOut(MouseOutEvent event) {
+				removeAvatar.removeStyleName("qView-action2");
 			}});
 		
 		return panel;
