@@ -43,6 +43,10 @@
 	value='<%= NLT.get("administration.configure_ldap") %>' scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp"%>
 
+<%
+	User currentUser = null;
+%>
+
 <body class="ss_style_body tundra" onunload="onUnloadEventHandler();">
 <div class="ss_pseudoPortal">
 	<div class="ss_style ss_portlet">
@@ -156,28 +160,24 @@
 								</label>
 								<select name="ssDefaultTimeZone" id="ssDefaultTimeZone">
 								<%
-									java.util.Set<String> tzones = null;
-									java.util.Set<String> map = null;
-									String defaultTimeZone	= null;
-									Locale locale = null;
-				
-									// Get all of the time zone ids.  These are always returned in English.
-									tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIds();
+									TreeMap<String, String> tzones;
+
+									currentUser = (User)request.getAttribute( "ssUser" );
 									
-									// We can use English as the language in the constructor of Locale because the time zones are always
-									// displayed in English.
-									locale = new Locale( "en" );
-									map = new java.util.TreeSet(new org.kablink.teaming.comparator.StringComparator( locale ) ); //sort
-									map.addAll( tzones );
-				
-									// Add an <option> for every time zone.
-									for (String tz:map)
+									// Get all of the time zones.
+									tzones = org.kablink.teaming.calendar.TimeZoneHelper.getTimeZoneIdDisplayStrings( currentUser );
+									
+									for ( Map.Entry me : tzones.entrySet() )
 									{
+										String tz;
+										String checked = "";
+									
+										tz = (String) me.getValue();
 								%>
 									<c:set var="nextTimeZone" value="<%= tz %>" />
-									<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= tz %></option>
+									<option value="<%= tz %>" <c:if test="${ssDefaultTimeZone == nextTimeZone}">selected</c:if> ><%= (String) me.getKey() %></option>
 								<%
-									}// end for()
+									};
 								%>
 								</select>
 							</td>
@@ -191,7 +191,6 @@
 								</label>
 								<select name="ssDefaultLocaleId" id="ssDefaultLocaleId">
 								<%
-									User currentUser = null;
 									TreeMap<String,Locale> localeMap = null;
 
 									currentUser = (User)request.getAttribute( "ssUser" );
