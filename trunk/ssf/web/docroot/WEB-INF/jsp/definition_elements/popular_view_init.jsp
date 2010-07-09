@@ -37,7 +37,7 @@
 <c:if test="${empty ss_ratingSupportLoaded}">
 <script type="text/javascript">
 var ss_ratingImages = new Array();
-var ss_ratingRedStar = "<html:imagesPath/>pics/star_red.gif";
+var ss_ratingRedStar = "<html:imagesPath/>pics/star_blue.png";
 var ss_ratings_info = new Array();
 var ss_currentRatingInfoId = "";
 

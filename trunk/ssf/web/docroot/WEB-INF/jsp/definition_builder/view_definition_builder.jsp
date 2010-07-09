@@ -470,7 +470,7 @@ function setStateMachine(newState) {
 		showDisplayDiv();
 	} else if (state == "moveItem") {
 		ss_setDivHtml("displaydiv", "")
-		ss_addHtmlToDivFront("displaydiv", "<span class='ss_titlebold'>"+idCaptions[selectedId]+"</span><br/><br/>")
+		ss_addHtmlToDivFront("displaydiv", "<div class='ss_titlebold designer_dialog_title'>"+idCaptions[selectedId]+"</div>")
 		//ss_addToDiv("displaydiv", "info_"+selectedId)
 		ss_addToDiv("displaydiv", "move_item")
 		//loadDiv('info', '', 'move_item')
@@ -624,7 +624,7 @@ function ss_saveUserGroupResults(s) {
 <div id="definitionbuilder_tree_loading">
 <span><ssf:nlt tag="Loading" text="Loading..."/></span><br/>
 </div>
-<table width="100%">
+<table width="100%"">
 	<tr>
 		<td width="50%" valign="top">
 			<div id="definitionbuilder_tree" style="visibility:hidden;">
@@ -639,7 +639,7 @@ function ss_saveUserGroupResults(s) {
 		<td width="50%" valign="top">
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
-			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100;">
+			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100; position:relative;">
 			<form class="ss_form" action="<ssf:url actionUrl="true" binderId="${ssBinderId}"><ssf:param 
 				name="action" value="definition_builder" /></ssf:url>" 
 				method="post" name="definitionbuilder" id="definitionbuilder" 

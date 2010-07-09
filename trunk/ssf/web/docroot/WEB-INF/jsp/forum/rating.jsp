@@ -50,8 +50,8 @@
 		    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
 		    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 		  ><img border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
-		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"
-		    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gold.gif';" /></a></td>
+		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.png"
+		    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gold.png';" /></a></td>
 	
 		</c:forEach>
 	</c:if>
@@ -63,32 +63,32 @@
 			    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
 			    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 			  ><img <ssf:alt tag="alt.grayStar"/> border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
-			    src="<html:imagesPath/>pics/star_gray.gif"
-			    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gray.gif';" /></a></td>
+			    src="<html:imagesPath/>pics/star_gray.png"
+			    onLoad="ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = '<html:imagesPath/>pics/star_gray.png';" /></a></td>
 		</c:forEach>
 	</c:if>
 
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
   <td class="ss_nowrap">
 	<c:if test="${ssDefinitionEntry.averageRating.count == 1}">
-  	  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.average">
+  	  <span class="ss_muted_label_small"> <ssf:nlt tag="popularity.rating.average">
     	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
     	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
-    	</ssf:nlt>)
+    	</ssf:nlt>
   	  </span>
 	</c:if>
 	<c:if test="${ssDefinitionEntry.averageRating.count != 1}">
-  	  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.averages">
+  	  <span class="ss_muted_label_small"> <ssf:nlt tag="popularity.rating.averages">
     	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
     	<ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
-    	</ssf:nlt>)
+    	</ssf:nlt>
   	  </span>
 	</c:if>
   </td>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.averageRating}">
-  <td><span class="ss_muted_label_small"> (<ssf:nlt 
-  	tag="popularity.rating.none" />)</span></td>
+  <td><span class="ss_muted_label_small"> <ssf:nlt 
+  	tag="popularity.rating.none" /></span></td>
 </c:if>
 </tr></tbody></table>
 </div>
