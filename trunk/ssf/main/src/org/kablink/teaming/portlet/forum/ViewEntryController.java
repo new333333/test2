@@ -719,8 +719,6 @@ public class ViewEntryController extends  SAbstractController {
 						} else {
 							toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.unlock"), url, qualifiers);
 						}
-					} else {
-						toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.unlock"), nullPortletUrl, disabledQual);
 					}
 				}
 			}
