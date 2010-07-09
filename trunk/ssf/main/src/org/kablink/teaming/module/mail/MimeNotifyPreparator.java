@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,8 +41,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import net.fortuna.ical4j.model.Calendar;
@@ -57,6 +55,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -68,6 +67,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	Collection<String> ccAddrs;
 	Collection<String> bccAddrs;
 	Collection<String> toAddrs;
+	@SuppressWarnings("unchecked")
 	Collection entries;
 	Entry entry;
 	Notify.NotifyType messageType;
@@ -88,13 +88,13 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		icalModule = (IcalModule)SpringContextUtil.getBean("icalModule");
 	}
 	public void setCcAddrs(Collection<String> ccAddrs) {
-		this.ccAddrs = ccAddrs;			
+		this.ccAddrs = MiscUtil.validateEmailAddressCollection(MailModule.CC, ccAddrs);			
 	}
 	public void setBccAddrs(Collection<String> bccAddrs) {
-		this.bccAddrs = bccAddrs;			
+		this.bccAddrs = MiscUtil.validateEmailAddressCollection(MailModule.BCC, bccAddrs);			
 	}
 	public void setToAddrs(Collection<String> toAddrs) {
-		this.toAddrs = toAddrs;			
+		this.toAddrs = MiscUtil.validateEmailAddressCollection(MailModule.TO, toAddrs);			
 	}
 	public void setEntry(Entry entry) {
 		this.entry = entry;		
@@ -108,6 +108,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	public void setRedacted(boolean redacted) {
 		this.redacted = redacted;
 	}
+	@SuppressWarnings("unchecked")
 	public void setEntries(Collection entries) {
 		this.entries = entries;
 	}
@@ -148,6 +149,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			helper.setTo(toAddrs.toArray(new String[toAddrs.size()]));
 		}
 	}
+	@SuppressWarnings("unchecked")
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
 		notify = new Notify(messageType, locale, timezone, startDate);
@@ -195,6 +197,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		message = mimeMessage;
 	}
 	
+	@SuppressWarnings("unchecked")
 	protected void prepareICalendars(MimeMessageHelper helper) throws MessagingException {
 		int c = 0;
 		int eventsSize = notify.getEvents().size();
@@ -241,6 +244,4 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		
 		notify.clearEvents();
 	}
-		
-
 }

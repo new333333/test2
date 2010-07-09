@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,16 +47,21 @@ import org.apache.commons.logging.Log;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 public class MimeMapPreparator extends AbstractMailPreparator {
+	@SuppressWarnings("unchecked")
 	Map details;
 	boolean sendVTODO;
+	
+	@SuppressWarnings("unchecked")
 	public MimeMapPreparator(Map details, Log logger, boolean sendVTODO) {
 		super(logger);
 		this.details = details;
 		this.sendVTODO = sendVTODO;
 	}
+	@SuppressWarnings("unchecked")
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
 		message = null;
@@ -79,6 +84,7 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			helper.setFrom(defaultFrom);
 		
 		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
+		Collection<InternetAddress> validAddrs;;
 		if (addrs == null || addrs.isEmpty()) {
 			if (details.containsKey(MailModule.FROM)) 
 				helper.setTo((InternetAddress)details.get(MailModule.FROM));
@@ -87,15 +93,18 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(MailModule.SUBJECT));
 		} else {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
-			helper.setTo(addrs.toArray(new InternetAddress[addrs.size()]));			
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.TO, addrs);
+			helper.setTo(validAddrs.toArray(new InternetAddress[validAddrs.size()]));			
 		}
 		addrs = (Collection)details.get(MailModule.CC);
 		if (addrs != null) {
-			helper.setCc(addrs.toArray(new InternetAddress[addrs.size()]));
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.CC, addrs);
+			helper.setCc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}
 		addrs = (Collection)details.get(MailModule.BCC);
 		if (addrs != null) {
-			helper.setBcc(addrs.toArray(new InternetAddress[addrs.size()]));
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, addrs);
+			helper.setBcc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}
 		// the next line creates ALTERNATIVE part, change to setText(String, boolean)
 		// which will cause error in iCalendar section (the ical is add as alternative content) 
