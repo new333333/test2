@@ -195,7 +195,7 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
 <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
   <div id="viewEntryHistory${ss_tabDivCount}loading" 
-    style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
+    style="text-align:center;font-weight:bold;display:block;width:100%;"><img src="<html:rootPath/>images/pics/busyanim32b.gif"/></div>
   <iframe id="viewEntryHistory${ss_tabDivCount}Iframe" name="viewEntryHistory${ss_tabDivCount}Iframe" 
     onLoad="ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe', 'viewEntryHistory${ss_tabDivCount}loading')" 
     src="<html:rootPath/>js/forum/null.html" class="wg-tab-iframe" >xxx</iframe>

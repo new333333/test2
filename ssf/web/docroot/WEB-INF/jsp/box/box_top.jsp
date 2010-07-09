@@ -110,12 +110,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  <td><img border="0" <ssf:alt/>
 	    src="<html:imagesPath/>roundcorners3/corner1.png"></td>
 	  <c:if test="<%= showResizeIcon %>">
-		<td class="ss_title_bar" align="left"><div style="display:inline; width:40px; 
-		    background-position:center left;
-            background-image:url(<html:imagesPath/><%= showResizeGif %>);
-            background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
-		  ><span class="ss_box_small_icon" 
-		  style="cursor:w-resize; width:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></td>
+		<td class="ss_title_bar" align="left">
+			<div style="display:inline; width:40px; 
+		    	background-position:center left;
+            	background-image:url(<html:imagesPath/><%= showResizeGif %>);
+            	background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
+			>
+			<span class="ss_box_small_icon" style="cursor:w-resize; width:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div></td>
 	  </c:if>
 
 	  <c:if test="${empty ss_boxTitle}">

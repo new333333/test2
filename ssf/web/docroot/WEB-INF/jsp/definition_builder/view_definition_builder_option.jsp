@@ -44,17 +44,17 @@
 	  <div id="displaydiv" style="margin:0px; padding:4px 14px;"> 
 	  <c:choose>
 	  <c:when test="${data['option'] == 'copyDefinition'}">
-	  		<span class="ss_titlebold"><ssf:nlt tag="administration.copy.definition.rename"/></span><br/><br/>
-			<span><ssf:nlt tag="definition.name"/></span><br/>
-			<input type="text" class="ss_text" name="propertyId_name" size="40" value="<c:out value="${ssDefinition.name}-2" escapeXml="true"/>"/><br/>
-			<span><ssf:nlt tag="definition.caption"/></span><br/>
-			<input type="text" class="ss_text" name="propertyId_caption" size="40" value="<c:out value="${ssDefinition.title}-2" escapeXml="true"/>"/><br/><br/>
+	  		<div class="ss_titlebold designer_dialog_title"><ssf:nlt tag="administration.copy.definition.rename"/></div>
+			<span><ssf:nlt tag="definition.name"/></span>
+			<input type="text" class="ss_text" name="propertyId_name" size="40" value="<c:out value="${ssDefinition.name}-2" escapeXml="true"/>"/>
+			<span><ssf:nlt tag="definition.caption"/></span>
+			<input type="text" class="ss_text" name="propertyId_caption" size="40" value="<c:out value="${ssDefinition.title}-2" escapeXml="true"/>"/>
 		</c:when>	  
 	  <c:when test="${data['option'] == 'deleteDefinition'}">
-			<span class="ss_titlebold"><ssf:nlt tag="definition.delete"/></span><span><c:out value="${data.selectedItemTitle}" escapeXml="true"/></span>
+			<div class="ss_titlebold designer_dialog_title"><ssf:nlt tag="definition.delete"/></span><span><c:out value="${data.selectedItemTitle}" escapeXml="true"/></div>
 	  </c:when>	  
 	  <c:when test="${data['option'] == 'view_definition_options'}">
-		<span class="ss_titlebold"><c:out value="${data.selectedItemTitle}" escapeXml="true"/></span>
+			<div class="ss_titlebold designer_dialog_title"><c:out value="${data.selectedItemTitle}" escapeXml="true"/></div>
 			
 		<table><tbody>
 		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>

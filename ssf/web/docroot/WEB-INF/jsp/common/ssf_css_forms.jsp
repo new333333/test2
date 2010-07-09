@@ -490,3 +490,11 @@ fieldset a:hover {
 .ss_inlineButtonSmall img {
   margin: 0px 0px 0px 0px;
 }
+
+.designer_dialog_title {
+	color: #fff;
+	display: block;
+	position: absolute;
+	top: 7px;
+	padding-right: 15px;
+	}
