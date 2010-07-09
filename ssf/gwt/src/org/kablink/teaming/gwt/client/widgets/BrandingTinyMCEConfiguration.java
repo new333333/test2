@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -51,6 +53,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 {
 	private String m_binderId = null;	// Id of the binder we are dealing with.
 	private AsyncCallback<String> m_rpcCallback = null;
+	private ArrayList<String> m_listOfFileAttachments = null;
 	
 	/**
 	 * 
@@ -123,7 +126,41 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		messages = GwtTeaming.getMessages();
 		
 		// Add a language pack for the "add image dialog" plugin.
-		addAddImageDialogLanguagePack( getLanguage() + ".ss_addimage_dlg", messages );
+		{
+			String imageSelectionsHtml;
+			
+			// Create the html that is used in the "add image" dialog to select from a list of attached files.
+			{
+				// Do we have a list of file attachments?
+				if ( m_listOfFileAttachments != null && m_listOfFileAttachments.size() > 0 )
+				{
+					int i;
+					
+					// Yes
+					imageSelectionsHtml = "<select name='srcUrl' id='srcUrl'>";
+					
+					for (i = 0; i < m_listOfFileAttachments.size(); ++i)
+					{
+						String fileName;
+						String option;
+						
+						// Create an <option value="file name>filename</option>
+						fileName = m_listOfFileAttachments.get( i );
+						option = "<option value='" + fileName + "' >" + fileName + "</option>";
+						imageSelectionsHtml += option;
+					}
+					
+					imageSelectionsHtml += "</select>";
+				}
+				else
+				{
+					// No
+					imageSelectionsHtml = "<select name='srcUrl' id='srcUrl'></select>";
+				}
+			}
+			
+			addAddImageDialogLanguagePack( getLanguage() + ".ss_addimage_dlg", messages, imageSelectionsHtml );
+		}
 		
 		// Add a language pack for the "add image" plugin.
 		addAddImageLanguagePack( getLanguage() + ".ss_addimage", messages );
@@ -152,8 +189,8 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	/**
 	 * Add a language package to the Tiny MCE editor for the "add image dialog" plugin.
 	 */
-	protected native void addAddImageDialogLanguagePack( String langPrefix, GwtTeamingMessages messages ) /*-{
-		var ss_imageSelections_ss_htmleditor = "<select name='srcUrl' id='srcUrl'></select>";
+	protected native void addAddImageDialogLanguagePack( String langPrefix, GwtTeamingMessages messages, String imageSelectionsHtml ) /*-{
+		var ss_imageSelections_ss_htmleditor = imageSelectionsHtml;
 		
 		$wnd.tinyMCE.addI18n( langPrefix, {
 			overQuota : ' ',
@@ -228,4 +265,12 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			getDocumentBaseUrlFromServer();
 		}
 	}
+	
+	/**
+	 * Set the list of file attachments the user can choose from when they invoke the "Add image" dialog.
+	 */
+	public void setListOfFileAttachments( 	ArrayList<String> listOfFileAttachments )
+	{
+		m_listOfFileAttachments = listOfFileAttachments;
+	}// end setListOfFileAttachments()
 }// end BrandingTinyMCEConfiguration
