@@ -307,19 +307,10 @@ function ss_resizeIframeArea() {
 >
 
 	<div id="compare-button" class="marginbottom3">
-		<table cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-					<div><input class="n-button" type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/></div>
-				</td>
-				<td>
-					<img class="n-button-right" src="<html:imagesPath/>pics/1pix.gif" border="0" >
-				</td>
-				<td>
-					<span class="ss_style"><ssf:nlt tag="entry.version.compare"/></span>
-				</td>
-			</tr>	
-		</table>	
+		<div>
+			<input class="n-button" type="button" name="compareBtn" id="compareBtn" value="<ssf:nlt tag="button.compare"/>" disabled="true" onclick="dodiff();"/>
+			<span class="ss_style"><ssf:nlt tag="entry.version.compare"/></span>
+		</div>
 	</div>
 
 	<table class="ss_style" cellpadding="0" cellspacing="0">

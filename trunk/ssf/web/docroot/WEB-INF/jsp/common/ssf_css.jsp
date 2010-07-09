@@ -639,31 +639,27 @@ input[type="button"].n-button {
 	color: #fff;
 	font-weight: bold;	
     text-align: center !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 0px 4px 2px 15px !important;
-	background-color: transparent;
-	background-image: url(<html:rootPath/>images/pics/n-button-left.png);
-	background-repeat: no-repeat;
-	background-position: center left;
+  	padding: 0px 10px 2px 10px !important;
+	margin-right: 15px;
+	background-color: #81b2bd;
 	border: 0px;
-	height: 23px;
+	height: 20px;
+	-moz-border-radius:15px;
+	-webkit-border-radius:15px;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;
 	</c:if>
 	}
-img.n-button-right {
-	background-color: transparent;
-	background-image: url(<html:rootPath/>images/pics/n-button-right.png);
-	background-repeat: no-repeat;
-	background-position: center right;
-	width: 21px;
-	height: 23px;
-	margin-right: 10px;
+input[type="button"].n-button:hover {
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
 	}
+
 input.ss_submit:hover, 
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
