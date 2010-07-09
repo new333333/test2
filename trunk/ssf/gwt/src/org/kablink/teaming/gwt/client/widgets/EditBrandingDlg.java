@@ -94,13 +94,13 @@ public class EditBrandingDlg extends DlgBox
 	private InlineLabel m_sampleText;
 	private AsyncCallback<ArrayList<String>> m_rpcReadCallback = null;
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
+	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
+	private ArrayList<String> m_listOfFileAttachments = null;
 	private final String m_noAvailableImages = "no available images";
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private ColorPickerDlg m_colorPickerDlg = null;
 	private TextBox m_destColorTextbox = null;
-	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
 	private String m_advancedBranding = null;
-	private BrandingTinyMCEConfiguration m_tinyMCEConfig = null;
 	private FlowPanel m_rulesPanel = null;
 	private RadioButton m_ruleSiteBrandingOnlyRb = null;
 	private RadioButton m_ruleBothSiteAndBinderBrandingRb = null;
@@ -913,18 +913,6 @@ public class EditBrandingDlg extends DlgBox
 		// When we get the response, updateListOfFileAttachments() will be called.
 		getListOfFileAttachmentsFromServer();
 		
-		// Have we created a BrandingTinyMCEConfiguration object yet?
-		if ( m_tinyMCEConfig == null )
-		{
-			// No, create one
-			m_tinyMCEConfig = new BrandingTinyMCEConfiguration( brandingData.getBinderId() );
-		}
-		else
-		{
-			// Yes, update the configuration based on the binder id we are working with.
-			m_tinyMCEConfig.setBinderId( brandingData.getBinderId() );
-		}
-
 		// Select the appropriate checkbox depending on whether "use branding image" or "use advanced branding" is selected.
 		m_useBrandingImgRb.setValue( false );
 		m_useAdvancedBrandingRb.setValue( false );
@@ -1127,63 +1115,58 @@ public class EditBrandingDlg extends DlgBox
 	 */
 	public void invokeEditAdvancedBrandingDlg( int x, int y )
 	{
-		// Have we already created an "Edit Advanced Branding" dialog?
-		if ( m_editAdvancedBrandingDlg != null )
+		EditSuccessfulHandler editSuccessfulHandler;
+		EditCanceledHandler editCanceledHandler;
+		BrandingTinyMCEConfiguration tinyMCEConfig = null;
+		
+		editSuccessfulHandler = new EditSuccessfulHandler()
 		{
-			// Yes
-			m_editAdvancedBrandingDlg.setPopupPosition( x, y );
-		}
-		else
-		{
-			EditSuccessfulHandler editSuccessfulHandler;
-			EditCanceledHandler editCanceledHandler;
-			
-			editSuccessfulHandler = new EditSuccessfulHandler()
+			/**
+			 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
+			 */
+			public boolean editSuccessful( Object obj )
 			{
-				/**
-				 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
-				 */
-				public boolean editSuccessful( Object obj )
+				if ( obj instanceof String )
 				{
-					if ( obj instanceof String )
-					{
-						if ( obj != null )
-							m_advancedBranding = new String( (String) obj );
-						else
-							m_advancedBranding = null;
-					}
-					
-					m_editAdvancedBrandingDlg.hide();
-
-					return true;
-				}// end editSuccessful()
-			};
+					if ( obj != null )
+						m_advancedBranding = new String( (String) obj );
+					else
+						m_advancedBranding = null;
+				}
 				
-			editCanceledHandler = new EditCanceledHandler()
-			{
-				/**
-				 * This method gets called when the user presses cancel in the "Edit Advanced Branding" dialog.
-				 */
-				public boolean editCanceled()
-				{
-					m_editAdvancedBrandingDlg.hide();
-					
-					return true;
-				}// end editCanceled()
-			};
+				m_editAdvancedBrandingDlg.hide();
 
-			// No, create a "Edit Advanced Branding" dialog.
-			m_editAdvancedBrandingDlg = new TinyMCEDlg(
-												GwtTeaming.getMessages().editAdvancedBranding(),
-												m_tinyMCEConfig,
-												editSuccessfulHandler,
-												editCanceledHandler,
-												false,
-												true,
-												x,
-												y,
-												null );
-		}
+				return true;
+			}// end editSuccessful()
+		};
+			
+		editCanceledHandler = new EditCanceledHandler()
+		{
+			/**
+			 * This method gets called when the user presses cancel in the "Edit Advanced Branding" dialog.
+			 */
+			public boolean editCanceled()
+			{
+				m_editAdvancedBrandingDlg.hide();
+				
+				return true;
+			}// end editCanceled()
+		};
+
+		tinyMCEConfig = new BrandingTinyMCEConfiguration( m_origBrandingData.getBinderId() );
+		tinyMCEConfig.setListOfFileAttachments( m_listOfFileAttachments );
+
+		// No, create a "Edit Advanced Branding" dialog.
+		m_editAdvancedBrandingDlg = new TinyMCEDlg(
+											GwtTeaming.getMessages().editAdvancedBranding(),
+											tinyMCEConfig,
+											editSuccessfulHandler,
+											editCanceledHandler,
+											false,
+											true,
+											x,
+											y,
+											null );
 
 		m_editAdvancedBrandingDlg.show();
 		m_editAdvancedBrandingDlg.setText( m_advancedBranding );
@@ -1305,6 +1288,8 @@ public class EditBrandingDlg extends DlgBox
 	{
 		int i;
 
+		m_listOfFileAttachments = listOfFileAttachments;
+		
 		// Empty the "branding image" and "background image" listboxes.
 		m_brandingImgListbox.clear();
 		m_backgroundImgListbox.clear();
