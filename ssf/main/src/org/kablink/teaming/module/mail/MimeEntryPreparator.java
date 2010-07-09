@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,12 +41,15 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 public class MimeEntryPreparator extends MimeNotifyPreparator {
+	@SuppressWarnings("unchecked")
 	Map details;
 	
+	@SuppressWarnings("unchecked")
 	public MimeEntryPreparator(EmailFormatter processor, Entry entry,  Map details, Log logger, boolean sendVTODO) {
 		super(processor, entry.getParentBinder(), new Date(), logger, sendVTODO);
 		this.details = details;
@@ -61,8 +64,10 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 		else
 			helper.setFrom(defaultFrom);
 	}
+	@SuppressWarnings("unchecked")
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
 		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
+		Collection<InternetAddress> validAddrs;;
 		if (addrs == null || addrs.isEmpty()) {
 			if (details.containsKey(MailModule.FROM)) 
 				helper.setTo((InternetAddress)details.get(MailModule.FROM));
@@ -70,15 +75,18 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 				helper.setTo(defaultFrom);
 		} else {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
-			helper.setTo(addrs.toArray(new InternetAddress[addrs.size()]));
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.TO, addrs);
+			helper.setTo(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		} 
 		addrs = (Collection)details.get(MailModule.CC);
 		if (addrs != null) {
-			helper.setCc(addrs.toArray(new InternetAddress[addrs.size()]));
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.CC, addrs);
+			helper.setCc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}		
 		addrs = (Collection)details.get(MailModule.BCC);
 		if (addrs != null) {
-			helper.setBcc(addrs.toArray(new InternetAddress[addrs.size()]));
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, addrs);
+			helper.setBcc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}
 	}
 
@@ -89,6 +97,4 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 		if (Validator.isNotNull(html)) htmlText = html + htmlText;
 		super.setText(plainText, htmlText, helper);
 	}
-
 }
-

@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpSession;
 
@@ -72,6 +74,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public final class MiscUtil
 {
+	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 	private static ZoneModule m_zoneModule = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ));
 
 	
@@ -460,4 +463,133 @@ public final class MiscUtil
 		// null if there wasn't one.  Return it.
 		return reply;
 	}// end getFromOverride()
+	
+	/**
+	 * Validates a Collection<InternetAddress> as containing valid
+	 * InternetAddress's.
+	 * 
+	 * A separate Collection<InternetAddress> is returned containing
+	 * only those InternetAddress's from the original that are valid.
+	 * Invalid InternetAddress's are logged and dropped.
+	 * 
+	 * @param usedAs
+	 * @param addrs
+	 * 
+	 * @return
+	 */
+	public static Collection<InternetAddress> validateInternetAddressCollection( String usedAs, Collection<InternetAddress> addrs )
+	{
+		// Do we have any addresses to validate?
+		Collection<InternetAddress> reply = new ArrayList<InternetAddress>();
+		if ( null != addrs )
+		{
+			// Yes!  Scan them.
+			for (Iterator<InternetAddress> iaIT = addrs.iterator(); iaIT.hasNext(); )
+			{
+				// Was this InternetAddress valid?
+				InternetAddress ia = validateIA( usedAs, iaIT.next() );
+				if ( null != ia )
+				{
+					// Yes!  Add it to the validated collection.
+					reply.add( ia );
+				}
+			}
+		}
+
+		// If we get here, reply refers to a
+		// Collection<InternetAddress> of the valid InternetAddress's
+		// from the Collection<InternetAddress> passed in.  Return it.
+		return reply;
+	}//end validateInternetAddressCollection()
+	
+	/**
+	 * Validates a Collection<String> as containing valid email
+	 * addresses.
+	 * 
+	 * A separate Collection<String> is returned containing only those
+	 * email addresses from the original that are valid.  Invalid email
+	 * addresses are logged and dropped.
+	 * 
+	 * @param usedAs
+	 * @param addrs
+	 * 
+	 * @return
+	 */
+	public static Collection<String> validateEmailAddressCollection( String usedAs, Collection<String> addrs )
+	{
+		// Do we have any email addresses to validate?
+		Collection<String> reply = new ArrayList<String>();
+		if ( null != addrs )
+		{
+			// Yes!  Scan them.
+			for ( Iterator<String> itEA = addrs.iterator(); itEA.hasNext(); )
+			{
+				// Is this email address valid?
+				String ea = itEA.next();
+				InternetAddress ia = new InternetAddress();
+				try {ia.setAddress( ea );} catch (Exception e) {};
+				if ( null != validateIA( usedAs, ia ) )
+				{
+					// Yes!  Add it to the validated collection.
+					reply.add( ea );
+				}
+			}
+		}
+		
+		// If we get here, reply refers to a
+		// Collection<String> of the valid email addresses from the
+		// Collection<String> passed in.  Return it.
+		return reply;
+	}// end validateEmailAddressCollection()
+
+	/*
+	 * Validates an InternetAddress as containing a valid email
+	 * address.
+	 * 
+	 * If it does, it is returned.  If it doesn't, an error is logged
+	 * and null is returned.
+	 */
+	private static InternetAddress validateIA( String usedAs, InternetAddress ia )
+	{
+		try
+		{
+			// Is this InternetAddress valid?
+			ia.validate();
+		}
+		catch ( Exception ex )
+		{
+			// No!  Log the error...
+			StringBuffer error = new StringBuffer( usedAs + ":  invalid InternetAddress dropped" );
+			error.append( getIAPartString( "address",  ia.getAddress()  ) );
+			error.append( getIAPartString( "personal", ia.getPersonal() ) );
+			error.append( getIAPartString( "type",     ia.getType()     ) );
+			error.append( getIAPartString( "toString", ia.toString()    ) );
+			m_logger.error( error.toString() );
+						
+			// ...and forget about it.
+			ia = null;
+
+			// Was the exception we caught other than an
+			// AddressException?
+			if ( ! ( ex instanceof AddressException ) )
+			{
+				// Yes!  Then something deeper than just a bogus email
+				// address is happening.  Lets log the exception too.
+				m_logger.error( "MiscUtil.validateIA( EXCEPTION ):  ", ex );
+			}
+		}
+
+		// If we get here, ia refers to the validated InternetAddress
+		// or is null.  Return it.
+		return ia;
+	}// end validateIA()
+	
+	/*
+	 * Returns a String for constructing an error message about the
+	 * invalid email address.
+	 */
+	private static String getIAPartString( String name, String value )
+	{
+		return ( ", " + name + ":  '" + ( ( null == value ) ? "" : value ) + "'" );
+	}// end getIAPartString()
 }// end MiscUtil
