@@ -122,7 +122,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -622,7 +621,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Long entryIdL;
 
 			// Get the id of the zone we are running in.
-			zoneInfo = ExportHelper.getZoneInfo();
+			zoneInfo = MiscUtil.getCurrentZone();
 			zoneInfoId = zoneInfo.getId();
 			if ( zoneInfoId == null )
 				zoneInfoId = "";
@@ -780,7 +779,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Long folderIdL;
 
 			// Get the id of the zone we are running in.
-			zoneInfo = ExportHelper.getZoneInfo();
+			zoneInfo = MiscUtil.getCurrentZone();
 			zoneInfoId = zoneInfo.getId();
 			if ( zoneInfoId == null )
 				zoneInfoId = "";
@@ -865,7 +864,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			String zoneInfoId;
 
 			// Get the id of the zone we are running in.
-			zoneInfoId = ExportHelper.getZoneInfo().getId();
+			zoneInfoId = MiscUtil.getCurrentZone().getId();
 			if ( zoneInfoId == null )
 			{
 				zoneInfoId = "";
