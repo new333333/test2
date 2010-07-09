@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,7 +62,6 @@ import org.kablink.util.Validator;
 
 
 public class WebUrlUtil {
-	
 	public static final int FILE_URL_ACTION = 1;
 	public static final int FILE_URL_ENTITY_TYPE = 2;
 	public static final int FILE_URL_ENTITY_ID = 3;
@@ -386,15 +385,19 @@ public class WebUrlUtil {
 		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
 					entity.getEntityType().name(), "");			
 	}
+	@SuppressWarnings("unchecked")
 	public static String getFileUrl(PortletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, 	searchResults);
 	}
+	@SuppressWarnings("unchecked")
 	public static String getFileUrl(HttpServletRequest req, String path, Map searchResults) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, searchResults);
 	}
+	@SuppressWarnings("unchecked")
 	public static String getFileUrl(String webPath, String action, Map searchResults) {
 		return getFileUrl(webPath, action, searchResults, null);
 	}
+	@SuppressWarnings("unchecked")
 	public static String getFileUrl(String webPath, String action, Map searchResults, String file) {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
@@ -504,11 +507,7 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + fileId); //for fall back
 		webUrl.append(Constants.SLASH + attDate); //for browser caching
 		webUrl.append(Constants.SLASH + version);
-		if(SPropsUtil.getBoolean(FILE_URL_ENCODE_FILENAME, false)) {
-			///encodeUrl replaces spaces with '+' which readFileController doesn't handle
-			fileName = StringUtils.replace(Http.encodeURL(fileName), "+", "%20");
-		}
-		webUrl.append(Constants.SLASH + fileName);  
+		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName));  
 		return webUrl.toString();
 	}
 
@@ -925,6 +924,7 @@ public class WebUrlUtil {
 		return adapterUrl.toString();
 	}
 
+	@SuppressWarnings("unused")
 	private static String getMultiHomingSubPath() {
 		if(multiHomingSubPath == null) {
 			multiHomingSubPath = SPropsUtil.getString("sso.proxy.multihoming.subpath", "");
@@ -958,5 +958,33 @@ public class WebUrlUtil {
 			}
 		}
 		return url;
+	}
+	
+	/**
+	 * If configured to do so, URL encodes fileNames for inclusion into a URL.
+	 * 
+	 * @param fileName
+	 * 
+	 * @return
+	 */
+	public static String urlEncodeFilename(String fileName) {
+		// Do we have a filename that we're supposed to encode?
+		String encodedFileName;
+		if (MiscUtil.hasString(fileName) && SPropsUtil.getBoolean(FILE_URL_ENCODE_FILENAME, false)) {
+			// Yes!  Encode it.
+			encodedFileName = Http.encodeURL(fileName);
+			encodedFileName = StringUtils.replace(encodedFileName, "+", "%20");
+			logger.debug("WebUrlUtil.urlEncodeFilename( '" + fileName + "' encoded as '" + encodedFileName + "')");
+		}
+		else {
+			// No, we don't have a filename or we're not supposed to
+			// encode it!  Return what was passed in.
+			encodedFileName = fileName;
+			logger.debug("WebUrlUtil.urlEncodeFilename( '" + ((null == fileName) ? "<null>" : fileName) + " was not encoded )");
+		}
+		
+		// If we get here, fileName refers to the encoded version of
+		// the string received if encoding was configured.  Return it.
+		return encodedFileName;
 	}
 }

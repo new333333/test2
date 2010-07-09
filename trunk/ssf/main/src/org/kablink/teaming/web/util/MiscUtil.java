@@ -44,6 +44,8 @@ import java.util.Map;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
@@ -70,6 +72,9 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public final class MiscUtil
 {
+	private static ZoneModule m_zoneModule = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ));
+
+	
 	/**
 	 * Class constructor that prevents this class from being instantiated.
 	 */
@@ -404,6 +409,16 @@ public final class MiscUtil
 				((null == s1) ? "" : s1),
 				((null == s2) ? "" : s2) );
    }
+
+	/**
+	 * Returns the ZoneInfo for the zone we're currently running under.
+	 * 
+	 * @return
+	 */
+	public static ZoneInfo getCurrentZone()
+	{
+		return m_zoneModule.getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
+	}//end getCurrentZone()
 	
 	/**
 	 * Called to determine if there is an override specified for the
@@ -416,24 +431,27 @@ public final class MiscUtil
 	 * 
 	 * @return
 	 */
-	public static String getFromOverride() {
+	public static String getFromOverride()
+	{
 		// Can we access the current zone name?
-		ZoneModule zoneModule = ((ZoneModule) SpringContextUtil.getBean("zoneModule"));
-		ZoneInfo zoneInfo = zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
+		ZoneInfo zoneInfo = getCurrentZone();
 		String reply = zoneInfo.getZoneName();
-		if (MiscUtil.hasString(reply)) {
+		if ( MiscUtil.hasString( reply ) )
+		{
 			// Yes!  Check for a zone specific setting.
-			reply = SPropsUtil.getString((SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), ""); 
+			reply = SPropsUtil.getString( (SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), "" ); 
 		}
 
 		// Do we have a zone specific setting?
-		if (!(MiscUtil.hasString(reply))) {
+		if ( ! ( MiscUtil.hasString( reply ) ) )
+		{
 			// No!  Check for a global setting.
-			reply = SPropsUtil.getString(SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "");
+			reply = SPropsUtil.getString( SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "" );
 		}
 
 		// Do we have a global setting?
-		if (!(MiscUtil.hasString(reply))) {
+		if ( ! ( MiscUtil.hasString( reply ) ) )
+		{
 			// No!  Then ensure we return null.
 			reply = null;
 		}
@@ -441,5 +459,5 @@ public final class MiscUtil
 		// If we get here, reply refers to the from override or is
 		// null if there wasn't one.  Return it.
 		return reply;
-	}
+	}// end getFromOverride()
 }// end MiscUtil

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.ssfs.util;
-import java.net.URLEncoder;
 import java.util.Iterator;
 
 import javax.portlet.PortletRequest;
@@ -45,7 +44,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -69,6 +67,8 @@ public class SsfsUtil {
 	public static String getInternalAttachmentUrl(HttpServletRequest req, 
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
+		String strFileName = fa.getFileItem().getName();
+		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
 		if (fa == null) {
 			sb.append("attach/unknown/");
@@ -76,7 +76,7 @@ public class SsfsUtil {
 			sb.append("attach/").
 			append(fa.getRepositoryName()).
 			append("/").
-			append(fa.getFileItem().getName()).toString();
+			append(strUrlEncoded).toString();
 		}
 		return sb.toString();
 	}
@@ -85,7 +85,7 @@ public class SsfsUtil {
 			DefinableEntity entity, FileAttachment fa) throws Exception {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
 		String strFileName = fa.getFileItem().getName();
-		String strUrlEncoded = URLEncoder.encode(strFileName, "UTF-8");
+		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
 		if (fa == null) {
 			sb.append("attach/unknown/");
@@ -101,24 +101,28 @@ public class SsfsUtil {
 	public static String getInternalFileUrl(HttpServletRequest req, Binder binder, 
 			DefinableEntity entity, String elemName, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
+		String strFileName = fa.getFileItem().getName();
+		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
 		return sb.append("file").
 		append("/").		
 		append(elemName).
 		append("/").
-		append(fa.getFileItem().getName()).toString();
+		append(strUrlEncoded).toString();
 	}
 	
 	public static String getInternalTitleFileUrl(HttpServletRequest req, 
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
+		String strFileName = fa.getFileItem().getName();
+		String strUrlEncoded = WebUrlUtil.urlEncodeFilename(strFileName);
 		
 		// Library type element is singleton (ie, at most one instance),
 		// and therefore we do not need to encode element name in url.
 		
 		return sb.append("library").
 		append("/").		
-		append(fa.getFileItem().getName()).toString();
+		append(strUrlEncoded).toString();
 	}
 	
 	public static String getMobileUrl(PortletRequest req) {
