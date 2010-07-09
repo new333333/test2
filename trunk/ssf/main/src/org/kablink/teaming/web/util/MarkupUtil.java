@@ -257,7 +257,10 @@ public class MarkupUtil {
     		}
     		String url = "";
     		String img = m.group(0);
+    		String origImg;
 
+    		origImg = img;
+    		
 	    	//See if this has already been fixed up
     		Matcher m2 = attachmentUrlPattern.matcher(img);
         	if (m2.find()) continue;
@@ -266,6 +269,10 @@ public class MarkupUtil {
 	    	Matcher m1 = urlSrcPattern.matcher(img);
         	if (m1.find()) {
         		String fileName = m1.group(1);
+        		String markedUpImg;
+        		String desc;
+        		int start;
+        		int end;
         		
         		//See if this is a full file spec that needs to be trimmed back to just the file name
         		String correctedFileName = fileName;
@@ -277,10 +284,24 @@ public class MarkupUtil {
         			fileName = "";
         			for (int i = 5; i < urlArgs.length; i++) fileName += urlArgs[i];
         		}
- 
+
+        		// Change the text from <img class="ss_addimage_att src="some file name" alt=" " />
+        		// to <img class="ss_addimage_att src="{{attachmentUrl: some file name"}}" alt=" " />
         		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
-        		m = attachedImagePattern.matcher(description.getText());
+        		markedUpImg = img.replace( "$", "\\$" );	// remove regex special char
+        		desc = description.getText();
+        		desc = desc.replaceFirst( origImg, markedUpImg );
+        		description.setText( desc );
+        		//!!!description.setText( m.replaceFirst( markedUp ) );
+
+        		// Start searching after the <img class="ss_addimage_att" src="{{attachmentUrl: some name}}" alt=" ">
+        		// we just added.
+        		desc = description.getText();
+        		start = desc.lastIndexOf( markedUpImg ) + markedUpImg.length();
+        		end = desc.length();
+
+        		m = attachedImagePattern.matcher( desc );
+        		m.region( start, end );
         	}
     	}
 	}
