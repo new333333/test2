@@ -2050,7 +2050,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					//There was no indication of XSS code, so store the result
 					entryData.put(nameValue, value);
 				} else {
-					entryData.put(nameValue, "");
+					entryData.put(nameValue, NLT.get("error.invalidUrl"));
 				}
 			}
 		} else if (itemName.equals("folderAttributeList")) {
