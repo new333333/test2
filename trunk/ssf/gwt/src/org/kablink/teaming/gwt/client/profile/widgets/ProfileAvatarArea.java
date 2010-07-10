@@ -64,7 +64,7 @@ public class ProfileAvatarArea extends FlowPanel  {
 		this.profileRequestInfo = requestInfo;
 		
 		addStyleName("profile_gallery");
-		addStyleName("ss_thumbnail_small");
+		addStyleName("ss_thumbnail_profile_high");
 
 		createWidget(attr);
 	}

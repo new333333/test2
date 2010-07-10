@@ -46,14 +46,11 @@
 
 <c:set var="ssItemCaption" value="<%= itemCaption %>" scope="request" />
 
-<div id="ss_topic_box">
-	<span><ssf:nlt tag="${ssItemCaption}"/></span>
-</div>
-
 <c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
 <c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
 <c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 
+<fieldset><legend><ssf:nlt tag="${ssItemCaption}"/></legend>
 <table class="ss_transparent" style="border-spacing: 10px 2px;">
 
 <c:forEach var="element" items="${propertyValues__elements}">
@@ -80,12 +77,12 @@
  </tr>
  </c:if>
 </c:forEach>
+</table>
 
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
        configElement="<%= item %>" 
        configJspStyle="${ssConfigJspStyle}" 
        entry="${ssDefinitionEntry}" />
  
-</table>
-
+</fieldset>
  

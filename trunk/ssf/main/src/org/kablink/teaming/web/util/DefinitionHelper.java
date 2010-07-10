@@ -451,20 +451,25 @@ public class DefinitionHelper {
     }
     
     public static String findFormType(Document definitionConfig) {
-    	Node formTypeNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']/properties/property[@name='type']/@value");
+    	Node formTypeNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']/properties/property[@name='type']/@value");
     	if(formTypeNode != null) { return formTypeNode.getStringValue();}
     	return null;
     }
     
     public static String findCaptionForAttribute(String attributeName, Document definitionConfig)
     {
-    	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]/properties/property[@name='caption']/@value");
+    	Node valueNode = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]/properties/property[@name='caption']/@value");
     	if (valueNode == null) return "";
     	return valueNode.getStringValue();
     }
     
+    public static Element findAttribute(String attributeName, Document definitionConfig) {
+    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	return node;
+    }
+    
     public static String findAttributeType(String attributeName, Document definitionConfig) {
-    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) return "";
     	return node.attributeValue("name");
     }
@@ -482,7 +487,7 @@ public class DefinitionHelper {
   	if (definitionConfig == null) {
     		return Collections.EMPTY_MAP;
     	}
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+  		Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}    	
@@ -516,7 +521,7 @@ public class DefinitionHelper {
     }
     
     public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -555,7 +560,7 @@ public class DefinitionHelper {
     }
     
     public static List findRadioSelections(String attributeName, Document definitionConfig) {
-    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_LIST;
     	}
@@ -588,7 +593,7 @@ public class DefinitionHelper {
     	return result;
     }
     public static Map findRadioSelectionsAsMap(String attributeName, Document definitionConfig) {
-       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
+       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) {
     		return Collections.EMPTY_MAP;
     	}
@@ -642,7 +647,7 @@ public class DefinitionHelper {
 	public static List findPlacesAttributes(Document definitionConfig) {
 		List result = new ArrayList();
 		
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@type='data' and @name='places']/properties/property[@name='name']/@value");
+    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and @name='places']/properties/property[@name='name']/@value");
     	if (nodes == null) {
     		return result;
     	}
@@ -655,7 +660,14 @@ public class DefinitionHelper {
     	return result;
 	}
     
-	
+	public static String getItemProperty(Element item, String name) {
+		String result = "";
+		Element propertyEle = (Element)item.selectSingleNode("./properties/property[@name='"+name+"']");
+		if (propertyEle != null) {
+			result = propertyEle.attributeValue("value", "");
+		}
+		return result;
+	}
 	public static String getCaptionFromElement(Definition def, String eleName, String type, 
 			String defaultCaption) {
 		Document defDoc = def.getDefinition();

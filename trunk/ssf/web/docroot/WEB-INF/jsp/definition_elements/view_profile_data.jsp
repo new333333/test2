@@ -45,52 +45,52 @@
 		String itemType = (String) item.attributeValue("formItem", "");
 	
 		if (itemType.equals("profileName")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" /><%
 			
 		} else if (itemType.equals("profileTimeZone")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" /><%
 	
 		} else if (itemType.equals("profileLocale")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_locale.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_profile_data_locale.jsp" /><%
 		} else if (itemType.equals("text")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" /><%
 			
 		} else if (itemType.equals("description")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" /><%
 		} else if (itemType.equals("htmlEditorTextarea")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" /><%
 			
 		} else if (itemType.equals("url")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" /><%
 			
 		} else if (itemType.equals("checkbox")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" /><%
 			
 		} else if (itemType.equals("selectbox")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_selectbox.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_selectbox.jsp" /><%
 			
 		} else if (itemType.equals("radio")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_radio.jsp" /><%
 			
 		} else if (itemType.equals("date")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" /><%
 			
 		} else if (itemType.equals("date_time")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" /><%
 	
 		} else if (itemType.equals("file")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" /><%
 			
 		} else if (itemType.equals("graphic") || itemType.equals("profileEntryPicture")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%			
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" /><%			
 		} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%			
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" /><%			
 		} else if (itemType.equals("group_list")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_group_list.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_group_list.jsp" /><%
 		} else if (itemType.equals("team_list")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_team_list.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_team_list.jsp" /><%
 		} else if (itemType.equals("event")) {
-			%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+			%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" /><%
 		} else  {
 			%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_element.jsp" %><%
 		}

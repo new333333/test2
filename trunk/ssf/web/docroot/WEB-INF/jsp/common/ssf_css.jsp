@@ -2311,6 +2311,14 @@ div.ss_thumbnail_profile div {
 div.ss_thumbnail_profile img {
     width: 75px;
 	}    	
+div.ss_thumbnail_profile_high div {
+    height: 75px;
+    margin-left:   5px;
+    margin-right:  5px;
+	}
+div.ss_thumbnail_profile_high img {
+    height: 75px;
+	}    	
 div.ss_thumbnail_small img {
     width: 75px;
     height: 75px;

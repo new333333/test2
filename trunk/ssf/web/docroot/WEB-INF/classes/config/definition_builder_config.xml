@@ -1123,15 +1123,8 @@
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
 				<exclude name="description"/>
-				<exclude name="selectbox"/>
-				<exclude name="checkbox"/>
 				<exclude name="hidden"/>
-				<exclude name="graphic"/>
-				<exclude name="file"/>
-				<exclude name="radio"/>
-				<exclude name="user_list"/>
 				<exclude name="group_list"/>
-				<exclude name="team_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
 			<option_select path="//item[@category='userFormLayout']" optionCaption="__layout_options" />
@@ -2213,7 +2206,15 @@
 			<option name="profileState" caption="__state" initial="true"/>
 			<option name="profilePostalCode" caption="__postalCode" initial="true"/>
 			<option_select path="//item[@category='profileEntryData']" />
-		</options>		<jsps>
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="attachFiles"/>
+				<exclude name="description"/>
+				<exclude name="hidden"/>
+				<exclude name="group_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
+		</options>		
+		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
 		</jsps>
 	</item>	
@@ -2228,6 +2229,13 @@
 			<option name="profileLocation" initial="true" />
 			<option name="profileOffice" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="attachFiles"/>
+				<exclude name="description"/>
+				<exclude name="hidden"/>
+				<exclude name="group_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
@@ -2250,6 +2258,13 @@
 			<option name="profileInstantMessage" initial="false" />
 			<option name="profilePresence" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="attachFiles"/>
+				<exclude name="description"/>
+				<exclude name="hidden"/>
+				<exclude name="group_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
@@ -2268,6 +2283,13 @@
 			<option name="profileCompetencies" initial="true" />
 			<option name="profileQualifications" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="attachFiles"/>
+				<exclude name="description"/>
+				<exclude name="hidden"/>
+				<exclude name="group_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_heading.jsp" />
