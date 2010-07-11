@@ -178,6 +178,13 @@ if (self != self.parent) {
 			}
 		}
 	} catch(e) {}
+	//Check if this is a full teaming view about to be shown inside the Teaming content frame
+	try {
+		if ( window.name == 'gwtContentIframe' && typeof ss_GWT_main_page != "undefined") {
+			// We are trying to load the full UI inside the GWT content frame
+			self.parent.location.href = self.location.href;
+		}
+	} catch(e) {}
 }
 </script>
 

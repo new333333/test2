@@ -36,6 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value="${ssProductName}" scope="request"/>
 <c:set var="ss_skip_head_close" value="true" scope="request"/>
+<c:set var="ss_GWT_main_page" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
