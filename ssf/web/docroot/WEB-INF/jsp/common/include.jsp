@@ -44,6 +44,11 @@
     --%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
+<c:if test="${ss_GWT_main_page}">
+<script type="text/javascript">
+var ss_GWT_main_page = true;
+</script>
+</c:if>
 <%-- Variables that can be overridden in the following callout --%><%--
 --%><c:set var="ss_watermark" value="" scope="request"/><%--
 --%><c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/><%--
