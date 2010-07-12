@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
@@ -144,6 +145,7 @@ public interface GwtRpcServiceAsync
 	public void getDefaultFolderDefinitionId( String             binderId,                                   AsyncCallback<String>                callback );
 	public void getFavorites(                                                                                AsyncCallback<List<FavoriteInfo>>    callback );
 	public void getMyTeams(                   HttpRequestInfo    ri,                                         AsyncCallback<List<TeamInfo>>        callback );
+	public void getMyGroups(                  HttpRequestInfo    ri,                                         AsyncCallback<List<GroupInfo>>        callback );
 	public void getRecentPlaces(              HttpRequestInfo    ri,                                         AsyncCallback<List<RecentPlaceInfo>> callback );
 	public void getSavedSearches(                                                                            AsyncCallback<List<SavedSearchInfo>> callback );
 	public void getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId,      AsyncCallback<TeamManagementInfo>    callback );
@@ -167,6 +169,7 @@ public interface GwtRpcServiceAsync
 	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback);
 	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );
+	public void getGroups(			HttpRequestInfo ri, String binderId, AsyncCallback<List<GroupInfo>> callback );
 	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback);
 	public void isPresenceEnabled(                   AsyncCallback<Boolean>			callback);
 	public void getImUrl(			String binderId, AsyncCallback<String> 			callback);

@@ -65,6 +65,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -89,6 +90,7 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
+import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -114,6 +116,7 @@ import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -207,6 +210,34 @@ public class GwtServerHelper {
 		 * @return
 		 */
 		public int compare(TeamInfo ti1, TeamInfo ti2) {
+			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
+		}
+	}	   
+	   
+	private static class GroupInfoComparator implements Comparator<GroupInfo> {
+		/**
+		 * Class constructor.
+		 */
+		public GroupInfoComparator() {
+			// Nothing to do.
+		}
+
+	      
+		/**
+		 * Implements the Comparator.compare() method on two
+		 * GroupInfo's.
+		 *
+		 * Returns:
+		 *    -1 if ti1 <  ti2;
+		 *     0 if ti1 == ti2; and
+		 *     1 if ti1 >  ti2.
+		 *     
+		 * @param ti1
+		 * @param ti2
+		 * 
+		 * @return
+		 */
+		public int compare(GroupInfo ti1, GroupInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
 		}
 	}	   
@@ -1788,6 +1819,16 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns information about the groups the current user is a member of.
+	 * 
+	 * @return
+	 */
+	public static List<GroupInfo> getMyGroups(HttpServletRequest request, AllModulesInjected bs) {
+		User user = getCurrentUser();
+		return getGroups(request, bs, user.getId());
+	}
+
+	/**
 	 * Returns information about the teams the current user is a member of.
 	 * 
 	 * @return
@@ -1980,6 +2021,46 @@ public class GwtServerHelper {
 		else {
 			reply = "";
 		}
+		return reply;
+	}
+	
+	/**
+	 * Returns information about the teams of a specific user
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
+		// Allocate an ArrayList<GroupInfo> to hold the groups.
+		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
+
+		// Scan the groups the current user is a member of...
+		List<Long> userIds = new ArrayList<Long>();
+		userIds.add(userId);
+		List users = ResolveIds.getPrincipals(userIds, true);
+		if (!users.isEmpty()) {
+			Principal p = (Principal)users.get(0);
+			List groups = p.getMemberOf();
+			for (Iterator<Principal> myGroupsIT = groups.iterator(); myGroupsIT.hasNext(); ) {
+				// ...adding a GroupInfo for each to the reply list.
+				Group myGroup = (Group)myGroupsIT.next();
+				GroupInfo gi = new GroupInfo();
+				gi.setId(myGroup.getId());
+				gi.setTitle(myGroup.getTitle());
+				reply.add(gi);
+			}
+		}
+		
+		// If there's more than one team being returned...
+		if (1 < reply.size()) {
+			// ...sort them.
+			Collections.sort(reply, new GroupInfoComparator());
+		}
+		
+		// If we get here, reply refers to the ArrayList<GroupInfo> of
+		// the groups the current user is a member of.  Return it.
 		return reply;
 	}
 	

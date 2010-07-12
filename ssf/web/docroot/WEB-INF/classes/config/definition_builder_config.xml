@@ -860,7 +860,6 @@
 			<option name="graphic" />
 			<option name="file" />
 			<option name="attachFiles" />
-			<option name="profileAboutMe" />
 			<option_select path="//item[@category='profileData']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
@@ -1542,197 +1541,6 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileWebsite" caption="__website" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__website"/>
-			<property name="name" caption="__data_name" type="text" value="website" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-	
-	<item name="profileResponsibilities" caption="__responsibilities" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__responsibilities"/>
-			<property name="name" caption="__data_name" type="text" value="responsibilities" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="height" caption="__height_px" type="text"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="minimal" value="minimal">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-	
-	<item name="profileInterests" caption="__interests" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="name" caption="__data_name" type="text" value="interests" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="caption" caption="__caption" type="text" value="__interests"/>
-			<property name="height" caption="__height_px" type="text"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="minimal" value="minimal">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-
-    <item name="profileJobFunctions" caption="__jobFunction" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__jobFunction"/>
-			<property name="name" caption="__data_name" type="text" value="jobFunction" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-	
-	<item name="profileCompetencies" caption="__competencies" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__competencies"/>
-			<property name="name" caption="__data_name" type="text" value="competencies" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-	
-	<item name="profileQualifications" caption="__qualifications" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__qualifications"/>
-			<property name="name" caption="__data_name" type="text" value="qualifications" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-
-	<item name="profileEducation" caption="__education" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__education"/>
-			<property name="name" caption="__data_name" type="text" value="education" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="toolbarType" caption="__toolbarType" type="selectbox" 
-				  default="standard" value="standard">
-				<option name="standard" caption="__toolbarType_standard" />
-				<option name="minimal" caption="__toolbarType_minimal" />
-			</property>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
-				<help>ihelp.designers.field_modification</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-
 	<item name="profileWorkPhone" caption="__workPhone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
@@ -1974,26 +1782,6 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
-	
-	<item name="profileAboutMe" caption="__aboutMe" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__aboutMe"/>
-			<property name="name" caption="__data_name" type="text" value="aboutMe" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="width" caption="__textboxWidth" type="text" />
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
@@ -2275,13 +2063,6 @@
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options optionCaption="__profile_options">
-			<option name="profileWebsite" initial="true" />
-			<option name="profileResponsibilities" initial="true" />
-			<option name="profileJobFunctions" initial="true" />
-			<option name="profileInterests" initial="true" />
-			<option name="profileEducation" initial="true" />
-			<option name="profileCompetencies" initial="true" />
-			<option name="profileQualifications" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
 				<exclude name="attachFiles"/>
@@ -2348,13 +2129,13 @@
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options optionCaption="__profile_options">
-			<option name="profileWebsite" initial="true" />
-			<option name="profileResponsibilities" initial="true" />
-			<option name="profileJobFunctions" initial="true" />
-			<option name="profileInterests" initial="true" />
-			<option name="profileEducation" initial="true" />
-			<option name="profileCompetencies" initial="true" />
-			<option name="profileQualifications" initial="true" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
+				<exclude name="attachFiles"/>
+				<exclude name="description"/>
+				<exclude name="hidden"/>
+				<exclude name="group_list"/>
+				<exclude name="external_user_list"/>
+			</option_select>
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 	</item>	
@@ -2373,7 +2154,7 @@
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
 		<options>
-			<option name="profileAboutMe" initial="true"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 			<option_select definitionType="7" path="//item[@category='userSideViewLayout']" optionCaption="__layout_options" />
 		</options>
 	</item>
@@ -2387,6 +2168,12 @@
 	<item name="profileTeams" caption="__teams" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__teams"/>
+		</properties>
+	</item>
+
+	<item name="profileGroups" caption="__groups" canBeDeleted="true" multipleAllowed="false" category="userSideViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__groups"/>
 		</properties>
 	</item>
 

@@ -310,6 +310,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageTagThisWorkspace();
 	String mainMenuManageViewTeam();
 	String mainMenuMyTeamsNoTeams();
+	String mainMenuMyGroupsNoGroups();
 	String mainMenuRecentPlacesNoPlaces();
 	String mainMenuSearchButtonAlt();
 	String mainMenuSearchOptionsAdvancedSearch();

@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
+import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -149,6 +150,7 @@ public interface GwtRpcService extends RemoteService
 	public String                getDefaultFolderDefinitionId( String binderId );
 	public List<FavoriteInfo>    getFavorites();
 	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo    ri                                         );
+	public List<GroupInfo>       getMyGroups(                  HttpRequestInfo    ri                                         );
 	public List<RecentPlaceInfo> getRecentPlaces(              HttpRequestInfo    ri                                         );
 	public List<SavedSearchInfo> getSavedSearches();
 	public TeamManagementInfo    getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId      );
@@ -173,6 +175,7 @@ public interface GwtRpcService extends RemoteService
 	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId);
 	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
+	public List<GroupInfo> 	getGroups(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public String 			getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	public Boolean 			isPresenceEnabled();
 	public String 			getImUrl( String binderId ) throws GwtTeamingException;
