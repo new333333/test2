@@ -446,10 +446,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
+    		long begin = System.currentTimeMillis();
     		try {
     			contentFilters[i].filter(binder, entity, fileName, is);
     		}
     		finally {
+    			end(begin, contentFilters[i]);
     			try {
     				is.close();
     			}
@@ -458,6 +460,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     }
     
+	private void end(long begin, ContentFilter filter) {
+		if(debugEnabled) {
+			long diff = System.currentTimeMillis() - begin;
+			logger.debug(diff + " ms, filtered with " + filter.getClass().getSimpleName());
+		}	
+	}
+
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
 		if(contentFilters == null)
