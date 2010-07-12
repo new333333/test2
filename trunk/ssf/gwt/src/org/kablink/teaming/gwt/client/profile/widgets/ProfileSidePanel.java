@@ -55,6 +55,7 @@ public class ProfileSidePanel extends Composite {
 	private ProfileRequestInfo profileRequestInfo;
 	private ProfileSectionPanel aboutMeSection;
 	private ProfileSectionPanel teamsSection;
+	private ProfileSectionPanel groupsSection;
 	private ProfileSectionPanel followingSection;
 	private ProfileSectionPanel savedSearches;
 	private FlowPanel content;
@@ -147,6 +148,11 @@ public class ProfileSidePanel extends Composite {
 		if (attrExist(cat, "profileTeams")) {
 			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams", actionTrigger);
 			content.add(teamsSection);
+		}
+
+		if (attrExist(cat, "profileGroups")) {
+			groupsSection = new ProfileGroupsPanel(profileRequestInfo, "Groups", actionTrigger);
+			content.add(groupsSection);
 		}
 
 		if (attrExist(cat, "profileFollowing")) {

@@ -81,6 +81,7 @@ import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
+import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -118,6 +119,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -1820,6 +1822,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getFavorites()
 	
 	/**
+	 * Returns information about the groups the current user is a member
+	 * of.
+	 * 
+	 * @return
+	 */
+	public List<GroupInfo> getMyGroups( HttpRequestInfo ri )
+	{
+		return GwtServerHelper.getMyGroups( getRequest( ri ), this );
+	}// end getMyGroups()
+	
+	/**
 	 * Returns information about the teams the current user is a member
 	 * of.
 	 * 
@@ -2574,6 +2587,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 	
+	/**
+	 * Returns Look up the user and return the list of groups they belong to.
+	 * 
+	 * @param userId  The userId being viewed
+	 * 
+	 * @return
+	 * @throws GwtTeamingException 
+	 */
+	public List<GroupInfo> getGroups( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	{
+		try {
+			Long userId = null;
+			Principal p = null;
+
+			if (binderId != null) {
+				p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+			}
+			
+			if (p != null){
+				userId = p.getId();
+			}
+			
+			return GwtServerHelper.getGroups( getRequest( ri ), this, userId );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		} 
+		
+	}// end getMyGroups()
+
 	/**
 	 * Returns Look up the workspace owner and return the list of teams they belong to.
 	 * 

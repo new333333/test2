@@ -363,7 +363,9 @@ public class GwtProfileHelper {
 				//Read the custom attribute
 				CustomAttribute cAttr = u.getCustomAttribute(name);
 				//Convert the Custom Attribute to a Profile Attribute for serialization purposes
-				convertCustomAttrToProfileAttr(request, u, cAttr, pAttr, name, profile);
+				if (cAttr != null) {
+					convertCustomAttrToProfileAttr(request, u, cAttr, pAttr, name, profile);
+				}
 				
 				//done here, continue to the next attribute
 				continue;
@@ -395,7 +397,13 @@ public class GwtProfileHelper {
 		
 		//Process the known attribute types
 		if ("description".equals(attrType) || "htmlEditorTextarea".equals(attrType)) {
-			Description desc = (Description) cAttr.getValue();
+			Description desc = null;
+			Object value = cAttr.getValue();
+			if (value instanceof String) {
+				desc = new Description((String)value);
+			} else if (value instanceof Description) {
+				desc = (Description) cAttr.getValue();
+			}
 			if (desc != null) {
 				String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
 				pAttr.setValue(text);
