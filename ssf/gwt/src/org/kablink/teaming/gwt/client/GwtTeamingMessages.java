@@ -270,7 +270,6 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
 	String mainMenuAltSearchOptions();
-	String mainMenuBarActions();
 	String mainMenuBarFolder();
 	String mainMenuBarManageSavedSearches();
 	String mainMenuBarMyFavorites();
@@ -278,6 +277,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarMyWorkspace();
 	String mainMenuBarRecentPlaces();
 	String mainMenuBarTopRanked();
+	String mainMenuBarViews();
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
@@ -293,6 +293,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgImportCalendar();
 	String mainMenuFolderOptionsNoOptions();
 	String mainMenuManageEditTeam();
+	String mainMenuManageEmailTeam();
 	String mainMenuManageFolderOptions();
 	String mainMenuManageSavedSearchesDlgDeleteSearch();
 	String mainMenuManageSavedSearchesDlgErrorSearchDuplicate();
@@ -304,7 +305,6 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuManageSavedSearchesDlgSavedSearches();
 	String mainMenuManageSavedSearchesDlgSaveSearch();
 	String mainMenuManageSavedSearchesDlgWarningNameTruncated();
-	String mainMenuManageSendTeamEmail();
 	String mainMenuManageStartTeamConference();
 	String mainMenuManageTagThisFolder();
 	String mainMenuManageTagThisWorkspace();
@@ -345,6 +345,10 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuTopRankedDlgRating();
 	String mainMenuTopRankedDlgTopRankedPlaces();
 	String mainMenuTopRankedDlgTopRankedPeople();
+	String mainMenuViewsWhatsNewInFolder();
+	String mainMenuViewsWhatsNewInWorkspace();
+	String mainMenuViewsWhatsUnreadInFolder();
+	String mainMenuViewsWhatsUnreadInWorkspace();
 
 	// Strings used in the workspace tree control.
 	String treeCloseBreadCrumbs();

@@ -96,7 +96,7 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 		m_rpcService	= GwtTeaming.getRpcService();
 		
 		// ...and initialize everything else.
-		addStyleName("mainMenuPopup_Core");
+		addStyleName("mainMenuPopup_Core roundcornerSM-bottom");
 		GwtClientHelper.rollDownPopup(this);
 
 		// ...create the popup's innards...
