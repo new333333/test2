@@ -40,7 +40,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.mainmenu.ActionsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -55,6 +54,7 @@ import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.TopRankedDlg;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
+import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
@@ -166,28 +166,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_actionHandlers.add( actionHandler );
 	}
 
-	/*
-	 * Adds the Actions item to the context based portion of the menu
-	 * bar.
-	 */
-	private void addActionsToContext(List<ToolbarItem> toolbarItemList) {
-		final ActionsMenuPopup amp = new ActionsMenuPopup(this);
-		amp.setCurrentBinder(m_contextBinder);
-		amp.setToolbarItemList(toolbarItemList);
-		if (amp.shouldShowMenu()) {
-			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuActions", m_messages.mainMenuBarActions(), true);
-			actionsBox.addClickHandler(
-				new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						if (amp.isShowing())
-						     amp.hideMenu();
-						else amp.showMenu(actionsBox);
-					}
-				});
-			m_contextPanel.add(actionsBox);
-		}
-	}
-	
 	/*
 	 * Adds the "Close Administration" button to the common portion of the menu bar.
 	 * bar.
@@ -454,6 +432,28 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_contextPanel.add(topRankedBox);
 	}
 
+	/*
+	 * Adds the Views item to the context based portion of the menu
+	 * bar.
+	 */
+	private void addViewsToContext(List<ToolbarItem> toolbarItemList) {
+		final ViewsMenuPopup vmp = new ViewsMenuPopup(this);
+		vmp.setCurrentBinder(m_contextBinder);
+		vmp.setToolbarItemList(toolbarItemList);
+		if (vmp.shouldShowMenu()) {
+			final MenuBarBox actionsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), true);
+			actionsBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						if (vmp.isShowing())
+						     vmp.hideMenu();
+						else vmp.showMenu(actionsBox);
+					}
+				});
+			m_contextPanel.add(actionsBox);
+		}
+	}
+	
 	/**
 	 * Called to remove the context based menu items (Workspace,
 	 * Folder, ...) from the menu bar.
@@ -511,7 +511,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 									addTopRankedToContext();
 									addManageSavedSearchesToContext(searchTabId);
 								}
-								addActionsToContext(toolbarItemList);
+								addViewsToContext(toolbarItemList);
 							}
 						});
 					}

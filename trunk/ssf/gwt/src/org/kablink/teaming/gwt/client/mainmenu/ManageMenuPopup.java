@@ -62,26 +62,23 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private BinderInfo m_currentBinder;				// The currently selected binder.
 	private int m_menuLeft;							// Left coordinate of where the menu is to be placed.
 	private int m_menuTop;							// Top  coordinate of where the menu is to be placed.
-	private List<ToolbarItem> m_actionsBucket;		// List of action        items for the context based menu.
-	private List<ToolbarItem> m_configBucket;		// List of configuration items for the context based menu.
-	private List<ToolbarItem> m_ignoreBucket;		// List of ignored       items for the context based menu.
-	private List<ToolbarItem> m_miscBucket;			// List of miscellaneous items for the context based menu.
-	private List<ToolbarItem> m_showBucket;			// List of show          items for the context based menu.
-	private List<ToolbarItem> m_teamBucket;			// List of team          items for the context based menu.
+	private List<ToolbarItem> m_actionsBucket;		// List of action         items for the context based menu.
+	private List<ToolbarItem> m_configBucket;		// List of configuration  items for the context based menu.
+	private List<ToolbarItem> m_ignoreBucket;		// List of ignored        items for the context based menu.
+	private List<ToolbarItem> m_miscBucket;			// List of miscellaneous  items for the context based menu.
+	private List<ToolbarItem> m_teamAndEmailBucket;	// List of team and email items for the context based menu.
 	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
 	private TeamManagementInfo m_tmi;				// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem m_brandingTBI;				// The branding                  toolbar item, if found.
 	private ToolbarItem m_calendarImportTBI;		// The calendar import           toolbar item, if found.
 	private ToolbarItem m_commonActionsTBI;			// The common actions            toolbar item, if found.
 	private ToolbarItem m_configureColumnsTBI;		// The configure columns         toolbar item, if found.
+	private ToolbarItem m_emailContributorsTBI;		// The email contributors        toolbar item, if found.
 	private ToolbarItem m_emailNotificationTBI;		// The email notification        toolbar item, if found.
 	private ToolbarItem m_folderViewsTBI;			// The folder views              toolbar item, if found.
 	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
 	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
 	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
-	private ToolbarItem m_whatsNewTBI;				// The what's new                toolbar item, if found.
-	private ToolbarItem m_whatsUnreadTBI;			// The what's unread             toolbar item, if found.
-	private ToolbarItem m_whoHasAccessTBI;			// The who has access            toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -175,23 +172,14 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		ToolbarItem localTBI;
 
 		// Allocate the bucket lists.
-		m_actionsBucket = new ArrayList<ToolbarItem>();
-		m_configBucket  = new ArrayList<ToolbarItem>();
-		m_ignoreBucket  = new ArrayList<ToolbarItem>();
-		m_miscBucket    = new ArrayList<ToolbarItem>();
-		m_showBucket    = new ArrayList<ToolbarItem>();
-		m_teamBucket    = new ArrayList<ToolbarItem>();
+		m_actionsBucket      = new ArrayList<ToolbarItem>();
+		m_configBucket       = new ArrayList<ToolbarItem>();
+		m_ignoreBucket       = new ArrayList<ToolbarItem>();
+		m_miscBucket         = new ArrayList<ToolbarItem>();
+		m_teamAndEmailBucket = new ArrayList<ToolbarItem>();
 
 		// File the buckets in the order things will appear in the
-		// menu.  Start with the show section...
-		if (null != m_whatsNewTBI)     m_showBucket.add(m_whatsNewTBI);
-		if (null != m_whatsUnreadTBI)  m_showBucket.add(m_whatsUnreadTBI);
-		if (null != m_whoHasAccessTBI) m_showBucket.add(m_whoHasAccessTBI);
-		addNestedItemFromUrl(m_showBucket, m_commonActionsTBI, "configure_access_control");
-		addNestedItemFromUrl(m_showBucket, m_commonActionsTBI, "activity_report");
-		addNestedItemFromUrl(m_showBucket, m_commonActionsTBI, "binder_report");
-
-		// ...then the actions section...
+		// menu.  Start with the actions section...
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace");
@@ -210,7 +198,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.setName("viewTeam");
 				localTBI.setTitle(m_messages.mainMenuManageViewTeam());
 				localTBI.setTeamingAction(TeamingAction.VIEW_TEAM_MEMBERS);
-				m_teamBucket.add(localTBI);
+				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isManageAllowed()) {
 				localTBI = new ToolbarItem();
@@ -220,17 +208,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.addQualifier("popup", "true");
 				localTBI.addQualifier("popupHeight", "500");
 				localTBI.addQualifier("popupWidth",  "600");
-				m_teamBucket.add(localTBI);
-			}
-			if (m_tmi.isSendMailAllowed()) {
-				localTBI = new ToolbarItem();
-				localTBI.setName("mailTeam");
-				localTBI.setTitle(m_messages.mainMenuManageSendTeamEmail());
-				localTBI.setUrl(m_tmi.getSendMailUrl());
-				localTBI.addQualifier("popup", "true");
-				localTBI.addQualifier("popupHeight", "500");
-				localTBI.addQualifier("popupWidth",  "600");
-				m_teamBucket.add(localTBI);
+				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isTeamMeetingAllowed()) {
 				localTBI = new ToolbarItem();
@@ -241,7 +219,18 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.addQualifier("popupHeight", "500");
 				localTBI.addQualifier("popupWidth",  "600");
 			}
+			if (m_tmi.isSendMailAllowed()) {
+				localTBI = new ToolbarItem();
+				localTBI.setName("mailTeam");
+				localTBI.setTitle(m_messages.mainMenuManageEmailTeam());
+				localTBI.setUrl(m_tmi.getSendMailUrl());
+				localTBI.addQualifier("popup", "true");
+				localTBI.addQualifier("popupHeight", "500");
+				localTBI.addQualifier("popupWidth",  "600");
+				m_teamAndEmailBucket.add(localTBI);
+			}
 		}
+		if (null != m_emailContributorsTBI) m_teamAndEmailBucket.add(m_emailContributorsTBI);
 		
 		// ...then the miscellaneous section...
 		if (null != m_trackPersonTBI) m_miscBucket.add(m_trackPersonTBI);
@@ -254,14 +243,16 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		}
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_definitions");
 		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "config_email");
+		addNestedItemFromUrl(m_configBucket, m_commonActionsTBI, "configure_access_control");
 		
 		// When all is said and done, where going to render anything
-		// that's left in the action menus from the server at the
-		// bottom of the manage menu.  There are certain, known items
-		// that we don't want to render anywhere.  The following will
-		// see to it that they're ignored by removing them from the
-		// appropriate lists.
-		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");
+		// that's left in the menus from the server at the bottom of
+		// the manage menu.  There are certain, known items that we
+		// don't want to render here.  The following will see to it
+		// that they're ignored by removing them from the appropriate
+		// lists.
+		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "site_administration");	// This is handled in the masthead.
+		addNestedItemFromUrl(m_ignoreBucket, m_commonActionsTBI, "binder_report");			// This is in the views menu.
 	}
 	
 	/*
@@ -342,10 +333,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("addBinder"));
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("configuration"));
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("folders"));
-					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("reports"));
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("workspace"));
 				}
-				m_whoHasAccessTBI = tbi.getNestedToolbarItem("whohasaccess");
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssFolderViewsToolbar")) {
@@ -354,11 +343,6 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				if (null != categoriesTBI) {
 					m_folderViewsTBI = categoriesTBI.getNestedToolbarItem("folderviews");
 				}
-			}
-			
-			else if (tbName.equalsIgnoreCase("ss_whatsNewToolbar")) {
-				m_whatsNewTBI    = tbi.getNestedToolbarItem("whatsnew");
-				m_whatsUnreadTBI = tbi.getNestedToolbarItem("unseen");
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssEmailSubscriptionToolbar")) {
@@ -376,11 +360,12 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			else if (tbName.equalsIgnoreCase("ssGwtMiscToolbar")) {
-				m_brandingTBI         = tbi.getNestedToolbarItem("branding");
-				m_configureColumnsTBI = tbi.getNestedToolbarItem("configureColumns");
-				m_shareThisTBI        = tbi.getNestedToolbarItem("share");
-				m_trackBinderTBI      = tbi.getNestedToolbarItem("track");
-				m_trackPersonTBI      = tbi.getNestedToolbarItem("trackPerson");
+				m_brandingTBI          = tbi.getNestedToolbarItem("branding");
+				m_configureColumnsTBI  = tbi.getNestedToolbarItem("configureColumns");
+				m_emailContributorsTBI = tbi.getNestedToolbarItem("sendEmail");
+				m_shareThisTBI         = tbi.getNestedToolbarItem("share");
+				m_trackBinderTBI       = tbi.getNestedToolbarItem("track");
+				m_trackPersonTBI       = tbi.getNestedToolbarItem("trackPerson");
 			}
 		}
 		
@@ -389,13 +374,11 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		boolean reply =
 			((null != m_configureColumnsTBI)                                                 ||
 			 (null != m_brandingTBI)                                                         ||
+			 (null != m_emailContributorsTBI)                                                ||
 			 (null != m_emailNotificationTBI)                                                ||
 			 (null != m_shareThisTBI)                                                        ||
 			 (null != m_trackBinderTBI)                                                      ||
 			 (null != m_trackPersonTBI)                                                      ||
-			 (null != m_whatsNewTBI)                                                         ||
-			 (null != m_whatsUnreadTBI)                                                      ||
-			 (null != m_whoHasAccessTBI)                                                     ||
 			((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
 			((null != m_commonActionsTBI)    && m_commonActionsTBI.hasNestedToolbarItems())  ||
 			((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2)));
@@ -463,30 +446,17 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		
 		// Have we constructed the menu's contents yet?
 		if (!(hasContent())) {
-			// No!  We need to construct it now.  First the show
-			// section...
-			addContextMenuItemsFromList(IDBASE, m_showBucket);
-
-			// Then the actions section...
-			boolean hasActionsSection = (!(m_actionsBucket.isEmpty()));
-			if (!hasActionsSection) {
-				hasActionsSection =
-					(((null != m_calendarImportTBI)   && m_calendarImportTBI.hasNestedToolbarItems()) ||
-					 ((null != m_folderViewsTBI)      && m_folderViewsTBI.hasNestedToolbarItems(2)));
-			}
-			if (hasActionsSection && isSpacerNeeded()) {
-				// ...and add a spacer when required.
-				addSpacerMenuItem();
-			}
+			// No!  We need to construct it now.  First the actions
+			// section.
 			addContextMenuItemsFromList(IDBASE, m_actionsBucket);
 			
-			// Then the team section...
-			boolean hasTeamSection = (!(m_teamBucket.isEmpty()));
-			if (hasTeamSection && isSpacerNeeded()) {
+			// Then the team and email section...
+			boolean hasTeamAndEmailSection = (!(m_teamAndEmailBucket.isEmpty()));
+			if (hasTeamAndEmailSection && isSpacerNeeded()) {
 				// ...and add a spacer when required.
 				addSpacerMenuItem();
 			}
-			addContextMenuItemsFromList(IDBASE, m_teamBucket);
+			addContextMenuItemsFromList(IDBASE, m_teamAndEmailBucket);
 			
 			// Then the miscellaneous section...
 			boolean hasMiscSection = (!(m_miscBucket.isEmpty()));
