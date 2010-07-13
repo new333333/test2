@@ -451,7 +451,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			contentFilters[i].filter(binder, entity, fileName, is);
     		}
     		finally {
-    			end(begin, contentFilters[i]);
+    			endFiltering(begin, fileName, contentFilters[i]);
     			try {
     				is.close();
     			}
@@ -460,10 +460,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     }
     
-	private void end(long begin, ContentFilter filter) {
+	private void endFiltering(long begin, String fileName, ContentFilter filter) {
 		if(debugEnabled) {
 			long diff = System.currentTimeMillis() - begin;
-			logger.debug(diff + " ms, filtered with " + filter.getClass().getSimpleName());
+			logger.debug(diff + " ms, " + fileName + " filtered with " + filter.getClass().getSimpleName());
 		}	
 	}
 
