@@ -1173,21 +1173,21 @@ table.ss_mouseOverInfo {
 	width:100%;
 	}	
 #ss_fixed_table{
-	border-bottom: solid 1px #CCC;
+	border-bottom: 1px solid #BBBBB9;
 	font-family: Arial, Helvetica, sans serif;
 	font-size: 10px;
 	color: #333;
 	}
 .ss_fixed_TD{
-	border-bottom: solid 1px #72AEB6;
+	border-bottom: solid 1px #D2D5D1;
 	font-size: 12px !important;
-	padding: 12px 2px 12px 2px;
+	padding: 4px 10px 2px 3px;
 	}
 .ss_fixed_TD_left{
 	padding-left: 4px;
 	}
 .ss_fixed_TH{
-	border: solid 1px #CCC;
+	border: 1px solid #D2D5D1;
 	padding:4px 2px 5px 5px;
 	}
 .ss_fixed_TH a:hover {
@@ -1197,7 +1197,7 @@ table.ss_mouseOverInfo {
 	text-align: center;
 	}
 .ss_fixed_odd_TR {
-	background-color: #E9F1F1;
+	background-color: #fff;
 	}
 .ss_fixed_odd_TR a:hover {
 	background-color: #9EC8CD;
@@ -1284,8 +1284,16 @@ li.ss_toolbar_gwtui {
   color: ${ss_toolbar_link_hover_color};
 }
 .ss_toolbar_inactive { 
-  color:#CECECE !important; 
-}
+	color:#b8b8b8 !important; 
+	background-color: #ededed;
+	padding: 2px 10px !important;
+	margin-right: 3px;
+	display: inline-block;
+	-moz-border-radius: 10px;
+	-webkit-border-radisu: 10px;
+	}
+span.ss_toolbar_inactive {
+	}
 
 
 li.ss_menu_item_highlighted {
