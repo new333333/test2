@@ -78,7 +78,7 @@
 
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <div id="gwtProfileDiv">
-	<div id="profilePhoto" class="ss_user_photo" style="display:none;">
+	<div id="profilePhoto" style="display:none;">
 	  <div class="ss_thumbnail_standalone ss_thumbnail_profile">
 		<div>
 			<a onclick="ss_showThisImage(this);return false;" href="javascript:;">
