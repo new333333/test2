@@ -126,9 +126,9 @@ public class ProfileSidePanel extends Composite {
 		//Add error Div
 		createMessageDiv();
 
-		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "htmlEditorTextarea", "aboutMe");
+		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "aboutMe");
 		if (aboutMeAttr != null) {
-			
+			Window.alert("Found aboutMeAttr: " + aboutMeAttr.getDataName());
 			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
 			aboutMeSection.setStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
@@ -224,9 +224,10 @@ public class ProfileSidePanel extends Composite {
 		return null;
 	}
 	
-	private ProfileAttribute findAttrByDataName(ProfileCategory cat, String catName, String dataName) {
+	private ProfileAttribute findAttrByDataName(ProfileCategory cat, String dataName) {
+		Window.alert("Cat: "+ cat.getName() + " dataName: " + dataName);
 		for (ProfileAttribute attr : cat.getAttributes()) {
-			if (attr.getName().equals(catName) && attr.getDataName().equals(dataName)) {
+			if (attr.getDataName().equals(dataName)) {
 				return attr;
 			}
 		}
