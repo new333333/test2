@@ -126,7 +126,8 @@ public class ProfileSidePanel extends Composite {
 		//Add error Div
 		createMessageDiv();
 
-		if (attrExist(cat, "profileAboutMe")) {
+		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "htmlEditorTextarea", "aboutMe");
+		if (aboutMeAttr != null) {
 			
 			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
 			aboutMeSection.setStyleName("aboutHeading");
@@ -134,11 +135,9 @@ public class ProfileSidePanel extends Composite {
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
 			topContent.add(aboutMeSection);
 			
-			ProfileAttribute attr = findAttrByName(cat, "profileAboutMe");
-			if(attr != null) {
-				if(attr.getValue() != null) {
-					String aboutMeText = (String) attr.getValue();
-					HTML aboutMeLabel = new HTML(aboutMeText);
+			if (aboutMeAttr != null) {
+				if (aboutMeAttr.getValue() != null) {
+					HTML aboutMeLabel = new HTML((String)aboutMeAttr.getValue());
 					aboutMeLabel.setStyleName("aboutDesc");
 					aboutMeSection.add(aboutMeLabel);
 				}
@@ -219,6 +218,15 @@ public class ProfileSidePanel extends Composite {
 	private ProfileAttribute findAttrByName(ProfileCategory cat, String name) {
 		for (ProfileAttribute attr : cat.getAttributes()) {
 			if (attr.getName().equals(name)) {
+				return attr;
+			}
+		}
+		return null;
+	}
+	
+	private ProfileAttribute findAttrByDataName(ProfileCategory cat, String catName, String dataName) {
+		for (ProfileAttribute attr : cat.getAttributes()) {
+			if (attr.getName().equals(catName) && attr.getDataName().equals(dataName)) {
 				return attr;
 			}
 		}
