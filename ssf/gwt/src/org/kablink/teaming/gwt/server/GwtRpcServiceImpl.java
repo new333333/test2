@@ -157,7 +157,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		GwtSearchResults searchResults = null;
 		
 		// Make sure we are dealing with the right search type.
-		switch ( searchCriteria.getSearchType() )
+		GwtSearchCriteria.SearchType searchType = searchCriteria.getSearchType();
+		switch ( searchType )
 		{
 		case APPLICATION:
 		case APPLICATION_GROUP:
@@ -239,6 +240,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case USER:
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
+			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
+				searchTermFilter.addPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
+			}
 			break;
 			
 		default:
@@ -255,7 +259,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
 			
 			// Perform the search based on the search type.
-			GwtSearchCriteria.SearchType searchType = searchCriteria.getSearchType();
 			switch ( searchType )
 			{
 			case APPLICATION:
@@ -885,7 +888,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 					// If we are searching for a person and this user
 					// is not a person...
 					user = users[0];
-					if ( ( searchType == GwtSearchCriteria.SearchType.PERSON ) && ( ! ( GwtServerHelper.isUserPerson( user ) ) ) )
+					if ( ( searchType == GwtSearchCriteria.SearchType.PERSON ) && ( ! ( user.isPerson() ) ) )
 					{
 						// ...ignore it.
 						user = null;
