@@ -75,9 +75,9 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
 					(parseInt(iframeDiv.style.height) != parseInt(iframeHeight) + ss_entryHistoryIframeOffset)) {
 				iframeDiv.style.height = parseInt(iframeHeight) + ss_entryHistoryIframeOffset + "px"
 				//Signal that the layout changed
-				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
-				if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
-				if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
+				//if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 300);
+				//if (self.parent.ssf_onLayoutChange) setTimeout("self.parent.ssf_onLayoutChange();", 100);
+				//if (self.parent.parent.ssf_onLayoutChange) setTimeout("self.parent.parent.ssf_onLayoutChange();", 100);
 			}
 		}
 	} catch(e) {alert(e)}
