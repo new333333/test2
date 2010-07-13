@@ -58,7 +58,12 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default text implementation ignores args.
         
-        Description val = (Description) getFirstElement(dataElemValue);
+        Object firstVal = getFirstElement(dataElemValue);
+        if (firstVal != null && firstVal instanceof String) {
+        	//Old code could have a String here. Turn it into a Description
+        	firstVal = new Description((String) firstVal);
+        }
+        Description val = (Description) firstVal;
         
         if(val == null)
             return new Field[0];
