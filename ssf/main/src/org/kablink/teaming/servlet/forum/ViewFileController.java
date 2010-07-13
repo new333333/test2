@@ -130,13 +130,12 @@ public class ViewFileController extends SAbstractController {
 				entity = getBinderModule().getBinder(entryId);
 				parent = (Binder) entity;
 			} else if (entryId != null) {
-				Long binderId = new Long(ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) {
-					entity = getFolderModule().getEntry(binderId, entryId);
+					entity = getFolderModule().getEntry(null, entryId);
 				} else if (entityType.equals(EntityIdentifier.EntityType.none)) {
 					//Try to figure out what type of entity this is
 					try {
-						entity = getFolderModule().getEntry(binderId, entryId);
+						entity = getFolderModule().getEntry(null, entryId);
 					} catch (Exception e) {}
 					if (entity == null) {
 						try {

@@ -223,8 +223,11 @@ public class SsfsUtil {
 		
 		return false;
 	}
-	
+
 	public static boolean supportsViewAsHtml(String relativeFilePath, String browserType) { 
+		return supportsViewAsHtml(relativeFilePath);
+	}
+	public static boolean supportsViewAsHtml(String relativeFilePath) { 
 		String extension = null;
 		
 		int index = relativeFilePath.lastIndexOf(".");
