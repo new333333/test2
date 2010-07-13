@@ -128,7 +128,6 @@ public class ProfileSidePanel extends Composite {
 
 		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "aboutMe");
 		if (aboutMeAttr != null) {
-			Window.alert("Found aboutMeAttr: " + aboutMeAttr.getDataName());
 			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
 			aboutMeSection.setStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
@@ -225,7 +224,6 @@ public class ProfileSidePanel extends Composite {
 	}
 	
 	private ProfileAttribute findAttrByDataName(ProfileCategory cat, String dataName) {
-		Window.alert("Cat: "+ cat.getName() + " dataName: " + dataName);
 		for (ProfileAttribute attr : cat.getAttributes()) {
 			if (attr.getDataName().equals(dataName)) {
 				return attr;
