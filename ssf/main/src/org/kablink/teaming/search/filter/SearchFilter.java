@@ -280,6 +280,13 @@ public class SearchFilter {
 		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
+	public void addAndPersonFlagFilter(String searchTerm) {
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
+		
+		addPersonFlagFilter(searchTerm);
+	}
+	
 	public void addPersonFlagFilter(String searchTerm) {
 		addFieldFilter(Constants.PERSONFLAG_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
