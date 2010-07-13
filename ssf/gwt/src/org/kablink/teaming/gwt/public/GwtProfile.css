@@ -364,6 +364,7 @@ padding:10px;
 color: #666666;
 font-size: 0.9em;
 text-transform: uppercase;
+float: left;
 }
 .aboutLabel {
 padding-right: 10px;
