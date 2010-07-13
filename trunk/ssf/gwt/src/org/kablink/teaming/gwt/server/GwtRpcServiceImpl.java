@@ -241,7 +241,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
 			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
-				searchTermFilter.addPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
+				searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
 			}
 			break;
 			
