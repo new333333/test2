@@ -359,6 +359,26 @@ public class WebUrlUtil {
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
 		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
 	}
+	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
+		if (entity == null) return "";
+		FileAttachment fAtt = null;
+		if (!fileName.equals("")) 
+			try {
+				fAtt = entity.getFileAttachment(fileName);
+			} catch (Exception e) {}
+		if (fAtt != null) {
+			StringBuffer webUrl = new StringBuffer(WebUrlUtil.getServletRootURL(req) + action + Constants.QUESTION);
+			webUrl.append(WebKeys.URL_BINDER_ID + Constants.EQUAL + entity.getParentBinder().getId().toString());
+			webUrl.append(Constants.AMPERSAND + WebKeys.URL_ENTRY_ID + Constants.EQUAL + entity.getId().toString());
+			webUrl.append(Constants.AMPERSAND + WebKeys.URL_ENTITY_TYPE + Constants.EQUAL + entity.getEntityType().name());
+			webUrl.append(Constants.AMPERSAND + WebKeys.URL_FILE_ID + Constants.EQUAL + fAtt.getId());
+			webUrl.append(Constants.AMPERSAND + WebKeys.URL_VIEW_TYPE + Constants.EQUAL + "html");
+			return webUrl.toString();
+		} else {
+			return null;
+		}
+	}
+
 	public static String getFileUrl(String webPath, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -367,22 +387,22 @@ public class WebUrlUtil {
 				fAtt = entity.getFileAttachment(fileName);
 			} catch (Exception e) {}
 		if (fAtt != null) {
-			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+			return WebUrlUtil.getFileUrl(webPath, action, entity.getId().toString(), 
 				entity.getEntityType().name(), String.valueOf(fAtt.getId()), String.valueOf(fAtt.getModification().getDate().getTime()), null, fileName);
 		} else {
-			return WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+			return WebUrlUtil.getFileUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), null, String.valueOf(new Date().getTime()) , null, fileName);
 			
 		}
 	}
 	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity, String fileId) {
 		if (entity == null) return "";
-		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+		return WebUrlUtil.getFileZipUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), fileId);			
 	}
 	public static String getFileZipUrl(String webPath, String action, DefinableEntity entity) {
 		if (entity == null) return "";
-		return WebUrlUtil.getFileZipUrl(webPath, WebKeys.ACTION_READ_FILE, entity.getId().toString(), 
+		return WebUrlUtil.getFileZipUrl(webPath, action, entity.getId().toString(), 
 					entity.getEntityType().name(), "");			
 	}
 	@SuppressWarnings("unchecked")

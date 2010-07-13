@@ -77,6 +77,7 @@ import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
@@ -501,6 +502,52 @@ public class GwtProfileHelper {
 				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM, user.getLocale());
 				pAttr.setValue(df.format(date));
 			}
+		} else if ("file".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
+				Set v = (Set) cAttr.getValue();
+				String html = "";
+				if (v != null && !v.isEmpty()) {
+		    		for (Iterator iter=v.iterator(); iter.hasNext();) {
+	    				Attachment attach = (Attachment) iter.next();
+		    			if (attach !=  null) {
+							String webPath;
+							String path;
+							String fileName;
+							
+							webPath = WebUrlUtil.getServletRootURL(request);
+							fileName = attach.toString();
+							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+							if (SsfsUtil.supportsViewAsHtml(fileName)) {
+								path = WebUrlUtil.getFileHtmlUrl(request, WebKeys.ACTION_VIEW_FILE, attach.getOwner().getEntity(), fileName);
+							}
+							if (!html.equals("")) html = html + "<br/>";
+							html = html + "<a target=\"_blank\" href=\"" + path + "\">" + fileName + "</a>";
+		    			}
+	    			}
+	    		}
+	    		pAttr.setValue(html);
+			}
+		} else if ("graphic".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
+				String html = "";
+				Set v = (Set) cAttr.getValue();
+				if (v != null && !v.isEmpty()) {
+		    		for (Iterator iter=v.iterator(); iter.hasNext();) {
+	    				Attachment attach = (Attachment) iter.next();
+		    			if (attach !=  null) {
+							String webPath;
+							String path;
+							String fileName;
+							
+							webPath = WebUrlUtil.getServletRootURL(request);
+							fileName = attach.toString();
+							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+							html = html + "<img src=\"" + path + "\"/>";
+		    			}
+	    			}
+	    		}
+	    		pAttr.setValue(html);
+			}
 		} else {
 			processed = false;
 		}
@@ -545,7 +592,7 @@ public class GwtProfileHelper {
 			    							
 			    							webPath = WebUrlUtil.getServletRootURL(request);
 			    							fileName = attach.toString();
-			    							path = WebUrlUtil.getFileUrl(webPath, "readScaledFile", attach.getOwner().getEntity(), fileName);
+			    							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
 			    							
 			    							//Check if null, this will guarantee we use the first picture we come across
 			    							if(profile != null && Validator.isNull(profile.getPictureUrl())){

@@ -224,6 +224,7 @@ public class WebKeys {
 	public static final String URL_TYPE3 = "type3";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
+	public static final String URL_VIEW_TYPE = "viewType";
 	public static final String URL_UNSEEN = "unseen";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKAREA_ID="workAreaId";
@@ -366,6 +367,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_BINDER_IN_PARENT="view_binder_in_parent";
 	public static final String ACTION_VIEW_CREDITS="view_credits";
 	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
+	public static final String ACTION_VIEW_FILE="viewFile";
 	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
 	
 	
