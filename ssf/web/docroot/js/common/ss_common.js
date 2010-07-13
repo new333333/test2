@@ -2460,7 +2460,7 @@ function ss_showDivObj(divObj, backgroundIframe) {
     	divObj.style.display = "block";
     }
     divObj.style.visibility = "visible";
-    divObj.focus();
+    try {divObj.focus();} catch(e) {}
 	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') 
 		ss_showBackgroundIFrame(divObj.id, "ss_background_iframe");
 	//Signal that the layout changed
