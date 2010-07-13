@@ -2276,6 +2276,47 @@ public class GwtServerHelper {
 		}
 		return false;
 	}
+
+	/**
+	 * Returns true if user is a person and false otherwise.
+	 * 
+	 * @param user
+	 * @return
+	 */
+	public static boolean isUserPerson(User user) {
+		boolean reply;
+
+		// If we don't have a user...
+		if (null == user) {
+			// ...it can't be a person.
+			return false;
+		}
+		
+		
+		// Is this a reserved user:
+		if (user.isReserved()) {
+			// Yes!  If it's guest or admin...
+			String internalId = user.getInternalId();
+			if (ObjectKeys.GUEST_USER_INTERNALID.equals(internalId) ||
+				ObjectKeys.SUPER_USER_INTERNALID.equals( internalId)) {
+				// ...we consider it a person...
+				return true;
+			}
+			else {
+				// ...otherwise, we don't.
+				reply = false;
+			}
+		}
+		else {
+			// No, it's not a reserved user!  These are always
+			// considered a person.
+			reply = true;
+		}
+		
+		// If we get here, reply is true if the user is a person and
+		// false otherwise.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns true if two List<Long>'s contain different values and
