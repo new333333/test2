@@ -78,14 +78,17 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
 		if (spanObj != null) spanObj.style.display = "none";
 	}
 	try {
-		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
-		if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
-				(iframeHeight > 200 && parseInt(iframeDiv.style.height) != iframeHeight)) {
-			iframeDiv.style.height = parseInt(iframeHeight + ss_entryHistoryIframeOffset) + "px"
-			//Signal that the layout changed
-			if (ssf_onLayoutChange) ssf_onLayoutChange();
-			if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
-			if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
+		var frameWindow = window.frames[iframeId];
+		if (frameWindow && frameWindow.document && frameWindow.document.body) {
+			var iframeHeight = parseInt(frameWindow.document.body.scrollHeight);
+			if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
+					(parseInt(iframeDiv.style.height) != parseInt(iframeHeight) + ss_entryHistoryIframeOffset)) {
+				iframeDiv.style.height = parseInt(iframeHeight) + ss_entryHistoryIframeOffset + "px"
+				//Signal that the layout changed
+				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+				if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
+				if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
+			}
 		}
 	} catch(e) {}
 }

@@ -283,6 +283,7 @@ function dodiff()
 		document.getElementById("diff").style.display='block';
 		document.getElementById("diff").focus();
 	}
+	ss_resizeIframeArea();
 }
 
 function ss_resizeIframeArea() {
