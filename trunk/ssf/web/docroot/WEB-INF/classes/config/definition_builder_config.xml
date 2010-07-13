@@ -1123,6 +1123,7 @@
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
@@ -1998,6 +1999,7 @@
 				<exclude name="attachFiles"/>
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
@@ -2021,6 +2023,7 @@
 				<exclude name="attachFiles"/>
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
@@ -2050,6 +2053,7 @@
 				<exclude name="attachFiles"/>
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
@@ -2068,6 +2072,7 @@
 				<exclude name="attachFiles"/>
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
@@ -2133,6 +2138,7 @@
 				<exclude name="attachFiles"/>
 				<exclude name="description"/>
 				<exclude name="hidden"/>
+				<exclude name="graphic"/>
 				<exclude name="group_list"/>
 				<exclude name="external_user_list"/>
 			</option_select>
