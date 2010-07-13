@@ -119,7 +119,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -165,6 +164,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case COMMUNITY_TAGS:
 		case ENTRIES:
 		case GROUP:
+		case PERSON:
 		case PERSONAL_TAGS:
 		case PLACES:
 		case TAG:
@@ -234,7 +234,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case TEAMS:
 			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 			break;
-			
+
+		case PERSON:
 		case USER:
 			searchTermFilter.addTitleFilter( searchText );
 			searchTermFilter.addLoginNameFilter( searchText );
@@ -254,7 +255,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			options.put( ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter() );
 			
 			// Perform the search based on the search type.
-			switch ( searchCriteria.getSearchType() )
+			GwtSearchCriteria.SearchType searchType = searchCriteria.getSearchType();
+			switch ( searchType )
 			{
 			case APPLICATION:
 				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
@@ -401,7 +403,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			case TEAMS:
 				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
 				break;
-				
+
+			case PERSON:
 			case USER:
 			{
 				List userEntries;
@@ -430,7 +433,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 					// Pull information about this user from the search results.
 					userId = entry.get( "_docId" );
-					gwtUser = getGwtUser( request, null, userId );
+					gwtUser = getGwtUser( request, searchType, userId );
 					if ( gwtUser != null )
 						results.add( gwtUser );
 				}
@@ -466,6 +469,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case COMMUNITY_TAGS:
 		case ENTRIES:
 		case GROUP:
+		case PERSON:
 		case PERSONAL_TAGS:
 		case PLACES:
 		case TAG:
@@ -849,10 +853,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getFolder()
 	
 	
-	/**
+	/*
 	 * Return a GwtUser object for the given user id
 	 */
-	public GwtUser getGwtUser( HttpServletRequest request, String zoneUUID, String userId ) throws GwtTeamingException
+	private GwtUser getGwtUser( HttpServletRequest request, GwtSearchCriteria.SearchType searchType, String userId ) throws GwtTeamingException
 	{
 		Binder binder = null;
 		BinderModule bm = getBinderModule();
@@ -863,25 +867,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		try
 		{
 			Long userIdL;
-			String zoneInfoId;
 
-			// Get the id of the zone we are running in.
-			zoneInfoId = MiscUtil.getCurrentZone().getId();
-			if ( zoneInfoId == null )
-			{
-				zoneInfoId = "";
-			}
-			
-			// Are we looking for an id that was imported from another zone?
+			// Do we have an ID we can access as a person?
 			userIdL = new Long( userId );
-			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-			{
-				// Yes, get the id for it in this zone.
-				userIdL = bm.getZoneBinderId( userIdL, zoneUUID, EntityType.folder.name() );
-			}
-
-			// Do we have an id and can we access it as a User with a
-			// workspace?
 			if ( userIdL != null )
 			{
 				ArrayList<Long> userAL;
@@ -894,46 +882,66 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				users = userSet.toArray( new User[0] );
 				if ( 1 <= users.length )
 				{
-					Long wsId;
-
-					// Does this user have a workspace ID?
+					// If we are searching for a person and this user
+					// is not a person...
 					user = users[0];
-					wsId = user.getWorkspaceId();
-					if ( null != wsId )
+					if ( ( searchType == GwtSearchCriteria.SearchType.PERSON ) && ( ! ( GwtServerHelper.isUserPerson( user ) ) ) )
 					{
-						try
-						{
-							// Yes!  Can we access it?
-							binder = bm.getBinder( user.getWorkspaceId() );
-						}
-						catch ( Exception ex )
-						{
-							// No!  Simply ignore it as this is a
-							// permissible condition if the user
-							// performing the search does NOT have
-							// access to the workspace in question.
-							binder = null;
-						}
+						// ...ignore it.
+						user = null;
 					}
 					
-					// Note:  Cases where a user won't have a workspace
-					//    ID include special user IDs such as the email
-					//    posting agent and others as well as users
-					//    that have never logged in.  At some point,
-					//    we'll need to fix bug 612167 and show users
-					//    that don't have a workspace.
+					else {
+						Long wsId;
+
+						// Does this user have a workspace ID?
+						wsId = user.getWorkspaceId();
+						if ( null != wsId )
+						{
+							try
+							{
+								// Yes!  Can we access the workspace?
+								binder = bm.getBinder( user.getWorkspaceId() );
+							}
+							catch ( Exception ex )
+							{
+								// No!  Simply ignore it as this is a
+								// permissible condition if the user
+								// performing the search does NOT have
+								// access to the workspace in question.
+								binder = null;
+							}
+						}
+						
+						// Note:  Cases where a user won't have a workspace
+						//    ID include special user IDs such as the email
+						//    posting agent and others as well as users
+						//    that have never logged in.
+					}
 				}
 			}
-			if (( null != binder ) && ( null != user ))
+			
+			// Do we have access to a user?
+			if ( null != user )
 			{
 				// Yes!  Construct a GwtUser object for it.
 				reply = new GwtUser();
 				reply.setUserId( user.getId() );
-				reply.setWorkspaceId( binder.getId() );
 				reply.setName( user.getName() );
-				reply.setTitle( Utils.getUserTitle(user) );
+				reply.setTitle( Utils.getUserTitle( user ) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
-				reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
+				
+				// Do we have access to this user's workspace?
+				if ( null == binder ) {
+					// No!  Provide a permalink to the user's profile.
+					reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, user ) );
+				}
+				else {
+					// Yes, we have access to this user's workspace!
+					// Store the workspace's ID and a permalink to it. 
+					reply.setWorkspaceId( binder.getId() );
+					reply.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
+				}
 			}
 		}
 		catch ( AccessControlException acEx )

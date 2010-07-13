@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -202,15 +203,15 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 
 		// create the radio buttons themselves...
 		FinderRB rb;
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsPeople(), GwtSearchCriteria.SearchType.USER, true); rbPanel.add(rb);
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsPlaces(), GwtSearchCriteria.SearchType.PLACES);     rbPanel.add(rb);
-		rb = new FinderRB(m_messages.mainMenuSearchOptionsTags(),   GwtSearchCriteria.SearchType.TAG);        rbPanel.add(rb);
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsPeople(), GwtSearchCriteria.SearchType.PERSON, true); rbPanel.add(rb);
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsPlaces(), GwtSearchCriteria.SearchType.PLACES);       rbPanel.add(rb);
+		rb = new FinderRB(m_messages.mainMenuSearchOptionsTags(),   GwtSearchCriteria.SearchType.TAG);          rbPanel.add(rb);
 
 		// ...add the radio button panel to the main content...
 		m_mainPanel.add(rbPanel);
 
 		// ...and add a finder widget for it.
-		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.USER, 30);
+		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.PERSON, 30);
 		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2");
 		m_mainPanel.add(m_finderControl);
 	}
@@ -296,10 +297,21 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 			
 			// No, it's not a GwtFolder!  Is it a GwtUser?
 			else if (obj instanceof GwtUser) {
-				// Yes!  Hide the search options popup and switch to
-				// that workspace.
+				// Yes!  Hide the search options popup.
 				m_searchOptionsPopup.hide();
-				loadBinder(((GwtUser) obj).getWorkspaceId());
+				
+				// Does the user have a workspace we can access?
+				GwtUser user = ((GwtUser) obj);
+				String userWSId = user.getWorkspaceId();
+				if (GwtClientHelper.hasString(userWSId)) {
+					// Yes!  Switch to it.
+					loadBinder(userWSId);
+				}
+				else {
+					// No, the user doesn't have a workspace we can
+					// access!  Activate their permalink instead.
+					m_actionTrigger.triggerAction(TeamingAction.GOTO_PERMALINK_URL, user.getViewWorkspaceUrl());
+				}
 				return;
 			}
 			
