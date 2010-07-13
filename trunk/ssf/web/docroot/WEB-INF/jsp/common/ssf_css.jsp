@@ -127,6 +127,8 @@ body.ss_style_body {
 	-webkit-border-radius: 5px;
 }
 
+img { -ms-interpolation-mode: bicubic; }
+
 .ss_style {
   font-family: ${ss_style_font_family};
   font-weight: inherit;
@@ -2326,6 +2328,7 @@ div.ss_thumbnail_profile_high div {
 	}
 div.ss_thumbnail_profile_high img {
     height: 75px;
+    width: auto;
 	}    	
 div.ss_thumbnail_small img {
     width: 75px;
