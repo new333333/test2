@@ -114,7 +114,7 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
     </c:if>
   </div>
   </td>
-  <c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
+  <c:if test="${empty ss_seenHistoryTab && empty ss_pseudoEntity}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewEntryHistory${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -150,7 +150,7 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
 
-<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
+<c:if test="${empty ss_seenHistoryTab && empty ss_pseudoEntity}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
   <div id="viewEntryHistory${ss_tabDivCount}loading" 
     style="text-align:center;font-weight:bold;display:block;width:100%;"><ssf:nlt tag="Loading"/></div>
@@ -163,6 +163,7 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 		function() {ss_resizeEntryHistoryIframe('viewEntryHistory${ss_tabDivCount}Iframe');});
 
 </script>
+<c:set var="ss_seenHistoryTab" value="true" scope="request"/>
 </c:if>
 
 <div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
