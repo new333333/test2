@@ -1038,7 +1038,7 @@ function ss_postRequestSetFileStatus(s, data) {
 	if (statusObj != null) {
 		statusObj.innerHTML = s;
 	}
-	ss_showHide("ss_fileStatusMenu"+data.statusObjId+"_" + data.fileId);
+	ss_hideDiv("ss_fileStatusMenu"+data.statusObjId+"_" + data.fileId);
 }
 
 function ss_executeJavascript(xmlNode) {
