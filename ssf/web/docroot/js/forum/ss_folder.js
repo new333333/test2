@@ -380,4 +380,7 @@ function ss_hideFolderAddAttachmentDropbox(namespace, binderId) {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "none";
 	ss_hideDiv(divId);
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 }
