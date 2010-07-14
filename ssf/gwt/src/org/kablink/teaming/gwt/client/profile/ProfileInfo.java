@@ -46,6 +46,7 @@ public class ProfileInfo implements IsSerializable  {
 	private ArrayList<String> pictureUrls = new ArrayList<String>();
 	
 	private ArrayList<ProfileCategory> categories = new ArrayList<ProfileCategory>();
+	private boolean pictureEnabled = false;
 	
 	/**
 	 * Constructor method.
@@ -118,5 +119,13 @@ public class ProfileInfo implements IsSerializable  {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public void setPictureEnabled(boolean enabled) {
+		this.pictureEnabled = enabled;
+	}
+
+	public boolean isPictureEnabled() {
+		return pictureEnabled;
 	}
 }

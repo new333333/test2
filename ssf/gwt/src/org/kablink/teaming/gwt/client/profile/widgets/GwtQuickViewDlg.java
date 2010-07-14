@@ -107,6 +107,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private Anchor miniBlogA;
 	private ProfileActionWidget instantMessageBtn;
 	private Element clientElement;
+	private FlowPanel pictureDiv;
 	
 	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName, Element element) {
@@ -199,7 +200,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	}
 
 	private Panel createPhotoPanel() {
-		FlowPanel pictureDiv = new FlowPanel();
+		pictureDiv = new FlowPanel();
 		pictureDiv.addStyleName("qViewPhoto");
 
 		avatar = new Image();
@@ -469,18 +470,23 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 			public void onSuccess(ProfileInfo profile) {
 
+				boolean isPictureEnabled = profile.isPictureEnabled();
 				String url = profile.getPictureUrl();
-				if(url != null && !url.equals("")){
-					avatar.setUrl(profile.getPictureUrl());
+				if(isPictureEnabled) {
+					if(url != null && !url.equals("")){
+						avatar.setUrl(profile.getPictureUrl());
+					} else {
+						FlowPanel w = (FlowPanel)avatar.getParent();
+						w.removeStyleName("qViewPhoto");
+						w.addStyleName("qViewPhoto_No");
+						FlowPanel panel = new FlowPanel();
+						w.add(panel);
+						panel.addStyleName("qViewPhotoHeight_No");
+						panel.addStyleName("ss_profile_photo_box_empty");
+						avatar.removeFromParent();
+					}
 				} else {
-					FlowPanel w = (FlowPanel)avatar.getParent();
-					w.removeStyleName("qViewPhoto");
-					w.addStyleName("qViewPhoto_No");
-					FlowPanel panel = new FlowPanel();
-					w.add(panel);
-					panel.addStyleName("qViewPhotoHeight_No");
-					panel.addStyleName("ss_profile_photo_box_empty");
-					avatar.removeFromParent();
+					pictureDiv.addStyleName("qViewPhotoDisabled");
 				}
 				
 				int count = profile.getCategories().size();

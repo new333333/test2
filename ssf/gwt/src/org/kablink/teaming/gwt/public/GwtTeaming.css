@@ -1850,6 +1850,9 @@ a.ss_new_thread {
 .qViewPhotoHeight_No {
 	height:50px;
 }
+.qViewPhotoDisabled {
+	margin-bottom: 20px;
+}
 .qViewStatus {
 	padding-bottom: 10px;
 }
