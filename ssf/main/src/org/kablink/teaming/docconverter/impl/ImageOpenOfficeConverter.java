@@ -206,5 +206,6 @@ public class ImageOpenOfficeConverter
 	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, THUMB_SUBDIR, IMG_FILE_SUFFIX);
 	}
 }
