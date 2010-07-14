@@ -77,15 +77,24 @@
 		<c:if test="${ssConfigJspStyle != 'form'}">
 		  <c:set var="spanClass" value="ss_size_20px ss_bold" />
 		</c:if>
-		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupEntry.parentBinder.id}"
-		  entryId="${mashupEntry.id}">
-		  <ssf:param name="entityType" value="folderEntry"/>
-		  </ssf:url>"><span class="${spanClass}">${mashupEntry.title}</span></a>
-		  <c:if test="${ssConfigJspStyle == 'form'}">
+		<ssf:titleLink action="view_folder_entry" entryId="${mashupEntry.id}" 
+			binderId="${mashupEntry.parentBinder.id}" entityType="folderEntry"
+			seenStyle="class='${spanClass}'" seenStyleFine="class='${spanClass}'">
+			<ssf:param name="url" useBody="true">
+				<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+					action="view_permalink" 
+					binderId="${mashupEntry.parentBinder.id}"
+					entryId="${mashupEntry.id}">
+					<ssf:param name="entityType" value="folderEntry"/>
+					<ssf:param name="seen_by_gwt" value="1" />
+				</ssf:url>
+			</ssf:param>
+			<c:out value="${mashupEntry.title}"/>
+		</ssf:titleLink>
+		
+		<c:if test="${ssConfigJspStyle == 'form'}">
 		    <span class="ss_italic ss_smallprint">(${mashupEntry.parentBinder.pathName})</span>
-		  </c:if>
+		</c:if>
 	  </div>
 	</c:if>
 	<c:if test="${ssConfigJspStyle != 'form'}">
