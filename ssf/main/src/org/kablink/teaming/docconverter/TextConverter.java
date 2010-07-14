@@ -75,7 +75,7 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
 	protected String excludedExtensions = "";
-	private static final String TEXT_SUBDIR = "text",
+	protected static final String TEXT_SUBDIR = "text",
 		   TEXT_FILE_SUFFIX = ".txt";
 
 	private String[] m_additionalExclusions = null;

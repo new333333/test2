@@ -43,7 +43,9 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.IHtmlConverterManager;
 import org.kablink.teaming.docconverter.IImageConverterManager;
+import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.ImageConverter;
+import org.kablink.teaming.docconverter.TextConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
@@ -57,6 +59,7 @@ import org.springframework.util.FileCopyUtils;
 public class ConvertedFileModuleImpl implements ConvertedFileModule {
 	private FileModule fileModule;
 	private IHtmlConverterManager htmlConverterManager;
+	private ITextConverterManager textConverterManager;
 	private IImageConverterManager imageConverterManager;
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -70,6 +73,14 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 	
 	protected IHtmlConverterManager getHtmlConverterManager() {
 		return htmlConverterManager;
+	}
+	
+	public void setTextConverterManager(ITextConverterManager textConverterManager) {
+		this.textConverterManager = textConverterManager;
+	}
+	
+	protected ITextConverterManager getTextConverterManager() {
+		return textConverterManager;
 	}
 	
 	public void setImageConverterManager(IImageConverterManager imageConverterManager) {
@@ -95,6 +106,14 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		HtmlConverter converter = this.htmlConverterManager.getConverter();
 		converter.deleteConvertedFile(binder, entity, fa);
 	}
+	public void deleteCacheTextFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException {
+		
+		TextConverter converter = this.textConverterManager.getConverter();
+		converter.deleteConvertedFile(binder, entity, fa);
+	}
+	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out)
 	{

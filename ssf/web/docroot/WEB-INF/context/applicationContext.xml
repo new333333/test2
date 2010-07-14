@@ -847,6 +847,7 @@
 			<bean class="org.kablink.teaming.module.file.impl.ConvertedFileModuleImpl" depends-on="sPropsUtil">
 				<property name="fileModule"><ref bean="fileModule"/></property>
 				<property name="htmlConverterManager"><ref bean="htmlConverterManager"/></property>
+				<property name="textConverterManager"><ref bean="textConverterManager"/></property>
 				<property name="imageConverterManager"><ref bean="imageConverterManager"/></property>
 			</bean>
 		</property>

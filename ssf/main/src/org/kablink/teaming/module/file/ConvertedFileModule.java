@@ -82,6 +82,10 @@ public interface ConvertedFileModule {
 			Binder binder, DefinableEntity entity, FileAttachment fa) 
 		throws UncheckedIOException, RepositoryServiceException;
 	
+	public void deleteCacheTextFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
 	public void readCacheImageReferenceFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String imageFileName) 
 		throws UncheckedIOException, RepositoryServiceException;
