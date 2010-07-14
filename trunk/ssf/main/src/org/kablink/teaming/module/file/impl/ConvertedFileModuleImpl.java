@@ -114,6 +114,14 @@ public class ConvertedFileModuleImpl implements ConvertedFileModule {
 		converter.deleteConvertedFile(binder, entity, fa);
 	}
 	
+	public void deleteCacheImageFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa) 
+		throws UncheckedIOException, RepositoryServiceException {
+		
+		ImageConverter converter = this.imageConverterManager.getConverter();
+		converter.deleteConvertedFile(binder, entity, fa);
+	}
+	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out)
 	{

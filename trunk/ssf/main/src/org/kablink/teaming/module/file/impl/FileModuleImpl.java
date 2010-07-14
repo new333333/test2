@@ -694,6 +694,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
     	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
+    	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
     	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_REVERT);
@@ -925,6 +926,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
 		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
+    	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
 		
 		// Since creation date is not really useful, we will leave it alone. 
 		

@@ -49,9 +49,9 @@ public abstract class ImageConverter extends Converter<ImageConverter.Parameters
 	protected String _defaultImage = "";
 	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
-	private static final String SCALED_SUBDIR = "scaled";
-	private static final String THUMB_SUBDIR = "thumb";
-	private static final String IMG_FILE_SUFFIX = ".jpg";
+	protected static final String SCALED_SUBDIR = "scaled";
+	protected static final String THUMB_SUBDIR = "thumb";
+	protected static final String IMG_FILE_SUFFIX = ".jpg";
 
 	public InputStream convertToScaledImage(Binder binder, DefinableEntity entry, FileAttachment fa, ImageConverter.Parameters parameters)
 	throws IOException
