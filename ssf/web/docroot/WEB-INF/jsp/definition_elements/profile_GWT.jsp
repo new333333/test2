@@ -73,7 +73,8 @@
 				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
 				isDiskQuotaHighWaterMarkExceeded: ${ss_diskQuotaHighWaterMarkExceeded},
 	            isModifyAllowed : ${ss_modifyEntryAllowed},
-				isBinderAdmin : ${ss_isBinderAdmin} };
+				isBinderAdmin : ${ss_isBinderAdmin},
+				deleteUserUrl : '${ss_deleteEntryAdapter}' };
 </script>	
 
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
