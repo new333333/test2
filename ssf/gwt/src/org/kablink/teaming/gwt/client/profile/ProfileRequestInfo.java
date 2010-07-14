@@ -100,7 +100,9 @@ public class ProfileRequestInfo extends JavaScriptObject
 	public final native String getModifyUrl() /*-{ return this.modifyUrl }-*/;
 	
 	public final native boolean isDiskQuotaHighWaterMarkExceeded() /*-{ return this.isDiskQuotaHighWaterMarkExceeded; }-*/;
-	
+
+	public final native String getDeleteUserUrl() /*-{ return this.deleteUserUrl }-*/;
+
 	/**
 	 * Is the workspace being referenced owned by the current user
 	 * @return
