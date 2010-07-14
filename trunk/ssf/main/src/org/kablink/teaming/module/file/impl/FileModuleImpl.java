@@ -723,6 +723,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
+		VersionAttachment hVer = fileAtt.getHighestVersion();
+		if (hVer.getParentAttachment() == fileAtt) {
+			hVer.setMajorVersion(fileAtt.getMajorVersion());
+			hVer.setMinorVersion(fileAtt.getMinorVersion());
+		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
