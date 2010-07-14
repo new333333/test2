@@ -689,6 +689,7 @@ public class WebKeys {
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
     public static final String CALENDAR_IMPORT_TOOLBAR="ssCalendarImportToolbar";
     public static final String CALENDAR_MODE_PREF="calendarModePreference";
+	public static final String CAN_DELETE_USER = "ss_canDeleteUser";
 	public static final String CAN_FORCE_FILE_UNLOCK="ss_canForceFileUnlock";
 	public static final String CAN_VIEW_USER_PROFILES="ss_canViewUserProfiles";
 	public static final String CAPTIVE="ss_captive";
@@ -752,6 +753,7 @@ public class WebKeys {
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
+    public static final String DELETE_ENTRY_ADAPTER = "ss_deleteEntryAdapter";
     public static final String DIRECTION="ss_direction";
     public static final String DISKQUOTA="diskQuota";
     public static final String DISK_QUOTA_EXCEEDED="ss_diskQuotaExceeded";
@@ -1488,5 +1490,6 @@ public class WebKeys {
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
+	
     
 }

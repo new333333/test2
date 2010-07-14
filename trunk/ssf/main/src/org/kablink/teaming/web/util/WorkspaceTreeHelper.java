@@ -365,6 +365,17 @@ public class WorkspaceTreeHelper {
 							} else {
 								model.put(WebKeys.MODIFY_ENTRY_ALLOWED, false);
 							}
+				        	
+				        	if (bs.getProfileModule().testAccess(owner, ProfileOperation.deleteEntry)) {
+				    			Map qualifiers = new HashMap();
+				    			qualifiers.put("popup", new Boolean(true));
+				    			PortletURL url = response.createActionURL();
+				    			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				    			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				    			url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				    			url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				    			model.put(WebKeys.DELETE_ENTRY_ADAPTER, url.toString());
+				        	}
 				        }
 						
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
