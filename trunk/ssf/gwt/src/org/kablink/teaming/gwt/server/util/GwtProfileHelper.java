@@ -296,6 +296,11 @@ public class GwtProfileHelper {
 									String dataName = nameElement.attributeValue("value");
 									attr.setDataName(dataName);
 									
+									//if the element exists then show the picture
+									if(dataName != null && dataName.equals("picture")){
+										profile.setPictureEnabled(true);
+									}
+									
 									if(attr.getTitle() == null){
 										attr.setTitle(NLT.get("profile.element."+dataName, dataName));
 									}
