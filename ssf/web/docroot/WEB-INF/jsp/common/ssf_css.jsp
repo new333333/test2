@@ -1358,6 +1358,7 @@ table.ss_attachments_list td.ss_att_title {
 table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-weight: normal;
 	white-space: nowrap;
+	padding-right:4px;
 	}
 tr.ss_attachments_list_primary_file td, tr.ss_attachments_list_regular_file td {
 	padding: 5px 10px 5px 0px;
