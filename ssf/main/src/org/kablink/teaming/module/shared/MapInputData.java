@@ -85,7 +85,7 @@ public class MapInputData implements InputDataAccessor {
 			return (Survey) source.get(key);
 		}
 		String stringValue = this.getSingleValue(key);
-		if (stringValue == null || "".equals(stringValue)) {
+		if (stringValue == null) {
 			return null;
 		}
 		return new Survey(stringValue);
@@ -96,7 +96,7 @@ public class MapInputData implements InputDataAccessor {
 			return (Description) source.get(key);
 		}
 		String stringValue = this.getSingleValue(key);
-		if (stringValue == null || "".equals(stringValue)) {
+		if (stringValue == null) {
 			return null;
 		}
 		return new Description(stringValue);
