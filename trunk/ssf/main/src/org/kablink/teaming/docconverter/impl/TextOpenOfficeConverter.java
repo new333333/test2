@@ -303,5 +303,6 @@ public class TextOpenOfficeConverter
 	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, TextConverter.TEXT_SUBDIR, TextConverter.TEXT_FILE_SUFFIX);
 	}
 }

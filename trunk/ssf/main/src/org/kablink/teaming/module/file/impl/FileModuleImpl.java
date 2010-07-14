@@ -693,6 +693,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
     	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
+    	getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
     	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_REVERT);
@@ -923,6 +924,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setMinorVersion(highestVa.getMinorVersion());
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
+		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
 		
 		// Since creation date is not really useful, we will leave it alone. 
 		
