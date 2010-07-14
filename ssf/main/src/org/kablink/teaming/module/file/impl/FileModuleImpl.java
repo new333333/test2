@@ -704,6 +704,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
+		if (fileAtt instanceof FileAttachment) {
+			VersionAttachment hVer = fileAtt.getHighestVersion();
+			if (hVer.getParentAttachment() == fileAtt) {
+				hVer.getFileItem().setDescription(description);
+			}
+		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_COMMENT);
@@ -713,6 +719,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
 		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
+		if (fileAtt instanceof FileAttachment) {
+			VersionAttachment hVer = fileAtt.getHighestVersion();
+			if (hVer.getParentAttachment() == fileAtt) {
+				hVer.setFileStatus(FileStatus.valueOf(fileStatus));
+			}
+		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_STATUS);
@@ -1595,6 +1607,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		mod = now;
     	
 		fAtt.setModification(mod);
+		fAtt.setFileStatus(FileStatus.not_set.ordinal());
 		
 		FileItem fItem = fAtt.getFileItem();
 
