@@ -95,6 +95,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 	private Anchor uploadBtn;
 
+	private Anchor delete;
+
 	/**
 	 * Constructor
 	 * 
@@ -209,6 +211,31 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		};
 		edit.addMouseOutHandler(mouseOutHandler);
 		
+		delete = createDeleteAction(actionsPanel);
+		
+		// Add a mouse-over handler
+		delete.addMouseOverHandler( new MouseOverHandler() {
+			public void onMouseOver(MouseOverEvent event) {
+				Widget widget;
+
+				widget = (Widget) event.getSource();
+				widget.removeStyleName("subhead-control-bg1");
+				widget.addStyleName("subhead-control-bg2");
+			}// end onMouseOver()
+		});
+
+		// Add a mouse-out handler
+		delete.addMouseOutHandler( new MouseOutHandler() {
+			public void onMouseOut(MouseOutEvent event) {
+				Widget widget;
+
+				// Remove the background color we added to the anchor when the
+				// user moved the mouse over the anchor.
+				widget = (Widget) event.getSource();
+				removeMouseOverStyles(widget);
+			}// end onMouseOut()
+		});
+		
 		updateFollowingStatus();
 	}
 
@@ -251,6 +278,27 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 		actions.add(eAnchor);
 		eAnchor.addClickHandler(new ActionClickHandler("EditId"));
+
+		return eAnchor;
+	}
+	
+	private Anchor createDeleteAction(FlowPanel panel) {
+		
+		FlowPanel actions = new FlowPanel();
+		actions.addStyleName("profile-action");
+		panel.add(actions);
+
+		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileDelete());
+		eAnchor.setTitle(GwtTeaming.getMessages().profileDelete());
+		
+		eAnchor.addStyleName("editBrandingLink");
+		eAnchor.addStyleName("editBrandingAdvancedLink");
+		eAnchor.addStyleName("roundcornerSM");
+		eAnchor.addStyleName("subhead-control-bg1");
+		eAnchor.setVisible(profileRequestInfo.isBinderAdmin());
+
+		actions.add(eAnchor);
+		eAnchor.addClickHandler(new ActionClickHandler("DeleteId"));
 
 		return eAnchor;
 	}
@@ -503,6 +551,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				} else {
 					followPerson();
 				}
+			} else if (handlerId.equals("DeleteId")) {
+				String url = profileRequestInfo.getDeleteUserUrl();
+				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
 			}
 		}
 	}

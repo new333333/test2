@@ -563,6 +563,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	//Profile
 	String profileEdit();
+	String profileDelete();
 	String profileEditTitle();
 	String profileNotFollowing();
 	String profileNoSavedSearches();
