@@ -101,15 +101,19 @@
 	  <c:forEach var="entry" items="${ss_mashupBinderEntries[mashupBinderIdIndex]}" varStatus="status">
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div style="padding-left:6px;">
-	        <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"    
-		      action="view_permalink" 
-		      binderId="${entry._binderId}"
-		      entryId="${entry._docId}"
-		      ><ssf:param name="entityType" value="folderEntry"/>
-		      <ssf:param name="seen_by_gwt" value="1" />
-		      </ssf:url>">
-	          <span>${entry.title}</span>
-	        </a>
+	        <ssf:titleLink action="view_permalink" entryId="${entry._docId}" 
+				binderId="${entry._binderId}" entityType="folderEntry">
+				<ssf:param name="url" useBody="true">
+					<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+						action="view_permalink" 
+						binderId="${entry._binderId}"
+						entryId="${entry._docId}">
+						<ssf:param name="entityType" value="folderEntry"/>
+						<ssf:param name="seen_by_gwt" value="1" />
+					</ssf:url>
+				</ssf:param>
+				<c:out value="${entry.title}"/>
+			</ssf:titleLink>
 	      </div>
 		</c:if>
 	  </c:forEach>
@@ -120,15 +124,19 @@
 	    <c:if test="${empty mashup_attributes['entriesToShow'] || status.count <= mashup_attributes['entriesToShow']}">
 	      <div class="ss_mashup_folder_list_open">
 			<div class="ss_mashup_folder_list_open_title">
-			  <a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-			      action="view_permalink" 
-				  binderId="${entry._binderId}"
-				  entryId="${entry._docId}">
-				  <ssf:param name="entityType" value="folderEntry"/>
-				  <ssf:param name="seen_by_gwt" value="1" />
-				  </ssf:url>">
-		  	    <span>${entry.title}</span>
-		  	  </a>
+		        <ssf:titleLink action="view_permalink" entryId="${entry._docId}" 
+					binderId="${entry._binderId}" entityType="folderEntry">
+					<ssf:param name="url" useBody="true">
+						<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+							action="view_permalink" 
+							binderId="${entry._binderId}"
+							entryId="${entry._docId}">
+							<ssf:param name="entityType" value="folderEntry"/>
+							<ssf:param name="seen_by_gwt" value="1" />
+						</ssf:url>
+					</ssf:param>
+					<c:out value="${entry.title}"/>
+				</ssf:titleLink>
 			</div>
 			<c:if test="${!empty entry._desc}">
 			  <div class="ss_mashup_folder_list_open_entry">
