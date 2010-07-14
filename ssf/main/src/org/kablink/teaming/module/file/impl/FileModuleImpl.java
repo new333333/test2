@@ -912,7 +912,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					" because it does not allow deletion of a version");
 		}
 
-		// Update the metadata
+   		// Decrement disk space used for this version
+   		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
+				RequestContextHolder.getRequestContext()
+				.getZoneId());
+   		if (zoneConf.isDiskQuotaEnabled()) {
+			User user = getProfileDao().loadUser(va.getCreation().getPrincipal().getId(), 
+					RequestContextHolder.getRequestContext().getZoneName());
+			user.decrementDiskSpaceUsed(va.getFileItem().getLength());
+   		}
+
+   		// Update the metadata
 		entity.incrLogVersion();
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
 		ChangeLogUtils.buildLog(changes, va);
@@ -1148,7 +1158,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    			}
    		}
    		
-//   	 decrement disk space used for each version as well as the primary
+   		// Decrement disk space used for each version as well as the primary
    		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(
 				RequestContextHolder.getRequestContext()
 				.getZoneId());
