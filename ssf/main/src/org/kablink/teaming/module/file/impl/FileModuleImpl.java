@@ -719,9 +719,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
 		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
-		if (fileAtt instanceof FileAttachment) {
+		if (!(fileAtt instanceof VersionAttachment)) {
 			VersionAttachment hVer = fileAtt.getHighestVersion();
-			if (hVer.getParentAttachment() == fileAtt) {
+			if (hVer != null && hVer.getParentAttachment() == fileAtt) {
 				hVer.setFileStatus(FileStatus.valueOf(fileStatus));
 			}
 		}
