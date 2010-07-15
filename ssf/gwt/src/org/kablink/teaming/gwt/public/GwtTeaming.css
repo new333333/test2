@@ -220,7 +220,7 @@ body, table td, select
 /* Style used for links in the "edit branding" dialog. */
 .editBrandingLink, .editorOverridesLink2, .selfRegLink2
 {
-	color: #3e6978;
+	color: #135c8f;
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
@@ -1552,9 +1552,8 @@ body, table td, select
 .mastheadUserName
 {
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 0.95em;
-	font-style: italic;
-	left: -4px;
+	font-size: 0.85em;
+	left: -5px;
 	letter-spacing: 0.05em;
 	position: relative;
 	text-align: right;
@@ -1641,6 +1640,33 @@ body, table td, select
 {
 	margin-left: 0.5em;
 }
+
+.gwt-Button {
+  margin: 0;
+  border: 0px;
+  padding: 1px 10px;
+  margin-right: 3px;
+  min-width: 60px;
+  text-decoration: none;
+  font-size: 12px;
+  cursor: pointer;
+  cursor: hand;
+  background: #949494;
+}
+.gwt-Button:active {
+  border: 1px inset #ccc;
+}
+.gwt-Button:hover {
+  border-color: #9cf #69e #69e #7af;
+}
+.gwt-Button[disabled] {
+  cursor: default;
+  color: #888;
+}
+.gwt-Button[disabled]:hover {
+  border: 1px outset #ccc;
+}
+
 
 /* Styles for dialog boxes */
 .teamingDlgBox
@@ -1794,7 +1820,7 @@ body, table td, select
 /* general CSS styes */
 
 a.ss_new_thread {
-	color: #3e6978;
+	color: #135c8f;
 	text-decoration: none;
 	}
 	

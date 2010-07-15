@@ -596,39 +596,47 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
  <c:if test="<%= isIE %>">
    		height: 20px; 
    		margin: 1px;
-  		padding: 0px 7px 0px 7px;
+  		padding: 3px 11px;
  </c:if>
-  text-align: center;
-  padding: 0px 6px 0px 6px;
-  font-size: 12px !important;
-  font-family: Arial, sans-serif;
-  white-space: nowrap;
-  text-decoration: none !important;
-  border: 1px solid #5691A6;
-  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
-  background-repeat: repeat-x;
+  	text-align: center;
+  	padding: 2px 10px;
+ 	font-family: ${ss_style_folder_view_font_family};
+ 	font-size: 12px;
+	white-space: nowrap;
+	text-decoration: none !important;
 	}	
+	
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
+	color:#fff;
+ 	font-family: ${ss_style_folder_view_font_family};
+ 	font-size: 12px;
+	background:none repeat scroll 0 0 #949494;
+	margin-right:3px;
+	padding: 1px 10px;
+	text-decoration:none;
+  	cursor: pointer;
+  	white-space: nowrap;
+	border: 0px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
     text-align: center !important;
-    font-size: 12px !important;
-    font-family: Arial, sans-serif !important;
-    white-space: nowrap !important;
-    text-decoration: none !important;
-  	border: 1px solid #333;
-  	padding: 0px 6px 0px 6px !important
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;
 	</c:if>
 	}
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
+	color: #fff;
     text-align: center !important;
     font-size: 12px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	border: 1px dotted #333;
-  	padding: 0px 6px 0px 6px !important;
+  	padding: 1px 10px !important;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
+	border: 0px;
+
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -666,8 +674,8 @@ input.ss_submit:hover,
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
 	padding: 0px 6px 0px 6px;
-	border: 1px dotted #333;
-	color: #333;
+	cursor: pointer;
+	color: #fff;
 	}	
 input.ss_tinyButton, 
 a.ss_tinyButton:link, 
@@ -776,11 +784,13 @@ div.ss_send_friend {
 
 .ss_hover_over {
   position:absolute;
-  border:1px solid black;
+  border:1px solid #d6dede;
   margin:2px;
-  padding:2px;
-  background-color: ${ss_style_background_color_opaque};
-  width: 250px;
+  padding: 10px;
+  background-color: ${ss_replies_background_color};
+  width: 300px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
 }
 
 
@@ -1214,10 +1224,14 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style{
+.ss_tableheader_style {
 	font-size: 9px!important;
-	background-color: #9EC8CD;
+	background:url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
+	background-position:bottom;
 	text-decoration: none;
+	}
+.ss_tableheader_style a {
+	color: #fff;
 	}
 
 
@@ -1433,7 +1447,7 @@ table.ss_attachments_list td.ss_att_description p{
 }
 .ss_footer_toolbar a:hover {
   color: ${ss_style_link_hover_color};
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 
@@ -1660,8 +1674,8 @@ div.ss_box_top_rounded {
 	color: #fff;
 	font-size: 14px;
 	font-weight: bold;
-	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	padding: 5px;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
@@ -2254,11 +2268,11 @@ div.ss_bottomlinks {
 	display:inline;
 	margin:5px 0px;
 	padding:0px;
-	color:#8E8FA7;
+	color:#666;
 }
 
 .ss_bottomlinks *, span.ss_bottomlinks {
-	color:#8E8FA7 !important;
+	color:#666 !important;
 }
 
 .ss_innerContentBegins{
@@ -3578,7 +3592,7 @@ tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
 	padding: 4px 5px 4px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
-	background:url(<html:imagesPath/>pics/gray_blend7_28.png) repeat-x;
+	background:url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	}
 tr.ss_tab_table_row td {

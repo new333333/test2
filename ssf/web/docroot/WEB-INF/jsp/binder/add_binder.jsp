@@ -202,6 +202,15 @@ function ss_checkForm(obj) {
   id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
   
+<div style="text-align:right; padding:10px;">
+	<c:if test="${empty ss_accessControlMap || 
+	  empty ss_accessControlMap.createWorkspace || 
+	  ss_accessControlMap.createWorkspace}">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
+	</c:if>
+	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
+</div>
+  
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">
 <c:if test="${ssOperation != 'add_folder' && ssOperation != 'add_subFolder'}">
 <tr><td>

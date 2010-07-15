@@ -94,6 +94,16 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
 
+
+<%-- Show the ok and cancel buttons at top right --%>
+<div class="ss_Tinybutton margintop2" style="position: absolute; top: 50px; right: 30px;">
+  <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
+  <input type="submit" class="ss_submit" 
+    name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
+    onClick="return handleCloseBtn();"/>
+</div>
+
+
 <%-- Show the screen name --%>
 <div class="ss_entryContent">
 <div class="needed-because-of-ie-bug"><div id="ss_titleCheck2" style="display:none; visibility:hidden;" 
@@ -251,8 +261,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp" %>
 
 <%-- Show the ok and cancel buttons --%>
-<br/>
-<div class="ss_buttonBarLeft">
+<div class="ss_buttonBarLeft margintop3">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
   <input type="submit" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 

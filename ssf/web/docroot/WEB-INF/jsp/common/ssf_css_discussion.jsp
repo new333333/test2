@@ -121,44 +121,36 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: #777;
 	}	
 #ss_topic_box { 
-	margin: 8px 0 8px 0;
-	border: 1px #CCCCCC solid; 
-	padding: 2px 10px 4px 10px;
 	font-size: 12px;
-	font-style: italic;
 	font-family: Arial, Helvetica, sans-serif;
 	text-align:left;
 	vertical-align:top;
-	background-color:#f2f2f2;
 	}
 #ss_topic_box_h1{
 	margin: 2px 0 2px 0;
 	font-size: 20px;
-	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
 	color:#5691A6!important;
 	}
 #ss_topic_box_h1 * a, #ss_topic_box_h1 * span, #ss_topic_box_h1 table *  {
 	font-size: 20px;
-	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#5691A6!important;
+	color: #5691A6!important;
 	}
 #ss_topic_box_h1 * a:hover {
 	font-size: 20px;
-	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#555!important;
+	color:#3E6978 !important;
+	text-decoration: none;
 	}
 #ss_topic_folder{
 	margin-left:1%;
 	padding-top:0px;
 	padding-bottom:4px;
 	font-size: 16px;
-	font-style: italic;
 	font-weight:bold;
 	color: #00ADef;
 	text-align:left;
@@ -187,16 +179,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 **/
 %>
 #ss_profile_box {
-	-moz-border-radius:5px 5px 5px 5px;
-	background:none repeat scroll 0 0 #E9F1F1;
-	border:1px solid #D2D5D1;
-	margin: 8px 0px;
-	padding:10px;
+	margin: 8px 0px 0px;
+	padding-left: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
-
 #ss_profile_box_h1  {
 	font-size: 20px;
-	font-style:italic;
 	font-weight:bold;
 	color:#5691A6!important;
 }
@@ -215,7 +204,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 #ss_profile_box_h1 * a, #ss_profile_box_h1 * span, #ss_profile_box_h1 table *  {
 	font-size: 20px;
-	font-style: italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
 	color:#5691A6!important;
@@ -243,14 +231,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 
 .ss_profile {
-  font-size:10px !important;
+  font-size:13px !important;
   font-style:normal !important;
   font-weight:normal !important;
-  letter-spacing: .1em !important;
-  padding-left:10px;
-  color:#3e6978 !important;
+  letter-spacing: 0em !important;
+  padding-left: 10px;
+  color:#135c8f !important;
   text-decoration:none;
 }
+
+a span.ss_profile {
+	color: #135c8f;
+	}
 
 /**********************************/	
 
@@ -275,7 +267,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-top: 2px;
 	padding-bottom: 3px;
 	font-size:1.2em;
-	font-style:italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;	
 	color:#5691A6!important;
@@ -348,7 +339,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-right:2px;
 	padding-bottom:1px;
 	color:#777;
-	font-style: italic;
 	margin-right:5px;
 	margin-bottom:5px;
 	font-weight: 500;
@@ -694,7 +684,6 @@ div.ss_replies_indent_picture {
 	padding-top: 25px;
 	padding-bottom: 10px;
 	font-size:1.8em;
-	font-style:italic;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;	
 	color:#5691A6!important;
