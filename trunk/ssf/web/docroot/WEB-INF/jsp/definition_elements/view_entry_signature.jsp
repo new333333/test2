@@ -72,12 +72,11 @@
 	<table cellspacing="0" cellpadding="0">
 	 <tr>
 	  <td>
-		<div class="ss_entryContent ss_entrySignature margintop1">
+		<div class="ss_entryContent ss_entrySignature margintop2">
 		  <span style="padding-right:5px;">
-		  <img <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 		  <b><ssf:nlt tag="entry.reservedBy"/></b>
 		  </span>
-		  
 		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/></b>
 		</div>
 	  </td>
@@ -145,11 +144,10 @@
 		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 		   <tr>
 			<td>
-				<div class="ss_entryContent ss_entrySignature">
-				  <span style="padding-right:8px;">
-				  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
-					src="<html:imagesPath/>pics/sym_s_caution.gif"/>
-				  </span><br/>
+				<div class="ss_entryContent ss_entrySignature margintop2">
+				  <span style="padding-right:5px;">
+				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
+				  </span>
 				  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 				</div>
 			</td>
@@ -215,21 +213,13 @@
 
   <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
    <tr>
-    <td>
-	  <div class="ss_entrySignature">
-	    <ssf:nlt tag="entry.reservedBy"/>
-	  </div>
-	</td>
-	<td>
-	  <div class="ss_entrySignature">
-	    <img <ssf:alt tag="alt.locked"/> 
-	      align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+ 	<td colspan="3">
+	  <div class="ss_entrySignature margintop2">
+	    <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 	    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 	  </div>
 	</td>
-	<td>
-	</td>
-   </tr>
+  </tr>
   </c:if>
 
 </table>

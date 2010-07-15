@@ -825,7 +825,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			
 				  <img border="0" 
 				    <ssf:alt tag="alt.goldStar"/>
-				    src="<html:imagesPath/>pics/star_gold.gif"/>
+				    src="<html:imagesPath/>pics/star_gold.png"/>
 				 
 			
 				</c:forEach>
@@ -834,7 +834,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			<c:if test="${sRating < 5}">
 				<c:forEach var="i" begin="${sRating}" end="4" step="1">
 				  <img <ssf:alt tag="alt.grayStar"/> border="0" 
-					    src="<html:imagesPath/>pics/star_gray.gif" />
+					    src="<html:imagesPath/>pics/star_gray.png" />
 				  
 				</c:forEach>
 			</c:if>

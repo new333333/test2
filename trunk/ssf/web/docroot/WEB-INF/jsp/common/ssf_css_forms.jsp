@@ -173,11 +173,11 @@ td.rightend
 
 
 .ss_form_header {
-	font-size:28px !important;
-	letter-spacing:-1px;
-	font-family:Georgia, "Times New Roman", Times, serif !important;
-	font-weight:normal !important;
-	color:#5691A6;
+	color:#fff;
+	font-family: ${ss_style_font_family};
+	font-size: 16px !important;
+	font-weight: bold;
+	padding-top: 3px;
 	}
 .ss_table_wrap {
 	display: table;
@@ -193,16 +193,13 @@ td.rightend
 	padding: 0 25px 25px 25px!important;
 	}
 .ss_form_wrap {
-	border-top-width: 24px;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-style: solid;
-	border-top-color: #5691A6;
-	border-right-color: #CCCCCC;
-	border-bottom-color: #CCCCCC;
-	border-left-color: #CCCCCC;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	background-postion: top;
 	padding: 0 15px 15px 15px!important;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
 	}
 .tab_form .ss_form_wrap {
 	border-top-width: 0px;

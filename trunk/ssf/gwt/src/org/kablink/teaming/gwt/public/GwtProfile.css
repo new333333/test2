@@ -228,30 +228,42 @@ float: right;
 margin-right:13px;
 }
 .user_status {
-clear: both;
-display: inline;
-}
+	clear: both;
+	width: 550px;
+	}
 .user_status_text {
-margin: 0;
-display:inline;
-font-size: 14px;
-}
+	margin: 0;
+	font-size: 13px;
+	width: 550px;
+	display: inline;
+	}
 .user_status_time  {
-display:inline;
-color:#666666;
-font-size:10px;
-padding-right:10px;
-white-space:nowrap;
-}
-.user_status_input {
-margin-top: 0.5em;
-width: 500px;
-}
+	display:inline;
+	color:#666666;
+	font-size:10px;
+	padding-right:10px;
+	white-space:nowrap;
+	}
+textarea.user_status_input {
+	margin-top: 0.5em;
+	width: 500px;
+	background-color: transparent !important;
+	color: #666 !important;
+	border: 0px !important;
+	}
 .user_status_info {
 margin-top: 2px;
 width: 520px;
 }
 .user_status_update {
+	color: #999;
+	border: 0px;
+	background-color: #ecedec;
+	padding: 2px 4px 4px 8px;
+	width: 500px;
+	margin-top: 4px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 .user_status_textAmount {
 margin-right: 0.25em;
