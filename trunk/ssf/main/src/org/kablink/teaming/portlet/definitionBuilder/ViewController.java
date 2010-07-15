@@ -260,6 +260,9 @@ public class ViewController extends SAbstractController {
 		Document sourceDefinition = def.getDefinition();
 		data.put("sourceDefinition", sourceDefinition);
 		String title = NLT.getDef(def.getTitle()) + "  (" + def.getName() + ")";
+		title = title.replaceAll("&", "&amp;");
+		title = title.replaceAll("<", "&lt;");
+		title = title.replaceAll(">", "&gt;");
 		data.put("selectedItemTitle", title);
 			
 		if (Validator.isNull(option)) {
@@ -364,6 +367,8 @@ public class ViewController extends SAbstractController {
 			}
 			
 			caption = caption.replaceAll("&", "&amp;");
+			caption = caption.replaceAll("<", "&lt;");
+			caption = caption.replaceAll(">", "&gt;");
 			Element targetEle = targetElement.addElement("child");
 			targetEle.addAttribute("type", "item");
 			targetEle.addAttribute("title", caption);
