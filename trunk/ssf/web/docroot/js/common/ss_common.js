@@ -6249,8 +6249,8 @@ function ss_checkForRequiredFields(obj) {
 				} else if (eleObj0.tagName.toLowerCase() == 'input' && 
 						(eleObj0.type.toLowerCase() == 'text' || eleObj0.type.toLowerCase() == 'hidden' ||
 						 eleObj0.type.toLowerCase() == 'file')) {
-					if (typeof(eleObj0.value) != 'undefined' && eleObj0.value != "") {
-						//alert('text found: '+eleObj0.value);
+					if (typeof(eleObj0.value) != 'undefined' && ss_trim(eleObj0.value) != "") {
+						//alert('text found: xxx'+eleObj0.value+'xxx');
 						continue;
 					}
 					
