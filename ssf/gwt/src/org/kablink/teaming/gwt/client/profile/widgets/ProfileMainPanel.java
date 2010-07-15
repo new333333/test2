@@ -295,7 +295,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		eAnchor.addStyleName("editBrandingAdvancedLink");
 		eAnchor.addStyleName("roundcornerSM");
 		eAnchor.addStyleName("subhead-control-bg1");
-		eAnchor.setVisible(profileRequestInfo.isBinderAdmin());
+		eAnchor.setVisible(profileRequestInfo.isBinderAdmin() && !profileRequestInfo.isOwner());
 
 		actions.add(eAnchor);
 		eAnchor.addClickHandler(new ActionClickHandler("DeleteId"));
@@ -553,7 +553,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				}
 			} else if (handlerId.equals("DeleteId")) {
 				String url = profileRequestInfo.getDeleteUserUrl();
-				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
+				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 400, 400);
 			}
 		}
 	}
