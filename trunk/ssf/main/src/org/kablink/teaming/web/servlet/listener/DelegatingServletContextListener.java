@@ -85,9 +85,11 @@ public class DelegatingServletContextListener implements ServletContextListener 
 			}
 			catch(RuntimeException e) {
 				logger.error("Error creating delegate " + classNames[i], e);
+				throw e;
 			}
 			catch(Error e) {
 				logger.error("Error creating delegate " + classNames[i], e);
+				throw e;
 			}
 		}
 		if(logger.isDebugEnabled())
