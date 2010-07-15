@@ -752,7 +752,8 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
 			}
 
-			if (entry.isTop() && getFolderModule().testAccess(entry, FolderOperation.moveEntry)) {
+			if ((!isEntryReserved || isLockedByAndLoginUserSame) && 
+					entry.isTop() && getFolderModule().testAccess(entry, FolderOperation.moveEntry)) {
 				//The "Move" menu item
 				Map qualifiers = new HashMap();
 				qualifiers.put("nosort", true);
