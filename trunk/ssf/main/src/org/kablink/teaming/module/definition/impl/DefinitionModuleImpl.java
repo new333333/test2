@@ -1930,57 +1930,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (inputData.exists(nameValue)) {
 				Description description = inputData.getDescriptionValue(nameValue);
 				if (description != null) {
-					String text = mapInputData(description.getText());
-					if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
-						ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
-						ByteArrayOutputStream sw = new ByteArrayOutputStream();
-						TidyMessageListener tml = new TidyMessageListener();
-						Tidy tidy = new Tidy();
-						tidy.setQuiet(true);
-						tidy.setShowWarnings(false);
-						tidy.setMessageListener(tml);
-						tidy.setPrintBodyOnly(true);
-						tidy.setFixUri(false);
-						tidy.setFixComments(false);
-						tidy.setAsciiChars(false);
-						tidy.setBreakBeforeBR(false);
-						tidy.setBurstSlides(false);
-						tidy.setDropEmptyParas(false);
-						tidy.setDropFontTags(false);
-						tidy.setDropProprietaryAttributes(false);
-						tidy.setEncloseBlockText(false);
-						tidy.setEncloseText(false);
-						tidy.setIndentAttributes(false);
-						tidy.setIndentCdata(false);
-						tidy.setIndentContent(false);
-						tidy.setLiteralAttribs(true);
-						tidy.setLogicalEmphasis(false);
-						tidy.setLowerLiterals(false);
-						tidy.setMakeClean(false);
-						tidy.setMakeBare(false);
-						tidy.setInputEncoding("UTF8");
-						tidy.setOutputEncoding("UTF8");
-						tidy.setRawOut(true);
-						tidy.setSmartIndent(false);
-						tidy.setTidyMark(false);
-						tidy.setWrapAsp(false);
-						tidy.setWrapAttVals(false);
-						tidy.setWrapJste(false);
-						tidy.setWrapPhp(false);
-						tidy.setWrapScriptlets(false);
-						tidy.setWrapSection(false);
-						tidy.setWraplen(1000000);
-						org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
-						if (tml.isErrors() || tidy.getParseErrors() > 0) {
-							entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
-							description.setText("");
-						} else {
-							description.setText(sw.toString());
-						}
-					} else {
-						//HTML validation is turned off, just use whatever the user passed in
-						description.setText(text);
+					String format = inputData.getSingleValue(nameValue + ".format");
+					if (format != null) {
+						description.setFormat(Integer.valueOf(format));
 					}
+					//Make sure the text is legal html
+					tidyCheckText(description, entryDataErrors);
+					
 					//Deal with any markup language transformations before storing the description
 					MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
 					MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
@@ -1992,53 +1948,33 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
 			if (inputData.exists(nameValue)) {
-				Description description = new Description();
-				String text = mapInputData(inputData.getSingleValue(nameValue));
-				if (SPropsUtil.getBoolean("HTML.validate", true)) {
-					ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
-					ByteArrayOutputStream sw = new ByteArrayOutputStream();
-					TidyMessageListener tml = new TidyMessageListener();
-					Tidy tidy = new Tidy();
-					tidy.setQuiet(true);
-					tidy.setShowWarnings(false);
-					tidy.setMessageListener(tml);
-					tidy.setPrintBodyOnly(true);
-					tidy.setInputEncoding("UTF-8");
-					org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
-					if (tml.isErrors() || tidy.getParseErrors() > 0) {
-						entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
-					} else {
-						description.setText(sw.toString());
-						String format = inputData.getSingleValue(nameValue + ".format");
-						if (format != null) {
-							description.setFormat(Integer.valueOf(format));
-						}
-					}
-				} else {
-					//HTML validation is turned off, just use whatever the user passed in
-					description.setText(text);
+				Description description = inputData.getDescriptionValue(nameValue);
+				if (description != null) {
 					String format = inputData.getSingleValue(nameValue + ".format");
 					if (format != null) {
 						description.setFormat(Integer.valueOf(format));
 					}
-				}
-				//Deal with any markup language transformations before storing the description
-				MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
-				MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
-				MarkupUtil.scanDescriptionForICLinks(description);
-				MarkupUtil.scanDescriptionForYouTubeLinks(description);
-				MarkupUtil.scanDescriptionForExportTitleUrls(description);
-				if (!inputData.isFieldsOnly() || fieldModificationAllowed)
-				{
-					entryData.put(nameValue, description.getText());
+					//Make sure the text is legal html
+					tidyCheckText(description, entryDataErrors);
 					
-					// Add any extended branding we might have.
-					if ( inputData.exists( "brandingExt" ) )
+					//Deal with any markup language transformations before storing the description
+					MarkupUtil.scanDescriptionForUploadFiles(description, nameValue, fileData);
+					MarkupUtil.scanDescriptionForAttachmentFileUrls(description);
+					MarkupUtil.scanDescriptionForICLinks(description);
+					MarkupUtil.scanDescriptionForYouTubeLinks(description);
+					MarkupUtil.scanDescriptionForExportTitleUrls(description);
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed)
 					{
-						String brandingExt;
-
-						brandingExt = mapInputData( inputData.getSingleValue( "brandingExt" ) );
-						entryData.put( "brandingExt", brandingExt );
+						entryData.put(nameValue, description.getText());
+						
+						// Add any extended branding we might have.
+						if ( inputData.exists( "brandingExt" ) )
+						{
+							String brandingExt;
+	
+							brandingExt = mapInputData( inputData.getSingleValue( "brandingExt" ) );
+							entryData.put( "brandingExt", brandingExt );
+						}
 					}
 				}
 			}
@@ -2497,6 +2433,60 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (userVersionAllowed && inputData.exists(nameValuePerUser)) 
 				entryData.put(nameValuePerUser, inputData.getSingleValue(nameValuePerUser));
 		}    	
+    }
+    
+    public void tidyCheckText(Description description, EntryDataErrors entryDataErrors) {
+		String text = mapInputData(description.getText());
+		if (SPropsUtil.getBoolean("HTML.validate", true) && description.getFormat() == Description.FORMAT_HTML) {
+			ByteArrayInputStream sr = new ByteArrayInputStream(text.getBytes());
+			ByteArrayOutputStream sw = new ByteArrayOutputStream();
+			TidyMessageListener tml = new TidyMessageListener();
+			Tidy tidy = new Tidy();
+			tidy.setQuiet(true);
+			tidy.setShowWarnings(false);
+			tidy.setMessageListener(tml);
+			tidy.setPrintBodyOnly(true);
+			tidy.setFixUri(false);
+			tidy.setFixComments(false);
+			tidy.setAsciiChars(false);
+			tidy.setBreakBeforeBR(false);
+			tidy.setBurstSlides(false);
+			tidy.setDropEmptyParas(false);
+			tidy.setDropFontTags(false);
+			tidy.setDropProprietaryAttributes(false);
+			tidy.setEncloseBlockText(false);
+			tidy.setEncloseText(false);
+			tidy.setIndentAttributes(false);
+			tidy.setIndentCdata(false);
+			tidy.setIndentContent(false);
+			tidy.setLiteralAttribs(true);
+			tidy.setLogicalEmphasis(false);
+			tidy.setLowerLiterals(false);
+			tidy.setMakeClean(false);
+			tidy.setMakeBare(false);
+			tidy.setInputEncoding("UTF8");
+			tidy.setOutputEncoding("UTF8");
+			tidy.setRawOut(true);
+			tidy.setSmartIndent(false);
+			tidy.setTidyMark(false);
+			tidy.setWrapAsp(false);
+			tidy.setWrapAttVals(false);
+			tidy.setWrapJste(false);
+			tidy.setWrapPhp(false);
+			tidy.setWrapScriptlets(false);
+			tidy.setWrapSection(false);
+			tidy.setWraplen(1000000);
+			org.w3c.dom.Document doc = tidy.parseDOM(sr, sw);
+			if (tml.isErrors() || tidy.getParseErrors() > 0) {
+				entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
+				description.setText("");
+			} else {
+				description.setText(sw.toString());
+			}
+		} else {
+			//HTML validation is turned off, just use whatever the user passed in
+			description.setText(text);
+		}
     }
     
     public List<Definition> getAllDefinitions() {
