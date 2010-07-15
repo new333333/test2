@@ -171,6 +171,10 @@
     <listener>
      	<listener-class>org.kablink.teaming.web.servlet.listener.SessionListener</listener-class>
     </listener>
+    
+    <listener>
+     	<listener-class>org.kablink.teaming.web.servlet.listener.DelegatingServletContextListener</listener-class>
+    </listener>
 
 	<servlet>
 		<servlet-name>viewRendererServlet</servlet-name>
