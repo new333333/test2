@@ -78,9 +78,17 @@ public class DelegatingServletContextListener implements ServletContextListener 
 		String[] classNames = SPropsUtil.getStringArray("servlet.context.listener.classes", ",");
 		contextListeners = new ServletContextListener[classNames.length];
 		for(int i = 0; i < classNames.length; i++) {
-			if(logger.isDebugEnabled())
-				logger.debug("Creating delegate " + classNames[i]);
-			contextListeners[i] = (ServletContextListener) ReflectHelper.getInstance(classNames[i]);
+			try {
+				if(logger.isDebugEnabled())
+					logger.debug("Creating delegate " + classNames[i]);
+				contextListeners[i] = (ServletContextListener) ReflectHelper.getInstance(classNames[i]);
+			}
+			catch(RuntimeException e) {
+				logger.error("Error creating delegate " + classNames[i], e);
+			}
+			catch(Error e) {
+				logger.error("Error creating delegate " + classNames[i], e);
+			}
 		}
 		if(logger.isDebugEnabled())
 			logger.debug("Number of delegates is " + classNames.length);		
