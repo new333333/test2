@@ -289,7 +289,9 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 			//sb.append("self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
 			sb.append("idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue).replaceAll("'", "\\\\'").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")+"';\n");
+			sb.append("idMapCaption['"+rootElementId+"'] = '"+NLT.getDef(propertyCaptionValue)
+					.replaceAll("'", "\\\\'").replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+					.replaceAll(">", "&gt;")+"';\n");
 		}
 
 	}
@@ -369,7 +371,8 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("onClick=\"self."+operationElementId+"('" + operationElementId + "', '" + 
 						operationElementName + "', '" + 
 						operationElement.attributeValue("item", "") + "'); return false;\">");
-				sb.append(NLT.getDef(operationElement.attributeValue("caption", "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+				sb.append(NLT.getDef(operationElement.attributeValue("caption", ""))
+						.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 				sb.append("</a>\n");
 				sb.append("</td></tr>\n");
 			}
@@ -397,7 +400,8 @@ public class BuildDefinitionDivs extends TagSupport {
 			Map<String, StringBuffer[]> optionsMap = new TreeMap();
 			String optionCaption = "";
 			if (e_options != null) {
-				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", ""))
+					.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 				if (Validator.isNotNull(optionCaption)) {
 					sb.append("<b>").append(optionCaption).append("</b>\n");
 				}
@@ -475,7 +479,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							excludeNames.add(ex.attributeValue("name"));
 						}
 
-						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""))
+							.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 						if (!optionCaption.equals("")) {
 							//flush contents of current buffers to make way for new header
 							for (Map.Entry<String, StringBuffer[]> me: optionsMap.entrySet()) {
@@ -657,7 +662,8 @@ public class BuildDefinitionDivs extends TagSupport {
 					if(propertyId.equalsIgnoreCase("name")){
 						readonly = "";
 						}
-					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", ""))
+						.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 					List propertyValues = new ArrayList();
 					if (properties != null) {
 						//See if there are already values for this property in the actual definition file
@@ -702,7 +708,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							checked = "checked=\"checked\"";
 						}
 						sb.append("<br/><input type=\"checkbox\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" "+checked+" "+readonly+"/> ");
-						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+						sb.append(NLT.getDef(propertyConfig.attributeValue("caption", ""))
+								.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
@@ -734,7 +741,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								if (type.equals("radio")) checked = " checked=\"checked\"";							}
 							if (type.equals("selectbox")) {
 								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
+										.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 								sb.append("</option>\n");
 								optionCount++;
 							} else if (type.equals("radio")) {
@@ -742,7 +750,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
 								sb.append("\"").append(checked).append("/>");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
+									.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 							}
 						}
 						//See if there are any items to be shown from the "sourceRoot"
@@ -813,7 +822,8 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
 											sb.append("\"").append(checked).append("/>");
-											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")));
+											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
+													.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
 										}
 									}
 								}
@@ -851,7 +861,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									Element selectedItemCaptionEle = (Element)selectedItem.selectSingleNode("properties/property[@name='caption']");
 									if (selectedItemCaptionEle == null) {continue;}
 									String selectedItemName = selectedItemNameEle.attributeValue("value", "");
-									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+									String selectedItemCaption = selectedItemCaptionEle.attributeValue("value", "")
+										.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 									sb.append("<option value=\"").append(selectedItemName).append("\"");
 									for (int i = 0; i < propertyValues.size(); i++) {
 										if (((String)propertyValues.get(i)).equals(selectedItemName)) {
@@ -892,7 +903,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (replyIds.contains(entryDef.getId())) {
 								sb.append(" selected=\"selected\"");
 							}
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
 						}
 
 						sb.append("</select>\n<br/><br/>\n");
@@ -1036,8 +1048,13 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
-									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</del>");
-									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+										sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+											.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</del>");
+									} else {
+										sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+												.replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+									}
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1157,7 +1174,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the entry definitions
 							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1207,8 +1225,13 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\" style=\"padding-left:4px;\">");
-									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</del>");
-									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+										sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+												.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</del>");
+									} else {
+										sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")
+												.replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+									}
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1245,7 +1268,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							//Build a list of the entry definitions
 							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1279,7 +1303,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {
 							rd.include(req, res);
-							sb.append(res.getString().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+							sb.append(res.getString().replaceAll("&", "&amp;"));
 						} catch(Exception e) {}
 						
 					} else if (type.equals("folderSelect")) {
@@ -1303,7 +1327,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {
 							rd.include(req, res);
-							sb.append(res.getString().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+							sb.append(res.getString().replaceAll("&", "&amp;"));
 						} catch(Exception e) {}
 						
 					} else if (type.equals("remoteApp")) {
@@ -1335,8 +1359,9 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (remoteApp.get("_docId").equals(propertyValue0)) {
 								sb.append(" selected=\"selected\"");
 							}
-							sb.append(">").append(((String)remoteApp.get("title")).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"))
-								.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");
+							sb.append(">").append(((String)remoteApp.get("title"))
+									.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"))
+									.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 
@@ -1357,7 +1382,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (entryDef.getId().equals(selectedId)) {
 								sb.append(" selected=\"selected\"");
 							}
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
 						}
 
 						sb.append("</select>\n<br/><br/>\n");
