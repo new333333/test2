@@ -94,7 +94,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource tree_opener();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_generic.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_generic.png")
 	public ImageResource workspace_generic();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
