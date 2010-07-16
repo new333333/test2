@@ -40,7 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -52,7 +51,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
@@ -67,7 +65,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.zip.ZipEntry;
 import org.apache.tools.zip.ZipOutputStream;
-import org.dom4j.Attribute;
 import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -78,7 +75,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -87,7 +83,6 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -104,8 +99,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
-import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.export.ElementBuilder;
@@ -123,7 +116,6 @@ import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -1082,7 +1074,8 @@ public class ExportHelper {
 		// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 		zipOut.putNextEntry(new ZipEntry("__definitions" + "/"
 				+ name + ".xml"));
-		XmlFileUtil.writeFile(def.getDefinition(), zipOut);
+		Document defXmlDoc = definitionModule.getDefinitionAsXml(def);
+		XmlFileUtil.writeFile(defXmlDoc, zipOut);
 		zipOut.closeEntry();
 	}
 
@@ -1116,6 +1109,9 @@ public class ExportHelper {
 		// key-value pairs: old exported definition id - new definition id assigned
 		// during import
 		HashMap<String, Definition> definitionIdMap = new HashMap<String, Definition>();
+		
+		//List of new definitions added during this import
+		List<String> newDefIds = new ArrayList<String>();
 
 		logger.debug("Unzipping to disk temporarily...");
 		String tempDir = deploy(zIn);
@@ -1123,7 +1119,7 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, definitionIdMap, 
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, definitionIdMap, newDefIds,
 					statusTicket, reportMap, nameCache);
 		} catch(Exception e) {
 				if (e instanceof ExportException)
@@ -1136,11 +1132,15 @@ public class ExportHelper {
 		
 		//After importing binders and entries, perform a final fix-up of mappings (landing pages and markup)
 		fixUpLinks(binderIdMap, entryIdMap);
+		//Make sure the principal mappings and internal defIds are handled
+		for (String defId : newDefIds) {
+			definitionModule.updateDefinitionReferences(defId);
+		}
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, StatusTicket statusTicket,
-			Map reportMap, Map<String, Principal> nameCache) throws IOException {
+			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, List<String> newDefIds, 
+			StatusTicket statusTicket, Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		Binder topBinder = loadBinder(topBinderId);
 
@@ -1158,7 +1158,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, definitionIdMap, 
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, definitionIdMap, newDefIds,
 						statusTicket, reportMap, nameCache);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
@@ -1226,7 +1226,11 @@ public class ExportHelper {
 						// or mirrored file folders
 					} else {
 						if (def == null) def = definitionModule.addDefinition(tempDoc, topBinder, false);
-						if (def != null) definitionIdMap.put(defId, def);
+						if (def != null) {
+							definitionIdMap.put(defId, def);
+							//Remember the new def so we can update its principal ids later
+							newDefIds.add(def.getId());
+						}
 					}
 
 				} else if (fileExt.equals("xml")) {
@@ -1339,7 +1343,6 @@ public class ExportHelper {
 
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
-						String defName = getEntityDefinitionName(tempDoc);
 						Definition def = null;
 						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
 
@@ -1392,7 +1395,6 @@ public class ExportHelper {
 
 						Document tempDoc = getDocument(xmlStr, nameCache);
 						String defId = getEntityDefinitionId(tempDoc);
-						String defName = getEntityDefinitionName(tempDoc);
 						Definition def = null;
 						if (definitionIdMap.containsKey(defId)) def = definitionIdMap.get(defId);
 
@@ -1611,7 +1613,6 @@ public class ExportHelper {
 
 		final Binder topBinder = loadBinder(topBinderId);
 		final Document doc = getDocument(inputDataAsXML, nameCache);
-		String[] fileNames = new String[0];
 		Map options = new HashMap();
 		//Set the entry creator and modifier fields
 		setSignature(options, doc, nameCache);
@@ -2222,7 +2223,6 @@ public class ExportHelper {
 		if (teamInherited) {
 			binder.setTeamMembershipInherited(true);
 		} else {
-			List<String> names = new ArrayList<String>();
 			xPath = "//team//principal";
 			List principals = entityDoc.selectNodes(xPath);
 			Set<Long> ids = new HashSet();
@@ -2280,7 +2280,6 @@ public class ExportHelper {
 				String question = response.attributeValue("responseName", "");
 				String responseValue = response.attributeValue("responseValue", "");
 				String responseDate = response.attributeValue("responseDate", "");
-				String responderId = response.attributeValue("responderId", "");
 
 				Element responderEle = (Element)response.selectSingleNode("./principal");
 				String responderName = responderEle.attributeValue("name", "");
@@ -2328,7 +2327,7 @@ public class ExportHelper {
 				options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state);
 				
 				//Workflow State needs a modification timestamp
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		    	Calendar current = Calendar.getInstance();
 		    	current.setTime(new Date());
 				
@@ -2474,13 +2473,6 @@ public class ExportHelper {
 				.getZoneId());
 	}
 
-	private Binder loadBinder(Long binderId, Long zoneId) {
-		Binder binder = coreDao.loadBinder(binderId, zoneId);
-		if (binder.isDeleted())
-			throw new NoBinderByTheIdException(binderId);
-		return binder;
-	}
-	
 	public static ZoneInfo getZoneInfo() {
 		return zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
 	}
