@@ -260,8 +260,8 @@
         </properties>  
         <item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form" id="126">
           <properties>
-            <property name="caption" value="__profile_heading_Other_Info"/>
-            <property name="name" value="other_info"/>
+            <property name="caption" value="__responsibilities"/>
+            <property name="name" value="responsibilities"/>
             <property name="height" value="125"/>
             <property name="toolbarType" value="standard"/>
             <property name="required" value="false"/>
@@ -518,8 +518,8 @@
       </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="127" formItem="htmlEditorTextarea">
         <properties>
-          <property name="caption" value="__profile_heading_Other_Info"/>
-          <property name="name" value="other_info"/>
+          <property name="caption" value="__responsibilities"/>
+          <property name="name" value="responsibilities"/>
         </properties>
       </item>
     </item>  
