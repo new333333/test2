@@ -66,7 +66,7 @@
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_myDocs}">
     <jsp:useBean id="entry" type="java.util.Map" />
-    <li>
+    <div class="item">
 	 
 	 
 		<c:set var="isDashboard" value="yes"/>
@@ -82,20 +82,15 @@
 			<c:out value="${entry.title}" escapeXml="false"/>
 		</ssf:titleLink>
 	 
-	  <br/>
-	  <span>
-	  
+	  <div class="item-sub margintop1">
 		<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
-	  
-	  </span>
-	  
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      value="${entry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
-	  </span>
+		<span class="ss_link_4">
+			<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			value="${entry._modificationDate}" type="both" 
+			timeStyle="short" dateStyle="medium" />
+		</span>	  
 	   
-	  <span class="ss_link_2">
+		<span class="ss_link_2">
 	  
 		<c:set var="path" value=""/>
 
@@ -105,22 +100,24 @@
 		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
-    		<br/><a href="javascript: ;"
+    		<div style="margin-left:22px;"><a href="javascript: ;"
 				onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 				title="${path}"
 				><span>${title}</span></a>
+			</div>	
 		</c:if>
-	  
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  </span>
+ 	  </div>
+
 	  <c:if test="${!empty entry._desc}">
-	    <br/>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup search="${entry}" type="view">${entry._desc}</ssf:markup></ssf:textFormat></span>
-	    <div class="ss_clear"></div>
+	    <div style="margin-left:22px;">
+			<span class="ss_summary"><ssf:textFormat 
+			  formatAction="limitedDescription" 
+			  textMaxWords="15"><ssf:markup search="${entry}" type="view">${entry._desc}</ssf:markup></ssf:textFormat></span>
+			 </div> 
 	  </c:if>
 	
-    </li>
+    </div>
   </c:forEach>
   <c:if test="${empty ss_myDocs && ss_pageNumber > '0'}">
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>

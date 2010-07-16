@@ -207,6 +207,7 @@ td.rightend
 	border-bottom-width: 0px;
 	border-left-width: 0px;
 	padding: 0px 15px 0px 0px !important;
+	background: transparent !important;
 	}	
 	
 .ss_form_wrap_compact {

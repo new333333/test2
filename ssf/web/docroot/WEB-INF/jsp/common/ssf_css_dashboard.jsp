@@ -90,7 +90,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
 	background-color: transparent; /* right column background color */
-	padding: 10px;
 	} 
 .ss_tricolumn .ss_colmid{
 	right: 21%;
@@ -276,11 +275,10 @@ div.ss_canvas {
 #ss_im_status{
 	font-size: 11px;
 	line-height: 13px;
-	padding-left:4px;
-	padding-bottom:1px;
-	border: 1px dotted #555;
-	color:#555;
+	padding:4px;
 	background: #FFF;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 .ss_im_status_active{
 	font-weight: bold;
@@ -383,14 +381,17 @@ div.ss_canvas {
 	/*MY DOCUMENTS*/
 #ss_mydocs_para {
 	line-height:1.2em;
-	padding:5px 0 0 15px;
+	padding: 5px;
 	}
-#ss_mydocs_para li{
-	list-style-type: square;
-	padding-bottom:0px;
-	border-bottom:1px dotted #5691A6;
-	padding-bottom: 1.6em;
+#ss_mydocs_para div.item {
+	padding-top: 2px;
+	padding-bottom: 8px;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #e0e0e0;
 	}
+#ss_mydocs_para div.item-sub a {
+	font-weight: normal;
+	}	
 	/* ACTIVE LINK */
 #ss_mydocs_para a {					
 	text-decoration:underline;
@@ -434,7 +435,8 @@ div.ss_canvas {
 	margin-left: 4px !important;
 	margin-bottom: 10px;
 	background: #FFF;
-	border: dotted 1px #5691A6;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 	/* NOTES */
 #ss_notes{
@@ -575,8 +577,6 @@ div.ss_canvas {
 /* to use when need to display summary of an entry */
 
 .ss_summary	{
-	font-style: italic;
-	color: #555555;
 	font-size: 11px;
 	line-height: 12px;
 	padding: 0;
@@ -590,12 +590,15 @@ div.ss_canvas {
 	padding: 5px 0 15px 20px;
 }
 #ss_para {
-	border: 1px dotted #5691A6;
-	padding-left: 15px;
+	padding-left: 6px;
 	padding-bottom: 15px;
 	color: #555555;
 	margin-top: 2px;
+	margin-right: 6px;
 	line-height: 1.2em;
+	background-color: #f6f6f6;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 
 #ss_para ul{
@@ -622,28 +625,22 @@ div.ss_canvas {
 #ss_para a{
 	text-decoration:none!important;
 	font-weight: bold;
-	color: #555555;
 	}
 #ss_para a:hover{
 	color:#555!important;
 	background:#CCC!important;
 	}
 #ss_para a:visited{
-	color:#996699 !important;
 	}	
 #ss_para .ss_link_3 a:visited{
-	color:#9966CC !important;
 	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
 	font-size:${ss_style_font_normalprint};
-	font-weight: 200;
-	letter-spacing: -.5px;
-	color:#3e6978 !important;
+	letter-spacing: -.25px;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
-	color:#3e6978 !important;
 	font-size:${ss_style_font_smallprint}!important;
 	text-decoration: underline!important;
 	}
@@ -733,13 +730,11 @@ div.ss_canvas {
  	</c:if>	    
       }
 #ss_tabsC div { 
-    display:inline-block;
-	margin:0px;
+	margin-right: 4px;
 	}
 #ss_tabsC a {
 	color: #fff;
 	font-weight: bold;
-    margin-right: 5px;
       }
 #ss_tabsC a span {
     display:block;
@@ -761,17 +756,17 @@ div.ss_canvas {
 #ss_tabsC a:hover span {
 	color: #fff;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
-      }
-#ss_tabsC .ss_tabsCCurrent {
-	border-bottom: 10px solid #eaebe8;
+      }  
+#ss_tabsC .ss_tabsC_other {
+	margin-bottom: 5px;
 	}
-
 #ss_tabsC .ss_tabsCCurrent a {
 	color: #000;
 	font-weight: bold;
     font-size:100%;
 	}
 #ss_tabsC .ss_tabsCCurrent a span {
+	border-bottom: 10px solid #eaebe8;
 	background-color: #eaebe8;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
