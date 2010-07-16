@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -105,12 +105,15 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 
 <%
 	String browserType = request.getHeader("User-Agent");
-	String sizingTableCellPadding;
+	String sizingTableHeaderCellStyle;
+	String sizingTableRowCellStyle;
 	if ((null != browserType) && ((-1) != browserType.toLowerCase().indexOf("safari"))) {
-		sizingTableCellPadding = "3";
+		sizingTableHeaderCellStyle = "padding-bottom: 1px;";
+		sizingTableRowCellStyle    = "padding-bottom: 10px;";
 	}
 	else {
-		sizingTableCellPadding = "2";
+		sizingTableHeaderCellStyle =
+		sizingTableRowCellStyle    = "padding-bottom: 0px;";
 	}
 %>
 <script type="text/javascript">
@@ -124,12 +127,12 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0" width="100%">
-<table cellspacing="0" cellpadding="<%= sizingTableCellPadding %>" width="100%">
+<table id="findThisTable" cellspacing="0" cellpadding="2" width="100%">
  <tr class="ss_sliding">
-  <td class="ss_sliding_table_row0" width="100%">&nbsp; </td>
+  <td class="ss_sliding_table_row0" width="100%" style="<%= sizingTableHeaderCellStyle %>">&nbsp; </td>
  </tr>
 </table>
-<table cellspacing="0" cellpadding="<%= sizingTableCellPadding %>" width="100%" style="padding-bottom:2px;">
+<table id="findThisTable2" cellspacing="0" cellpadding="2" width="100%" style="padding-bottom: 2px;">
 <%		
 		int rowCount = 1;
 		String rowStyle = "ss_sliding_table_row0";
@@ -138,7 +141,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 			if ((rowCount % 2) == 0) rowStyle = "ss_sliding_table_row1";
 			rowCount++;
 %>
-<tr class="<%= rowStyle %>"><td nowrap width="100%">&nbsp;</td></tr>
+<tr class="<%= rowStyle %>"><td nowrap width="100%" style="<%= sizingTableRowCellStyle %>">&nbsp;</td></tr>
 <%
 		}		
 %>
