@@ -39,20 +39,21 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
-		  <ssf:nlt tag="relevance.documents">
-		    <ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
-		  </ssf:nlt>
-		</div>
-	</ssf:param>
-		<div id="ss_dashboardDocs${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-		</div>
-	</ssf:canvas>
+			<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
+			<ssf:param name="title" useBody="true" >
+				<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
+				  <ssf:nlt tag="relevance.documents">
+					<ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
+				  </ssf:nlt>
+				</div>
+			</ssf:param>
+				<div id="ss_dashboardDocs${renderResponse.namespace}">
+				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+				</div>
+			</ssf:canvas>
 	
-        </div><!-- end of ss_col 1 -->
+		</div><!-- end of ss_col 1 -->
+
       <div id="ss_col2" class="ss_col2">
 
 	<c:if test="${ssBinder.owner.id == ssUser.id}">

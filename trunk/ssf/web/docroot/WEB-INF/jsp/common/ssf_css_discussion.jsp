@@ -74,7 +74,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* 2 COLUMN PAGE STYLE SETTINGS */	
 
 .ss_doublecolumn{
-	background-color:#fff;
 	text-align:left;
 	}
 #ss_column_L{
