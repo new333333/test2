@@ -93,9 +93,8 @@ if (ss_getUserDisplayStyle() != "accessible") {
 
 <% //Tabs %>
 
-<div id="ss_wrap" align="center">
+<div id="ss_wrap">
 <div id="ss_tabsC" align="left">
-  <ul>
 	<!-- CSS Tabs -->
 	<% /* If we are dealing with a Template Binder select the Overview tab as the default tab. */ %>
 	<c:if test="${usingTemplateBinder == 'true'}">
@@ -115,7 +114,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 	</c:if>
 
 	<% /* Add the "Overview" tab as the first tab. */ %>
-	<li <c:if test="${ssRDCurrentTab == 'overview'}">class="ss_tabsCCurrent"</c:if>>
+	<div <c:if test="${ssRDCurrentTab == 'overview'}">class="ss_tabsCCurrent"</c:if>>
 		<a <c:if test="${ssRDCurrentTab == 'overview'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 			href="javascript: ;"
 			<% /* We only need to do something when the user clicks on the overview tab if we are not dealing with a TemplateBinder. */ %>
@@ -129,54 +128,53 @@ if (ss_getUserDisplayStyle() != "accessible") {
 			</c:choose>
 			<span><ssf:nlt tag="relevance.tab.overview"/></span>
 		</a>
-	</li>
+	</div>
 
 <% /* Only add the What's New tab if we are not dealing with a Template Binder. */ %>
 <c:if test="${!empty ssRelevanceDashboardConfigElement && usingTemplateBinder == 'false'}">
-	<li <c:if test="${ssRDCurrentTab == 'whatsNew'}">class="ss_tabsCCurrent"</c:if>
+	<div <c:if test="${ssRDCurrentTab == 'whatsNew'}">class="ss_tabsCCurrent"</c:if>
 	><a 
 	  <c:if test="${ssRDCurrentTab == 'whatsNew'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
 		onclick="ss_selectRelevanceTab(this, 'whatsNew', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
+		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></div>
 </c:if>
 <c:if test="${empty ssRelevanceDashboardConfigElement && usingTemplateBinder == 'false'}">
   <c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="whatsNew" scope="request"/></c:if>
-	<li <c:if test="${ssRDCurrentTab == 'whatsNew'}">class="ss_tabsCCurrent"</c:if>
+	<div <c:if test="${ssRDCurrentTab == 'whatsNew'}">class="ss_tabsCCurrent"</c:if>
 	  class="ss_tabsCCurrent"><a 
 	  <c:if test="${ssRDCurrentTab == 'whatsNew'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
 		onclick="ss_selectRelevanceTab(this, 'whatsNew', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
+		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></div>
 </c:if>
 
 	<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 	<c:if test="${usingTemplateBinder == 'false'}">
 	  <ssf:ifLoggedIn>
-		<li <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>>
+		<div <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>>
 		<a 
 		  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 		  href="javascript: ;"
 			onclick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-			<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
+			<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></div>
 	
 	
-		<li <c:if test="${ssRDCurrentTab == 'activities'}">class="ss_tabsCCurrent"</c:if>>
+		<div <c:if test="${ssRDCurrentTab == 'activities'}">class="ss_tabsCCurrent"</c:if>>
 		<a 
 		  <c:if test="${ssRDCurrentTab == 'activities'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 		  href="javascript: ;"
 			onclick="ss_selectRelevanceTab(this, 'activities', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-			<span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
+			<span><ssf:nlt tag="relevance.tab.activities"/></span></a></div>
 	
-		<li <c:if test="${ssRDCurrentTab == 'miniblogs'}">class="ss_tabsCCurrent"</c:if>>
+		<div <c:if test="${ssRDCurrentTab == 'miniblogs'}">class="ss_tabsCCurrent"</c:if>>
 		<a 
 		  <c:if test="${ssRDCurrentTab == 'miniblogs'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 		  href="javascript: ;"
 			onclick="ss_selectRelevanceTab(this, 'miniblogs', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-			<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></li>
+			<span><ssf:nlt tag="relevance.tab.miniblogs"/></span></a></div>
 	  </ssf:ifLoggedIn>
 	</c:if>	
-  </ul>
 </div>
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
@@ -186,7 +184,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
-<div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
+<div id="relevanceCanvas_${renderResponse.namespace}" class="ss_tertiaryTabs" style="margin: -5px 10px 10px;">
 <c:set var="ss_relevanceDashboardNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>

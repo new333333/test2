@@ -89,7 +89,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
-	background-color: #FFFFFF; /* right column background color */
+	background-color: transparent; /* right column background color */
+	padding: 10px;
 	} 
 .ss_tricolumn .ss_colmid{
 	right: 21%;
@@ -114,8 +115,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_tricolumn .ss_col3 {
 	width:20%;				/* Width of right column content (column width minus padding on either side) */
 	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
-	background-color: #DBE9E8;
-	padding: 5px 7px 0px 3px;
+	padding: 5px 5px 0px 5px;
 	}
 
 div.ss_canvas {
@@ -124,7 +124,7 @@ div.ss_canvas {
 	border-bottom: solid .3px ${ss_toolbar1_background_color};
 	padding-bottom: 0px;
 	margin-bottom: 10px;
-	background-color: ${ss_style_background_color_side_panel};
+	background-color: red; /* ${ss_style_background_color_side_panel} */
 	}
 #ss_wrap{
 	margin: auto;
@@ -485,7 +485,6 @@ div.ss_canvas {
 	margin: 0px 0px 2px 0px;
 	font-size: 16px;
 	font-weight: 500;
-	letter-spacing: -1px !important;
 	color: #555;
 	font-family: Arial, Helvetica, sans-serif;
 	}
@@ -505,8 +504,6 @@ div.ss_canvas {
 	padding: 2px 0px 2px 5px;
 	width:100%;
 	font-family: Arial, Helvetica, sans-serif;
-
-	font-style: italic;
 	}
 /*  BOX TITLE COLORS   */
 .ss_blue{
@@ -720,80 +717,70 @@ div.ss_canvas {
 
 /* - MENU TABS FOR RELEVANCE--------------------------- */
 
+.ss_tertiaryTabs {
+	background-color: #eaebe8; /* Gray 8 */
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	}
 #ss_tabsC {
-    top:-1px;
-    float:left;
     width:100%;
     background:transparent;
-    font-size:95%;
   /*  line-height:normal; */
-    border-bottom: 1px solid #e6e6e6;
-	padding-bottom: 2px;
-    margin-top:0px;
+  	margin-left: 10px;
+    margin-top: 10px;
  	<c:if test="<%= isIE %>">
  	    margin-top:20px !important;
  	</c:if>	    
       }
- #ss_tabsC ul { 
-    padding:10px 10px 0 10px;
- 	<c:if test="<%= isIE %>">
- 	    padding:0px 10px 0px 10px;
- 	</c:if>	
-    list-style:none;
-    margin:0px;
-      }
-#ss_tabsC li {
-    display:inline;
-    margin-top:0;
-   	padding:0px !important;
-      }
- #ss_tabsC a {
-    top:1px;
-    float:left;
+#ss_tabsC div { 
+    display:inline-block;
+	margin:0px;
+	}
+#ss_tabsC a {
+	color: #fff;
+	font-weight: bold;
     margin-right: 5px;
-	background-color: #cdced0;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
       }
- #ss_tabsC a span {
+#ss_tabsC a span {
     display:block;
-    background-color: #cdced0;
-    padding: 5px 8px;
+    background-color: #949494; /* gray */
+    padding: 5px 10px;
     white-space:nowrap !important;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
       }
 
 	 /* Commented Backslash Hack hides rule from IE5-Mac \ */ 
- #ss_tabsC a span {float:none;}
+#ss_tabsC a span {float:none;}
     /* End IE5-Mac hack */
 
 #ss_tabsC a:hover {
-	color: #5691a6;
-	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
-	background-position:bottom;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
       }
 #ss_tabsC a:hover span {
-	color: #5691a6;
-	background-image: url("<html:rootPath/>images/pics/teal_slice.png");
-	background-position: middle;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
       }
+#ss_tabsC .ss_tabsCCurrent {
+	border-bottom: 10px solid #eaebe8;
+	}
+
 #ss_tabsC .ss_tabsCCurrent a {
-	color: #FFFFFF;
+	color: #000;
 	font-weight: bold;
     font-size:100%;
-	background-color: #5691a6;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-        }
+	}
 #ss_tabsC .ss_tabsCCurrent a span {
-	background-color: #5691a6;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background-color: #eaebe8;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomleft: 0px;
+	-moz-border-radius-bottomright: 0px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 0px;
+	-webkit-border-bottom-right-radius: 0px;
         }	
 /* PROFILE STYLES*/
 
