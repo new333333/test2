@@ -38,9 +38,6 @@
 <c:if test="${!empty ssPageCount}">
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/slider/slider.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/slider/range.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/slider/timer.js"></script>
 <script type="text/javascript">
 var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param 
 	name="action" value="ssActionPlaceHolder"/><ssf:param 
