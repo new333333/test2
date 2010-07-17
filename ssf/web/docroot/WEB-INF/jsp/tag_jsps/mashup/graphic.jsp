@@ -67,7 +67,7 @@
 	    	<ssf:param name="fileId" value="${mashup_attributes['graphic']}"/>
 	    	<ssf:param name="fileTitle" value="${graphicFileTitle}"/>
 	    	</ssf:url>" alt="${mashup_attributes['title']}"
-        <c:if test="${!empty mashup_attributes['showBorder']}"> style="border: 2px solid #ccc !important;" </c:if>
+        <c:if test="${mashup_attributes['showBorder'] == '1'}"> style="border: 2px solid #ccc !important;" </c:if>
 	>
   </c:if>
  </div>
