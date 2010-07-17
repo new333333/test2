@@ -1743,12 +1743,24 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
-
 		<attribute>
 			<name>textMaxWords</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
+		<attribute>
+			<name>stripHtml</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>			
+		<attribute>
+			<name>breakOnLines</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>			
+		
 	</tag>
 
 	<tag>

@@ -50,12 +50,24 @@
 	String caption = (String) request.getAttribute("property_caption");
 	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String width = (String) request.getAttribute("property_width");
-	String rows = (String) request.getAttribute("property_rows");
-	if (rows == null || rows.equals("")) {rows = "4";}
+	String height = (String) request.getAttribute("property_height");
 	if (width == null || width.equals("")) {
 		width = "";
-	} else {
-		width = "width='"+width+"'";
+	}
+	if (width.indexOf("px") >= 0) {
+		width = width.substring(0, width.indexOf("px")).trim();
+	}
+	if (!width.equals("")) {
+		width = "width:"+width+"px;";
+	}
+	if (height == null || height.equals("")) {
+		height = "";
+	}
+	if (height.indexOf("px") >= 0) {
+		height = height.substring(0, height.indexOf("px")).trim();
+	}
+	if (!height.equals("")) {
+		height = "height:"+height+"px;";
 	}
 	if (caption == null || caption.equals("")) {
 		caption = "";
@@ -73,6 +85,6 @@
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual" ${ss_fieldModifyInputAttribute}
-  rows="<%= rows %>" <%= width %> 
+  style="<%= height %> <%= width %>"
 ><c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/></textarea>
 </div>

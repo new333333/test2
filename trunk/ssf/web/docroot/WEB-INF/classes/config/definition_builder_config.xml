@@ -2500,6 +2500,29 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
+	<item name="textarea" caption="__text_area" type="data" category="commonEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="width" caption="__width_px" type="text"/>
+			<property name="height" caption="__height_px" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDescription" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDescription" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDescription" />
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
 	<item name="number" caption="__number" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>

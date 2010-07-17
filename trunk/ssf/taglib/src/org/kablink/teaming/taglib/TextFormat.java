@@ -47,6 +47,8 @@ public class TextFormat extends BodyTagSupport {
 	private String _bodyContent;
 	private String formatAction;
 	private String textMaxWords;
+	private Boolean stripHtml = false;
+	private Boolean breakOnLines = false;
 	
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -192,6 +194,8 @@ public class TextFormat extends BodyTagSupport {
 				
 			} else if (formatAction.equals("textToHtml")) {
 				TextToHtml textToHtml = new TextToHtml();
+				textToHtml.setBreakOnLines(this.breakOnLines);
+				textToHtml.setStripHtml(this.stripHtml);
 				textToHtml.parseText(textContent);
 				JspWriter jspOut = pageContext.getOut();
 				jspOut.print(textToHtml.toString()); 
@@ -208,6 +212,8 @@ public class TextFormat extends BodyTagSupport {
 		} finally {
 			this.formatAction = null;
 			this.textMaxWords = null;			
+			this.breakOnLines = false;
+			this.stripHtml = false;
 		}
 	}
 
@@ -217,5 +223,13 @@ public class TextFormat extends BodyTagSupport {
 	
 	public void setTextMaxWords(String textMaxWords) {
 		this.textMaxWords = textMaxWords;
+	}
+	
+	public void setStripHtml(Boolean stripHtml) {
+		this.stripHtml = stripHtml;
+	}
+	
+	public void setBreakOnLines(Boolean breakOnLines) {
+		this.breakOnLines = breakOnLines;
 	}
 }

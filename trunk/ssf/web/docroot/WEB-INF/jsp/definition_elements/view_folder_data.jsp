@@ -49,6 +49,9 @@
 	} else if (itemType.equals("description")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_description.jsp" /><%
 
+	} else if (itemType.equals("textarea")) {
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_textarea.jsp" /><%
+		
 	} else if (itemType.equals("htmlEditorTextarea")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" /><%
 		
