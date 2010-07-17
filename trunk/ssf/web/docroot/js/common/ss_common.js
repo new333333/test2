@@ -8847,6 +8847,16 @@ function ss_deleteMultipleFileVersions(formId, confirmText) {
 	}
 }
 
+function ss_launchSimpleProfile(element, workspaceId, userName, errorText) {
+	if(window.top.ss_invokeSimpleProfile != null ) {
+		window.top.ss_invokeSimpleProfile(element, workspaceId, userName);
+	} else {
+		alert(errorText);
+	}
+	return;
+}
+
+
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
 dojo.require("dojo.io.iframe");
