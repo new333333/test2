@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.util.Html;
 import org.kablink.util.Validator;
 
 /**
@@ -58,11 +59,16 @@ public class TextToHtml {
 	
 	private List<Para> paraList = new ArrayList<Para>();
 	private List<String> lines = new ArrayList<String>();
+	private Boolean breakOnLines = false;
+	private Boolean stripHtml = false;
 	
 	public void parseText(String inputText) {
 		
 		//Break the text into a list of lines
 		String s = inputText;
+		if (stripHtml) {
+			s = Html.stripHtml(s);
+		}
 		Pattern pLines = Pattern.compile(PATTERN_LINE, Pattern.DOTALL);
 		Matcher mLines = pLines.matcher(s);
 		while (mLines.find()) {
@@ -104,6 +110,16 @@ public class TextToHtml {
 			scanForUrls(nextPara);
 		}
 				
+	}
+	
+	//Strip html from the text
+	public void setStripHtml(Boolean stripHtml) {
+		this.stripHtml = stripHtml;
+	}
+	
+	//Break on lines
+	public void setBreakOnLines(Boolean breakOnLines) {
+		this.breakOnLines = breakOnLines;
 	}
 	
 	//Return the html string
@@ -214,7 +230,9 @@ public class TextToHtml {
 				if (!buf.toString().equals("")) buf.append("\n");
 				if (!firstLine) {
 					//See if this is a list line
-					if (line.matches(PATTERN_LIST_LINE)) buf.append("\n<br/>\n");
+					if (line.matches(PATTERN_LIST_LINE) || breakOnLines) {
+						buf.append("\n<br/>\n");
+					}
 				}
 				buf.append(line);
 				firstLine = false;

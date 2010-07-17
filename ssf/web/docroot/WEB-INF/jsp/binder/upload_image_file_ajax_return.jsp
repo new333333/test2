@@ -76,7 +76,7 @@ function passBackUrl() {
 function saveImageUrl(url) {
 	var formObj = parent.document.forms[0];
 	formObj.src.value = url;
-	parent.showPreviewImage(url)
+	if (self.parent && self.parent.showPreviewImage) self.parent.showPreviewImage(url)
 }
 var urlToView = "${ss_upload_file_url}";
 

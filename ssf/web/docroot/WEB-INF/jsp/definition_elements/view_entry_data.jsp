@@ -67,6 +67,9 @@
 	} else if (itemType.equals("text") || itemType.equals("number") || itemType.equals("hidden")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" /><%
 		
+	} else if (itemType.equals("textarea")) {
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_textarea.jsp" /><%
+		
 	} else if (itemType.equals("htmlEditorTextarea")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_html_textarea.jsp" /><%
 		
