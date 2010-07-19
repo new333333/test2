@@ -544,7 +544,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		public void onClick(ClickEvent event) {
 			if (handlerId.equals("EditId")) {
 				String url = profileRequestInfo.getModifyUrl();
-				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
+				if(GwtClientHelper.hasString(url)){
+					GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
+				}
 			} else if(handlerId.equals("FollowId")) {
 				if(followingAnchor.isChecked()) {
 					unfollowPerson();
@@ -553,7 +555,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				}
 			} else if (handlerId.equals("DeleteId")) {
 				String url = profileRequestInfo.getDeleteUserUrl();
-				GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 400, 400);
+				if(GwtClientHelper.hasString(url)){
+					GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 400, 400);
+				}
 			}
 		}
 	}
