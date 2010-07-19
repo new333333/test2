@@ -39,22 +39,22 @@
 <c:if test="${ss_visitorsPage > '0'}">
 <a href="javascript: ;" 
   onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
   title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_visitorsPage || ss_visitorsPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
 </c:if>
 <c:if test="${!empty ss_visitors}">
 <a href="javascript: ;" 
   onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
   title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 </a>
 </c:if>
 <c:if test="${empty ss_visitors}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
 </c:if>
 </div>
 
@@ -62,10 +62,10 @@
     <div id="ss_col3_para" >
 	  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 	  <c:if test="${!empty user.status}">
-		<div><span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		<div class="list-indent"><span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
         value="${user.statusDate}" type="both" 
 	    timeStyle="short" dateStyle="short" /></span></div>
-		<div id="ss_im_status"><em>${user.status}</em></div>
+		<div id="ss_im_status">${user.status}</div>
 	  </c:if>
     </div><!-- end of para -->
   </c:forEach>

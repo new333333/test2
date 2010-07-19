@@ -40,34 +40,34 @@
 </c:if>
 <c:if test="${!empty ss_myDocs || ss_myDocsPage > '0'}">
 <div id="ss_para">
-<div id="ss_today">
-<div align="right">
-<c:if test="${ss_myDocsPage > '0'}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_myDocsPage || ss_myDocsPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-</c:if>
-<c:if test="${!empty ss_myDocs}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_myDocs}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-</c:if>
-</div>
-  <div id="ss_mydocs_para" >
-  <c:forEach var="entry" items="${ss_myDocs}">
-    <jsp:useBean id="entry" type="java.util.Map" />
-    <div class="item">
-	 
+	<div id="ss_today">
+		<div class="col-nextback-but">
+			<c:if test="${ss_myDocsPage > '0'}">
+			<a href="javascript: ;" 
+			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
+			<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+			  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+			</a>
+			</c:if>
+			<c:if test="${empty ss_myDocsPage || ss_myDocsPage <= '0'}">
+			<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+			</c:if>
+			<c:if test="${!empty ss_myDocs}">
+			<a href="javascript: ;" 
+			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
+			<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
+			  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+			</a>
+			</c:if>
+			<c:if test="${empty ss_myDocs}">
+			<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+			</c:if>
+		</div>
+ 
+  	<div id="ss_mydocs_para" >
+ 		 <c:forEach var="entry" items="${ss_myDocs}">
+    	<jsp:useBean id="entry" type="java.util.Map" />
+    	<div class="item">
 	 
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
@@ -100,7 +100,7 @@
 		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
-    		<div style="margin-left:22px;"><a href="javascript: ;"
+    		<div class="list-indent"><a href="javascript: ;"
 				onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 				title="${path}"
 				><span>${title}</span></a>
@@ -110,11 +110,12 @@
  	  </div>
 
 	  <c:if test="${!empty entry._desc}">
-	    <div style="margin-left:22px;">
+	    <div class="list-indent">
 			<span class="ss_summary"><ssf:textFormat 
 			  formatAction="limitedDescription" 
-			  textMaxWords="15"><ssf:markup search="${entry}" type="view">${entry._desc}</ssf:markup></ssf:textFormat></span>
-			 </div> 
+			  textMaxWords="15"><ssf:markup search="${entry}" type="view">${entry._desc}</ssf:markup></ssf:textFormat>
+			</span>
+		</div> 
 	  </c:if>
 	
     </div>

@@ -228,7 +228,7 @@ ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
-<div id="relevanceCanvas_${renderResponse.namespace}" class="ss_tertiaryTabs" style="margin: -5px 10px 10px; padding: 15px 5px 5px 10px;">
+<div id="relevanceCanvas_${renderResponse.namespace}" class="ss_tertiaryTabs" style="margin: -5px 10px 10px; padding: 10px 5px 0px 10px;">
 <c:set var="ss_relevanceDashboardNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'overview'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/overview.jsp" /></c:if>
