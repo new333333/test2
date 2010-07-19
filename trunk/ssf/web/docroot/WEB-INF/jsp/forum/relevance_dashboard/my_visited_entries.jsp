@@ -36,80 +36,88 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <div id="ss_para">
-<div id="ss_viewedItems">
-<div align="right">
-<c:if test="${ssEntriesViewedPage > '0'}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ssEntriesViewedPage || ssEntriesViewedPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-</c:if>
-<c:if test="${!empty ssEntriesViewed}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'next', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ssEntriesViewed}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-</c:if>
-</div>
-<c:set var="count" value="0"/>
-  <c:forEach var="entryMap" items="${ssEntriesViewed}">
-    <c:if test="${entryMap.type == 'view'}">
-    <c:set var="entry" value="${entryMap.entity}"/>
-    <jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
-    
-    <div class="ss_v_entries">
-    <ul>
-    <li>
-		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_2"
-			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
-			entityType="${entry.entityType}" 
-			namespace="${ss_namespace}" 
-			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-			<ssf:param name="url" useBody="true">
-				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry.parentBinder.id}" 
-				  action="view_folder_entry" entryId="${entry.id}" actionUrl="true" />
-			</ssf:param>
-			<c:out value="${entry.title}" escapeXml="false"/>
-		</ssf:titleLink>
-	  
-	  <br/>
-	  <span>
-	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
-	  </span>
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      value="${entry.modification.date}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
-	  </span>
-	   
-	  <br/>
-	  <span class="ss_link_2">
-    	<a href="javascript: ;"
-			onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
-	  <c:if test="${!empty entry.description}">
-	    <br/>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup entity="${entry}">${entry.description}</ssf:markup></ssf:textFormat></span>
-	    <div class="ss_clear"></div>
-	  </c:if>
-	<c:set var="count" value="${count + 1}"/>
-	</li>
-	</ul>
-	</div><!-- end of viewed entries -->
+	<div id="ss_viewedItems">
+		<div class="col-nextback-but">
+				<c:if test="${ssEntriesViewedPage > '0'}">
+				<a href="javascript: ;" 
+				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
+				  <img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+				  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+				</a>
+				</c:if>
 	
-    </c:if>
+				<c:if test="${empty ssEntriesViewedPage || ssEntriesViewedPage <= '0'}">
+				<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+				</c:if>
+	
+				<c:if test="${!empty ssEntriesViewed}">
+				<a href="javascript: ;" 
+				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'next', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
+				  <img src="<html:imagesPath/>pics/sym_arrow_right_.png"
+				  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+				</a>
+				</c:if>
+	
+				<c:if test="${empty ssEntriesViewed}">
+				<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+				</c:if>
+				
+			</div>
+
+		<c:set var="count" value="0"/>
+		<c:forEach var="entryMap" items="${ssEntriesViewed}">
+
+		<c:if test="${entryMap.type == 'view'}">
+			<c:set var="entry" value="${entryMap.entity}"/>
+			<jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
+    
+			<div class="ss_v_entries">
+				<div class="item">
+					<c:set var="isDashboard" value="yes"/>
+					<ssf:titleLink hrefClass="ss_link_2"
+						entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
+						entityType="${entry.entityType}" 
+						namespace="${ss_namespace}" 
+						isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+						<ssf:param name="url" useBody="true">
+							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry.parentBinder.id}" 
+							  action="view_folder_entry" entryId="${entry.id}" actionUrl="true" />
+						</ssf:param>
+						<c:out value="${entry.title}" escapeXml="false"/>
+					</ssf:titleLink>
+	
+					<div class="item-sub margintop1">	  
+						<span>
+							<ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
+						</span>
+						<span class="ss_link_4">
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+						  value="${entry.modification.date}" type="both" 
+						  timeStyle="short" dateStyle="medium" />
+						</span>
+						   
+						<div class="ss_link_2 list-indent">
+							<a href="javascript: ;"
+								onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');">
+								<span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span>
+							</a>
+						</div> 
+						
+						<c:if test="${!empty entry.description}">
+							<div class="ss_summary list-indent">
+								<ssf:textFormat 
+								formatAction="limitedDescription" 
+								textMaxWords="15"><ssf:markup entity="${entry}">${entry.description}</ssf:markup></ssf:textFormat>
+							</div>
+					    </c:if>
+					<div>
+				</div>
+				<c:set var="count" value="${count + 1}"/>
+			</div>
+	    </c:if>
+	</div><!-- end of viewed entries -->
+	</div>
+	
 
     <c:if test="${entryMap.type == 'download'}">
     <c:set var="entry2" value="${entryMap.entity}"/>
@@ -117,54 +125,53 @@
 
     
 	<div id="ss_viewedItems" class="ss_v_attachments">
-	<ul>
-    <li>
-	  
-	  <span class="ss_link_3">
-	  	<a target="_blank" href="<ssf:fileUrl entity="${entry2}" fileId="${entryMap.file_id}"/>">${entryMap.description}</a>
-	  </span>
-	  <br/>
-	  <span>
-	    <ssf:showUser user="${entry2.creation.principal}" titleStyle="ss_link_1"/>
-	  </span>
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      value="${entry2.modification.date}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
-	  </span>
-	  <br/>
-		<c:set var="isDashboard" value="yes"/>
-		<span class="ss_link_2">
-		<ssf:titleLink hrefClass="ss_link_2"
-			entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
-			entityType="${entry2.entityType}" 
-			namespace="${ss_namespace}" 
-			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-			<ssf:param name="url" useBody="true">
-				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
-				  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
-			</ssf:param>
-			<c:out value="${entry2.title}" escapeXml="false"/>
-		</ssf:titleLink>
-		</span>
-	  
-	  <br/>
-	  <span class="ss_link_2">
-    	<a href="javascript: ;"
-			onclick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry2.parentBinder.parentBinder.title} // ${entry2.parentBinder.title}</span></a>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" /> 
-	  <c:if test="${!empty entry2.description}">
-	    <br/>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup entity="${entry2}">${entry2.description}</ssf:markup></ssf:textFormat></span>
-	    <div class="ss_clear"></div>
-	  </c:if>
-	
+	    <div class="item">  
+			<span class="ss_link_3">
+				<a target="_blank" href="<ssf:fileUrl entity="${entry2}" fileId="${entryMap.file_id}"/>">${entryMap.description}</a>
+			</span>
+
+			<div class="item-sub margintop1">	  
+
+				  <span>
+					<ssf:showUser user="${entry2.creation.principal}" titleStyle="ss_link_1"/>
+				  </span>
+				  <span class="ss_link_4">
+					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				  value="${entry2.modification.date}" type="both" 
+				  timeStyle="short" dateStyle="medium" />
+				  </span>
+			
+					<c:set var="isDashboard" value="yes"/>
+					<span class="ss_link_2">
+					<ssf:titleLink hrefClass="ss_link_2"
+						entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
+						entityType="${entry2.entityType}" 
+						namespace="${ss_namespace}" 
+						isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+						<ssf:param name="url" useBody="true">
+							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
+							  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
+						</ssf:param>
+						<c:out value="${entry2.title}" escapeXml="false"/>
+					</ssf:titleLink>
+					</span>
+				  
+				  <span class="ss_link_2">
+					<a href="javascript: ;"
+						onclick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+						><span>${entry2.parentBinder.parentBinder.title} // ${entry2.parentBinder.title}</span></a>
+				  </span> 
+				  <c:if test="${!empty entry2.description}">
+					<div class="ss_summary list-indent">
+						<span class="ss_summary"><ssf:textFormat 
+						  formatAction="limitedDescription" 
+						  textMaxWords="10"><ssf:markup entity="${entry2}">${entry2.description}</ssf:markup></ssf:textFormat></span>
+					</div>
+				  </c:if>
+			</div>	
+			
 	<c:set var="count" value="${count + 1}"/>
-	</li>
-	</ul>
+	</div>
 	</div><!-- end of viewed attachments -->
 	
 

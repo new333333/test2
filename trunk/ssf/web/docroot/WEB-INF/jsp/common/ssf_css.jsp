@@ -1416,7 +1416,7 @@ table.ss_attachments_list td.ss_att_description p{
   color: ${ss_style_footer_text_color};
   font: ${ss_style_footer_font};
   text-align:center;
-  padding-top:15px;
+  padding-top:5px;
   padding-bottom:2px;
   }
 .ss_footer_toolbar * {

@@ -86,7 +86,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding: 0 0 1em 0; 
 	margin: 0px 2px 0px 2px;
 	overflow: hidden;
-	}	
+	}
+.col-nextback-but {
+	text-align: right;
+	}
+		
 /* 3 COLUMN PAGE STYLE SETTINGS */
 .ss_tricolumn{	/* 3 Column page style */
 	background-color: transparent; /* right column background color */
@@ -275,7 +279,7 @@ div.ss_canvas {
 #ss_im_status{
 	font-size: 11px;
 	line-height: 13px;
-	padding:4px;
+	padding: 5px;
 	background: #FFF;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -317,6 +321,7 @@ div.ss_canvas {
 	/*VIEWED ITEMS*/
 #ss_viewedItems {
 	line-height:1.2em;
+	padding: 5px;
 	}
 #ss_viewedItems .ss_v_entries ul{
 	padding: 0;
@@ -381,16 +386,15 @@ div.ss_canvas {
 	/*MY DOCUMENTS*/
 #ss_mydocs_para {
 	line-height:1.2em;
-	padding: 5px;
 	}
-#ss_mydocs_para div.item {
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item {
 	padding-top: 2px;
 	padding-bottom: 8px;
-	border-top: 1px solid #fff;
+	border-top: 2px solid #fff;
 	border-bottom: 1px solid #e0e0e0;
 	}
-#ss_mydocs_para div.item-sub a {
-	font-weight: normal;
+div.item-sub a {
+	font-weight: normal !important;
 	}	
 	/* ACTIVE LINK */
 #ss_mydocs_para a {					
@@ -547,6 +551,7 @@ div.ss_canvas {
 /* TIMEBLOCK STYLES */	
 #ss_today {
 	margin: 0 0 0 0;
+	padding: 5px;
 	}
 #ss_yesterday{
 	margin: 0 0 0 10px;
@@ -600,6 +605,10 @@ div.ss_canvas {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
+	
+.list-indent {
+	margin-left: 22px;
+	}	
 
 #ss_para ul{
 	color:#555555;
@@ -734,7 +743,6 @@ div.ss_canvas {
 	}
 #ss_tabsC a {
 	color: #fff;
-	font-weight: bold;
       }
 #ss_tabsC a span {
     display:block;
