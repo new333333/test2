@@ -45,6 +45,10 @@ dojo.date.locale.addCustomFormats("ssf.cldr","custom");
 //    used.
 var calendarNav_DateFormat = "medium";
 
+// Width used for the popup DIV containing the list of events when
+// they all can't be displayed in the calendar grid.
+var moreEventsDIVWidth = 150;
+
 function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
 	
 	var binderId = binderId;
@@ -2435,7 +2439,7 @@ function ss_calendarEngine(
 					var moreEventsDiv = document.createElement("div");
 					moreEventsDiv.className = "ss_calendar_more_box";
 					moreEventsDiv.style.left = monthGridEventVOffsets[dayOfWeek] + "%";
-					moreEventsDiv.style.width = "150px";
+					moreEventsDiv.style.width = (String(moreEventsDIVWidth) + "px");
 					moreEventsDiv.style.height = ((18 * (eventCount<=10?eventCount:10)) + 19) + "px";
 					moreEventsDiv.style.top = (monthGridEventHOffsets[ss_cal_Grid.monthGridWeeks][week][0] - 5) + "%";
 					
@@ -2485,24 +2489,43 @@ function ss_calendarEngine(
 						
 						var eboxInner = document.createElement("div");
 						eboxInner.style.height = "14px";
-						var boxHtml = '';
 						
-						if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+						var hasPrev =                                                (continues == ss_cal_Events.CONTINUES_LEFT  || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT);
+						var hasNext = (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT));
+						var titleDisp;
+						var titleStyle = "margin-left: 4px; float: left;";
+						if (e.title) {
+							titleDisp = e.title;
+							if (hasPrev || hasNext) {
+								// If we're displaying a previous or
+								// next arrow, we need to put a style
+								// on the title's anchor so that
+								// everything displays as it should.
+								var titleWidth = Number(moreEventsDIVWidth);	// Overall width of menu.
+								titleWidth -= 4;								// Title's margin-left.
+								if (hasPrev) titleWidth -= 10;					// Width of left  arrow.
+								if (hasNext) titleWidth -= 10;					// Width of right arrow.
+								titleWidth -= 4;								// Allow for the same margin on the right too.
+								titleStyle += (" width: " + String(titleWidth) + "px;");
+							}
+						}
+						else {
+							titleDisp = that.locale.noTitle;
+						}
+						
+						var boxHtml = '';
+						if (hasPrev) {
 							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
 						}
-						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
-						if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; ' + titleStyle + '"':'style="' + titleStyle + '"') + '>'+titleDisp+'</a>';			
+						if (hasNext) {
 							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
 						}
 						
 						eboxInner.innerHTML = boxHtml;
-						
-						eboxInner.className = "ss_cal_monthEventBody " + getCalendarEventStyle(e.calendarId);
-									
-						ebox.appendChild(eboxInner);
-						
+						eboxInner.className = ("ss_cal_monthEventBody " + getCalendarEventStyle(e.calendarId));
+						ebox.appendChild(eboxInner);						
 						addBottomCorners(ebox, calStyle);						
-						
 				        moreEventsDivList.appendChild(ebox);
 					}
 					
