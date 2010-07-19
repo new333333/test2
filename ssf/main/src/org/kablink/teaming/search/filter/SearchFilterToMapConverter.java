@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -131,6 +132,29 @@ public class SearchFilterToMapConverter {
 		
 		result.put(WebKeys.SEARCH_FILTER_MAP, convertedQuery);
 		result.putAll(prepareAdditionalFiltersData(convertedQuery));
+		
+		//Build the structure needed by the jsp
+		Map filters = (Map) result.get("ss_filterMap");
+		Map additionalFilters = (Map) filters.get("additionalFilters");
+		List<Map> entryList = (List<Map>) additionalFilters.get("entry");
+		Map<String,Entry> ssDefinitionEntryMapMap = (Map<String,Entry>) result.get("ssEntryDefinitionMapMap");
+		if (entryList != null) {
+			for (Map entry : entryList) {
+				String entryType = (String) entry.get("entryType");
+				//See if there are filter fields that match this entry
+				if (entryType != null) {
+					Entry e = (Entry) ssDefinitionEntryMapMap.get(entryType);
+					List<EntryField> fields = e.getFields();
+					for (EntryField f : fields) {
+						String entryElement = (String) entry.get("entryElement");
+						if (entryElement != null && entryElement.equals(f.getName())) {
+							entry.put("title", f.getTitle());
+						}
+					}
+				}
+			}
+		}
+		
 		
 		return result;
 	}
@@ -351,6 +375,14 @@ public class SearchFilterToMapConverter {
 					} catch (NoBinderByTheIdException e) {
 						formattedValue = "[" + value + " - " + NLT.get("binder.deleted") + "]";
 					}
+				} else {
+					Definition def = DefinitionHelper.getDefinition(entryTypeId);
+					if (def != null) {
+						String caption = DefinitionHelper.findCaptionForAttribute(entryFieldId, def.getDefinition());
+						if (caption != null) {
+							formattedValue = caption;
+						}
+					}
 				}
 				
 				block.put(SearchEntryValues, formattedValue);
@@ -540,16 +572,17 @@ public class SearchFilterToMapConverter {
 			if (preparedWorkflows != null) {
 				result.put(WebKeys.WORKFLOW_DEFINITION_MAP, preparedWorkflows);
 			}
-			Collection preparedEntries = prepareEntries(convertedQuery);
+			Map preparedEntries = prepareEntries(convertedQuery);
 			if (preparedEntries != null) {
-				result.put(WebKeys.ENTRY_DEFINITION_MAP, preparedEntries);
+				result.put(WebKeys.ENTRY_DEFINITION_MAP, preparedEntries.values());
+				result.put(WebKeys.ENTRY_DEFINITION_MAP_MAP, preparedEntries);
 			}
 		}
 		
 		return result;
 	}
 
-	private Collection prepareEntries(Map convertedQuery) {
+	private Map prepareEntries(Map convertedQuery) {
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
 		if (entriesFromSearch == null) {
@@ -579,7 +612,7 @@ public class SearchFilterToMapConverter {
 				entry.addField(entryField);	
 			}
 		}
-		return entriesMap.values();
+		return entriesMap;
 	}
 	
 	private  void prepareTags(Map convertedQuery) {
@@ -658,7 +691,7 @@ public class SearchFilterToMapConverter {
 		}
 		public Workflow(Definition definition, List steps) {
 			this.id = definition.getId();
-			this.title = definition.getTitle();
+			this.title = NLT.getDef(definition.getTitle());
 			this.steps = steps;
 		}
 		public String getId() {

@@ -77,9 +77,12 @@ function ss_addInitializedWorkflow(wfIdValue, stepsValue, stepTitles) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType) {
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
+	if (typeof fieldNameTitle == "undefined") {
+		fieldNameTitle = fieldName;
+	}
 	ss_optionsArray[ss_userOptionsCounter]='entry';
-	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType);
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle);
 	ss_userOptionsCounter++;
 }
 
@@ -268,7 +271,10 @@ function ss_getSelectedBinders(url) {
 	return url += "&idChoices=" + encodeURIComponent(value);
  
 }
-function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType) {
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
+	if (typeof fieldNameTitle == "undefined") {
+		fieldNameTitle = fieldName;
+	}
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	div.style.marginBottom = "3px";
@@ -322,7 +328,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType) 
 		var optionObj = document.createElement("option");
 		optionObj.value = fieldName;
 		optionObj.selected = true;
-		optionObj.innerHTML = fieldName;
+		optionObj.innerHTML = fieldNameTitle;
 		selectObj.appendChild(optionObj);
 		fieldValue2Div.appendChild(selectObj);
 		
