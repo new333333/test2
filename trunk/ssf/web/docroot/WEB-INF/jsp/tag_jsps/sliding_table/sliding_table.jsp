@@ -113,7 +113,7 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 	}
 	else {
 		sizingTableHeaderCellStyle =
-		sizingTableRowCellStyle    = "padding-bottom: 0px;";
+		sizingTableRowCellStyle    = "";
 	}
 %>
 <script type="text/javascript">
