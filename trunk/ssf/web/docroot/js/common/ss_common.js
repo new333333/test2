@@ -1708,7 +1708,11 @@ function ss_onSubmit(obj) {
     if (typeof obj.action != 'undefined' && obj.action == '') obj.action = self.location.href;
     
     var result = true;
-    if(ss_buttonSelected == "cancelBtn") {
+    if(ss_buttonSelected == "") {
+    	//This must be IE. Don't let them submit using the Enter key since it doesn't submit the whole form that way.
+    	alert(ss_clickOkToSubmit);
+    	return false;
+    } else if (ss_buttonSelected == "cancelBtn") {
     	return true;
     }
     for (var i = 0; i < ss_onSubmitList.length; i++) {
@@ -2760,7 +2764,40 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	var hw = "";
 	if (width != "") hw += ",width="+parseInt(width) + "px";
 	if (height != "") hw += ",height="+parseInt(height) + "px";
-	self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
+	var popupDiv = self.document.getElementById("ss_showpopupdiv");
+	var popupIframe = self.document.getElementById("ss_showpopupframe");
+	if (popupDiv != null && popupIframe != null) {
+		try {popupIframe.innerHTML = ss_loadingMessage;} catch(e) {}
+		popupDiv.style.display = "block";
+		popupDiv.style.visibility = "visible";
+		ss_resizePopupDiv();
+		popupIframe.src = url;
+	} else {
+		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
+	}
+	return false;
+}
+function ss_resizePopupDiv() {
+	var popupDiv = self.document.getElementById("ss_showpopupdiv");
+	var popupIframe = self.document.getElementById("ss_showpopupframe");
+	if (popupDiv != null && popupIframe != null && popupDiv.style.display == "block") {
+		popupDiv.style.top = "0px";
+		popupDiv.style.left = "0px";
+		popupDiv.style.width = parseInt(parseInt(ss_getWindowWidth())) + "px";
+		if (parseInt(popupDiv.style.height) != parseInt(parseInt(ss_getWindowHeight()) - 40)) {
+			popupDiv.style.height = parseInt(parseInt(ss_getWindowHeight()) - 40) + "px";
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+		}
+		popupIframe.style.width = "100%";
+		popupIframe.style.height = popupDiv.style.height;
+	}
+}
+function ss_hidePopupDiv() {
+	var popupDiv = self.document.getElementById("ss_showpopupdiv");
+	if (popupDiv != null) {
+		popupDiv.style.display = "none";
+	}
 }
 
 //Routine to show a div at the bottom of the highest size attained by the window
