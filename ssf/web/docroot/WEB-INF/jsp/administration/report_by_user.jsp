@@ -39,6 +39,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.activityByUser") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -65,7 +66,6 @@
 
 </script>
 
-<body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <c:set var="formName">${renderResponse.namespace}fm</c:set>

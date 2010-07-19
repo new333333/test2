@@ -38,6 +38,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mobile") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -63,7 +64,6 @@
 	}// end handleCloseBtn()
 </script>
 
-<body class="ss_style_body tundra">
 <div class="ss_style ss_portlet">
 <c:set var="titleTag" value='<%= NLT.get("administration.configure_mobile") %>'/>
 <ssf:form title="${titleTag}" >

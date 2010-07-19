@@ -55,6 +55,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
@@ -96,7 +97,7 @@ public class ViewController extends SAbstractController {
 					if (name.equals("")) {
 						response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
 					} else {
-						String chars = "!@#\\$&%^*()+=?~[]{}";
+						String chars = "!@#\\$&%^*()+=?~[]{}<>";
 						String badChars = "";
 						for (int i = 0; i < chars.length(); i++) {
 							if (name.contains(String.valueOf(chars.charAt(i)))) badChars += chars.charAt(i);
@@ -127,14 +128,15 @@ public class ViewController extends SAbstractController {
 					if (name.equals("")) {
 						response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.nullname"));
 					} else {
-						String chars = "!@#\\$&%^*()+=?~[]{}";
+						Definition def = DefinitionHelper.getDefinition(selectedItem);
+						String chars = "!@#\\$&%^*()+=?~[]{}<>";
 						String badChars = "";
 						for (int i = 0; i < chars.length(); i++) {
 							if (name.contains(String.valueOf(chars.charAt(i)))) badChars += chars.charAt(i);
 						}
-						if (!badChars.equals("")) {
+						if (!badChars.equals("") && !name.equals(def.getName())) {
 							response.setRenderParameter("ss_configErrorMessage", 
-									NLT.get("definition.error.invalidCharacter", new String[]{badChars}));
+									NLT.get("definition.error.invalidCharacterInName", new String[]{badChars}));
 						} else {
 							getDefinitionModule().modifyDefinitionProperties(selectedItem,  new MapInputData(formData));
 						}
@@ -260,7 +262,7 @@ public class ViewController extends SAbstractController {
 		Document sourceDefinition = def.getDefinition();
 		data.put("sourceDefinition", sourceDefinition);
 		String title = NLT.getDef(def.getTitle()) + "  (" + def.getName() + ")";
-		title = title.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+		title = title.replaceAll("&", "&amp;");
 		data.put("selectedItemTitle", title);
 			
 		if (Validator.isNull(option)) {

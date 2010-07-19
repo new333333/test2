@@ -38,6 +38,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.credits") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -64,7 +65,6 @@
 
 </script>
 
-<body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 
 <ssf:form titleTag="administration.credits">

@@ -41,6 +41,7 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get( "administration.report.title.user_access" ) %>' scope="request"/>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -335,7 +336,6 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 
 </script>
 
-<body class="ss_style_body tundra">
 	<div class="ss_pseudoPortal">
 		<div class="ss_style ss_portlet">
 			<c:set var="formName">${renderResponse.namespace}fm</c:set>

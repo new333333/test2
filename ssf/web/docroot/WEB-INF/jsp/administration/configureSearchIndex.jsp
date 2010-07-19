@@ -43,6 +43,7 @@
 <%
 String wsTreeName = "" + renderResponse.getNamespace();
 %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 function handleCloseBtn() {
@@ -177,7 +178,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 </script>
 
-<body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
