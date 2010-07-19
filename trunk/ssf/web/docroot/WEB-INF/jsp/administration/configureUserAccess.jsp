@@ -37,6 +37,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_ldap") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	var m_guestRightsMsg			= null;
@@ -116,7 +117,6 @@
 
 </script>
 
-<body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 <c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/>

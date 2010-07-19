@@ -606,7 +606,7 @@ function ss_saveUserGroupResults(s) {
 <td><span class="ss_titlebold">
 <c:if test="${!empty ssBinder}">${ssBinder.title}<br/></c:if>
 <ssf:nlt tag="definition.builder" text="Definition builder" />
->> <c:out value="${data.selectedItemTitle}" />
+ >> <c:out value="${data.selectedItemTitle}" escapeXml="true" />
 </span>
 </td>
 <td align="right">
@@ -726,7 +726,7 @@ function ss_saveUserGroupResults(s) {
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br/>${data.selectedItemTitle}
+    <ssf:nlt tag="definition.form_preview" text="Form Preview"/><br/><c:out value="${data.selectedItemTitle}" escapeXml="true" />
   </span>
 </div>
 <br/>
@@ -755,7 +755,7 @@ function ss_saveUserGroupResults(s) {
 <div class="ss_style ss_portlet">
 <div align="center" width="100%">
   <span class="ss_titlebold">
-    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br/>${data.selectedItemTitle}
+    <ssf:nlt tag="definition.workflow_preview" text="Workflow Preview"/><br/><c:out value="${data.selectedItemTitle}" escapeXml="true" />
   </span>
 
 <br/>

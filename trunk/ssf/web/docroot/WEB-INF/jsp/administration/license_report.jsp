@@ -39,6 +39,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.license") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -64,7 +65,6 @@
 	}// end handleCloseBtn()
 </script>
 
-<body class="ss_style_body tundra">
 	<script type="text/javascript">
 		/**
 		 * Validate the data entered by the user.  At this time we only validate the start year and end year.

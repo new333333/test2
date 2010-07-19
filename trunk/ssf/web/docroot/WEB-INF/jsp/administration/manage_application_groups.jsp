@@ -37,6 +37,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.application.groups") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body tundra">
 
 <script type="text/javascript">
 	/**
@@ -62,7 +63,6 @@
 	}// end handleCloseBtn()
 </script>
 
-<body class="ss_style_body tundra">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_pseudoPortal">
 
