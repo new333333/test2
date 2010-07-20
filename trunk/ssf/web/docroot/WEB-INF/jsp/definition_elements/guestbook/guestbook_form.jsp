@@ -57,7 +57,7 @@
 %>
 
 <form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
+  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
   
 <c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
 

@@ -1703,12 +1703,15 @@ function m_setSubmitRoutine(submitRoutine) {
 //  This function will call the desired routines at form submit time
 //  unless the onClick for the submit button called ss_selectButton('cancelBtn').
 //  If any routine returns "false", then this routine returns false.
-function ss_onSubmit(obj) {
+function ss_onSubmit(obj, checkIfButtonClicked) {
+	if (typeof checkIfButtonClicked == "undefined") {
+		checkIfButtonClicked = false;
+	}
     //Take this opportunity to fill in the action if blank. Some browsers want this to be non-blank.
     if (typeof obj.action != 'undefined' && obj.action == '') obj.action = self.location.href;
     
     var result = true;
-    if(ss_buttonSelected == "") {
+    if (ss_buttonSelected == "" && checkIfButtonClicked) {
     	//This must be IE. Don't let them submit using the Enter key since it doesn't submit the whole form that way.
     	alert(ss_clickOkToSubmit);
     	return false;
@@ -2768,35 +2771,43 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (popupDiv != null && popupIframe != null) {
 		try {popupIframe.innerHTML = ss_loadingMessage;} catch(e) {}
-		popupDiv.style.display = "block";
-		popupDiv.style.visibility = "visible";
-		ss_resizePopupDiv();
+		if (typeof popupDiv.style != "undefined" && 
+				typeof popupDiv.style.display != "undefined" && popupDiv.style.display != "block") {
+			popupDiv.style.display = "block";
+			popupDiv.style.visibility = "visible";
+		}
 		popupIframe.src = url;
+		ss_resizePopupDiv();
 	} else {
 		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 	}
 	return false;
 }
+var ss_popupFrameWidthFudge = 20;
+var ss_popupFrameHeightFudge = 40;
+var ss_popupFrameHeightFudgeIframe = 54;
+var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (popupDiv != null && popupIframe != null && popupDiv.style.display == "block") {
 		popupDiv.style.top = "0px";
 		popupDiv.style.left = "0px";
-		popupDiv.style.width = parseInt(parseInt(ss_getWindowWidth())) + "px";
-		if (parseInt(popupDiv.style.height) != parseInt(parseInt(ss_getWindowHeight()) - 40)) {
-			popupDiv.style.height = parseInt(parseInt(ss_getWindowHeight()) - 40) + "px";
-			//Signal that the layout changed
-			if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+		popupDiv.style.width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge) + "px";
+		if (parseInt(popupDiv.style.height) != parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge)) {
+			popupDiv.style.height = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge) + "px";
+			popupIframe.style.width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge) + "px";;
+			popupIframe.style.height = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudgeIframe) + "px";
 		}
-		popupIframe.style.width = "100%";
-		popupIframe.style.height = popupDiv.style.height;
 	}
 }
 function ss_hidePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
-	if (popupDiv != null) {
+	if (popupDiv != null && popupDiv.style.display != "none") {
 		popupDiv.style.display = "none";
+		popupDiv.style.visibility = "hidden";
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 	}
 }
 
