@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_tags">
 
-  <div id="ss_col3_para" >
+  <div id="ss_col3_para" style="padding: 5px;">
     <c:forEach var="tag" items="${ss_myTags}">
 	  <a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			name="searchPersonalTags_hidden" value="${tag.ssTag}"/><ssf:param 

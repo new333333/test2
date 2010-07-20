@@ -37,32 +37,39 @@
 
 <div id="ss_para">
 	<div id="ss_viewedItems">
-		<div class="col-nextback-but">
+	
+		<div id="ss_title" class="ss_pt_title ss_green">
+			<ssf:nlt tag="relevance.visitedEntries">
+				<ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
+			</ssf:nlt>
+
+		<span class="col-nextback-but">
 				<c:if test="${ssEntriesViewedPage > '0'}">
 				<a href="javascript: ;" 
 				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'previous', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
-				  <img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+				  <img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
 				  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 				</a>
 				</c:if>
 	
 				<c:if test="${empty ssEntriesViewedPage || ssEntriesViewedPage <= '0'}">
-				<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
 				</c:if>
 	
 				<c:if test="${!empty ssEntriesViewed}">
 				<a href="javascript: ;" 
 				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'entriesViewed', '${ssEntriesViewedPage}', 'next', 'ss_dashboardEntriesViewed', '${ss_relevanceDashboardNamespace}');return false;">
-				  <img src="<html:imagesPath/>pics/sym_arrow_right_.png"
+				  <img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
 				  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 				</a>
 				</c:if>
 	
 				<c:if test="${empty ssEntriesViewed}">
-				<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
 				</c:if>
 				
-			</div>
+			</span>
+		</div>
 
 		<c:set var="count" value="0"/>
 		<c:forEach var="entryMap" items="${ssEntriesViewed}">
@@ -73,6 +80,7 @@
     
 			<div class="ss_v_entries">
 				<div class="item">
+					<b>
 					<c:set var="isDashboard" value="yes"/>
 					<ssf:titleLink hrefClass="ss_link_2"
 						entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
@@ -85,7 +93,7 @@
 						</ssf:param>
 						<c:out value="${entry.title}" escapeXml="false"/>
 					</ssf:titleLink>
-	
+					</b>
 					<div class="item-sub margintop1">	  
 						<span>
 							<ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
@@ -110,20 +118,17 @@
 								textMaxWords="15"><ssf:markup entity="${entry}">${entry.description}</ssf:markup></ssf:textFormat>
 							</div>
 					    </c:if>
-					<div>
-				</div>
+					</div>
 				<c:set var="count" value="${count + 1}"/>
 			</div>
 	    </c:if>
 	</div><!-- end of viewed entries -->
-	</div>
 	
 
     <c:if test="${entryMap.type == 'download'}">
     <c:set var="entry2" value="${entryMap.entity}"/>
     <jsp:useBean id="entry2" type="org.kablink.teaming.domain.Entry" />
 
-    
 	<div id="ss_viewedItems" class="ss_v_attachments">
 	    <div class="item">  
 			<span class="ss_link_3">
@@ -142,25 +147,25 @@
 				  </span>
 			
 					<c:set var="isDashboard" value="yes"/>
-					<span class="ss_link_2">
-					<ssf:titleLink hrefClass="ss_link_2"
-						entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
-						entityType="${entry2.entityType}" 
-						namespace="${ss_namespace}" 
-						isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-						<ssf:param name="url" useBody="true">
-							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
-							  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
-						</ssf:param>
-						<c:out value="${entry2.title}" escapeXml="false"/>
-					</ssf:titleLink>
-					</span>
+					<div class="ss_link_2 list-indent">
+						<ssf:titleLink hrefClass="ss_link_2"
+							entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
+							entityType="${entry2.entityType}" 
+							namespace="${ss_namespace}" 
+							isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+							<ssf:param name="url" useBody="true">
+								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
+								  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
+							</ssf:param>
+							<c:out value="${entry2.title}" escapeXml="false"/>
+						</ssf:titleLink>
+					</div>
 				  
-				  <span class="ss_link_2">
+				  <div class="ss_link_2 list-indent">
 					<a href="javascript: ;"
 						onclick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 						><span>${entry2.parentBinder.parentBinder.title} // ${entry2.parentBinder.title}</span></a>
-				  </span> 
+				  </div> 
 				  <c:if test="${!empty entry2.description}">
 					<div class="ss_summary list-indent">
 						<span class="ss_summary"><ssf:textFormat 
@@ -173,12 +178,13 @@
 	<c:set var="count" value="${count + 1}"/>
 	</div>
 	</div><!-- end of viewed attachments -->
-	
 
     </c:if>
   </c:forEach>
+
   <c:if test="${empty ssEntriesViewed && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+    <span class="ss_italic" style="padding: 5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
   </c:if>
+
 </div> <!-- end of viewed items -->
 </div> <!-- end of ss_para -->

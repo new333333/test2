@@ -41,28 +41,35 @@
 <c:if test="${!empty ss_myDocs || ss_myDocsPage > '0'}">
 <div id="ss_para">
 	<div id="ss_today">
-		<div class="col-nextback-but">
+
+		<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
+		  <ssf:nlt tag="relevance.documents">
+			<ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
+		  </ssf:nlt>
+
+		<span class="col-nextback-but">
 			<c:if test="${ss_myDocsPage > '0'}">
 			<a href="javascript: ;" 
 			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
-			<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
 			  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
 			</a>
 			</c:if>
 			<c:if test="${empty ss_myDocsPage || ss_myDocsPage <= '0'}">
-			<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
 			</c:if>
 			<c:if test="${!empty ss_myDocs}">
 			<a href="javascript: ;" 
 			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
 			  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
 			</a>
 			</c:if>
 			<c:if test="${empty ss_myDocs}">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
 			</c:if>
-		</div>
+		</span>
+	</div>
  
   	<div id="ss_mydocs_para" >
  		 <c:forEach var="entry" items="${ss_myDocs}">
@@ -121,7 +128,7 @@
     </div>
   </c:forEach>
   <c:if test="${empty ss_myDocs && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+    <span class="ss_italic" style="padding:5px"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
   </c:if>
 	</div><!-- end of para -->
     </div><!-- end of today -->

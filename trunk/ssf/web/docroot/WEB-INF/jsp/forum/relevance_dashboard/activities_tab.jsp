@@ -35,66 +35,41 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
-
-			<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-			<ssf:param name="title" useBody="true" >
-				<div id="ss_title" class="ss_pt_title ss_green ss_recentfolder_image">
-				  <ssf:nlt tag="relevance.documents">
-					<ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
-				  </ssf:nlt>
-				</div>
-			</ssf:param>
-				<div id="ss_dashboardDocs${renderResponse.namespace}">
-				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-				</div>
-			</ssf:canvas>
-	
-		</div><!-- end of ss_col 1 -->
-
-      <div id="ss_col2" class="ss_col2">
-
-			<c:if test="${ssBinder.owner.id == ssUser.id}">
-			<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
-			<ssf:param name="title" useBody="true" >
-				<div id="ss_title" class="ss_pt_title ss_green">
-				  <ssf:nlt tag="relevance.visitedEntries">
-					<ssf:param name="value" useBody="true"><ssf:userTitle user="${ssBinder.owner}"/></ssf:param>
-				  </ssf:nlt>
-				</div>
-			</ssf:param>
-				<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
-				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-				</div>
-			</ssf:canvas>
-			</c:if>
-	
-    </div><!-- end of col2 -->
-
-    <div id="ss_col3" class="ss_col3">
-
-		<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
-		<ssf:param name="title" useBody="true" >
-			<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
-		</ssf:param>
-			<div id="ss_dashboardVisitors${renderResponse.namespace}">
-			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
-			</div>
-		</ssf:canvas>
-	
-		<ssf:canvas id="relevanceTags" type="inline" styleId="ss_people">
-		<ssf:param name="title" useBody="true" >
-			<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.myTags"/></div>
-		</ssf:param>
-			<div id="ss_dashboardMyTags${renderResponse.namespace}">
-			  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tags.jsp" />
-			</div>
-		</ssf:canvas>
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
+	<table cellpadding="0" cellspacing="0" class="marginbottom3">
+		<tr>
+			<td width="35%" style="padding-right: 10px; vertical-align: top;">
+				<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
+					<div id="ss_dashboardDocs${renderResponse.namespace}" style="padding: 5px;">
+					  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+					</div>
+				</ssf:canvas>
+			</td><!-- end of ss_col 1 -->
+			<td width="35%" style="padding-right: 10px; vertical-align: top;">			
+				<c:if test="${ssBinder.owner.id == ssUser.id}">
+					<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
+						<div id="ss_dashboardEntriesViewed${renderResponse.namespace}" style="padding: 5px;">
+						  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+						</div>
+					</ssf:canvas>
+				</c:if>	
+			</td><!-- end of col2 -->
+			<td width="25%"  style="padding-right: 10px; vertical-align: top;>
+				<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
+					<div id="ss_dashboardVisitors${renderResponse.namespace}" style="padding: 5px;">
+					  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
+					</div>
+				</ssf:canvas>
+			
+				<ssf:canvas id="relevanceTags" type="inline" styleId="ss_people">
+				<ssf:param name="title" useBody="true" >
+					<div id="ss_title" class="ss_pt_title ss_green" style="padding-top: 10px;"><ssf:nlt tag="relevance.myTags"/></div>
+				</ssf:param>
+					<div id="ss_dashboardMyTags${renderResponse.namespace}">
+					  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tags.jsp" />
+					</div>
+				</ssf:canvas>
+      		</td><!-- end of col3 -->
+		</td>
+	</table>		
 </div><!-- end of content -->
 

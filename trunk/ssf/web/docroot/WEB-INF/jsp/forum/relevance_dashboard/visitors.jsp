@@ -35,41 +35,48 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_today">
-<div align="right">
-<c:if test="${ss_visitorsPage > '0'}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
-  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_visitorsPage || ss_visitorsPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
-</c:if>
-<c:if test="${!empty ss_visitors}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
-  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_visitors}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
-</c:if>
-</div>
+	
+	<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/>
+		<span class="col-nextback-but">
+			<c:if test="${ss_visitorsPage > '0'}">
+			<a href="javascript: ;" 
+			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+			  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+			</a>
+			</c:if>
+		
+			<c:if test="${empty ss_visitorsPage || ss_visitorsPage <= '0'}">
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+			</c:if>
+		
+			<c:if test="${!empty ss_visitors}">
+			<a href="javascript: ;" 
+			  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+			  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+			</a>
+			</c:if>
+		
+			<c:if test="${empty ss_visitors}">
+			<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+			</c:if>
+		</span>	
+	</div>
 
-  <c:forEach var="user" items="${ss_visitors}">
-    <div id="ss_col3_para" >
-	  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
-	  <c:if test="${!empty user.status}">
-		<div class="list-indent"><span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-        value="${user.statusDate}" type="both" 
-	    timeStyle="short" dateStyle="short" /></span></div>
-		<div id="ss_im_status">${user.status}</div>
+	<c:forEach var="user" items="${ss_visitors}">
+		<div id="ss_col3_para" >
+		  <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
+		  <c:if test="${!empty user.status}">
+			<span class="ss_smallprint" style="padding-left: 5px; color: #666; white-space: nowrap"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+			value="${user.statusDate}" type="both" 
+			timeStyle="short" dateStyle="short" /></span>
+			<div id="ss_im_status">${user.status}</div>
+		  </c:if>
+		</div><!-- end of para -->
+	</c:forEach>
+
+	  <c:if test="${empty ss_visitors && ss_pageNumber > '0'}">
+		<span class="ss_italic" style="padding: 5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
 	  </c:if>
-    </div><!-- end of para -->
-  </c:forEach>
-  <c:if test="${empty ss_visitors && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
-  </c:if>
 </div><!-- end of today -->
