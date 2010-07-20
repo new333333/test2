@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -3229,9 +3229,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 */
 	public List getAllRecurrenceDates() {
 		List result = new ArrayList();
-		
+
+		// Is this an all day event?
 		VEvent vEvent = null;
 		if (!isAllDayEvent()) {
+			// No!
 			net.fortuna.ical4j.model.DateTime start = new net.fortuna.ical4j.model.DateTime(getDtStart().getTime());
 			if (timeZone != null) {
 				// it's NOT enough to set always GMT - recurrences depends on given time zone
@@ -3239,28 +3241,35 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 				start.setTimeZone(IcalModuleImpl.getTimeZone(getTimeZone(), "GMT"));
 			}
 
-			Dur duration = null;
-			if (getDuration().getWeeks() > 0) {
-				duration = new Dur(getDuration().getWeeks());
-			} else {
-				duration = new Dur(getDuration().getDays(), getDuration().getHours(), getDuration()
-						.getMinutes(), getDuration().getSeconds());
-			}
+			Dur duration = getDurFromEvent();
 			vEvent = new VEvent(start, duration, "");
 			vEvent.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE_TIME);
 		} else {
+			// Yes, this is an all day event!  Construct the start date for it.
 			net.fortuna.ical4j.model.Date start = new net.fortuna.ical4j.model.Date(getDtStart().getTime());
-			net.fortuna.ical4j.model.Date end = (net.fortuna.ical4j.model.Date)start.clone();
-			if (getDtEnd() != null) {
-				end = new net.fortuna.ical4j.model.Date(getDtEnd().getTime());
+			
+			// Should we use a Dur to create the VEvent?
+			if (useDurForAllDayVEvent()) {
+				// Yes!  Construct the VEvent using a Dur.
+				vEvent = new VEvent(start, getDurFromEvent(), "");
+				vEvent.getProperties().getProperty(Property.DTSTART)
+					.getParameters().add(Value.DATE);
 			}
-			end = new net.fortuna.ical4j.model.Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
-			vEvent = new VEvent(start, end, "");
-			vEvent.getProperties().getProperty(Property.DTSTART)
-					.getParameters().add(Value.DATE);
-			vEvent.getProperties().getProperty(Property.DTEND)
-					.getParameters().add(Value.DATE);
+			else {
+				// No, we shouldn't use a Dur to create the VEvent!
+				// Construct the VEvent using start/end dates. 
+				net.fortuna.ical4j.model.Date end = (net.fortuna.ical4j.model.Date)start.clone();
+				if (getDtEnd() != null) {
+					end = new net.fortuna.ical4j.model.Date(getDtEnd().getTime());
+				}
+				end = new net.fortuna.ical4j.model.Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
+				vEvent = new VEvent(start, end, "");
+				vEvent.getProperties().getProperty(Property.DTSTART)
+						.getParameters().add(Value.DATE);
+				vEvent.getProperties().getProperty(Property.DTEND)
+						.getParameters().add(Value.DATE);
+			}
 		}
 		
 		vEvent.getProperties().add(Transp.OPAQUE); // to be sure getConsumedTime works correctly
@@ -3278,7 +3287,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			
 			Calendar end = new GregorianCalendar();
 			end.setTime(period.getEnd());
-			if (isAllDayEvent()) {
+			
+			// Is this an all day event that we didn't use a Dur
+			// to construct the VEvent with?
+			if (isAllDayEvent() && (!(useDurForAllDayVEvent()))) {
+				// Yes!  Update the start/end times accordingly.
 				start.setTime(new org.joda.time.DateTime(period.getStart()).plusMinutes(12*60 - 1).toDate());
 				end.setTime(new org.joda.time.DateTime(period.getStart()).plusMinutes(12*60 - 1).toDate());
 			}
@@ -3287,6 +3300,43 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		}
 		
 		return result;
+	}
+	
+	/*
+	 * Constructs a Dur object based on an Event's Duration.
+	 */
+	private Dur getDurFromEvent() {
+		Dur duration;
+		if (getDuration().getWeeks() > 0) {
+			duration = new Dur(getDuration().getWeeks());
+		} else {
+			duration = new Dur(getDuration().getDays(), getDuration().getHours(), getDuration()
+					.getMinutes(), getDuration().getSeconds());
+		}
+		return duration;
+	}
+	
+	/*
+	 * Returns true if we should construct VEvents using a Dur object
+	 * or false if we should construct them using start/end dates.
+	 * 
+	 * For all day events that span multiple days, we use the Dur
+	 * method.  For all day events that are only for a single day,
+	 * we use the start/end dates method.
+	 */
+	private boolean useDurForAllDayVEvent() {
+		// Do we have a duration?
+		boolean reply = false;
+		Duration duration = getDuration();
+		if (null != duration) {
+			// Yes!  If it's >= 1 day, we use Dur's.  Otherwise, we use
+			// start/end dates.
+			reply = ((0 < duration.getWeeks()) || (0 < duration.getDays()));
+		}
+		
+		// If we get here, reply is true if we should use Dur's and
+		// false if we should use start/end dates.  Return it.
+		return reply;
 	}
 
 	private static List getAllDatesBetween(Calendar start, Calendar end) {
