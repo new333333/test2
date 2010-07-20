@@ -82,13 +82,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:100%;  /* width of page */
 	}
 .ss_col1, .ss_col2, .ss_col3 {
-	float: left;
-	padding: 0 0 1em 0; 
-	margin: 0px 2px 0px 2px;
+	padding-bottom: 10px; 
+	margin: 0px 3px;
 	overflow: hidden;
-	}
+	}	
+.ss_col1, .ss_col2 {
+	float: left;
+	}	
+.ss_col3 {
+	float: right;
+	}	
 .col-nextback-but {
-	text-align: right;
+	padding-left: 5px;
 	}
 		
 /* 3 COLUMN PAGE STYLE SETTINGS */
@@ -116,9 +121,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
 	}
 .ss_tricolumn .ss_col3 {
-	width:20%;				/* Width of right column content (column width minus padding on either side) */
+	width:23%;				/* Width of right column content (column width minus padding on either side) */
 	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
-	padding: 5px 5px 0px 5px;
+	padding: 5px 0px;
 	}
 
 div.ss_canvas {
@@ -262,8 +267,7 @@ div.ss_canvas {
 	
 	}
 #ss_col3_para {			/* to use for 3rd column displays */
-	padding-top:5px;
-	margin:5px 0 5px 4px;
+	margin: 10px 0px;
 	}			
 	/*TRACKED ITEMS*/	
 #ss_trackedItems{
@@ -279,7 +283,7 @@ div.ss_canvas {
 #ss_im_status{
 	font-size: 11px;
 	line-height: 13px;
-	padding: 5px;
+	padding: 8px;
 	background: #FFF;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
@@ -311,17 +315,9 @@ div.ss_canvas {
 #ss_visit_para a{
 	text-decoration:underline;
 }
-	/* HOVER LINKS */
-#ss_visit_para a:hover{
-	text-decoration:underline;
-	color:#464E42 !important;
-	background-color:#CCCCCC !important;
-	}
 	
 	/*VIEWED ITEMS*/
 #ss_viewedItems {
-	line-height:1.2em;
-	padding: 5px;
 	}
 #ss_viewedItems .ss_v_entries ul{
 	padding: 0;
@@ -357,13 +353,9 @@ div.ss_canvas {
 #ss_viewedItems a{
 	text-decoration:none;
 	}
-	/* ACTIVE HOVER LINKS */
-#ss_viewedItems a:hover{
-	text-decoration:underline;
-	color:#555 !important;
-	background-color:#CCCCCC !important;
-	}
+
 	/*CALENDAR*/
+
 #ss_cal_para{
 	padding: 5px 0 0 15px;
 	}
@@ -377,21 +369,17 @@ div.ss_canvas {
 #ss_cal_para a{
 	text-decoration:underline;
 	}
-	/* CALENDAR HOVER LINKS */
-#ss_cal_para a:hover{
-	text-decoration:underline;
-	color:#464E42 !important;
-	background-color:#CCCCCC !important;
-	}
+
 	/*MY DOCUMENTS*/
-#ss_mydocs_para {
+	
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item {
+	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
+	background-position: top;
+	margin-top: 2px;
+	padding: 10px;
 	line-height:1.2em;
-	}
-#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item {
-	padding-top: 2px;
-	padding-bottom: 8px;
-	border-top: 2px solid #fff;
-	border-bottom: 1px solid #e0e0e0;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.item-sub a {
 	font-weight: normal !important;
@@ -400,13 +388,9 @@ div.item-sub a {
 #ss_mydocs_para a {					
 	text-decoration:underline;
 	}
-	/* HOVER LINK */
-#ss_mydocs_para a:hover{
-	text-decoration:underline;
-	color:#464E42 !important;
-	background-color:#CCCCCC !important;
-	}
+
 	/* WHATS HOT */
+
 #ss_whatshot{
 	margin: 1% 0 5% 0;
 	padding: 0% 0 1% 0;
@@ -483,10 +467,6 @@ div.item-sub a {
 	color:#555;
 	}
 	/* DOCUMENTS */
-#ss_documents{
-	margin: 1% 0 5% 0;
-	color:#555;
-	}
 #ss_title{
 	margin: 0px 0px 2px 0px;
 	font-size: 16px;
@@ -551,7 +531,6 @@ div.item-sub a {
 /* TIMEBLOCK STYLES */	
 #ss_today {
 	margin: 0 0 0 0;
-	padding: 5px;
 	}
 #ss_yesterday{
 	margin: 0 0 0 10px;
@@ -595,19 +574,9 @@ div.item-sub a {
 	padding: 5px 0 15px 20px;
 }
 #ss_para {
-	padding-left: 6px;
-	padding-bottom: 15px;
-	color: #555555;
-	margin-top: 2px;
-	margin-right: 6px;
-	line-height: 1.2em;
-	background-color: #f6f6f6;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 	}
-	
 .list-indent {
-	margin-left: 22px;
+	margin-left: 21px;
 	}	
 
 #ss_para ul{
@@ -635,23 +604,18 @@ div.item-sub a {
 	text-decoration:none!important;
 	font-weight: bold;
 	}
-#ss_para a:hover{
-	color:#555!important;
-	background:#CCC!important;
-	}
 #ss_para a:visited{
 	}	
 #ss_para .ss_link_3 a:visited{
 	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
-	font-size:${ss_style_font_normalprint};
+	font-size:${ss_style_font_smallprint};
 	letter-spacing: -.25px;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
 	font-size:${ss_style_font_smallprint}!important;
-	text-decoration: underline!important;
 	}
 	/* ENTRY LINKS*/	
 .ss_link_3, .ss_link_3 span	{
@@ -817,7 +781,6 @@ div.item-sub a {
 	text-decoration:none;
 	}
 #ss_footer a:hover {
-	color:#444444;
 	text-decoration:none;
 	background-color:#fff;
 	}		
