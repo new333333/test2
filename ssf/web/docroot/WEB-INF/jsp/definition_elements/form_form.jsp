@@ -87,7 +87,7 @@
 
   <c:otherwise>
 	<form style="background: transparent;" method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
+	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
 	<ssf:displayConfiguration 
 	  configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
