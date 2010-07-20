@@ -1170,7 +1170,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
    //RW transaction
    public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
-        Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), true);
+        Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
     		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
