@@ -50,6 +50,10 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource breadcrumb_close();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/bucket.png")
+	public ImageResource bucket();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_calendar.png")
 	public ImageResource folder_calendar();
 	
@@ -84,6 +88,14 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/spacer_1px.png")
 	public ImageResource spacer_1px();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/range.png")
+	public ImageResource range();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/range_arrows.gif")
+	public ImageResource rangeArrows();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_closer.png")

@@ -85,6 +85,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
 	private final static String EXTENSION_ID_BASE            = "workspaceTreeBinder_";
+	private final static String EXTENSION_ID_BUCKET_BASE     = (EXTENSION_ID_BASE + "Bucket_");
 	private final static String EXTENSION_ID_SELECTOR_ANCHOR = "selectorAnchor_";
 	private final static String EXTENSION_ID_SELECTOR_BASE   = (EXTENSION_ID_BASE + "Selector_");
 	private final static String EXTENSION_ID_SELECTOR_ID     = (EXTENSION_ID_BASE + "SelectorId");
@@ -122,6 +123,28 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_expanderImg = expanderImg;
 		}
 
+		/*
+		 * Collapses the current row.
+		 */
+		private void doCollapseRow() {
+			m_ti.clearChildBindersList();
+			m_ti.setBinderExpanded(false);
+			reRenderRow(m_grid, m_gridRow, m_ti);
+			m_expanderImg.setResource(getImages().tree_opener());
+		}
+
+		/*
+		 * Expands the current row.
+		 */
+		private void doExpandRow(TreeInfo expandedTI) {
+			m_ti.setBinderExpanded(true);
+			m_ti.setChildBindersList(expandedTI.getChildBindersList());
+			if (0 < m_ti.getBinderChildren()) {
+				reRenderRow(m_grid, m_gridRow, m_ti);
+			}
+			m_expanderImg.setResource(getImages().tree_closer());
+		}
+		
 		/**
 		 * Called when the expander is clicked.
 		 * 
@@ -132,46 +155,66 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
-				// Yes!  Can we mark the row as being closed?
-				rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
-					public void onFailure(Throwable t)       {}
-					public void onSuccess(Boolean success) {
-						// Yes!  Update the TreeInfo, re-render the
-						// row and change the row's Anchor Image to a
-						// tree_opener.
-						m_ti.clearChildBindersList();
-						m_ti.setBinderExpanded(false);
-						reRenderRow(m_grid, m_gridRow, m_ti);
-						m_expanderImg.setResource(getImages().tree_opener());
-					}
-				});
+				// Yes!  Are we showing an expanded bucket?
+				if (m_ti.isBucket()) {
+					// Yes!  Collapse it.
+					doCollapseRow();
+				}
+				
+				else {
+					// No, we aren't showing an expanded bucket!  We
+					// must be showing a normal row.  Can we mark the
+					// row as being closed?
+					rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable t)       {}
+						public void onSuccess(Boolean success) {
+							// Yes!  Update the TreeInfo, re-render the
+							// row and change the row's Anchor Image to a
+							// tree_opener.
+							doCollapseRow();
+						}
+					});
+				}
 			}
 				
 			else {
 				// No, we aren't collapsing it!  We must be expanding
-				// it.  Can we mark the row as being opened?
-				rpcService.persistNodeExpand(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
-					public void onFailure(Throwable t) {}
-					public void onSuccess(Boolean success) {
-						// Yes!  Can we get a TreeInfo for the
-						// expansion?
-						rpcService.getVerticalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
-							public void onFailure(Throwable t) {}
-							public void onSuccess(TreeInfo expandedTI) {
-								// Yes!  Update the TreeInfo, and if
-								// there are any expanded rows, render
-								// them and change the row's Anchor
-								// Image to a tree_closer.
-								m_ti.setBinderExpanded(true);
-								m_ti.setChildBindersList(expandedTI.getChildBindersList());
-								if (0 < m_ti.getBinderChildren()) {
-									reRenderRow(m_grid, m_gridRow, m_ti);
+				// it.  Are we showing a collapsed bucket?
+				if (m_ti.isBucket()) {
+					// Yes!  Expand it.
+					rpcService.expandVerticalBucket(new HttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+						public void onFailure(Throwable t) {}
+						public void onSuccess(TreeInfo expandedTI) {
+							// Yes!  Update the TreeInfo, and if
+							// there are any expanded rows, render
+							// them and change the row's Anchor
+							// Image to a tree_closer.
+							doExpandRow(expandedTI);
+						}
+					});
+				}
+				else {
+					// No, we aren't showing a collapsed bucket!  We
+					// must be showing a normal row.  Can we mark the
+					// row as being opened?
+					rpcService.persistNodeExpand(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable t) {}
+						public void onSuccess(Boolean success) {
+							// Yes!  Can we get a TreeInfo for the
+							// expansion?
+							rpcService.getVerticalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+								public void onFailure(Throwable t) {}
+								public void onSuccess(TreeInfo expandedTI) {
+									// Yes!  Update the TreeInfo, and if
+									// there are any expanded rows, render
+									// them and change the row's Anchor
+									// Image to a tree_closer.
+									doExpandRow(expandedTI);
 								}
-								m_expanderImg.setResource(getImages().tree_closer());
-							}
-						});
-					}
-				});
+							});
+						}
+					});
+				}
 			}
 		}
 	}
@@ -263,7 +306,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// object for this TreeInfo.  Return it.
 		return reply;
 	}
-	
+
 	/*
 	 * Removes the widgets from a Grid row.
 	 */
@@ -289,9 +332,46 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static String getSelectorId(TreeInfo ti) {
 		String reply;
-		if (ti.getBinderInfo().isBinderTrash())
-			 reply = (EXTENSION_ID_TRASH_BASE    + ti.getBinderInfo().getBinderId());
-		else reply = (EXTENSION_ID_SELECTOR_BASE + ti.getBinderInfo().getBinderId());
+		if      (ti.isBucket())                      reply = (EXTENSION_ID_BUCKET_BASE   + ti.getBucketList().get(0));
+		else if (ti.getBinderInfo().isBinderTrash()) reply = (EXTENSION_ID_TRASH_BASE    + ti.getBinderInfo().getBinderId());
+		else                                         reply = (EXTENSION_ID_SELECTOR_BASE + ti.getBinderInfo().getBinderId());
+		return reply;
+	}
+
+	/*
+	 * Returns the widget to use as the label of a selector in the tree.
+	 */
+	private Widget getSelectorLabel(TreeInfo ti) {
+		Widget reply;
+
+		// Is this item a bucket?
+		if (ti.isBucket()) {
+			// Yes!  Generate the appropriate widgets. 
+			FlowPanel selectorPanel = new FlowPanel();
+			selectorPanel.addStyleName("workspaceTreeBinderAnchor gwtUI_nowrap");
+			selectorPanel.getElement().setId(getSelectorId(ti));
+			selectorPanel.add(buildBucketPartLabel(ti.getPreBucketTitle() + "\u00A0"));
+			selectorPanel.add(buildBucketRangeImage());
+			selectorPanel.add(buildBucketPartLabel("\u00A0" + ti.getPostBucketTitle()));
+			reply = selectorPanel;
+		}
+		
+		else {
+			// No, it's not a bucket!  Generate a simply Label for it.
+			Label selectorLabel = new Label(ti.getBinderTitle());
+			selectorLabel.setWordWrap(false);
+			selectorLabel.addStyleName("workspaceTreeBinderAnchor");
+			selectorLabel.getElement().setId(getSelectorId(ti));
+			if (!(ti.getBinderInfo().isBinderTrash())) {
+				selectorLabel.getElement().setAttribute(
+					EXTENSION_ID_TRASH_PERMALINK,
+					ti.getBinderTrashPermalink());
+			}
+			reply = selectorLabel;
+		}
+		
+		// If we get here, reply refers to the Widget to use for the
+		// selector label.  Return it.
 		return reply;
 	}
 	
@@ -302,7 +382,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * @return
 	 */
 	private boolean isBinderSelected(TreeInfo ti) {
-		return (Long.parseLong(ti.getBinderInfo().getBinderId()) == m_selectedBinderId);
+		boolean reply;
+		if (ti.isBucket()) {
+			reply = false;
+		}
+		else {
+			reply = (Long.parseLong(ti.getBinderInfo().getBinderId()) == m_selectedBinderId);
+		}
+		return reply;
 	}
 
 	/**
@@ -420,16 +507,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		binderImg.setWidth(BINDER_WIDTH);
 		binderImg.setHeight(BINDER_HEIGHT);
 		selectorGrid.setWidget(0, 0, binderImg);
-		String binderTitle = ti.getBinderTitle();
-		Label selectorLabel = new Label(binderTitle);
-		selectorLabel.setWordWrap(false);
-		selectorLabel.addStyleName("workspaceTreeBinderAnchor");
-		selectorLabel.getElement().setId(getSelectorId(ti));
-		if (!(ti.getBinderInfo().isBinderTrash())) {
-			selectorLabel.getElement().setAttribute(
-				EXTENSION_ID_TRASH_PERMALINK,
-				ti.getBinderTrashPermalink());
-		}
+		Widget selectorLabel = getSelectorLabel(ti);
 		selectorGrid.setWidget(0, 1, selectorLabel);
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
@@ -442,11 +520,16 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
-		selectorA.setTitle(binderTitle);
+		selectorA.setTitle(getBinderHover(ti));
 		String selectorId = getSelectorId(ti);
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
 		selectorGrid.addStyleName("workspaceTreeControlRow");
+		String cursorStyle;
+		if (ti.isBucket())
+		     cursorStyle = "cursorDefault";
+		else cursorStyle = "cursorPointer";
+		selectorGrid.addStyleName(cursorStyle);
 
 		// Add the row to the Grid.
 		grid.setWidget(row, 0, expanderWidget);

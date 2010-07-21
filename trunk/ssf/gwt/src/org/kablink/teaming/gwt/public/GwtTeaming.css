@@ -175,6 +175,10 @@ body, table td, select
 }
 
 /* */
+.cursorDefault
+{
+	cursor: default;
+}
 .cursorPointer
 {
 	cursor: pointer;
@@ -387,7 +391,6 @@ body, table td, select
 {
 	padding: 2px;
 	margin-bottom: 1px;
-	cursor: pointer;
 }
 .workspaceTreeControlRowHover
 {
@@ -887,7 +890,6 @@ body, table td, select
 }
 .breadCrumb_ContentNode_Anchor
 {
-	cursor: pointer;
 	color: #FFFFFF;
 	margin-top: 2px;
 	margin-right: 15px;
@@ -1955,6 +1957,15 @@ a.ss_new_thread {
 left:-25px;
 position:absolute;
 top:100px;
+}
+
+.gwtUI_nowrap
+{
+	white-space: nowrap;	
+}
+.gwtUI_vmiddle
+{
+	vertical-align: middle;
 }
 
 .gwtUI_ss_forceHorizontalScroller

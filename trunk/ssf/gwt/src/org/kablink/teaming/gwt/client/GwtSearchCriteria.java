@@ -45,6 +45,13 @@ public class GwtSearchCriteria
 {
 	/**
 	 * This class defines all the possible types of searches.
+	 * 
+	 * Note:  There are distinct search types for PERSON and USER.  The
+	 *   difference between this is that PERSON searches for those
+	 *   user accounts that people generally login to (eg., admin, ...)
+	 *   and USER servers for all user accounts includes those that are
+	 *   not typically logged into (eg., E-mail posting agent, ...)
+	 * 
 	 * @author jwootton
 	 *
 	 */

@@ -117,6 +117,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -142,7 +143,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 {
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
 	
-	/**
+	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
 	@SuppressWarnings("unchecked")
@@ -460,6 +461,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Execute a search based on the given search criteria.
+	 * 
+	 * @param ri
+	 * @param searchCriteria
+	 * 
+	 * @return
+	 * 
+	 * @throws Exception 
 	 */
 	public GwtSearchResults executeSearch( HttpRequestInfo ri, GwtSearchCriteria searchCriteria ) throws Exception
 	{
@@ -493,6 +501,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Return the administration options the user has rights to run.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -552,6 +567,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return a GwtBrandingData object for the given binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public GwtBrandingData getBinderBrandingData( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -561,6 +583,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return the "document base url" that is used in tinyMCE configuration
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public String getDocumentBaseUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -615,6 +644,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return an Entry object for the given zone and entry id
+	 * 
+	 * @param ri
+	 * @param zoneUUID
+	 * @param entryId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException
 	{
@@ -706,6 +743,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return a list of the names of the files that are attachments for the given binder
+	 * 
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException
 	{
@@ -767,7 +810,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Return a Folder object for the given folder id
+	 * Return a Folder object for the given folder id.
+	 * 
+	 * @param ri
+	 * @param zoneUUID
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException
 	{
@@ -970,6 +1021,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return the "binder permalink" URL.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
 	 */
 	public String getBinderPermalink( HttpRequestInfo ri, String binderId )
 	{
@@ -989,6 +1045,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return the "modify binder" URL.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
 	 */
 	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId )
 	{
@@ -1107,6 +1168,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the URL needed to invoke the "site administration" page.  If the user does not
 	 * have rights to run the "site administration" page we will throw an exception.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -1133,6 +1201,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return a GwtBrandingData object for the home workspace.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException
 	{
@@ -1188,6 +1262,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     
 	/**
 	 * Return a GwtUpgradeInfo object.
+	 *
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException
 	{
@@ -1382,6 +1460,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns a permalink to the currently logged in user's workspace.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
 	public String getUserWorkspacePermalink( HttpRequestInfo ri )
@@ -1421,7 +1501,82 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return new Boolean( GwtUIHelper.isGwtUIExclusive() );
 	}// end getGwtUI()
+
+	/**
+	 * Returns a TreeInfo containing the display information for the
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
+	 * 
+	 * The information returned is typically used for driving a
+	 * horizontal WorkspaceTreeControl widget.
+	 * 
+	 * @param ri
+	 * @param bucketList
+	 * 
+	 * @return
+	 */
+	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, List<Long> bucketList )
+	{
+		// Expand the bucket list without regard to persistent Binder
+		// expansions.
+		return expandBucket( getRequest( ri ), this, bucketList, null );
+	}//end expandHorizontalBucket()
+	
+	/**
+	 * Returns a TreeInfo containing the display information for the
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
+	 * 
+	 * The information returned is typically used for driving a
+	 * vertical WorkspaceTreeControl widget.
+	 * 
+	 * @param ri
+	 * @param bucketList
+	 * 
+	 * @return
+	 */
+	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, List<Long> bucketList ) {
+		// Expand the bucket list taking any persistent Binder
+		// expansions into account.
+		return expandBucket( getRequest( ri ), this, bucketList, new ArrayList<Long>() );
+	}
+
+	/*
+	 * Returns a TreeInfo containing the display information for the
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
+	 */
+	private static TreeInfo expandBucket( HttpServletRequest request, AllModulesInjected bs, List<Long> bucketList, List<Long> expandedBindersList )
+	{
+		// Are there any Binder's in the bucket list?
+		TreeInfo reply = new TreeInfo();
+		if ( ( null != bucketList ) && ( 0 < bucketList.size() ) )
+		{
+			// Yes!  Scan them.
+			ArrayList<TreeInfo> childBindersList = new ArrayList<TreeInfo>();
+			for ( Iterator<Long> itL = bucketList.iterator(); itL.hasNext(); )
+			{
+				// Can we build a TreeInfo for this binder?
+				Long binderId = itL.next();
+				Binder binder = GwtServerHelper.getBinderForWorkspaceTree( bs, binderId );
+				TreeInfo ti = ( ( null == binder ) ? null : GwtServerHelper.buildTreeInfoFromBinder( request, bs, binder, expandedBindersList, (null != expandedBindersList), (-1) ) );
+				if ( null != ti )
+				{
+					// Yes!  Add it to the child Binder's list.
+					childBindersList.add( ti );
+				}
+			}
+			
+			// Add the list of Binder's in the bucket as the child
+			// Binder's list of the reply.
+			reply.setChildBindersList( childBindersList );
+		}
 		
+		// If we get here, reply refers to the TreeInfo for the bucket
+		// list.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns a List<TreeInfo> containing the display information for
 	 * the Binder hierarchy referred to by binderId from the
@@ -1430,6 +1585,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
 	 * 
+	 * @param ri
 	 * @param binderIdS
 	 * 
 	 * @return
@@ -1477,6 +1633,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
 	 * list.toArray(infoArray);
+	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
@@ -1529,6 +1687,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * The information returned is typically used for driving a
 	 * vertical WorkspaceTreeControl widget.
 	 * 
+	 * @param ri
 	 * @param binderIdS
 	 * 
 	 * @return
@@ -1601,6 +1760,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * The information returned is typically used for driving a
 	 * vertical WorkspaceTreeControl widget.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
@@ -1836,6 +1996,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns information about the groups the current user is a member
 	 * of.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
 	public List<GroupInfo> getMyGroups( HttpRequestInfo ri )
@@ -1847,6 +2009,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns information about the teams the current user is a member
 	 * of.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
 	public List<TeamInfo> getMyTeams( HttpRequestInfo ri )
@@ -1857,6 +2021,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the url needed to invoke the user's "micro-blog" page.  
 	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
  	 */
 	public String getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -1917,7 +2087,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Return the URL needed to start an Instant Message with the user.
+	 *
+	 * @param binderId
 	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
  	 */
 	public String getImUrl( String binderId ) throws GwtTeamingException
 	{
@@ -2074,6 +2249,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns information about the recent place the current user has
 	 * visited.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
 	public List<RecentPlaceInfo> getRecentPlaces( HttpRequestInfo ri )
@@ -2095,6 +2272,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return information about self registration.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
 	 */
 	public GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpRequestInfo ri )
 	{
@@ -2151,6 +2332,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns a List<TopRankedInfo> of the top ranked items from the
 	 * most recent search.
+	 * 
+	 * @param ri
 	 * 
 	 * @return
 	 */
@@ -2327,6 +2510,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns a TeamManagementInfo object regarding the current user's
 	 * team management capabilities.
 	 * 
+	 * @param ri
 	 * @binderId
 	 * 
 	 * @return
@@ -2398,6 +2582,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Save the given branding data to the given binder.
+	 *
+	 * @param binderId
+	 * @param brandingData
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
 	{
@@ -2469,6 +2660,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Save the given personal preferences for the logged in user.
+	 *
+	 * @param personalPrefs
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
 	{
@@ -2559,6 +2756,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Get the profile information based on the binder Id passed in.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
 	 */
 	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) {
 		
@@ -2571,6 +2773,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Get the profile information for the Quick View based on the binder Id passed in.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public ProfileInfo getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		
@@ -2601,9 +2810,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns Look up the user and return the list of groups they belong to.
 	 * 
-	 * @param userId  The userId being viewed
+	 * @param ri
+	 * @param binderId
 	 * 
 	 * @return
+	 * 
 	 * @throws GwtTeamingException 
 	 */
 	public List<GroupInfo> getGroups( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
@@ -2633,10 +2844,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Returns Look up the workspace owner and return the list of teams they belong to.
-	 * 
+	 *
+	 * @param ri
 	 * @param binderId  The binderId of the workspace being viewed
 	 * 
 	 * @return
+	 * 
 	 * @throws GwtTeamingException 
 	 */
 	public List<TeamInfo> getTeams( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
@@ -2666,7 +2879,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Save the User Status
+	 * 
 	 * @param status The text to store in the Micro-Blog
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public Boolean saveUserStatus( String status ) throws GwtTeamingException
 	{
@@ -2688,6 +2906,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Return the "user permalink" URL.
+	 * 
+	 * @param ri
+	 * @param userId
+	 * 
+	 * @return
 	 */
 	public String getUserPermalink( HttpRequestInfo ri, String userId )
 	{
@@ -2704,10 +2927,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Get the User Status from their Micro Blog
+	 * 
 	 * @param binderId This is the binderId of the workspace we are loading
 	 * 
 	 * @return UserStatus This object contains information about the user status.
 	 * 
+	 * @throws GwtTeamingException 
 	 */
 	public UserStatus getUserStatus(String sbinderId)
 			throws GwtTeamingException {
@@ -2717,6 +2942,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 	/**
 	 * Get the stats for the user
+	 * 
+	 * @param ri
 	 * @param binderId This is the binderId of the person you want to get stats on.
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
@@ -2727,7 +2954,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 	/**
-	 * Get the avatars for the user profile
+	 * Get the avatars for the user profile.
+	 * 
+	 * @param ri
 	 * @param binderId  This is the binderId of the user.
 	 * 
 	 * @return ProfileAttribute  The ProfileAttribute contains the information needed to populate the avatars
