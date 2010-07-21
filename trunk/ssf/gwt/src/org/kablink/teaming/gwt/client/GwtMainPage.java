@@ -1114,7 +1114,7 @@ public class GwtMainPage extends Composite
 			public void onSuccess( String userWorkspaceURL )
 			{
 				jsToggleGwtUI();
-				jsLoadUserWorkspaceURL( userWorkspaceURL + "&captive=false" );
+				jsLoadUserWorkspaceURL( userWorkspaceURL + "/captive/false/seen_by_gwt/0" );
 			}// end onSuccess()
 			
 			private native void jsToggleGwtUI()
