@@ -327,9 +327,11 @@ public class SsfsUtil {
 		if (platform.equals("mac")) {
 			String[] browsers = SPropsUtil.getStringArray("applet.support.in.mac.browsers", ",");
 			for (int i = 0; i < browsers.length; i++) {
-				if (browsers[i].equals("firefox") && BrowserSniffer.is_mozilla_5(req) &&
-						!BrowserSniffer.is_safari(req)) return true;
+				if (browsers[i].equals("firefox") && BrowserSniffer.is_mozilla_5(req)
+						&& !BrowserSniffer.is_safari(req)
+						&& !BrowserSniffer.is_chrome(req)) return true;
 				if (browsers[i].equals("safari") && BrowserSniffer.is_safari(req)) return true;
+				if (browsers[i].equals("chrome") && BrowserSniffer.is_chrome(req)) return true;
 			}
 			return false;
 		}
