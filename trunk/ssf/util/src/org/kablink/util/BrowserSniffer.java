@@ -337,6 +337,27 @@ public class BrowserSniffer {
 		agent = agent.toLowerCase();
 
 		if (agent.indexOf("safari") != -1) {
+			return !is_chrome(req);
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_chrome(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("chrome") != -1) {
 			return true;
 		}
 		else {
