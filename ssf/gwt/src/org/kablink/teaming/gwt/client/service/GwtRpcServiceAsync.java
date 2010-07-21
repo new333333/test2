@@ -123,13 +123,15 @@ public interface GwtRpcServiceAsync
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public void getHorizontalTree(   HttpRequestInfo ri, String binderId, AsyncCallback<List<TreeInfo>> callback );
-	public void getHorizontalNode(   HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
-	public void getRootWorkspaceId(                      String binderId, AsyncCallback<String>         callback );
-	public void getVerticalTree(     HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
-	public void getVerticalNode(     HttpRequestInfo ri, String binderId, AsyncCallback<TreeInfo>       callback );
-	public void persistNodeCollapse(                     String binderId, AsyncCallback<Boolean>        callback );
-	public void persistNodeExpand(                       String binderId, AsyncCallback<Boolean>        callback );
+	public void expandHorizontalBucket( HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
+	public void expandVerticalBucket(   HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
+	public void getHorizontalTree(      HttpRequestInfo ri, String     binderId,   AsyncCallback<List<TreeInfo>> callback );
+	public void getHorizontalNode(      HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
+	public void getRootWorkspaceId(                         String     binderId,   AsyncCallback<String>         callback );
+	public void getVerticalTree(        HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
+	public void getVerticalNode(        HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
+	public void persistNodeCollapse(                        String     binderId,   AsyncCallback<Boolean>        callback );
+	public void persistNodeExpand(                          String     binderId,   AsyncCallback<Boolean>        callback );
 
 	// The following are used in the implementation of the
 	// MainMenuControl.

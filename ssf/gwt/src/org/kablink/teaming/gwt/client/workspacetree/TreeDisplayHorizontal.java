@@ -88,6 +88,16 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 			m_expanderImg = expanderImg;
 		}
 
+		/*
+		 * Expands the current node.
+		 */
+		private void doExpandNode(TreeInfo expandedTI) {
+			m_expanderImg.setResource(getImages().tree_closer());
+			m_ti.setBinderExpanded(true);
+			m_ti.setChildBindersList(expandedTI.getChildBindersList());
+			reRenderNode(m_ti, m_nodeGrid);
+		}
+		
 		/**
 		 * Called when the expander is clicked.
 		 * 
@@ -104,19 +114,32 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				
 			else {
 				// No, we aren't collapsing the node!  We must be
-				// expanding it.  Can we get a TreeInfo for the
-				// expansion?
-				getRpcService().getHorizontalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
-					public void onFailure(Throwable t) {}
-					public void onSuccess(TreeInfo expandedTI) {
-						// Yes!  Mark the node as being opened, save its
-						// new child Binder's list and re-render it.
-						m_expanderImg.setResource(getImages().tree_closer());
-						m_ti.setBinderExpanded(true);
-						m_ti.setChildBindersList(expandedTI.getChildBindersList());
-						reRenderNode(m_ti, m_nodeGrid);
-					}
-				});
+				// expanding it.  Are we showing a collapsed bucket?
+				if (m_ti.isBucket()) {
+					// Yes!  Expand it.
+					getRpcService().expandHorizontalBucket(new HttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+						public void onFailure(Throwable t) {}
+						public void onSuccess(TreeInfo expandedTI) {
+							// Yes!  Mark the node as being opened, save its
+							// new child Binder's list and re-render it.
+							doExpandNode(expandedTI);
+						}
+					});
+				}
+				
+				else {
+					// No, we aren't showing a collapsed bucket!  We
+					// must be showing a normal node.  Can we get a
+					// TreeInfo for the expansion?
+					getRpcService().getHorizontalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+						public void onFailure(Throwable t) {}
+						public void onSuccess(TreeInfo expandedTI) {
+							// Yes!  Mark the node as being opened, save its
+							// new child Binder's list and re-render it.
+							doExpandNode(expandedTI);
+						}
+					});
+				}
 			}
 		}
 	}
@@ -211,6 +234,33 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		return reply;
 	}
 
+	private Widget getSelectorLabel(TreeInfo ti) {
+		Widget reply;
+		
+		// Is this item a bucket?
+		if (ti.isBucket()) {
+			// Yes!  Generate the appropriate widgets. 
+			FlowPanel selectorPanel = new FlowPanel();
+			selectorPanel.addStyleName("breadCrumb_ContentNode_Anchor cursorDefault gwtUI_nowrap");
+			selectorPanel.add(buildBucketPartLabel(ti.getPreBucketTitle() + "\u00A0"));
+			selectorPanel.add(buildBucketRangeImage());
+			selectorPanel.add(buildBucketPartLabel("\u00A0" + ti.getPostBucketTitle()));
+			reply = selectorPanel;
+		}
+		
+		else {
+			// No, it's not a bucket!  Generate a simply Label for it.
+			Label selectorLabel = new Label(ti.getBinderTitle());
+			selectorLabel.setWordWrap(false);
+			selectorLabel.addStyleName("breadCrumb_ContentNode_Anchor cursorPointer");
+			reply = selectorLabel;
+		}
+
+		// If we get here, reply refers to the Widget to use for the
+		// selector label.  Return it.
+		return reply;
+	}
+
 	/**
 	 * Called to render the information in a TreeInfo object into a
 	 * FlowPanel.
@@ -270,13 +320,14 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 		
 		// Generate the widgets to select the Binder.
-		Label selectorLabel = new Label(ti.getBinderTitle());
-		selectorLabel.setWordWrap(false);
-		selectorLabel.addStyleName("breadCrumb_ContentNode_Anchor");
+		Widget selectorLabel = getSelectorLabel(ti);
 		Anchor selectorA = new Anchor();
 		selectorA.getElement().appendChild(selectorLabel.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
+		if (ti.isBucket()) {
+			selectorA.setTitle(getBinderHover(ti));
+		}
 		
 		// Add the expander and selector to the Grid.
 		nodeGrid.setWidget(0, 0, expanderWidget);

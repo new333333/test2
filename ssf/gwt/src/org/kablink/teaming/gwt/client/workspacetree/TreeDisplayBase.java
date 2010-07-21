@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 /**
@@ -86,10 +88,17 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 		 * @param event
 		 */
 		public void onClick(ClickEvent event) {
-			// Select the Binder and tell the WorkspaceTreeControl to
-			// handle it.
-			selectBinder(m_ti);
-			triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
+			// Is the item is a bucket?
+			if (m_ti.isBucket()) {
+				// Yes!  Simply ignore the click.  We make it an anchor
+				// so that the hover, ... works.
+			}
+			else {
+				// No, the item is not a bucket!  Select the Binder and
+				// tell the WorkspaceTreeControl to handle it.
+				selectBinder(m_ti);
+				triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
+			}
 		}
 	}
 
@@ -126,6 +135,58 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	public abstract void render(String selectedBinderId, FlowPanel targetPanel);
 	public abstract void setSelectedBinder(OnSelectBinderInfo binderInfo);
 
+	/**
+	 * Constructs an InlineLabel for a part name of a bucket.
+	 * 
+	 * @param part
+	 * 
+	 * @return
+	 */
+	InlineLabel buildBucketPartLabel(String part) {
+		InlineLabel reply = new InlineLabel(part);
+		reply.addStyleName("gwtUI_nowrap");
+		return reply;
+	}
+	
+	/**
+	 * Constructs a range Image for constructing a bucket name.
+	 * 
+	 * @return
+	 */
+	Image buildBucketRangeImage() {
+		Image reply = new Image(getImages().range());
+		reply.addStyleName("gwtUI_vmiddle");
+		
+//!		// If we use getImages().rangeArrows(), we must set the height
+//!		// and width.
+//!		reply.setHeight("10");
+//!		reply.setWidth("9");
+		
+		return reply;
+	}
+	
+	/**
+	 * Returns the string to display as the hover over text for the
+	 * Anchor on a TreeItem.
+	 * 
+	 * For buckets, this contains a named range of the items in the
+	 * bucket.  For non buckets, it's simply the item's title.
+	 * 
+	 * @param ti
+	 * 
+	 * @return
+	 */
+	String getBinderHover(TreeInfo ti) {
+		String reply;
+		if (ti.isBucket()) {
+			reply = getMessages().treeBucketHover(ti.getBucketFirstTitle(), ti.getBucketLastTitle());
+		}
+		else {
+			reply = ti.getBinderTitle();
+		}
+		return reply;
+	}
+	
 	/**
 	 * Returns access to the workspace tree's image bundle.
 	 *  

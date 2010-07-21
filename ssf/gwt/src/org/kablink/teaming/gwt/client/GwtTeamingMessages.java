@@ -351,6 +351,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuViewsWhatsUnreadInWorkspace();
 
 	// Strings used in the workspace tree control.
+	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseBreadCrumbs();
 	
 	// Strings used in the "Add File Attachment" dialog.

@@ -128,13 +128,15 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
-	public List<TreeInfo> getHorizontalTree(   HttpRequestInfo ri, String binderId );
-	public TreeInfo       getHorizontalNode(   HttpRequestInfo ri, String binderId );
-	public String         getRootWorkspaceId(                      String binderId );
-	public TreeInfo       getVerticalTree(     HttpRequestInfo ri, String binderId );
-	public TreeInfo       getVerticalNode(     HttpRequestInfo ri, String binderId );
-	public Boolean        persistNodeCollapse(                     String binderId );
-	public Boolean        persistNodeExpand(                       String binderId );
+	public TreeInfo       expandHorizontalBucket( HttpRequestInfo ri, List<Long> bucketList );
+	public TreeInfo       expandVerticalBucket(   HttpRequestInfo ri, List<Long> bucketList );
+	public List<TreeInfo> getHorizontalTree(      HttpRequestInfo ri, String     binderId );
+	public TreeInfo       getHorizontalNode(      HttpRequestInfo ri, String     binderId );
+	public String         getRootWorkspaceId(                         String     binderId );
+	public TreeInfo       getVerticalTree(        HttpRequestInfo ri, String     binderId );
+	public TreeInfo       getVerticalNode(        HttpRequestInfo ri, String     binderId );
+	public Boolean        persistNodeCollapse(                        String     binderId );
+	public Boolean        persistNodeExpand(                          String     binderId );
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.

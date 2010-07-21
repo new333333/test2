@@ -39,6 +39,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -52,7 +53,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class TreeInfo implements IsSerializable {
+public class TreeInfo implements IsSerializable {	
 	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
 	private BinderInfo m_binderInfo = new BinderInfo();
 	private boolean m_binderExpanded;
@@ -62,6 +63,12 @@ public class TreeInfo implements IsSerializable {
 	private String m_binderPermalink = "";
 	private String m_binderTrashPermalink = "";
 	
+	// The following are only used for TreeInfo's that represent a
+	// bucket of Binder's.
+	private List<Long> m_bucketList;
+	private String m_bucketFirstTitle;
+	private String m_bucketLastTitle;
+		
 	/**
 	 * Constructor method.
 	 * 
@@ -214,51 +221,125 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public ImageResource getBinderImage() {
-//!		...this needs to be implemented...
-		
 		ImageResource reply = null;
 		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
-		switch (m_binderInfo.getBinderType()) {
-		case FOLDER:
-			switch (m_binderInfo.getFolderType()) {
-			case BLOG:        reply = images.folder_comment();  break;
-			case CALENDAR:    reply = images.folder_calendar(); break;
-			case DISCUSSION:  reply = images.folder_comment();  break;
-			case FILE:        reply = images.folder_file();     break;
-			case MINIBLOG:    reply = images.folder_comment();  break;
-			case PHOTOALBUM:  reply = images.folder_photo();    break;
-			case TASK:        reply = images.folder_task();     break;
-			case TRASH:       reply = images.folder_trash();    break;
-			case SURVEY:                                        break;
-			case WIKI:                                          break;
-			case OTHER:                                         break;
-			}
-			
-			if (null == reply) {
-				reply = images.folder_generic();
-			}
-			
-			break;
-			
-		case WORKSPACE:
-			switch (m_binderInfo.getWorkspaceType()) {
-			case GLOBAL_ROOT:                                        break;
-			case PROFILE_ROOT:                                       break;
-			case TEAM:          reply = images.workspace_team();     break;
-			case TEAM_ROOT:                                          break;
-			case TOP:                                                break;
-			case TRASH:         reply = images.workspace_trash();    break;
-			case USER:          reply = images.workspace_personal(); break;
-			case OTHER:                                              break;
-			}
-			
-			if (null == reply) {
-				reply = images.workspace_generic();
-			}
-			
-			break;
+		if (isBucket()) {
+			reply = images.bucket();
 		}
 		
+		else {
+			switch (m_binderInfo.getBinderType()) {
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:        reply = images.folder_comment();  break;
+				case CALENDAR:    reply = images.folder_calendar(); break;
+				case DISCUSSION:  reply = images.folder_comment();  break;
+				case FILE:        reply = images.folder_file();     break;
+				case MINIBLOG:    reply = images.folder_comment();  break;
+				case PHOTOALBUM:  reply = images.folder_photo();    break;
+				case TASK:        reply = images.folder_task();     break;
+				case TRASH:       reply = images.folder_trash();    break;
+				case SURVEY:                                        break;
+				case WIKI:                                          break;
+				case OTHER:                                         break;
+				}
+				
+				if (null == reply) {
+					reply = images.folder_generic();
+				}
+				
+				break;
+				
+			case WORKSPACE:
+				switch (m_binderInfo.getWorkspaceType()) {
+				case GLOBAL_ROOT:                                        break;
+				case PROFILE_ROOT:                                       break;
+				case TEAM:          reply = images.workspace_team();     break;
+				case TEAM_ROOT:                                          break;
+				case TOP:                                                break;
+				case TRASH:         reply = images.workspace_trash();    break;
+				case USER:          reply = images.workspace_personal(); break;
+				case OTHER:                                              break;
+				}
+				
+				if (null == reply) {
+					reply = images.workspace_generic();
+				}
+				
+				break;
+			}
+		}
+		
+		return reply;
+	}
+
+	/**
+	 * Returns the List<Long> of the Binder ID's in this bucket.
+	 * 
+	 * @return
+	 */
+	public List<Long> getBucketList() {
+		return m_bucketList;
+	}
+	
+	/**
+	 * Returns the name of the first Binder in this bucket.
+	 * 
+	 * @return
+	 */
+	public String getBucketFirstTitle() {
+		return m_bucketFirstTitle;
+	}
+
+	/**
+	 * Returns the title of the last Binder in this bucket.
+	 * 
+	 * @return
+	 */
+	public String getBucketLastTitle() {
+		return m_bucketLastTitle;
+	}
+	
+	/*
+	 * Returns the part of a title to be used for constructing the
+	 * display name for a bucket.
+	 */
+	private static String getBucketTitlePart(String title) {
+		// If we don't have a name to get the display part from...
+		String reply;
+		if (null != title) {
+			title = title.trim();
+		}
+		if (!(GwtClientHelper.hasString(title))) {
+			// ...return what we were given.
+			reply = title;
+		}
+		else {
+			// Otherwise, look for places to split the name.
+			int comma = title.indexOf(',');
+			int dot   = title.indexOf('.');
+			int nerp  = title.indexOf(')');
+			int space = title.indexOf(' ');
+			int split = Integer.MAX_VALUE;
+			if  ((-1) < comma)                     split = comma;
+			if (((-1) < dot)   && (dot   < split)) split = dot;
+			if (((-1) < nerp)  && (nerp  < split)) split = nerp;
+			if (((-1) < space) && (space < split)) split = space;
+
+			// Can we split the name?
+			if (Integer.MAX_VALUE == split) {
+				// No!  Return the entire thing.
+				reply = title;
+			}
+			else {
+				// Yes!  Split it, maintaining the ')' if that's what
+				// we're splitting on.
+				reply = title.substring(0, ((split == nerp) ? (split + 1) : split));
+			}
+		}
+		
+		// If we get here, reply refers to the part of the name to
+		// display.  Return it.
 		return reply;
 	}
 	
@@ -282,7 +363,7 @@ public class TreeInfo implements IsSerializable {
 	public ImageResource getExpanderImage() {
 		ImageResource reply = null;
 		
-		if (0 < getBinderChildren()) {
+		if (isBucket() || (0 < getBinderChildren())) {
 			GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
 			if (isBinderExpanded())
 			     reply = images.tree_closer();
@@ -290,6 +371,24 @@ public class TreeInfo implements IsSerializable {
 		}
 
 		return reply;
+	}
+
+	/**
+	 * Returns the initial part to construct a bucket title with.
+	 * 
+	 * @return
+	 */
+	public String getPreBucketTitle() {
+		return getBucketTitlePart(getBucketFirstTitle());
+	}
+	
+	/**
+	 * Returns the final part to construct a bucket title with.
+	 * 
+	 * @return
+	 */
+	public String getPostBucketTitle() {
+		return getBucketTitlePart(getBucketLastTitle());
 	}
 	
 	/**
@@ -302,6 +401,16 @@ public class TreeInfo implements IsSerializable {
 		return m_binderExpanded;
 	}
 
+	/**
+	 * Returns true if this TreeInfo corresponds to a bucket list
+	 * or false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isBucket() {
+		return (null != m_bucketList);
+	}
+	
 	/**
 	 * Store a count of the children of a Binder.
 	 * 
@@ -366,6 +475,38 @@ public class TreeInfo implements IsSerializable {
 	public void setBinderInfo(BinderInfo binderInfo) {
 		// Simply store the parameter.
 		m_binderInfo = binderInfo;
+	}
+
+	/**
+	 * Stores information about a bucket of Binders.
+	 * 
+	 * @param bucketList
+	 * @param bucketFirstTitle
+	 * @param bucketLastTitle
+	 */
+	public void setBucketInfo(List<Long> bucketList, String bucketFirstTitle, String bucketLastTitle) {
+		// Validate and store the parameters.
+		m_bucketList = bucketList;
+		if (null == bucketList) {
+			bucketFirstTitle =
+			bucketLastTitle  = null;
+		}
+		else {
+			bucketFirstTitle = ((null == bucketFirstTitle) ? "" : bucketFirstTitle);
+			bucketLastTitle  = ((null == bucketLastTitle)  ? "" : bucketLastTitle);
+		}
+		m_bucketFirstTitle = bucketFirstTitle;
+		m_bucketLastTitle  = bucketLastTitle;
+
+		// If we have a bucket list.
+		if (null != bucketList) {
+			// Generate a title that can be used for it.
+			StringBuffer binderTitle = new StringBuffer();
+			binderTitle.append(getPreBucketTitle());
+			binderTitle.append(" <-> ");
+			binderTitle.append(getPostBucketTitle());
+			setBinderTitle(binderTitle.toString());
+		}
 	}
 	
 	/**

@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.server.util;
 
+import static org.kablink.util.search.Restrictions.in;
+
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -132,6 +134,9 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
 import org.kablink.util.PropertyNotFoundException;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Order;
 
 
 /**
@@ -141,6 +146,23 @@ import org.kablink.util.PropertyNotFoundException;
  */
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
+
+	// The following are used to control when and how binders are
+	// placed in buckets in a workspace tree control.
+	private static final boolean ENABLE_BUCKETS      = true;
+	private static       int     BUCKET_SIZE         = (-1);
+	private static final int     BUCKET_SIZE_DEFAULT = 25;
+	private static final String  BUCKET_SIZE_KEY     = "wsTree.maxBucketSize";
+
+	// The following is used to control how workspace trees are
+	// sorted and displayed.  The value meanings are:
+	//    0 -> First Middle Last	(uses the Binder's plain  title)
+	//    1 -> Last, First Middle	(uses the Binder's search title)
+	// Any other value or undefined uses the default of 0.  Note that
+	// the traditional UI would equate to 1 for this.
+	private static       int     TREE_TITLE_FORMAT         = (-1);
+	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
+	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
 	
 	/**
 	 * Inner class used compare two GwtAdminAction objects.
@@ -239,37 +261,6 @@ public class GwtServerHelper {
 		 */
 		public int compare(GroupInfo ti1, GroupInfo ti2) {
 			return MiscUtil.safeSColatedCompare(ti1.getTitle(), ti2.getTitle());
-		}
-	}	   
-	   
-	/**
-	 * Inner class used compare two TreeInfo objects.
-	 */
-	private static class TreeInfoComparator implements Comparator<TreeInfo> {
-		/**
-		 * Class constructor.
-		 */
-		public TreeInfoComparator() {
-			// Nothing to do.
-		}
-
-	      
-		/**
-		 * Implements the Comparator.compare() method on two
-		 * TreeInfo's.
-		 *
-		 * Returns:
-		 *    -1 if ti1 <  ti2;
-		 *     0 if ti1 == ti2; and
-		 *     1 if ti1 >  ti2.
-		 *     
-		 * @param ti1
-		 * @param ti2
-		 * 
-		 * @return
-		 */
-		public int compare(TreeInfo ti1, TreeInfo ti2) {
-			return MiscUtil.safeSColatedCompare(ti1.getBinderTitle(), ti2.getBinderTitle());
 		}
 	}	   
 	   
@@ -372,6 +363,91 @@ public class GwtServerHelper {
 		
 		return reply;
 	}
+
+	/*
+	 * Builds the TreeInfo objects for a list of child Binder IDs into
+	 * buckets.
+	 */
+	private static void buildChildBucketTIs(AllModulesInjected bs, HttpServletRequest request, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
+		// Are buckets enabled?		
+		if (ENABLE_BUCKETS) {
+			// Yes!  Do we have so many binders that the number of
+			// buckets we'll have will exceed our bucket size?
+			BinderModule bm = bs.getBinderModule();
+			int binders    = childBinderList.size();
+			int bucketSize = getBucketSize();
+			if (binders > (bucketSize * bucketSize)) {
+				// Yes!  Then we increase the bucket size for list so
+				// that we only have the bucket size number of buckets.
+				int newBucketSize = (binders / bucketSize);
+				if (binders > (newBucketSize * bucketSize)) {
+					newBucketSize += 1;
+				}
+				bucketSize = newBucketSize;
+			}
+			
+			// Scan the list.
+			for (int i = 0; i < binders; i += bucketSize) {
+				// Does this bucket have only a single item?
+				List<Long> bucketList = childBinderList.subList(i, Math.min((i + bucketSize), binders));
+				switch (bucketList.size()) {
+				case 0:
+					// This should never happen.
+					break;
+					
+				case 1:
+					// If there's only a single entry in the bucket,
+					// just display it directly.  This should only
+					// happen for the last bucket.
+					buildChildTIs(
+						bs,
+						request,
+						childTIList,
+						bucketList,
+						expandedBindersList,
+						depth);
+					
+					break;
+					
+				default:
+					// For bucket with more than one item, create a
+					// TreeInfo that represents the bucket.
+					TreeInfo bucketTI = new TreeInfo();
+					Binder firstBinder = bm.getBinder(bucketList.get(0));
+					Binder lastBinder  = bm.getBinder(bucketList.get(bucketList.size() - 1));
+					bucketTI.setBucketInfo(cloneSublist(bucketList), treeBinderTitle(firstBinder), treeBinderTitle(lastBinder));
+					childTIList.add(bucketTI);
+					
+					break;
+				}
+			}
+		}
+		
+		else {
+			// No, buckets are not enabled!  Build the TreeInfo objects
+			// directly.
+			buildChildTIs(
+				bs,
+				request,
+				childTIList,
+				childBinderList,
+				expandedBindersList,
+				depth);
+		}
+	}
+	
+	/*
+	 * Builds the TreeInfo objects for a list of child Binder IDs.
+	 */
+	private static void buildChildTIs(AllModulesInjected bs, HttpServletRequest request, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
+		BinderModule bm = bs.getBinderModule();
+		for (Iterator<Long> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
+			// ...creating a TreeInfo for each...
+			Binder subBinder = bm.getBinder(biIT.next());
+			TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+			childTIList.add(subWsTI);
+		}
+	}
 	
 	/**
 	 * Builds a TreeInfo object for a given Binder.
@@ -384,22 +460,19 @@ public class GwtServerHelper {
 	 */
 	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(request, bs, binder, expandedBindersList, (null != expandedBindersList), 0);
+		return buildTreeInfoFromBinder(request, bs, binder, expandedBindersList, (null != expandedBindersList), 0);
 	}
 	
 	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Always use the private implementation of this method.
-		return buildTreeInfoFromBinderImpl(request, bs, binder, null, false, 0);
+		return buildTreeInfoFromBinder(request, bs, binder, null, false, 0);
 	}
 	
-	/*
-	 * Builds a TreeInfo object for a given Binder.
-	 */
-	private static TreeInfo buildTreeInfoFromBinderImpl(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
+	public static TreeInfo buildTreeInfoFromBinder(HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> expandedBindersList, boolean mergeUsersExpansions, int depth) {
 		// Construct the base TreeInfo for the Binder.
 		TreeInfo reply = new TreeInfo();
 		reply.setBinderInfo(getBinderInfo(binder));
-		reply.setBinderTitle(binder.getTitle());
+		reply.setBinderTitle(treeBinderTitle(binder));
 		reply.setBinderChildren(binder.getBinderCount());
 		String binderPermalink = PermaLinkUtil.getPermalink(request, binder);
 		reply.setBinderPermalink(binderPermalink);
@@ -419,29 +492,39 @@ public class GwtServerHelper {
 		boolean expandBinder = ((0 == depth) || isLongInList(binder.getId(), expandedBindersList));
 		reply.setBinderExpanded(expandBinder);
 		if (expandBinder) {
-			// Yes!  Scan the Binder's children...
+			// Yes!  Get the sort list of the binder's children.
 			List<TreeInfo> childTIList = reply.getChildBindersList(); 
-			List<Binder> childBinderList = getVisibleBinderDecendents(bs, binder);
-			for (Iterator<Binder> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
-				// ...creating a TreeInfo for each...
-				Binder subBinder = biIT.next();
-				TreeInfo subWsTI = buildTreeInfoFromBinderImpl(request, bs, subBinder, expandedBindersList, false, (depth + 1));
-				childTIList.add(subWsTI);
+			List<Long> childBinderList = getSortedBinderChildIds(bs, binder.getId());
+			
+			// Do we need to display the list in buckets?
+			if (useBuckets(childBinderList)) {
+				// Yes!  Build the TreeInfo objects for putting the
+				// Binder's children into buckets.
+				buildChildBucketTIs(
+					bs,
+					request,
+					childTIList,
+					childBinderList,
+					expandedBindersList,
+					(depth + 1));
+			}
+			else {
+				// No, we don't need to display it in buckets!  Build
+				// the TreeInfo objects for the Binder's children.
+				buildChildTIs(
+					bs,
+					request,
+					childTIList,
+					childBinderList,
+					expandedBindersList,
+					(depth + 1));
 			}
 			
-			// ...and update the count of Binder children as it may
-			// ...have changed based on visibility.
-			reply.setBinderChildren(childBinderList.size());
+			// Update the count of Binder children as it may have
+			// changed based on moving into buckets, ...
+			reply.setBinderChildren(childTIList.size());
 		}
 
-		// If there's more than one child being tracked for this
-		// TreeInfo...
-		List<TreeInfo> childBindersList = reply.getChildBindersList();
-		if (1 < childBindersList.size()) {
-			// ...sort them.
-			Collections.sort(childBindersList, new TreeInfoComparator());
-		}
-		
 		// If we get here, reply refers to the TreeInfo object for this
 		// Binder.  Return it.
 		return reply;
@@ -461,12 +544,36 @@ public class GwtServerHelper {
 		for (Iterator<Long> lIT = bindersList.iterator(); lIT.hasNext(); ) {
 			Binder binder = getBinderForWorkspaceTree(bs, lIT.next());
 			if (null != binder) {
-				reply.add(buildTreeInfoFromBinderImpl(request, bs, binder, null, false, (-1)));
+				reply.add(buildTreeInfoFromBinder(request, bs, binder, null, false, (-1)));
 			}
 		}
 		return reply;
 	}
 
+	/*
+	 * Clones a List<Long> that was extracted as a sublist from a
+	 * parent List<Long>.
+	 */
+	private static List<Long> cloneSublist(List<Long> srcList) {
+		// If there is not source list...
+		List<Long> reply;
+		if (null == srcList) {
+			// ...return null...
+			reply = null;
+		}
+		else {
+			// ...otherwise, copy the source list to a new list.
+			reply = new ArrayList<Long>();
+			for (Iterator<Long> itL = srcList.iterator(); itL.hasNext(); ) {
+				reply.add(itL.next());
+			}
+		}
+		
+		// If we get here, reply refers to the clone of the List<Long>
+		// we were given.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Scans the tags in newTags and any that aren't defined in oldTags
 	 * are defined on the binder.
@@ -522,7 +629,7 @@ public class GwtServerHelper {
 			}
 		}
 	}
-
+	
 	/*
 	 * Constructs a FavoriteInfo object from a JSONObject.
 	 */
@@ -1468,8 +1575,7 @@ public class GwtServerHelper {
 		
 		return brandingData;
 	}// end getBinderBrandingData()
-	
-	
+
 	/**
 	 * Returns the entity type of a binder.
 	 * 
@@ -1552,7 +1658,7 @@ public class GwtServerHelper {
 		// accessed and null otherwise.  Return it.
 		return reply;
 	}
-	
+
 	/**
 	 * Returns a BinderInfo describing a binder.
 	 * 
@@ -1676,6 +1782,33 @@ public class GwtServerHelper {
 		if (BinderType.OTHER == reply) {
 			m_logger.debug("GwtServerHelper.getBinderType( 'Could not determine binder type' ):  " + binder.getPathName());
 		}
+		return reply;
+	}
+	
+	/*
+	 * Returns the bucket size to use when displaying binders in
+	 * buckets in the workspace trees.
+	 */
+	private static int getBucketSize() {
+		int reply;
+		
+		if (ENABLE_BUCKETS) {
+			// If we haven't read the binder bucket size from the
+			// ssf*.properties file yet...
+			if ((-1) == BUCKET_SIZE) {
+				// ...read it now...
+				BUCKET_SIZE = SPropsUtil.getInt( 
+					BUCKET_SIZE_KEY,
+					BUCKET_SIZE_DEFAULT);
+			}
+			
+			// ...and return it.
+			reply = BUCKET_SIZE;
+		}
+		else {
+			reply = Integer.MAX_VALUE;
+		}
+		
 		return reply;
 	}
 	
@@ -2100,30 +2233,47 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-	/*
-	 * Returns a List<Binder> of the child Binder's of binder that are
-	 * visible to the user.
+	/**
+	 * Using a search query, returns an ArrayList<Long> containing the
+	 * IDs of the sorted list the children of a given binder.
 	 * 
-	 * Note:  For a way to do this using the search index, start with
-	 *    TrashHelper.containsVisibleBinders().
+	 * @param bs
+	 * @param binderId
+	 * @param start
+	 * @param count
+	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<Binder> getVisibleBinderDecendents(AllModulesInjected bs, Binder binder) {
-		ArrayList<Binder> reply = new ArrayList<Binder>();
-		
-		List allSubBinders = binder.getBinders();
-		for (Iterator bi = allSubBinders.iterator(); bi.hasNext(); ) {
-			Binder subBinder = ((Binder) bi.next());
-			if ((!(isBinderPreDeleted(subBinder))) && 
-					(bs.getBinderModule().testAccess(subBinder, BinderOperation.readEntries) || 
-					bs.getBinderModule().testAccess(subBinder, BinderOperation.viewBinderTitle))) {
-				reply.add(0, subBinder);
-			}
-		}
-		
+	public static ArrayList<Long> getSortedBinderChildIds(AllModulesInjected bs, Long binderId, int start, int count) {
+		// Construct the search Criteria...
+		Criteria crit = new Criteria();
+		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+		    .add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[] {String.valueOf(binderId)}));
+		crit.addOrder(new Order(treeBinderSortField(), true));	// true -> Ascending.
+
+		// ...issue the search query...
+		Map bindersMap = bs.getBinderModule().executeSearchQuery(crit, start, count);
+
+		// ...scan the results... 
+		ArrayList<Long> reply = new ArrayList<Long>();
+		ArrayList hierarchyAL = ((ArrayList) bindersMap.get(ObjectKeys.SEARCH_ENTRIES));
+        for (Iterator bindersIT = hierarchyAL.iterator(); bindersIT.hasNext();) {
+        	// ...tracking the IDs of the child binders.
+        	Map binderMap = ((Map) bindersIT.next());
+			reply.add(Long.valueOf((String) binderMap.get("_docId")));
+        }
+
+        // If we get here, reply refers to an ArrayList<Long> of the
+        // IDs of the sorted children of the given binder.  Return it.
 		return reply;
 	}
-
+	
+	public static ArrayList<Long> getSortedBinderChildIds(AllModulesInjected bs, Long binderId) {
+		// Always use the initial form of the method.
+		return getSortedBinderChildIds(bs, binderId, 0, Integer.MAX_VALUE);
+	}
+	
 	/**
 	 * Returns a List<TopRankedInfo> of the top ranked items from the
 	 * most recent search.
@@ -2543,6 +2693,29 @@ public class GwtServerHelper {
 				new ArrayList<Long>()      :
 				expandedBindersList));
 	}
+
+	/*
+	 * Returns the field we use for sorting a workspace tree.
+	 */
+	private static String treeBinderSortField() {
+		String reply;
+		if (useSearchTitles())
+		     reply = Constants.NORM_TITLE_FIELD;
+		else reply = Constants.SORT_TITLE_FIELD;		
+		return reply;
+	}
+	
+	/*
+	 * Given a binder, returns the string to display for it in a
+	 * workspace tree.
+	 */
+	private static String treeBinderTitle(Binder binder) {
+		String reply;
+		if (useSearchTitles())
+		     reply = binder.getSearchTitle();
+		else reply = binder.getTitle();
+		return reply;
+	}
 	
 	/**
 	 * Updates the tags defined on a binder.
@@ -2585,5 +2758,49 @@ public class GwtServerHelper {
 
 		// If we get here, the update was successful.  Return true.
 		return Boolean.TRUE;
+	}
+	
+	/*
+	 * Returns true if the number of binder IDs in the List<Long>
+	 * requires displaying them in buckets and false otherwise.
+	 */
+	private static boolean useBuckets(List<Long> binderList) {
+		boolean reply;
+		
+		if (ENABLE_BUCKETS) {
+			int binders = ((null == binderList) ? 0 : binderList.size());
+			reply = (binders > getBucketSize());
+		}
+		else {
+			reply = false;
+		}
+		
+		return reply;
+	}
+	
+	/*
+	 * Returns the bucket size to use when displaying binders in
+	 * buckets in the workspace trees.
+	 */
+	private static boolean useSearchTitles() {
+		// If we haven't read which format to display workspace tree
+		// titles in yet...
+		if ((-1) == TREE_TITLE_FORMAT) {
+			// ...read it now.
+			TREE_TITLE_FORMAT = SPropsUtil.getInt( 
+				TREE_TITLE_FORMAT_KEY,
+				TREE_TITLE_FORMAT_DEFAULT);
+
+			// If what we read is out of range, use the default.
+			switch (TREE_TITLE_FORMAT) {
+			case 0:
+			case 1:                                                  break;
+			default:  TREE_TITLE_FORMAT = TREE_TITLE_FORMAT_DEFAULT; break;
+			}
+		}
+		
+		// Return true if we should use search titles and false
+		// otherwise.
+		return (1 == TREE_TITLE_FORMAT);
 	}
 }
