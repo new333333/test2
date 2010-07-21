@@ -36,93 +36,96 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
 
-<div align="right">
-<c:if test="${ss_trackedPlacesPage > '0'}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_trackedPlacesPage || ss_trackedPlacesPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-</c:if>
-<c:if test="${!empty ss_whatsNewTrackedPlaces}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'next', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_whatsNewTrackedPlaces}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-</c:if>
-</div><!--end of arrow division-->
-  <div id="ss_today">
-  <div id="ss_mydocs_para" >
-  <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
-    <jsp:useBean id="entry" type="java.util.Map" />
-    <li>
-	  <span>
-		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_3"
-			entryId="${entry._docId}" binderId="${entry._binderId}" 
-			entityType="${entry._entityType}" 
-			namespace="${ss_namespace}" 
-			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-			<ssf:param name="url" useBody="true">
-				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-				  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-			</ssf:param>
-			<c:out value="${entry.title}" escapeXml="false"/>
-		</ssf:titleLink>
-	  </span>
-	  <br/>
-	  
-	  <span>
-		<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
-	  </span>
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      value="${entry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
-	  </span>
-	  
-	  <c:set var="path" value=""/>
-	  <c:if test="${!empty ss_whatsNewTrackedPlacesFolders[entry._binderId]}">
-		<c:set var="path" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId]}"/>
-		<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].parentBinder.title} // ${ss_whatsNewTrackedPlacesFolders[entry._binderId].title}"/>
-	  </c:if>
-	  <c:if test="${!empty path}">
-	  <div>
-	  <span class="ss_link_2">
-		<c:set var="isDashboard" value="yes"/>
-		<c:if test="${!empty path}">
-    		<br/><a href="javascript: ;"
-				onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
-				title="${path}"
-				><span>${title}</span></a>
+	<div id="ss_title" class="ss_pt_title ss_green">
+	  	<ssf:nlt tag="relevance.whatsNewTracked"/>
+
+		<span class="col-nextback-but">
+		<c:if test="${ss_trackedPlacesPage > '0'}">
+		<a href="javascript: ;" 
+		  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
+		<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+		  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+		</a>
 		</c:if>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
-	    title="<ssf:nlt tag="general.type.folder"/>" width="11" height="10" 
-	    hspace="2" border="0" align="absmiddle" <ssf:alt/>/>
-	  </div>
-	  </c:if>
-	  <c:if test="${!empty entry._desc}">
-	    <div>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></span>
-	    <div class="ss_clear"></div>
-	    </div>
-	  </c:if>
+		<c:if test="${empty ss_trackedPlacesPage || ss_trackedPlacesPage <= '0'}">
+		<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+		</c:if>
+		<c:if test="${!empty ss_whatsNewTrackedPlaces}">
+		<a href="javascript: ;" 
+		  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newTracked', '${ss_trackedPlacesPage}', 'next', 'ss_dashboardWhatsNewTracked', '${ss_relevanceDashboardNamespace}');return false;">
+		<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+		  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+		</a>
+		</c:if>
+		<c:if test="${empty ss_whatsNewTrackedPlaces}">
+		<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+		</c:if>
+		</span>
+	</div><!--end of arrow division-->
+ 
+	<div id="ss_today">
+  		<div id="ss_mydocs_para" >
+			<c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
+			<jsp:useBean id="entry" type="java.util.Map" />
+
+			<div class="item">
+				<c:set var="isDashboard" value="yes"/>
+				<ssf:titleLink hrefClass="ss_link_3"
+					entryId="${entry._docId}" binderId="${entry._binderId}" 
+					entityType="${entry._entityType}" 
+					namespace="${ss_namespace}" 
+					isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+					<ssf:param name="url" useBody="true">
+						<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+						  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+					</ssf:param>
+					<c:out value="${entry.title}" escapeXml="false"/>
+				</ssf:titleLink>
+	  
+				<div class="item-sub margintop1">
+					<ssf:showUser user='<%=(org.kablink.teaming.domain.User)entry.get("_principal")%>' titleStyle="ss_link_1" /> 
+				  	<span class="ss_link_4">
+						<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+						value="${entry._modificationDate}" type="both" 
+						timeStyle="short" dateStyle="medium" />
+				  	</span>
+		  
+				  	<c:set var="path" value=""/>
+				  	<c:if test="${!empty ss_whatsNewTrackedPlacesFolders[entry._binderId]}">
+						<c:set var="path" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId]}"/>
+						<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].parentBinder.title} // ${ss_whatsNewTrackedPlacesFolders[entry._binderId].title}"/>
+				  	</c:if>
+
+				  	<c:if test="${!empty path}">
+						<div class="list-indent">
+							<span class="ss_link_2">
+								<c:set var="isDashboard" value="yes"/>
+								<c:if test="${!empty path}">
+									<a href="javascript: ;"
+										onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+										title="${path}"
+									><span>${title}</span></a>
+								</c:if>
+							</span>
+						</div>
+				  </c:if>
+				  
+				  <c:if test="${!empty entry._desc}">
+					<div class="list-indent">
+						<span class="ss_summary"><ssf:textFormat 
+						  formatAction="limitedDescription" 
+						  textMaxWords="15"><ssf:markup search="${entry}">${entry._desc}</ssf:markup></ssf:textFormat></span>
+					</div>
+		  		</c:if>
+			</div>	
+		</div>
+	</c:forEach>
+
+	<c:if test="${empty ss_whatsNewTrackedPlaces && ss_pageNumber > '0'}">
+		<span class="ss_italic" style="padding: 5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+	</c:if>
 	
-    </li>
-  </c:forEach>
-  <c:if test="${empty ss_whatsNewTrackedPlaces && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
-  </c:if>
 	</div><!-- end of para -->
-    </div><!-- end of today -->
-    </div><!-- end of ss_para -->
+  </div><!-- end of today -->
+</div><!-- end of ss_para -->
 

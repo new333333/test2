@@ -34,13 +34,10 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para">
+<div id="ss_para" style="margin-left:5px;">
 	<div id="ss_today">
-		<div id="ss_hints"><em><br />
-			<ssf:nlt tag="relevance.peopleBeingTracked"/>
-		</em></div>
 		<c:forEach var="user" items="${ss_trackedPeople}">
-		    <div id="ss_col3_para" > 
+		    <div id="ss_col3_para" style="margin: 2px 0px;"> 
 			    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
 			    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
 			    <img style="padding:4px 0px 0px 2px;" align="texttop"
@@ -48,17 +45,8 @@
 			      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
 			      <ssf:alt tag="alt.delete"/>/>
 			    </c:if>
-			    <c:if test="${!empty user.status}">
-				    <div>
-						<span class="ss_smallprint"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-						  value="${user.statusDate}" type="both" 
-						  timeStyle="short" dateStyle="short" /></span>
-				    </div>
-				    <div id="ss_im_status"><em>${user.status}</em></div>
-			    </c:if>
 		    </div> <!-- end of ss_col3_para -->
 		</c:forEach>
 	</div>		<!-- end of ss_today -->
 </div>			<!-- end of ss_para -->
 
-<div class="ss_clear_float"></div>
