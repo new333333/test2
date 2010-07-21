@@ -177,6 +177,7 @@ a:hover {
 <br/><br/><span class="ss_bold"><a href="http://m2.modularity.net.au/projects/ical4j/license.html">iCal4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.xom.nu/lib/normalizer_license.html">icu4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://jaxen.codehaus.org/license.html">Jaxen</a></span>
+<br/><br/><span class="ss_bold"><a href="http://jtidy.sourceforge.net/license.html">JTidy</a></span>
 <br/><br/><span class="ss_bold"><a href="http://contraintes.inria.fr/OADymPPaC/sourceforge/cvs/tra4cp/src/cp-infovis/license-junit.html">Junit</a></span>
 <br/><br/><span class="ss_bold"><a href="http://dev.jquery.com/browser/trunk/jquery/MIT-LICENSE.txt">jQuery</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.gnu.org/copyleft/gpl.html">MySQL Connector/J</a></span>
