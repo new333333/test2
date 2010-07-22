@@ -36,66 +36,67 @@
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content" class="ss_doublecolumn">
-  <div id="ss_column_L" class="ss_dblcolleft">
-      <div class="ss_dblcol1">
-      <!-- Start Left Column -->
+	<table cellpadding="0" cellspacing="0" class="marginbottom3">
+		<tr>
+			<td width="50%" style="padding-right: 15px; vertical-align: top;">
+			<!-- Start Left Column -->
       
-	<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="2weeks"/></c:if>
-	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img">
-		  <ssf:nlt tag="relevance.tasksDue"/>
-		</div>
-	</ssf:param>
-		<div style="padding-bottom:10px;">
-		  <input type="radio" name="tasksType" value="2weeks"
-		    <c:if test="${ss_type3 == '2weeks'}">checked="checked"</c:if>
-		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
-		  ><a href="javascript: ;" 
-		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
-		  ><span><ssf:nlt tag="relevance.tasksFewWeeks">
-		    <ssf:param name="value" value='<%= SPropsUtil.getString("relevance.tasks2WeeksAhead") %>'/>
-		  </ssf:nlt></span></a>
-			  
-		  <input type="radio" name="tasksType" value="all" style="padding-left:20px;"
-		    <c:if test="${ss_type3 == 'all'}">checked="checked"</c:if>
-		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
-		  ><a href="javascript: ;" 
-		  	onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
-		  ><span><ssf:nlt tag="relevance.tasksAll"/></span></a>
-		  
-		</div>
-		<div id="ss_dashboardTasks${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
-		</div>
-	</ssf:canvas>
-		
-        </div><!-- end of ss_col 1 -->
-        <!-- Start Right Column -->
-      	<div id="ss_column_R">
-      	<div class="ss_dblcol2">
+				<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="2weeks"/></c:if>
+				<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
+				<ssf:param name="title" useBody="true" >
+					<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img">
+					  <ssf:nlt tag="relevance.tasksDue"/>
+					</div>
+				</ssf:param>
+
+				<div style="padding-bottom:10px;">
+					  <input type="radio" name="tasksType" value="2weeks"
+						<c:if test="${ss_type3 == '2weeks'}">checked="checked"</c:if>
+						onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+					  ><a href="javascript: ;" 
+						onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', '2weeks', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+					  ><span style="padding-right:10px;"><ssf:nlt tag="relevance.tasksFewWeeks">
+						<ssf:param name="value" value='<%= SPropsUtil.getString("relevance.tasks2WeeksAhead") %>'/>
+					  </ssf:nlt></span></a>
+						  
+					  <input type="radio" name="tasksType" value="all"
+						<c:if test="${ss_type3 == 'all'}">checked="checked"</c:if>
+						onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+					  ><a href="javascript: ;" 
+						onclick="ss_selectRelevanceTab(null, 'tasks_and_calendars', 'all', '${ssBinderId}', '${renderResponse.namespace}');return false;"
+					  ><span><ssf:nlt tag="relevance.tasksAll"/></span></a>			  
+				</div>
+
+				<div id="ss_dashboardTasks${renderResponse.namespace}">
+				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+				</div>
+				</ssf:canvas>	
+	        <!-- end of ss_col 1 -->
+			</td>
+			<td width="50%" style="padding-right:10px; padding-top:5px; vertical-align:top;">
+	        <!-- Start Right Column -->
       
-	<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_cal_img"> 
-		  <ssf:nlt tag="relevance.calendar"/> 
-		</div>
-	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
-	</ssf:canvas>
+				<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
+				<ssf:param name="title" useBody="true" >
+					<div id="ss_title" class="ss_pt_title ss_green ss_cal_img"> 
+					  <ssf:nlt tag="relevance.calendar"/> 
+					</div>
+				</ssf:param>
+					<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
+				</ssf:canvas>
+			
+				<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
+				<ssf:param name="title" useBody="true" >
+					<div id="ss_title" class="ss_tracked_icon ss_pt_title ss_green">
+					  <ssf:nlt tag="relevance.trackedCalendars"/>
+					</div>
+				</ssf:param>
+				<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_calendars.jsp" />
+				</ssf:canvas>
 
-	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_green ss_tracked_img">
-		  <ssf:nlt tag="relevance.trackedCalendars"/>
-	    </div>
-	</ssf:param>
-	<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_calendars.jsp" />
-	</ssf:canvas>
-
-      </div><!-- end of col2 (right column) -->
-      </div><!-- end of ss_col_R (right column placeholder) -->
-    </div><!-- end of col left -->
+			<!-- end of right column -->
+			</td>
+		</td>
+	</table>	
 
 </div><!-- end of content -->
-<div class="ss_clear_float"></div>

@@ -34,13 +34,13 @@
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para" style="margin-left:5px;">
+<div id="ss_para">
 	<div id="ss_today">
 		<c:forEach var="user" items="${ss_trackedPeople}">
-		    <div id="ss_col3_para" style="margin: 2px 0px;"> 
+		    <div id="ss_col3_para" style="margin: 0px 5px 0px 10px;"> 
 			    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
 			    <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
-			    <img style="padding:4px 0px 0px 2px;" align="texttop"
+			    <img align="absmiddle"
 			      src="<html:rootPath/>images/pics/delete.png"
 			      onclick="ss_trackedPeopleDelete(this, '${user.id}');"
 			      <ssf:alt tag="alt.delete"/>/>

@@ -170,10 +170,12 @@ div.ss_canvas {
 	background-repeat: no-repeat;
 	background-position: 97% center;
 	}	
-.ss_tracked_img {
+.ss_tracked_icon {
 	background-image: url("<html:rootPath/>images/pics/tracking20x16.png");
 	background-repeat: no-repeat;
-	background-position: 95% center;
+	background-position: 3px 3px;
+	padding: 2px 0px 5px 23px !important;
+	
 	}	
 .ss_recentfolder_img {
 	background-image: url("<html:rootPath/>images/pics/folder_blue_recent.png");
@@ -225,7 +227,6 @@ div.ss_canvas {
 #ss_tasks{
 	margin: 1% 0 5% 0;
 	padding: 0.5% 0 15px;
-	color: #666666;
 	line-height: 1.6em;
 	}
 #ss_tasks_para {
@@ -365,7 +366,7 @@ div.ss_canvas {
 
 	/*MY DOCUMENTS*/
 	
-#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item {
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item {
 	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
 	background-position: top;
 	margin-top: 2px;

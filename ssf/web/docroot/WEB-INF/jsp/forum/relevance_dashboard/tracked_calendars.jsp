@@ -37,9 +37,6 @@
 
 <div id="ss_para">
 	<div id="ss_today">
-		<div id="ss_hints"><em><br />
-			<ssf:nlt tag="relevance.calendarsBeingTracked"/>
-		</em></div>
 		<div id="ss_tasks_para">
 			<c:forEach var="binder" items="${ss_trackedCalendars}">
 				    <table cellpadding="0" cellspacing="0"><tbody><tr><td>

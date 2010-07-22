@@ -100,15 +100,15 @@
 						  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" /></div>
 					</ssf:canvas>
 				</c:if>
-        	<!-- end of ss_col 1 -->
+        	<!-- end of left column -->
 			</td>
-			<td width="50%" style="padding-right:10px; padding-top:5px; vertical-align:top;">
+			<td width="50%" style="padding-right:10px; vertical-align:top;">
 	        <!-- Start Right Column -->
 
 				<c:if test="${ss_type3 == 'tracked'}">
 					<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 					<ssf:param name="title" useBody="true" >
-						<div id="ss_title" class="ss_pt_title ss_green ss_para">
+						<div id="ss_title" class="ss_pt_title ss_green ss_para ss_tracked_icon" style="margin-top: 7px;">
 						  <ssf:nlt tag="relevance.trackedPeople"/></div>
 					</ssf:param>
 					  <c:if test="${ssBinderId == ssUser.workspaceId}">
@@ -119,7 +119,7 @@
 				<div class="margintop3">	
 					<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 					<ssf:param name="title" useBody="true" >
-						<div id="ss_title" class="ss_pt_title ss_green">
+						<div id="ss_title" class="ss_pt_title ss_green ss_tracked_icon">
 						  <ssf:nlt tag="relevance.trackedFolders"/>
 						</div>
 					</ssf:param>
@@ -135,7 +135,7 @@
 						</div>
 					</ssf:canvas>
 				</c:if>
-			<!-- end of col2 (right column) -->
+			<!-- end of right column -->
 			</td>
 		</td>
 	</table>	
