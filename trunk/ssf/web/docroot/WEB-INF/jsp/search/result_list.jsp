@@ -460,7 +460,7 @@
 		  										</c:if>
 		  										
 											</ssf:param>
-									    	<c:out value="${entry.title}"/>
+									    	<c:out value="${entry._extendedTitle}"/>
 										</ssf:titleLink>
 									</div>
 									<div class="ss_clear">&nbsp;</div>
