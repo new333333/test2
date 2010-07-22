@@ -257,7 +257,19 @@ public class ViewPermalinkController  extends SAbstractController {
 					fileName = "";
 					showTrash = "";
 					entryTitle = "";
-				} catch(Exception e) {}
+				} catch(Exception e) {
+					//Cannot reference the default landing page; go to the user's workspace page
+					User user = RequestContextHolder.getRequestContext().getUser();
+					newBinderId = user.getWorkspaceId();
+					Binder binder = getBinderModule().getBinder(newBinderId);
+					binderId = binder.getId().toString();
+					entityType = binder.getEntityType();
+					entryId = "";
+					fileId = "";
+					fileName = "";
+					showTrash = "";
+					entryTitle = "";
+				}
 			}
 		}
 
