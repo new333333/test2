@@ -659,14 +659,20 @@ function ss_cancelButtonCloseWindow() {
 		//This looks like it is a pop-up form
 		self.window.close();
 		return
-	} else if (self.parent) {
-		iframeObj = self.parent.document.getElementById(self.name)
-		if (iframeObj != null && iframeObj.tagName.toLowerCase() == 'iframe') {
-			if (iframeObj.parentNode.tagName.toLowerCase() == 'div') {
-				var divObj = self.parent.document.getElementById(iframeObj.parentNode.id);
-				divObj.style.visibility = 'hidden';
-				divObj.style.display = 'none';
-				return
+	} else if (self != self.parent) {
+		if (self.window.name == "ss_showpopupframe") {
+			//This is in the popup iframe
+			if (self.parent.ss_hidePopupDiv) self.parent.ss_hidePopupDiv();
+			return;
+		} else {
+			iframeObj = self.parent.document.getElementById(self.name)
+			if (iframeObj != null && iframeObj.tagName.toLowerCase() == 'iframe') {
+				if (iframeObj.parentNode.tagName.toLowerCase() == 'div') {
+					var divObj = self.parent.document.getElementById(iframeObj.parentNode.id);
+					divObj.style.visibility = 'hidden';
+					divObj.style.display = 'none';
+					return
+				}
 			}
 		}
 	}
@@ -2776,38 +2782,46 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 			popupDiv.style.display = "block";
 			popupDiv.style.visibility = "visible";
 		}
-		popupIframe.src = url;
+		var entryContentDiv = self.document.getElementById("ss_entryContentDiv");
+		if (entryContentDiv != null) {
+			entryContentDiv.style.display = "none";
+		}
 		ss_resizePopupDiv();
+		popupIframe.src = url;
 	} else {
 		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 	}
 	return false;
 }
-var ss_popupFrameWidthFudge = 20;
+var ss_popupFrameWidthFudge = 40;
 var ss_popupFrameHeightFudge = 40;
-var ss_popupFrameHeightFudgeIframe = 54;
 var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (popupDiv != null && popupIframe != null && popupDiv.style.display == "block") {
-		popupDiv.style.top = "0px";
-		popupDiv.style.left = "0px";
-		popupDiv.style.width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge) + "px";
-		if (parseInt(popupDiv.style.height) != parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge)) {
-			popupDiv.style.height = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge) + "px";
-			popupIframe.style.width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge) + "px";;
-			popupIframe.style.height = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudgeIframe) + "px";
+		var scrollHeight = parseInt(window.ss_showpopupframe.document.body.scrollHeight);
+		var height = parseInt(scrollHeight + ss_popupFrameHeightFudge);
+		var width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge);
+		
+		if (parseInt(popupIframe.style.height) != height ||
+				parseInt(popupIframe.style.width) != width) {
+			popupIframe.style.height = parseInt(height) + "px";
+			popupIframe.style.width = parseInt(width) + "px";
 		}
 	}
 }
 function ss_hidePopupDiv() {
+	var entryContentDiv = self.document.getElementById("ss_entryContentDiv");
+	if (entryContentDiv != null) entryContentDiv.style.display = "block";
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	if (popupDiv != null && popupDiv.style.display != "none") {
 		popupDiv.style.display = "none";
 		popupDiv.style.visibility = "hidden";
 		//Signal that the layout changed
-		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+		if (ssf_onLayoutChange) {
+			setTimeout("ssf_onLayoutChange();", 100);
+		}
 	}
 }
 
@@ -4031,7 +4045,8 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 
 function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 	ss_hideAddAttachmentDropbox(entryId, namespace);
-	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+	self.location.reload(true);
+	//ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
@@ -4121,7 +4136,8 @@ function ss_hideAddAttachmentMeetingRecordsAndAJAXCall(obj) {
 	var entryId = obj.getData("entryId");
 	var namespace = obj.getData("namespace");
 	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
-	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+	self.location.reload(true);
+	//ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function escapeAppletFileURL(s) {

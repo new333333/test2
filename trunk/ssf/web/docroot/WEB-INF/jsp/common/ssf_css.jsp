@@ -1690,6 +1690,37 @@ div.ss_box_top_rounded {
 	padding-left: 5px;
 	}
 
+/* popup box styles */
+.ss_popup_box {
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin:0px;
+	padding:0px;
+	}
+.ss_popup_box_header {
+	position: relative;
+	color: #fff;
+	font-size: 14px;
+	font-weight: bold;
+	padding: 5px;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-topright: 5px;
+	-webkit-border-top-left-radius: 5px;
+	-webkit-border-top-right-radius: 5px;
+}
+.ss_popup_wrapper {
+	padding:10px 0px 0px 10px;
+}
+.ss_popup_box_close {
+	position: absolute;
+	top: 5px;
+	right: 8px;
+	}
+.ss_popup_box_title {
+	padding-left: 5px;
+	}
+
 .ss_plus {
   width:16px;
   height:16px;

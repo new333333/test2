@@ -34,6 +34,14 @@
 %>
 <% // The main forum view - for viewing folder listings and for viewing entries %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+String op2 = (String) renderRequest.getAttribute(WebKeys.ACTION);
+boolean isViewEntry2 = false;
+if (op2 != null && !op2.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op2.equals(WebKeys.ACTION_VIEW_PROFILE_LISTING)) {
+	isViewEntry2 = true;
+}
+%>
+<c:set var="isViewEntry" value="<%= isViewEntry2 %>"/>
 <c:if test="${ss_snippet}"><%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %></c:if>
 <%
 	if (renderRequest.getAttribute(WebKeys.ACTION) == null ||
@@ -47,13 +55,10 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>
-<ssf:ifnotadapter>
-    <c:set var="showFolderPage" value="false"/>
-</ssf:ifnotadapter>
-<ssf:ifadapter>
-<c:if test="${!ss_snippet}"><body class="ss_style_body tundra"></c:if>
+<c:if test="${!ss_snippet}">
+<body class="ss_style_body tundra">
+</c:if>
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-</ssf:ifadapter>
 <script type="text/javascript">
 function ss_resizeTopDiv_${renderResponse.namespace}() {
 	ss_resizeTopDiv('${renderResponse.namespace}');
@@ -61,6 +66,14 @@ function ss_resizeTopDiv_${renderResponse.namespace}() {
 ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 </script>
+<c:if test="${empty ssReloadUrl}">
+  <c:if test="${showFolderPage}">
+    <c:if test="${isViewEntry}">
+      <%@ include file="/WEB-INF/jsp/entry/view_popup_iframe_div.jsp" %>
+    </c:if>
+  </c:if>
+</c:if>
+<div id="ss_entryContentDiv">
  <table width="100%">
  <tr>
  <td>
@@ -85,14 +98,13 @@ ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.n
  <%@ include file="/WEB-INF/jsp/entry/view_listing_common.jsp" %>
  <jsp:useBean id="ss_entryWindowWidth" type="java.lang.Integer" scope="request" />
  <jsp:useBean id="ss_entryWindowHeight" type="java.lang.Integer" scope="request" />
-
   <c:if test="<%= !reloadCaller %>">
-    <c:if test="<%= !isViewEntry %>">
+    <c:if test="${!isViewEntry}">
  <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" 
    style="margin:0px 15px 0px 0px; padding:0px;">
  <%@ include file="/WEB-INF/jsp/entry/view_iframe.jsp" %>
  </div>
-     </c:if>
+    </c:if>
   </c:if>
   <c:if test="<%= reloadCaller %>">
  <script type="text/javascript">
@@ -105,11 +117,10 @@ ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.n
  </td>
  </tr>
  </table>
-<ssf:ifadapter>
+</div>
 </div>
 <c:if test="${!ss_snippet}">
 </body>
 </html>
 </c:if>
-</ssf:ifadapter>
 

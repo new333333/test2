@@ -46,8 +46,8 @@ ss_createOnResizeObj("ss_setEditableSize", ss_setEditableSize);
 </script>
 </ssf:ifadapter>
 
+<div class="ss_popup_wrapper">
 <form method="post">
-<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
@@ -56,11 +56,13 @@ ss_createOnResizeObj("ss_setEditableSize", ss_setEditableSize);
   <ssf:param name="ss_sectionNumber" value="${ss_sectionNumber}"/>
   <ssf:param name="ss_sectionText" value="${ss_sectionText}"/>
 </ssf:displayConfiguration>
-</td></tr></table>
+<br/>
 <br/>
 <input type="submit" name="editElementBtn" value="<ssf:nlt tag="button.ok"/>"/>&nbsp;&nbsp;&nbsp;<input
-  type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="window.close();return false;"/>
+  type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
+  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </form>
+</div>
 
 <ssf:ifadapter>
 </body>

@@ -41,13 +41,13 @@
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
-<table class="ss_style" cellpadding="10" width="100%"><tr><td>
+<div class="ss_popup_wrapper">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   entry="${ssEntry}"
   processThisItem="true" />
-</td></tr></table>
+</div>
 
 <ssf:ifadapter>
 </body>
