@@ -48,14 +48,14 @@
 			
 			  <c:if test="${showThisBinder}">
 				<div class="margintop1">
-					<img align="absmiddle" src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" /><a
+					<img align="absmiddle" src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> border="0" />&nbsp;<a
 			   			href="<ssf:permalink entity="${binder}"/>"
 				  		onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 			    		>
 					<span>${binder.parentBinder.title} // ${binder.title}</span> </a>
 			    	<c:if test="${ssBinderId == ssUser.workspaceId}">
 			      <img align="absmiddle" style="padding:4px 0px 0px 2px;" align="texttop"
-		            src="<html:rootPath/>images/pics/delete.gif"
+		            src="<html:rootPath/>images/pics/delete.png"
 		            onclick="ss_trackedItemsDelete(this, '${binder.id}');"
 		            <ssf:alt tag="alt.delete"/>/>
 		        </c:if>
@@ -74,12 +74,12 @@
 			<c:forEach var="binder" items="${ss_trackedBinders}">
 			  <c:if test="${binder.entityType == 'workspace'}">
 			  	<div class="margintop1">
-					<img align="absmiddle" src="<html:rootPath/>images/icons/workspace_generic.png" <ssf:alt tag="general.type.workspace"/> width="11" height="10" hspace="2" border="0" />&nbsp;<a
+					<img align="absmiddle" src="<html:rootPath/>images/icons/workspace_generic.png" <ssf:alt tag="general.type.workspace"/> width="12" height="12" border="0" />&nbsp;<a
 					  href="<ssf:permalink entity="${binder}"/>"
 					  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
 					><span>${binder.parentBinder.title} // ${binder.title}</span> </a>
 					<c:if test="${ssBinderId == ssUser.workspaceId}">
-					  <img align="absmiddle" style="padding:4px 0px 0px 2px;" align="texttop" src="<html:rootPath/>images/pics/delete.gif"
+					  <img align="absmiddle" style="padding:4px 0px 0px 2px;" align="texttop" src="<html:rootPath/>images/pics/delete.png"
 						onclick="ss_trackedItemsDelete(this, '${binder.id}');" <ssf:alt tag="alt.delete"/>/>
 					</c:if>
 				</div>

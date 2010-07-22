@@ -36,33 +36,39 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
 <div id="ss_hot_para">
-<div align="right">
-<c:if test="${ss_whatsHotPage > '0'}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'previous', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_whatsHotPage || ss_whatsHotPage <= '0'}">
-<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-</c:if>
-<c:if test="${!empty ss_whatsHot}">
-<a href="javascript: ;" 
-  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'next', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
-<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-</a>
-</c:if>
-<c:if test="${empty ss_whatsHot}">
-<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-</c:if>
-</div>
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.hotItems"/></em></div>
-  <c:forEach var="entry" items="${ss_whatsHot}">
+	
+		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.whatsHot"/>	
+			<span class="col-nextback-but">
+				<c:if test="${ss_whatsHotPage > '0'}">
+				<a href="javascript: ;" 
+				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'previous', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+				  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+				</a>
+				</c:if>
+	
+				<c:if test="${empty ss_whatsHotPage || ss_whatsHotPage <= '0'}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+				</c:if>
+	
+				<c:if test="${!empty ss_whatsHot}">
+				<a href="javascript: ;" 
+				  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'hot', '${ss_whatsHotPage}', 'next', 'ss_dashboardWhatsHot', '${ss_relevanceDashboardNamespace}');return false;">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+				  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+				</a>
+				</c:if>
+	
+				<c:if test="${empty ss_whatsHot}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+				</c:if>
+			</span>
+		</div>
+		
+  	<c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="org.kablink.teaming.domain.Entry" />
-    <li>
-	  <span>
+
+	<div class="item">
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_3"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
@@ -75,37 +81,36 @@
 			</ssf:param>
 			<c:out value="${entry.title}" escapeXml="false"/>
 		</ssf:titleLink>
-	  </span>
-	  <br/>
-	  <span>
-	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
-	  </span>
-	  <span class="ss_link_4">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-      value="${entry.modification.date}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
-	  </span>
+
+		<div class="item-sub margintop1">
+			<span>
+				<ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
+			</span>
+		  	<span class="ss_link_4">
+				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		  		value="${entry.modification.date}" type="both" 
+		  		timeStyle="short" dateStyle="medium" />
+		  	</span>
 	  
-	  <br/>
-	  <span class="ss_link_2">
-    	<a href="javascript: ;"
-			onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
-	  </span>&nbsp;<img 
-	    src="<html:rootPath/>images/icons/folder_cyan_sm.png" <ssf:alt tag="entry.Folder"/> 
-	    width="11" height="10" hspace="2" border="0" align="absmiddle" />
-	  <c:if test="${!empty entry.description}">
-	    <br/>
-	    <span class="ss_summary"><ssf:textFormat 
-	      formatAction="limitedDescription" 
-	      textMaxWords="10"><ssf:markup  entity="${entry}" type="view">${entry.description}</ssf:markup></ssf:textFormat></span>
-	    <div class="ss_clear"></div>
-	  </c:if>
-	
-    </li>
-  </c:forEach>
-  <c:if test="${empty ss_whatsHot && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
-  </c:if>
+			<div class="ss_link_2 list-indent">
+    			<a href="javascript: ;"
+				onclick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+				><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
+	  		</div>
+			<c:if test="${!empty entry.description}">
+				<div class="list-indent">
+					<span class="ss_summary"><ssf:textFormat 
+					formatAction="limitedDescription" 
+					textMaxWords="15"><ssf:markup  entity="${entry}" type="view">${entry.description}</ssf:markup></ssf:textFormat></span>
+				</div>
+			</c:if>
+		</div>
+    </div>
+	</c:forEach>
+
+	<c:if test="${empty ss_whatsHot && ss_pageNumber > '0'}">
+    	<span class="ss_italic" style="padding:5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+	</c:if>
+
 </div><!-- end of ss_hot_para -->
 </div><!-- end of ss_para -->
