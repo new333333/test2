@@ -190,14 +190,12 @@ div.ss_canvas {
 #ss_networkupdates{
 	padding: 0;
 	margin: 2% 0 2% 0;
-	color:#444444;
 	}
 #ss_shared{
 	margin: 0% 0 5% 0;
 	<c:if test="<%= isIE %>">
  	margin: 3px 0 5% 0;
  	</c:if>	
-	color:#444444;
 	line-height:1.6em;
 	}
 .ss_shared_para {
@@ -261,10 +259,8 @@ div.ss_canvas {
 	font-style: italic;
 	}
 #ss_nextPage{			/* to use when need to display left right arrows */
-	border-bottom:dotted 1px #5691A6;
 	margin:5px;
 	padding-right: 5px;
-	
 	}
 #ss_col3_para {			/* to use for 3rd column displays */
 	margin: 10px 0px;
@@ -273,10 +269,8 @@ div.ss_canvas {
 #ss_trackedItems{
 	margin: 1% 0 5% 0;
 	padding: 0% 0 1% 0;
-	color:#555;
 	}
 #ss_trackedPeople{
-	color:#555;
 	background-color:transparent;
 	line-height: 1.6em;
 	}
@@ -291,14 +285,13 @@ div.ss_canvas {
 .ss_im_status_active{
 	font-weight: bold;
 	background: #FFFBD6!important;	
-	}					
+	}	
+					
 	/*CALENDAR*/
 #ss_calendar{
 	padding: 0;
 	margin: 1% 0 5% 0;
-	color:#444444;
 	padding: 0.5% 0 0px;
-	color: #555555;
 	line-height: 1.5em;
 	}
 #ss_visit_para {
@@ -372,7 +365,7 @@ div.ss_canvas {
 
 	/*MY DOCUMENTS*/
 	
-#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item {
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item {
 	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
 	background-position: top;
 	margin-top: 2px;
@@ -394,20 +387,8 @@ div.item-sub a {
 #ss_whatshot{
 	margin: 1% 0 5% 0;
 	padding: 0% 0 1% 0;
-	color: #666666;
 	line-height: 1.6em;
 	}
-#ss_hot_para {
-	line-height:1.2em;
-	padding-top:1px;
-	}
-#ss_hot_para li{
-	list-style-type: square;	
-	border-bottom:1px dotted #5691A6;
-	margin:0pt 0pt 0pt 15px;
-	padding-bottom: 1.6em;
-	}	
-	
 	/* SURVEY*/
 #ss_survey{
 	margin: 1% 0 5% 0;
@@ -445,7 +426,6 @@ div.item-sub a {
 	/* WHATS NEW */
 #ss_whatsnew{
 	margin: 1% 0 5% 0;
-	color:#555;
 	}
 	/* PERSONAL TRACKER */
 #ss_personaltracker{
@@ -471,7 +451,6 @@ div.item-sub a {
 	margin: 0px 0px 2px 0px;
 	font-size: 16px;
 	font-weight: 500;
-	color: #555;
 	font-family: Arial, Helvetica, sans-serif;
 	}
 .ss_title_im{
@@ -485,7 +464,6 @@ div.item-sub a {
 
 /*  BOX TITLES */
 .ss_pt_title{
-	color: #555;
 	font-size:14px;
 	padding: 2px 0px 2px 5px;
 	width:100%;
@@ -562,7 +540,7 @@ div.item-sub a {
 
 .ss_summary	{
 	font-size: 11px;
-	line-height: 12px;
+	line-height: 13px;
 	padding: 0;
 	}
 	
