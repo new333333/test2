@@ -39,13 +39,13 @@
 <ssf:ifadapter>
 <body class=" ss_style_body tundra">
 </ssf:ifadapter>
-
+<div class="ss_popup_wrapper">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   processThisItem="true" />
-
+</div>
 <ssf:ifadapter>
 </body>
 </html>

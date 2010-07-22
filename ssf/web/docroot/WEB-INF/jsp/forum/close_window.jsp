@@ -43,7 +43,7 @@
 </c:if>
 <c:if test="${empty ss_errorMessage}">
 <script type="text/javascript">
-  self.window.close();
+  if (self == self.parent) self.window.close();
 </script>
 </c:if>
 
