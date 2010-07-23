@@ -35,7 +35,7 @@ Ehcache 2.0.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-light 1.2
 groovy 1.7.2
-gwt 2.0.3 (Google Web Toolkit)
+gwt 2.0.4 (Google Web Toolkit)
 gwt-fx 0.5.0 (GWT Native Effects)
 Hibernate 3.2.6.ga
 ical4j 1.0-rc1
