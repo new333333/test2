@@ -242,7 +242,7 @@ public class HTMLInputFilter
     vAllowedProtocols = new String[] { "*", "http", "https", "mailto" }; 
     vDisAllowedProtocols = new String[] { "" }; 
     vProtocolAtts = new String[] { "src", "href", "cite", "scheme" };
-    vRemoveBlanks = new String[] { "a", "b", "strong", "i", "em", "p" };
+    vRemoveBlanks = new String[] { };  //For example:  "b", "strong", "i", "em", "p"
     vRemoveBlanksPatterns1 = new HashMap<String,Pattern>();
     vRemoveBlanksPatterns2 = new HashMap<String,Pattern>();
     vDisAllowedEntities = new String[] { };
