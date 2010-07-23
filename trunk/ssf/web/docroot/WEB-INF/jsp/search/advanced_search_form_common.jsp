@@ -55,7 +55,7 @@
 </script>
 
 <c:choose>
-<c:when test="${empty ssTotalRecords}">
+<c:when test="${empty ssTotalRecords || ssShowAdvancedSearchForm}">
 	<div id="ss_searchForm_container" class="tundra">
 </c:when>	
 <c:otherwise>

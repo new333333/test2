@@ -44,7 +44,8 @@
 					name="tabTitle" value=""/><ssf:param 
 					name="newTab" value="1"/><ssf:param 
 					name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
-					name="operation" value="ss_searchResults"/></ssf:url>" 
+					name="operation" value="ss_searchResults"/><ssf:param 
+					name="showAdvancedSearchForm" value="true"/></ssf:url>" 
 					class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
 				<div class="ss_clear"></div>
 								

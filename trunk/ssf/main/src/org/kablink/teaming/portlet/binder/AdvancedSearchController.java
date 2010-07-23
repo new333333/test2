@@ -107,6 +107,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map<String,Object> model = new HashMap();
 		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		model.put(WebKeys.BINDER_ID, strBinderId);
+		Boolean showAdvancedSearchForm = PortletRequestUtils.getBooleanParameter(request, "showAdvancedSearchForm", false);
+		model.put("ssShowAdvancedSearchForm", showAdvancedSearchForm);
 		Long binderId = null;
 		if (!strBinderId.equals("")) {
 			binderId = Long.valueOf(strBinderId);
