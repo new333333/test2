@@ -76,7 +76,7 @@
 %>
       <table cellspacing="0" cellpadding="0" style="margin-left: 5px;">
       <tr>
-        <td>
+        <td <c:if test="${!empty selection.fileItem.description.text}">rowspan="2" valign="top" </c:if> >
           <div class="ss_thumbnail_tiny ss_thumbnail_standalone">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
@@ -106,6 +106,15 @@
           </div>
 		</td>
       </tr>
+      <c:if test="${!empty selection.fileItem.description.text}">
+      <tr>
+        <td colspan="4" valign="top">
+          <div class="ss_entryTitleFileDescription">
+            <ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
+          </div>
+        </td>
+      </tr>
+      </c:if>
       </table>
     </c:if>
   </c:forEach>
