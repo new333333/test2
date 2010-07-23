@@ -959,8 +959,8 @@ public class WebUrlUtil {
 	public static String getSsoProxyLogoffUrl(HttpServletRequest req) {
 		String url = SPropsUtil.getString("sso.proxy.logoff.url", "");
 		if(url.length() > 0) {
-			url = url.toLowerCase();
-			if(!url.startsWith("http") && !url.startsWith("https")) {
+			String lowerCaseUrl = url.toLowerCase();
+			if(!lowerCaseUrl.startsWith("http") && !lowerCaseUrl.startsWith("https")) {
 				if(url.startsWith("://")) { // scheme is dynamic
 					String scheme = (req.isSecure())? "https" : "http";
 					url = scheme + url;	
