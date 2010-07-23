@@ -117,7 +117,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -1519,7 +1518,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		// Expand the bucket list without regard to persistent Binder
 		// expansions.
-		return expandBucket( getRequest( ri ), this, bucketList, null );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, null );
 	}//end expandHorizontalBucket()
 	
 	/**
@@ -1538,45 +1537,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, List<Long> bucketList ) {
 		// Expand the bucket list taking any persistent Binder
 		// expansions into account.
-		return expandBucket( getRequest( ri ), this, bucketList, new ArrayList<Long>() );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, new ArrayList<Long>() );
 	}
 
-	/*
-	 * Returns a TreeInfo containing the display information for the
-	 * Binder hierarchy referred to by a List<Long> of Binder IDs
-	 * (i.e., a bucket list.)
-	 */
-	private static TreeInfo expandBucket( HttpServletRequest request, AllModulesInjected bs, List<Long> bucketList, List<Long> expandedBindersList )
-	{
-		// Are there any Binder's in the bucket list?
-		TreeInfo reply = new TreeInfo();
-		if ( ( null != bucketList ) && ( 0 < bucketList.size() ) )
-		{
-			// Yes!  Scan them.
-			ArrayList<TreeInfo> childBindersList = new ArrayList<TreeInfo>();
-			for ( Iterator<Long> itL = bucketList.iterator(); itL.hasNext(); )
-			{
-				// Can we build a TreeInfo for this binder?
-				Long binderId = itL.next();
-				Binder binder = GwtServerHelper.getBinderForWorkspaceTree( bs, binderId );
-				TreeInfo ti = ( ( null == binder ) ? null : GwtServerHelper.buildTreeInfoFromBinder( request, bs, binder, expandedBindersList, (null != expandedBindersList), (-1) ) );
-				if ( null != ti )
-				{
-					// Yes!  Add it to the child Binder's list.
-					childBindersList.add( ti );
-				}
-			}
-			
-			// Add the list of Binder's in the bucket as the child
-			// Binder's list of the reply.
-			reply.setChildBindersList( childBindersList );
-		}
-		
-		// If we get here, reply refers to the TreeInfo for the bucket
-		// list.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Returns a List<TreeInfo> containing the display information for
 	 * the Binder hierarchy referred to by binderId from the
