@@ -320,7 +320,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private int getRenderDepth(TreeInfo ti) {
 		int reply;
-		Integer depth = m_renderDepths.get(ti.getBinderInfo().getBinderId());
+		Integer depth = m_renderDepths.get(getSelectorIdAppendage(ti));
 		if (null == depth)
 			 reply = 0;
 		else reply = depth.intValue();
@@ -331,10 +331,28 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Returns the ID to use for the selector for this TreeInfo.
 	 */
 	private static String getSelectorId(TreeInfo ti) {
+		String idBase;
+		if (ti.isBucket())                           idBase = EXTENSION_ID_BUCKET_BASE;
+		else if (ti.getBinderInfo().isBinderTrash()) idBase = EXTENSION_ID_TRASH_BASE;
+		else                                         idBase = EXTENSION_ID_SELECTOR_BASE;
+		return (idBase + getSelectorIdAppendage(ti));
+	}
+
+	/*
+	 * Returns the part of the ID for a TreeInfo's selector that
+	 * appears after the base component.
+	 */
+	private static String getSelectorIdAppendage(TreeInfo ti) {
 		String reply;
-		if      (ti.isBucket())                      reply = (EXTENSION_ID_BUCKET_BASE   + ti.getBucketList().get(0));
-		else if (ti.getBinderInfo().isBinderTrash()) reply = (EXTENSION_ID_TRASH_BASE    + ti.getBinderInfo().getBinderId());
-		else                                         reply = (EXTENSION_ID_SELECTOR_BASE + ti.getBinderInfo().getBinderId());
+		if (ti.isBucket()) {
+			StringBuffer sb = new StringBuffer(String.valueOf(ti.getBucketList().get(0)));
+			sb.append("_");
+			sb.append(ti.getBucketList().get(ti.getBucketList().size() - 1));
+			reply = sb.toString();
+		}
+		else {
+			reply = ti.getBinderInfo().getBinderId();
+		}
 		return reply;
 	}
 
@@ -357,7 +375,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 		
 		else {
-			// No, it's not a bucket!  Generate a simply Label for it.
+			// No, it's not a bucket!  Generate a simple Label for it.
 			Label selectorLabel = new Label(ti.getBinderTitle());
 			selectorLabel.setWordWrap(false);
 			selectorLabel.addStyleName("workspaceTreeBinderAnchor");
@@ -744,7 +762,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Store the depth at which a TreeInfo object was last rendered.
 	 */
 	private void setRenderDepth(TreeInfo ti, int depth) {
-		m_renderDepths.put(ti.getBinderInfo().getBinderId(), new Integer(depth));
+		m_renderDepths.put(getSelectorIdAppendage(ti), new Integer(depth));
 	}
 	
 	/*

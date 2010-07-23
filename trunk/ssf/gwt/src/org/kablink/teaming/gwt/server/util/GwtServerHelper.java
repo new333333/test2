@@ -368,78 +368,63 @@ public class GwtServerHelper {
 	 * Builds the TreeInfo objects for a list of child Binder IDs into
 	 * buckets.
 	 */
-	private static void buildChildBucketTIs(AllModulesInjected bs, HttpServletRequest request, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
-		// Are buckets enabled?		
-		if (ENABLE_BUCKETS) {
-			// Yes!  Do we have so many binders that the number of
-			// buckets we'll have will exceed our bucket size?
-			BinderModule bm = bs.getBinderModule();
-			int binders    = childBinderList.size();
-			int bucketSize = getBucketSize();
-			if (binders > (bucketSize * bucketSize)) {
-				// Yes!  Then we increase the bucket size for list so
-				// that we only have the bucket size number of buckets.
-				int newBucketSize = (binders / bucketSize);
-				if (binders > (newBucketSize * bucketSize)) {
-					newBucketSize += 1;
-				}
-				bucketSize = newBucketSize;
+	private static void buildChildBucketTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
+		// Do we have so many Binder IDs that the number of buckets
+		// we'll have will exceed our bucket size?
+		int binders    = childBinderList.size();
+		int bucketSize = getBucketSize();
+		if (binders > (bucketSize * bucketSize)) {
+			// Yes!  Then we increase the bucket size for this list so
+			// that we only have the bucket size number of buckets.
+			int newBucketSize = (binders / bucketSize);
+			if (binders > (newBucketSize * bucketSize)) {
+				newBucketSize += 1;
 			}
-			
-			// Scan the list.
-			for (int i = 0; i < binders; i += bucketSize) {
-				// Does this bucket have only a single item?
-				List<Long> bucketList = childBinderList.subList(i, Math.min((i + bucketSize), binders));
-				switch (bucketList.size()) {
-				case 0:
-					// This should never happen.
-					break;
-					
-				case 1:
-					// If there's only a single entry in the bucket,
-					// just display it directly.  This should only
-					// happen for the last bucket.
-					buildChildTIs(
-						bs,
-						request,
-						childTIList,
-						bucketList,
-						expandedBindersList,
-						depth);
-					
-					break;
-					
-				default:
-					// For bucket with more than one item, create a
-					// TreeInfo that represents the bucket.
-					TreeInfo bucketTI = new TreeInfo();
-					Binder firstBinder = bm.getBinder(bucketList.get(0));
-					Binder lastBinder  = bm.getBinder(bucketList.get(bucketList.size() - 1));
-					bucketTI.setBucketInfo(cloneSublist(bucketList), treeBinderTitle(firstBinder), treeBinderTitle(lastBinder));
-					childTIList.add(bucketTI);
-					
-					break;
-				}
-			}
+			bucketSize = newBucketSize;
 		}
 		
-		else {
-			// No, buckets are not enabled!  Build the TreeInfo objects
-			// directly.
-			buildChildTIs(
-				bs,
-				request,
-				childTIList,
-				childBinderList,
-				expandedBindersList,
-				depth);
+		// Scan the list.
+		for (int i = 0; i < binders; i += bucketSize) {
+			// Does this bucket have only a single item?
+			List<Long> bucketList = childBinderList.subList(i, Math.min((i + bucketSize), binders));
+			switch (bucketList.size()) {
+			case 0:
+				// This should never happen.
+				break;
+				
+			case 1:
+				// If there's only a single entry in the bucket, just
+				// display it directly.  This should only happen for
+				// the last bucket.
+				buildChildTIs(
+					request,
+					bs,
+					childTIList,
+					bucketList,
+					expandedBindersList,
+					depth);
+				
+				break;
+				
+			default:
+				// For bucket with more than one item, create a
+				// TreeInfo that represents the bucket.
+				TreeInfo bucketTI = new TreeInfo();
+				BinderModule bm = bs.getBinderModule();
+				Binder firstBinder = bm.getBinder(bucketList.get(0));
+				Binder lastBinder  = bm.getBinder(bucketList.get(bucketList.size() - 1));
+				bucketTI.setBucketInfo(cloneSublist(bucketList), treeBinderTitle(firstBinder), treeBinderTitle(lastBinder));
+				childTIList.add(bucketTI);
+				
+				break;
+			}
 		}
 	}
 	
 	/*
 	 * Builds the TreeInfo objects for a list of child Binder IDs.
 	 */
-	private static void buildChildTIs(AllModulesInjected bs, HttpServletRequest request, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
+	private static void buildChildTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
 		BinderModule bm = bs.getBinderModule();
 		for (Iterator<Long> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
 			// ...creating a TreeInfo for each...
@@ -501,8 +486,8 @@ public class GwtServerHelper {
 				// Yes!  Build the TreeInfo objects for putting the
 				// Binder's children into buckets.
 				buildChildBucketTIs(
-					bs,
 					request,
+					bs,
 					childTIList,
 					childBinderList,
 					expandedBindersList,
@@ -512,8 +497,8 @@ public class GwtServerHelper {
 				// No, we don't need to display it in buckets!  Build
 				// the TreeInfo objects for the Binder's children.
 				buildChildTIs(
-					bs,
 					request,
+					bs,
 					childTIList,
 					childBinderList,
 					expandedBindersList,
@@ -630,6 +615,43 @@ public class GwtServerHelper {
 		}
 	}
 	
+	/**
+	 * Returns a TreeInfo containing the display information for the
+	 * Binder hierarchy referred to by a List<Long> of Binder IDs
+	 * (i.e., a bucket list.)
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param bucketList
+	 * @param expandedBindersList
+	 * 
+	 * @return
+	 */
+	public static TreeInfo expandBucket(HttpServletRequest request, AllModulesInjected bs, List<Long> bucketList, List<Long> expandedBindersList) {
+		// Are there any Binder IDs in the bucket list?
+		TreeInfo reply = new TreeInfo();
+		int count = ((null == bucketList) ? 0 : bucketList.size());
+		if (0 < count) {
+			// Yes!  If we're expanding in the context of persistent
+			// user expansions...
+			if (null != expandedBindersList) {
+				// ...merge in the user's current settings...
+				mergeBinderExpansions(bs, expandedBindersList);
+			}
+			
+			// ...and perform the expansion.
+			ArrayList<TreeInfo> childTIList = new ArrayList<TreeInfo>(); 
+			if (useBuckets(bucketList))
+				 buildChildBucketTIs(request, bs, childTIList, bucketList, expandedBindersList, (-1));
+			else buildChildTIs(      request, bs, childTIList, bucketList, expandedBindersList, (-1));
+			reply.setChildBindersList(childTIList);
+		}
+		
+		// If we get here, reply refers to the TreeInfo for the
+		// expanded bucket list.  Return it.
+		return reply;
+	}
+
 	/*
 	 * Constructs a FavoriteInfo object from a JSONObject.
 	 */
@@ -2766,7 +2788,6 @@ public class GwtServerHelper {
 	 */
 	private static boolean useBuckets(List<Long> binderList) {
 		boolean reply;
-		
 		if (ENABLE_BUCKETS) {
 			int binders = ((null == binderList) ? 0 : binderList.size());
 			reply = (binders > getBucketSize());
@@ -2774,7 +2795,6 @@ public class GwtServerHelper {
 		else {
 			reply = false;
 		}
-		
 		return reply;
 	}
 	
