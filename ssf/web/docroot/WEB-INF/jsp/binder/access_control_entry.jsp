@@ -121,7 +121,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="button" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="self.window.close();return false;"/>
+	onClick="ss_cancelButtonCloseWindow();return false;"/>
 </form>
 </td>
 </tr>
@@ -366,7 +366,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
   <input type="button" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="self.window.close();return false;"/>
+	onClick="ss_cancelButtonCloseWindow();return false;"/>
 </form>
 </div>
 </div>

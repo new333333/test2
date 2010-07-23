@@ -61,7 +61,7 @@ if (self.opener && self.opener.parent && self.opener.parent.ss_reloadUrl) {
 	self.parent.location.href = url;
 	self.parent.focus();
 }
-setTimeout("self.window.close();", 500);
+setTimeout("ss_cancelButtonCloseWindow();", 500);
 
 </script>
 

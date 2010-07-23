@@ -41,7 +41,9 @@
 
 
 <ssf:ifadapter>
-<input type="button" value="<ssf:nlt tag="button.returnToForm"/>" onclick="history.go(-1);"/><input type="button" value="<ssf:nlt tag="button.close"/>" onclick="window.close();"/>
+<input type="button" value="<ssf:nlt tag="button.returnToForm"/>" onclick="history.go(-1);"/>
+<input type="button" value="<ssf:nlt tag="button.close"/>" 
+  onclick="ss_cancelButtonCloseWindow();return false;"/>
 </ssf:ifadapter>
 <ssf:ifnotadapter>
 	<c:if test="${!empty ssUser.workspaceId}">

@@ -130,7 +130,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		   		}
 		   		try {
 		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts, null);				
-		   			if (formData.containsKey("okBtn")) setupReloadOpener(response, binderId);	
+		   			if (formData.containsKey("okBtn")) setupReloadBinder(response, binderId);	
 		   			if (formData.containsKey("applyBtn")) response.setRenderParameters(formData);
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
@@ -140,11 +140,11 @@ public class ModifyBinderController extends AbstractBinderController {
 				//must be a move
 				Long destinationId = TreeHelper.getSelectedId(formData);
 				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId, null);
-				setupReloadOpener(response, binderId);
+				setupReloadBinder(response, binderId);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
 				Long destinationId = TreeHelper.getSelectedId(formData);
 				if (destinationId != null) getBinderModule().copyBinder(binderId, destinationId, true, null);
-				setupReloadOpener(response, binderId);
+				setupReloadBinder(response, binderId);
 				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
@@ -161,7 +161,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				}
 				setupViewBinderInParent(response, parentBinder.getId());
 			} else {
-				setupReloadOpener(response, binderId);			
+				setupReloadBinder(response, binderId);			
 			}	
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button

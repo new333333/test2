@@ -62,7 +62,7 @@
 <div style="padding-top:16px;">
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
-  onClick="self.window.close();return false;">
+  onClick="ss_cancelButtonCloseWindow();return false;">
 </div>
 </div>
 

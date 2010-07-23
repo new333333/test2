@@ -54,7 +54,7 @@ var ${renderResponse.namespace}_savedIndex;
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <%--<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">--%>
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="window.close();return false;"/>
+  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="synchronization.schedule.header" /></legend>	
@@ -74,7 +74,7 @@ var ${renderResponse.namespace}_savedIndex;
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <%--<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">--%>
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="window.close();return false;"/>
+  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 </form>
 

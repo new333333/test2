@@ -67,12 +67,12 @@
 			}
 			else
 			{
-				self.window.close();
+				ss_cancelButtonCloseWindow();
 			}
 			return false;
 	<% 	}
 		else { %>
-			self.window.close();
+			ss_cancelButtonCloseWindow();
 			return true;
 	<%	} %>
 	

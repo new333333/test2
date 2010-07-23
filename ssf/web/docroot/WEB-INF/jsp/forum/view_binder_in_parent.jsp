@@ -66,7 +66,7 @@ if (self.opener) {
 	self.location.href = url;
 }
 
-setTimeout("self.window.close();", 500);
+setTimeout("ss_cancelButtonCloseWindow();", 500);
 
 </script>
 

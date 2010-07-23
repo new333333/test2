@@ -55,7 +55,7 @@
 >
 	 <div class="ss_formButton">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
-	 	  onClick="self.window.close();return false;"/>
+	 	  onClick="ss_cancelButtonCloseWindow();return false;"/>
 	 </div>
 	 <c:if test="${!empty ssEntry}">
 	   <div class="ss_bold ss_largerprint">${ssEntry.title}</div>
@@ -166,7 +166,8 @@
 	 <br />
 	 
 	 <div class="ss_formButton">
-	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;"/>
+	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
+	 	onClick="ss_cancelButtonCloseWindow();return false;"/>
 	 </div>	 
 </body>
 </form>

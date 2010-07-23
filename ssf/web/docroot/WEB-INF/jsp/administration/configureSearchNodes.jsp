@@ -44,7 +44,7 @@
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 
 <c:if test="${!empty ssSearchNodes}">
@@ -100,7 +100,7 @@
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+		  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 </form>
 

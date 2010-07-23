@@ -57,7 +57,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" 
-      onclick="self.window.close(); return false;">
+      onclick="ss_cancelButtonCloseWindow(); return false;">
   </div>
   <br/>
   <ssf:nlt tag="administration.report.dates"/>
@@ -118,7 +118,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" 
-      onclick="self.window.close(); return false;">
+      onclick="ss_cancelButtonCloseWindow(); return false;">
   </div>
 </form>
 <br>

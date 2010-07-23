@@ -154,7 +154,7 @@ public class AddEntryController extends SAbstractController {
     			else
     			{
     				// No
-        			setupReloadOpener(response, binderId);
+    				setupReloadBinder(response, binderId);
 
         			//flag reload of folder listing
     				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
@@ -167,6 +167,11 @@ public class AddEntryController extends SAbstractController {
 
 		}
 			
+	}
+	private void setupReloadBinder(ActionResponse response, Long folderId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 	}
 	private void setupReloadOpener(ActionResponse response, Long binderId) {
 		//return to view entry
