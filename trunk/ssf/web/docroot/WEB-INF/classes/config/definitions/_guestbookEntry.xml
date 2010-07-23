@@ -30,7 +30,7 @@
         <properties> 
           <property name="name" value="description"/>  
           <property name="caption" value="__description"/>  
-          <property name="height" value=""/>  
+          <property name="height" value="150"/>  
           <property name="required" value=""/> 
         </properties> 
       </item>  

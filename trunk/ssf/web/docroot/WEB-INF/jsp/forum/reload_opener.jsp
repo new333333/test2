@@ -82,7 +82,7 @@ function ss_doReload() {
 		self.parent.focus();
 	}
 	
-	setTimeout("self.window.close();", 500);
+	setTimeout("ss_cancelButtonCloseWindow();", 500);
 }
 </script>
 

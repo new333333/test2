@@ -145,10 +145,12 @@ public class SearchFilterToMapConverter {
 				if (entryType != null) {
 					Entry e = (Entry) ssDefinitionEntryMapMap.get(entryType);
 					List<EntryField> fields = e.getFields();
-					for (EntryField f : fields) {
-						String entryElement = (String) entry.get("entryElement");
-						if (entryElement != null && entryElement.equals(f.getName())) {
-							entry.put("title", f.getTitle());
+					if (fields != null) {
+						for (EntryField f : fields) {
+							String entryElement = (String) entry.get("entryElement");
+							if (entryElement != null && entryElement.equals(f.getName())) {
+								entry.put("title", f.getTitle());
+							}
 						}
 					}
 				}

@@ -113,7 +113,7 @@ function ss_submitMoveBinderForm() {
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" 
   onClick="ss_startSpinner();setTimeout('ss_submitMoveBinderForm();', 500);return false;">
 <input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="self.window.close();return false;">
+  onClick="ss_cancelButtonCloseWindow();return false;">
 <input type="hidden" name="okBtn" value="okBtn"/>
 </form>
 </ssf:form>

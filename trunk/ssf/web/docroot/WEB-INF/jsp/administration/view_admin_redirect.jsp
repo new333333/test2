@@ -44,7 +44,7 @@ var timeout = 0;
 <c:if test="${!empty ssDownloadURL}">
 timeout = 200;
 </c:if>
-setTimeout("self.window.close()", timeout);
+setTimeout("ss_cancelButtonCloseWindow()", timeout);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">
@@ -59,7 +59,7 @@ setTimeout("self.window.close()", timeout);
 	<li>${err}</li>
 </c:forEach>
 </ul>
-<input type="submit" class="ss_submit" name="cancelBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" onClick="ss_cancelButtonCloseWindow();return false;" value="<ssf:nlt tag="button.ok" text="OK"/>">
 
 </form>
 </c:if>

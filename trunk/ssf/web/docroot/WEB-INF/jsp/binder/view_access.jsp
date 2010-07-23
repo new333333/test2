@@ -162,7 +162,7 @@
 		name="actionUrl" value="true"/><ssf:param 
 		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 		name="workAreaType" value="${ssWorkArea.workAreaType}"
-		/></ssf:url>", "_blank");setTimeout("self.window.close();", 1000);return false;'>
+		/></ssf:url>", "_blank");setTimeout("ss_cancelButtonCloseWindow();", 1000);return false;'>
   &nbsp;&nbsp;&nbsp;
 </c:if>
   <input type="submit" class="ss_submit" name="closeBtn" 

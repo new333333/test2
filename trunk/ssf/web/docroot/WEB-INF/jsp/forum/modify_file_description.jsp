@@ -61,7 +61,7 @@
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
 />
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="window.close();return false;"/>
+  onClick="ss_cancelButtonCloseWindow();return false;"/>
 </form>
 </ssf:form>
 </div>

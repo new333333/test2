@@ -53,7 +53,7 @@
 <ssf:ifadapter>
 <br/>
 <input type="button" value="<ssf:nlt tag="button.close"/>" class="ss_submit" 
- onClick="self.window.close();return false;">
+ onClick="ss_cancelButtonCloseWindow();return false;">
 </ssf:ifadapter>
 
 </div>

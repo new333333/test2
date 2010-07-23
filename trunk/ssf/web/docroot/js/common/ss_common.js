@@ -464,11 +464,7 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 	//Is this a request to pop up?
 	ss_debug('popup = '+popup+', url = '+url)
 	if (popup) {
-		if (width == '' || height == '') {
-			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
-		} else {
-			self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,width="+width+",height="+height+",scrollbars=yes,status=no,toolbar=no");
-		}
+		ss_toolbarPopupUrl(url, "_blank", width, height);
 		return false;
 	}
 	//Are we at the top window?
@@ -655,7 +651,7 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 //Routine to close a pop-up form window if the cancel button is clicked
 //  This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {
-	if (self == self.parent && self.opener) {
+	if (self == self.parent) {
 		//This looks like it is a pop-up form
 		self.window.close();
 		return
@@ -664,6 +660,10 @@ function ss_cancelButtonCloseWindow() {
 			//This is in the popup iframe
 			if (self.parent.ss_hidePopupDiv) self.parent.ss_hidePopupDiv();
 			return;
+		} else if (self.window.name == "gwtContentIframe") {
+				//This is in the main content iframe
+				self.history.go(-1);
+				return;
 		} else {
 			iframeObj = self.parent.document.getElementById(self.name)
 			if (iframeObj != null && iframeObj.tagName.toLowerCase() == 'iframe') {
@@ -1721,7 +1721,20 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
     	//This must be IE. Don't let them submit using the Enter key since it doesn't submit the whole form that way.
     	alert(ss_clickOkToSubmit);
     	return false;
-    } else if (ss_buttonSelected == "cancelBtn") {
+    } else if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
+		if (self != self.parent) {
+			if (self.window.name == "ss_showpopupframe") {
+				//This is in the popup iframe
+				if (self.parent.ss_hidePopupDiv) {
+					self.parent.ss_hidePopupDiv();
+					return false;
+				}
+			} else if (self.window.name == "gwtContentIframe") {
+				//This is in the main content iframe
+				self.history.go(-1);
+				return false;
+			}
+		}
     	return true;
     }
     for (var i = 0; i < ss_onSubmitList.length; i++) {
@@ -2775,7 +2788,7 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	if (height != "") hw += ",height="+parseInt(height) + "px";
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
-	if (popupDiv != null && popupIframe != null) {
+	if (url != "" && popupDiv != null && popupIframe != null) {
 		try {popupIframe.innerHTML = ss_loadingMessage;} catch(e) {}
 		if (typeof popupDiv.style != "undefined" && 
 				typeof popupDiv.style.display != "undefined" && popupDiv.style.display != "block") {
@@ -2788,6 +2801,12 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 		}
 		ss_resizePopupDiv();
 		popupIframe.src = url;
+	} else if (url != "" && self.window.name == "ss_showentryframe") {
+		//Instead of popping up into another window, we now use the current showEntry frame
+		self.location.href = url;
+	} else if (url != "" && self.window.name == "gwtContentIframe") {
+		//Instead of popping up into another window, we now use the current content frame
+		self.location.href = url;
 	} else {
 		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 	}

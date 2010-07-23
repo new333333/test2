@@ -38,12 +38,12 @@
 <pre>${ss_errorMessage}</pre>
 <br/>
 <br/>
-<input type="button" onClick="self.window.close()" value="<ssf:nlt tag="button.close"/>">
+<input type="button" onClick="ss_cancelButtonCloseWindow()" value="<ssf:nlt tag="button.close"/>">
 </ssf:form>
 </c:if>
 <c:if test="${empty ss_errorMessage}">
 <script type="text/javascript">
-  if (self == self.parent) self.window.close();
+	ss_cancelButtonCloseWindow();
 </script>
 </c:if>
 

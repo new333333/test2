@@ -74,7 +74,7 @@
 <!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 </div>
 </div>
-<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
+<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
 </ssf:form>
 
 <ssf:ifadapter>

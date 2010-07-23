@@ -52,7 +52,7 @@
 			if ( window.parent.ss_closeAdministrationContentPanel ) {
 				window.parent.ss_closeAdministrationContentPanel();
 			} else {
-				self.window.close();
+				ss_cancelButtonCloseWindow();
 			}
 
 			return false;

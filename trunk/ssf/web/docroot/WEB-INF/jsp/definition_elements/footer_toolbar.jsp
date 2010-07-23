@@ -102,7 +102,8 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 	
 									--%></c:forEach><%--
 	
-									--%><a href="javascript: //" onclick="<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">ss_toolbarPopupUrl('', 'footerToolbarOptionWnd')</c:if>; ss_submitParentForm(this); "><%--
+									--%><a href="javascript: //" onclick="<c:if test="${!empty toolbarMenu.value.qualifiers.popup}"
+									  >ss_toolbarPopupUrl('', 'footerToolbarOptionWnd')</c:if>; ss_submitParentForm(this);return false; "><%--
 									--%>${toolbarMenu.value.title}</a><%--
 								--%></form><%--
 	

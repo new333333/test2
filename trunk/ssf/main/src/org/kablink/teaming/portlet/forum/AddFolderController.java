@@ -132,7 +132,7 @@ public class AddFolderController extends SAbstractController {
 				}
 			}
 			
-			setupReloadOpener(response, newId);
+			setupReloadBinder(response, newId);
 			
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			//This is the short form
@@ -152,7 +152,7 @@ public class AddFolderController extends SAbstractController {
 				}
 			}
 			if (newBinderId != null) {
-				setupReloadOpener(response, newBinderId);
+				setupReloadBinder(response, newBinderId);
 			} else {
 				response.setRenderParameters(formData);
 			}
@@ -237,6 +237,11 @@ public class AddFolderController extends SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);
 	}
 
+	private void setupReloadBinder(ActionResponse response, Long binderId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
 	private void setupReloadOpener(ActionResponse response, Long binderId) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);

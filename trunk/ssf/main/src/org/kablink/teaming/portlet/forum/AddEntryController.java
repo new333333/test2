@@ -130,11 +130,11 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
-				setupReloadOpener(response, folderId, null);
+				setupReloadBinder(response, folderId);
 				if (!addEntryFromIFrame.equals("")) {
+					setupReloadOpener(response, folderId, null);
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");
-					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
@@ -349,6 +349,18 @@ public class AddEntryController extends SAbstractController {
 		return arrFolders;
 	}
 	
+	private void setupReloadBinder(ActionResponse response, Long folderId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "");	
+	}
+	private void setupReloadEntry(ActionResponse response, Long folderId, Long entryId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		if (entryId != null) response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+	}
 	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);

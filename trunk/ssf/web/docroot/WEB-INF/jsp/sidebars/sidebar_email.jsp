@@ -61,7 +61,8 @@
 					  target="footerToolbarOptionWnd"
 					>
 						<input type="hidden" name="ssUsersIdsToAdd" value="${contributorIdList}"/>
-						<a href="javascript: ;" onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this); "
+						<a href="javascript: ;" 
+						  onclick="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd'); ss_submitParentForm(this);return false; "
 						title="<%= NLT.get("sidebar.sendEmail.info").replaceAll("\"", "&QUOT;") %>"
 						><span><ssf:nlt tag="profile.abv.element.emailAddress"/></span></a>
 					</form>
