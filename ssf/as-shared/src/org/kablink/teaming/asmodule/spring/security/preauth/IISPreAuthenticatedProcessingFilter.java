@@ -32,11 +32,18 @@
  */
 package org.kablink.teaming.asmodule.spring.security.preauth;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.kablink.teaming.util.SPropsUtil;
+import org.springframework.security.AuthenticationException;
 import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
+
+    private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
 
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpRequest) {
     	if(logger.isDebugEnabled())
@@ -85,4 +92,24 @@ public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticate
     public int getOrder() {
         return 0;
     }
+    
+    public void setContinueFilterChainOnUnsuccessfulAuthentication(boolean shouldContinue) {
+    	continueFilterChainOnUnsuccessfulAuthentication = shouldContinue;
+    	super.setContinueFilterChainOnUnsuccessfulAuthentication(shouldContinue);
+    }
+    
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    	super.unsuccessfulAuthentication(request, response, failed);
+        if (!continueFilterChainOnUnsuccessfulAuthentication) {
+        	try {
+        		if(SPropsUtil.getBoolean("iis.send.unauthorized.upon.unsuccessful.authentication", false))
+        			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        		else
+        			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+			} catch (IOException e) {
+				logger.warn(e.toString());
+			}
+        }
+    }
+
 }
