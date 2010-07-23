@@ -211,7 +211,7 @@ public class XSSCheck implements StringCheck {
 	protected boolean checkIfStringValid(String type, Map data) {
 		boolean result = true;
 		String sequence = (String)data.get("sequence");
-		//Check for scrip, embed, iframe, ...
+		//Check for script, embed, iframe, ...
 		Matcher matcher1 = pattern1.matcher(sequence);
 		if (type.equals(TYPE_CHECK_FILE)) matcher1 = pattern1file.matcher(sequence);
 		if (matcher1.find()) {
