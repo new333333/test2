@@ -39,13 +39,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-//import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.PropsUtil;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
-
-    private boolean continueFilterChainOnUnsuccessfulAuthentication = true;
 
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpRequest) {
     	if(logger.isDebugEnabled())
@@ -94,40 +92,17 @@ public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticate
     public int getOrder() {
         return 0;
     }
-    
-    public void setContinueFilterChainOnUnsuccessfulAuthentication(boolean shouldContinue) {
-    	continueFilterChainOnUnsuccessfulAuthentication = shouldContinue;
-    	super.setContinueFilterChainOnUnsuccessfulAuthentication(shouldContinue);
-    }
-    
-    /*
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-    	super.unsuccessfulAuthentication(request, response, failed);
-        if (!continueFilterChainOnUnsuccessfulAuthentication) {
-        	try {
-        		if(SPropsUtil.getBoolean("iis.send.unauthorized.upon.unsuccessful.authentication", false))
-        			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        		else
-        			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-        		response.flushBuffer();		
-			} catch (IOException e) {
-				logger.warn(e.toString());
-			}
-        }
-    }*/
 
-    /*
     public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
     	try {
     		super.doFilterHttp(request, response, filterChain);
     	}
     	catch(AuthenticationException e) {
-    		if(SPropsUtil.getBoolean("iis.send.unauthorized.upon.unsuccessful.authentication", false))
+    		if(PropsUtil.getBoolean("iis.send.unauthorized.upon.unsuccessful.authentication", false))
     			response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     		else
-    			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-    		response.flushBuffer();			
+    			response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");	
     	}
     }
-*/
+
 }
