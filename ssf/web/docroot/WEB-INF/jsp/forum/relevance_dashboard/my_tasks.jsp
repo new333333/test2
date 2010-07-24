@@ -35,31 +35,37 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para" class="ss_paraC">
-	<div>
-		<c:if test="${ss_myTasksPage > '0'}">
-		<a href="javascript: ;" 
-		  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'previous', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
-		  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-		</a>
-		</c:if>
-		<c:if test="${empty ss_myTasksPage || ss_myTasksPage <= '0'}">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
-		</c:if>
-		<c:if test="${!empty ss_myTasks}">
-		<a href="javascript: ;" 
-		  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'next', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
-		  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-		</a>
-		</c:if>
-		<c:if test="${empty ss_myTasks}">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
-		</c:if>
-	</div>
-
 	<div id="ss_today">
-		<div id="ss_tasks_para">
+		<div id="ss_tasks_para" style="padding-left: 0px;">
+
+			<div id="ss_title" class="ss_pt_title ss_green">
+				<ssf:nlt tag="relevance.tasksDue"/>
+				<span class="col-nextback-but">
+					<c:if test="${ss_myTasksPage > '0'}">
+					<a href="javascript: ;" 
+					  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'previous', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+					  title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+					</a>
+					</c:if>
+					<c:if test="${empty ss_myTasksPage || ss_myTasksPage <= '0'}">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+					</c:if>
+					<c:if test="${!empty ss_myTasks}">
+					<a href="javascript: ;" 
+					  onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'tasks', '${ss_myTasksPage}', 'next', 'ss_dashboardTasks', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+					  title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+					</a>
+					</c:if>
+					<c:if test="${empty ss_myTasks}">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+					</c:if>
+				</span>
+			</div>
+			
+
+
 			<c:forEach var="entry" items="${ss_myTasks}">
 			<jsp:useBean id="entry" type="java.util.HashMap" />
 			
@@ -144,7 +150,7 @@
 								<a href="javascript: ;"
 									onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									title="${path}"
-									><span class="s_prioValue"">${title}</span></a>
+									><span class="s_prioValue">${title}</a>
 							</c:if>
 						</span>
 					</c:if>

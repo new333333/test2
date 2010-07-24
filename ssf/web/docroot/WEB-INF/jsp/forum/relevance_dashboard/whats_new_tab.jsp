@@ -108,7 +108,7 @@
 				<c:if test="${ss_type3 == 'tracked'}">
 					<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 					<ssf:param name="title" useBody="true" >
-						<div id="ss_title" class="ss_pt_title ss_green ss_para ss_tracked_icon" style="margin-top: 7px;">
+						<div id="ss_title" class="ss_pt_title ss_green ss_para" style="margin-top: 7px;">
 						  <ssf:nlt tag="relevance.trackedPeople"/></div>
 					</ssf:param>
 					  <c:if test="${ssBinderId == ssUser.workspaceId}">
@@ -119,7 +119,7 @@
 				<div class="margintop3">	
 					<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 					<ssf:param name="title" useBody="true" >
-						<div id="ss_title" class="ss_pt_title ss_green ss_tracked_icon">
+						<div id="ss_title" class="ss_pt_title ss_green">
 						  <ssf:nlt tag="relevance.trackedFolders"/>
 						</div>
 					</ssf:param>

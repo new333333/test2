@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_today">
 	
-	<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/>
+	<div id="ss_title" class="ss_pt_title ss_green" style="margin-top:5px;"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/>
 		<span class="col-nextback-but">
 			<c:if test="${ss_visitorsPage > '0'}">
 			<a href="javascript: ;" 

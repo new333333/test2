@@ -54,9 +54,9 @@
 			    		>
 					<span class="ss_link_2">${binder.parentBinder.title} // ${binder.title}</span> </a>
 			    	<c:if test="${ssBinderId == ssUser.workspaceId}">
-			      <img align="absmiddle"
+			      <img class="display-pointer" align="absmiddle"
 		            src="<html:rootPath/>images/pics/delete.png"
-		            onclick="ss_trackedItemsDelete(this, '${binder.id}');"
+		            onclick="ss_trackedItemsDelete(this, '${binder.id}');" title="<ssf:nlt tag="relevance.trackThisFolderNot"/>"
 		            <ssf:alt tag="alt.delete"/>/>
 		        </c:if>
 			    </div>
@@ -66,7 +66,7 @@
 	
 		<!-- Tracked Workspaces List -->
 		<div class="margintop3">
-			<div id="ss_title" class="ss_green ss_tracked_icon">
+			<div id="ss_title" class="ss_pt_title ss_green">
 			  <ssf:nlt tag="relevance.trackedWorkspaces"/>
 			</div>
 
@@ -79,8 +79,8 @@
 					  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
 					><span class="ss_link_2">${binder.parentBinder.title} // ${binder.title}</span> </a>
 					<c:if test="${ssBinderId == ssUser.workspaceId}">
-					  <img align="absmiddle" src="<html:rootPath/>images/pics/delete.png"
-						onclick="ss_trackedItemsDelete(this, '${binder.id}');" <ssf:alt tag="alt.delete"/>/>
+					  <img class="display-pointer" align="absmiddle" src="<html:rootPath/>images/pics/delete.png"
+						onclick="ss_trackedItemsDelete(this, '${binder.id}');" title="<ssf:nlt tag="relevance.trackThisWorkspaceNot"/>" <ssf:alt tag="alt.delete"/>/>
 					</c:if>
 				</div>
 			  </c:if>
