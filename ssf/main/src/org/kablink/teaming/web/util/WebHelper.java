@@ -48,17 +48,17 @@ import java.util.regex.Pattern;
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
@@ -66,14 +66,10 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
-import org.kablink.teaming.portletadapter.portlet.RenderRequestImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -86,7 +82,6 @@ import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.Html;
-import org.kablink.util.Http;
 import org.kablink.util.PortalDetector;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -271,7 +266,7 @@ public class WebHelper {
 	 */
 	public static HttpSession getRequiredSession(HttpServletRequest request) 
 	throws IllegalStateException {
-		HttpSession ses = request.getSession();
+		final HttpSession ses = request.getSession();
 		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 		if(infoId == null) { 
 			String ldapGuid;
@@ -323,7 +318,7 @@ public class WebHelper {
 				// Make sure to run it in the user's context.			
 				RunasTemplate.runas(new RunasCallback() {
 					public Object doAs() {
-						String infoId = getAccessTokenManager().createTokenInfoSession(user.getId());
+						String infoId = getAccessTokenManager().createTokenInfoSession(user.getId(), ses.getId());
 						session.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
 						return null;
 					}
@@ -617,5 +612,17 @@ public class WebHelper {
 		HttpSession ses = request.getSession(false);
 		if(ses == null) return null;
 		return (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+	}
+	
+	public static HttpSession getCurrentHttpSession() {
+		HttpSession reply = null;
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		if(rc != null) {
+			SessionContext sc = rc.getSessionContext();
+			if(sc != null && sc instanceof HttpSessionContext) {
+				reply = ((HttpSessionContext) sc).getHttpSession();
+			}
+		}
+		return reply;
 	}
 }

@@ -33,14 +33,24 @@
 package org.kablink.teaming.security.accesstoken.impl;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.kablink.teaming.domain.ZonedObject;
 
 
 public abstract class TokenInfo extends ZonedObject implements Serializable {
 
-	protected String id;
-	protected String seed;
+	private String id;
+	private String seed;
+	private Date lastAccessTime;
+	
+	public TokenInfo() {
+		this.lastAccessTime = new Date(); // initialize to current time
+	}
+	
+	public TokenInfo(Date lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
+	}
 	
 	public String getId() {
 		return id;
@@ -52,9 +62,19 @@ public abstract class TokenInfo extends ZonedObject implements Serializable {
 		return seed;
 	}
 	public void setSeed(String seed) {
+		if(seed.length() > 128)
+			seed = seed.substring(0, 128);
 		this.seed = seed;
 	}
 	
+	public Date getLastAccessTime() {
+		return lastAccessTime;
+	}
+
+	public void setLastAccessTime(Date lastAccessTime) {
+		this.lastAccessTime = lastAccessTime;
+	}
+
     public int hashCode() {
     	if(id != null)
     		return id.hashCode();

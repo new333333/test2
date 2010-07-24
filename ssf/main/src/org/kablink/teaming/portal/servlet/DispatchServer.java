@@ -128,7 +128,7 @@ public class DispatchServer extends GenericServlet {
 					// Make sure to run it in the user's context.			
 					RunasTemplate.runas(new RunasCallback() {
 						public Object doAs() {
-							String infoId = accessTokenManager.createTokenInfoSession(user.getId());
+							String infoId = accessTokenManager.createTokenInfoSession(user.getId(), ses.getId());
 							ses.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
 							return null;
 						}
@@ -141,7 +141,7 @@ public class DispatchServer extends GenericServlet {
 						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
 					RunasTemplate.runas(new RunasCallback() {
 						public Object doAs() {
-							accessTokenManager.updateTokenInfoSession(infoId, user.getId());
+							accessTokenManager.updateTokenInfoSession(infoId, user.getId(), ses.getId());
 							return null;
 						}
 					}, user);						

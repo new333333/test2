@@ -108,7 +108,7 @@ public interface AccessTokenManager {
 	 * @param userId
 	 * @return ID of the created object.
 	 */
-	public String createTokenInfoSession(Long userId);
+	public String createTokenInfoSession(Long userId, String httpSessionId);
 	
 	/**
 	 * Update the <code>TokenInfoSession</code> object represented by the
@@ -117,7 +117,7 @@ public interface AccessTokenManager {
 	 * @param infoId
 	 * @param newUserId
 	 */
-	public void updateTokenInfoSession(String infoId, Long newUserId);
+	public void updateTokenInfoSession(String infoId, Long newUserId, String httpSessionId);
 	
 	/**
 	 * Destroy all <code>TokenInfoSession</code> objects that belong

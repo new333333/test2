@@ -40,7 +40,7 @@ public class TokenInfoSession extends TokenInfo {
 	
 	public TokenInfoSession(Long userId, String seed) {
 		this(userId);
-		this.seed = seed;
+		setSeed(seed);
 	}
 	
 	public TokenInfoSession(Long userId) {
