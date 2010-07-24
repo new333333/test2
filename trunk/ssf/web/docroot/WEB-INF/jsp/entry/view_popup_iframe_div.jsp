@@ -48,6 +48,7 @@
 			if (entryContentDiv != null) {
 				entryContentDiv.style.display = "none";
 			}
+			ss_resizePopupDiv()
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) {
 				setTimeout("ssf_onLayoutChange();", 100);

@@ -2813,7 +2813,7 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	return false;
 }
 var ss_popupFrameWidthFudge = 40;
-var ss_popupFrameHeightFudge = 40;
+var ss_popupFrameHeightFudge = 0;
 var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
@@ -2822,11 +2822,22 @@ function ss_resizePopupDiv() {
 		var scrollHeight = parseInt(window.ss_showpopupframe.document.body.scrollHeight);
 		var height = parseInt(scrollHeight + ss_popupFrameHeightFudge);
 		var width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge);
+		var windowHeight = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge);
 		
-		if (parseInt(popupIframe.style.height) != height ||
-				parseInt(popupIframe.style.width) != width) {
-			popupIframe.style.height = parseInt(height) + "px";
-			popupIframe.style.width = parseInt(width) + "px";
+		if (ss_getUserDisplayStyle() == "newpage") {
+			if (parseInt(popupIframe.style.height) != windowHeight ||
+					parseInt(popupIframe.style.width) != width) {
+				popupIframe.style.height = parseInt(windowHeight) + "px";
+				popupDiv.style.height = parseInt(windowHeight) + "px";
+				popupIframe.style.width = parseInt(width) + "px";
+			}
+
+		} else {
+			if (parseInt(popupIframe.style.height) != height ||
+					parseInt(popupIframe.style.width) != width) {
+				popupIframe.style.height = parseInt(height) + "px";
+				popupIframe.style.width = parseInt(width) + "px";
+			}
 		}
 	}
 }
@@ -4462,15 +4473,15 @@ function ss_pinEntry(obj, binderId, entryId) {
 	ss_post_to_url(url);
 }
 
-var ss_entryInPlaceIframeOffset = 50;
+var ss_entryInPlaceIframeOffset = 0;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);
 	var iframeDiv = document.getElementById(iframeId);	
 	if (window.frames[iframeId] != null) {
 		var iframeHeight = parseInt(window.frames[iframeId].document.body.scrollHeight);
 		if (iframeHeight > 0) {
-			iframeDiv.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
-			iframeDiv.style.width= parseInt(ss_getObjectWidth(targetDiv) - 6) + "px";
+			iframeDiv.style.height = parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px"
+			iframeDiv.style.width= parseInt(parseInt(ss_getObjectWidth(targetDiv)) - 6) + "px";
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
@@ -4487,8 +4498,7 @@ function ss_setCurrentIframeHeight() {
 			var parentIframeObj = parent.document.getElementById(iframeId);
 			if (parentIframeObj != null && 
 					parseInt(parentIframeObj.style.height) != parseInt(iframeHeight + ss_entryInPlaceIframeOffset)) {
-				//alert(parseInt(parentIframeObj.style.height) +", "+ parseInt(iframeHeight + ss_entryInPlaceIframeOffset))
-				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
+				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px";
 				//Signal that the layout changed
 				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
 			}

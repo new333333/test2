@@ -57,6 +57,14 @@
 		var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 	</c:if>
 	var ss_entryBackgroundColor = "${ss_style_background_color}";
+	function ss_setEntryDivHeightOnload() {
+		if (typeof ss_setEntryDivHeight != 'undefined') {
+			ss_setEntryDivHeight();
+			ss_setCurrentIframeHeight();
+		}
+		ss_setEntryPopupIframeSize();
+	}
+
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
@@ -83,7 +91,7 @@
 		    name="ss_showentryframe" style="width:100%; 
 		    display:block;"
 		    src="<html:rootPath/>js/forum/null.html" 
-		    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
+		    onLoad="ss_setEntryDivHeightOnload();" 
 		    frameBorder="0" >xxx</iframe>
 		  </div>
 	  </ssf:box>
@@ -103,7 +111,7 @@
 	        name="ss_showentryframe" style="width:100%; 
 	        display:block;"
 	        src="<html:rootPath/>js/forum/null.html" 
-	        onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
+	        onLoad="ss_setEntryDivHeightOnload();" 
 	        frameBorder="0" >xxx</iframe>
 	    </div>
 	  </div>
@@ -121,4 +129,5 @@ function gwt_showEntryDivInitialization() {
 	ss_showEntryDivInitialization('');
 }
 ss_createOnLoadObj("gwt_showEntryDivInitialization", gwt_showEntryDivInitialization);
+//ss_createOnLayoutChangeObj("gwt_showEntryDiv", ss_setEntryDivHeight);
 </script>
