@@ -32,17 +32,20 @@
  */
 package org.kablink.teaming.web.servlet.listener;
 
+import java.util.Date;
+
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class ContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
-		// Do not destroy tokens when a node starts up because -
+		// Do not destroy all tokens when a node starts up because -
 		// (a) Currently we have no way to identify only those tokens that belong to this particular node.
 		// Blindly destroying all tokens within the installation can end up wiping out all active tokens 
 		// that belong to other nodes within the cluster.
@@ -63,6 +66,16 @@ public class ContextListener implements ServletContextListener {
 		accessTokenManager.destroyAllTokenInfoRequest();
 		accessTokenManager.destroyAllTokenInfoApplication();
 		*/
+		
+		// Instead, we will only purge those tokens that we consider "stale", which is determined by
+		// how long the token has existed since the time of its creation or last use.
+		AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
+
+		long timeoutDays = SPropsUtil.getInt("token.info.startup.purge.timeout", 30);
+		
+		Date thisDate = new Date(System.currentTimeMillis() - timeoutDays * 24 * 60 * 60 * 1000);
+
+		accessTokenManager.destroyTokenInfoOlderThan(thisDate);
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {

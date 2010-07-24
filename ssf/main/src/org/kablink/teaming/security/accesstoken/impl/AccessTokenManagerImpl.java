@@ -347,5 +347,8 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			throw new InvalidAccessTokenException(tokenStr);
 		}
 	}
-	
+
+	public void destroyTokenInfoOlderThan(Date thisDate) {
+		getSecurityDao().deleteTokenInfoOlderThan(thisDate);
+	}
 }

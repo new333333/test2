@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.security.accesstoken;
 
+import java.util.Date;
+
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 
 public interface AccessTokenManager {
@@ -180,5 +182,8 @@ public interface AccessTokenManager {
 	 */
 	public void destroyAllTokenInfoApplication();
 	
-
+	/**
+	 * Destroy all <code>TokenInfo</code> objects whose timestamps are older than the specified date.
+	 */
+	public void destroyTokenInfoOlderThan(Date thisDate);
 }
