@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.security.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -102,5 +103,6 @@ public interface SecurityDao {
     public TokenInfoApplication loadTokenInfoApplication(Long zoneId, String infoId);
 
     public void deleteAll(Class clazz);
-    
+ 
+    public void deleteTokenInfoOlderThan(Date thisDate);
 }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.security.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.hibernate.criterion.Order;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.domain.ZoneMismatchException;
+import org.kablink.teaming.security.accesstoken.impl.TokenInfo;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
@@ -431,4 +433,21 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}
 	}
 
+    public void deleteTokenInfoOlderThan(final Date thisDate) {
+		long begin = System.currentTimeMillis();
+		try {
+			getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session)
+						throws HibernateException {
+					session.createQuery("DELETE " + TokenInfo.class.getName() + " where lastAccessTime<:lastAccessTime")
+							.setDate("lastAccessTime", thisDate)
+							.executeUpdate();
+					return null;
+				}
+			});
+    	}
+    	finally {
+    		end(begin, "deleteTokenInfoOlderThan()");
+    	}    	
+    }
  }
