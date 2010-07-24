@@ -48,7 +48,7 @@ public class TokenInfoRequest extends TokenInfo {
 		this(applicationId, userId);
 		this.binderId = binderId;
 		setBinderAccessConstraints(binderAccessConstraints);
-		this.seed = seed;
+		setSeed(seed);
 	}
 	
 	public TokenInfoRequest(Long applicationId, Long userId) {
@@ -57,14 +57,6 @@ public class TokenInfoRequest extends TokenInfo {
 	}
 	
 	public TokenInfoRequest() {
-	}
-	
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public Long getApplicationId() {

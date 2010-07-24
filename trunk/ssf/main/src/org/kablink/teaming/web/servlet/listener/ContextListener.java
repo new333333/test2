@@ -42,11 +42,27 @@ import org.kablink.teaming.util.SpringContextUtil;
 public class ContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
+		// Do not destroy tokens when a node starts up because -
+		// (a) Currently we have no way to identify only those tokens that belong to this particular node.
+		// Blindly destroying all tokens within the installation can end up wiping out all active tokens 
+		// that belong to other nodes within the cluster.
+		// (b) By default, Tomcat tries to serialize and save user sessions when a node shuts down,
+		// which means that a previous interactive session may still be good after node restart.
+		// In that case, it makes sense to allow previous tokens associated with the resurrected session
+		// to be also reusable. To prevent stale tokens from being used indefinitely, the runtime needs
+		// to check and validate the association between the token and the currently-active session
+		// in the context of which the remote app is being executed.
+		// (c) If Teaming is ever configured to support replicated sessions (i.e., a configuration
+		// where a session is not exclusively owned by a node, but rather shared among them), then
+		// it becomes even harder or impossible to identity ownership of tokens. In that scenario, 
+		// token cleanup at the individual node level isn't quite plausible.
+		/*
 		AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
 		
 		accessTokenManager.destroyAllTokenInfoSession();
 		accessTokenManager.destroyAllTokenInfoRequest();
 		accessTokenManager.destroyAllTokenInfoApplication();
+		*/
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {

@@ -43,8 +43,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessTokenException;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -238,7 +236,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		return AccessToken.sessionScopedToken(infoId, applicationId, info.getUserId(), digest, binderId, binderAccessConstraints);
 	}
 
-	public String createTokenInfoSession(Long userId) {
+	public String createTokenInfoSession(Long userId, String httpSessionId) {
 		/*
 		 * Implementation note:
 		 * 
@@ -252,12 +250,12 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		 * (b) By using database id for record lookup (as opposed to querying 
 		 * it by session id), the chance of cache hit is much higher. 
 		 * 
-		 * 2. Although we could use the session id as the input to the digest
-		 * computation, we simply use random seed so that we could re-use the
-		 * same code for both interactive and background tokens. 
+		 * 2. We use HTTP session id as the input (seed) to the digest computation
+		 * which also means that the HTTP session id is stored in the database 
+		 * as part of the TokenInfo record. 
 		 */
 		
-		TokenInfoSession info = new TokenInfoSession(userId, getRandomSeed());
+		TokenInfoSession info = new TokenInfoSession(userId, (httpSessionId == null)? getRandomSeed() : httpSessionId);
 		getSecurityDao().save(info);
 		return info.getId();	
 	}
@@ -279,12 +277,12 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		}
 	}
 
-	public void updateTokenInfoSession(String infoId, Long newUserId) {
+	public void updateTokenInfoSession(String infoId, Long newUserId, String httpSessionId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), infoId);	
 		if(info != null) {
 			info.setUserId(newUserId);
-			info.setSeed(getRandomSeed());
+			info.setSeed((httpSessionId == null)? getRandomSeed() : httpSessionId);
 			getSecurityDao().update(info);
 		}
 		else {
