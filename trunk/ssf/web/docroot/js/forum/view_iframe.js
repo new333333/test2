@@ -63,7 +63,10 @@ function ss_setEntryDivHeight() {
 }
 function ss_loadUrlInEntryFrame(url) {
 	var frameObj = self.document.getElementById('ss_showentryframe');
-	frameObj.style.height = "300px";
+	if (ss_getUserDisplayStyle() != 'newpage') {
+		//Drop it back down to a reasonable size
+		frameObj.style.height = "300px";
+	}
 	frameObj.src = url;
 }
 function ss_showForumEntryInIframe(url) {
