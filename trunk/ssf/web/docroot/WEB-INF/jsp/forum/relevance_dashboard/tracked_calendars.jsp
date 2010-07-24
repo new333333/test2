@@ -39,19 +39,18 @@
 	<div id="ss_today">
 		<div id="ss_tasks_para">
 			<c:forEach var="binder" items="${ss_trackedCalendars}">
-				    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
-				    <a class="ss_link_5"
-				      href="<ssf:permalink entity="${binder}"/>"
+				    <div class="margintop1">
+				    <img align="absmiddle" src="<html:rootPath/>images/pics/calendar_16.png" <ssf:alt tag="relevance.trackedCalendar"/> width="12" height="12" hspace="2" border="0" align="absmiddle" />
+					<a class="ss_link_2" href="<ssf:permalink entity="${binder}"/>"
 					  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
-				    ><span>${binder.parentBinder.title} // ${binder.title}</span> </a>
-				    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> width="11" height="10" hspace="2" border="0" align="absmiddle" />
+				    ><span>${binder.parentBinder.title} // ${binder.title}</span></a>
 				    <c:if test="${ssBinderId == ssUser.workspaceId}">
-				      <img style="padding:4px 0px 0px 2px;" align="texttop"
-			            src="<html:rootPath/>images/pics/delete.gif"
+				      <img align="absmiddle"
+			            src="<html:rootPath/>images/pics/delete.png"
 			            onclick="ss_trackedItemsDelete(this, '${binder.id}');"
 			            <ssf:alt tag="alt.delete"/>/>
 			        </c:if>
-				    </td></tr></tbody></table>
+				    </div>
 			</c:forEach>
 		</div>	<!-- end of ss_tasks_para -->
 	</div>		<!-- end of ss_today      -->

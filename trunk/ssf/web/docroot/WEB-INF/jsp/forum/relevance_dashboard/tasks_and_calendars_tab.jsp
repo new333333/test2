@@ -35,19 +35,14 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_dashboard_content" class="ss_doublecolumn">
+<div id="ss_dashboard_content">
 	<table cellpadding="0" cellspacing="0" class="marginbottom3">
 		<tr>
 			<td width="50%" style="padding-right: 15px; vertical-align: top;">
 			<!-- Start Left Column -->
-      
-				<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="2weeks"/></c:if>
-				<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
-				<ssf:param name="title" useBody="true" >
-					<div id="ss_title" class="ss_pt_title ss_green ss_tasks_img">
-					  <ssf:nlt tag="relevance.tasksDue"/>
-					</div>
-				</ssf:param>
+
+			<c:if test="${empty ss_type3}"><c:set var="ss_type3" value="2weeks"/></c:if>
+			<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 
 				<div style="padding-bottom:10px;">
 					  <input type="radio" name="tasksType" value="2weeks"
@@ -70,15 +65,16 @@
 				<div id="ss_dashboardTasks${renderResponse.namespace}">
 				  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 				</div>
-				</ssf:canvas>	
+				
+			</ssf:canvas>	
 	        <!-- end of ss_col 1 -->
 			</td>
-			<td width="50%" style="padding-right:10px; padding-top:5px; vertical-align:top;">
+			<td width="50%" style="padding-right:15px; padding-top:5px; vertical-align:top;">
 	        <!-- Start Right Column -->
       
 				<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
 				<ssf:param name="title" useBody="true" >
-					<div id="ss_title" class="ss_pt_title ss_green ss_cal_img"> 
+					<div id="ss_title" class="ss_pt_title ss_green"> 
 					  <ssf:nlt tag="relevance.calendar"/> 
 					</div>
 				</ssf:param>
@@ -87,7 +83,7 @@
 			
 				<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 				<ssf:param name="title" useBody="true" >
-					<div id="ss_title" class="ss_tracked_icon ss_pt_title ss_green">
+					<div id="ss_title" class="ss_pt_title ss_green">
 					  <ssf:nlt tag="relevance.trackedCalendars"/>
 					</div>
 				</ssf:param>

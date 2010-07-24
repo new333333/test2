@@ -36,8 +36,9 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:if test="${empty ss_whatsNewTrackedCalendars}">
-<span><ssf:nlt tag="relevance.none"/></span>
+<span style="padding: 5px 15px;"><ssf:nlt tag="relevance.none"/></span>
 </c:if>
+
 <c:if test="${!empty ss_whatsNewTrackedCalendars}">
 <div id="ss_para" class="ss_paraC">
 	<div id="ss_today">

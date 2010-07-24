@@ -181,7 +181,11 @@ div.ss_canvas {
 	background-image: url("<html:rootPath/>images/pics/folder_blue_recent.png");
 	background-repeat: no-repeat;
 	background-position: 95% center;
-	}			
+	}
+.display-pointer {
+	cursor: pointer;
+	}	
+			
 /* BOX STYLES*/	
 
 #ss_Box{
@@ -230,7 +234,6 @@ div.ss_canvas {
 	line-height: 1.6em;
 	}
 #ss_tasks_para {
-	line-height:1.6em;
 	padding:5px 0 0 15px;
 	}
 #ss_tasks_para .ss_link_1 a {
@@ -501,7 +504,7 @@ div.item-sub a {
 /* BACKGROUND COLORS */	
 .ss_paraC{
 	background-color:transparent;
-	padding-left: 15px;	
+	padding-left: 	5px;	
 	}
 .ss_paraD{                    
 	background-color:transparent;
