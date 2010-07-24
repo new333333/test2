@@ -56,10 +56,15 @@ function ss_setEntryDivHeight() {
 	var boxTitleArea = self.document.getElementById("ss_showEntryDivTitle");
 	if (boxTitleArea != null && boxTitle != "") {
 		try {
-			boxTitleArea.innerHTML = "<a class='ss_box_title' href='"+window.ss_showentryframe.location.href+"' target='ss_showentryframe'>"+boxTitle+"</a>";
+			boxTitleArea.innerHTML = "<a class='ss_box_title' href='"+window.ss_showentryframe.location.href+"' onclick='ss_loadUrlInEntryFrame(this.href);return false;'>"+boxTitle+"</a>";
 		} catch(e) {}
 	}
-	setTimeout("ss_positionEntryDiv(true);", 100);
+	setTimeout("ss_positionEntryDiv(true);", 200);
+}
+function ss_loadUrlInEntryFrame(url) {
+	var frameObj = self.document.getElementById('ss_showentryframe');
+	frameObj.style.height = "300px";
+	frameObj.src = url;
 }
 function ss_showForumEntryInIframe(url) {
 	try {
@@ -243,32 +248,9 @@ function ss_positionEntryDiv(moveTop) {
 			    if (document.body.scrollHeight > parseInt(ss_getWindowHeight())) windowIsScrolling = true;
 			    
 			    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-			    if (0 == 1) {
-				    if (windowIsScrolling || entryHeight > ss_entryHeightHighWaterMark) {
-					    //Only expand the height if there is already a scroll bar. Otherwise the screen jumps around.
-					    ss_entryHeightHighWaterMark = entryHeight;
-					    
-					    if (entryHeight > parseInt(ss_getWindowHeight())) {
-					    	//Start by resetting the window to a size big enough to not turn off scrolling
-					    	//This makes the entry div smaller, but not enough to jump around.
-					    	ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-							ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-						}
-						
-						ss_setObjectHeight(wObj3, entryHeight);
-					} else if (ss_entryHeightHighWaterMark >= parseInt(ss_getWindowHeight())) {
-						ss_entryHeightHighWaterMark = parseInt(ss_getWindowHeight());
-						ss_setObjectHeight(wObj3, parseInt(ss_getWindowHeight()));
-					} else {
-						if (entryHeight < parseInt(ss_getWindowHeight()) && 
-								ss_entryHeightHighWaterMark < parseInt(ss_getWindowHeight())) {
-							ss_setObjectHeight(wObj3, entryHeight);
-						}
-					}
-			    } else {
-			    	//Set the size to fit in the window
-			    	ss_setIframeDivHeight();
-			    }
+			    
+			    //Set the size to fit in the window
+			    ss_setIframeDivHeight();
 			    
 				if (!ss_draggingDiv &&  ss_getScrollXY()[1] < ss_entryLastScrollTop) {
 					//See if the entry runs off the bottom of the screen and should be moved up some
@@ -290,6 +272,8 @@ function ss_positionEntryDiv(moveTop) {
 		    	}
 			}
 		} catch(e) {}
+	} else {
+		ss_setIframeDivHeight();
 	}
 	ss_entryLastScrollTop = ss_getScrollXY()[1];
 }

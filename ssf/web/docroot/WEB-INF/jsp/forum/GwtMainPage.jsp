@@ -109,17 +109,20 @@
 					ss_setObjectTop(entryIframeDiv, top);
 					ss_setObjectLeft(entryIframeDiv, left);
 					ss_setObjectWidth(entryIframeFrame, contentIframe.style.width);
-					var windowHeight = ss_getWindowHeight();
+					var windowHeight = parseInt(ss_getWindowHeight());
 					var iframeMinimum = parseInt(windowHeight - startOfContent - ss_entryPopupBottomMargin);
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
 						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
+							//alert(entryIframeFrame.style.height + ", set to: " + iframeMinimum)
 							entryIframeFrame.style.height = parseInt(iframeMinimum) + "px";
 						}
 					}
 				} catch(e) {
 					//alert('Error during frame resizing: ' + e)
 				}
+			} else {
+				ss_setCurrentIframeHeight();
 			}
 		}
 
