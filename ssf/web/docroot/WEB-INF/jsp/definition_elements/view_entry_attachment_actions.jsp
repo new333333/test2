@@ -149,6 +149,15 @@
 	       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
 		</div>
 		
+      <c:if test="${!ss_attachedFileIsVersion}">
+		<div class="ss_inline_menu">
+			<a class="ss_nowrap" 
+			  title="<ssf:nlt tag="entry.DownloadAllAttachmentsAsZip"/>" 
+			  href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}"/>" 
+			  ><ssf:nlt tag="entry.DownloadAllAttachments"/></a>
+		</div>
+	  </c:if>
+		
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
