@@ -706,7 +706,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fileAtt.getFileItem().setDescription(description);
 		if (fileAtt instanceof FileAttachment) {
 			VersionAttachment hVer = fileAtt.getHighestVersion();
-			if (hVer.getParentAttachment() == fileAtt) {
+			if (hVer != null && hVer.getParentAttachment() == fileAtt) {
 				hVer.getFileItem().setDescription(description);
 			}
 		}
