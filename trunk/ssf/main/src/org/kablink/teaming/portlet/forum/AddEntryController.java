@@ -287,7 +287,7 @@ public class AddEntryController extends SAbstractController {
 		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
 		        	    	}
 		        	    	intFileCount++;
-	        	    	} catch(WriteFilesException e) {
+	        	    	} catch(Exception e) {
 	        	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 	        	    		blnCheckForAppletFile = false;
 	        	    		break;
