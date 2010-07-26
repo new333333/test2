@@ -37,76 +37,83 @@
 
 <div id="ss_para">
 
- <div align="right">
-	<c:if test="${ss_sharedEntitiesPage > '0'}">
-		<a href="javascript: ;" 
-  			onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
-			<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-  			title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-		</a>
-	</c:if>
-	<c:if test="${empty ss_sharedEntitiesPage || ss_sharedEntitiesPage <= '0'}">
-		<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-	</c:if>
-	<c:if test="${!empty ss_sharedEntities}">
-		<a href="javascript: ;" 
-  			onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-  			title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-		</a>
-	</c:if>
-	<c:if test="${empty ss_sharedEntities}">
-		<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-	</c:if>
- </div><!-- end of ss_nextPage -->
-<div id="ss_today">
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.shared"/></em></div>
+	<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.sharedItems"/>
+		 <span class="col-nextback-but">
+			<c:if test="${ss_sharedEntitiesPage > '0'}">
+				<a href="javascript: ;" 
+					onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+					title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+				</a>
+			</c:if>
+			<c:if test="${empty ss_sharedEntitiesPage || ss_sharedEntitiesPage <= '0'}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+			</c:if>
+			<c:if test="${!empty ss_sharedEntities}">
+				<a href="javascript: ;" 
+					onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+					title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+				</a>
+			</c:if>
+			<c:if test="${empty ss_sharedEntities}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+			</c:if>
+		</span>
+	</div><!-- end of ss_nextPage -->
 
-<div class="ss_shared_para">
-
-  <c:forEach var="sharedItem" items="${ss_sharedEntities}">
-   
-	 <li> <ssf:nlt tag="relevance.sharedEntityLine">
-	 
-	  <ssf:param name="value" useBody="true">
-	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-				      value="${sharedItem.sharedDate}" type="both" 
-					  timeStyle="short" dateStyle="short" /><br/>
-		<ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" /><br/>
-	  </ssf:param>
-
-	  <ssf:param name="value" useBody="true">
-	   <span class="ss_link_2">
-    	<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
-    	  <a href="javascript: ;"
-			onclick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
-			>
-			<span>${sharedItem.entity.title}</span>
-		  </a>
-		</c:if>
-		<c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
-			<c:set var="isDashboard" value="yes"/>
-			  <ssf:titleLink hrefClass="ss_link_2"
-				entryId="${sharedItem.entity.id}" binderId="${sharedItem.entity.parentBinder.id}" 
-				entityType="${sharedItem.entity.entityType}" 
-				namespace="${ss_namespace}" 
-				isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-				<ssf:param name="url" useBody="true">
-					<ssf:url adapter="true" portletName="ss_forum" folderId="${sharedItem.entity.parentBinder.id}" 
-					  action="view_folder_entry" entryId="${sharedItem.entity.id}" actionUrl="true" />
-				</ssf:param>
-				<c:out value="${sharedItem.entity.title}" escapeXml="false"/>
-			  </ssf:titleLink>
-		</c:if>
-	   </span><br/>
-	  </ssf:param>
-	  </ssf:nlt>
-	  </li>
-  </c:forEach>
-  <c:if test="${empty ss_sharedEntities && ss_pageNumber > '0'}">
-    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
-  </c:if>
-
-</div><!-- end of ss_shared_para -->
-</div><!-- end of ss_today -->
+	<div id="ss_today">
+		<div class="ss_shared_para">
+	
+			  <c:forEach var="sharedItem" items="${ss_sharedEntities}">
+			   
+				 <div class="item">
+				 	<ssf:nlt tag="relevance.sharedEntityLine">
+				 
+					  <ssf:param name="value" useBody="true">
+						<ssf:nlt tag="relevance.sharedItemsLabel" />
+							<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+									  value="${sharedItem.sharedDate}" type="both" 
+									  timeStyle="short" dateStyle="short" />
+						<div>
+							<ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_2" />
+					  	</div>
+					  </ssf:param>
+					  			
+					  	<ssf:param name="value" useBody="true">
+					   		<div class="item-sub list-indent">
+								<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
+								  <a href="javascript: ;"
+									onclick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
+									>
+									<span>${sharedItem.entity.title}</span>
+								  </a>
+								</c:if>
+			
+								<c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
+									<c:set var="isDashboard" value="yes"/>
+									  <ssf:titleLink hrefClass="ss_link_2"
+										entryId="${sharedItem.entity.id}" binderId="${sharedItem.entity.parentBinder.id}" 
+										entityType="${sharedItem.entity.entityType}" 
+										namespace="${ss_namespace}" 
+										isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+										<ssf:param name="url" useBody="true">
+											<ssf:url adapter="true" portletName="ss_forum" folderId="${sharedItem.entity.parentBinder.id}" 
+											  action="view_folder_entry" entryId="${sharedItem.entity.id}" actionUrl="true" />
+										</ssf:param>
+										<c:out value="${sharedItem.entity.title}" escapeXml="false"/>
+									  </ssf:titleLink>
+								</c:if>
+							</div>
+						</ssf:param>
+					</ssf:nlt>
+				</div>
+			  </c:forEach>
+			
+			  <c:if test="${empty ss_sharedEntities && ss_pageNumber > '0'}">
+				<span class="ss_italic" style="padding:5px;"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+			  </c:if>
+			
+		</div><!-- end of ss_shared_para -->
+	</div><!-- end of ss_today -->
 </div><!-- end of ss_para -->

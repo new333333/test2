@@ -40,10 +40,10 @@
 		<div id="ss_tasks_para">
 			<c:forEach var="binder" items="${ss_trackedCalendars}">
 				    <div class="margintop1">
-				    <img align="absmiddle" src="<html:rootPath/>images/pics/calendar_16.png" <ssf:alt tag="relevance.trackedCalendar"/> width="12" height="12" hspace="2" border="0" align="absmiddle" />
+				    <img align="absmiddle" src="<html:rootPath/>images/icons/calendar_16.png" <ssf:alt tag="relevance.trackedCalendar"/> width="12" height="12" hspace="2" border="0" align="absmiddle" />
 					<a class="ss_link_2" href="<ssf:permalink entity="${binder}"/>"
 					  onclick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
-				    ><span>${binder.parentBinder.title} // ${binder.title}</span></a>
+				    >${binder.parentBinder.title} // ${binder.title}</a>
 				    <c:if test="${ssBinderId == ssUser.workspaceId}">
 				      <img align="absmiddle"
 			            src="<html:rootPath/>images/pics/delete.png"

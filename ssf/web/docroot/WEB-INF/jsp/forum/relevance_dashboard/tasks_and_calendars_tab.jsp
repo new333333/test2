@@ -72,15 +72,6 @@
 			<td width="50%" style="padding-right:15px; padding-top:5px; vertical-align:top;">
 	        <!-- Start Right Column -->
       
-				<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
-				<ssf:param name="title" useBody="true" >
-					<div id="ss_title" class="ss_pt_title ss_green"> 
-					  <ssf:nlt tag="relevance.calendar"/> 
-					</div>
-				</ssf:param>
-					<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
-				</ssf:canvas>
-			
 				<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 				<ssf:param name="title" useBody="true" >
 					<div id="ss_title" class="ss_pt_title ss_green">
@@ -90,6 +81,15 @@
 				<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_calendars.jsp" />
 				</ssf:canvas>
 
+				<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
+				<ssf:param name="title" useBody="true" >
+					<div id="ss_title" class="ss_pt_title ss_green"> 
+					  <ssf:nlt tag="relevance.calendar"/> 
+					</div>
+				</ssf:param>
+					<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
+				</ssf:canvas>
+			
 			<!-- end of right column -->
 			</td>
 		</td>

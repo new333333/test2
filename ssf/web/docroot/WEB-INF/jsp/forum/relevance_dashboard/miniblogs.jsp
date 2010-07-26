@@ -35,46 +35,47 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
-	<div align="right">
-		<c:if test="${ss_activitiesPage > '0'}">
-			<a href="javascript: ;" 
-		  		onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
-				<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-		  		title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
-			</a>
-		</c:if>
-		<c:if test="${empty ss_activitiesPage || ss_activitiesPage <= '0'}">
-			<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif" <ssf:alt/>/>
-		</c:if>
-		<c:if test="${!empty ss_activities}">
-			<a href="javascript: ;" 
-		  		onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
-				<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-		  		title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
-			</a>
-		</c:if>
-		<c:if test="${empty ss_activities}">
-			<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif" <ssf:alt/>/>
-		</c:if>
+
+	<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.miniblogs"/>
+		<span class="col-nextback-but">
+			<c:if test="${ss_activitiesPage > '0'}">
+				<a href="javascript: ;" 
+					onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+					title="<ssf:nlt tag="general.previousPage"/>" <ssf:alt/>/>
+				</a>
+			</c:if>
+			<c:if test="${empty ss_activitiesPage || ss_activitiesPage <= '0'}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png" <ssf:alt/>/>
+			</c:if>
+			<c:if test="${!empty ss_activities}">
+				<a href="javascript: ;" 
+					onclick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'miniblogs', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities', '${ss_relevanceDashboardNamespace}');return false;">
+					<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_.png"
+					title="<ssf:nlt tag="general.nextPage"/>" <ssf:alt/>/>
+				</a>
+			</c:if>
+			<c:if test="${empty ss_activities}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png" <ssf:alt/>/>
+			</c:if>
+		</span>
 	</div>
 
-	<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.miniblogs"/></em></div>
 	
 	<div id="ss_today">
 	<div id="ss_mydocs_para">
 	  <c:forEach var="activity" items="${ss_activities}">
 	  
-	    <li>
+	    <div class="item">
 		  
 		    	<ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
 		      
-		        &nbsp;&nbsp;&nbsp;<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+		        <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					      value="${activity.date}" type="both" 
 						  timeStyle="short" dateStyle="short" />
-				<br/>
-		    	<span class="ss_italic">${activity.description}</span>
+		    	<div class="list-indent margintop1">${activity.description}</div>
 
-	    </li>
+	    </div>
 	    
 
 	  </c:forEach>
