@@ -6136,7 +6136,7 @@ function ss_synchronizeCheckboxes(selectAllCheckboxObj, synchronizedCheckboxesOb
 }
 
 //Routine to pop-up an edit window for editing an element
-var ss_minEditWidth = 600;
+var ss_minEditWidth = 680;
 var ss_minEditHeight = 580;
 var ss_editWidthOffset = 20;
 var ss_editHeightOffset = 100;
@@ -6145,20 +6145,20 @@ var ss_editScreenHeightOfset = 60;
 function ss_editablePopUp(url, sourceDivId, sectionNumber) {
 	var width = parseInt(ss_getDivWidth(sourceDivId) + ss_editWidthOffset);
 	var height = parseInt(ss_getDivHeight(sourceDivId) + ss_editHeightOffset);
-	if (width < ss_minEditWidth) width = ss_minEditWidth;
-	if (height < ss_minEditHeight) height = ss_minEditHeight;
 	if (width > parseInt(screen.width - ss_editScreenWidthOfset)) width = parseInt(screen.width - ss_editScreenWidthOfset)
 	if (height > parseInt(screen.height - ss_editScreenHeightOfset)) height = parseInt(screen.height - ss_editScreenHeightOfset)
 	var cookieWidth = ss_getCookie("ss_editableWidth");
 	var cookieHeight = ss_getCookie("ss_editableHeight");
 	if (cookieWidth != null && parseInt(cookieWidth) > width) width = parseInt(cookieWidth);
-	if (cookieHeight != null && parseInt(cookieHeight) > width) width = parseInt(cookieHeight);
+	if (cookieHeight != null && parseInt(cookieHeight) > height) height = parseInt(cookieHeight);
+	if (width < ss_minEditWidth) width = ss_minEditWidth;
+	if (height < ss_minEditHeight) height = ss_minEditHeight;
 	if (typeof sectionNumber != "undefined") {
 		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", sectionNumber);
 	} else {
 		url = ss_replaceSubStr(url, "ss_sectionPlaceholder", "");
 	}
-	self.window.open(url, '_blank', 'width='+width+',height='+height+',directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
+	self.window.open(url, '_blank', 'width='+width+'px,height='+height+'px,directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
 }
 
 function ss_editableHighlight(overOut, obj, divId) {
