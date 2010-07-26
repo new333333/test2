@@ -4492,6 +4492,7 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 
 function ss_setCurrentIframeHeight() {
 	if (self == self.parent) return;
+	if (ss_getUserDisplayStyle() == "newpage") return;
 	var iframeId = window.name;
 	var iframeHeight = parseInt(document.body.scrollHeight);
 	if (iframeHeight > 0) {
