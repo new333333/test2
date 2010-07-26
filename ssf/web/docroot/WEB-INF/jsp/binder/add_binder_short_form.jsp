@@ -82,7 +82,8 @@ function ss_checkForm(obj) {
 <form class="ss_style ss_form" 
   action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
   		name="binderId" value="${ssBinder.id}"/><ssf:param 
-  		name="templateName" value="${ssBinderTemplateName}"/></ssf:url>"
+  		name="templateName" value="${ssBinderTemplateName}"/><ssf:param 
+  		name="shortForm" value="true"/></ssf:url>"
   name="${renderResponse.namespace}fm" 
   id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
