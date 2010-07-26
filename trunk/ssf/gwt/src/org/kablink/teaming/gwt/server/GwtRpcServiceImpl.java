@@ -125,6 +125,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -2270,7 +2271,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 
 		// If we can't access the cached toolbar beans... 
-		Map<String, Map> tbMaps = ((Map<String, Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
+		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
+		Map<String, Map> tbMaps = ((Map<String, Map>) tabsObj.getData());
 		if (null == tbMaps) {
 			// ...we can't build any toolbar items.  Bail.
 			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access any cached toolbars' )");
