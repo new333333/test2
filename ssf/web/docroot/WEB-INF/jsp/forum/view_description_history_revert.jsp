@@ -155,7 +155,8 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
   </c:if>
 </c:if>
 <div style="margin:10px 0px 0px 0px;">
-  <input type="button" value="<ssf:nlt tag="button.ok"/>" onClick="submitRevertForm();return false;"/>
+  <input type="button" value="<ssf:nlt tag="button.ok"/>" 
+    onClick="ss_buttonSelect('okBtn');submitRevertForm();return false;"/>
   &nbsp;&nbsp;&nbsp;
   <input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.history.back();return false;"/>
 </div>
