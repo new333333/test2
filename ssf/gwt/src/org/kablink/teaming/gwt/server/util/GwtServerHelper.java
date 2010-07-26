@@ -127,6 +127,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -2014,7 +2015,8 @@ public class GwtServerHelper {
 		}
 
 		// If we can't access the cached tabs... 
-		Tabs tabs = ((Tabs) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		Tabs tabs = ((Tabs) tabsObj.getData());
 		if (null == tabs) {
 			// ...we can't build any recent place items.  Bail.
 			m_logger.debug("GwtServerHelper.getRecentPlaces( 'Could not access any cached tabs' )");
@@ -2318,8 +2320,14 @@ public class GwtServerHelper {
 		}
 
 		// If there aren't any cached top ranked items... 
-		List<Map> peopleList = ((List<Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PEOPLE_KEY)); int people = ((null == peopleList) ? 0 : peopleList.size());
-		List<Map> placesList = ((List<Map>) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PLACES_KEY)); int places = ((null == placesList) ? 0 : placesList.size());
+		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PEOPLE_KEY));
+		List<Map> peopleList = ((List<Map>) tabsObj.getData());
+		int people = ((null == peopleList) ? 0 : peopleList.size());
+		
+		tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOP_RANKED_PLACES_KEY));
+		List<Map> placesList = ((List<Map>) tabsObj.getData());
+		int places = ((null == placesList) ? 0 : placesList.size());
+		
 		if (0 == (people + places)) {
 			// ...we can't build a list.  Bail.
 			m_logger.debug("GwtServerHelper.getTopRanked( 'Could not access any cached items' )");
@@ -2667,7 +2675,8 @@ public class GwtServerHelper {
 		}
 
 		// If we can't access the cached tabs... 
-		Tabs tabs = ((Tabs) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TABS_KEY));
+		Tabs tabs = ((Tabs) tabsObj.getData());
 		if (null == tabs) {
 			// ...we can't save the search.  Bail.
 			m_logger.debug("GwtServerHelper.saveSearch( 'Could not access any cached tabs' )");

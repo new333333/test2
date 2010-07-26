@@ -81,7 +81,7 @@ public class GwtUIHelper {
 	
 	// The names of the toolbar beans stored in the session cache for
 	// the GWT UI.
-	public final static String[] CACHED_TOOLBARS = new String[] {
+	private final static String[] CACHED_TOOLBARS = new String[] {
 		WebKeys.CALENDAR_IMPORT_TOOLBAR,
 		WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR,
 		WebKeys.FOLDER_ACTIONS_TOOLBAR,
@@ -628,10 +628,10 @@ public class GwtUIHelper {
 		}
 
 		// Finally, store the stuff we cache in the session cache.
-		hSession.setAttribute(CACHED_TABS_KEY,              model.get(WebKeys.TABS));
-		hSession.setAttribute(CACHED_TOOLBARS_KEY,          tbHM);
-		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, model.get(WebKeys.FOLDER_ENTRYPEOPLE));
-		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, model.get(WebKeys.FOLDER_ENTRYPLACES));
+		hSession.setAttribute(CACHED_TABS_KEY,              new GwtUISessionData(model.get(WebKeys.TABS)));
+		hSession.setAttribute(CACHED_TOOLBARS_KEY,          new GwtUISessionData(tbHM));
+		hSession.setAttribute(CACHED_TOP_RANKED_PEOPLE_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPEOPLE)));
+		hSession.setAttribute(CACHED_TOP_RANKED_PLACES_KEY, new GwtUISessionData(model.get(WebKeys.FOLDER_ENTRYPLACES)));
 	}
 
 	/*
