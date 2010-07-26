@@ -123,11 +123,18 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
+		<td class="ss_att_meta" style="border: 0px;">
+            <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+            <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+            <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
+            <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
+		</td>
 		<td width="100%" style="border: 0px;">&nbsp;</td>
 	</tr>
 
 	<tr class="ss_tab_table_row">
-	  <td colspan="8" class="ss_att_description" style="white-space: normal;">
+	  <td colspan="9" class="ss_att_description" style="white-space: normal;">
 	    <ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
 	  </td>
 	</tr>	
@@ -135,10 +142,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	<c:if test="${!ss_showPrimaryFileAttachmentOnly}">
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
         <tr class="ss_tab_table_row">
-			<td class="ss_att_title" style="border: 0px;" colspan="8"></td>
+			<td class="ss_att_title" style="border: 0px;" colspan="9"></td>
 		</tr>
 		<tr class="ss_tab_table_row">
-		  <td class="ss_att_title ss_subhead2" style="border: 0px;" colspan="8">
+		  <td class="ss_att_title ss_subhead2" style="border: 0px;" colspan="9">
 		    <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
 		    <c:if test="<%= owningBinder.isMirrored() %>">
 		      <c:set var="previousVersionsText" value='<%= NLT.get("entry.PreviousVersionsMirrored", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>'/>
@@ -174,7 +181,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="9" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 4, 9);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -189,7 +196,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="9" style="padding-left: 5px; font-weight: normal;">
 							<a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 10, 20);" 
 							  class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -203,7 +210,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="9" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 21, 40);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -217,7 +224,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="8" 
+							<td valign="top" colspan="9" 
 							  style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							  onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 41, 80);" 
@@ -232,7 +239,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						          src="<html:imagesPath/>pics/1pix.gif"/>
 						      </div>
 						    </td>
-							<td valign="top" colspan="8" style="padding-left: 5px; font-weight: normal;">
+							<td valign="top" colspan="9" style="padding-left: 5px; font-weight: normal;">
 							  <a href="javascript: // " 
 							    onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81);ss_showAttachmentVersions('${ss_attachments_namespace}att_desc_row', 81);" 
 							    class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
@@ -297,6 +304,8 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		          <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
 		          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 				</td>
+				<td class="ss_att_meta" style="border: 0px;">
+				</td>
 				<td width="100%" style="border: 0px">&nbsp;</td>	
 			  </tr>	
 			  <tr class="ss_tab_table_row" 
@@ -315,7 +324,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					  src="<html:imagesPath/>pics/1pix.gif"/>
 				  </div>
 				</td>
-			    <td colspan="8" class="ss_att_description" style="white-space: normal;">
+			    <td colspan="9" class="ss_att_description" style="white-space: normal;">
 			      <ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup>
 			    </td>
 			  </tr>	

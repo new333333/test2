@@ -84,7 +84,8 @@
     ><ssf:nlt tag="file.actions"/>
     <img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
   </div>
-  <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" class="ss_actions_bar_submenu" style="position:absolute; display:none;">
+  <div id="ss_fileActionsMenu${ss_divCounter}_${ss_attachedFile.id}" 
+      class="ss_actions_bar_submenu" style="position:absolute; display:none;">
 	<div class="ss_inline_menu">
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
@@ -140,56 +141,7 @@
 	  </ssf:ifSupportsViewAsHtml>
 	  </c:if>
 
-		<c:if test="${!ss_attachedFileIsVersion}">
-		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-		<c:if test="${!ss_attachedFile.currentlyLocked}">
-			<ssf:ifSupportsEditInPlace relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
-				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-					<ssf:isFileEditorConfiguredForOS relativeFilePath="${ss_attachedFile.fileItem.name}" operatingSystem="<%= operatingSystem %>">
-						<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-						  <div class="ss_inline_menu">
-						    <a href="javascript: ;" 
-							  onClick='javascript:<c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>
-							    ss_openWebDAVFile("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}", "<%= operatingSystem %>", 
-								"${ss_attachedFile.id}");
-								return false;'
-						    ><span><ssf:nlt tag="file.editFile"/></span></a>
-						  </div>
-						</c:if>
-						<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-						  <div class="ss_inline_menu">
-						  <a href="javascript: ;" 
-							onClick='alert("${ss_quotaMessage}");return false;'
-						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						  </div>
-						</c:if>
-					</ssf:isFileEditorConfiguredForOS>
-				</ssf:editorTypeToUseForEditInPlace>
-					
-				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">
-					  <c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-					    <div class="ss_inline_menu">
-					      <a href="<ssf:ssfsInternalAttachmentUrl 
-							binder="${ssDefinitionEntry.parentBinder}"
-							entity="${ssDefinitionEntry}"
-							fileAttachment="${ss_attachedFile}"/>"
-						  <c:if test="${!empty ss_quotaMessage}">onClick='alert("${ss_quotaMessage}");'</c:if>
-						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						</div>
-					  </c:if>
-					  <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-					    <div class="ss_inline_menu">
-						  <a href="javascript: ;" 
-							onClick='alert("${ss_quotaMessage}");return false;'
-						  ><span><ssf:nlt tag="file.editFile"/></span></a>
-						</div>
-					  </c:if>
-				</ssf:editorTypeToUseForEditInPlace>
-			
-			</ssf:ifSupportsEditInPlace>
-		  </c:if>
-		  </c:if>
-		  </c:if>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
 		
 		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" 

@@ -92,7 +92,8 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
   <td><ssf:nlt tag="file.date"/></td>
   <td><ssf:nlt tag="file.size"/></td>
   <td><ssf:nlt tag="entry.modifiedBy"/></td>
-  <td colspan="2"><ssf:nlt tag="toolbar.actions"/></td>
+  <td><ssf:nlt tag="toolbar.actions"/></td>
+  <td colspan="2"><ssf:nlt tag="Edit"/></td>
 </tr>
 </c:if>
 

@@ -1269,6 +1269,7 @@ function ss_showHideMenuDiv(divId) {
 	} else {
 		ss_showDivActivate(divId);
 	}
+	ssf_onLayoutChange();
 }
 
 //Routine to hide or show a region using a collapse/expand button
