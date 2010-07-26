@@ -4507,6 +4507,17 @@ function ss_setCurrentIframeHeight() {
 }
 
 function ss_showForumEntry(url, isDashboard) {	
+	if (typeof isDashboard == 'undefined') isDashboard = "no";
+	if (window.name != "ss_showentryframe" && window.name != "gwtContentIframe") {
+		if (self.location.href.indexOf("/action/view_permalink/") > 0 &&
+				self.location.href.indexOf("/seen_by_gwt/1") < 0) {
+			url = url.trim("/") + "/seen_by_gwt/1";
+		}
+		if (self.location.href.indexOf("&action=view_permalink") > 0 &&
+				self.location.href.indexOf("&seen_by_gwt=1") < 0) {
+			url = url.trim("&") + "&seen_by_gwt=1";
+		}
+	}
 	if (ss_getUserDisplayStyle() == "accessible") {
 		self.location.href = url;
 		return false;
