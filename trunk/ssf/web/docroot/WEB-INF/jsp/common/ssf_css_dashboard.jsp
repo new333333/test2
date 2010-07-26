@@ -206,19 +206,10 @@ div.ss_canvas {
 	}
 .ss_shared_para {
 	line-height:1.6em;
-	padding-top:5px;
-	padding-left:1%;
 	}
- .ss_shared_para li{
-	list-style-type: square;
-	padding-bottom:5px;
-	}
-#ss_shared_para li{
-	list-style-type: square;
-	padding-bottom:3px;
-	border-bottom:1px dotted #666666;	
-	}
+
 	/*MINIBLOG*/
+
 #ss_blogs{
 	margin: 0% 0 5% 0;
 	<c:if test="<%= isIE %>">
@@ -369,7 +360,7 @@ div.ss_canvas {
 
 	/*MY DOCUMENTS*/
 	
-#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item {
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item, .ss_shared_para div.item {
 	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
 	background-position: top;
 	margin-top: 2px;

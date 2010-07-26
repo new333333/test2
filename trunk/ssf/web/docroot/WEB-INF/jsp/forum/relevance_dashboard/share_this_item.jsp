@@ -51,40 +51,36 @@
   method="post">
   
 <span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
-<br/>
+
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
     type="user" userList="${ssUsers}" binderId="${ssBinderId}" width="150px"/>
 
-<br/>
-
-<span class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></span>
-<br/>
+<div class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></div>
   <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
     type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
     
 <br/>
-<br/>
 
-<span class="ss_bold"><ssf:nlt tag="relevance.selectTeams"/></span>
-<br/>
-<ul class="ss_nobullet">
+<div class="ss_bold"><ssf:nlt tag="relevance.selectTeams"/></div>
+<div class="margintop1">
   <c:forEach var="team" items="${ss_myTeams}">
-	<li><input type="checkbox" name="cb_${team._docId}" id="cb_${team._docId}"/>
+  	<div>
+		<input type="checkbox" name="cb_${team._docId}" id="cb_${team._docId}"/>
 	    <label for="cb_${team._docId}"><span style="padding-left:6px;">${team.title}</span></label>
-	</li>
+	</div>	
   </c:forEach>
-</ul>
+</div>
 
-<br/>
 
-<span class="ss_labelAbove"><ssf:nlt tag="relevance.shareThisWithComment"/></span>
+<div class="ss_labelAbove margintop3"><ssf:nlt tag="relevance.shareThisWithComment"/></div>
 <div>
 <%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> 
 </div>
 
+<div class="margintop3">
 <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
 <input type="button" value="<ssf:nlt tag="button.cancel"/>" onclick="ss_cancelButtonCloseWindow();return false;"/>
-
+</div>
 </form>
 <br/>
 <br/>
