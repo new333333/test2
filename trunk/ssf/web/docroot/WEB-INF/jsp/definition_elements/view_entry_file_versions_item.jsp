@@ -182,14 +182,22 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td class="ss_att_meta_wrap ss_att_space">
 			<ssf:userTitle user="${selection.modification.principal}"/>
 		</td>
-		<td class="ss_att_meta" width="100%">
+		<td class="ss_att_meta">
           <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 		</td>
+		<td class="ss_att_meta" width="100%">
+          <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
+          <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+          <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
+          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
+          <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
+		</td>
+		<td width="100%" style="border: 0px;">&nbsp;</td>
 	</tr>
 	<tr class="${ss_attachedFileRowClass}">
-	  	<td colspan="8" class="ss_att_description" style="padding-left: 38px; white-space: normal">
+	  	<td colspan="9" class="ss_att_description" style="padding-left: 38px; white-space: normal">
 	    	<ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
 	  	</td>
 	</tr>
@@ -254,11 +262,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 				<td class="ss_att_meta_wrap ss_att_space">
 					<ssf:userTitle user="${fileVersion.modification.principal}"/>
 				</td>
-				<td class="ss_att_meta" width="100%">
+				<td class="ss_att_meta">
           		  <c:set var="ss_attachedFileIsVersion" value="true" scope="request" />
           		  <c:set var="ss_attachedFile" value="${fileVersion}" scope="request" />
           		  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
 				</td>
+				<td class="ss_att_meta">
+				</td>
+				<td width="100%" style="border: 0px;">&nbsp;</td>
 			  </tr>	
 			  <c:choose>
 				<c:when test="${status.count <= 3}">
@@ -268,7 +279,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					<tr class="${ss_attachedFileRowClass}" id="${ss_attachments_namespace}att_desc_row${status.count}" style="display: none; ">
 				</c:otherwise>
 			  </c:choose>
-			    <td colspan="8" class="ss_att_description" style="padding-left: 38px; white-space: normal;">
+			    <td colspan="9" class="ss_att_description" style="padding-left: 38px; white-space: normal;">
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
