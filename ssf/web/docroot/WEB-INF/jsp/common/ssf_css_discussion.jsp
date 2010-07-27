@@ -239,7 +239,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 
 a span.ss_profile {
-	color: #135c8f;
+	color: #135c8f !important;
 	}
 
 /**********************************/	
