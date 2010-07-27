@@ -86,7 +86,7 @@
     <property name="name" value="_calendarFolder"/>  
     <property name="caption" value="__definition_default_folder_calendar"/>  
     <property name="family" value="calendar"/>  
-    <property name="icon" value="/icons/folder_blue_calendar.gif"/> 
+    <property name="icon" value="/icons/calendar_16.png"/> 
   </properties>  
   <export-mappings/>
 </definition>
