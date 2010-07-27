@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -49,14 +49,15 @@
 <script type="text/javascript">
 ss_createSpannedAreaObj("ss_youTubeDiv${ss_youTubeDivNum}");
 </script>"
-<div id="ss_youTubeDiv${ss_youTubeDivNum}" style="padding:4px 10px 20px 10px;">
+<div id="ss_youTubeDiv${ss_youTubeDivNum}" class="ss_videoDiv" style="padding:4px 10px 20px 10px;">
   <object width="425" height="344"><param name="movie"
     value="${ss_youTubeUrl}"></param><param
     name="allowFullScreen" value="true"></param><param name="allowscriptaccess"
-    value="always"></param><embed
+    value="always"></param><param name="wmode"
+    value="opaque"></param><embed
     src="${ss_youTubeUrl}"
     type="application/x-shockwave-flash" allowscriptaccess="always"
-    allowfullscreen="true" width="425" height="344"></embed></object>
+    allowfullscreen="true" width="425" height="344" wmode="opaque"></embed></object>
 </div>
 <%
 	} else {
