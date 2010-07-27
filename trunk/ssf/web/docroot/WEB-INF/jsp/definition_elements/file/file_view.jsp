@@ -82,7 +82,7 @@
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
           </div>
         </td>
-        <td >
+        <td style="white-space: nowrap">
 	      <div class="ss_entryTitleFile">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
@@ -112,10 +112,11 @@
             <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
           </div>
 		</td>
+		<td width="100%">&nbsp;</td>
       </tr>
       <c:if test="${!empty selection.fileItem.description.text}">
       <tr>
-        <td colspan="5" valign="top">
+        <td colspan="6" valign="top">
           <div class="ss_entryTitleFileDescription">
             <ssf:markup type="view" entity="${ssDefinitionEntry}">${selection.fileItem.description.text}</ssf:markup>
           </div>
