@@ -468,6 +468,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_comments_and_attachments.jsp" />
 		</jsps>
+		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderAttachments"/>
 	</item>
 		
 	<item name="entryComments" caption="__entry_comments" category="entryViewData" display="view">

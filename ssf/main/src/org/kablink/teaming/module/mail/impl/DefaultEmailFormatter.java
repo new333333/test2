@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -263,7 +263,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				if (p.getEntityType().equals(EntityType.group)) {
 					groupIds.add(p.getId());
 				} else {
-					boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+					boolean limitedView = isPrincipalLimitedView(p);
 					if ((redacted && limitedView) || (!redacted && !limitedView)) {
 						userIds.add(p.getId());
 					}
@@ -277,7 +277,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 					if (p.getEntityType().equals(EntityType.group)) {
 						groupIds.add(p.getId());
 					} else {
-						boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+						boolean limitedView = isPrincipalLimitedView(p);
 						if ((redacted && limitedView) || (!redacted && !limitedView)) {
 							userIds.add(p.getId());
 						}
@@ -291,7 +291,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			List<Principal> principals = getProfileDao().loadPrincipals(explodedGroups, folder.getZoneId(), true);
 			for (Principal p : principals) {
 				if (p.getEntityType().equals(EntityType.user)) {
-					boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+					boolean limitedView = isPrincipalLimitedView(p);
 					if ((redacted && limitedView) || (!redacted && !limitedView)) {
 						userIds.add(p.getId());
 					}
@@ -312,7 +312,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				if (notify.hasStyle(style)) {
 					Principal p = getProfileDao().loadPrincipal(notify.getId().getPrincipalId(), folder.getZoneId(), true);
 					if (p.getEntityType().equals(EntityType.user)) {
-						boolean limitedView = Utils.canUserOnlySeeCommonGroupMembers((User)p);
+						boolean limitedView = isPrincipalLimitedView(p);
 						if ((redacted && limitedView) || (!redacted && !limitedView)) {
 							userIds.add(p.getId());
 							//The first in the list takes priority - should be entry subscription
@@ -335,7 +335,26 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 		
 	}
-	/**
+
+	/*
+	 * Returns true if a Principal can be cast to a User and that user
+	 * can only see common group members and false otherwise.
+	 */
+	private static boolean isPrincipalLimitedView(Principal p) {
+		User pUser;
+		try {
+			pUser = ((User) p);
+		}
+		catch (Exception ex) {
+			pUser = null;
+			logger.error("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION:  Cannot cast '" + p.getId() + "' to User)");
+			logger.debug("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION)", ex);
+		}
+		boolean limitedView = ((null == pUser) ? false : Utils.canUserOnlySeeCommonGroupMembers(pUser));
+		return limitedView;
+	}
+	
+	/*
 	 * Add email only subscriptions to the lists
 	 */
 	private List doEmailAddrs(Folder folder, Collection entries, List result) {
@@ -641,7 +660,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			ctx.put("ssVisitor", visitor);
 			visitor.processTemplate("digestTOC.vm", ctx);
 		} catch (Exception ex) {
-			NotifyBuilderUtil.logger.error("Error processing template", ex);
+			NotifyBuilderUtil.logger.error("EXCEPTION:  Error processing template", ex);
 		}
 		
 	}
@@ -652,7 +671,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			ctx.put("ssVisitor", visitor);
 			visitor.processTemplate("folder.vm", ctx);
 		} catch (Exception ex) {
-			NotifyBuilderUtil.logger.error("Error processing template", ex);
+			NotifyBuilderUtil.logger.error("EXCEPTION:  Error processing template", ex);
 		}
 
 	}
