@@ -94,7 +94,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 <% //Tabs %>
 
 <div id="ss_wrap">
-	<table id="ss_tabsC" cellpadding="0" cellspacing="0">
+<table id="ss_tabsC" cellpadding="0" cellspacing="0">
 	
 		<!-- CSS Tabs -->
 		<% /* If we are dealing with a Template Binder select the Overview tab as the default tab. */ %>
@@ -113,32 +113,8 @@ if (ss_getUserDisplayStyle() != "accessible") {
 				<c:set var="ssRDCurrentTab" value="overview" scope="request"/>
 			</c:if>
 		</c:if>
-		<tr>
-	
-		<% /* Add the "Overview" tab as the first tab. */ %>
-		<td>
-		<div
-			<c:choose>
-				<c:when test="${ssRDCurrentTab == 'overview'}">class="ss_tabsCCurrent"</c:when>
-				<c:otherwise>class="ss_tabsC_other"</c:otherwise>			
-			</c:choose>>
-		<a 
-			<c:if test="${ssRDCurrentTab == 'overview'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
-				href="javascript: ;"
-				<% /* We only need to do something when the user clicks on the overview tab if we are not dealing with a TemplateBinder. */ %>
-				<c:choose>
-					<c:when test="${usingTemplateBinder == 'false'}">
-						onclick="ss_selectRelevanceTab(this, 'overview', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
-					</c:when>
-					<c:otherwise>
-						onclick="return false;">
-					</c:otherwise>
-				</c:choose>
-				<span><ssf:nlt tag="relevance.tab.overview"/></span>
-			</a>
-		</div>
-		</td>
-		
+	<tr>
+			
 	<% /* Only add the What's New tab if we are not dealing with a Template Binder. */ %>
 	<c:if test="${!empty ssRelevanceDashboardConfigElement && usingTemplateBinder == 'false'}">
 		<td>
@@ -155,7 +131,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 	</c:if>
 	<c:if test="${empty ssRelevanceDashboardConfigElement && usingTemplateBinder == 'false'}">
-	  <c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="whatsNew" scope="request"/></c:if>
+	  	<c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="whatsNew" scope="request"/></c:if>
 		<td>
 		<div
 			<c:choose>
@@ -168,7 +144,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 			onclick="ss_selectRelevanceTab(this, 'whatsNew', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 			><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></div>
 		</td>
-	</c:if>
+		</c:if>
 	
 		<% /* Only add the other tabs if we are not dealing with a Template Binder. */ %>
 		<c:if test="${usingTemplateBinder == 'false'}">
@@ -217,6 +193,31 @@ if (ss_getUserDisplayStyle() != "accessible") {
 		</td>
 		  </ssf:ifLoggedIn>
 		</c:if>
+
+		<% /* Add the "Overview" tab as the first tab. */ %>
+		<td>
+		<div
+			<c:choose>
+				<c:when test="${ssRDCurrentTab == 'overview'}">class="ss_tabsCCurrent"</c:when>
+				<c:otherwise>class="ss_tabsC_other"</c:otherwise>			
+			</c:choose>>
+		<a 
+			<c:if test="${ssRDCurrentTab == 'overview'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+				href="javascript: ;"
+				<% /* We only need to do something when the user clicks on the overview tab if we are not dealing with a TemplateBinder. */ %>
+				<c:choose>
+					<c:when test="${usingTemplateBinder == 'false'}">
+						onclick="ss_selectRelevanceTab(this, 'overview', '', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+					</c:when>
+					<c:otherwise>
+						onclick="return false;">
+					</c:otherwise>
+				</c:choose>
+				<span><ssf:nlt tag="relevance.tab.accessories"/></span>
+			</a>
+		</div>
+		</td>
+
 		<td width="100%"></td>	
 		</tr>
 	</table>

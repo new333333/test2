@@ -805,7 +805,7 @@ div.item-sub a {
 	padding: 0;
 }
 
-.diag_modal {
+.diag_modal, .diag_modal2 {
 	position: relative;
 	top: -10px;
 	background-color: #eaebe8;
@@ -816,3 +816,7 @@ div.item-sub a {
 	-webkit-border-bottom-right-radius: 10px;
 	-webkit-border-bottom-left-radius: 10px;
 	}
+	
+.diag_modal2 {
+	top: 0px !important;
+	}	

@@ -39,10 +39,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="tundra">
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:form titleTag="file.editFileComment">
-<div class="ss_style ss_portlet">
-<form name="form1" id="form1" class="ss_style ss_form" method="post" 
-  action="<ssf:url
+	<div class="ss_style ss_portlet diag_modal">
+		<form name="form1" id="form1" class="ss_style ss_form" method="post" 
+  			action="<ssf:url
 		    adapter="true" 
 		    portletName="ss_forum" 
 		    action="modify_file" 
@@ -51,19 +50,19 @@
 		    name="entityType" value="${ss_entity.entityType}"/><ssf:param 
 		    name="fileId" value="${ss_fileAttachment.id}"/><ssf:param 
 		    name="operation" value="modify_file_description"/></ssf:url>"
->
-<br/>
-<div>
-  <ssf:htmleditor name="description" height="100" toolbar="minimal"
-  >${ss_fileAttachment.fileItem.description.text}</ssf:htmleditor>
-</div>
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
-/>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;"/>
-</form>
-</ssf:form>
-</div>
+		>
+		<div>
+			<h2><ssf:nlt tag="file.editFileComment"/></h2>
+
+			<ssf:htmleditor name="description" height="100" toolbar="minimal"
+			>${ss_fileAttachment.fileItem.description.text}</ssf:htmleditor>
+		</div>
+		<div class="margintop3">
+			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
+			<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+  			onClick="ss_cancelButtonCloseWindow();return false;"/>
+		</div>		
+		</form>
+	</div>
 </body>
 </html>
