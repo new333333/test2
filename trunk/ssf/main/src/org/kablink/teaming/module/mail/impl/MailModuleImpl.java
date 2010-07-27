@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -196,7 +196,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mailSenders.put(jndiName, sender);
 				
 				} catch (Exception ex) {
-					logger.error("Error locating " + jndiName + " " + getMessage(ex));
+					logger.error("EXCEPTION:  Error locating " + jndiName + " " + getMessage(ex));
+					logger.debug("EXCEPTION", ex);
 				}
 			}		
 		}
@@ -210,7 +211,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     		try {
     			return (FillEmailSubscription)ReflectHelper.getInstance(jobClass);
     		} catch (Exception e) {
- 			   logger.error("Cannot instantiate FillEmailSubscription custom class", e);
+ 			   logger.error("EXCEPTION:  Cannot instantiate FillEmailSubscription custom class", e);
     		}
     	}
     	return (FillEmailSubscription)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFillEmailSubscription.class);
@@ -221,7 +222,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     		try {
     			return (SendEmail)ReflectHelper.getInstance(jobClass);
     		} catch (Exception e) {
- 			   logger.error("Cannot instantiate SendEmail custom class", e);
+ 			   logger.error("EXCEPTION:  Cannot instantiate SendEmail custom class", e);
     		}
     	}
     	return (SendEmail)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultSendEmail.class);
@@ -363,7 +364,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			try {				
 				store = session.getStore(protocol);
 			} catch (Exception ex) {
-				logger.error("Error posting mail from [" + hostName + "]", ex);
+				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]", ex);
 				continue;
 			}
 			try {				
@@ -395,13 +396,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}
 					
 			} catch (AuthenticationFailedException ax) {
-				logger.error("Error posting mail from [" + hostName + "] " + getMessage(ax));
+				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "] " + getMessage(ax));
+				logger.debug("EXCEPTION", ax);
 				continue;
 			} catch (MessagingException mx) {
-				logger.error("Error posting mail from [" + hostName + "] " + getMessage(mx));
+				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "] " + getMessage(mx));
+				logger.debug("EXCEPTION", mx);
 				continue;
 			} catch (Exception ex) {
-				logger.error("Error posting mail from [" + hostName + "]", ex);
+				logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]", ex);
+				logger.debug("EXCEPTION", ex);
 			} finally  {
 				//Close folder and expunge
 				if (mFolder != null && mFolder.isOpen()) try {mFolder.close(true);} catch (Exception ex1) {};
@@ -419,13 +423,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mFolder.open(javax.mail.Folder.READ_WRITE);
 					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session, null));							
 				} catch (AuthenticationFailedException ax) {
-					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
+					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
+					logger.debug("EXCEPTION", ax);
 					continue;
 				} catch (MessagingException mx) {
-					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(mx));
+					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(mx));
+					logger.debug("EXCEPTION", mx);
 					continue;
 				} catch (Exception ex) {
-					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
+					logger.error("EXCEPTION:  Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
+					logger.debug("EXCEPTION", ex);
 					continue;
 				} finally {
 					if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};
@@ -454,9 +461,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}
 				sender.send((MimeMessage[])errors.toArray(new MimeMessage[errors.size()]));
 			} catch (MailAuthenticationException ax) {
-				logger.error("Authentication Exception:" + getMessage(ax));
+				logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));
+				logger.debug("EXCEPTION", ax);
 			} catch (MailSendException ms) {
-				logger.error("Error sending posting reject:" + getMessage(ms));
+				logger.error("EXCEPTION:  Error sending posting reject:" + getMessage(ms));
+				logger.debug("EXCEPTION", ms);
 				if ((binder != null) && ms.getFailedMessages().isEmpty()) {  //if not empty, trouble unreachable users; will have sent to some
 					logger.error("Error sending posting reject:" + getMessage(ms));						
 					SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
@@ -469,7 +478,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					}
 				}
 			} catch (Exception ex) {
-				logger.error("Error sending posting reject:" + getMessage(ex));
+				logger.error("EXCEPTION:  Error sending posting reject:" + getMessage(ex));
+				logger.debug("EXCEPTION", ex);
 			}
 		}
 		
@@ -610,7 +620,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					return end;
 				}});
 		} catch(Exception ex) {
-			logger.error("Could not fill e-mail subscriptions: " +getMessage(ex));
+			logger.error("EXCEPTION:  Could not fill e-mail subscriptions: " +getMessage(ex));
+			logger.debug("EXCEPTION", ex);
 		}
 		return last;
 	}
@@ -630,7 +641,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					else                                                 mHelper.setToAddrs( subList);
 					mailSender.send(transport, mHelper);
 				} catch (MailSendException sx) {
-		    		logger.error("Error sending mail:" + getMessage(sx));
+		    		logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
+					logger.debug("EXCEPTION", sx);
 		 			Exception[] exceptions = sx.getMessageExceptions();
 		 			if (exceptions != null && exceptions.length > 0) {
 		 				logger.error(sx.toString());
@@ -640,7 +652,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		 			}
 			   	} catch (Exception ex) {
 			   		//message gets thrown away here
-		       		logger.error(getMessage(ex));
+		       		logger.error("EXCEPTION:  " + getMessage(ex));
+					logger.debug("EXCEPTION", ex);
 		    	}
 			}
 		}
@@ -788,7 +801,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	   		try {
     	   			mailSender = (JavaMailSender)mailSender.getClass().newInstance();				
     	   		} catch (Exception ia) {
-    	   			logger.error("Cannot create sender");
+    	   			logger.error("EXCEPTION:  Cannot create sender");
+    				logger.debug("EXCEPTION", ia);
     	   			return;
     	   		}
     	   		SpringContextUtil.applyDependencies(mailSender, "mailSender");	
@@ -835,11 +849,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 			mailSender.send(helper);
 	 		} catch (MailSendException sx) {
-	 			logger.error("Error sending mail:" + getMessage(sx));
+	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
+				logger.debug("EXCEPTION", sx);
 	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
-	 				//if sent to anyone; or only 1 receipient and couldn't send don't try again
+	 				//if sent to anyone; or only 1 recipient and couldn't send don't try again
 	 				status.addFailures(sf.getInvalidAddresses());
 	 				status.addFailures(sf.getValidUnsentAddresses());	 				
 	 			} else {
@@ -850,7 +865,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 				} catch (MessagingException ignore) {}
 	 			}
 	 	   	} catch (MailAuthenticationException ax) {
-	       		logger.error("Authentication Exception:" + getMessage(ax));				
+	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
+				logger.debug("EXCEPTION", ax);
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	       		try {
@@ -887,7 +903,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		try {
 	 			mailSender.send(helper);
 	 		} catch (MailSendException sx) {
-	 			logger.error("Error sending mail:" + getMessage(sx));
+	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
+				logger.debug("EXCEPTION", sx);
 	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
@@ -901,7 +918,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 				} catch (MessagingException ignore) {}
 	 			}
 	 	   	} catch (MailAuthenticationException ax) {
-	       		logger.error("Authentication Exception:" + getMessage(ax));				
+	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
+				logger.debug("EXCEPTION", ax);
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
 	       		try {
