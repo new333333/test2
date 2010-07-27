@@ -805,3 +805,14 @@ div.item-sub a {
 	padding: 0;
 }
 
+.diag_modal {
+	position: relative;
+	top: -10px;
+	background-color: #eaebe8;
+	margin: 1px 50px 20px;
+	padding: 1px 20px 20px;
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	}

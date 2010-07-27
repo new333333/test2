@@ -37,7 +37,7 @@
 <body>
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
-<div class="ss_style ss_portal">
+<div class="ss_style ss_portal diag_modal">
 <h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
 
 <form class="ss_style ss_form" 
