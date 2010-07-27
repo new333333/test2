@@ -360,7 +360,7 @@ div.ss_canvas {
 
 	/*MY DOCUMENTS*/
 	
-#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item, .ss_shared_para div.item {
+#ss_mydocs_para div.item, .ss_v_entries div.item, .ss_viewedItems div.item, .ss_v_attachments div.item, #ss_hot_para div.item, #ss_tasks_para div.item, .ss_shared_para div.item, .ss_newinbinder div.item {
 	background: #f6f6f6 url(<html:imagesPath/>pics/blends/fff-f6f6f6.png) repeat-x;
 	background-position: top;
 	margin-top: 2px;
@@ -660,7 +660,7 @@ div.item-sub a {
 
 /* - MENU TABS FOR RELEVANCE--------------------------- */
 
-.ss_tertiaryTabs {
+.ss_tertiaryTabs, #ss_dashboard_content {
 	background-color: #eaebe8; /* Gray 8 */
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;

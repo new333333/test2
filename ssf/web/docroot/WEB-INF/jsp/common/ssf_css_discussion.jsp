@@ -185,7 +185,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_profile_box_h1  {
 	font-size: 20px;
-	font-weight:bold;
 	color:#5691A6!important;
 }
 <%
