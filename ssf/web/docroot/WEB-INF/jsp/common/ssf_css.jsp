@@ -4694,6 +4694,9 @@ span.ss_infoDivValue {
 	color: ${ss_form_element_text_color};
 }
 
+.ss_videoDiv {
+}
+
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />
