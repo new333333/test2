@@ -438,12 +438,13 @@ div.ss_editorHints {
   padding: 0px 6px;
   }
 .ss_entryTitleFileDescription {
-  font-weight: normal;
-  font-size: ${ss_style_font_smallprint};
-  font-family: ${ss_style_title_font_family};
-  padding: 0px 6px 6px 6px;
-  margin: 0px;
-  }
+	color: #666 !important;
+	font-weight: normal;
+	font-size: ${ss_style_font_smallprint};
+	font-family: ${ss_style_title_font_family};
+	padding: 0px 6px 6px 6px;
+	margin: 0px;
+	}
 .ss_entryTitleFileDescription p {
   margin: 0px 0px 2px 0px;
   }
