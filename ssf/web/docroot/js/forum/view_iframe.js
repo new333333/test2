@@ -123,6 +123,10 @@ function ss_showForumEntryInIframe(url) {
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
     	wObj.src = ss_forumRefreshUrl;
     } else {
+        if (ss_getUserDisplayStyle() != "newpage") {
+        	//Resize the popup down to a starting size
+        	wObj.style.height = "300px";
+        }
     	wObj.src = url
     }
     wObj.focus();
