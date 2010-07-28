@@ -252,6 +252,7 @@ if (typeof ss_workarea_showId == "undefined")
 		  <c:if test="${!ss_mashupHideFooter}">
 		    <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 		  </c:if>
+		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 		  <c:if test="${ss_mashupHideToolbar && ss_mashupShowAlternateToolbar}">
 			<div class="ss_actions_bar1_pane ss_sidebarImage">
 			<table cellspacing="0" cellpadding="0">
@@ -268,6 +269,7 @@ if (typeof ss_workarea_showId == "undefined")
 			</table>
 			</div>
 		  </c:if>
+		<% } %>
 			
 		</div>
 	</td>
