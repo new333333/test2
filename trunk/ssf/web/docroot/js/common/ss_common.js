@@ -4587,6 +4587,11 @@ function ss_showForumEntryInIframe_Overlay(url) {
     wObj1.style.display = "block";
     wObj1.style.zIndex = ssEntryZ;
     wObj1.style.visibility = "visible";
+    
+    if (ss_getUserDisplayStyle() != "newpage") {
+    	//Resize the popup down to a starting size
+    	wObj.style.height = "300px";
+    }
 
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
