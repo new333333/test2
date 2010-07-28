@@ -76,6 +76,7 @@ public class AddEntryController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String context = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CONTEXT, "");				
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
@@ -154,7 +155,11 @@ public class AddEntryController extends SAbstractController {
     			else
     			{
     				// No
-    				setupReloadBinder(response, binderId);
+    				if (context.equals("adminMenu")) {
+    					setupReloadOpener(response, binderId);
+    				} else {
+    					setupReloadBinder(response, binderId);
+    				}
 
         			//flag reload of folder listing
     				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");

@@ -747,6 +747,7 @@ public class GwtServerHelper {
 						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
 						adaptedUrl.setParameter( WebKeys.URL_BINDER_ID, profilesBinder.getId().toString() );
 						adaptedUrl.setParameter( WebKeys.URL_ENTRY_TYPE, def.getId() );
+						adaptedUrl.setParameter(WebKeys.URL_CONTEXT, "adminMenu");
 						url = adaptedUrl.toString();
 						
 						adminAction = new GwtAdminAction();
