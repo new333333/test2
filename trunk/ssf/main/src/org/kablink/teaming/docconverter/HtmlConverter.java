@@ -61,7 +61,6 @@ public abstract class HtmlConverter extends Converter<String>
 {
 	protected static final String HTML_SUBDIR = "html";
 	protected static final String HTML_FILE_SUFFIX = ".html";
-	protected final Log logger = LogFactory.getLog(getClass());	
     
     /**
      * Alter tag data held in HTML file. We need to alter Image and Url file path information to reflect were
