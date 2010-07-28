@@ -84,14 +84,14 @@
 	    </td>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
-			<img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-			  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+          <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
 	    </div>
 		</td>
 		
 		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
-		    <%= fnBr %><span style="padding-left:8px;"><ssf:nlt tag="file.versionNumber"><ssf:param
-					name="value" value="${selection.fileVersion}"/></ssf:nlt></span>
+          <c:set var="ss_attachedFile" value="${selection}" scope="request" />
+          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
 		</td>
 
 		<td valign="top" class="ss_att_meta" nowrap width="5%">
