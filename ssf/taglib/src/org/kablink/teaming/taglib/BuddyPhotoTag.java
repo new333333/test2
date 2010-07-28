@@ -69,6 +69,8 @@ public class BuddyPhotoTag extends BodyTagSupport {
 	private String entryId = null;
 	
 	private String style = "";
+	
+	private Boolean scaled = false;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -103,6 +105,7 @@ public class BuddyPhotoTag extends BodyTagSupport {
 			httpReq.setAttribute("style", this.style);
 			httpReq.setAttribute("photo_folder", this.folderId);
 			httpReq.setAttribute("photo_entry", this.entryId);
+			httpReq.setAttribute("isScaled", this.scaled);
 
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/business_card/thumbnail.jsp";
@@ -119,6 +122,7 @@ public class BuddyPhotoTag extends BodyTagSupport {
 			this.style = null;
 			this.folderId = null;
 			this.entryId = null;
+			this.scaled = false;
 		}
 
 		return EVAL_PAGE;
@@ -140,5 +144,8 @@ public class BuddyPhotoTag extends BodyTagSupport {
 		this.style = style;
 	}
 
+	public void setScaled(Boolean scaled) {
+		this.scaled = scaled;
+	}
 
 }

@@ -87,14 +87,15 @@
 <c:set var="binderId" value="${ssDefinitionEntry.id}" />
 <c:set var="userWorkspaceId" value="${ssDefinitionEntry.owner.workspaceId}" />
 <c:if test="${binderId == userWorkspaceId}">
-<div class="ss_user_photo">
+<div>
 	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssDefinitionEntry.owner.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
 		value="${ssDefinitionEntry.owner.creation.principal.id}"/><ssf:param name="newTab" 
 		value="1" /></ssf:url>" <ssf:title tag="title.goto.profile.page" />>
-		<ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_small" 
+		<ssf:buddyPhoto 
 			user="${ssDefinitionEntry.owner}" 
-			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}" />
+			folderId="${ssDefinitionEntry.owner.parentBinder.id}" entryId="${ssDefinitionEntry.owner.id}"
+			scaled="true" />
 	</a>
  </div>
 </c:if>    
@@ -124,6 +125,7 @@
 	<% // Status %>
 	<jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
 	</div>
+  <div class="ss_clear"></div>
 </td>
 </tr>
 </tbody>
