@@ -33,6 +33,7 @@
  */
 %>
 <% //View an entry %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
@@ -112,7 +113,7 @@
             <c:set var="ss_attachedFileShowEditButton" value="false" scope="request"/>
           </div>
 		</td>
-		<td width="100%">&nbsp;</td>
+		<td <% if (!BrowserSniffer.is_ie(request)) { %>width="100%" <% } %> >&nbsp;</td>
       </tr>
       <c:if test="${!empty selection.fileItem.description.text}">
       <tr>

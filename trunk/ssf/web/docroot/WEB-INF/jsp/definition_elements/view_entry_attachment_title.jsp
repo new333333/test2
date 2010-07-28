@@ -54,15 +54,19 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	boolean editInPlaceSupported = false;
 	String fnBr = "";
 	int cCount = 0;
-	for (int i = 0; i < fn.length(); i++) {
-		String c = String.valueOf(fn.charAt(i));
-		cCount++;
-		if (c.matches("[\\W_]?") || cCount > 15) {
-			fnBr += c + "<wbr/>";
-			cCount = 0;
-		} else {
-			fnBr += c;
+	if (fn.length() > 40) {
+	    for (int i = 0; i < fn.length(); i++) {
+		    String c = String.valueOf(fn.charAt(i));
+		    cCount++;
+		    if (c.matches("[\\W_]?") || cCount > 15) {
+			    fnBr += c + "<wbr/>";
+			    cCount = 0;
+		    } else {
+			    fnBr += c;
+			}
 		}
+	} else {
+		fnBr = fn;
 	}
 %>
   <ssf:ifSupportsEditInPlace relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">

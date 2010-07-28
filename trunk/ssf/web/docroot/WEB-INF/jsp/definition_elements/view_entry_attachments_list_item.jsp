@@ -57,18 +57,6 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	String ext = "";
 	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
 	boolean editInPlaceSupported = false;
-	String fnBr = "";
-	int cCount = 0;
-	for (int i = 0; i < fn.length(); i++) {
-		String c = String.valueOf(fn.charAt(i));
-		cCount++;
-		if (c.matches("[\\W_]?") || cCount > 15) {
-			fnBr += c + "<wbr/>";
-			cCount = 0;
-		} else {
-			fnBr += c;
-		}
-	}
 %>
   <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 <%  editInPlaceSupported = true;  %>
@@ -160,15 +148,19 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	if (vfn.lastIndexOf(".") >= 0) vext = vfn.substring(vfn.lastIndexOf("."));
 	String vfnBr = "";
 	int vcCount = 0;
-	for (int i = 0; i < vfn.length(); i++) {
-		String c = String.valueOf(vfn.charAt(i));
-		vcCount++;
-		if (c.matches("[\\W_]?") || vcCount > 15) {
-			vfnBr += c + "<wbr/>";
-			vcCount = 0;
-		} else {
-			vfnBr += c;
+	if (vfn.length > 40) {
+		for (int i = 0; i < vfn.length(); i++) {
+			String c = String.valueOf(vfn.charAt(i));
+			vcCount++;
+			if (c.matches("[\\W_]?") || vcCount > 15) {
+				vfnBr += c + "<wbr/>";
+				vcCount = 0;
+			} else {
+				vfnBr += c;
+			}
 		}
+	} else {
+		vfnBr = vfn;
 	}
 %>
 	          	<c:choose>

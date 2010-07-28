@@ -53,18 +53,6 @@
 	String ext = "";
 	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
 	boolean editInPlaceSupported = false;
-	String fnBr = "";
-	int cCount = 0;
-	for (int i = 0; i < fn.length(); i++) {
-		String c = String.valueOf(fn.charAt(i));
-		cCount++;
-		if (c.matches("[\\W_]?") || cCount > 15) {
-			fnBr += c + "<wbr/>";
-			cCount = 0;
-		} else {
-			fnBr += c;
-		}
-	}
 %>
   <c:set var="selectionCount" value="${selectionCount + 1}"/>
   <c:set var="versionCount" value="0"/>
