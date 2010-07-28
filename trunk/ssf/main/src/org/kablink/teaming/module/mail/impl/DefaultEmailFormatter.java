@@ -56,6 +56,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
@@ -66,6 +67,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
@@ -83,6 +85,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.smtp.SMTPManager;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
@@ -341,16 +344,22 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * can only see common group members and false otherwise.
 	 */
 	private static boolean isPrincipalLimitedView(Principal p) {
+		if (!EntityType.user.equals(p.getEntityType())) return false;
 		User pUser;
 		try {
 			pUser = ((User) p);
 		}
 		catch (Exception ex) {
-			pUser = null;
-			logger.error("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION:  Cannot cast '" + p.getId() + "' to User)");
-			logger.debug("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION)", ex);
+			try {
+				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+				pUser = (User) profileDao.loadUserPrincipal(p.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+			} catch (Exception ex2) {
+				pUser = null;
+				logger.error("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION:  Cannot cast '" + p.getId() + "' to User)");
+				logger.debug("DefaultEmailFormatter.isPrincipalLimitedView(EXCEPTION)", ex);
+			}
 		}
-		boolean limitedView = ((null == pUser) ? false : Utils.canUserOnlySeeCommonGroupMembers(pUser));
+		boolean limitedView = ((null == pUser) ? false : Utils.canUserOnlySeeCommonGroupMembers((User)pUser));
 		return limitedView;
 	}
 	
