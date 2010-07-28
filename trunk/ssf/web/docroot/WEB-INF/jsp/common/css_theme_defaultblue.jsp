@@ -79,7 +79,7 @@
   --
 --%><c:set var="ss_style_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_background_color_side_panel" value="#E9EDF3" scope="request"/><%--
---%><c:set var="ss_style_background_color_side_panel_featured" value="#DDF0DD" scope="request"/><%--
+--%><c:set var="ss_style_background_color_side_panel_featured" value="#ebf5f5" scope="request"/><%--
 --%><c:set var="ss_style_background_color_opaque" value="#FAFAFA" scope="request"/><%--
 --%><c:set var="ss_style_component_background_color" value="inherit" scope="request"/><%--
 --%><c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/><%--

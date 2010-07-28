@@ -40,6 +40,7 @@
 <body class="tundra">
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 	<div class="ss_style ss_portlet diag_modal">
+	
 		<form name="form1" id="form1" class="ss_style ss_form" method="post" 
   			action="<ssf:url
 		    adapter="true" 
@@ -57,9 +58,9 @@
 			<ssf:htmleditor name="description" height="100" toolbar="minimal"
 			>${ss_fileAttachment.fileItem.description.text}</ssf:htmleditor>
 		</div>
-		<div class="margintop3">
+		<div class="teamingDlgBoxFooter" style="border-top: 0px;">
 			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
-			<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+			<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"
   			onClick="ss_cancelButtonCloseWindow();return false;"/>
 		</div>		
 		</form>
