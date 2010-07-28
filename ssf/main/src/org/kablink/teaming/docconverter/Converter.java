@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -58,8 +60,9 @@ public abstract class Converter<T>
 	protected long maxTextLength;
 	private int conversionTimeoutMS = 30000;
 	private FileModule fileModule;
-	private static final String TEXT_FILE_SUFFIX = ".txt";
+	protected Log logger = LogFactory.getLog(getClass());
 	
+	private static final String TEXT_FILE_SUFFIX = ".txt";
 	
 	public Converter() {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
@@ -184,7 +187,9 @@ public abstract class Converter<T>
 				checkAndConvertEncoding(copyOfOriginalFile);
 			}
 			
+    		long begin = System.currentTimeMillis();
 			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), conversionTimeoutMS, parameters);
+			end(begin, relativeFilePath);
 			
 			FileHelper.move(tempConvertedFile, convertedFile);
 		}
@@ -210,6 +215,13 @@ public abstract class Converter<T>
 		}
 	}
 
+	private void end(long begin, String fileName) {
+		if(logger.isDebugEnabled()) {
+			long diff = System.currentTimeMillis() - begin;
+			logger.debug(diff + " ms, converting " + fileName);
+		}	
+	}
+	
 	private String getTimestamp() {
 		return String.valueOf(System.currentTimeMillis());
 	}

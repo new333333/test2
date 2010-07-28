@@ -72,7 +72,6 @@ import org.xml.sax.InputSource;
 
 public abstract class TextConverter extends Converter<String> implements EntityResolver
 {
-	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
 	protected String excludedExtensions = "";
 	protected static final String TEXT_SUBDIR = "text",

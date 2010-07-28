@@ -47,7 +47,6 @@ import org.springframework.util.FileCopyUtils;
 public abstract class ImageConverter extends Converter<ImageConverter.Parameters>
 {
 	protected String _defaultImage = "";
-	protected final Log logger = LogFactory.getLog(getClass());
 	protected String _nullTransform = "";
 	protected static final String SCALED_SUBDIR = "scaled";
 	protected static final String THUMB_SUBDIR = "thumb";
