@@ -210,15 +210,19 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	if (vfn.lastIndexOf(".") >= 0) vext = vfn.substring(vfn.lastIndexOf("."));
 	String vfnBr = "";
 	int vcCount = 0;
-	for (int i = 0; i < vfn.length(); i++) {
-		String c = String.valueOf(vfn.charAt(i));
-		vcCount++;
-		if (c.matches("[\\W_]?") || vcCount > 15) {
-			vfnBr += c + "<wbr/>";
-			vcCount = 0;
-		} else {
-			vfnBr += c;
+	if (vfn.length() > 40) {
+		for (int i = 0; i < vfn.length(); i++) {
+			String c = String.valueOf(vfn.charAt(i));
+			vcCount++;
+			if (c.matches("[\\W_]?") || vcCount > 15) {
+				vfnBr += c + "<wbr/>";
+				vcCount = 0;
+			} else {
+				vfnBr += c;
+			}
 		}
+	} else {
+		vfnBr = vfn;
 	}
 %>
 			<tr class="${ss_attachedFileRowClass}">
