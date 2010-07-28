@@ -148,7 +148,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	if (vfn.lastIndexOf(".") >= 0) vext = vfn.substring(vfn.lastIndexOf("."));
 	String vfnBr = "";
 	int vcCount = 0;
-	if (vfn.length > 40) {
+	if (vfn.length() > 40) {
 		for (int i = 0; i < vfn.length(); i++) {
 			String c = String.valueOf(vfn.charAt(i));
 			vcCount++;
