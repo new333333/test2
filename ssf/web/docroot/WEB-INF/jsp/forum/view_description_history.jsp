@@ -317,7 +317,7 @@ function ss_resizeIframeArea() {
 	<table class="ss_style" cellpadding="0" cellspacing="0">
 		<tr class="ss_tab_table_columnhead">
 			<td colspan="2"><ssf:nlt tag="entry.Version"/></td>
-			<td><ssf:nlt tag="entry.modifiedOn"/>Date</td>
+			<td><ssf:nlt tag="entry.modifiedOn"/></td>
 			<td><ssf:nlt tag="entry.modifiedBy"/></td>
 			<td><ssf:nlt tag="entry.change"/></td>
 			<td colspan="2">&nbsp;</td>
