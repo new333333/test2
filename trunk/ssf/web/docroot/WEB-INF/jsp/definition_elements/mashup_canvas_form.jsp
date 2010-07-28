@@ -131,6 +131,8 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
       </label>
       <br/>
+
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
       <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
       	id="${ss_mashupPropertyName}__hideToolbar"
         <c:if test="${ss_mashupHideToolbar}">checked</c:if> >
@@ -138,6 +140,8 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
       </label>
       <br/>
+<% } %>
+
       <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
       	id="${ss_mashupPropertyName}__hideFooter"
         <c:if test="${ss_mashupHideFooter}">checked</c:if> >
@@ -145,6 +149,8 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
       </label>
       <br/>
+
+<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
       <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
       	id="${ss_mashupPropertyName}__showBranding"
         <c:if test="${ss_mashupShowBranding}">checked</c:if> >
@@ -166,6 +172,8 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
       	<span class="ss_labelRight"><ssf:nlt tag="mashup.showNavigation"/></span>
       </label>
       <br/>
+<% } %>
+
       <br/>
       <span class="ss_labelAbove"><ssf:nlt tag="mashup.style"/></span>
       <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
