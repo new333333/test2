@@ -816,7 +816,7 @@ public class MarkupUtil {
 				    		titleLink.append("?enablejsapi=1&playerapiid=ytplayer\",");
 				    		titleLink.append(" \"ytapiplayer"+id.toString()+"\", \"").append(s_width).append("\", ");
 				    		titleLink.append("\"").append(s_height).append("\", \"8\", null, null, params, atts);\n");
-				    		titleLink.append("ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
+				    		titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
 				    		titleLink.append("</script>\n");
 			    		}
 			    	} else {
