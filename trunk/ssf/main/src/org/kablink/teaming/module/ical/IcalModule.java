@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.Folder;
 
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.property.Attendee;
 
 
 /**
@@ -73,8 +74,10 @@ public interface IcalModule {
 		 * @param event
 		 * @param description
 		 * @param summary
+		 * @param location
+		 * @param attendees
 		 */
-		void handleEvent(Event event, String description, String summary);
+		void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees);
 		
 		/**
 		 * handleTodo
@@ -82,9 +85,17 @@ public interface IcalModule {
 		 * Called each time a VTODO in the ical input is converted to an Event.  The
 		 *  DESCRIPTION and SUMMARY from the VTODO are passed along, but will be null
 		 *  if they are absent from the VTODO.
-		 * 
+		 *
+		 * @param event
+		 * @param description
+		 * @param summary
+		 * @param priority
+		 * @param status
+		 * @param completed
+		 * @param location
+		 * @param assignees
 		 */
-		void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location);		
+		void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> assignees);		
 	}
 	
 	/**

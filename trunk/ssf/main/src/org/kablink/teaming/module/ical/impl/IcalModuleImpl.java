@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -89,7 +89,6 @@ import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.model.property.XProperty;
-import net.fortuna.ical4j.util.CompatibilityHints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -124,6 +123,8 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.cal.DayAndPosition;
@@ -136,6 +137,7 @@ import org.kablink.util.cal.DayAndPosition;
  * @author Pawel Nowicki
  * 
  */
+@SuppressWarnings("deprecation")
 public class IcalModuleImpl extends CommonDependencyInjection implements IcalModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	
@@ -144,6 +146,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 	private BinderModule binderModule;
 	private FolderModule folderModule;
+	
+	private static final String CAL_ADDRESS_HEADER = "MAILTO:";
 
 	
 	/*
@@ -1543,7 +1547,17 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					summary = eventComponent.getSummary().getValue();
 				}
 								
-				handler.handleEvent(event, description, summary);
+				String location = null;
+				if(eventComponent.getLocation() != null) {
+					location = eventComponent.getLocation().getValue();
+				}
+				
+				handler.handleEvent(
+					event,
+					description,
+					summary,
+					location,
+					getAttendees(eventComponent));
 			}
 			for(Object comp : cal.getComponents("VTODO")) {
 				VToDo todoComponent = (VToDo) comp;
@@ -1572,9 +1586,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				}	
 							
 				handler.handleTodo(event, description, summary, 
-						priority!=null?priority.name():null, 
-						status!=null?status.name():null, 
-						percentComplete!=null?percentComplete.name():null, location);
+					((null != priority)        ? priority.name() : null), 
+					((null != status)          ? status.name()   : null), 
+					((null != percentComplete) ? percentComplete.name() : null),
+					location,
+					getAttendees(todoComponent));
 			}
 		} catch(IOException e) {
 			logger.debug("IOException while parsing iCal stream", e);
@@ -1583,6 +1599,109 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			logger.debug("ParserException while parsing iCal stream", e);
 			throw e;
 		}
+	}
+
+	/*
+	 * Returns a List<Attendee> of the attendees of an iCal VEVENT or
+	 * VTODO.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Attendee> getAttendees(CalendarComponent vCal) {
+		ArrayList<Attendee> reply = new ArrayList<Attendee>();
+		PropertyList attendees = vCal.getProperties(Property.ATTENDEE);
+		for (Iterator<Property> attIT = attendees.iterator(); attIT.hasNext(); ) {
+			Property attendee = attIT.next();
+			if (attendee instanceof Attendee) {
+				reply.add((Attendee) attendee);
+			}
+		}
+		return reply;
+	}
+
+	/*
+	 * Adds a List<Attendee> to the formData using knownAttr as the
+	 * attribute for known Attendee's and unkownAttr as the attribute
+	 * name for external Attendee's.
+	 */
+	private void addAttendeesToFormData(Map<String, Object> formData, String knownAttr, String unknownAttr, List<Attendee> attendees) {
+		// If we don't have any Attendee's...
+		if ((null == attendees) || attendees.isEmpty()) {
+			// ...we don't have anything to add.
+			return;
+		}
+
+		// Scan the Attendee's.
+		boolean hasKnowns   = false; StringBuffer      knowns    = new StringBuffer();
+		boolean hasUnknowns = false; ArrayList<String> unknowns  = new ArrayList<String>();
+		for (Attendee attendee: attendees) {
+			// Does the next Attendee have an email address?
+			String calAddress = attendee.getValue();
+			if (MiscUtil.hasString(calAddress)) {
+				// Yes!  If it begins with 'MAILTO:'...
+				if (0 <= calAddress.toUpperCase().indexOf(CAL_ADDRESS_HEADER.toUpperCase())) {
+					// ...strip that off.
+					calAddress = calAddress.substring(CAL_ADDRESS_HEADER.length());
+				}
+				
+				// Can we map the email address to a User?
+				User user = getUserFromEmailAddress(calAddress);
+				if (null != user) {
+					// Yes!  Add their ID to a String buffer of them.
+					if (hasKnowns)
+						 knowns.append(" ");
+					else hasKnowns = true;
+					knowns.append(String.valueOf(user.getId().longValue()));
+				}
+				
+				else {
+					// No, we couldn't map the email address to a User!
+					// Add it to a buffer of unknown users.
+					hasUnknowns = true;
+					unknowns.add(calAddress);
+				}
+			}
+		}
+
+		// Finally, if there is any, add the assignee information to
+		// the formData. 
+		if (hasKnowns)   formData.put(knownAttr,   new String[]{knowns.toString()});
+		if (hasUnknowns) formData.put(unknownAttr, unknowns.toArray(new String[0]));
+	}
+
+	/*
+	 * Maps an email address to a User.  Returns null if no User maps
+	 * to the given address.
+	 */
+	private User getUserFromEmailAddress(String emailAddress) {
+		// If we don't have an email address...
+		if (!(MiscUtil.hasString(emailAddress))) {
+			// ...we can't map it to a user.
+			return null;
+		}
+				
+		// Scan the Principal's that the email address in question
+		// maps to.
+		User user = null;
+		List<Principal> ps = getProfileDao().loadPrincipalByEmail(emailAddress, null, RequestContextHolder.getRequestContext().getZoneId());
+		for (Principal p: ps) {
+            try {
+                // Make sure it's a user.
+            	User principal = ((User) getProfileDao().loadUser(p.getId(), RequestContextHolder.getRequestContext().getZoneId()));
+            	if (null == user) {
+            		user = principal;
+            	}
+            	else if (!(principal.equals(user))) {
+        			logger.error("IcalModuleImpl.getUserFromEmailAddress(Multiple users with an email address of '" + emailAddress + "', using '" + user.getTitle() + "' for assignment.");
+        			break;
+            	}
+            }
+            catch (Exception ignoreEx) {
+            };  
+		}
+
+		// If we get here, user is null or refers to the User whose
+		// email address is emailAddress.  Return it.
+		return user;
 	}
 	
 	/**
@@ -1715,12 +1834,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		final List<Event> events = new LinkedList<Event>();
 		
 		EventHandler myHandler = new EventHandler() {
-			public void handleEvent(Event e, String description, String summary)
+			public void handleEvent(Event e, String description, String summary, String location, List<Attendee> attendees)
 			{
 				events.add(e);
 			}
 
-			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location) {
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				events.add(event);
 			}
 		};
@@ -1761,16 +1880,21 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 		EventHandler entryCreator = new EventHandler() {
 			
-			public void handleEvent(Event event, String description, String summary) {
+			public void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
 				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
-				
+				formData.put("location", new String[] {location});
+				addAttendeesToFormData(
+					formData,
+					EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME,
+					EventHelper.ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME,
+					attendees);
 				addOrModifyEntry(event, new MapInputData(formData));
 			}
 
-			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location) {
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
 				shorterSummary(formData, description, summary);
@@ -1779,6 +1903,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				formData.put("status", new String[] {status});
 				formData.put("completed", new String[] {completed});
 				formData.put("location", new String[] {location});
+				addAttendeesToFormData(
+					formData,
+					TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
+					TaskHelper.ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME,
+					attendees);
 				
 				// TODO: add attachments support
 				// TODO: alert's support
@@ -1812,11 +1941,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 						attendedEntries.added.add(entryId);
 					}
 				} catch (AccessControlException e) {
-					logger.warn("Can not create entry from iCal file.", e);
+					logger.warn("Cannot create entry from iCal file.", e);
 				} catch (WriteFilesException e) {
-					logger.warn("Can not create entry from iCal file.", e);
+					logger.warn("Cannot create entry from iCal file.", e);
 				} catch (WriteEntryDataException e) {
-					logger.warn("Can not create entry from iCal file.", e);
+					logger.warn("Cannot create entry from iCal file.", e);
 				}
 			}			
 		};
@@ -1894,7 +2023,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			attendeesInCalendar += generate(attendeesInCalendar, calendar, entry, entry.getEvents(), defaultTimeZoneId);
 		}
 		
-		// Calendar without any components can not exists
+		// Calendar without any components Cannot exists
 		// so put time zone
 		if (calendar.getComponents().isEmpty()) {
 			TimeZone timeZone = getTimeZone(null, defaultTimeZoneId);
@@ -2152,7 +2281,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				try {
 					component.getProperties().add(new Attendee(attendeeParams, uri));
 				} catch (URISyntaxException e) {
-					logger.warn("Can not add attendee because of URI [" + uri
+					logger.warn("Cannot add attendee because of URI [" + uri
 							+ "] parsing problem");
 				}
 			}
@@ -2178,7 +2307,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		try {
 			component.getProperties().add(new Organizer(organizerParams, uri));
 		} catch (URISyntaxException e) {
-			logger.warn("Can not add organizer because of URI [" + uri
+			logger.warn("Cannot add organizer because of URI [" + uri
 					+ "] parsing problem");
 		}
 

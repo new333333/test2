@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -73,6 +73,8 @@ public class TaskHelper {
 	
 	public static final String ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME = "assignment_teams";
 	
+	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME = "responsible_external";
+	
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME = "start_end";
 	
 	public final static String TASK_ASSIGNED_TO = "assignedTo";
@@ -84,6 +86,7 @@ public class TaskHelper {
 	}
 	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
 	
+	@SuppressWarnings("unchecked")
 	public static String getTaskCompletedValue(Entry entry) {
 	
 		CustomAttribute customAttribute = entry.getCustomAttribute(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -106,6 +109,7 @@ public class TaskHelper {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String getTaskStatusValue(Entry entry) {
 		
 		CustomAttribute customAttribute = entry.getCustomAttribute(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
@@ -128,6 +132,7 @@ public class TaskHelper {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static String getTaskSingleValue(Map formData, String key) {
 		Object values = formData.get(key);
 		
@@ -141,14 +146,17 @@ public class TaskHelper {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String getTaskStatusValue(Map formData) {
 		return getTaskSingleValue(formData, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String getTaskPriorityValue(Map formData) {
 		return getTaskSingleValue(formData, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static String getTaskCompletedValue(Map formData) {
 		return getTaskSingleValue(formData, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
@@ -194,6 +202,8 @@ public class TaskHelper {
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
 		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null, null);
 	}
+	
+	@SuppressWarnings("unchecked")
 	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model, Binder binder) {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
@@ -251,6 +261,7 @@ public class TaskHelper {
 		return searchFilter;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static Map adjustTaskAttributesDependencies(FolderEntry entry, Map formData) {
 		Map result = new HashMap(formData);
 		if (!TaskHelper.isTaskEntryType(entry)) {
@@ -275,12 +286,14 @@ public class TaskHelper {
 		return ObjectKeys.FAMILY_TASK.equals(family);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
 		Definition entryDef = entry.getEntryDef();
 		String family = DefinitionUtils.getFamily(entryDef.getDefinition());
 		TaskHelper.adjustTaskAttributesDependencies(entry, family, formData, newPriority, newStatus, newCompleted);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, String typeOfEntry, Map formData, String newPriority, String newStatus, String newCompleted) {
 		if ((typeOfEntry != null && !TaskHelper.isTaskEntryType(typeOfEntry)) ||
 				(entry != null && !TaskHelper.isTaskEntryType(entry))) {
