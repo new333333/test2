@@ -39,64 +39,65 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="tundra">
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:form titleTag="file.deleteVersion">
-<div class="ss_style ss_portlet">
-<form name="form1" id="form1" class="ss_style ss_form" method="post" 
-  action="<ssf:url
-		    adapter="true" 
-		    portletName="ss_forum" 
-		    action="modify_file" 
-		    actionUrl="true" 
-		    ><ssf:param name="entityId" value="${ss_entity.id}"/><ssf:param 
-		    name="entityType" value="${ss_entity.entityType}"/><ssf:param 
-		    name="fileId" value="${ss_fileAttachment.id}"/><ssf:param 
-		    name="operation" value="delete"/></ssf:url>"
->
-<br/>
-<div>
-<table>
-<tr>
-<td valign="top">
-  <span class="ss_bold"><ssf:nlt tag="file.name"/></span>
-</td>
-<td valign="top">
-  <span style="padding-left:10px;">${ss_fileAttachment.fileItem.name}</span>
-</td>
-</tr>
 
-<tr>
-<td valign="top">
-  <span class="ss_bold"><ssf:nlt tag="file.version"/></span>
-</td>
-<td valign="top">
-  <span style="padding-left:10px;">${ss_fileAttachment.fileVersion}</span>
-</td>
-</tr>
+<div class="ss_style ss_portlet diag_modal">
 
-<tr>
-<td valign="top">
-  <span class="ss_bold"><ssf:nlt tag="file.date"/></span>
-</td>
-<td valign="top">
-  <span style="padding-left:10px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-          	value="${ss_fileAttachment.creation.date}" type="both" 
-	      	timeStyle="short" dateStyle="medium" /></span>
-</td>
-</tr>
-</table>
-<br/>
-<br/>
-<span class="ss_bold"><ssf:nlt tag="file.deleteConfirm"/></span>
-<br/>
-<span class="ss_smallprint"style="padding-left:10px;"><ssf:nlt tag="file.deleteConfirm2"/></span>
-</div>
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
-/>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="ss_cancelButtonCloseWindow();return false;"/>
-</form>
-</ssf:form>
+	<form name="form1" id="form1" class="ss_style ss_form" method="post" 
+	  action="<ssf:url
+				adapter="true" 
+				portletName="ss_forum" 
+				action="modify_file" 
+				actionUrl="true" 
+				><ssf:param name="entityId" value="${ss_entity.id}"/><ssf:param 
+				name="entityType" value="${ss_entity.entityType}"/><ssf:param 
+				name="fileId" value="${ss_fileAttachment.id}"/><ssf:param 
+				name="operation" value="delete"/></ssf:url>"
+	>
+	<div>
+		<h2><ssf:nlt tag="file.deleteVersion"/></h2>
+		<div class="ss_bold"><ssf:nlt tag="file.deleteConfirm"/></div>
+		<div><ssf:nlt tag="file.deleteConfirm2"/></div>
+
+
+		<table cellpadding="3" class="margintop3">
+			<tr>
+				<td>
+				  <span><ssf:nlt tag="file.name"/></span>
+				</td>
+				<td>
+				  <span class="ss_bold">${ss_fileAttachment.fileItem.name}</span>
+				</td>
+			</tr>
+		
+			<tr>
+				<td>
+				  <span><ssf:nlt tag="file.version"/></span>
+				</td>
+				<td>
+				  <span class="ss_bold">${ss_fileAttachment.fileVersion}</span>
+				</td>
+			</tr>
+		
+			<tr>
+				<td>
+				  <span><ssf:nlt tag="file.date"/></span>
+				</td>
+				<td>
+		  			<span class="ss_bold"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+					value="${ss_fileAttachment.creation.date}" type="both" 
+					timeStyle="short" dateStyle="medium" /></span>
+				</td>
+			</tr>
+		</table>
+	
+	</div>
+
+	<div class="teamingDlgBoxFooter">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
+		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"
+			onClick="ss_cancelButtonCloseWindow();return false;"/>
+	</div>		
+	</form>
 </div>
 </body>
 </html>

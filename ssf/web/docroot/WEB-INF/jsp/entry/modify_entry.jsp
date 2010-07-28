@@ -41,7 +41,7 @@
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
-<div class="ss_popup_wrapper">
+<div class="ss_popup_wrapper diag_modal2">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"

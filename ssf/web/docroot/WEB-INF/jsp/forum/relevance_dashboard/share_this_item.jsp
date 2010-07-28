@@ -38,55 +38,47 @@
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_style ss_portal diag_modal">
-<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
+	<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
 
-<form class="ss_style ss_form" 
-  action="<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_relevance" actionUrl="true"><ssf:param 
-		name="operation" value="share_this_binder" /><ssf:param 
-		name="binderId" value="${ssBinderId}" /><c:if test="${!empty ssEntryId}"><ssf:param 
-		name="entryId" value="${ssEntryId}" /></c:if></ssf:url>"
-  name="${renderResponse.namespace}fm" 
-  id="${renderResponse.namespace}fm" 
-  method="post">
-  
-<span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
+	<div class="margintop2 marginbottom3"><ssf:nlt tag="relevance.shareHint"/></div>
 
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinderId}" width="150px"/>
-
-<div class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></div>
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
-    
-<br/>
-
-<div class="ss_bold"><ssf:nlt tag="relevance.selectTeams"/></div>
-<div class="margintop1">
-  <c:forEach var="team" items="${ss_myTeams}">
-  	<div>
-		<input type="checkbox" name="cb_${team._docId}" id="cb_${team._docId}"/>
-	    <label for="cb_${team._docId}"><span style="padding-left:6px;">${team.title}</span></label>
-	</div>	
-  </c:forEach>
-</div>
-
-
-<div class="ss_labelAbove margintop3"><ssf:nlt tag="relevance.shareThisWithComment"/></div>
-<div>
-<%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> 
-</div>
-
-<div class="margintop3">
-<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
-<input type="button" value="<ssf:nlt tag="button.cancel"/>" onclick="ss_cancelButtonCloseWindow();return false;"/>
-</div>
-</form>
-<br/>
-<br/>
-<div>
-  <span class="ss_italic"><ssf:nlt tag="relevance.shareHint"/></span>
-</div>
+	<form class="ss_style ss_form" 
+	  action="<ssf:url adapter="true" portletName="ss_forum" 
+			action="__ajax_relevance" actionUrl="true"><ssf:param 
+			name="operation" value="share_this_binder" /><ssf:param 
+			name="binderId" value="${ssBinderId}" /><c:if test="${!empty ssEntryId}"><ssf:param 
+			name="entryId" value="${ssEntryId}" /></c:if></ssf:url>"
+	  name="${renderResponse.namespace}fm" 
+	  id="${renderResponse.namespace}fm" 
+	  method="post">
+	  
+		<span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
+	
+		<ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
+			type="user" userList="${ssUsers}" binderId="${ssBinderId}" width="150px"/>
+	
+		<div class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></div>
+	  	<ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
+			type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
+			
+		<div class="ss_bold margintop2"><ssf:nlt tag="relevance.selectTeams"/></div>
+		<div class="margintop1">
+		  <c:forEach var="team" items="${ss_myTeams}">
+			<div>
+				<input type="checkbox" name="cb_${team._docId}" id="cb_${team._docId}"/>
+				<label for="cb_${team._docId}"><span style="padding-left:6px;">${team.title}</span></label>
+			</div>	
+		  </c:forEach>
+		</div>
+		
+		<div class="ss_labelAbove margintop3"><ssf:nlt tag="relevance.shareThisWithComment"/></div>
+		<div><%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> </div>
+	
+		<div class="teamingDlgBoxFooter" style="border-top: 0px;">
+			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
+			<input type="button" value="<ssf:nlt tag="button.cancel"/>" onclick="ss_cancelButtonCloseWindow();return false;"/>
+		</div>
+	</form>
 
 </div>
 <ssf:ifadapter>

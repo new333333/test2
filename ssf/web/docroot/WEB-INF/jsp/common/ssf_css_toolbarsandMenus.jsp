@@ -229,15 +229,15 @@ table.ss_actions_bar4_pane {
 	font-family: ${ss_style_title_font_family};
 	}
 .ss_actions_bar5 {
-	background-color:#72AEB6;
+	background-color:#81b2bd;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	font-weight: bold;
-	margin:15px 0 0 0;
-	padding:5px 0 5px 25px;
+	margin:5px 0 0 0;
+	padding:5px 0 5px 5px;
 	}
 .ss_actions_bar6 {
-	background-color:#72AEB6;
+	background-color:#81b2bd;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	font-weight: bold;
@@ -946,8 +946,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .teamingDlgBoxFooter {
 	background-color: #EAEBE8;
 	border-top: 1px solid #BABDB6;
-	margin-top: 0.5em;
-	padding: 0.5em;
+	margin-top: 15px;
+	padding: 10px 0px 5px 10px;
 	text-align: right;
 	vertical-align: middle;
 	-moz-border-radius-bottomleft: 3px;
@@ -973,3 +973,26 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	right: 10px;
 	}	
 	
+.diag_modal {
+	position: relative;
+	top: -10px;
+	background-color: #eaebe8;
+	margin: 1px 50px 20px;
+	padding: 1px 20px 10px;
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
+	}
+.diag_modal2 {
+	position: relative;
+	background-color: #eaebe8;
+	padding: 1px 20px 10px;
+	}
+.diag_modal2 table div.ss_form_wrap {
+	background: transparent;
+	padding: 0px;
+	}
+.diag_modal2 table div.ss_form_header {
+	color: #333;
+	}

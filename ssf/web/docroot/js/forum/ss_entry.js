@@ -142,11 +142,12 @@ function ss_confirmDeleteEntry_Create(eA)
 		var ePBanner = document.createElement("p");
     	ePBanner.innerHTML = ss_confirmDeleteEntryText;
         eDIV.appendChild(ePBanner);
+		ePBanner.className = "ss_bold";
 
 		// ...add the purge immediately checkbox...		
 		var ePCBox = document.createElement("p");
         eDIV.appendChild(ePCBox);
-		var eNOBR = document.createElement("nobr");
+		var eNOBR = document.createElement("div");
 		ePCBox.appendChild(eNOBR);
 		var eCB = document.createElement("input");
 		eCB.type = "checkbox";
@@ -159,7 +160,9 @@ function ss_confirmDeleteEntry_Create(eA)
 		// ...add a container for the push buttons...
 		var eBR = document.createElement("br");
 		eDIV.appendChild(eBR);		
-		eNOBR = document.createElement("nobr");
+		eNOBR = document.createElement("div");
+		eNOBR.className = "teamingDlgBoxFooter";
+		eNOBR.style.backgroundColor = "#fff";
 		eDIV.appendChild(eNOBR);
 		
 		// ...add the OK push button...

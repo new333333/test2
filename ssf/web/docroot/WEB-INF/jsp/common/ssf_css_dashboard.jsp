@@ -804,19 +804,3 @@ div.item-sub a {
 #ss_calendar #ss_para, #ss_calendar .ss_paraC, #ss_calendar #ss_cal_para {
 	padding: 0;
 }
-
-.diag_modal, .diag_modal2 {
-	position: relative;
-	top: -10px;
-	background-color: #eaebe8;
-	margin: 1px 50px 20px;
-	padding: 1px 20px 20px;
-	-moz-border-radius-bottomleft: 10px;
-	-moz-border-radius-bottomright: 10px;
-	-webkit-border-bottom-right-radius: 10px;
-	-webkit-border-bottom-left-radius: 10px;
-	}
-	
-.diag_modal2 {
-	top: 0px !important;
-	}	

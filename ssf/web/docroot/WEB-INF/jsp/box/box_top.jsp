@@ -107,8 +107,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 	  <col width="8"/>
 	  <tr>
-	  <td class="ss_title_bar"><img border="0" <ssf:alt/> style="background-color:white;"
-	    src="<html:imagesPath/>roundcorners3/corner1.png"></td>
+	  <td><img border="0" src="<html:imagesPath/>roundcorners3/corner1.png"></td>
 	  <c:if test="<%= showResizeIcon %>">
 		<td class="ss_title_bar" align="left">
 			<div style="display:inline; width:40px; 

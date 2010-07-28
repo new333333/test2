@@ -390,7 +390,7 @@ fieldset a:hover {
 	}
  /*FORM LABELS (these need to be consolidated */	
 .ss_labelAbove {
-  	padding-top: 2px;
+  	padding-top: 8px;
   	padding-bottom: 2px;
   	display: block;
   	font-weight: bold;

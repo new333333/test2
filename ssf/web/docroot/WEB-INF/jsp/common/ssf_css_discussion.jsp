@@ -659,8 +659,8 @@ div.ssPageNavi {
 	border-top: solid 1px #FFF;
 	border-bottom: solid 1px #FFF;
 	padding-left: 15px;
-	padding-top: 15px;
-	padding-bottom:15px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 	background-color: #E9F1F1;
 	}
 /*******replies -s comments*****************/	

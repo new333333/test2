@@ -718,7 +718,7 @@ a.ss_tinyButton:hover {
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {
-  padding-top: 2px;
+  padding-top: 8px;
   padding-bottom: 2px;
   display: block;
   font-weight: bold;
@@ -4451,11 +4451,9 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 
 div.ssPageNavi {
 	margin: 0px;
-	border-top: solid 1px #FFF;
-	border-bottom: solid 1px #FFF;
 	padding-left: 15px;
-	padding-top: 15px;
-	padding-bottom:15px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 	background-color: #E9F1F1;
 	}
 div.ssPageNavi table td {
@@ -4686,13 +4684,13 @@ span.ss_infoDivValue {
 	
 .ss_confirmationDlg {
 	background-color: ${ss_style_background_color_opaque};
-	border:1px solid black; 
-	padding: 8px;
+	padding: 15px;
 	width:  400px;
 	font-size: ${ss_style_font_normalprint};
-	font-weight: bold;
 	font-family: ${ss_style_font_family};
 	color: ${ss_form_element_text_color};
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .ss_videoDiv {
