@@ -34,15 +34,33 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<div class="<c:if test="${!empty style}">${style}</c:if><c:if test="${empty style}">ss_thumbnail_small_buddies_list</c:if>"><div>
+<c:if test="${!isScaled}">
+<div class="<c:if test="${!empty style}">${style}</c:if><c:if test="${empty style}">ss_thumbnail_small_buddies_list</c:if>">
+<div>
   	<c:if test="${!empty thumbnail}">
 		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<ssf:fileUrl webPath="readThumbnail" file="${thumbnail}"/>" 
-		onerror="ss_buddyPhotoLoadError(this, '<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg');" />
+		onerror="ss_buddyPhotoLoadError(this, '<html:imagesPath/>pics/UserPhoto.png');" />
 	</c:if>
-
-
 
 	<c:if test="${empty thumbnail}">
-		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg">
+		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<html:imagesPath/>pics/UserPhoto.png">
 	</c:if>
-</div></div>
+</div>
+</div>
+</c:if>
+
+<c:if test="${isScaled}">
+<div class="<c:if test="${!empty style}">${style}</c:if><c:if test="${empty style}">ss_thumbnail_standalone ss_thumbnail_profile</c:if>">
+<div>
+  	<c:if test="${!empty thumbnail}">
+		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<ssf:fileUrl webPath="readScaledFile" file="${thumbnail}"/>" 
+		onerror="ss_buddyPhotoLoadError(this, '<html:imagesPath/>pics/UserPhoto.png');" />
+	</c:if>
+
+	<c:if test="${empty thumbnail}">
+		<img border="0" <ssf:alt tag="alt.thumbnail"/> src="<html:imagesPath/>pics/UserPhoto.png">
+	</c:if>
+</div>
+</div>
+</c:if>
+
