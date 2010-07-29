@@ -651,6 +651,13 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 //Routine to close a pop-up form window if the cancel button is clicked
 //  This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {
+	if (ss_isGwtUIActive) {
+		if ( self.window.name != "gwtContentIframe" && window.parent.ss_closeAdministrationContentPanel ) {
+			// Tell the Teaming GWT ui to close the administration content panel.
+			window.parent.ss_closeAdministrationContentPanel();
+			return;
+		}
+	}
 	if (self == self.parent) {
 		//This looks like it is a pop-up form
 		self.window.close();

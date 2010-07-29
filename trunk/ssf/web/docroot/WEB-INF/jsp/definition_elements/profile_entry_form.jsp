@@ -67,11 +67,13 @@
 			}
 			else
 			{
+				ss_buttonSelect('cancelBtn'); 
 				ss_cancelButtonCloseWindow();
 			}
 			return false;
 	<% 	}
 		else { %>
+			ss_buttonSelect('cancelBtn'); 
 			ss_cancelButtonCloseWindow();
 			return true;
 	<%	} %>
@@ -98,9 +100,9 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <%-- Show the ok and cancel buttons at top right --%>
 <div class="ss_Tinybutton margintop2" style="position: absolute; top: 50px; right: 30px;">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
-  <input type="submit" class="ss_submit" 
+  <input type="button" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
-    onClick="return handleCloseBtn();"/>
+    onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 
 
@@ -263,9 +265,9 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <%-- Show the ok and cancel buttons --%>
 <div class="ss_buttonBarLeft margintop3">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
-  <input type="submit" class="ss_submit" 
+  <input type="button" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 
-    onClick="return handleCloseBtn();"/>
+    onClick="ss_cancelButtonCloseWindow();return false;"/>
 </div>
 
 </form>  
