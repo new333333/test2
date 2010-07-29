@@ -39,7 +39,8 @@
 <ssf:ifadapter>
 <body class=" ss_style_body tundra">
 </ssf:ifadapter>
-<div class="ss_popup_wrapper">
+<div class="ss_popup_wrapper 
+  <c:if test="${ssOperation == 'add_folder_reply'}">diag_modal2</c:if>">
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
