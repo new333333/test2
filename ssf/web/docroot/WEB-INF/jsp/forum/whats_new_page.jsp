@@ -54,7 +54,13 @@
 <div>
 	<c:choose>
 		<c:when test="${ss_whatsUnseenType && !empty ss_whatsNewBinder}">
-			<div id="ss_profile_box_h1" style="padding:5px 10px;"><ssf:nlt tag="mobile.whatsUnreadWorkspace"/>
+			<div id="ss_profile_box_h1" style="padding:5px 10px;">
+			  <c:if test="${ssBinder.entityType == 'workspace'}">
+			    <ssf:nlt tag="mobile.whatsUnreadWorkspace"/>
+			  </c:if>
+			  <c:if test="${ssBinder.entityType != 'workspace'}">
+			    <ssf:nlt tag="mobile.whatsUnreadFolder"/>
+			  </c:if>
 			<span style="padding-left:10px;">
 				<a class="ss_linkButton ss_smallprint" href="<ssf:url 
 				  actionUrl="true"
@@ -70,7 +76,15 @@
 			</span>
 		</c:when>
 		<c:otherwise>
-			<div id="ss_profile_box_h1" style="padding:5px 10px;"><ssf:nlt tag="mobile.whatsNewWorkspace"/>
+			<div id="ss_profile_box_h1" style="padding:5px 10px;">
+			  <c:if test="${ssBinder.entityType == 'workspace'}">
+			    <c:if test="${ss_whatsUnseenType}"><ssf:nlt tag="mobile.whatsUnreadWorkspace"/></c:if>
+			    <c:if test="${!ss_whatsUnseenType}"><ssf:nlt tag="mobile.whatsNewWorkspace"/></c:if>
+			  </c:if>
+			  <c:if test="${ssBinder.entityType != 'workspace'}">
+			    <c:if test="${ss_whatsUnseenType}"><ssf:nlt tag="mobile.whatsUnreadFolder"/></c:if>
+			    <c:if test="${!ss_whatsUnseenType}"><ssf:nlt tag="mobile.whatsNewFolder"/></c:if>
+			  </c:if>
 		</c:otherwise>
 	</c:choose>
 	<span style="padding-left: 10px;">
