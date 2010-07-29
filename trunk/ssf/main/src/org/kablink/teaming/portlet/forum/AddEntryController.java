@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,17 +32,10 @@
  */
 package org.kablink.teaming.portlet.forum;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URLDecoder;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.ArrayList;
 import java.util.TimeZone;
 
@@ -62,6 +55,7 @@ import org.springframework.web.portlet.ModelAndView;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Event;
@@ -73,27 +67,18 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
-import org.kablink.teaming.repository.RepositoryServiceException;
-import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
-import org.kablink.teaming.task.TaskHelper;
-import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
-import org.kablink.teaming.web.tree.WorkspaceConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.util.Validator;
 import org.kablink.util.cal.Duration;
 
 /**
@@ -261,11 +246,30 @@ public class AddEntryController extends SAbstractController {
 			        	    	
 			        	    	//Create a sub folder, if it does not exist
 			        	    	if (!doesFolderExist) {
-			        	    		Binder lngFolderToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName);
+			        	    		Binder lngFolderToUse = null;
+			        	    		try {
+			        	    			lngFolderToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName);
+			        	    		}
+			        	    		catch (Exception ex) {
+			        	    			if (ex instanceof UncheckedCodedException) {
+			        	    				String message = ex.getLocalizedMessage();
+			        	    				if (!(MiscUtil.hasString(message))) {
+			        	    					message = ex.getMessage();
+			        	    				}
+			    	        	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, message);
+			    	        	    		blnCheckForAppletFile = false;
+			    	        	    		break;
+			        	    			}
+			        	    			throw ex;
+			        	    		}
 			        	    		lngFolderIdToUse = lngFolderToUse.getId();
 			        	    		this.getBinderModule().setDefinitionsInherited(lngFolderIdToUse, true);
 			        	    	}
 	        	    		}
+	        	    	}
+	        	    	
+	        	    	if (!blnCheckForAppletFile) {
+	        	    		break;
 	        	    	}
 	        	    	
 	        	    	//Using the Folder object that was already present or that was recently created 

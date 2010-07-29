@@ -45,6 +45,9 @@ function ss_hideFolderDropTarget${ssBinderId}${ss_namespace}(strErrorMessage) {
 		alert(strErrorMessage);
 	}
 	if (self.parent) {
+		if (ss_isGwtUIActive) {
+			window.top.m_requestInfo.forceSidebarReload = true;
+		}
 		self.parent.location.reload(true);
 		self.parent.focus();
 	}
