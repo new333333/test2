@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.portlet.forum;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.Calendar;
@@ -72,6 +73,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
@@ -130,7 +132,7 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
-				setupReloadBinder(response, folderId);
+				setupReloadBinder(request, response, folderId);
 				if (!addEntryFromIFrame.equals("")) {
 					setupReloadOpener(response, folderId, null);
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
@@ -349,9 +351,9 @@ public class AddEntryController extends SAbstractController {
 		return arrFolders;
 	}
 	
-	private void setupReloadBinder(ActionResponse response, Long folderId) {
-		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+	private void setupReloadBinder(ActionRequest request, ActionResponse response, Long folderId) {
+		//return to view binder
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_BINDER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "");	
 	}

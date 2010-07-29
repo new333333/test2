@@ -1732,7 +1732,7 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
 				}
 			} else if (self.window.name == "gwtContentIframe") {
 				//This is in the main content iframe
-				self.history.go(-1);
+				self.history.back();
 				return false;
 			}
 		}
