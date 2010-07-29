@@ -122,9 +122,7 @@ p {
 
 body.ss_style_body {
 	margin: 0px 0px 0px 0px;
-	background-color: #fff;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	background: transparent;
 }
 
 img { -ms-interpolation-mode: bicubic; }
