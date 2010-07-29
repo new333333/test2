@@ -332,6 +332,7 @@ public class WebKeys {
 	public static final String ACTION_READ_FILE="readFile";
 	public static final String ACTION_READ_SCALED="readScaledFile";
 	public static final String ACTION_READTHUMB_NAIL="readThumbnail";
+	public static final String ACTION_RELOAD_BINDER="reload_binder";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_RELOAD_OPENER_PARENT="reload_opener_parent";
 	public static final String ACTION_RELOAD_PREVIOUS_PAGE="reload_previous_page";

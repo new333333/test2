@@ -8,6 +8,7 @@
 	<bean id="closeWindowController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.CloseWindowController" />
 	<bean id="reloadOpenerController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadOpenerController" />
 	<bean id="reloadPreviousPageController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadPreviousPageController" />
+	<bean id="reloadBinderController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ReloadBinderController" />
 	<bean id="viewBinderInParentController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewBinderInParentController" />
 	<bean id="editController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EditController" />
 	<bean id="appletResponseController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.AppletResponseController" />
@@ -118,6 +119,7 @@
 						<entry key="view_binder_in_parent"><ref bean="viewBinderInParentController"/></entry>
 						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
 						<entry key="reload_previous_page"><ref bean="reloadPreviousPageController"/></entry>
+						<entry key="reload_binder"><ref bean="reloadBinderController"/></entry>
 						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
 						<entry key="clipboard"><ref bean="clipboardController"/></entry>
 												
