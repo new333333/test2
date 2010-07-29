@@ -368,8 +368,8 @@ function ss_showFolderAddAttachmentDropbox(namespace, binderId, isLibrary) {
 		eval("iFrameFolderAttachmentInvokedOnce" +  binderId + namespace + "= 'true'");
 	}
 
-	divObj.style.width = "400px";
-	divObj.style.height = "250px";
+	divObj.style.width = "500px";
+	divObj.style.height = "300px";
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();

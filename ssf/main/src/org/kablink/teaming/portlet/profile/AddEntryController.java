@@ -175,7 +175,7 @@ public class AddEntryController extends SAbstractController {
 	}
 	private void setupReloadBinder(ActionResponse response, Long folderId) {
 		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_BINDER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 	}
 	private void setupReloadOpener(ActionResponse response, Long binderId) {
