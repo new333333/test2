@@ -825,6 +825,8 @@ body, table td, select
 	position: absolute;
 	top: 8px;
 	background-color:#fff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .mainContentControl iframe.gwt-Frame {
