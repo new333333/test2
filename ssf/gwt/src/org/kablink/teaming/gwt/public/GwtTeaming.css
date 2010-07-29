@@ -824,6 +824,7 @@ body, table td, select
 	left: 246px;
 	position: absolute;
 	top: 8px;
+	background-color:#fff;
 }
 
 .mainContentControl iframe.gwt-Frame {
