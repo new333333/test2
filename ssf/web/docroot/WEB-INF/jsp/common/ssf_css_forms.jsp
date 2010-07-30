@@ -175,8 +175,9 @@ td.rightend
 .ss_form_header {
 	color:#fff;
 	font-family: ${ss_style_font_family};
-	font-size: 16px !important;
-	font-weight: bold;
+	font-size: 15px !important;
+	letter-spacing: .03em;
+	font-weight: normal !important;
 	padding-top: 3px;
 	margin-bottom: 10px;
 	}

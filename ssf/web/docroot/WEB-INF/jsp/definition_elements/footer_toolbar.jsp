@@ -218,12 +218,11 @@ Boolean webdavSupportedFooter = new Boolean(org.kablink.teaming.web.util.BinderH
 var iFrameFolderAttachmentInvokedOnce${ssFolder.id}${renderResponse.namespace} = "false"
 
 </script>
-<div id="ss_permalink_display_div" class="ss_style"
-  style="display:none; background-color: #ddd; border:1px solid #cecece; margin:0px 10px 10px 0px;">
-  <div align="right">
-	<a style="margin-left:15px;" <ssf:alt tag="alt.hidePermalinks"/>
+<div id="ss_permalink_display_div" class="ss_style" style="display:none;">
+  <div style="text-align: right;">
+	<a <ssf:alt tag="alt.hidePermalinks"/>
    	  onClick="ss_hideDivNone('ss_permalink_display_div'); return false;"><img 
-  	   border="0" src="<html:imagesPath/>icons/close_off.gif"/>
+  	   border="0" src="<html:imagesPath/>icons/close_gray16.png"/>
   	</a>
   </div>
 <%@ include file="/WEB-INF/jsp/forum/permalinks.jsp" %>

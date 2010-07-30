@@ -201,13 +201,6 @@ div.ss_header_bar_timestamp {
   white-space: nowrap;
 }
 
-div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
-	color: ${ss_style_metadata_color};
-	}
-div.ss_header_bar_timestamp a:hover, div.ss_header_bar_timestamp a:visited:hover {
-	color: ${ss_style_metadata_color};
-	text-decoration: underline;
-	}
 div.ss_header_bar_burst {
     display: inline;
 	padding-left: 3px;
