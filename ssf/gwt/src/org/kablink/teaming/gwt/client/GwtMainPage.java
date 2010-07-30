@@ -786,6 +786,12 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case MY_WORKSPACE:
+			// If we're currently running site administration...
+			if ((null != m_adminControl) && m_adminControl.isVisible()) {
+				// ...close it first.
+				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
+			}
+			
 			// Change the browser's URL.
 			preContextSwitch();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
