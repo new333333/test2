@@ -125,15 +125,22 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	 * 
 	 * @param idBase
 	 * @param tbi
+	 * @param addEntryView
 	 */
-	final public void addContextMenuItem(String idBase, ToolbarItem tbi) {
+	final public void addContextMenuItem(String idBase, ToolbarItem tbi, boolean hideEntryView) {
 		// If we have a widget for the menu item... 
-		ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi);
+		ContextMenuItem cmi = new ContextMenuItem(this, idBase, tbi, hideEntryView);
 		Widget cmiWidget = cmi.getWidget();
 		if (null != cmiWidget) {
 			// ...add it to the popup.
 			addContentWidget(cmiWidget);
 		}
+	}
+	
+	final public void addContextMenuItem(String idBase, ToolbarItem tbi) {
+		// Always use the initial form of the method, defaulting to not
+		// hiding an entry view.
+		addContextMenuItem(idBase, tbi, false);
 	}
 
 	/**

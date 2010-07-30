@@ -242,8 +242,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
 			// ...construct it now...
-			addContextMenuItem(IDBASE, m_whatsNewTBI);
-			addContextMenuItem(IDBASE, m_whatsUnreadTBI);
+			addContextMenuItem(IDBASE, m_whatsNewTBI,    true);
+			addContextMenuItem(IDBASE, m_whatsUnreadTBI, true);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
 			addContextMenuItem(IDBASE, m_activityReportTBI);
 			if (isSpacerNeeded() &&
