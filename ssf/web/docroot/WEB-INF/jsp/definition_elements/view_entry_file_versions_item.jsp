@@ -88,7 +88,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
 	  <tr class="${ss_attachedFileRowClass}">		
-		<td colspan="2" class="ss_att_title">
+		<td colspan="2" class="ss_att_title"
+		  <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
+		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
+		>
 		<%
 			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		%>
@@ -204,8 +207,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+			<jsp:useBean id="fileVersion" type="org.kablink.teaming.domain.FileAttachment" />
 <%
-	String vfn = selection.getFileItem().getName();
+	String vfn = fileVersion.getFileItem().getName();
 	String vext = "";
 	if (vfn.lastIndexOf(".") >= 0) vext = vfn.substring(vfn.lastIndexOf("."));
 	String vfnBr = "";
@@ -229,7 +233,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			    <td style="padding-left: 8px; padding-right: 3px">
 			      <input type="checkbox" name="delete_version_${fileVersion.id}"/>
 			    </td>
-				<td class="ss_att_title" style="font-weight: normal; padding-left: 0px;">
+				<td class="ss_att_title" style="font-weight: normal; padding-left: 0px;
+		  			<% if (!BrowserSniffer.is_ie(request) && fileVersion.getFileItem().getName().length() <= 80) { %> white-space: nowrap; <% } %>
+		  			<% if (BrowserSniffer.is_ie(request) || fileVersion.getFileItem().getName().length() > 80) { %> white-space: normal; <% } %>
+				  ">
 				<c:if test="<%= !owningBinder.isMirrored() %>">
 					<a style="text-decoration: none;"
 					  href="<ssf:fileUrl file="${fileVersion}"/>" 

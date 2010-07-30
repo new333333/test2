@@ -79,7 +79,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	    </div>
 		</td>
 		
-		<td class="ss_att_title" style="border: 0px;">
+		<td class="ss_att_title" style="border: 0px; 
+		  <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> white-space: nowrap; <% } %>
+		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> white-space: normal; <% } %>
+		  ">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
           <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
 		</td>
