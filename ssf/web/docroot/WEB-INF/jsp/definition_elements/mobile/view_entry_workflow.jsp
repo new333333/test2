@@ -79,7 +79,6 @@
 				    <option value="${transition.key}"><ssf:nlt tag="${transition.value}" checkIfTag="true"/></option>
 				  </c:forEach>
 				  </select><input type="submit" class="ss_submit" name="changeStateBtn" 
-				   style="background: inherit !important;"
 				   value="<ssf:nlt tag="button.ok" text="OK"/>">
 				  </form>
 			  </c:if>
