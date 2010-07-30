@@ -112,11 +112,30 @@ public class AddEntryController extends SAbstractController {
 				MapInputData inputData = new MapInputData(formData);
 				
 				try {
+					// Does the folder being added to require unique titles?
+					if (getBinderModule().getBinder(folderId).isUniqueTitles()) {
+						// Yes!  Do we have a title for the entry we're
+						// adding?
+						String title = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE);
+						if (MiscUtil.hasString(title)) {
+							// Yes!  Is it already being used in the binder?
+							if (BinderHelper.isTitleRegistered(folderId, title)) {
+								// Yes!  Generate an error.
+								String error = NLT.get("errorcode.title.exists", new Object[]{title});
+					    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, error);
+					    		return;
+							}
+						}
+					}
 					entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
+				} catch (WriteEntryDataException e) {
+		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+		    		return;
 				}
+				
 				setupReloadBinder(request, response, folderId);
 				if (!addEntryFromIFrame.equals("")) {
 					setupReloadOpener(response, folderId, null);
