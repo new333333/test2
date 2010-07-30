@@ -42,7 +42,7 @@
 <body class="tundra">
 </ssf:ifadapter>
 
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet diag_modal2">
 <ssf:form titleTag="entry.workflowHistory">
 <form class="ss_form" method="post" action="<ssf:url     
 		adapter="true" 
@@ -62,21 +62,21 @@
 	 </c:if>
 	 <br/>
     	<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
-    		<tr>
-				<th width="5%" class="ss_table_heading"><ssf:nlt tag="entry.eventNumber"/></th>
-				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedOn"/></th>
-				<th width="20%" class="ss_table_heading"><ssf:nlt tag="entry.modifiedBy"/></th>
-				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.operation"/></th>
-				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.processName"/></th>
-				<th width="15%" class="ss_table_heading"><p><ssf:nlt tag="entry.threadName"/></p></th>
-				<th width="15%" class="ss_table_heading"><ssf:nlt tag="entry.state"/></th>
+    		<tr class="ss_tab_table_columnhead">
+				<td><ssf:nlt tag="entry.eventNumber"/></td>
+				<td><ssf:nlt tag="entry.modifiedOn"/></td>
+				<td><ssf:nlt tag="entry.modifiedBy"/></td>
+				<td><ssf:nlt tag="entry.operation"/></td>
+				<td><ssf:nlt tag="entry.processName"/></td>
+				<td><ssf:nlt tag="entry.threadName"/></td>
+				<td><ssf:nlt tag="entry.state"/></td>
 			</tr>
 			
 			<c:forEach var="change" items="${ss_changeLogList}">
 			  <c:set var="changeLog" value="${change.changeLog}"/>
 			  <jsp:useBean id="changeLog" type="org.kablink.teaming.domain.ChangeLog" />
-			  <tr>
-				<td class="ss_table_data_mid" valign="top">
+			  <tr class="ss_tab_table_row">
+				<td>
 				  ${changeLog.version}&nbsp
 				</td>
 				
@@ -86,7 +86,7 @@
 	  				timeStyle="short" dateStyle="short" />&nbsp
 				</td>
 				
-				<td class="ss_table_data_TD" valign="top">
+				<td>
 				  <%
 				  	String fullName = changeLog.getUserName();
 				  	java.util.List ps = ResolveIds.getPrincipals(changeLog.getUserId().toString(), false);
@@ -95,11 +95,11 @@
 				  <%= fullName %> (${changeLog.userName})&nbsp
 				</td>
 				
-				<td class="ss_table_data_TD" valign="top">
+				<td>
 				  <ssf:nlt tag="workflow.${changeLog.operation}"/>&nbsp
 				</td>
 				
-				<td class="ss_table_data_TD" valign="top">			
+				<td>			
 				<%
 					Document doc = changeLog.getDocument();
 					Element root = doc.getRootElement();
@@ -137,7 +137,7 @@
 				%>
 				</td>
 				
-				<td class="ss_table_data_TD" valign="top">
+				<td>
 				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
 					  <c:if test="${!empty workflow.value.attributes.threadCaption}">
 					    ${workflow.value.attributes.threadCaption}&nbsp
@@ -149,7 +149,7 @@
 				  </c:forEach>
 				</td>
 				
-				<td class="ss_table_data_TD" valign="top">
+				<td>
 				  <c:forEach var="workflow" items="${change.folderEntry.workflowState}">
 					  <c:if test="${!empty workflow.value.attributes.stateCaption}">
 					    ${workflow.value.attributes.stateCaption}&nbsp

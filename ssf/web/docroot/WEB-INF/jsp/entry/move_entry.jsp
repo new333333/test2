@@ -46,22 +46,28 @@ function ${wsTreeName}_showId(forum, obj, action) {
 }
 </script>
 
-<div class="ss_style ss_portlet">
-<div style="padding:4px;">
-<c:if test="${ssOperation == 'move'}">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="move.entry"/></span>
-</c:if>
-<c:if test="${ssOperation != 'move'}">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.entry"/></span>
-</c:if>
-<br/>
-<br/>
-<span><ssf:nlt tag="move.currentEntry"/>: </span>
-<span><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
-  //
-<span class="ss_bold">${ssEntry.title}</span>
-  
-<br/>
+<div class="ss_style ss_portlet diag_modal">
+	<div style="padding:10px;">
+		<c:if test="${ssOperation == 'move'}">
+			<div class="marginbottom3">
+				<span class="ss_size_18px ss_bold"><ssf:nlt tag="move.entry"/></span>
+				<span style="padding-left:5px;"><ssf:nlt tag="move.andfiles"/></span>
+			</div>
+		</c:if>
+
+		<c:if test="${ssOperation != 'move'}">
+			<div class="marginbottom3">
+				<span class="ss_size_18px ss_bold"><ssf:nlt tag="copy.entry"/></span>
+				<span style="padding-left:5px;"><ssf:nlt tag="move.andfiles"/></span>
+			</div>
+		</c:if>
+		<div class="margintop3">
+			<span><ssf:nlt tag="move.currentEntry"/>: </span>
+			<span><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+			  //
+			<span class="ss_bold">${ssEntry.title}</span>
+		</div>
+
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url
 	action="modify_folder_entry"
@@ -165,10 +171,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </c:if>
 </ul>
 </div>
-<div class="ss_clear"></div>
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	<div class="teamingDlgBoxFooter">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
+		<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+	</div>
 </form>
 </div>
 </div>
