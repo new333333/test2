@@ -66,6 +66,7 @@
 {
 	position: absolute;
 	top: 8px;
+	background-color:#fff;
 }
 
 /* Style used for the iframe in the content control that holds the administration content. */
