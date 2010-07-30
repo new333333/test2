@@ -46,7 +46,8 @@
 </span><br/><br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onclick="ss_startSpinner();">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+  onClick=ss_cancelButtonCloseWindow();return false;">
 
 </form>
 </div>
