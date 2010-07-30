@@ -211,6 +211,17 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Called to hide any open entry view DIV that's in new page mode.
+	 */
+	public static native void jsHideNewPageEntryViewDIV() /*-{
+		if (window.top.ss_getUserDisplayStyle() == "newpage") {
+			if (typeof window.top.ss_hideEntryDivOnLoad != "undefined") {
+				window.top.ss_hideEntryDivOnLoad();
+			}
+		}
+	}-*/;
+	
+	/**
 	 * Invoke the "define editor overrides" dialog.
 	 */
 	public static native void jsInvokeDefineEditorOverridesDlg() /*-{
@@ -396,7 +407,7 @@ public class GwtClientHelper {
 			});
 		}
 	}
-	
+
 	public static void scrollUIForPopup(PopupPanel popup) {
 		// Always use the initial form of the method, defaulting to a
 		// vertical scroll bar only.

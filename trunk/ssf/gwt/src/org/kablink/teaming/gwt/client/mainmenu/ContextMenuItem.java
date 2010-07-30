@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class ContextMenuItem {
+	private boolean m_hideEntryView;				// true -> Hides any open entry view when the menu item is triggered.  false -> It doesn't.	
 	private MenuBarPopupBase m_contextMenu;			// The menu containing    this context based menu item.
 	private MenuPopupAnchor m_contextMenuAnchor;	// The anchor created for this context based menu item.
 	
@@ -178,6 +179,12 @@ public class ContextMenuItem {
 			
 			// ...hide the menu...
 			m_contextMenu.hide();
+			
+			// ...if requested to do so...
+			if (m_hideEntryView) {
+				// ...hide any entry view...
+				GwtClientHelper.jsHideNewPageEntryViewDIV();
+			}
 
 			// ...and perform the request based on the type of click
 			// ...handler was constructed from.
@@ -212,10 +219,12 @@ public class ContextMenuItem {
 	 * @param contextMenu
 	 * @param idBase
 	 * @param tbi
+	 * @param hideEntryView
 	 */
-	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi) {
-		// Store the context menu we're creating this for.
+	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi, boolean hideEntryView) {
+		// Store the parameters we keep class global.
 		m_contextMenu = contextMenu;
+		m_hideEntryView = hideEntryView;
 		
 		// If we don't have an menu item...
 		if (null == tbi) {
@@ -237,6 +246,12 @@ public class ContextMenuItem {
 			label,
 			tbi.getQualifierValue("title"),
 			clicker);
+	}
+	
+	public ContextMenuItem(MenuBarPopupBase contextMenu, String idBase, ToolbarItem tbi) {
+		// Always use the initial form of the constructor, defaulting
+		// to not hiding an entry view.
+		this(contextMenu, idBase, tbi, false);
 	}
 
 	/*
