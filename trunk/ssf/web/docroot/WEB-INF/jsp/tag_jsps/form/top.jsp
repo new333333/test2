@@ -49,6 +49,14 @@
     	<ssf:nlt tag="${ss_title}" checkIfTag="true"/>
       </c:if>
     </div>
+	<div class="ss_newpage_box_close">
+		<img border="0" <ssf:alt/>
+			 height="16" hspace="0" 
+			 name="p_${renderResponse.namespace}_close" 
+			 src="<html:imagesPath/>icons/close_teal16.png" 
+			 title="<ssf:nlt tag="icon.close" text="Close" />" 
+			 vspace="0" width="16" >
+	</div>		 
 </c:if>
 <c:set var="ss_formTagTopApplied" value="1"/>
 

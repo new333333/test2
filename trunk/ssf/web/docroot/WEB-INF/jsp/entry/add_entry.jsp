@@ -37,7 +37,7 @@
 <c:set var="ss_windowTitle" value='<%= NLT.get("window.title.addEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
-<body class=" ss_style_body tundra">
+<body class="ss_style_body tundra">
 </ssf:ifadapter>
 <div class="ss_popup_wrapper 
   <c:if test="${ssOperation == 'add_folder_reply'}">diag_modal2</c:if>">

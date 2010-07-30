@@ -84,267 +84,260 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 %>
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet diag_modal2">
-<ssf:form titleTag="access.configure">
-<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
-<div style="margin:6px; width:100%;">
-<table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-<td valign="top">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span> <ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
-<br/>
-<br/>
-	<table cellpadding="0" cellspacing="0">
-	<tr>
-	<td><span><ssf:nlt tag="access.currentEntry"/></span>
-	</td>
-	<td style="padding-left:10px;">
-	<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
-	</td>
-	</tr>
-	<tr>
-	<td>
-	<span><ssf:nlt tag="access.entryOwner"/></span>
-	</td>
-	<td style="padding-left:10px;">
-	<span class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
-		  <span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span></span>
-	</td>
-	</tr>
-	</table>
-</td>
-<td align="right" valign="top">
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url ><ssf:param 
-	name="action" value="configure_access_control"/><ssf:param 
-	name="actionUrl" value="true"/><ssf:param 
-	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
-	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="button" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="ss_cancelButtonCloseWindow();return false;"/>
-</form>
-</td>
-</tr>
-</table>
+	<ssf:form titleTag="access.configure">
+	<ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
+	<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
+		<div>
+			<table cellpadding="0" cellspacing="0" width="100%">
+				<tr>
+				<td valign="top">
+					<table cellpadding="0" cellspacing="5" class="margintop3">
+						<tr>
+							<td><span><ssf:nlt tag="access.currentEntry"/></span></td>
+							<td style="padding-left:10px;">
+								<span class="ss_bold"><ssf:nlt tag="${ssWorkArea.title}" checkIfTag="true"/></span>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span><ssf:nlt tag="access.entryOwner"/></span>
+							</td>
+							<td style="padding-left:10px;">
+								<span class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
+								<span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span></span>
+							</td>
+						</tr>
+					</table>
+				</td>
+				<td align="right" valign="top">
+					<form class="ss_form" method="post" style="display:inline;" 
+						action="<ssf:url ><ssf:param 
+						name="action" value="configure_access_control"/><ssf:param 
+						name="actionUrl" value="true"/><ssf:param 
+						name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+						name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+					  <input type="button" class="ss_submit" name="closeBtn" 
+						value="<ssf:nlt tag="button.close" text="Close"/>"
+						onClick="ss_cancelButtonCloseWindow();return false;"/>
+					</form>
+				</td>
+			</tr>
+		</table>
 
-<ssf:box style="rounded">
-<div style="padding:4px 8px;">
+		<div class="margintop3 ss_newpage_box" style="padding:10px; background-color: #f6f6f6;">
+			<c:if test="${ssEntryHasEntryAcl && !ss_accessControlConfigureAllowed}">
+			<div>
+  				<span class="ss_italic">[<ssf:nlt tag="access.mode.readonly"/>]</span>
+			</div>
+			</c:if>
 
-<c:if test="${ssEntryHasEntryAcl && !ss_accessControlConfigureAllowed}">
-<div>
-  <span class="ss_italic">[<ssf:nlt tag="access.mode.readonly"/>]</span>
-</div>
-</c:if>
-
-<form class="ss_form" 
-  name="${renderResponse.namespace}rolesForm" 
-  id="${renderResponse.namespace}rolesForm" 
-  method="post" 
-  action="<ssf:url><ssf:param 
-  		name="action" value="configure_access_control"/><ssf:param 
-  		name="actionUrl" value="true"/><ssf:param 
-  		name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
-  		name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-
-<input type="hidden" name="btnClicked"/>
-<input type="hidden" name="roleIdToAdd"/>
-
-<div>
-  <c:if test="${!ssEntryHasEntryAcl}"><span class="ss_bold">
-    <ssf:nlt tag="access.noEntryAclSet"/></span>
-    <span class="ss_smallprint" style="padding-left:20px;">
-      [<a href="<ssf:url action="configure_access_control"><ssf:param
-		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
-		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
-		  name="operation" value="view_access"/></ssf:url>"
-  		onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
-	  ><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]
-	</span>
-  </c:if>
-  <c:if test="${ssEntryHasEntryAcl}"><span class="ss_bold"><ssf:nlt tag="access.entryAclSet"/></span></c:if>
-  <br/>
-  <div style="padding:4px 0px 20px 10px;">
-   <c:if test="${ss_accessControlConfigureAllowed}">
-    <input type="radio" name="aclSelection" value="folder"  
-      <c:if test="${!ssEntryHasEntryAcl}"> checked </c:if>
-      <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
-    />
-    <span><ssf:nlt tag="access.entry.useFolderACL"/></span>
-    <br/>
-    <input type="radio" name="aclSelection" value="entry" 
-      <c:if test="${ssEntryHasEntryAcl}"> checked </c:if>
-      <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
-    />
-    <span><ssf:nlt tag="access.entry.specifyEntryACL"/></span>
-    <br/>
-    <div style="padding:4px 0px 20px 10px;">
-        <input type="submit" class="ss_submit" name="aclSelectionBtn" 
- 		  value="<ssf:nlt tag="button.apply" />">
-	</div>
-   </c:if>
-  </div>
-</div>
-
-<div id="ss_accessControlTable" 
-  <c:if test="${!ssEntryHasEntryAcl && empty ss_accessSortedGroups && empty ss_accessSortedUsers}">style="display:none;"</c:if>
->
-<c:if test="${ss_accessFunctionsCount <= 0}">
-<span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
-</c:if>
-<c:if test="${ss_accessFunctionsCount > 0}">
-
-<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
-
-<c:if test="${!ssWorkArea.functionMembershipInherited}">
-
-<div id="ss_addGroupsMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addGroupsMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addGroup"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="group"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
-  </div>
-</div>
-
-<div id="ss_addUsersMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addUsersMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addUser"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="user"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
-  </div>
-</div>
-
-<div id="ss_addApplicationGroupsMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationGroupsMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addApplicationGroup"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="applicationGroup"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
-  </div>
-</div>
-
-<div id="ss_addApplicationsMenu${renderResponse.namespace}" 
-  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
-  <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationsMenu${renderResponse.namespace}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-    </a>
-  </div>
-  <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addApplication"/></span><br/>
-  <ssf:find formName="${renderResponse.namespace}rolesForm" 
-    formElement="addPrincipalText${renderResponse.namespace}" 
-    type="application"
-    leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/>
-  </div>
-</div>
-
-<c:if test="${ss_accessControlConfigureAllowed}">
-<div style="padding:4px;">
-<span class="ss_bold">
-<a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a>
-</span>
-</div>
-</c:if>
-
-	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
-		  <div align="right">
-		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
-		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
-		    </a>
-		  </div>
-		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
-		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
-	    <c:forEach var="function" items="${ssFunctions}">
-	     <c:if test="${function.scope == 'entry'}">
-	      <c:set var="includeRole" value="1"/>
-	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
-	        <c:if test="${sortedFunction.id == function.id}">
-	          <c:set var="includeRole" value="0"/>
-	        </c:if>
-	      </c:forEach>
-	      <c:if test="${includeRole == '1'}">
-	        <li>
-	          <a href="javascript: ;" 
-	          onClick="${renderResponse.namespace}accessObj.addAccessControlRole('${function.id}');"
-	          ><ssf:nlt tag="${function.name}" checkIfTag="true"/></a>
-	        </li>
-	      </c:if>
-	     </c:if>
-	    </c:forEach>
-		</ul>
-	</div>
-  
-</c:if>
-
-
-<c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
-<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
-
-<br/>
-<div style="padding:8px 0px 14px 10px;">
-<table>
-<tr>
-<td valign="bottom">
-<input type="checkbox" 
-  <c:if test="${ssWorkArea.includeFolderAcl}">
-    checked="checked"
-  </c:if>
-  <c:if test="${!ss_accessControlConfigureAllowed}">
-    disabled="disabled"
-  </c:if>
-  name="includeFolderAcl"
-  title="<ssf:nlt tag="access.select"/>" /><span style="padding-left:4px;"><ssf:nlt tag="access.includeFolderAcl"/></span>
-</td>
-<td valign="bottom" style="padding-left:20px;">
-<span class="ss_smallprint">[<a href="<ssf:url action="configure_access_control"><ssf:param
-		  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
-		  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
-		  name="operation" value="view_access"/></ssf:url>"
-  onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
-><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]</span>
-</td>
-</tr>
-</table>
-</div>
-<c:if test="${ss_accessControlConfigureAllowed}">
-<input type="submit" class="ss_submit" name="okBtn" 
- onClick="ss_startSpinner();"
- value="<ssf:nlt tag="button.saveChanges" />">
-</c:if>
-</c:if>
-</form>
+			<form class="ss_form" 
+			  name="${renderResponse.namespace}rolesForm" 
+			  id="${renderResponse.namespace}rolesForm" 
+			  method="post" 
+			  action="<ssf:url><ssf:param 
+					name="action" value="configure_access_control"/><ssf:param 
+					name="actionUrl" value="true"/><ssf:param 
+					name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+					name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+			
+			<input type="hidden" name="btnClicked"/>
+			<input type="hidden" name="roleIdToAdd"/>
+			
+			<div>
+			  <c:if test="${!ssEntryHasEntryAcl}"><span class="ss_bold">
+				<ssf:nlt tag="access.noEntryAclSet"/></span>
+				<span class="ss_smallprint" style="padding-left:20px;">
+				  [<a href="<ssf:url action="configure_access_control"><ssf:param
+					  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
+					  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
+					  name="operation" value="view_access"/></ssf:url>"
+					onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
+				  ><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]
+				</span>
+			  </c:if>
+			  <c:if test="${ssEntryHasEntryAcl}"><span class="ss_bold"><ssf:nlt tag="access.entryAclSet"/></span></c:if>
+			  <div class="margintop3" style="padding:4px 0px 10px 10px;">
+			   <c:if test="${ss_accessControlConfigureAllowed}">
+				<input type="radio" name="aclSelection" value="folder"  
+				  <c:if test="${!ssEntryHasEntryAcl}"> checked </c:if>
+				  <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
+				/>
+				<span><ssf:nlt tag="access.entry.useFolderACL"/></span>
+				<br/>
+				<input type="radio" name="aclSelection" value="entry" 
+				  <c:if test="${ssEntryHasEntryAcl}"> checked </c:if>
+				  <c:if test="${!ss_accessControlConfigureAllowed}"> disabled </c:if>
+				/>
+				<span><ssf:nlt tag="access.entry.specifyEntryACL"/></span>
+				<div class="margintop2" style="padding:4px 0px 20px 10px;">
+					<input type="submit" class="ss_submit" name="aclSelectionBtn" 
+					  value="<ssf:nlt tag="button.apply" />">
+				</div>
+			   </c:if>
+			  </div>
+			</div>
+			
+			<div id="ss_accessControlTable" 
+			  <c:if test="${!ssEntryHasEntryAcl && empty ss_accessSortedGroups && empty ss_accessSortedUsers}">style="display:none;"</c:if>
+			>
+			<c:if test="${ss_accessFunctionsCount <= 0}">
+			<span class="ss_bold ss_italic"><ssf:nlt tag="access.noRoles"/></span><br/>
+			</c:if>
+			<c:if test="${ss_accessFunctionsCount > 0}">
+			
+			<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+			
+			<c:if test="${!ssWorkArea.functionMembershipInherited}">
+			
+			<div id="ss_addGroupsMenu${renderResponse.namespace}" 
+			  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+			  <div align="right">
+				<a href="javascript:;" onClick="ss_hideDiv('ss_addGroupsMenu${renderResponse.namespace}');return false;">
+				  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
+				</a>
+			  </div>
+			  <div style="padding:0px 10px 10px 10px;">
+			  <span class="ss_bold"><ssf:nlt tag="access.addGroup"/></span><br/>
+			  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+				formElement="addPrincipalText${renderResponse.namespace}" 
+				type="group"
+				leaveResultsVisible="false"
+				clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+				width="250px" singleItem="true"/> 
+			  </div>
+			</div>
+			
+			<div id="ss_addUsersMenu${renderResponse.namespace}" 
+			  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+			  <div align="right">
+				<a href="javascript:;" onClick="ss_hideDiv('ss_addUsersMenu${renderResponse.namespace}');return false;">
+				  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
+				</a>
+			  </div>
+			  <div style="padding:0px 10px 10px 10px;">
+			  <span class="ss_bold"><ssf:nlt tag="access.addUser"/></span><br/>
+			  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+				formElement="addPrincipalText${renderResponse.namespace}" 
+				type="user"
+				leaveResultsVisible="false"
+				clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+				width="250px" singleItem="true"/> 
+			  </div>
+			</div>
+			
+			<div id="ss_addApplicationGroupsMenu${renderResponse.namespace}" 
+			  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+			  <div align="right">
+				<a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationGroupsMenu${renderResponse.namespace}');return false;">
+				  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
+				</a>
+			  </div>
+			  <div style="padding:0px 10px 10px 10px;">
+			  <span class="ss_bold"><ssf:nlt tag="access.addApplicationGroup"/></span><br/>
+			  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+				formElement="addPrincipalText${renderResponse.namespace}" 
+				type="applicationGroup"
+				leaveResultsVisible="false"
+				clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+				width="250px" singleItem="true"/> 
+			  </div>
+			</div>
+			
+			<div id="ss_addApplicationsMenu${renderResponse.namespace}" 
+			  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+			  <div align="right">
+				<a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationsMenu${renderResponse.namespace}');return false;">
+				  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
+				</a>
+			  </div>
+			  <div style="padding:0px 10px 10px 10px;">
+			  <span class="ss_bold"><ssf:nlt tag="access.addApplication"/></span><br/>
+			  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+				formElement="addPrincipalText${renderResponse.namespace}" 
+				type="application"
+				leaveResultsVisible="false"
+				clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+				width="250px" singleItem="true"/>
+			  </div>
+			</div>
+			
+			<c:if test="${ss_accessControlConfigureAllowed}">
+			<div style="padding:4px;">
+			<span>
+			<a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a>
+			</span>
+			</div>
+			</c:if>
+			
+				<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
+					  <div align="right">
+						<a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
+						  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
+						</a>
+					  </div>
+					<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
+					<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
+					<c:forEach var="function" items="${ssFunctions}">
+					 <c:if test="${function.scope == 'entry'}">
+					  <c:set var="includeRole" value="1"/>
+					  <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
+						<c:if test="${sortedFunction.id == function.id}">
+						  <c:set var="includeRole" value="0"/>
+						</c:if>
+					  </c:forEach>
+					  <c:if test="${includeRole == '1'}">
+						<li>
+						  <a href="javascript: ;" 
+						  onClick="${renderResponse.namespace}accessObj.addAccessControlRole('${function.id}');"
+						  ><ssf:nlt tag="${function.name}" checkIfTag="true"/></a>
+						</li>
+					  </c:if>
+					 </c:if>
+					</c:forEach>
+					</ul>
+				</div>
+			  
+			</c:if>
+			
+			
+			<c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
+			<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+			<%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
+			
+			<br/>
+			<div style="padding:8px 0px 14px 10px;">
+			<table>
+			<tr>
+			<td valign="bottom">
+			<input type="checkbox" 
+			  <c:if test="${ssWorkArea.includeFolderAcl}">
+				checked="checked"
+			  </c:if>
+			  <c:if test="${!ss_accessControlConfigureAllowed}">
+				disabled="disabled"
+			  </c:if>
+			  name="includeFolderAcl"
+			  title="<ssf:nlt tag="access.select"/>" /><span style="padding-left:4px;"><ssf:nlt tag="access.includeFolderAcl"/></span>
+			</td>
+			<td valign="bottom" style="padding-left:20px;">
+			<span class="ss_smallprint">[<a href="<ssf:url action="configure_access_control"><ssf:param
+					  name="workAreaId" value="${ssWorkArea.parentBinder.id}"/><ssf:param
+					  name="workAreaType" value="${ssWorkArea.parentBinder.workAreaType}"/><ssf:param
+					  name="operation" value="view_access"/></ssf:url>"
+			  onClick="ss_openUrlInPortlet(this.href, true, '600', '700');return false;"
+			><ssf:nlt tag="access.viewWhoHasFolderAccess"/></a>]</span>
+			</td>
+			</tr>
+			</table>
+			</div>
+			<c:if test="${ss_accessControlConfigureAllowed}">
+			<input type="submit" class="ss_submit" name="okBtn" 
+			 onClick="ss_startSpinner();"
+			 value="<ssf:nlt tag="button.saveChanges" />">
+			</c:if>
+			</c:if>
+			</form>
 
 	<div class="ss_italic ss_small margintop3">[<ssf:nlt tag="access.superUser">
 	  <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
@@ -353,7 +346,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	</div>
 
 </div>
-</ssf:box>
+</div>
 
 
 		<form class="ss_form" method="post" style="display:inline;" 
@@ -366,7 +359,6 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 			value="<ssf:nlt tag="button.close" text="Close"/>"
 			onClick="ss_cancelButtonCloseWindow();return false;"/>
 		</form>
-	</div>
 </div>
 
 <c:forEach var="function" items="${ssFunctions}">
@@ -376,7 +368,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">
     <a href="javascript:;" onClick="ss_hideDiv('${renderResponse.namespace}ss_operations${function.id}');return false;">
-      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+      <img border="0" align="absmiddle" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
   <div>
