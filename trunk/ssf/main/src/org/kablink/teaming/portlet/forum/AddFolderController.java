@@ -248,7 +248,7 @@ public class AddFolderController extends SAbstractController {
 
 	private void setupReloadBinder(ActionResponse response, Long binderId) {
 		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_BINDER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	}
 	private void setupReloadOpener(ActionResponse response, Long binderId) {
