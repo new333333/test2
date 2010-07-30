@@ -6476,7 +6476,7 @@ function ss_startSpinner()
 		spinImgDiv.setAttribute("id", "ss_spinnerImgDiv");
 		spinImgDiv.setAttribute("align", "center");
 		var spinImg = document.createElement("img");
-		spinImg.setAttribute("src", ss_imagesPath + "pics/spinner.gif");
+		spinImg.setAttribute("src", ss_rootPath + "images/pics/spinner.gif");
 		spinImg.setAttribute("id", "ss_spinnerImg");
 		spinImgDiv.appendChild(spinImg);
 		spinner.appendChild(spinImgDiv);
