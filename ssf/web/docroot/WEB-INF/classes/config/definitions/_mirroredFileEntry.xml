@@ -85,9 +85,6 @@
     </item> 
   </item>  
   <item name="entryView" caption="__entry_view_definition" id="10" display="view"> 
-    <properties> 
-      <property name="type" value="entryView"/> 
-    </properties>  
     <item name="titleView" caption="__title" id="11"> 
       <properties> 
         <property name="caption" value="__title"/>  
@@ -111,12 +108,15 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="26">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="26"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item>  
+    <properties>
+      <property name="type" value="file"/>
+    </properties>
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="17" display="view"> 
     <properties> 
@@ -138,12 +138,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="27">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="27"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <properties> 
     <property name="caption" value="__definition_default_mirrored_file_entry"/>  
