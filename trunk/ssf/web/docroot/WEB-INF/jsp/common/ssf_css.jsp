@@ -1645,7 +1645,6 @@ div.ss_box_top_rounded {
 .ss_box_title,
 .ss_box_title:visited {
 	color: ${ss_box_title_color};
-	font-weight: bold;
 	text-decoration:none;
 }
 
@@ -1681,8 +1680,9 @@ div.ss_box_top_rounded {
 .ss_newpage_box_header {
 	position: relative;
 	color: #fff;
-	font-size: 14px;
-	font-weight: bold;
+	font-size: 15px;
+	letter-spacing: .03em;
+	font-weight: normal !important;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	-moz-border-radius-topleft: 5px;
