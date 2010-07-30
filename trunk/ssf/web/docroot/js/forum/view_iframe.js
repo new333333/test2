@@ -51,6 +51,7 @@ function ss_setEntryDivHeight() {
 		if (typeof window.ss_showentryframe != "undefined" && 
 				typeof window.ss_showentryframe.document.title != "undefined") {
 			boxTitle = window.ss_showentryframe.document.title;
+			if (boxTitle.length > 80) boxTitle = boxTitle.substr(0,80) + "...";
 		}
 	} catch(e) {}
 	var boxTitleArea = self.document.getElementById("ss_showEntryDivTitle");

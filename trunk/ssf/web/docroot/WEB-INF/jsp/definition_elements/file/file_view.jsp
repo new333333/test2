@@ -71,6 +71,7 @@
 <c:if test="${!empty ssPrimaryFileAttribute}">
   <c:set var="selections" value="${ssDefinitionEntry.customAttributes[ssPrimaryFileAttribute].valueSet}" />
   <c:forEach var="selection" items="${selections}" varStatus="status">
+    <jsp:useBean id="selection" type="org.kablink.teaming.domain.FileAttachment" />
     <c:if test="${status.first}">
 <%
 	ss_entryAttributesSeen.put("title"+ssDefinitionEntry.getId().toString(), true);
@@ -83,30 +84,33 @@
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
           </div>
         </td>
-        <td style="white-space: nowrap">
-	      <div class="ss_entryTitleFile">
+        <td 
+          <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
+		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
+        >
+	      <div class="ss_entryTitleFile" <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>>
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </div>
         </td>
-	    <td  style="white-space: nowrap">
+	    <td  style="white-space: nowrap;">
 		  <div class="ss_entryTitleFileVersion"><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></div>
 		</td>
-		<td style="white-space: nowrap">
+		<td style="white-space: nowrap;">
           <div class="ss_entryTitleFileVersion">
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_status.jsp" />
           </div>
 		</td>
-		<td style="white-space: nowrap">
+		<td style="white-space: nowrap;">
           <div class="ss_entryTitleFileVersion">
             <c:set var="ss_attachedFileIsVersion" value="false" scope="request" />
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions.jsp" />
           </div>
 		</td>
-		<td style="white-space: nowrap">
+		<td style="white-space: nowrap;">
           <div class="ss_entryTitleFileVersion">
             <c:set var="ss_attachedFileShowEditButton" value="true" scope="request"/>
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
