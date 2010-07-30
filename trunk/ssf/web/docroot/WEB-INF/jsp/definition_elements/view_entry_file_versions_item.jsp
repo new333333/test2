@@ -207,6 +207,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+			<c:if test="${!empty fileVersion.fileItem.name}">
 			<jsp:useBean id="fileVersion" type="org.kablink.teaming.domain.FileAttachment" />
 <%
 	String vfn = fileVersion.getFileItem().getName();
@@ -294,6 +295,6 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			      <div><ssf:markup type="view" entity="${ssDefinitionEntry}">${fileVersion.fileItem.description.text}</ssf:markup></div>
 			    </td>
 			  </tr>	
-				
+			  </c:if>
  	    	</c:forEach>
 	</c:if>
