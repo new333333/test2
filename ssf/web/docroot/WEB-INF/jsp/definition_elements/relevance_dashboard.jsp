@@ -68,6 +68,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
         action="view_ws_listing" ><ssf:param 
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
 		name="type" value="tasks_and_calendars" /><ssf:param 
+		name="type3" value="ss_type3PlaceHolder" /><ssf:param 
 		name="page" value="0" /></ssf:url>";
 } else {
   <c:if test="${ssBinder.entityType == 'workspace'}">
