@@ -154,6 +154,11 @@
 				<input type="checkbox" id="allowAnonymous" name="allowAnonymous" <c:if test="${ssAuthenticationConfig.allowAnonymousAccess}">checked</c:if>/>
 					<label for="allowAnonymous"><span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.config.allowAnonymous"/></span><br/></label>
 			</c:if>
+	    	<c:if test="${!showGuestOption}">
+	    	  <div>
+	    	    <span><ssf:nlt tag="administration.configure_userAccessNotLicensed"/></span>
+	    	  </div>
+			</c:if>
 
 			<!-- Are we running the open version of Teaming? -->
 			<c:if test="${openEdition}">
