@@ -2797,7 +2797,10 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (url != "" && popupDiv != null && popupIframe != null) {
-		try {popupIframe.innerHTML = ss_loadingMessage;} catch(e) {}
+		var blankhtml = "<div style=\"text-align: center;\">" + ss_loadingMessage + "</div>";
+		try {
+			window.frames['ss_showpopupframe'].document.body.innerHTML = blankhtml;
+		} catch(e) {}
 		if (typeof popupDiv.style != "undefined" && 
 				typeof popupDiv.style.display != "undefined" && popupDiv.style.display != "block") {
 			popupDiv.style.display = "block";
@@ -2826,7 +2829,7 @@ var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
-	if (popupDiv != null && popupIframe != null && popupDiv.style.display == "block") {
+	if (popupDiv != null && popupIframe != null && typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block") {
 		var scrollHeight = parseInt(window.ss_showpopupframe.document.body.scrollHeight);
 		var height = parseInt(scrollHeight + ss_popupFrameHeightFudge);
 		var width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge);
