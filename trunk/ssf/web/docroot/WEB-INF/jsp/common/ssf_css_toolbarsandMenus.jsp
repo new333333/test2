@@ -975,9 +975,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	
 .diag_modal {
 	position: relative;
-	top: -10px;
 	background-color: #eaebe8;
-	margin: 1px 50px 20px;
+	margin: -10px 50px 20px;
 	padding: 1px 20px 10px;
 	-moz-border-radius-bottomleft: 10px;
 	-moz-border-radius-bottomright: 10px;
@@ -987,7 +986,13 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .diag_modal2 {
 	position: relative;
 	background-color: #eaebe8;
-	padding: 1px 20px 10px;
+	margin: -10px 50px 20px;
+	padding: 15px 10px 10px ;
+	min-width: 700px;
+	-moz-border-radius-bottomleft: 10px;
+	-moz-border-radius-bottomright: 10px;
+	-webkit-border-bottom-right-radius: 10px;
+	-webkit-border-bottom-left-radius: 10px;
 	}
 .diag_modal2 table div.ss_form_wrap {
 	background: transparent;
@@ -995,4 +1000,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}
 .diag_modal2 table div.ss_form_header {
 	color: #333;
+	}
+.diag_modal2 table div.ss_form_wrap	.ss_buttonBarLeft {
+	display: block;
+	text-align: right;
 	}

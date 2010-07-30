@@ -454,7 +454,7 @@ div.ss_editorHints {
   	}
 #ss_entryTop1 {
 	margin-left: 5px;
-	}	
+	}
 div.ss_entryContent a {
   	color:#135c8f !important;
 	}
@@ -1719,7 +1719,7 @@ div.ss_box_top_rounded {
 	-webkit-border-top-right-radius: 5px;
 }
 .ss_popup_wrapper {
-	padding:10px 0px 0px 10px;
+	padding: 0px;
 }
 .ss_popup_box_close {
 	position: absolute;
