@@ -178,6 +178,7 @@ td.rightend
 	font-size: 16px !important;
 	font-weight: bold;
 	padding-top: 3px;
+	margin-bottom: 10px;
 	}
 .ss_table_wrap {
 	display: table;

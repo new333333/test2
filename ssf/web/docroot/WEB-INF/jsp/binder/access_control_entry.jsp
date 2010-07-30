@@ -83,7 +83,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	if (roleId == null) roleId = "";
 %>
 <c:set var="roleId" value="<%= roleId %>" />
-<div class="ss_portlet">
+<div class="ss_portlet diag_modal2">
 <ssf:form titleTag="access.configure">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
@@ -345,30 +345,28 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </c:if>
 </c:if>
 </form>
-<br/>
 
-<span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
-  <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
-  <ssf:param name="value" useBody="true"><ssf:userName user="${ss_superUser}"/></ssf:param>
-  </ssf:nlt>]</span><br/>
+	<div class="ss_italic ss_small margintop3">[<ssf:nlt tag="access.superUser">
+	  <ssf:param name="value" useBody="true"><ssf:userTitle user="${ss_superUser}"/></ssf:param>
+	  <ssf:param name="value" useBody="true"><ssf:userName user="${ss_superUser}"/></ssf:param>
+	  </ssf:nlt>]
+	</div>
+
 </div>
 </ssf:box>
 
 
-<br/>
-<br/>
-
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url ><ssf:param 
-	name="action" value="configure_access_control"/><ssf:param 
-	name="actionUrl" value="true"/><ssf:param 
-	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
-	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
-  <input type="button" class="ss_submit" name="closeBtn" 
-    value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="ss_cancelButtonCloseWindow();return false;"/>
-</form>
-</div>
+		<form class="ss_form" method="post" style="display:inline;" 
+			action="<ssf:url ><ssf:param 
+			name="action" value="configure_access_control"/><ssf:param 
+			name="actionUrl" value="true"/><ssf:param 
+			name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
+			name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+		  <input type="button" class="ss_submit" name="closeBtn" style="margin-top: 15px;" 
+			value="<ssf:nlt tag="button.close" text="Close"/>"
+			onClick="ss_cancelButtonCloseWindow();return false;"/>
+		</form>
+	</div>
 </div>
 
 <c:forEach var="function" items="${ssFunctions}">
