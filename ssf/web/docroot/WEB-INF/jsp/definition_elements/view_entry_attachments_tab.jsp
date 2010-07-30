@@ -212,12 +212,15 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 					  	border="0" align="absmiddle" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_teal16.png"/></a>
 					</div>	
 				</div>	
-				<iframe style="margin-top: 20px; margin-left: 10px;" title="<ssf:nlt tag="entry.AttachFilesByApplet" />" frameborder="0" 
+				<iframe style="margin-top: 20px; margin-left: 10px;" 
+				  title="<ssf:nlt tag="entry.AttachFilesByApplet" />" 
+				  frameborder="0" 
 				  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 				  src="<html:rootPath/>js/forum/null.html" 
-				  height="150" width="95%" 
-				  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
+				  height="180" width="95%" 
+				  onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
+				>xxx</iframe>
 				<div align="right" style="padding:10px;">
 				  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
 				  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/fileUploadHints"/>

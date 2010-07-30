@@ -36,18 +36,18 @@
 
 <c:if test="${ssFolder.entityType == 'folder'}">
 	<div id="ss_div_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
-	  class="ss_border_light" style="visibility:hidden;display:none;">
+	  class="ss_border_light" style="visibility:hidden;display:none;background-color:#fff;width:500px;">
 		<div align="right">
 			<a onClick="ss_hideFolderAddAttachmentDropbox('${renderResponse.namespace}','${ssFolder.id}'); return false;">
 			   <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/> />
 			</a>
 		</div>
-		<iframe frameborder="0" scrolling="no" 
+		<iframe frameborder="0" scrolling="auto" 
 		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
 		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}"
 		    title="Add Files to Folder" 
 		    src="<html:rootPath/>js/forum/null.html" 
-		    height="80%" width="100%">xxx</iframe>
+		    height="80%" width="96%" style="padding:6px;">xxx</iframe>
 	    <div align="right">
 		  <span class="ss_fineprint"><ssf:nlt tag="file.upload.having_trouble"/></span>
 		  <ssf:showHelp guideName="user" pageId="trouble" sectionId="trouble_fileupload" />
