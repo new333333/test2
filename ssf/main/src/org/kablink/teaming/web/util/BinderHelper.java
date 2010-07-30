@@ -83,6 +83,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -134,6 +135,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.util.search.Restrictions;
 import org.kablink.teaming.util.SPropsUtil;
@@ -4208,5 +4210,19 @@ public class BinderHelper {
 		} else if (EntityType.user.equals(entity.getEntityType())) {
 			bs.getProfileModule().indexEntry((Principal)entity);
 		}
+	}
+
+	/**
+	 * Returns true if a title is already registered in a binder and
+	 * false otherwise.
+	 * 
+	 * @param binderId
+	 * @param title
+	 * 
+	 * @return
+	 */
+	public static boolean isTitleRegistered(Long binderId, String title) {
+		CoreDao cd = ((CoreDao) SpringContextUtil.getBean("coreDao"));
+		return (cd.isTitleRegistered(binderId, WebHelper.getNormalizedTitle(title)));
 	}
 }
