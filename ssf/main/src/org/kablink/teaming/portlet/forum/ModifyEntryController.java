@@ -87,6 +87,7 @@ public class ModifyEntryController extends SAbstractController {
 	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -106,7 +107,7 @@ public class ModifyEntryController extends SAbstractController {
 			setupViewFolder(response, folderId);
 			
 			//Force the user's status to be updated.
-			BinderHelper.updateUserStatus(this, request, folderId);
+			BinderHelper.updateUserStatus(folderId, user);
 		
 		} else if (op.equals(WebKeys.OPERATION_LOCK) && WebHelper.isMethodPost(request)) {
 			getFolderModule().reserveEntry(folderId, entryId);
@@ -167,7 +168,7 @@ public class ModifyEntryController extends SAbstractController {
 
 								
 				//Force the user's status to be updated.
-				BinderHelper.updateUserStatus(this, request, folderId, entryId);
+				BinderHelper.updateUserStatus(folderId, entryId, user);
 
 				//See if the user wants to send mail
 				BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
@@ -194,8 +195,8 @@ public class ModifyEntryController extends SAbstractController {
 					//perspective (in case it was the user's MiniBlog
 					//folder) and the destination folder's perspective
 					//(in case it was the user's MiniBlog folder.)
-					BinderHelper.updateUserStatus(this, request, folderId);
-					BinderHelper.updateUserStatus(this, request, destinationId, entryId);
+					BinderHelper.updateUserStatus(folderId, user);
+					BinderHelper.updateUserStatus(destinationId, entryId, user);
 					
 				} else {
 					setupViewEntry(response, folderId, entryId);
@@ -253,7 +254,7 @@ public class ModifyEntryController extends SAbstractController {
 					inputData.put(elementToEdit, newElementText);
 
 					//Force the user's status to be updated.
-					BinderHelper.updateUserStatus(this, request, folderId, entryId);
+					BinderHelper.updateUserStatus(folderId, entryId, user);
 				}
 			}
 			try {

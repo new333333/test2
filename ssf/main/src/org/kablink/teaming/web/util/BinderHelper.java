@@ -118,6 +118,8 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
@@ -2719,27 +2721,28 @@ public class BinderHelper {
 	    model.put(WebKeys.WHATS_UNSEEN_TYPE, true);
 	}
 	
-	public static void updateUserStatus(AllModulesInjected bs, ActionRequest request, 
-			Long folderId) {
+	public static void updateUserStatus(Long folderId, User user) {
 		// Default to updating the user's status using the most recent
 		// entry in their MiniBlog folder.
-		updateUserStatus(bs, request, folderId, null);
+		updateUserStatus(folderId, null, user);
 	}
 	
-	public static void updateUserStatus(AllModulesInjected bs, ActionRequest request, 
-			Long folderId, Long entryId) {
+	public static void updateUserStatus(Long folderId, Long entryId, User user) {
 		Folder	miniBlog;
+		FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
+		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+		ReportModule reportModule = (ReportModule) SpringContextUtil.getBean("reportModule");
 		
 		// If the user is referencing a mini blog folder that we can't
 		// access or that has been deleted, we ignore it and use the
 		// folder that we were given.
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Long miniBlogId = user.getMiniBlogId();
 		boolean userHasMiniBlog = (null != miniBlogId); 
 		if (userHasMiniBlog) {
 			miniBlog = null;
         	try {
-        		miniBlog = bs.getFolderModule().getFolder(miniBlogId); 
+        		miniBlog = folderModule.getFolder(miniBlogId); 
         		if (miniBlog.isDeleted()) {
         			miniBlog = null;
         		}
@@ -2754,7 +2757,7 @@ public class BinderHelper {
 		if (!userHasMiniBlog)
 		{
 			// No!  Does this Folder have a default view defined?
-			Folder folder = bs.getFolderModule().getFolder(folderId);
+			Folder folder = folderModule.getFolder(folderId);
 	   		Definition defaultBinderView = folder.getDefaultViewDef();
 	   		if (null != defaultBinderView) {
 	   			// Yes!  Is the default view a MiniBlog Folder?
@@ -2769,7 +2772,7 @@ public class BinderHelper {
 		if ((null != miniBlogId) && (miniBlogId.longValue() == folderId.longValue())) {
 			try {
 				// Yes!  Can we access the MiniBlog folder?
-				miniBlog = (Folder) bs.getBinderModule().getBinder(miniBlogId);
+				miniBlog = (Folder) binderModule.getBinder(miniBlogId);
 				if (miniBlog.isDeleted()) {
 					//The miniblog folder doesn't exist anymore.
 					miniBlog = null;
@@ -2790,7 +2793,7 @@ public class BinderHelper {
 					// gets removed.
 					Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(new Long[]{user.getId()});
 					crit.add(Restrictions.eq(Constants.BINDER_ID_FIELD, folderId.toString()));
-					Map results   = bs.getBinderModule().executeSearchQuery(crit, 0, 1);
+					Map results   = binderModule.executeSearchQuery(crit, 0, 1);
 			    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 			    	boolean found = false;
 			    	for (Map item: items) {
@@ -2812,7 +2815,7 @@ public class BinderHelper {
 					// Yes, we were given the entryId for the MiniBlog
 					// entry to update the user's status with!  Can we
 					// access it?
-					FolderEntry miniBlogEntry = bs.getFolderModule().getEntry(miniBlogId, entryId);
+					FolderEntry miniBlogEntry = folderModule.getEntry(miniBlogId, entryId);
 					if (null != miniBlogEntry) {
 						// Yes!  Read the description from it.
 						text = miniBlogEntry.getDescription().getStrippedText();
@@ -2825,13 +2828,13 @@ public class BinderHelper {
 					// the user's mini blog...
 					if (!userHasMiniBlog) {
 						// ...set it...
-						bs.getProfileModule().setUserMiniBlog(user, miniBlogId);
+						profileModule.setUserMiniBlog(user, miniBlogId);
 					}
 					
 					// ...and update the status text.
-					bs.getProfileModule().setStatus(text);
-					bs.getProfileModule().setStatusDate(new Date());
-					bs.getReportModule().addStatusInfo(user);
+					profileModule.setStatus(text);
+					profileModule.setStatusDate(new Date());
+					reportModule.addStatusInfo(user);
 				}
 			}
 		}
