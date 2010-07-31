@@ -73,6 +73,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.springframework.util.FileCopyUtils;
@@ -286,6 +287,12 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
 			FolderEntry entry = folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 			if(entry != null) {
+				//If we just added a MiniBlog entry, update the user's status
+				Principal folderOwner = folder.getOwner();
+				if (folderOwner instanceof User) {
+					BinderHelper.updateUserStatus(folder.getId(), entry.getId(), (User)folderOwner);
+				}
+				
 				try {
 					msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, entry.getId().toString());
 				}
