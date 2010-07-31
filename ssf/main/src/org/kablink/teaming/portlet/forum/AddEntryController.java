@@ -89,6 +89,7 @@ public class AddEntryController extends SAbstractController {
 	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
@@ -167,7 +168,7 @@ public class AddEntryController extends SAbstractController {
 			}
 			
 			//If we just added a MiniBlog entry, update the user's status
-			BinderHelper.updateUserStatus(this, request, folderId, entryId);
+			BinderHelper.updateUserStatus(folderId, entryId, user);
 			
 			//See if the user wants to send mail
 			BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
