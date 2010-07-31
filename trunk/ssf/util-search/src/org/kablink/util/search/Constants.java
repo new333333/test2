@@ -33,13 +33,6 @@
 package org.kablink.util.search;
 
 public class Constants {
-	
-	/* 
-	 * NOTE: For consistent naming convention, all field names representing statically-defined
-	 * built-in data elements must use the underscore ('_') character as the prefix. This practice
-	 * not only helps maintain the naming convention, but also helps avoid potential naming
-	 * conflict with user-defined data elements.
-	 */
 
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
@@ -154,7 +147,7 @@ public class Constants {
 	public static final String EVENT_FIELD_END_DATE = "EndDate";
 	public static final String EVENT_COUNT_FIELD = "_eventCount";
 	public static final String EVENT_DATES_FIELD = "_eventDates";
-	public static final String EVENT_RECURRENCE_DATES_FIELD = "_recurrenceDates";
+	public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
 	public static final String EVENT_ID = "ID";
 	public static final String EVENT_DATES = "EventDates";
 	public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
@@ -204,9 +197,9 @@ public class Constants {
 	public static final String FIRSTNAME_FIELD = "_firstName";
 	public static final String MIDDLENAME_FIELD = "_middleName";
 	public static final String LASTNAME_FIELD = "_lastName";
-	public static final String EMAIL_FIELD = "_emailAddress";
-	public static final String EMAIL_TXT_FIELD = "_txtEmailAddress";
-	public static final String EMAIL_MOBILE_FIELD = "_mobileEmailAddress";
+	public static final String EMAIL_FIELD = "emailAddress";
+	public static final String EMAIL_TXT_FIELD = "txtEmailAddress";
+	public static final String EMAIL_MOBILE_FIELD = "mobileEmailAddress";
 	public static final String ORGANIZATION_FIELD = "_org";
 	public static final String PHONE_FIELD = "_phone";
 	public static final String STATUS_FIELD = "_status";
