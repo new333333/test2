@@ -135,7 +135,7 @@ public class Constants {
 	public static final String OWNER_TITLE_FIELD = "_ownerTitle";
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
-	public static final String TITLE_FIELD = "_title";
+	public static final String TITLE_FIELD = "title";
 	public static final String SORT_TITLE_FIELD = "_sortTitle";
 	public static final String NORM_TITLE = "_normTitle";
 	public static final String NORM_TITLE_FIELD = "_normTitleField";
@@ -144,7 +144,7 @@ public class Constants {
 	public static final String NAME_FIELD = "_name";
 	public static final String NAME1_FIELD = "_name1";
 	public static final String DESC_FIELD = "_desc"; // Lucene stored field for description element
-	public static final String DESC_TEXT_FIELD = "_description"; // Lucene indexed field for description element
+	public static final String DESC_TEXT_FIELD = "description"; // Lucene indexed field for description element
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
