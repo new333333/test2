@@ -33,6 +33,13 @@
 package org.kablink.util.search;
 
 public class Constants {
+	
+	/* 
+	 * NOTE: For consistent naming convention, all field names representing statically-defined
+	 * built-in data elements must use the underscore ('_') character as the prefix. This practice
+	 * not only helps maintain the naming convention, but also helps avoid potential naming
+	 * conflict with user-defined data elements.
+	 */
 
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
@@ -128,7 +135,7 @@ public class Constants {
 	public static final String OWNER_TITLE_FIELD = "_ownerTitle";
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
-	public static final String TITLE_FIELD = "title";
+	public static final String TITLE_FIELD = "_title";
 	public static final String SORT_TITLE_FIELD = "_sortTitle";
 	public static final String NORM_TITLE = "_normTitle";
 	public static final String NORM_TITLE_FIELD = "_normTitleField";
@@ -137,7 +144,7 @@ public class Constants {
 	public static final String NAME_FIELD = "_name";
 	public static final String NAME1_FIELD = "_name1";
 	public static final String DESC_FIELD = "_desc"; // Lucene stored field for description element
-	public static final String DESC_TEXT_FIELD = "description"; // Lucene indexed field for description element
+	public static final String DESC_TEXT_FIELD = "_description"; // Lucene indexed field for description element
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
@@ -147,7 +154,7 @@ public class Constants {
 	public static final String EVENT_FIELD_END_DATE = "EndDate";
 	public static final String EVENT_COUNT_FIELD = "_eventCount";
 	public static final String EVENT_DATES_FIELD = "_eventDates";
-	public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
+	public static final String EVENT_RECURRENCE_DATES_FIELD = "_recurrenceDates";
 	public static final String EVENT_ID = "ID";
 	public static final String EVENT_DATES = "EventDates";
 	public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
@@ -197,9 +204,9 @@ public class Constants {
 	public static final String FIRSTNAME_FIELD = "_firstName";
 	public static final String MIDDLENAME_FIELD = "_middleName";
 	public static final String LASTNAME_FIELD = "_lastName";
-	public static final String EMAIL_FIELD = "_email";
-	public static final String EMAIL_TXT_FIELD = "_emailTxt";
-	public static final String EMAIL_MOBILE_FIELD = "_emailMobile";
+	public static final String EMAIL_FIELD = "_emailAddress";
+	public static final String EMAIL_TXT_FIELD = "_txtEmailAddress";
+	public static final String EMAIL_MOBILE_FIELD = "_mobileEmailAddress";
 	public static final String ORGANIZATION_FIELD = "_org";
 	public static final String PHONE_FIELD = "_phone";
 	public static final String STATUS_FIELD = "_status";
