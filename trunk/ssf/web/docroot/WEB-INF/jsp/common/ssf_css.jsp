@@ -1691,9 +1691,7 @@ div.ss_box_top_rounded {
 	-webkit-border-top-right-radius: 5px;
 }
 .ss_newpage_box_close {
-	position: absolute;
-	top: 5px;
-	right: 8px;
+	padding: 5px 8px 0px 0px;
 	}
 .ss_newpage_box_title {
 	padding-left: 5px;

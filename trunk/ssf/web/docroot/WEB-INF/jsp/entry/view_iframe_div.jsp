@@ -100,10 +100,18 @@
   <c:if test="${ssUser.displayStyle == 'newpage'}">
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
 	    <div id="ss_iframe_holder_div${renderResponse.namespace}">
-	      <div class="ss_newpage_box_header" >
-	        <span class="ss_newpage_box_close"><a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
-					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a></span>
+	      <div class="ss_newpage_box_header" style="width:100%;">
+	        <table width="100%" cellspacing="0" cellpadding="0">
+	        <tr>
+	        <td valign="top">
 	        <span class="ss_newpage_box_title" id="ss_showEntryDivTitle"></span>
+	        </td>
+	        <td valign="top" align="right">
+	          <span class="ss_newpage_box_close"><a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
+					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a></span>
+			</td>
+			</tr>
+			</table>
 	      </div>
 		    <iframe id="ss_showentryframe${renderResponse.namespace}"
 		  	  title="<ssf:nlt tag = "iframe.entry"/>" 
