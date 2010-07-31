@@ -42,21 +42,35 @@
 <table cellspacing="0" cellpadding="0" width="100%"><tr><td>
 <div class="${ss_formClass}">
     <div class="ss_form_header">
-      <c:if test="${!empty ss_title_tag}">
-    	<ssf:nlt tag="${ss_title_tag}"/>
-      </c:if>
-      <c:if test="${!empty ss_title}">
-    	<ssf:nlt tag="${ss_title}" checkIfTag="true"/>
-      </c:if>
-    </div>
-	<div class="ss_newpage_box_close">
+      <table cellspacing="0" cellpadding="0" width="100%">
+      <tr>
+      <td valign="top">
+        <c:if test="${!empty ss_title_tag}">
+    	  <ssf:nlt tag="${ss_title_tag}"/>
+        </c:if>
+        <c:if test="${!empty ss_title}">
+    	  <ssf:nlt tag="${ss_title}" checkIfTag="true"/>
+        </c:if>
+      </td>
+      <td valign="top" align="right">
+		<%--
 		<img border="0" <ssf:alt/>
 			 height="16" hspace="0" 
 			 name="p_${renderResponse.namespace}_close" 
 			 src="<html:imagesPath/>icons/close_teal16.png" 
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="16" >
-	</div>		 
+		--%>
+		<img border="0" <ssf:alt/>
+			 height="16" hspace="0" 
+			 name="p_${renderResponse.namespace}_close" 
+			 src="<html:rootPath/>images/pics/1pix.gif" 
+			 title="<ssf:nlt tag="icon.close" text="Close" />" 
+			 vspace="0" width="16" >
+      </td>
+      </tr>
+      </table>
+    </div>
 </c:if>
 <c:set var="ss_formTagTopApplied" value="1"/>
 
