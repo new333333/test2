@@ -82,6 +82,7 @@ public class AddFolderController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Boolean isShortForm = PortletRequestUtils.getBooleanParameter(request, "shortForm", false);				
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");				
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
@@ -133,7 +134,7 @@ public class AddFolderController extends SAbstractController {
 				}
 			}
 			
-			if (isShortForm) {
+			if (isShortForm || operation.equals("add_team_workspace")) {
 				setupReloadBinder(response, newId);
 			} else {
 				setupReloadOpener(response, newId);
