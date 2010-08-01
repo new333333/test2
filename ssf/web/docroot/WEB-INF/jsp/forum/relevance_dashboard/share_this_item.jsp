@@ -76,7 +76,8 @@
 	
 		<div class="teamingDlgBoxFooter" style="border-top: 0px;">
 			<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
-			<input type="button" value="<ssf:nlt tag="button.cancel"/>" onclick="ss_cancelButtonCloseWindow();return false;"/>
+			<input type="button" value="<ssf:nlt tag="button.cancel"/>" 
+			  onclick="ss_cancelButtonCloseWindow();return false;"/>
 		</div>
 	</form>
 

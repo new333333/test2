@@ -174,7 +174,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<div class="teamingDlgBoxFooter">
 		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-		<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+		<input type="button" value="<ssf:nlt tag="button.cancel"/>" class="ss_submit" name="cancelBtn"
+		  onclick="ss_cancelButtonCloseWindow();return false;"/>
 	</div>
 </form>
 </div>
