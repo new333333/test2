@@ -998,11 +998,12 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	background: transparent;
 	padding: 0px;
 	}
-.diag_modal2 table div.ss_form_header {
-	color: #333;
-	font-size: 18px !important;
+.diag_modal2 table div.ss_form_header, .diag_modal2 div.ss_form_header table td {
+	color: #333 !important;
+	font-size: 14px !important;
 	font-weight: bold !important;
 	}
+	
 .diag_modal2 table div.ss_form_wrap	.ss_buttonBarLeft {
 	display: block;
 	text-align: right;

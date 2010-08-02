@@ -173,7 +173,7 @@ td.rightend
 
 
 .ss_form_header, div.ss_form_header table td {
-	color:#fff !important;
+	color:#fff;
 	font-family: ${ss_style_font_family};
 	font-size: 14px !important;
 	font-weight: bold;
