@@ -1006,11 +1006,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 .diag_modal2 table div.ss_form_wrap	.ss_buttonBarLeft {
 	display: block;
 	text-align: right;
-	}
-.diag_modal2 table div.ss_form_wrap	.ss_newpage_box_close {
-	top: 15px;
-	}
-	
+	}	
 	
 #ss_permalink_display_div {
 	background-color: #eaebe8;
