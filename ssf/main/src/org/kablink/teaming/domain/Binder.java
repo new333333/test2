@@ -42,12 +42,14 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -517,6 +519,25 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		return (Definition)eDefinitions.get(0);
     	return null;
 	}
+     /**
+      * Return a definition to use for file entries when dropped into the folder. 
+      * @return
+      */
+      public Definition getDefaultFileEntryDef() {
+     	Definition folderDef = this.getEntryDef();
+		Element useFileEntry = (Element) folderDef.getDefinition()
+			.getRootElement().selectSingleNode("//properties/property[@name='defaultToFileEntries']");
+		if (useFileEntry == null || useFileEntry.attributeValue("value", "true").equals("true")) {
+			//This binder defaults to adding file entries from "Add files to folder" operations
+			Definition fileDef = DefinitionHelper.getDefinition(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF);
+			if (fileDef != null) return fileDef;
+		}
+     	
+     	List eDefinitions = getEntryDefinitions();
+     	if (eDefinitions.size() > 0)
+     		return (Definition)eDefinitions.get(0);
+     	return null;
+ 	}
      /**
       * Return a definition to use for viewing the binder.
       * @return
