@@ -4451,7 +4451,7 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 
 div.ssPageNavi {
 	margin: 0px;
-	padding-left: 15px;
+	padding-left: 10px;
 	padding-top: 3px;
 	padding-bottom: 3px;
 	background-color: #E9F1F1;

@@ -155,7 +155,13 @@ li.ss_actions_bar_separator {
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
 	color: #fff ;
+	font-size: 11px;
+	padding: 2px 10px;
+	margin-right: 10px;
 	display:block;
+	background-color: #949494;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
 	}
 .ss_actions_bar li span {
 	padding:4px 7px;
@@ -229,7 +235,6 @@ table.ss_actions_bar4_pane {
 	font-family: ${ss_style_title_font_family};
 	}
 .ss_actions_bar5 {
-	background-color:#81b2bd;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
 	font-weight: bold;
