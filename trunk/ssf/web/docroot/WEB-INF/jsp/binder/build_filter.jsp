@@ -38,6 +38,8 @@
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 
 <body class="ss_style_body">
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+
 <div class="ss_style ss_portlet">
 	<div style="margin:10px;">
 		<form name="filterData" id="filterData" method="post" 
