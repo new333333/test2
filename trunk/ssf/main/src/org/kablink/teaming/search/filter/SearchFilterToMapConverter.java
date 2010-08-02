@@ -136,20 +136,22 @@ public class SearchFilterToMapConverter {
 		//Build the structure needed by the jsp
 		Map filters = (Map) result.get("ss_filterMap");
 		Map additionalFilters = (Map) filters.get("additionalFilters");
-		List<Map> entryList = (List<Map>) additionalFilters.get("entry");
-		Map<String,Entry> ssDefinitionEntryMapMap = (Map<String,Entry>) result.get("ssEntryDefinitionMapMap");
-		if (entryList != null) {
-			for (Map entry : entryList) {
-				String entryType = (String) entry.get("entryType");
-				//See if there are filter fields that match this entry
-				if (entryType != null) {
-					Entry e = (Entry) ssDefinitionEntryMapMap.get(entryType);
-					List<EntryField> fields = e.getFields();
-					if (fields != null) {
-						for (EntryField f : fields) {
-							String entryElement = (String) entry.get("entryElement");
-							if (entryElement != null && entryElement.equals(f.getName())) {
-								entry.put("title", f.getTitle());
+		if (additionalFilters != null) {
+			List<Map> entryList = (List<Map>) additionalFilters.get("entry");
+			Map<String,Entry> ssDefinitionEntryMapMap = (Map<String,Entry>) result.get("ssEntryDefinitionMapMap");
+			if (entryList != null) {
+				for (Map entry : entryList) {
+					String entryType = (String) entry.get("entryType");
+					//See if there are filter fields that match this entry
+					if (entryType != null) {
+						Entry e = (Entry) ssDefinitionEntryMapMap.get(entryType);
+						List<EntryField> fields = e.getFields();
+						if (fields != null) {
+							for (EntryField f : fields) {
+								String entryElement = (String) entry.get("entryElement");
+								if (entryElement != null && entryElement.equals(f.getName())) {
+									entry.put("title", f.getTitle());
+								}
 							}
 						}
 					}
