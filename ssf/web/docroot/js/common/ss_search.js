@@ -82,6 +82,7 @@ function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType
 		fieldNameTitle = fieldName;
 	}
 	ss_optionsArray[ss_userOptionsCounter]='entry';
+	//alert("fieldName: "+fieldName+", value: "+value+", valueLabel: "+valueLabel+", valueType: "+valueType+", fieldNameTitle: "+fieldNameTitle)
 	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle);
 	ss_userOptionsCounter++;
 }
@@ -339,7 +340,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 			var optionObj = document.createElement("option");
 			optionObj.value = valueOptionValue;
 			optionObj.selected = true;
-			optionObj.innerHTML = valueLabel;
+			optionObj.innerHTML = valueOptionValue;
 			selectObj.appendChild(optionObj);
 			fieldValue3Div.appendChild(selectObj);
 		}
