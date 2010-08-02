@@ -1646,11 +1646,15 @@ div.ss_box_top_rounded {
 .ss_box_title:visited {
 	color: ${ss_box_title_color};
 	text-decoration:none;
+	font-size: 14px;
+	font-weight: bold;
+	letter-spacing: .03em;
 }
 
 .ss_box_title:hover {
 	color: ${ss_box_title_hover_color};
 	font-weight: bold;
+	letter-spacing: .03em;
 }
 
 .ss_box_minimum_height {
@@ -1679,10 +1683,10 @@ div.ss_box_top_rounded {
 	}
 .ss_newpage_box_header {
 	position: relative;
-	color: #fff;
-	font-size: 15px;
+	color: #fff !important;
+	font-size: 15px !important;
 	letter-spacing: .03em;
-	font-weight: normal !important;
+	font-weight: bold;
 	padding: 5px;
 	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	-moz-border-radius-topleft: 5px;

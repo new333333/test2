@@ -172,13 +172,13 @@ td.rightend
 
 
 
-.ss_form_header {
-	color:#fff;
+.ss_form_header, div.ss_form_header table td {
+	color:#fff !important;
 	font-family: ${ss_style_font_family};
-	font-size: 15px !important;
+	font-size: 14px !important;
+	font-weight: bold;
 	letter-spacing: .03em;
-	font-weight: normal !important;
-	padding-top: 3px;
+	padding-top: 2px;
 	margin-bottom: 10px;
 	}
 .ss_table_wrap {
