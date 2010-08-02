@@ -515,7 +515,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				{
 					public void onFailure( Throwable t )
 					{
-						Window.alert( t.toString() );
+						GwtClientHelper.handleGwtRPCFailure(
+							GwtTeaming.getMessages().rpcFailure_IsPersonTracked(),
+							profileRequestInfo.getBinderId());
 					}//end onFailure()
 					
 					public void onSuccess( Boolean success )
@@ -712,7 +714,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					AsyncCallback<ProfileAttribute> callback = new AsyncCallback<ProfileAttribute>() {
 						public void onFailure(Throwable t) {
 							// display error
-							Window.alert("Error: " + t.getMessage());
+							GwtClientHelper.handleGwtRPCFailure(
+								GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
+								profileRequestInfo.getBinderId());
 						}
 
 						public void onSuccess(ProfileAttribute attr) {

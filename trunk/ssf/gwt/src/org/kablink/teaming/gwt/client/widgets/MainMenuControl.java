@@ -71,7 +71,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -215,9 +214,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// ...if the user is allowed to exit GWT UI mode...
 		final ActionTrigger actionTrigger = this;
 		GwtTeaming.getRpcService().getGwtUIExclusive(new AsyncCallback<Boolean>() {
-			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
-			}
+			public void onFailure(Throwable t) {}
 			public void onSuccess(Boolean isGwtUIExclusive) {
 				if (!isGwtUIExclusive) {
 					// ...add the GWT UI button...
@@ -376,8 +373,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					// ...and run the manage saved searches dialog.
 					GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 						public void onFailure(Throwable t) {
-							Window.alert(t.toString());
+							GwtClientHelper.handleGwtRPCFailure(
+								m_messages.rpcFailure_GetSavedSearches());
 						}
+						
 						public void onSuccess(List<SavedSearchInfo> ssList) {
 							ManageSavedSearchesDlg mssDlg = new ManageSavedSearchesDlg(
 								false,	// false -> Don't auto hide.
@@ -413,8 +412,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					// ...and run the top ranked dialog.
 					GwtTeaming.getRpcService().getTopRanked(new HttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
 						public void onFailure(Throwable t) {
-							Window.alert(t.toString());
+							GwtClientHelper.handleGwtRPCFailure(
+								m_messages.rpcFailure_GetTopRanked());
 						}
+						
 						public void onSuccess(List<TopRankedInfo> triList) {
 							TopRankedDlg topRankedDlg = new TopRankedDlg(
 								false,	// false -> Don't auto hide.
@@ -490,18 +491,24 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetBinderInfo(),
+					binderId);
 			}
 			public void onSuccess(BinderInfo binderInfo) {
 				m_contextBinder = binderInfo;
 				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							m_messages.rpcFailure_GetToolbarItems(),
+							binderId);
 					}
 					public void onSuccess(final List<ToolbarItem> toolbarItemList)  {
 						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
 							public void onFailure(Throwable t) {
-								Window.alert(t.toString());
+								GwtClientHelper.handleGwtRPCFailure(
+									m_messages.rpcFailure_GetTeamManagement(),
+									binderId);
 							}
 							public void onSuccess(final TeamManagementInfo tmi)  {
 								// Handle inSearch vs. not inSearch.

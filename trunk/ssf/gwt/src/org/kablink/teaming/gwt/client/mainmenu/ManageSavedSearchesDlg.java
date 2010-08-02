@@ -300,8 +300,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		Button saveButton = new Button(m_messages.mainMenuManageSavedSearchesDlgSave(), new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				// Is the name of the search to save valid?
-				String searchName = saveName.getValue();
-				searchName = validateSearchName(searchName);
+				final String searchName = validateSearchName(saveName.getValue());
 				if (!(GwtClientHelper.hasString(searchName))) {
 					// No!  validateSearchName() will have told the
 					// user about any problems.  Simply bail.
@@ -315,7 +314,9 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 				// Can we save it?
 				GwtTeaming.getRpcService().saveSearch(m_searchTabId, ssi, new AsyncCallback<SavedSearchInfo>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							m_messages.rpcFailure_SaveSearch(),
+							searchName);
 					}
 					public void onSuccess(SavedSearchInfo savedSSI) {
 						// Perhaps.  Did it really get saved?
@@ -359,7 +360,9 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 			public void onClick(ClickEvent event) {
 				GwtTeaming.getRpcService().removeSavedSearch(ssi, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							m_messages.rpcFailure_RemoveSavedSearch(),
+							ssi.getName());
 					}
 					public void onSuccess(Boolean success) {
 						// Remove the deleted SavedSearchInfo from the

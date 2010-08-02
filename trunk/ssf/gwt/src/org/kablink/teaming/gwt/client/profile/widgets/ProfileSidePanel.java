@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
@@ -40,10 +41,10 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -185,7 +186,9 @@ public class ProfileSidePanel extends Composite {
 
 			public void onFailure(Throwable t) {
 				// display error
-				Window.alert("Error: " + t.getMessage());
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetProfileStats(),
+					profileRequestInfo.getBinderId());
 			}
 
 			public void onSuccess(ProfileStats stats) {

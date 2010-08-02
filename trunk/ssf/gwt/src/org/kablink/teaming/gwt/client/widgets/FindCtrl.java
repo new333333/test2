@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -498,14 +499,9 @@ public class FindCtrl extends Composite
 			 */
 			public void onFailure(Throwable t)
 			{
-				String errMsg;
-				String cause;
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_Search() );
 				
-				cause = t.getLocalizedMessage();
-				if ( cause == null )
-					cause = t.toString();
-				errMsg = GwtTeaming.getMessages().searchRPCFailed( cause );
-				Window.alert( errMsg );
 				m_searchInProgress = false;
 				m_searchResultsWidget.hideSearchingText();
 			}// end onFailure()

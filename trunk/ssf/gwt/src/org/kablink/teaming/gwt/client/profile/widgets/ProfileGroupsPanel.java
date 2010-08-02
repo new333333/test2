@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
@@ -69,7 +70,9 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 		
 		rpcService.getGroups(new HttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<List<GroupInfo>>() {
 			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GwtGroups(),
+					profileRequestInfo.getBinderId());
 			}
 			public void onSuccess(List<GroupInfo> gList)  {
 				

@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -102,8 +103,11 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			mainPanel.addStyleName( "breadCrumb_Browser" );
 			rpcService.getHorizontalTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
 				public void onFailure(Throwable t) {
-					Window.alert(t.toString());
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetTree(),
+						selectedBinderId);
 				}
+				
 				public void onSuccess(List<TreeInfo> tiList)  {
 					m_treeDisplay = new TreeDisplayHorizontal(wsTree, tiList);
 					m_treeDisplay.render(selectedBinderId, mainPanel);
@@ -116,7 +120,9 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			mainPanel.addStyleName( "workspaceTreeControl" );
 			rpcService.getVerticalTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
 				public void onFailure(Throwable t) {
-					Window.alert(t.toString());
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetTree(),
+						selectedBinderId);
 				}
 				public void onSuccess(TreeInfo ti)  {
 					m_treeDisplay = new TreeDisplayVertical(wsTree, ti);

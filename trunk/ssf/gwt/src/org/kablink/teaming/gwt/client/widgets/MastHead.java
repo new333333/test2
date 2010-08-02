@@ -40,14 +40,12 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -190,35 +188,12 @@ public class MastHead extends Composite
 			 */
 			public void onFailure( Throwable t )
 			{
-				String errMsg;
-				String cause;
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( "Home Workspace" );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( "Home Workspace" );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBranding(),
+					"Home Workspace" );
 				
 				//!!!Window.alert( "get site branding failed" );
-				errMsg = messages.getBrandingRPCFailed( cause );
-				Window.alert( errMsg );
 			}// end onFailure()
 	
 			/**
@@ -244,35 +219,12 @@ public class MastHead extends Composite
 			 */
 			public void onFailure( Throwable t )
 			{
-				String errMsg;
-				String cause;
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( m_mastheadBinderId );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( m_mastheadBinderId );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBranding(),
+					m_mastheadBinderId );
 				
 				//!!!Window.alert( "get binder branding failed" );
-				errMsg = messages.getBrandingRPCFailed( cause );
-				Window.alert( errMsg );
 			}// end onFailure()
 	
 			/**

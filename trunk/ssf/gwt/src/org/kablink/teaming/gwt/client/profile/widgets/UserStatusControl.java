@@ -36,9 +36,6 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import java.util.Date;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -211,34 +208,10 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		AsyncCallback<Boolean> rpcCallback = new AsyncCallback<Boolean>(){
 
 			public void onFailure(Throwable t) {
-				String errMsg;
-				String cause = "";
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( getBinderId() );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( getBinderId() );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
-				
-				errMsg = messages.setStatusRPCFailed( cause );
-				Window.alert( errMsg );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SetStatus(),
+					getBinderId());
 			}
 
 			public void onSuccess(Boolean result) {
@@ -287,34 +260,10 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		AsyncCallback<UserStatus> rpcCallback = new AsyncCallback<UserStatus>(){
 
 			public void onFailure(Throwable t) {
-				String errMsg;
-				String cause = "";
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( getBinderId() );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( getBinderId() );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
-				
-				errMsg = messages.getStatusRPCFailed( cause );
-				Window.alert( errMsg );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetStatus(),
+					getBinderId());
 			}
 
 			public void onSuccess(UserStatus result) {

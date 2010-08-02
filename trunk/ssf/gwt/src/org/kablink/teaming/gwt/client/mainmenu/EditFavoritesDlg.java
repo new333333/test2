@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -288,7 +287,11 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler, E
 		// Update the favorites.
 		List<FavoriteInfo> favoritesList = ((List<FavoriteInfo>) callbackData);
 		GwtTeaming.getRpcService().updateFavorites(favoritesList, new AsyncCallback<Boolean>() {
-			public void onFailure(Throwable t) {Window.alert(t.toString());}
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_UpdateFavorites());
+			}
+			
 			public void onSuccess(Boolean result) {
 				hide();
 			}

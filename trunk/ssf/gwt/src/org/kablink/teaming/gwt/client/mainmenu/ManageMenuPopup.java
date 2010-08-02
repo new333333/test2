@@ -47,7 +47,6 @@ import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -544,12 +543,16 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				// ...and run the tag this dialog.
 				GwtTeaming.getRpcService().getBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							m_messages.rpcFailure_GetBinderTags(),
+							m_currentBinder.getBinderId());
 					}
 					public void onSuccess(final List<TagInfo> binderTags) {
 						GwtTeaming.getRpcService().canManagePublicBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
 							public void onFailure(Throwable t) {
-								Window.alert(t.toString());
+								GwtClientHelper.handleGwtRPCFailure(
+									m_messages.rpcFailure_CanManagePublicBinderTags(),
+									m_currentBinder.getBinderId());
 							}
 							public void onSuccess(Boolean isPublicTagManager) {
 								TagThisDlg ttDlg = new TagThisDlg(

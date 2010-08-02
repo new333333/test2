@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -99,7 +100,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			// ...and trigger a selection changed event.
 			m_rpcService.getBinderPermalink(new HttpRequestInfo(), m_favorite.getValue(), new AsyncCallback<String>()
 			{
-				public void onFailure(Throwable t) {Window.alert(t.toString());}
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						m_favorite.getValue());
+				}
+				
 				public void onSuccess(String binderPermalink) {
 					m_actionTrigger.triggerAction(
 						TeamingAction.SELECTION_CHANGED,
