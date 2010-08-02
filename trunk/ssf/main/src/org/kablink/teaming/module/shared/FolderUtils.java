@@ -486,7 +486,10 @@ public class FolderUtils {
 	}
 	
 	private static Definition getFolderEntryDefinition(Folder folder) {
-		Definition def = folder.getDefaultEntryDef();
+		Definition def = folder.getDefaultFileEntryDef();
+		if (def == null) {
+			def = folder.getDefaultEntryDef();
+		}
 		if(def == null)
 			def = getZoneWideDefaultFolderEntryDefinition();
 		return def;

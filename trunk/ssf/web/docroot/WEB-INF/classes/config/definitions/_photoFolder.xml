@@ -42,16 +42,16 @@
         <property name="caption" value="__icon"/> 
       </properties> 
     </item>  
-    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16">
-      <properties>
-        <property name="caption" value="__attach_files"/>
-        <property name="name" value="ss_attachFile"/>
-        <property name="width" value="60"/>
-        <property name="number" value=""/>
-        <property name="storage" value="simpleFileRepository"/>
-        <property name="hide" value="true"/>
-      </properties>
-    </item>
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16"> 
+      <properties> 
+        <property name="caption" value="__attach_files"/>  
+        <property name="name" value="ss_attachFile"/>  
+        <property name="width" value="60"/>  
+        <property name="number" value=""/>  
+        <property name="storage" value="simpleFileRepository"/>  
+        <property name="hide" value="true"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
     <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="14"> 
@@ -82,10 +82,11 @@
       <property name="type" value="photo"/> 
     </properties> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_folder_photo"/>  
-    <property name="name" value="_photoFolder"/>  
-    <property name="family" value="photo"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_folder_photo"/>
+    <property name="name" value="_photoFolder"/>
+    <property name="family" value="photo"/>
+    <property name="defaultToFileEntries" value="false"/>
+  </properties>
   <export-mappings/>
 </definition>

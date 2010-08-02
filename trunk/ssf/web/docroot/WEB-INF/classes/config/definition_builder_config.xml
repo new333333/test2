@@ -631,6 +631,8 @@
 				<option name="miniblog" caption="__family_miniblog" />
 				<help>ihelp.other.definition_family</help>
 			</property>
+			<property name="defaultToFileEntries" caption="__defaultEntryTypeIsFile" 
+				type="boolean" default="true" />
 			<property name="icon" caption="__icons.folder" type="iconList" 
 				path="icons.folder" default="/icons/folder.png" />
 		</properties>

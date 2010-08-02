@@ -330,6 +330,10 @@ public class AddEntryController extends SAbstractController {
 				String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
 	        	boolean blnCheckForAppletFile = true;
 	        	int intFileCount = 1;
+	        	Binder folder = getBinderModule().getBinder(folderId);
+	        	Definition fileDef = folder.getDefaultFileEntryDef();
+	        	String fileDefId = null;
+	        	if (fileDef != null) fileDefId = fileDef.getId();
 
 	        	while (blnCheckForAppletFile) {
 	        		Map oneFileMap = new HashMap();
@@ -347,7 +351,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	try {
-		        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null).getId();
+		        	    	entryId= getFolderModule().addEntry(folderId, fileDefId, inputData, oneFileMap, null).getId();
 						} catch(WriteFilesException e) {
 				    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 				    		return;
