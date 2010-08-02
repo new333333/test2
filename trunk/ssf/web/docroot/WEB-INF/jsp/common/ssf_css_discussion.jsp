@@ -423,9 +423,6 @@ a.ss_new_thread:hover {
 /**** INLINE NAVBAR STYLE ************/
 
 .ss_navbar_inline {
-	font-size: 12px;
-	padding:1px 0px 0px 0px;
-	line-height: 16px;
 	<c:if test="<%= isIE %>">
  		padding-top:3px;
  		padding-bottom:3px;
@@ -441,16 +438,11 @@ a.ss_new_thread:hover {
 .ss_navbar_inline ul a{
 	color:#666666;
 	}	
-.ss_navbar_inline ul a:hover{
-	color:#0000FF;
-/*	font-weight:bold;	*/
-	}
 .ss_navbar_inline ul a:active{
 /*	font-weight:bold;	*/
 	}	
 .ss_navbar_current {
 	font-weight: bold !important;
-	color:#F47400;
 	border: dotted 1px #135c8f !important; /* text-decoration: underline; */
 	padding:1px 5px 1px 5px;
 	}	
@@ -658,7 +650,7 @@ div.ssPageNavi {
 	margin: 0px;
 	border-top: solid 1px #FFF;
 	border-bottom: solid 1px #FFF;
-	padding-left: 15px;
+	padding-left: 10px;
 	padding-top: 3px;
 	padding-bottom: 3px;
 	background-color: #E9F1F1;
