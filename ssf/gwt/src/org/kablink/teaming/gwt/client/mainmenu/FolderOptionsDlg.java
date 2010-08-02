@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
@@ -150,7 +149,8 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			// view defined?
 			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(m_binderId, new AsyncCallback<String>() {
 				public void onFailure(Throwable t) {
-					Window.alert(t.toString());
+					GwtClientHelper.handleGwtRPCFailure(
+						m_messages.rpcFailure_GetFolderDefinitionId());
 				}
 				public void onSuccess(String folderDefId) {
 					if (GwtClientHelper.hasString(folderDefId)) {

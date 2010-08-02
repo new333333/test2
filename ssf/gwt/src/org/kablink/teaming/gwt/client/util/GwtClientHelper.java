@@ -34,10 +34,14 @@
 package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -63,7 +67,7 @@ public class GwtClientHelper {
 		HORIZONTAL,
 		VERTICAL,
 	}
-	
+
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
@@ -105,6 +109,86 @@ public class GwtClientHelper {
 	
 	public static boolean bFromS(String s) {
 		return bFromS(s, false);
+	}
+
+	/*
+	 * Applies patches to a message string.
+	 */
+	private static String patchMessage(String msg, String[] patches) {
+		int count = ((null == patches) ? 0 : patches.length);
+    	for (int i = 0; i < count; i += 1) {
+            String delimiter = ("[" + i + "]");
+            String patch = patches[i];
+            while(msg.contains(delimiter)) {
+                msg = msg.replace(delimiter, patch);
+            }
+        }
+		return msg;
+	}
+	
+	/**
+	 * Handles Throwable's received by GWT RPC onFailure() methods.
+	 * 
+	 * @param t
+	 * @param errorMessage
+	 * @param patches
+	 */
+	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String[] patches) {
+		if (null != t) {
+			GwtTeamingMessages messages = GwtTeaming.getMessages();
+			String cause;
+			if (t instanceof GwtTeamingException) {
+				switch (((GwtTeamingException) t).getExceptionType()) {
+				case ACCESS_CONTROL_EXCEPTION:
+					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
+					break;
+					
+				case NO_BINDER_BY_THE_ID_EXCEPTION:
+					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);
+					break;
+					
+				default:
+					cause = patchMessage(messages.rpcFailure_UnknownException(), patches);
+					break;
+				}
+			}
+			
+			else {
+				cause = t.getLocalizedMessage();
+				if (null == cause) {
+					cause = t.toString();
+				}
+			}
+			patches = new String[]{cause};
+		}
+		
+		errorMessage = patchMessage(errorMessage, patches);
+		Window.alert(errorMessage);
+	}
+	
+	public static void handleGwtRPCFailure(String errorMessage, String[] patches) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(null, errorMessage, patches);
+	}
+	
+	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String patch) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(t, errorMessage, new String[]{patch});
+	}
+	
+	public static void handleGwtRPCFailure(Throwable t, String errorMessage) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(t, errorMessage, ((String[]) null));
+	}
+	
+	public static void handleGwtRPCFailure(String errorMessage, String patch) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(null, errorMessage, new String[]{patch});
+	}
+	
+	public static void handleGwtRPCFailure(String errorMessage) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(null, errorMessage, ((String[]) null));
 	}
 	
 	/**

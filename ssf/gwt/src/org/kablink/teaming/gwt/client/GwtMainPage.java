@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.client;
 
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -380,7 +379,9 @@ public class GwtMainPage extends Composite
 		{
 			public void onFailure( Throwable t )
 			{
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					contextBinderId );
 			}//end onFailure()
 			
 			public void onSuccess( String binderPermalink )
@@ -462,34 +463,10 @@ public class GwtMainPage extends Composite
 							 */
 							public void onFailure( Throwable t )
 							{
-								String errMsg;
-								String cause;
-								GwtTeamingMessages messages;
-								
-								messages = GwtTeaming.getMessages();
-								
-								if ( t instanceof GwtTeamingException )
-								{
-									ExceptionType type;
-								
-									// Determine what kind of exception happened.
-									type = ((GwtTeamingException)t).getExceptionType();
-									if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-										cause = messages.errorAccessToFolderDenied( binderId );
-									else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-										cause = messages.errorFolderDoesNotExist( binderId );
-									else
-										cause = messages.errorUnknownException();
-								}
-								else
-								{
-									cause = t.getLocalizedMessage();
-									if ( cause == null )
-										cause = t.toString();
-								}
-								
-								errMsg = messages.getBrandingRPCFailed( cause );
-								Window.alert( errMsg );
+								GwtClientHelper.handleGwtRPCFailure(
+									t,
+									GwtTeaming.getMessages().rpcFailure_GetBranding(),
+									binderId );
 							}// end onFailure()
 					
 							/**
@@ -576,13 +553,8 @@ public class GwtMainPage extends Composite
 			 */
 			public void onFailure( Throwable t )
 			{
-				String cause;
-				
-				cause = t.getLocalizedMessage();
-				if ( cause == null )
-					cause = t.toString();
-				
-				Window.alert( cause );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
 			}// end onFailure()
 	
 			/**
@@ -622,13 +594,8 @@ public class GwtMainPage extends Composite
 									 */
 									public void onFailure( Throwable t )
 									{
-										String cause;
-										
-										cause = t.getLocalizedMessage();
-										if ( cause == null )
-											cause = t.toString();
-										
-										Window.alert( cause );
+										GwtClientHelper.handleGwtRPCFailure(
+											GwtTeaming.getMessages().rpcFailure_SavePersonalPreferences() );
 									}// end onFailure()
 							
 									/**
@@ -1207,7 +1174,9 @@ public class GwtMainPage extends Composite
 		rpcService.getBinderPermalink( new HttpRequestInfo(), m_selectedBinderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t ) {
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					m_selectedBinderId );
 			}//end onFailure()
 			
 			public void onSuccess( String binderUrl )
@@ -1260,7 +1229,9 @@ public class GwtMainPage extends Composite
 		{
 			public void onFailure( Throwable t )
 			{
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
+					m_selectedBinderId );
 			}//end onFailure()
 			
 			public void onSuccess( Boolean success )
@@ -1285,7 +1256,9 @@ public class GwtMainPage extends Composite
 		{
 			public void onFailure( Throwable t )
 			{
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
+					m_selectedBinderId );
 			}//end onFailure()
 			
 			public void onSuccess( Boolean success )
@@ -1310,7 +1283,9 @@ public class GwtMainPage extends Composite
 		{
 			public void onFailure( Throwable t )
 			{
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
+					m_selectedBinderId );
 			}//end onFailure()
 			
 			public void onSuccess( Boolean success )

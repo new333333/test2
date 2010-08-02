@@ -315,8 +315,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			Button addButton = new Button(m_messages.mainMenuTagThisDlgAdd(), new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					// Is the name of the tag to add valid?
-					String tagName = addName.getValue();
-					tagName = validateTagName(tagName, tagType);
+					final String tagName = validateTagName(addName.getValue(), tagType);
 					if (!(GwtClientHelper.hasString(tagName))) {
 						// No!  validateTagName() will have told the user
 						// about any problems.  Simply bail.
@@ -331,8 +330,14 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 					// Can we and add it to the binder?
 					GwtTeaming.getRpcService().addBinderTag(m_currentBinder.getBinderId(), addTag, new AsyncCallback<TagInfo>() {
 						public void onFailure(Throwable t) {
-							Window.alert(t.toString());
+							GwtClientHelper.handleGwtRPCFailure(
+								m_messages.rpcFailure_AddBinderTag(),
+								new String[] {
+									m_currentBinder.getBinderId(),
+									tagName
+								});
 						}
+						
 						public void onSuccess(TagInfo addedTag) {
 							// Perhaps.  Did it really get added?
 							if (null != addedTag) {
@@ -379,8 +384,14 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 				public void onClick(ClickEvent event) {
 					GwtTeaming.getRpcService().removeBinderTag(m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
 						public void onFailure(Throwable t) {
-							Window.alert(t.toString());
+							GwtClientHelper.handleGwtRPCFailure(
+								m_messages.rpcFailure_RemoveBinderTag(),
+								new String[] {
+									m_currentBinder.getBinderId(),
+									ti.getTagName()
+								});
 						}
+						
 						public void onSuccess(Boolean success) {
 							// Remove the deleted TagInfo from its list...
 							if (ti.isCommunityTag()) {m_communityTags.remove(ti); m_communityTagsCount -= 1;}

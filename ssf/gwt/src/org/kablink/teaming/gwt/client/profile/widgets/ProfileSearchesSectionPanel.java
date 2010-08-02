@@ -39,11 +39,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 
@@ -77,8 +77,10 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 		// Does the user have any saved searches defined?
 		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetSavedSearches());
 			}
+			
 			public void onSuccess(List<SavedSearchInfo> ssiList)  {
 
 				ssList = ssiList;

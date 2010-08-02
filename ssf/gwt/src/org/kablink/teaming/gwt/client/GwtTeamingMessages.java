@@ -46,7 +46,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the "find" name-completion control
 	String nOfn( int value1, int value2, int value3 );
 	String searching();
-	String searchRPCFailed( String cause );
 
 	// Strings used with the Custom Jsp widget in the landing page editor.
 	String customJspAssocEntry();
@@ -60,7 +59,6 @@ public interface GwtTeamingMessages extends Messages
 	String entryLabel();
 	String entryProperties();
 	String findEntry();
-	String getFolderEntryRPCFailed( String cause );
 	String pleaseSelectAnEntry();
 	
 	// Strings used with the Folder widget in the landing page editor
@@ -68,7 +66,6 @@ public interface GwtTeamingMessages extends Messages
 	String findFolderLabel();
 	String folderLabel();
 	String folderProperties();
-	String getFolderRPCFailed( String cause );
 	String numEntriesToShow();
 	String pleaseSelectAFolder();
 	String showEntriesOpened();
@@ -195,16 +192,63 @@ public interface GwtTeamingMessages extends Messages
 	String extensionsDlgVersion();
 	String extensionsDlgDateFormat();
 	
-	// Strings used for error messages
-	String errorAccessToEntryDenied( String entryId );
-	String errorAccessToFolderDenied( String folderId );
-	String errorEntryDoesNotExist( String entryId );
-	String errorFolderDoesNotExist( String folderId );
-	String errorUnknownException();
+	// Strings used to describe various RPC failure conditions.
+	// Notes:
+	// 1. The implementation of GwtClientHelper.handleGwtRPCFailure()
+	//    will take care of all parameter substitutions; and
+	// 2. Unlike normal messages, the replacement parameters in the
+	//    rcpFailure_* messages MUST use '[n]' instead of '{n}' to keep
+	//    the GWT compiler happy.
+	String rpcFailure_AccessToEntryDenied();
+	String rpcFailure_AccessToFolderDenied();
+	String rpcFailure_AddBinderTag();
+	String rpcFailure_CanManagePublicBinderTags();
+	String rpcFailure_EntryDoesNotExist();
+	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_GetAdminActions();
+	String rpcFailure_GetBinderInfo();
+	String rpcFailure_GetBinderPermalink();
+	String rpcFailure_GetBinderTags();
+	String rpcFailure_GetBranding();
+	String rpcFailure_GetFolder();
+	String rpcFailure_GetFolderDefinitionId();
+	String rpcFailure_GetFolderEntry();
+	String rpcFailure_GetGeneric();
+	String rpcFailure_GwtGroups();
+	String rpcFailure_GetImUrl();
+	String rpcFailure_GetMyTeams();
+	String rpcFailure_GetPersonalPreferences();
+	String rpcFailure_GetProfileAvatars();
+	String rpcFailure_GetProfileInfo();
+	String rpcFailure_GetProfileStats();
+	String rpcFailure_GetRecentPlaces();
+	String rpcFailure_GetRootWorkspaceId();
+	String rpcFailure_GetSavedSearches();
+	String rpcFailure_GetSelfRegInfo();
+	String rpcFailure_GetStatus();
+	String rpcFailure_GetTeamManagement();
+	String rpcFailure_GetTeams();
+	String rpcFailure_GetToolbarItems();
+	String rpcFailure_GetTopRanked();
+	String rpcFailure_GetTree();
+	String rpcFailure_GetUpgradeInfo();
+	String rpcFailure_IsPersonTracked();
+	String rpcFailure_QViewMicroBlog();
+	String rpcFailure_RemoveBinderTag();
+	String rpcFailure_RemoveSavedSearch();
+	String rpcFailure_SavePersonalPreferences();
+	String rpcFailure_SaveSearch();
+	String rpcFailure_Search();
+	String rpcFailure_SetStatus();
+	String rpcFailure_TrackingBinder();
+	String rpcFailure_TrackingPerson();
+	String rpcFailure_UnknownException();
+	String rpcFailure_UntrackingBinder();
+	String rpcFailure_UntrackingPerson();
+	String rpcFailure_UpdateFavorites();
 
 	// Strings used with the MastHead
 	String administrationHint();
-	String getBrandingRPCFailed( String cause );
 	String guest();
 	String helpHint();
 	String loginHint();
@@ -534,8 +578,6 @@ public interface GwtTeamingMessages extends Messages
 	String exceededMax(int value);
 	String exceededError();
 	String clearCurrentStatus();
-	String setStatusRPCFailed(String cause);
-	String getStatusRPCFailed(String cause);
 
 	
 	// The following strings are used with the Administration page.
@@ -559,7 +601,6 @@ public interface GwtTeamingMessages extends Messages
 	String qViewMicroBlogTitle();
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
-	String qViewMicroBlogRPCFailed(String cause);
 
 	
 	//Profile

@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class InstantMessageClickHandler implements ClickHandler {
@@ -58,7 +57,9 @@ public class InstantMessageClickHandler implements ClickHandler {
 			rpcService.getImUrl(m_binderId, 
 								new AsyncCallback<String>() {
 									public void onFailure(Throwable t) {
-										Window.alert("Error: " + t.toString());
+										GwtClientHelper.handleGwtRPCFailure(
+											GwtTeaming.getMessages().rpcFailure_GetImUrl(),
+											m_binderId);
 									}
 	
 									public void onSuccess(String url) {

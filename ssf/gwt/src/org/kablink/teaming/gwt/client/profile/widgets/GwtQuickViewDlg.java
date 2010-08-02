@@ -36,9 +36,6 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -277,7 +274,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				{
 					public void onFailure( Throwable t )
 					{
-						Window.alert( t.toString() );
+						GwtClientHelper.handleGwtRPCFailure(
+							GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
+							binderId);
 					}//end onFailure()
 					
 					public void onSuccess( Boolean success )
@@ -292,7 +291,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				{
 					public void onFailure( Throwable t )
 					{
-						Window.alert( t.toString() );
+						GwtClientHelper.handleGwtRPCFailure(
+							GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
+							binderId);
 					}//end onFailure()
 					
 					public void onSuccess( Boolean success )
@@ -440,32 +441,12 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		// the state:
 		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>() {
 			public void onFailure(Throwable t) {
-				String errMsg;
-				String cause = "";
-				GwtTeamingMessages	messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )	{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToEntryDenied( binderId );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( binderId );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else {
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetStatus(),
+					binderId );
 				
 				hide();
-				
-				errMsg = messages.getStatusRPCFailed( cause );
-				Window.alert( errMsg );
 			}
 
 			public void onSuccess(ProfileInfo profile) {
@@ -530,7 +511,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 			rpcService.getBinderPermalink( new HttpRequestInfo(), binderId, new AsyncCallback<String>()
 			{
 				public void onFailure( Throwable t ) {
-					Window.alert( t.toString() );
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						binderId);
 				}//end onFailure()
 				
 				public void onSuccess( String binderUrl )
@@ -597,30 +580,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		AsyncCallback<UserStatus> rpcCallback = new AsyncCallback<UserStatus>(){
 
 			public void onFailure(Throwable t) {
-				String errMsg;
-				String cause = "";
-				GwtTeamingMessages	messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )	{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToEntryDenied( binderId );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( binderId );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else {
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
-				
-				errMsg = messages.getStatusRPCFailed( cause );
-				Window.alert( errMsg );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetStatus(),
+					binderId );
 			}
 
 			public void onSuccess(UserStatus result) {
@@ -660,30 +623,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		
 		AsyncCallback<String> rpcCallback = new AsyncCallback<String>(){
 			public void onFailure(Throwable t) {
-					String errMsg;
-					String cause = "";
-					GwtTeamingMessages	messages = GwtTeaming.getMessages();
-					
-					if ( t instanceof GwtTeamingException )	{
-						ExceptionType type;
-					
-						// Determine what kind of exception happened.
-						type = ((GwtTeamingException)t).getExceptionType();
-						if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-							cause = messages.errorAccessToEntryDenied( binderId );
-						else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-							cause = messages.errorFolderDoesNotExist( binderId );
-						else
-							cause = messages.errorUnknownException();
-					}
-					else {
-						cause = t.getLocalizedMessage();
-						if ( cause == null )
-							cause = t.toString();
-					}
-					
-					errMsg = messages.qViewMicroBlogRPCFailed( cause );
-					Window.alert( errMsg );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_QViewMicroBlog(),
+					binderId );
 				}
 
 				public void onSuccess(String url) {

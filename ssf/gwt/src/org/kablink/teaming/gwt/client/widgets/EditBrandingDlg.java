@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,10 +40,7 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -129,34 +126,10 @@ public class EditBrandingDlg extends DlgBox
 			 */
 			public void onFailure( Throwable t )
 			{
-				String errMsg;
-				String cause;
-				GwtTeamingMessages messages;
-				
-				messages = GwtTeaming.getMessages();
-				
-				if ( t instanceof GwtTeamingException )
-				{
-					ExceptionType type;
-				
-					// Determine what kind of exception happened.
-					type = ((GwtTeamingException)t).getExceptionType();
-					if ( type == ExceptionType.ACCESS_CONTROL_EXCEPTION )
-						cause = messages.errorAccessToFolderDenied( m_origBrandingData.getBinderId() );
-					else if ( type == ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION )
-						cause = messages.errorFolderDoesNotExist( m_origBrandingData.getBinderId() );
-					else
-						cause = messages.errorUnknownException();
-				}
-				else
-				{
-					cause = t.getLocalizedMessage();
-					if ( cause == null )
-						cause = t.toString();
-				}
-				
-				errMsg = messages.getBrandingRPCFailed( cause );
-				Window.alert( errMsg );
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetBranding(),
+					m_origBrandingData.getBinderId() );
 				
 				// Update the list of files the user can select from for the branding image and background image.
 				updateListOfFileAttachments( null );

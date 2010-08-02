@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -51,7 +52,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -166,7 +166,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// must be showing a normal row.  Can we mark the
 					// row as being closed?
 					rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
-						public void onFailure(Throwable t)       {}
+						public void onFailure(Throwable t) {}
 						public void onSuccess(Boolean success) {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
@@ -663,7 +663,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Read the TreeInfo for the selected Binder...
 		getRpcService().getVerticalTree(new HttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetTree(),
+					newRootBinderId);
 			}
 			public void onSuccess(TreeInfo rootTI)  {
 				// ...and update the display with it.
@@ -727,7 +729,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// selected Binder's root workspace?
 				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							GwtTeaming.getMessages().rpcFailure_GetRootWorkspaceId(),
+							binderId);
 						selectBinder(targetTI);
 					}
 					public void onSuccess(String rootWorkspaceId)  {

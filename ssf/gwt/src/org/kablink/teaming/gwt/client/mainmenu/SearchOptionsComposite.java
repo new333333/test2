@@ -338,8 +338,11 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private void loadBinder(final String binderId) {
 		GwtTeaming.getRpcService().getBinderPermalink(new HttpRequestInfo(), binderId, new AsyncCallback<String>() {
 			public void onFailure(Throwable t) {
-				Window.alert( t.toString() );
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+					binderId);
 			}
+			
 			public void onSuccess(final String binderPermalink) {
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(binderId, binderPermalink, false, Instigator.OTHER);
 				m_actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbInfo);
@@ -360,7 +363,8 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		// Does the user have any saved searches defined?
 		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetSavedSearches());
 			}
 			public void onSuccess(List<SavedSearchInfo> ssiList)  {
 				int count = ((null == ssiList) ? 0 : ssiList.size());

@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -173,7 +172,9 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		AsyncCallback<ProfileInfo> callback = new AsyncCallback<ProfileInfo>() {
 			public void onFailure(Throwable t) {
 				// display error
-				Window.alert("Error: " + t.getMessage());
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetProfileInfo(),
+					profileRequestInfo.getBinderId());
 			}
 
 			public void onSuccess(ProfileInfo profile) {
