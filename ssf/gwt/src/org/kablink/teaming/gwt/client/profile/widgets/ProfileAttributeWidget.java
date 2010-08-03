@@ -74,7 +74,7 @@ public class ProfileAttributeWidget  {
 			}
 			widget.addStyleName("profile-value");
 		} else {
-			if(attr.getDisplayType().equals("email") ) {
+			if(attr.getDisplayType()!= null && attr.getDisplayType().equals("email") ) {
 				if(attr.getValue() != null) {
 					String url = "mailto:"+ attr.getValue().toString();
 					widget = new Anchor(attr.getValue().toString(), url);

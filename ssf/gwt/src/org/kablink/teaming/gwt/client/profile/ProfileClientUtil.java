@@ -70,6 +70,10 @@ public class ProfileClientUtil {
 
 		for (ProfileAttribute attr : cat.getAttributes()) {
 
+			if(attr == null) {
+				continue;
+			}
+			
 			if(attr.getDataName().equals("picture")){
 				continue;
 			}

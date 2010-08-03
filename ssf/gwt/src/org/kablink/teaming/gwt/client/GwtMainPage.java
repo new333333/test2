@@ -1505,6 +1505,11 @@ public class GwtMainPage extends Composite
 	@SuppressWarnings("unused")
 	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
 
+		if(!GwtClientHelper.hasString(binderId)) {
+			Window.alert(GwtTeaming.getMessages().qViewErrorWorkspaceDoesNotExist());
+			return;
+		}
+		
 		final GwtQuickViewDlg dlg;
 		PopupPanel.PositionCallback posCallback;
 		

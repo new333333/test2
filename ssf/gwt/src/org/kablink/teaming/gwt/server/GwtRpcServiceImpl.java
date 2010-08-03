@@ -2755,19 +2755,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ProfileInfo profile = GwtProfileHelper.buildQuickViewProfileInfo(getRequest( ri ), this, binderIdL);
 			
 			return profile;
-		} catch (OperationAccessControlExceptionNoName oae) {
+		} 
+		catch (NoBinderByTheIdException nbEx)
+		{
 			GwtTeamingException ex;
-
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
 			ex = new GwtTeamingException();
 			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 			throw ex;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			GwtTeamingException ex;
 			
 			ex = new GwtTeamingException();
 			ex.setExceptionType( ExceptionType.UNKNOWN );
-
-			m_logger.warn( "GwtRpcServiceImpl.getQuickViewInfo() unknown exception" );
 			throw ex;
 		}
 	}
