@@ -1396,6 +1396,13 @@ public class GwtServerHelper {
 				// Get the binder where branding comes from.
 				brandingSourceBinder = binder.getBrandingSource();
 				
+				// Does the user have rights to the binder where the branding is coming from?
+				if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
+				{
+					// No, return an empty branding.
+					return brandingData;
+				}
+				
 				brandingSourceBinderId = brandingSourceBinder.getId().toString();
 				brandingData.setBinderId( brandingSourceBinderId );
 
