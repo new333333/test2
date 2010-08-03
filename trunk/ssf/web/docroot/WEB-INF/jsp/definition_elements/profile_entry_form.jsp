@@ -227,24 +227,6 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 	</div>
   </td>
 </tr>
-<tr>
-  <td style="padding-right:6px;">
-	<div >
-	<label for="zonName">
-		<span class="ss_labelAbove"><ssf:nlt tag="__zonName"/></span>
-	</label>
-<c:if test="${empty ssReadOnlyFields['zonName']}">
-	<input type="text" class="ss_text" name="zonName" id="zonName"
-		value="${ssDefinitionEntry.zonName}">
-</c:if>
-<c:if test="${!empty ssReadOnlyFields['zonName']}">${ssDefinitionEntry.zonName}&nbsp;</c:if>
-	</div>
-  </td>
-  <td>
-  </td>
-  <td>
-  </td>
-</tr>
 </table>
 </div>
 

@@ -35,17 +35,30 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
+<style type="text/css">
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
+</style>
+<script type="text/javascript">
+	dojo.require("dojo.parser");
+	dojo.require("dijit.form.DateTextBox");
+	dojo.require("dijit.form.TimeTextBox");
+</script>
+
 
 <ssf:ifadapter>
 	<body class="tundra">
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
+
+<c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 		<script type="text/javascript">
 			var width = ss_getWindowWidth()/2;
-			if (width < 700) width=700;
+			if (width < 600) width=600;
 			var height = ss_getWindowHeight();
-			if (height < 600) height=600;
+			if (height < 700) height=700;
 			self.window.resizeTo(width, height);
 		</script>
 
@@ -79,28 +92,120 @@
 											<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
 										</c:if>										
 									</td>
+								</tr>
+								<tr>				
+									<td>
+										<span class="ss_labelAbove ss_bold" valign="top"><ssf:nlt tag="meeting.password"/></span>
+										<input class="ss_style" type="text" name="meeting_password" />										
+									</td>
 								</tr>								
 							</table>
 						</fieldset>
 					</td></tr>
 				</table>
-			</form>
-		
 			<div>
 				<span>
 				<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
 				  onClick="ss_startMeeting(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:'start_meeting'}), 'startMeetingForm', this.parentNode);"
 				><ssf:nlt tag="meeting.start"/></a></span>
-
-				<span>
-				
-				<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
-				  onClick="ss_startMeeting(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:'schedule_meeting'}), 'startMeetingForm', this.parentNode);"
-				><ssf:nlt tag="meeting.schedule"/></a></span>				
 			</div>
-		
+			<br/>
+			<div>
+				<fieldset class="ss_fieldset">
+				 	<legend class="ss_legend"><ssf:nlt tag="meeting.options"/></legend>
+					<div class="ss_event_editor tundra">
+						<table class="ss_style">
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.title"/></span>
+									<input type="text" name="meeting_name"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.agenda"/></span>
+									<textarea name="meeting_agenda" rows="5"></textarea>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.start.time"/></span>
+									<input type="text" dojoType="dijit.form.DateTextBox" 
+										name="meeting_start_date"
+										lang="<ssf:convertLocaleToDojoStyle />"
+										<c:if test="${!empty startDate}">
+											value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+										</c:if>
+									/>
+									<span>
+										<input type="text" dojoType="dijit.form.TimeTextBox"
+											name="meeting_start_time" 
+											lang="<ssf:convertLocaleToDojoStyle />" 	
+											 <c:if test="${!empty startDate}">
+												value="T<fmt:formatDate value="${startDate}" pattern="HH:mm" timeZone="${timeZoneID}"/>"
+											</c:if>
+										/>
+									</span>
+								</td>					
+							</tr>
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.length"/></span>
+									<select name="meeting_length_hours">
+										<option value="0">0</option>
+										<option value="1" selected>1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+										<option value="6">6</option>
+										<option value="7">7</option>
+										<option value="8">8</option>
+										<option value="9">9</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select>
+									<span><ssf:nlt tag="meeting.length.hours"/></span>
+									<span>
+										<select name="meeting_length_minutes">
+											<option value="0">0</option>
+											<option value="15">15</option>
+											<option value="30">30</option>
+											<option value="45">45</option>
+										</select>
+									</span>
+									<span><ssf:nlt tag="meeting.length.minutes"/></span>
+								</td>
+							</tr>
+							<!--  
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.repeat"/></span>
+									<select name="meeting_repeat_option">
+										<option value="once"><ssf:nlt tag="meeting.repeat.once"/></option>
+										<option value="daily"><ssf:nlt tag="meeting.repeat.daily"/></option>
+										<option value="weekly"><ssf:nlt tag="meeting.repeat.weekly"/></option>
+										<option value="monthly"><ssf:nlt tag="meeting.repeat.monthly"/></option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<span class="ss_labelAbove ss_bold"><ssf:nlt tag="meeting.end.date"/></span>	
+								</td>
+							</tr>
+							-->
+						</table>
+					</div>
+				</fieldset>
+			</div>
+			</form>
+			<a class="ss_linkButton ss_bold ss_smallprint" href="javascript:;"
+				  onClick="ss_startMeeting(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:'schedule_meeting'}), 'startMeetingForm', this.parentNode);"
+				><ssf:nlt tag="meeting.schedule"/></a>
+			
 			<br/><br/>
-		
 			<div class="ss_buttonBarLeft">
 				<form class="ss_style ss_form" method="post" 
 				  onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
@@ -108,7 +213,11 @@
 					onClick="ss_cancelButtonCloseWindow();return false;">
 				</form>
 			</div>
-		
+			<script type="text/javascript">
+				dojo.addOnLoad(function() {
+									dojo.addClass(document.body, "tundra");
+							   });
+			</script>
 		</div>
 <ssf:ifadapter>
 	</body>

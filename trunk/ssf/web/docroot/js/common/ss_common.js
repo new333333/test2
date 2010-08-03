@@ -4014,7 +4014,6 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	//alert("Inside ss_showAddAttachmentBrowse...");
 
 	ss_hideAddAttachmentDropbox(entryId, namespace);
-	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
 	
 	setURLInIFrame(binderId, entryId, namespace);
 	
@@ -4092,7 +4091,6 @@ function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	ss_hideAddAttachmentBrowse(entryId, namespace);
-	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
 
 	var urlParams = {binderId:binderId, entryId:entryId, operation:"add_attachment_options", namespace:namespace};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
@@ -4116,69 +4114,6 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 	} catch(e) {}
-}
-
-function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
-	ss_setupStatusMessageDiv();
-	ss_hideAddAttachmentDropbox(entryId, namespace);
-	ss_hideAddAttachmentBrowse(entryId, namespace);
-	
-	var divId = 'ss_div_attach_meeting_records' + entryId + namespace;
-	var divObj = document.getElementById(divId);
-	ss_showDiv(divId);
-	
-	var contentDivId = 'ss_div_attach_meeting_records_content' + entryId + namespace;
-	var contentDivObj = document.getElementById(divId);
-	ss_toggleAjaxLoadingIndicator(contentDivId);
-
-	// contentDivObj.style.height = "120px";
-	var urlParams = {operation:"get_meeting_records", recordsDivId:contentDivId, 
-					binderId:binderId, entryId:entryId,
-					ssNamespace:namespace, randomNumber:ss_random++};
-	if (held) {
-		urlParams.ssHeld=held;
-	}
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.sendRequest();  //Send the request
-	
-	try {
-		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
-	} catch(e) {}
-}
-
-function ss_hideAddAttachmentMeetingRecords(entryId, namespace) {
-	var divId = 'ss_div_attach_meeting_records' + entryId + namespace;
-	var divObj = document.getElementById(divId);
-	ss_hideDiv(divId);
-
-	try {
-		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
-	} catch(e) {}
-}
-
-function ss_attacheMeetingRecords(formId, binderId, entryId, namespace) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"attache_meeting_records"});
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements(formId);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.setData("binderId", binderId);
-	ajaxRequest.setData("entryId", entryId);
-	ajaxRequest.setData("namespace", namespace);
-	ajaxRequest.setPostRequest(ss_hideAddAttachmentMeetingRecordsAndAJAXCall);	
-	ajaxRequest.sendRequest();
-	ss_toggleAjaxLoadingIndicator(formId, true);
-}
-
-function ss_hideAddAttachmentMeetingRecordsAndAJAXCall(obj) {
-	var binderId = obj.getData("binderId");
-	var entryId = obj.getData("entryId");
-	var namespace = obj.getData("namespace");
-	ss_hideAddAttachmentMeetingRecords(entryId, namespace);
-	self.location.reload(true);
-	//ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function escapeAppletFileURL(s) {
@@ -6012,20 +5947,17 @@ function ss_Clipboard () {
 var ss_muster = new ss_Clipboard();
 
 /*
-	Starts a Zon meeting with given id;
+ 	Launch the meeting
 */
-function ss_launchMeeting(id) {
-	try {
-		self.location.href = 'iic:meetmany?meetingtoken=' + id;
-	} catch (e) {
-		alert(ss_rtc_not_configured);
-		// iic protocol unknown
-	}
-	return false;
+function ss_launchMeeting(url) {
+	var win = self.window.open(url, "_blank");
+	if (win != null && win.focus) win.focus();
+	
+	return true;
 }
 
 /*
-	Creates a new Zon meeting and launch it now.
+	Creates a new meeting and launch it now.
 	
 	ajaxLoadingIndicatorPane: add loading indicator as child of this HTML element (if exists)
 */
@@ -6042,12 +5974,14 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 		},
 		load: function(data) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-			if ((!data.meetingToken || data.meetingToken == "") && data.meetingError) {
+			if (data.meetingError) {
 				alert(data.meetingError);
 			} else {
-				ss_launchMeeting(data.meetingToken);
+				if (data.meetingToken && data.meetingToken != "")  {
+					ss_launchMeeting(data.meetingToken);
+				}
+				self.window.close();
 			}
-			
 		},
 		form: $(formId),
 		handleAs: "json",

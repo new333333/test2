@@ -225,7 +225,9 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		conferenceBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewConference(),
 										GwtTeaming.getMessages().qViewConferenceTitle(),
 										"qView-a", "qView-action");
-		
+		conferenceBtn.addClickHandler(new ConferencingClickHandler());
+		conferenceBtn.setVisible(false);
+
 		instantMessageBtn = new ProfileActionWidget(GwtTeaming.getMessages().qViewInstantMessage(),
 				GwtTeaming.getMessages().qViewInstantMessageTitle(),
 				"qView-a", "qView-action");
@@ -237,22 +239,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					hide();
 				}
 			});
-
-		// Default button to not visible
 		instantMessageBtn.setVisible(false);
 
-		// Check if presence is enabled; set the button visible if it is.
-		GwtTeaming.getRpcService().isPresenceEnabled(new AsyncCallback<Boolean>() {
-				public void onFailure(Throwable t) {
-					instantMessageBtn.setVisible(false);
-				}
-				public void onSuccess(Boolean enabled) {
-					instantMessageBtn.setVisible(enabled);
-				}
-			});
-
 		followBtn = new QuickViewAction("", "", "qView-a",
-											    "qView-action-following");
+									    "qView-action-following");
 
 		// Add a clickhandler to the "advanced" link. When the user clicks on
 		// the link we
@@ -449,8 +439,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				hide();
 			}
 
-			public void onSuccess(ProfileInfo profile) {
-
+			public void onSuccess(ProfileInfo profile) {		
 				boolean isPictureEnabled = profile.isPictureEnabled();
 				String url = profile.getPictureUrl();
 				if(isPictureEnabled) {
@@ -481,10 +470,12 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 					row = ProfileClientUtil.createProfileInfoSection(cat, grid,	row, false, false);
 				}
-
-				
+	
 				getUserStatus();
 				updateFollowingStatus();
+				
+				conferenceBtn.setVisible(profile.isConferencingEnabled());
+				instantMessageBtn.setVisible(profile.isPresenceEnabled());
 			}
 		};
 
@@ -637,6 +628,23 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					}
 				}
 			};
+	}
+
+	private class ConferencingClickHandler implements ClickHandler {
+		public void onClick(ClickEvent event) {
+			// Get the URL to the meeting start/schedule dialog and launch it in a new window
+			GwtTeaming.getRpcService().getAddMeetingUrl(new HttpRequestInfo(), binderId,
+					new AsyncCallback<String>() {
+						public void onSuccess(String url) {
+							if (GwtClientHelper.hasString(url)) {
+								GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 500, 600);
+								hide();
+							}
+						}
+						public void onFailure(Throwable t) {
+						}
+					});
+		}
 	}
 	
 	/**

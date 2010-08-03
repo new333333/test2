@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.portlet.binder;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +44,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.joda.time.DateTime;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.web.WebKeys;
@@ -89,11 +91,18 @@ public class MeetingController extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 		}
 
-		
 		Set users = new HashSet();
 		users.addAll(getProfileModule().getUsers(new HashSet(userIds)));
-		
-		
+
+		DateTime startDateTime = new DateTime();
+		startDateTime = startDateTime.plusMinutes(startDateTime
+				.getMinuteOfHour() > 30 ? 60 - startDateTime
+				.getMinuteOfHour() : 30 - startDateTime
+				.getMinuteOfHour());
+		Date startDate = startDateTime.toDate();
+
+		model.put("startDate", startDate);
+
 		model.put(WebKeys.USERS, users);
 		model.put(WebKeys.URL_APPEND_TEAM_MEMBERS, appendTeamMembers);
 

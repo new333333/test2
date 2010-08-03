@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.module.report.ReportModule;
+import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -247,6 +248,17 @@ public class GwtProfileHelper {
 			//if (!user.getId().equals(owner.getId())) {
 				u = (User) bs.getProfileModule().getEntry(owner.getId());
 				u = (User)Utils.fixProxy(u);
+
+				CustomAttribute ca = GwtServerHelper.getCurrentUser().getCustomAttribute("conferencingID");
+				if (ca != null && ((String)ca.getValue()).length() > 0) {
+					profile.setConferencingEnabled(bs.getConferencingModule().isEnabled());
+				}
+				
+				PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+				if (presenceService != null) {
+					profile.setPresenceEnabled(presenceService.isEnabled());
+				}
+
 				Document doc = u.getEntryDef().getDefinition();
 				Element configElement = doc.getRootElement();
 				

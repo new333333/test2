@@ -217,6 +217,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				localTBI.addQualifier("popup", "true");
 				localTBI.addQualifier("popupHeight", "500");
 				localTBI.addQualifier("popupWidth",  "600");
+				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isSendMailAllowed()) {
 				localTBI = new ToolbarItem();

@@ -99,8 +99,15 @@
 	
     <!-- ============================= Presence Service    ============================ -->
 	<bean id="presenceServiceImpl" class="org.kablink.teaming.presence.impl.PresenceManagerImpl">
-		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
-		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
+		<property name="jabberServer"><value>${presence.service.server.address}</value></property>
+		<property name="jabberServerPort"><value>${presence.service.server.port}</value></property>
 		<property name="enabled"><value>${presence.service.enable}</value></property>
 	</bean>
+
+    <!-- ============================= Conferencing Service    ============================ -->
+	<bean id="conferencingModuleImpl" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.conferencing.impl.ConferencingModuleImpl">
+		<property name="conferencingURL"><value>${conferencing.service.url}</value></property>
+		<property name="enabled"><value>${conferencing.service.enable}</value></property>
+	</bean>
+
 </beans>

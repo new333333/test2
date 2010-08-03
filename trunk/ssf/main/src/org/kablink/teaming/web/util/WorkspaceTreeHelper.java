@@ -1084,7 +1084,7 @@ public class WorkspaceTreeHelper {
 		}
 		
 		// Meet
-		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (bs.getConferencingModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1095,7 +1095,6 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.TOOLBAR_TEAM_MEET_URL, adapterUrl.toString());
 		}
 
-		
 		//	The "Manage dashboard" menu
 		BinderHelper.buildDashboardToolbar(request, response, bs, workspace, dashboardToolbar, model);
 
@@ -1151,7 +1150,7 @@ public class WorkspaceTreeHelper {
 		TrashHelper.buildTrashToolbar(user, workspace, model, qualifiers, trashToolbar);
 
 		// start meeting
-		if (bs.getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (bs.getConferencingModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1161,7 +1160,7 @@ public class WorkspaceTreeHelper {
 			//footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());
 		}
-		
+			
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();

@@ -183,6 +183,9 @@ public interface GwtRpcService extends RemoteService
 	public String 			getImUrl( String binderId ) throws GwtTeamingException;
 	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException;
 
+	// Return the URL for the start/schedule meeting page
+	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
+
 	// The following are used in the implementation of the
 	// UserStatusControl.
 	public Boolean saveUserStatus(String status) throws GwtTeamingException;

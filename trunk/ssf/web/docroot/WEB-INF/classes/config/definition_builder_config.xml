@@ -1297,24 +1297,36 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileZonName" caption="__zonName" type="data" 
+	<item name="profileConferencingID" caption="__conferencingID" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__zonName"/>
-			<property name="name" caption="__data_name" type="text" value="zonName" 
+			<property name="caption" caption="__caption" type="text" value="__conferencingID"/>
+			<property name="name" caption="__data_name" type="text" value="conferencingID" 
 			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
 		</properties>
 		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
+	</item>		
+	<item name="profileConferencingPwd" caption="__conferencingPwd" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__conferencingPwd"/>
+			<property name="name" caption="__data_name" type="text" value="conferencingPwd" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/pwd_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>		
 	<item name="profileTimeZone" caption="__timeZone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
 		<properties>
@@ -1907,7 +1919,6 @@
 				<option name="emailAddress" caption="__emailAddress" />
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" />
 				<option name="txtEmailAddress" caption="__txtEmailAddress" />
-				<option name="zonName" caption="__zonName" />
 				<option name="skypeId" caption="__skypeId" />
 				<option name="twitterId" caption="__twitterId" />
 		    </property>
@@ -1942,7 +1953,6 @@
 				<option name="emailAddress" caption="__emailAddress" initial="true"/>
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
 				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
-				<option name="zonName" caption="__zonName" initial="true"/>
 				<option name="skypeId" caption="__skypeId" initial="true"/>
 				<option name="twitterId" caption="__twitterId"/>
 		    </property>
@@ -1973,7 +1983,6 @@
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
 				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
 				<option name="instantMessageID" caption="__instantMessage" initial="true"/>
-				<option name="zonName" caption="__zonName" />
 				<option name="skypeId" caption="__skypeId" />
 				<option name="twitterId" caption="__twitterId" />
 		    </property>
@@ -2046,11 +2055,12 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
-			<option name="profileZonName" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
 			<option name="profilePresence" initial="true" />
+			<option name="profileConferencingID" initial="true" />
+			<option name="profileConferencingPwd" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
 				<exclude name="attachFiles"/>
@@ -2111,11 +2121,12 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
-			<option name="profileZonName" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
 			<option name="profilePresence" initial="true" />
+			<option name="profileConferencingID" initial="true" />
+			<option name="profileConferencingPwd" initial="true" />
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>
 	</item>	
