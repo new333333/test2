@@ -69,6 +69,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -1086,8 +1087,9 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * Invoke the "Edit Advanced Branding" dialog.
 	 */
-	public void invokeEditAdvancedBrandingDlg( int x, int y )
+	public void invokeEditAdvancedBrandingDlg( final int x, final int y )
 	{
+		PopupPanel.PositionCallback posCallback;
 		EditSuccessfulHandler editSuccessfulHandler;
 		EditCanceledHandler editCanceledHandler;
 		BrandingTinyMCEConfiguration tinyMCEConfig = null;
@@ -1141,7 +1143,23 @@ public class EditBrandingDlg extends DlgBox
 											y,
 											null );
 
-		m_editAdvancedBrandingDlg.show();
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int xPos;
+				int yPos;
+				
+				xPos = getAbsoluteLeft() - 50;
+				yPos = y;
+				
+				m_editAdvancedBrandingDlg.setPopupPosition( xPos, yPos );
+			}// end setPosition()
+		};
+		m_editAdvancedBrandingDlg.setPopupPositionAndShow( posCallback );
 		m_editAdvancedBrandingDlg.setText( m_advancedBranding );
 	}// end invokeEditAdvancedBrandingDlg()
 
