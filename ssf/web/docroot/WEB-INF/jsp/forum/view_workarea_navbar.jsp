@@ -56,8 +56,9 @@
 			if (inSearch && ("function" == typeof ss_getSearchTabId)) {
 				searchTabId = ss_getSearchTabId();
 			}
-			if (typeof window.top.ss_contextLoaded != "undefined") 
+			if (typeof window.top.ss_contextLoaded != "undefined" && window.name == "gwtContentIframe") {
 				window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
+			}
 		}
 
 		/*
@@ -76,9 +77,10 @@
 				hideMasthead = ${ss_mashupHideMasthead};
 				hideSidebar = ${ss_mashupHideSidebar};
 				showBranding = ${ss_mashupShowBranding}; 
-				if ( window.parent.ss_handleLandingPageOptions )
-				{
-					window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding );
+				if ( window.parent.ss_handleLandingPageOptions ) {
+					if (window.name == "gwtContentIframe") {
+						window.parent.ss_handleLandingPageOptions( hideMasthead, hideSidebar, showBranding );
+					}
 				}
 			</c:if>
 		}// end showLandingPageOptions()
