@@ -1170,20 +1170,20 @@ public class EditBrandingDlg extends DlgBox
 			valid = true;
 			
 			// On IE, setBackgroundColor() will throw an exception if the color is not valid.
+			// On FF, setBackgroundColor() will not set the color if is an invalid color.
 			style.setBackgroundColor( color );
 			
-			// Get the background color.  If it is not the same as the color that was passed to
-			// us then the browser rejected the color as invalid.
+			// Get the background color.  If it is empty then we were passed an invalid color.
 			tmpColor = style.getBackgroundColor();
-			if ( color.equalsIgnoreCase( tmpColor ) == false )
+			if ( tmpColor == null || tmpColor.length() == 0 )
 				valid = false;
-			
-			style.setBackgroundColor( origColor );
 		}
 		catch( Exception ex )
 		{
 			valid = false;
 		}
+		
+		style.setBackgroundColor( origColor );
 		
 		return valid;
 	}// end isColorValid()
