@@ -51,6 +51,9 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
@@ -144,7 +147,7 @@ public class AddEntryController extends SAbstractController {
     				}
     			}
 
-    			getProfileModule().addUser(entryType, inputData, fileMap, null);
+    			addUser(request, response, entryType, inputData, fileMap, null);
 
     			// Are we running the new GWT UI and doing a self registration?
     			if ( GwtUIHelper.isGwtUIActive( request ) && isGuestUser() )
@@ -235,6 +238,13 @@ public class AddEntryController extends SAbstractController {
 		
 		return guestUser;
 	}// end isGuestUser()
+	
+	 protected User addUser(ActionRequest request, ActionResponse response,
+			 String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+		throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		 return getProfileModule().addUser(definitionId, inputData, fileItems, options);
+	 }
+
 }
 
 
