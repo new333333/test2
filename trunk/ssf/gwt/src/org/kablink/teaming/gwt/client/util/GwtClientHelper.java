@@ -129,21 +129,30 @@ public class GwtClientHelper {
 	/**
 	 * Handles Throwable's received by GWT RPC onFailure() methods.
 	 * 
+	 * Note:
+	 *    On 20100803 I (Dennis) discussed this with Jay and we agreed
+	 *    that in the Durango release, we'll only display errors here
+	 *    for those exceptions that we really know something about.
+	 *    The others will be ignored.
+	 * 
 	 * @param t
 	 * @param errorMessage
 	 * @param patches
 	 */
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String[] patches) {
+		boolean displayAlert = false;
 		if (null != t) {
 			GwtTeamingMessages messages = GwtTeaming.getMessages();
 			String cause;
 			if (t instanceof GwtTeamingException) {
 				switch (((GwtTeamingException) t).getExceptionType()) {
 				case ACCESS_CONTROL_EXCEPTION:
+					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
 					break;
 					
 				case NO_BINDER_BY_THE_ID_EXCEPTION:
+					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);
 					break;
 					
@@ -167,7 +176,9 @@ public class GwtClientHelper {
 		}
 		
 		errorMessage = patchMessage(errorMessage, patches);
-		Window.alert(errorMessage);
+		if (displayAlert) {
+			Window.alert(errorMessage);
+		}
 	}
 	
 	public static void handleGwtRPCFailure(String errorMessage, String[] patches) {
