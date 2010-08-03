@@ -54,9 +54,12 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -145,6 +148,11 @@ public class EntryVersionController extends  SAbstractController {
 			DefinableEntity entity = null;
 			if (entityType.equals(EntityType.folderEntry.name())) {
 				entity = getFolderModule().getEntry(null, entityId);
+			}
+			Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+			if (entity != null && entity instanceof FolderEntry) {
+				accessControlMap.put("modifyEntry", 
+						getFolderModule().testAccess((FolderEntry)entity, FolderOperation.modifyEntry));
 			}
 			Map<Long,FolderEntry> folderEntries = new HashMap<Long,FolderEntry>();
 			if (entity != null && operation.equals(WebKeys.OPERATION_VIEW_EDIT_HISTORY)) {
