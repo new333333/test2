@@ -242,6 +242,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetStatus();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
+	String rpcFailure_UnknownCause();
 	String rpcFailure_UnknownException();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
