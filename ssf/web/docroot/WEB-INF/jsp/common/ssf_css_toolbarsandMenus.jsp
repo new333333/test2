@@ -242,11 +242,8 @@ table.ss_actions_bar4_pane {
 	padding:5px 0 5px 5px;
 	}
 .ss_actions_bar6 {
-	background-color:#81b2bd;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	font-weight: bold;
-	color: #fff;
 	margin:0;
 	padding: 0 4px;
     float:right;		
