@@ -429,9 +429,11 @@ public class GwtServerHelper {
 		BinderModule bm = bs.getBinderModule();
 		for (Iterator<Long> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
 			// ...creating a TreeInfo for each...
-			Binder subBinder = bm.getBinder(biIT.next());
-			TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
-			childTIList.add(subWsTI);
+			try {
+				Binder subBinder = bm.getBinder(biIT.next());
+				TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+				childTIList.add(subWsTI);
+			} catch(AccessControlException ace) {}
 		}
 	}
 	
