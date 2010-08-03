@@ -437,7 +437,11 @@ public class GwtMainPage extends Composite
 		
 		// Get the position of the content control.
 		x = m_contentCtrl.getAbsoluteLeft();
+		if ( x < 75 )
+			x = 75;
 		y = m_contentCtrl.getAbsoluteTop();
+		if ( y < 75 )
+			y = 75;
 		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
 		if ( m_editBrandingSuccessHandler == null )
