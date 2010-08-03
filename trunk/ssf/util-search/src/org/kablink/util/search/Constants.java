@@ -197,9 +197,9 @@ public class Constants {
 	public static final String FIRSTNAME_FIELD = "_firstName";
 	public static final String MIDDLENAME_FIELD = "_middleName";
 	public static final String LASTNAME_FIELD = "_lastName";
-	public static final String EMAIL_FIELD = "emailAddress";
-	public static final String EMAIL_TXT_FIELD = "txtEmailAddress";
-	public static final String EMAIL_MOBILE_FIELD = "mobileEmailAddress";
+	public static final String EMAIL_FIELD = "_email";
+	public static final String EMAIL_TXT_FIELD = "_emailTxt";
+	public static final String EMAIL_MOBILE_FIELD = "_emailMobile";
 	public static final String ORGANIZATION_FIELD = "_org";
 	public static final String PHONE_FIELD = "_phone";
 	public static final String STATUS_FIELD = "_status";
