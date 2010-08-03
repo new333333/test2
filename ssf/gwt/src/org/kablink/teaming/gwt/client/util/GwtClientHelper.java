@@ -155,9 +155,13 @@ public class GwtClientHelper {
 			
 			else {
 				cause = t.getLocalizedMessage();
-				if (null == cause) {
+				if (!(hasString(cause))) {
 					cause = t.toString();
 				}
+			}
+			
+			if (!(hasString(cause))) {
+				cause = messages.rpcFailure_UnknownCause();
 			}
 			patches = new String[]{cause};
 		}
