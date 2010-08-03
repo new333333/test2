@@ -38,19 +38,13 @@
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
-		String itemCaption = (String) item.attributeValue("caption", "");
-		
-		//System.out.println(item.asXML());
-		//System.out.println(itemCaption);
 %>
-
-<c:set var="ssItemCaption" value="<%= itemCaption %>" scope="request" />
 
 <c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
 <c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
 <c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 
-<fieldset><legend><ssf:nlt tag="${ssItemCaption}"/></legend>
+<fieldset><legend><ssf:nlt tag="${property_caption}"/></legend>
 <table class="ss_transparent" style="border-spacing: 10px 2px;">
 
 <c:forEach var="element" items="${propertyValues__elements}">
