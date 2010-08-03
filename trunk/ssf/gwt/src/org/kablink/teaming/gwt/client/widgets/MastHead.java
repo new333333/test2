@@ -83,7 +83,6 @@ public class MastHead extends Composite
 	private String m_mastheadBinderId = null;
 	private FlowPanel m_mainMastheadPanel = null;
 	private FlowPanel m_globalActionsPanel = null;
-	private InlineLabel m_mouseOverHint = null;
 	private Image m_adminImg1 = null;
 	private Image m_adminImg2 = null;
 	private Image m_personalPrefsImg1 = null;
@@ -165,11 +164,6 @@ public class MastHead extends Composite
 			}
 			
 			
-			// Create a place to hold the mouse-over hint.
-			m_mouseOverHint = new InlineLabel();
-			m_mouseOverHint.addStyleName( "mastheadGlobalActionsMouseOverHint" );
-			m_globalActionsPanel.add( m_mouseOverHint );
-
 			// Add the global actions to the masthead.
 			addAdministrationAction();
 			addPersonalPreferencesAction();
@@ -290,6 +284,7 @@ public class MastHead extends Composite
 		m_adminLink.addClickHandler( this );
 		m_adminLink.addMouseOutHandler( this );
 		m_adminLink.addMouseOverHandler( this );
+		m_adminLink.setTitle( GwtTeaming.getMessages().administrationHint() );
 		linkElement = m_adminLink.getElement();
 		
 		// Add the mouse-out image to the link.
@@ -363,6 +358,7 @@ public class MastHead extends Composite
 		m_helpLink.addClickHandler( this );
 		m_helpLink.addMouseOutHandler( this );
 		m_helpLink.addMouseOverHandler( this );
+		m_helpLink.setTitle( GwtTeaming.getMessages().helpHint() );
 		linkElement = m_helpLink.getElement();
 		
 		// Add the mouse-out image to the link.
@@ -397,6 +393,7 @@ public class MastHead extends Composite
 			m_logoutLink.addClickHandler( this );
 			m_logoutLink.addMouseOutHandler( this );
 			m_logoutLink.addMouseOverHandler( this );
+			m_logoutLink.setTitle( GwtTeaming.getMessages().logoutHint() );
 			linkElement = m_logoutLink.getElement();
 			
 			// Add the mouse-out image to the link.
@@ -420,6 +417,7 @@ public class MastHead extends Composite
 			m_loginLink.addClickHandler( this );
 			m_loginLink.addMouseOutHandler( this );
 			m_loginLink.addMouseOverHandler( this );
+			m_loginLink.setTitle( GwtTeaming.getMessages().loginHint() );
 			linkElement = m_loginLink.getElement();
 			
 			// Add the mouse-out image to the link.
@@ -455,6 +453,7 @@ public class MastHead extends Composite
 			m_personalPrefsLink.addClickHandler( this );
 			m_personalPrefsLink.addMouseOutHandler( this );
 			m_personalPrefsLink.addMouseOverHandler( this );
+			m_personalPrefsLink.setTitle( GwtTeaming.getMessages().personalPreferencesHint() );
 			linkElement = m_personalPrefsLink.getElement();
 			
 			// Add the mouse-out image to the link.
@@ -490,6 +489,7 @@ public class MastHead extends Composite
 			m_teamingFeedLink.addClickHandler( this );
 			m_teamingFeedLink.addMouseOutHandler( this );
 			m_teamingFeedLink.addMouseOverHandler( this );
+			m_teamingFeedLink.setTitle( GwtTeaming.getMessages().teamingFeedHint() );
 			linkElement = m_teamingFeedLink.getElement();
 			
 			// Add the mouse-out image to the link.
@@ -550,8 +550,6 @@ public class MastHead extends Composite
 			m_userName.addStyleDependentName( "mouseOut" );
 		}
 
-		// Remove the mouse-over hint.
-		m_mouseOverHint.setText( "" );
 	}// end doMouseOutActions()
 	
 	
@@ -705,7 +703,6 @@ public class MastHead extends Composite
 	public void onMouseOver( MouseOverEvent event )
 	{
 		Widget eventSource;
-		String hint = "";
 		
 		// Get the widget that was clicked on.
 		eventSource = (Widget) event.getSource();
@@ -715,53 +712,37 @@ public class MastHead extends Composite
 		{
 			m_adminImg1.setVisible( false );
 			m_adminImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().administrationHint();
 		}
 		else if ( eventSource == m_personalPrefsLink )
 		{
 			m_personalPrefsImg1.setVisible( false );
 			m_personalPrefsImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().personalPreferencesHint();
 		}
 		else if ( eventSource == m_teamingFeedLink )
 		{
 			m_teamingFeedImg1.setVisible( false );
 			m_teamingFeedImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().teamingFeedHint();
 		}
 		else if ( eventSource == m_logoutLink )
 		{
 			m_logoutImg1.setVisible( false );
 			m_logoutImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().logoutHint();
 		}
 		else if ( eventSource == m_loginLink )
 		{
 			m_loginImg1.setVisible( false );
 			m_loginImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().loginHint();
 		}
 		else if ( eventSource == m_helpLink )
 		{
 			m_helpImg1.setVisible( false );
 			m_helpImg2.setVisible( true );
-			
-			hint = GwtTeaming.getMessages().helpHint();
 		}
 		else if ( eventSource == m_userName )
 		{
 			m_userName.removeStyleDependentName( "mouseOut" );
 			m_userName.addStyleDependentName( "mouseOver" );
-			hint = "";
 		}
-		
-		// Update the mouse-over hint.
-		m_mouseOverHint.setText( hint );
 	}// onMouseOver()
 	
 
