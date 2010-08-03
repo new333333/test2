@@ -129,12 +129,16 @@ public class GwtProfileHelper {
 				
 				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
 				if(item != null) {
-					List<Element> itemList = item.selectNodes("item[@name]");
+					List<Element> itemList = item.selectNodes("item");
 					
 					//for each section header create a profile Info object to hold the information 
 					for(Element catItem: itemList){
 							ProfileCategory cat = new ProfileCategory();
 							String caption = catItem.attributeValue("caption", "");
+							Element captionEle = (Element)catItem.selectSingleNode("properties/property[@name='caption']");
+							if (captionEle != null) {
+								caption = captionEle.attributeValue("value", "");
+							}
 							String name = catItem.attributeValue("name", "");
 							String title = NLT.getDef(caption);
 							
