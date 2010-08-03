@@ -602,6 +602,7 @@ public interface GwtTeamingMessages extends Messages
 	String qViewMicroBlogTitle();
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
+	String qViewErrorWorkspaceDoesNotExist();
 
 	
 	//Profile

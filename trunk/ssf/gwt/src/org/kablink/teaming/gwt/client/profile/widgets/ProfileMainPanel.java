@@ -345,6 +345,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		for (ProfileAttribute attr : cat.getAttributes()) {
 			
+			if(attr == null) {
+				continue;
+			}
+			
 			String dataName = attr.getDataName();
 			if(dataName != null && !dataName.equals("picture")) {
 				String stitle = (GwtClientHelper.hasString(attr.getTitle())? attr.getTitle() : "");
