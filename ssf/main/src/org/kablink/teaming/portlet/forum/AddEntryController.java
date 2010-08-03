@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.security.AccessControlException;
@@ -128,7 +129,7 @@ public class AddEntryController extends SAbstractController {
 							}
 						}
 					}
-					entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
+					entryId = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
@@ -147,7 +148,7 @@ public class AddEntryController extends SAbstractController {
 				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				try {
-					entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
+					entryId = addReply(request, response, folderId, id, entryType, inputData, fileMap, null).getId();
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
@@ -351,7 +352,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	try {
-		        	    	entryId= getFolderModule().addEntry(folderId, fileDefId, inputData, oneFileMap, null).getId();
+		        	    	entryId = addEntry(request, response, folderId, fileDefId, inputData, oneFileMap, null).getId();
 						} catch(WriteFilesException e) {
 				    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 				    		return;
@@ -577,4 +578,18 @@ public class AddEntryController extends SAbstractController {
 			model.put(WebKeys.CALENDAR_INITIAL_EVENT, event);
 		}
 	}
+
+	protected FolderEntry addEntry(ActionRequest request, ActionResponse response,
+			Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		return getFolderModule().addEntry(folderId, definitionId, inputData, fileItems, options);
+	}
+	
+    protected FolderEntry addReply(ActionRequest request, ActionResponse response,
+    		Long folderId, Long parentId, String definitionId, 
+    		InputDataAccessor inputData, Map fileItems, Map options) 
+    	throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    	return getFolderModule().addReply(folderId, parentId, definitionId, inputData, fileItems, options);
+    }
+
 }
