@@ -44,7 +44,7 @@
 <c:set var="ss_element_display_style_caption" value="ss_light" scope="request"/>
 <c:set var="ss_element_display_style_item" value="ss_bold" scope="request"/>
 
-<fieldset><legend><ssf:nlt tag="${property_caption}"/></legend>
+<fieldset><legend><ssf:nlt tag="${property_caption}" checkIfTag="true"/></legend>
 <table class="ss_transparent" style="border-spacing: 10px 2px;">
 
 <c:forEach var="element" items="${propertyValues__elements}">
