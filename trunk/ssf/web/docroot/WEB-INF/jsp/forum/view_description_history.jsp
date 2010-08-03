@@ -348,6 +348,7 @@ function ss_resizeIframeArea() {
 			  <div><ssf:nlt tag="changeLog.operation.${change.operation}"/></div>
 			</td>		
 			<td colspan="2">
+			<c:if test="${ss_accessControlMap['modifyEntry']}">
 			  <a class="ss_tinyButton"
 				href="<ssf:url><ssf:param 
 				name="action" value="view_editable_history"/><ssf:param 
@@ -357,6 +358,7 @@ function ss_resizeIframeArea() {
 				alt="<ssf:nlt tag="entry.comparison.revert"/>"
 				title="<ssf:nlt tag="entry.comparison.revert"/>"
 				><ssf:nlt tag="entry.revert"/></a>
+			</c:if>
 			</td>
 		</tr>
 		<tr>
