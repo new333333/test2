@@ -120,7 +120,7 @@
       </properties>  
       <item name="profileHeadingPersonalForm" caption="__profile_heading_Personal_div" category="userFormLayout" display="form" id="39"> 
         <properties> 
-          <property name="caption" value=""/> 
+          <property name="caption" value="__profile_heading_Personal_div"/> 
         </properties>  
         <item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form" id="128">
           <properties>
@@ -159,7 +159,7 @@
       </item>  
       <item name="profileHeadingContactForm" caption="__profile_heading_Contact_div" category="userFormLayout" display="form" id="43"> 
         <properties> 
-          <property name="caption" value=""/> 
+          <property name="caption" value="__profile_heading_Contact_div"/> 
         </properties>  
         <item name="profileWorkPhone" caption="__workPhone" type="data" id="44"> 
           <properties> 
@@ -219,7 +219,7 @@
       </item>  
       <item name="profileHeadingOrgForm" caption="__profile_heading_Org_div" category="userFormLayout" display="form" id="51"> 
         <properties> 
-          <property name="caption" value=""/> 
+          <property name="caption" value="__profile_heading_Org_div"/> 
         </properties>  
         <item name="profileDepartment" caption="__department" type="data" id="52"> 
           <properties> 
@@ -256,7 +256,7 @@
       </item>  
       <item name="profileHeadingOtherForm" caption="__profile_heading_Other_div" category="userFormLayout" display="form" id="56"> 
         <properties> 
-          <property name="caption" value=""/> 
+          <property name="caption" value="__profile_heading_Other_div"/> 
         </properties>  
         <item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form" id="126">
           <properties>
@@ -388,7 +388,7 @@
     <properties/>  
     <item name="profileHeadingPersonalView" caption="__profile_heading_Personal_div" category="userViewLayout" display="view" id="64"> 
       <properties> 
-        <property name="caption" value=""/> 
+        <property name="caption" value="__profile_heading_Personal_div"/> 
       </properties>  
       <item name="profileJobTitle" caption="__jobTitle" type="data" id="65"> 
         <properties> 
@@ -417,7 +417,7 @@
     </item>  
     <item name="profileHeadingContactView" caption="__profile_heading_Contact_div" category="userViewLayout" display="view" id="68"> 
       <properties> 
-        <property name="caption" value=""/> 
+        <property name="caption" value="__profile_heading_Contact_div"/> 
       </properties>  
       <item name="profileWorkPhone" caption="__workPhone" type="data" id="69"> 
         <properties> 
@@ -477,7 +477,7 @@
     </item>  
     <item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" id="76"> 
       <properties> 
-        <property name="caption" value=""/> 
+        <property name="caption" value="__profile_heading_Org_div"/> 
       </properties>  
       <item name="profileDepartment" caption="__department" type="data" id="77"> 
         <properties> 
@@ -514,7 +514,7 @@
     </item>  
     <item name="profileHeadingOtherView" caption="__profile_heading_Other_div" category="userViewLayout" display="view" id="111"> 
       <properties> 
-        <property name="caption" value=""/> 
+        <property name="caption" value="__profile_heading_Other_div"/> 
       </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="127" formItem="htmlEditorTextarea">
         <properties>
@@ -525,7 +525,7 @@
     </item>  
     <item name="profileHeadingPhotosAndImagesView" caption="__profile_heading_PhotosAndImages_div" category="userViewLayout" display="view" id="86"> 
       <properties> 
-        <property name="caption" value=""/> 
+        <property name="caption" value="__profile_heading_PhotosAndImages_div"/> 
       </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="95" formItem="profileEntryPicture"> 
         <properties> 
