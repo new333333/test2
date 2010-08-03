@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EncryptedValue;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FolderEntry;
@@ -2418,6 +2419,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
 					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
 					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, mashupStyle);
+				}
+			}
+		} else if (itemName.equals("profileConferencingPwd")) {
+			if (inputData.exists(nameValue)) {
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+					String value = inputData.getSingleValue(nameValue);
+					if (!value.equals("********")) {				
+						EncryptedValue v = new EncryptedValue();
+						v.setValue(value);
+						entryData.put(nameValue, v);
+					}
 				}
 			}
 		} else {

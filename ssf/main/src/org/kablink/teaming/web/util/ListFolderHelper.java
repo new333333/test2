@@ -1787,7 +1787,7 @@ public class ListFolderHelper {
 		}
 		
 		//Meet
-		if (bs.getIcBrokerModule().isEnabled() && 
+		if (bs.getConferencingModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
@@ -2071,7 +2071,7 @@ public class ListFolderHelper {
 		TrashHelper.buildTrashToolbar(user, folder, model, qualifiers, trashToolbar);
 
 		// start meeting
-		if (bs.getIcBrokerModule().isEnabled() && 
+		if (bs.getConferencingModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);

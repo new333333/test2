@@ -92,7 +92,7 @@
 		<property name="convertedFileModule"><ref bean="convertedFileModule"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="reportModule"><ref bean="reportModule"/></property>
-		<property name="icBrokerModule"><ref bean="icBrokerModule"/></property>			
+		<property name="conferencingModule"><ref bean="conferencingModule"/></property>			
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="rssModule"><ref bean="rssModule"/></property>
 		<property name="licenseModule"><ref bean="licenseModule"/></property>
@@ -1011,21 +1011,9 @@ text/calendar											  ics
 		<property name="target"><ref bean="presenceServiceImpl"/></property>
 	</bean>
 	
-	<!-- ================================ Instant Collaboration Support==================== -->
-	<bean id="icBrokerModule" parent="moduleNonTransactionProxy">
-		<property name="target">
-			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.ic.impl.ICBrokerModuleImpl">	
-				<property name="adminId"><value>${presence.broker.admin.id}</value></property>
-				<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
-				<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>
-				<property name="jabberDomain"><value>${presence.broker.jabber.domain}</value></property>
-				<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
-				<property name="enabled"><value>${presence.service.enable}</value></property>
-			</bean>
-		</property>
-		<!--<property name="proxyInterfaces">
-			<value>org.kablink.teaming.module.ic.ICBrokerModule</value>
-		</property>-->
+	<!-- ================================ Conferencing Service =========================== -->
+	<bean id="conferencingModule" parent="moduleNonTransactionProxy">
+		<property name="target"><ref bean="conferencingModuleImpl"/></property>
 	</bean>
 	
 	<!-- ================================  Mail Support =============================== -->
@@ -1293,8 +1281,8 @@ text/calendar											  ics
 	        <entry key="Teaming:type=Realtime,name=presenceService">
 	          <ref bean="presenceService"/>
 	        </entry>
-	        <entry key="Teaming:type=Module,name=icBrokerModule">
-	          <ref bean="icBrokerModule"/>
+	        <entry key="Teaming:type=Module,name=conferencingModule">
+	          <ref bean="conferencingModule"/>
 	        </entry>
 	        <entry key="Teaming:type=Hibernate,name=hibernateStatisticsService">
 	          <ref bean="hibernateStatisticsService"/>

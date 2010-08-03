@@ -887,7 +887,7 @@ public class ViewEntryController extends  SAbstractController {
 				footerToolbar.addToolbarMenu("3_sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 			}
 	
-			if (getIcBrokerModule().isEnabled() && 
+			if (getConferencingModule().isEnabled() && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);

@@ -98,6 +98,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -1198,6 +1199,34 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		throw ex;
 	}// end getSiteAdministrationUrl()
 	
+	/**
+	 * Return the URL needed to invoke the start/schedule meeting dialog.
+	 */
+	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
+	{
+		AdaptedPortletURL adapterUrl;
+
+		// ...store the team meeting URL.
+		adapterUrl = new AdaptedPortletURL( getRequest(ri), "ss_forum", true );
+		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
+		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
+
+		if (GwtServerHelper.getWorkspaceType(GwtServerHelper.getBinderSafely(getBinderModule(), binderId)) == WorkspaceType.USER) {
+			// This is a User Workspace so add the owner in and don't append team members
+			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
+			if (p != null) {
+				Long id = p.getId();
+				String [] ids = new String[1];
+				ids[0] = id.toString();
+				adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, ids);
+			}
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.FALSE.toString() );
+		} else {
+			adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
+	    }
+
+		return adapterUrl.toString();
+	}// end getAddMeetingUrl()
 	
 	/**
 	 * Return a GwtBrandingData object for the home workspace.
@@ -2527,14 +2556,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 	
 				// ...if the user can start a team meeting...
-				if ( getIcBrokerModule().isEnabled() )
+				if ( getConferencingModule().isEnabled())
 				{
-					// ...store the team meeting URL.
-					adapterUrl = new AdaptedPortletURL( request, "ss_forum", true );
-					adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
-					adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
-					adapterUrl.setParameter( WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString() );
-					tmi.setTeamMeetingUrl( adapterUrl.toString() );
+					CustomAttribute ca = user.getCustomAttribute("conferencingID");
+					if (ca != null && MiscUtil.hasString((String)ca.getValue())) {		
+						// ...store the team meeting URL.
+						try {
+							tmi.setTeamMeetingUrl( getAddMeetingUrl(ri, binderId) );
+						} catch (GwtTeamingException e) {
+							// Nothing to do...
+						}
+					}
 				}
 			}
 		}

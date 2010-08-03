@@ -47,6 +47,8 @@ public class ProfileInfo implements IsSerializable  {
 	
 	private ArrayList<ProfileCategory> categories = new ArrayList<ProfileCategory>();
 	private boolean pictureEnabled = false;
+	private boolean conferencingEnabled = false;
+	private boolean presenceEnabled = false;
 	
 	/**
 	 * Constructor method.
@@ -127,5 +129,20 @@ public class ProfileInfo implements IsSerializable  {
 
 	public boolean isPictureEnabled() {
 		return pictureEnabled;
+	}
+	
+	public void setConferencingEnabled(boolean enabled) {
+		this.conferencingEnabled = enabled;
+	}
+	public boolean isConferencingEnabled() {
+		return conferencingEnabled;
+	}
+	
+	public void setPresenceEnabled(boolean enabled) {
+		this.presenceEnabled = enabled;
+	}
+	
+	public boolean isPresenceEnabled() {
+		return presenceEnabled;
 	}
 }

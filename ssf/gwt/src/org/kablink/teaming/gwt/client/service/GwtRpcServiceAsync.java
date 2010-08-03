@@ -177,6 +177,9 @@ public interface GwtRpcServiceAsync
 	public void getImUrl(			String binderId, AsyncCallback<String> 			callback);
 	public void getPresenceInfo(    String binderId, AsyncCallback<GwtPresenceInfo> callback);
 
+	// Return the URL for the start/schedule meeting page
+	public void getAddMeetingUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback);
+
 	// The following are used for the UserStatus control
 	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);
 	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 

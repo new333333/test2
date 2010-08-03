@@ -99,6 +99,7 @@ public class CustomAttribute extends ZonedObject {
        	public static final int COMMASEPARATEDSTRING=11;
        	public static final int SURVEY= 12;
        	public static final int PACKEDSTRING= 14;
+       	public static final int ENCRYPTEDSTRING=15;
    protected String name;//set by hibernate access="field"
    protected AnyOwner owner;
    protected String id;
@@ -450,6 +451,9 @@ public class CustomAttribute extends ZonedObject {
          } else if (value instanceof Survey) {
         	 setValue(value.toString());
             valueType = SURVEY;
+         } else if (value instanceof EncryptedValue) {
+        	 setValue(value.toString());
+			 valueType = ENCRYPTEDSTRING;
          } else {
             if (valueType != SERIALIZED) clearVals();
             valueType = SERIALIZED;
@@ -529,6 +533,10 @@ public class CustomAttribute extends ZonedObject {
 	 		    return null;
     		case ATTACHMENT:
     			return owner.getEntity().getAttachment(stringValue);
+        	case ENCRYPTEDSTRING:
+				EncryptedValue ev = new EncryptedValue();
+				ev.setEncryptedValue(stringValue);
+				return ev.getValue();
 
  	    }
 	    return null;

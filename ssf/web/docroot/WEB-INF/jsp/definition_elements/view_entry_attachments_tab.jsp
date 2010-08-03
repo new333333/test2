@@ -168,25 +168,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 		  ><ssf:nlt tag="entry.AttachFilesByWebBrowse"/></a>
 	  </li>
 	</c:if>
-	
-	<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
-	<% if (presence_service_enabled) { %>
-	  <li style="float:right; padding:1px 10px 4px 0px;">
-	  <a class="ss_nowrap" 
-	    title="<ssf:nlt tag="attachMeeting.attachResults"/>" 
-	    href="javascript: ;" 
-		<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
-	      onClick='ss_showAttachMeetingRecords("${ssDefinitionEntry.parentBinder.id}", "${ssDefinitionEntry.id}", "${ss_attachments_namespace}"); 
-	        <c:if test="${!empty ss_quotaMessage}">alert("${ss_quotaMessage}");</c:if>return false;'
-		</c:if>
-		<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-		  onClick='alert("${ss_quotaMessage}");return false;'
-		</c:if>
-	    ><ssf:nlt tag="attachMeeting.attachResults"/></a>
-	
-	  </li>
-	<% } %>
-	</c:if>	
 
 	<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 	  <li style="float:right; padding:1px 10px 4px 0px;">
@@ -243,17 +224,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 					src="<html:rootPath/>js/attachments/entry_attachment_browse.html" 
 					height="150" width="95%">xxx</iframe>
 			</div>	
-		</div>
-					
-					<div id="ss_div_attach_meeting_records${ssDefinitionEntry.id}${ss_attachments_namespace}" 
-					  style="position:relative; display: none; padding: 5px; z-index:10;" class="ss_border_light">
-						<div align="right">
-						<a onClick="ss_hideAddAttachmentMeetingRecords('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
-						  border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_off.gif"/></a>
-						</div>
-						<div id="ss_div_attach_meeting_records_content${ssDefinitionEntry.id}${ss_attachments_namespace}">
-						</div>
-					</div>
+		</div>					
 	</td>	
 </tr>
 </c:if>

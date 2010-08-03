@@ -35,11 +35,11 @@ package org.kablink.teaming.web.portlet;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.conferencing.ConferencingModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.ic.ICBrokerModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.ical.impl.IcalModuleImpl;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -67,7 +67,7 @@ implements AllModulesInjected {
 	private ReportModule reportModule;
 	private FileModule fileModule;
 	private DashboardModule dashboardModule;
-	private ICBrokerModule icBrokerModule;
+	private ConferencingModule conferencingModule;
 	private IcalModule icalModule;
 
 	public void setBinderModule(BinderModule binderModule) {
@@ -164,12 +164,12 @@ implements AllModulesInjected {
 		return reportModule;
 	}
 	
-	public ICBrokerModule getIcBrokerModule() {
-		return icBrokerModule;
+	public ConferencingModule getConferencingModule() {
+		return conferencingModule;
 	}
 
-	public void setIcBrokerModule(ICBrokerModule icBrokerModule) {
-		this.icBrokerModule = icBrokerModule;
+	public void setConferencingModule(ConferencingModule conferencingModule) {
+		this.conferencingModule = conferencingModule;
 	}
 
 	public IcalModule getIcalModule() {

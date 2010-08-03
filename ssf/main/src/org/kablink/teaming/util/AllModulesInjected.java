@@ -35,12 +35,12 @@ package org.kablink.teaming.util;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.conferencing.ConferencingModule;
 import org.kablink.teaming.module.dashboard.DashboardModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.ic.ICBrokerModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
@@ -119,9 +119,9 @@ public interface AllModulesInjected {
 
 	DashboardModule getDashboardModule();
 	
-	void setIcBrokerModule(ICBrokerModule icBrokerModule);
+	void setConferencingModule(ConferencingModule conferencingModule);
 
-	ICBrokerModule getIcBrokerModule();	
+	ConferencingModule getConferencingModule();	
 	
 	void setIcalModule(IcalModule icalModule);
 	IcalModule getIcalModule();

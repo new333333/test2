@@ -60,6 +60,8 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.collections.OrderedMap;
 import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.httpclient.HttpClient;
@@ -109,11 +111,12 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.conferencing.ConferencingException;
+import org.kablink.teaming.module.conferencing.ConferencingModule;
+import org.kablink.teaming.module.conferencing.MeetingInfo;
+import org.kablink.teaming.module.conferencing.MeetingInfo.MeetingRecurrance;
+import org.kablink.teaming.module.conferencing.MeetingInfo.MeetingType;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.ic.DocumentDownload;
-import org.kablink.teaming.module.ic.ICBrokerModule;
-import org.kablink.teaming.module.ic.ICException;
-import org.kablink.teaming.module.ic.RecordType;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
@@ -144,6 +147,7 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.TempFileUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -234,8 +238,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxRemoveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
 				if (WebHelper.isMethodPost(request)) ajaxVoteSurveyRemove(request, response);				
-			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
-				if (WebHelper.isMethodPost(request)) ajaxAttacheMeetingRecords(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 				Map formData = request.getParameterMap();
 				if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) ajaxDoSubscription(request, response);
@@ -422,9 +424,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS)) {
 			return addFolderAttachmentOptions(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
-			return ajaxStartMeeting(request, response, ICBrokerModule.REGULAR_MEETING);
+			return ajaxStartMeeting(request, response, MeetingType.Adhoc);
 		} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
-			return ajaxStartMeeting(request, response, ICBrokerModule.SCHEDULED_MEETING);
+			return ajaxStartMeeting(request, response, MeetingType.Scheduled);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
@@ -467,8 +469,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxSaveCalendarConfigurationStatus(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_GET_CHANGE_LOG_ENTRY_FORM)) {
 			return ajaxGetChangeLogEntryForm(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_MEETING_RECORDS)) {
-			return ajaxGetMeetingRecords(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
@@ -2106,16 +2106,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 	private ModelAndView ajaxStartMeeting(RenderRequest request, 
-			RenderResponse response, int[] meetingType) throws Exception {
+			RenderResponse response, MeetingType meetingType) throws Exception {
 		Map model = new HashMap();
-		
+		String meetingUrl = "";
+
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		
-		Set<Long> memberIds = new HashSet();
-		memberIds.addAll(LongIdUtil.getIdsAsLongSet(request
-				.getParameterValues("users")));
-				
+		SortedSet<User> users = getProfileModule().getUsers( LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+		
 		Binder binder = null;
 		if (binderId != null) {
 			binder = getBinderModule().getBinder(binderId);
@@ -2125,23 +2124,95 @@ public class AjaxController  extends SAbstractControllerRetry {
 			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
 		}
 		
-		try {
-			String meetingToken = getIcBrokerModule().addMeeting(memberIds,
-					binder, entry, "", -1, "", meetingType);
-			model.put(WebKeys.MEETING_TOKEN, meetingToken);
-			response.setContentType("text/json");
-			return new ModelAndView("forum/meeting_return", model);	
-		} catch (ICException e) {
-			logger.error(e);
-			model.put(WebKeys.MEETING_ERROR, NLT.get("meeting.start.error"));
-			response.setContentType("text/json");
-			return new ModelAndView("forum/meeting_return", model);	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		ConferencingModule conferencingService = getConferencingModule();
+		if (conferencingService != null && conferencingService.isEnabled()) {
+			try {
+				// Make sure we are logged in first
+				String conferencingID = "";
+				String conferencingPwd = "";
+				CustomAttribute ca = user.getCustomAttribute("conferencingID");
+				if (ca != null) {
+					conferencingID = (String)ca.getValue(); 
+				}
+				ca = user.getCustomAttribute("conferencingPwd");
+				if (ca != null) {
+					conferencingPwd = (String)ca.getValue();
+				}
+				conferencingService.login(conferencingID, conferencingPwd);
+				
+				MeetingInfo info = new MeetingInfo();
+				info.setType(meetingType);
+
+				for (User participant: users) {
+					if (participant != null) {
+						info.addParticipant(participant.getName(), participant.getEmailAddress());
+					}
+				}
+
+				String displayName = Utils.getUserTitle(user);
+				info.setHostDisplayName(displayName);
+
+		    	String meetingKey = PortletRequestUtils.getStringParameter(request, "meeting_password", "");
+		    	info.setMeetingPassword(meetingKey);
+
+		    	if (meetingType == MeetingType.Adhoc) {
+		    		if (conferencingService.isMeetingRunning(conferencingID)) {
+		    			logger.error("Ending meeting for user" + conferencingID);
+		    			conferencingService.endMeeting(conferencingID);
+		    		}
+					meetingUrl = conferencingService.startMeeting(conferencingID, info);
+		    	} else {
+		    		String name = PortletRequestUtils.getStringParameter(request, "meeting_name", "");
+		    		info.setTitle(name);
+
+		    		String agenda = PortletRequestUtils.getStringParameter(request, "meeting_agenda", "");
+		    		info.setAgenda(agenda);
+
+		    		String startDate = PortletRequestUtils.getStringParameter(request, "meeting_start_date", "");
+		    		info.setStartDate(startDate);
+
+		    		String startTime = PortletRequestUtils.getStringParameter(request, "meeting_start_time", "");
+		    		info.setStartTime(startTime);
+
+		    		String hours = PortletRequestUtils.getStringParameter(request, "meeting_length_hours", "");
+		    		String minutes = PortletRequestUtils.getStringParameter(request, "meeting_length_minutes", "");
+		    		info.setDuration(Integer.valueOf(hours) * 60 + Integer.valueOf(minutes));
+		    		
+		    		String recurrance = PortletRequestUtils.getStringParameter(request, "meeting_repeat_option", "");
+		    		info.setRecurrance(MeetingRecurrance.None);
+		    		if (recurrance.equals("daily")) {
+		    			info.setRecurrance(MeetingRecurrance.Daily);
+		    		} else if (recurrance.equals("weekly")) {
+		    			info.setRecurrance(MeetingRecurrance.Weekly);
+		    		} else if (recurrance.equals("monthly")) {
+		    			info.setRecurrance(MeetingRecurrance.Monthly);
+		    		}
+		    		
+		    		conferencingService.scheduleMeeting(conferencingID, info);
+		    	}
+			} catch (ConferencingException ex) {
+				logger.error(ex);
+				String message;
+				switch (ex.getErrorCode()) {
+				case ConferencingException.AUTH_FAILED:
+					message = NLT.get("meeting.credentials.invalid");
+					break;
+				default:
+					message = NLT.get("meeting.start.error");
+				}
+				model.put(WebKeys.MEETING_ERROR, message);
+				response.setContentType("text/json");
+				return new ModelAndView("forum/meeting_return", model);
+			}
 		}
-		
-		
-	
-	}	
-	
+
+		model.put(WebKeys.MEETING_TOKEN, JSONUtils.quote(meetingUrl));
+		response.setContentType("text/json");
+		return new ModelAndView("forum/meeting_return", model);
+	}
+
 	private ModelAndView ajaxGetTeamMembers(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -3011,252 +3082,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("propertyId", propertyIdText);
 
 		return new ModelAndView("binder/find_place_ajax_return", model);
-	}
-	
-	private ModelAndView ajaxGetMeetingRecords(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String recordsDivId = PortletRequestUtils.getStringParameter(request, "recordsDivId");
-		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX);
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		int held = PortletRequestUtils.getIntParameter(request, "ssHeld", -1);
-		
-		model.put(WebKeys.RECORDS_DIV_ID, recordsDivId);
-		model.put(WebKeys.URL_BINDER_ID, binderId);
-		model.put(WebKeys.URL_ENTRY_ID, entryId);
-		model.put(WebKeys.NAMING_PREFIX, namespace);
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		if (held == -1) {
-			if (portletSession.getAttribute("ssMeetingRecordsHeld") != null) {
-				held = (Integer)portletSession.getAttribute("ssMeetingRecordsHeld");
-			}
-		}
-		if (held == -1) {
-			held = 31;
-		}
-		portletSession.setAttribute("ssMeetingRecordsHeld", held);
-		
-		
-		Map meetingAttachments = new HashMap();
-		try {
-			meetingAttachments = getIcBrokerModule().getUserMeetingAttachments(user.getZonName(), held);
-		} catch(ICException e) {
-			logger.warn("Cannot communicate with Zon meeting server: " + e.getLocalizedMessage());
-		}
-	
-		model.put("ss_meeting_records", meetingAttachments);
-		model.put("ssHeld", held);
-		
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/meeting_records_return", model);
-	}
-	
-	private void ajaxAttacheMeetingRecords(ActionRequest request, ActionResponse response) throws Exception {
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		Map formData = request.getParameterMap();
-		
-		
-		List meetingRecordIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, "ssMeetingRecordId"));
-		List meetingDocumentIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, "ssMeetingDocumentId"));
-		
-		// sort documents and records by meeting id
-		Map<String, Map<String, Object>> attachmentIds = new HashMap();
-		Iterator<String> meetingDocumentIdsIt = meetingDocumentIds.iterator();
-		while (meetingDocumentIdsIt.hasNext()) {
-			String meetingDocumentId = meetingDocumentIdsIt.next();
-			if (meetingDocumentId.indexOf("/") == -1) {
-				continue;
-			}
-			String meetingId = meetingDocumentId.substring(0, meetingDocumentId.indexOf("/"));
-			String documentId = meetingDocumentId.substring(meetingDocumentId.indexOf("/") + 1);
-			if (attachmentIds.get(meetingId) == null) {
-				attachmentIds.put(meetingId, new HashMap());
-				attachmentIds.get(meetingId).put("docs", new ArrayList());
-				attachmentIds.get(meetingId).put("records", new HashMap());
-				((Map)attachmentIds.get(meetingId).get("records")).put("add", new ArrayList());
-				((Map)attachmentIds.get(meetingId).get("records")).put("addAndDelete", new ArrayList());
-			}
-			((List)attachmentIds.get(meetingId).get("docs")).add(documentId);
-		}
-		
-		Iterator<String> meetingRecordIdsIt = meetingRecordIds.iterator();
-		while (meetingRecordIdsIt.hasNext()) {
-			String meetingRecordId = meetingRecordIdsIt.next();
-			String meetingRecordOperation = PortletRequestUtils.getStringParameter(request, "ssMeetingRecordsOperation" + meetingRecordId, "");
-			if (!"".equals(meetingRecordOperation)) {
-				String meetingId = meetingRecordId.substring(0, meetingRecordId.indexOf("-"));
-				if (attachmentIds.get(meetingId) == null) {
-					attachmentIds.put(meetingId, new HashMap());
-					attachmentIds.get(meetingId).put("docs", new ArrayList());
-					attachmentIds.get(meetingId).put("records", new HashMap());
-					((Map)attachmentIds.get(meetingId).get("records")).put("add", new ArrayList());
-					((Map)attachmentIds.get(meetingId).get("records")).put("addAndDelete", new ArrayList());
-				}
-				((List)((Map)attachmentIds.get(meetingId).get("records")).get(meetingRecordOperation)).add(meetingRecordId);
-			}
-		}
-		
-		List<DocumentDownload> documents = new ArrayList();
-		
-		Iterator<Map.Entry<String, Map<String, Object>>> attachmentIdsIt = attachmentIds.entrySet().iterator();
-		while (attachmentIdsIt.hasNext()) {
-			Map.Entry<String, Map<String, Object>> meetingAttachments = attachmentIdsIt.next();
-			String meetingId = meetingAttachments.getKey();
-			Map<String, Object> recordsAndDocs = meetingAttachments.getValue();
-			List docIds  = (List)recordsAndDocs.get("docs");
-			List addRecords = (List)((Map)recordsAndDocs.get("records")).get("add");
-			List addAndDeleteRecords = (List)((Map)recordsAndDocs.get("records")).get("addAndDelete");
-			
-			Map meetingRecords = getIcBrokerModule().getMeetingRecords(meetingId);
-			List meetingDocs = getIcBrokerModule().getDocumentList(meetingId);
-			
-			// list add records
-			Iterator<String> addRecordsIt = addRecords.iterator();
-			while (addRecordsIt.hasNext()) {
-				String recordId = addRecordsIt.next();
-				Map recordsToAddAsMap = (Map)meetingRecords.get(recordId);
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.flash.name())));
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.audio.name())));
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "add", (List)recordsToAddAsMap.get(RecordType.chat.name())));
-			}
-			
-			// list addAndDelete records
-			Iterator<String> addAndDeleteRecordsIt = addAndDeleteRecords.iterator();
-			while (addAndDeleteRecordsIt.hasNext()) {
-				String recordId = addAndDeleteRecordsIt.next();
-				Map recordsToAddAndDeleteAsMap = (Map)meetingRecords.get(recordId);
-				
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.flash.name())));
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.audio.name())));
-				documents.addAll(DocumentDownload.fromRecordsList(meetingId, "addAndDelete", (List)recordsToAddAndDeleteAsMap.get(RecordType.chat.name())));
-			}
-			
-            // Prune originals if merged version exists
-			//
-			// Zon meeting archiver stores original files as
-			//   foo.jpg
-			// Any markup is then applied and the file is called
-			//   foo.jpg.merged
-			//
-			// If no markup has occurred, only the bare jpg file is
-			// there.  So we walk through the array looking for merged
-			// files and removing the original from the list to retrieve.
-			List docsToRemove = new ArrayList();
-			Iterator<List> meetingDocsIt = meetingDocs.iterator();
-			while (meetingDocsIt.hasNext()) {
-				List<String> doc = meetingDocsIt.next();
-				String docId = doc.get(0);
-				if (docId.endsWith(".merged")) {
-					docsToRemove.add(docId.substring(0, docId.length() - 7));
-				}
-			}
-			
-			// collect documents list
-			meetingDocsIt = meetingDocs.iterator();
-			while (meetingDocsIt.hasNext()) {
-				List<String> doc = meetingDocsIt.next();
-				String docId = doc.get(0);
-				if (docsToRemove.contains(docId)) {
-					continue;
-				}
-				
-				String shortId = docId;
-				if (docId.indexOf("/") > -1) {
-					shortId = docId.substring(0, docId.indexOf("/"));
-				}
-				if (docIds.contains(shortId) && 
-						(docId.endsWith(".jpg") || 
-						docId.endsWith(".jpg.merged") || 
-						docId.endsWith(".gif"))) {
-					documents.add(DocumentDownload.fromDocument(meetingId, doc));
-				}
-			}
-		}
-		
-		Map fileMap = new HashMap();
-		int fileCounter = 1;
-		Iterator<DocumentDownload> documentsIt = documents.iterator();
-		while (documentsIt.hasNext()) {
-			DocumentDownload doc = documentsIt.next();
-			if (doc.getType() != null && doc.getType().equals(RecordType.flash)) {
-				doc.setUrl(doc.getUrl().substring(0, doc.getUrl().lastIndexOf("/") + 1) + "movie.zip");
-			}
-			
-			HttpClient httpClient = new HttpClient();
-			GetMethod getMethod = new GetMethod(doc.getUrl());
-			getMethod.setRequestHeader("Authorization", "Basic " + getIcBrokerModule().getBASE64AuthorizationToken());			
-			try{
-
-		          //execute the method
-		          int statusCode =
-		                 httpClient.executeMethod(getMethod);
-
-		          if (statusCode != 200) {
-		        	  continue;
-		          }
-
-		          //get the resonse as an InputStream
-		          InputStream in =
-		                 getMethod.getResponseBodyAsStream();
-
-		          String prefix = "";
-		          String orginalFileName = "";
-		          if (doc.getType() == null) {
-		        	  prefix = doc.getId().substring(doc.getId().indexOf("/") + 1, doc.getId().length());
-		        	  if (prefix.endsWith(".merged")) {
-		        		  prefix = prefix.substring(0, prefix.indexOf(".merged"));
-		        	  }
-		        	  orginalFileName = doc.getMeetingId() + " " + prefix;
-		        	  prefix += "_";
-		          } else if (doc.getType().equals(RecordType.flash)) {
-		        	  prefix = doc.getMeetingId() + "_movie.zip_";
-		        	  orginalFileName = doc.getMeetingId() + " movie.zip";
-		          } else if (doc.getType().equals(RecordType.audio)) {
-		        	  prefix = doc.getMeetingId() + "_audio.mp3_";
-		        	  orginalFileName = doc.getMeetingId() + " audio.mp3";
-		          } else if (doc.getType().equals(RecordType.chat)) {
-			       	  prefix = doc.getMeetingId() + "_chat.txt_";
-			       	  orginalFileName = doc.getMeetingId() + " chat.txt";
-			      } else {
-			    	  continue;
-			      }
-		          
-		          File file = TempFileUtil.createTempFileWithContent(prefix, in);
-		          fileMap.put("ss_attachFile" + fileCounter++, new SimpleMultipartFile(orginalFileName, TempFileUtil.openTempFile(file.getName())));
-
-		          in.close();
-
-			} catch(HttpException e){
-				logger.error(e);
-			} catch(IOException e){
-				logger.error(e);
-			} finally{
-				//release the connection
-				getMethod.releaseConnection();
-			}
-		}
-		
-		String strFilesErrors = "";
-		try {
-			getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, null, null, null);
-		} catch (WriteFilesException wf) {
-			strFilesErrors = wf.toString();
-		}
-		
-		if ("".equals(strFilesErrors)) {
-			documentsIt = documents.iterator();
-			while (documentsIt.hasNext()) {
-				DocumentDownload doc = documentsIt.next();
-		          if (doc.getOperation() != null && doc.getOperation().equals("addAndDelete")) {
-		        	  getIcBrokerModule().removeRecordings(doc.getMeetingId(), doc.getOrginalUrl());
-		          }
-			}
-		}
 	}
 	
 	private ModelAndView ajaxGetUploadProgressStatus(RenderRequest request, RenderResponse response) {

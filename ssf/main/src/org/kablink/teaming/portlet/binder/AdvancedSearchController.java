@@ -248,7 +248,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 	@SuppressWarnings("unchecked")
 	private void addStartMeetingOption(Toolbar footerToolbar, RenderRequest request, String[] contributorIds) {
-		if (getIcBrokerModule().isEnabled()) {
+		if (getConferencingModule().isEnabled()) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			Map qualifiers = new HashMap();
