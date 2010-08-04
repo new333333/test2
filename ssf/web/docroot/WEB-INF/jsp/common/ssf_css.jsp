@@ -1081,7 +1081,6 @@ div.ss_sliding_table_column1 {
   	visibility: hidden;
   	overflow:hidden;
   	display: block; 
- 	border-left: #cccccc solid 1px;
   	font-size: ${ss_style_font_normalprint} !important;
   	margin: 0px;
   	padding-left:1px;
@@ -1126,14 +1125,12 @@ img.ss_sliding_table_column_image {
   background-color: ${ss_sliding_table_row0_background_color}; 
   line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
-  border-bottom: 1px solid #e0e0e0;
 }
 .ss_sliding_table_row1 {
   height:26px;
   background-color: ${ss_sliding_table_row1_background_color}; 
   line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
-  border-bottom: 1px solid #e0e0e0;
 }
 .ss_highlightEntry {
   background-color: #FAFAFA !important;
@@ -1235,7 +1232,7 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style, th.ss_sliding_table_row0 {
+.ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
 	background:url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
@@ -4456,6 +4453,8 @@ div.ssPageNavi {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	background-color: #E9F1F1;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.ssPageNavi table td {
 /*removed no wrap - robbin filter for discussions*/

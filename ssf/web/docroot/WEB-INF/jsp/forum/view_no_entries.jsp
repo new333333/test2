@@ -35,7 +35,7 @@
 <% // Default view if the forum has not been set up yet %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet" style="padding: 10px;">
 <span class="ss_bold">
 	<c:if test="${empty ssEmptyTrash}">
 		<c:if test="${ssBinderReadEntries}">
