@@ -172,8 +172,8 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// User Profiles
-	public ProfileInfo 		getProfileInfo(HttpRequestInfo ri, String binderId);
-	public ProfileStats     getProfileStats(HttpRequestInfo ri, String binderId);
+	public ProfileInfo 		getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
+	public ProfileStats     getProfileStats(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId);
 	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId) throws GwtTeamingException;

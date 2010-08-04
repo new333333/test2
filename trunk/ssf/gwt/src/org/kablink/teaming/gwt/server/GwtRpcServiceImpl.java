@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -2759,12 +2760,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) {
-		
-		//get the binder
-		ProfileInfo profile = GwtProfileHelper.buildProfileInfo(getRequest( ri ), this, Long.valueOf(binderId));
-		
-		return profile;
+	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+		try
+		{
+			//get the binder
+			ProfileInfo profile = GwtProfileHelper.buildProfileInfo(getRequest( ri ), this, Long.valueOf(binderId));
+			return profile;
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
 	}
 	
 	
@@ -2955,9 +2981,34 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
 	 */
-	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId) {
+	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+		try
+		{
+			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, binderId);
+			return stats;
+		}
+		catch (AccessControlException e)
+		{
+			GwtTeamingException ex = new GwtTeamingException();
+
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (NoUserByTheIdException nex)
+		{
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch ( Exception e )
+		{
+			//Log other errors
+			logger.error("Error getting stats for user with binderId "+binderId, e);
+		}
 		
-		return GwtProfileHelper.getStats(getRequest(ri), this, binderId);
+		return null;
 	}
 
 	/**

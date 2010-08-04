@@ -455,28 +455,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * Implements the TRACK_BINDER teaming action.
 	 */
 	private void followPerson() {
-		
 		actionTrigger.triggerAction(TeamingAction.TRACK_BINDER);
-		
-//		GwtTeaming.getRpcService().trackBinder(
-//				profileRequestInfo.getBinderId(), new AsyncCallback<Boolean>() {
-//					public void onFailure(Throwable t) {
-//						Window.alert(t.toString());
-//					}// end onFailure()
-//
-//					public void onSuccess(Boolean success) {
-//
-//						updateFollowingStatus();
-//						
-//						// It's overkill to force a full context reload, which
-//						// this does, but it's the only way right now to ensure
-//						// the What's New tab and other information gets fully
-//						// refreshed.
-//						// contextLoaded( profileRequestInfo.getBinderId(),
-//						// Instigator.OTHER );
-//						GwtClientHelper.jsContextLoaded( profileRequestInfo.getBinderId() );
-//					}// end onSuccess()
-//				});
 	}
 	
 	/*
@@ -486,27 +465,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * Implements the UNTRACK_PERSON teaming action.
 	 */
 	private void unfollowPerson() {
-		
 		actionTrigger.triggerAction(TeamingAction.UNTRACK_PERSON);
-		
-//		GwtTeaming.getRpcService().untrackPerson( profileRequestInfo.getBinderId(), new AsyncCallback<Boolean>()
-//		{
-//			public void onFailure( Throwable t )
-//			{
-//				Window.alert( t.toString() );
-//			}//end onFailure()
-//			
-//			public void onSuccess( Boolean success )
-//			{
-//				updateFollowingStatus();
-//
-//				// It's overkill to force a full context reload, which
-//				// this does, but it's the only way right now to ensure
-//				// the What's New tab and other information gets fully
-//				// refreshed.
-//				GwtClientHelper.jsContextLoaded( profileRequestInfo.getBinderId() );
-//			}// end onSuccess()
-//		});
 	}
 	
 	/**

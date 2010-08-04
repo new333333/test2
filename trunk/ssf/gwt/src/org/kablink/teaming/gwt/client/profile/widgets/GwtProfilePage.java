@@ -196,8 +196,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		};
 
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService
-				.getProfileInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+		gwtRpcService.getProfileInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 
 	}
 
