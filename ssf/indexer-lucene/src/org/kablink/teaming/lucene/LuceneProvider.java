@@ -535,7 +535,7 @@ public class LuceneProvider extends IndexSupport {
 	public ArrayList getTagsWithFrequency(Query query, String tag, String type, String userId, boolean isSuper)
 			throws LuceneException {
 		long startTime = System.currentTimeMillis();
-		
+		String tagOrig = tag;
 		int prefixLength = 0;
 		tag = tag.toLowerCase();
 		
@@ -627,7 +627,7 @@ public class LuceneProvider extends IndexSupport {
 
 		resultTags.addAll(results);
 
-		end(startTime, "getTagsWithFrequency", query, resultTags.size());
+		end(startTime, "getTagsWithFrequency", query, tagOrig, tag, resultTags.size());
 
 		return resultTags;
 	}
@@ -801,6 +801,18 @@ public class LuceneProvider extends IndexSupport {
 		if(logger.isTraceEnabled()) {
 			logTrace((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + "]");			
+		}
+		else if(logger.isDebugEnabled()) {
+			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length);
+		}
+	}
+	
+	private void end(long begin, String methodName, Query query, String tagBefore, String tagAfter, int length) {
+		if(logger.isTraceEnabled()) {
+			logTrace((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length + 
+					", query=[" + ((query==null)? "" : query.toString()) + 
+					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
+					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
 		}
 		else if(logger.isDebugEnabled()) {
 			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length);
