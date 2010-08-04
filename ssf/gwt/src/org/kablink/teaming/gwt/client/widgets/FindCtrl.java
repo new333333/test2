@@ -687,7 +687,7 @@ public class FindCtrl extends Composite
 			// Show the search-results widget.
 			showSearchResults();
 	
-			if ( tmp == null )
+			if (( tmp == null ) || ( 0 == tmp.trim().length() ))
 				tmp = "";
 			
 			if ( tmp.length() > 0 )
