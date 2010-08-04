@@ -478,8 +478,18 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 				//This is inside the workarea iframe, just let the url be called
 				return true;
 			} else {
-				//We are running inside a portlet iframe
-				parent.location.href = url;
+				// We are running inside a portlet iframe.  Is the GWT
+				// UI active?
+				if (ss_isGwtUIActive) {
+					// Yes!  Then submit the url to the GWT UI content
+					// frame.
+					window.top.gwtContentIframe.location.href = url;
+				}
+				else {
+					// No, the GWT UI isn't active!  Submit the URL
+					// to the parent frame.
+					parent.location.href = url;
+				}
 			}
 			return false
 		} else if ( self.opener !== undefined && self.opener != null ) {
