@@ -3961,7 +3961,7 @@ public class BinderHelper {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
 		if (text.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
-			text = text.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH);
+			text = text.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH - 3) + "...";
 		}
 		bs.getProfileModule().setStatus(text);
 		bs.getProfileModule().setStatusDate(new Date());
