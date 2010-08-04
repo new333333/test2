@@ -183,6 +183,7 @@ public class ModifyEntryController extends SAbstractController {
 	    		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 	    		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 	        	response.setRenderParameter("profile", "1");
+	        	setupReloadOpener(response, binderId, entryId);
 	        } else {
 				setupReloadOpener(response, binderId, entryId);
 	        }
