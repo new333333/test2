@@ -1656,11 +1656,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			params.put("pList", subList);
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
 			getCoreDao().bulkLoadCollections(binders);
-			List<EntityIdentifier> entityIds = new ArrayList();
+			List<EntityIdentifier> folderIds = new ArrayList();
+			List<EntityIdentifier> workspaceIds = new ArrayList();
+			List<EntityIdentifier> otherIds = new ArrayList();
 			for (Binder e: binders) {
-				entityIds.add(e.getEntityIdentifier());
+				if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
+					folderIds.add(e.getEntityIdentifier());
+				else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
+					workspaceIds.add(e.getEntityIdentifier());
+				else 
+					otherIds.add(e.getEntityIdentifier());
 			}
-			Map tagMap = getCoreDao().loadAllTagsByEntity(entityIds);
+			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
+			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
+			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
 				if (b.isDeleted()) continue;
