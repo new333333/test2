@@ -169,6 +169,9 @@ public class LdapConnectionConfig extends ZonedObject {
 		private String baseDn;
 
 		private String filter;
+		// In the "configure ldap" page, the filter field is not multiline which means the user can enter a CR
+		// We need to have the filter without a CR or LF
+		private String m_filterWithoutCRLF;
 
 		private boolean searchSubtree;
 
@@ -190,8 +193,22 @@ public class LdapConnectionConfig extends ZonedObject {
 			return filter;
 		}
 
+		/**
+		 * 
+		 */
+		public String getFilterWithoutCRLF()
+		{
+			return m_filterWithoutCRLF;
+		}
+
 		public void setFilter(String query) {
 			this.filter = query;
+			m_filterWithoutCRLF = query;
+			if ( query != null && query.length() > 0 )
+			{
+				m_filterWithoutCRLF = query.replaceAll( "\r", "" );
+				m_filterWithoutCRLF = m_filterWithoutCRLF.replaceAll( "\n", "" );
+			}
 		}
 
 		public boolean isSearchSubtree() {

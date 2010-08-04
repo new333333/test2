@@ -1784,7 +1784,7 @@ jQuery(document).ready(function() {
 				<tr>
 					<td nowrap><label for="ldapFilter"><ssf:nlt
 						tag="ldap.search.filter" /></label></td>
-					<td><input class="ldapFilter" id="ldapFilter" value="" size="70" />
+					<td><textarea class="ldapFilter" id="ldapFilter" wrap="off" rows="6" cols="70"></textarea>
 					</td>
 				</tr>
 			</table>
