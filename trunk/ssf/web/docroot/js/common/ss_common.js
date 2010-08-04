@@ -3067,6 +3067,7 @@ function ss_showNotLoggedInMsg() {
 
 function ss_showLightbox(id, zIndex, opacity, className) {
 	ss_hideSpannedAreas();
+	ss_hidePopupDivs();
 	if (ss_isGwtUIActive && window.name != "ss_showentryframe") {
 		ss_hideEntryDiv();
 	}
