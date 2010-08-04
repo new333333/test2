@@ -402,8 +402,8 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param status The status to set.
 	 */
 	public void setStatus(String status) {
-		if (status != null && status.length() > 256) {
-			this.status = status.substring(0,255);
+		if (status != null && status.length() > ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH) {
+			this.status = status.substring(0, ObjectKeys.USER_STATUS_DATABASE_FIELD_LENGTH -3) + "...";
 		} else {
 			this.status = status;
 		}
