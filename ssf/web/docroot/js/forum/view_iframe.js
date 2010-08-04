@@ -43,6 +43,7 @@ var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
 var ss_entryHeightHighWaterMark = 0
 var ss_entryLastScrollTop = 0
+var ss_entryStartingWindowHeight = 400;
 	//ss_debug("init: "+ss_entryWindowLeft)
 
 function ss_setEntryDivHeight() {
@@ -66,7 +67,7 @@ function ss_loadUrlInEntryFrame(url) {
 	var frameObj = self.document.getElementById('ss_showentryframe');
 	if (ss_getUserDisplayStyle() != 'newpage') {
 		//Drop it back down to a reasonable size
-		frameObj.style.height = "300px";
+		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
 	}
 	frameObj.src = url;
 }
@@ -126,7 +127,7 @@ function ss_showForumEntryInIframe(url) {
     } else {
         if (ss_getUserDisplayStyle() != "newpage") {
         	//Resize the popup down to a starting size
-        	wObj.style.height = "300px";
+        	wObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
         }
     	wObj.src = url
     }
