@@ -102,7 +102,7 @@
 	 </div>
 	</td>
 	<td align="left" width="5%">
-		<div class="ss_normal ss_navbar_new">
+		<div class="ss_normal ss_actions_bar">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 
 			  name="action" value="build_filter"/><ssf:param 

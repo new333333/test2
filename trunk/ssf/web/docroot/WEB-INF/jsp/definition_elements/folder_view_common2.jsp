@@ -852,7 +852,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 </div>
 
 <c:if test="${ssBinder.mirrored && empty ssBinder.resourceDriverName}">
-	<div class="ss_style ss_portlet"><span class="ss_errorLabel"><ssf:nlt tag="binder.mirrored.incomplete"/></span></div>
+	<div class="ss_style ss_portlet" style="padding:10px;"><span class="ss_errorLabel"><ssf:nlt tag="binder.mirrored.incomplete"/></span></div>
 </c:if>
 <c:if test="${empty ssFolderEntries && !(ssBinder.mirrored && empty ssBinder.resourceDriverName)}">
 	<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
