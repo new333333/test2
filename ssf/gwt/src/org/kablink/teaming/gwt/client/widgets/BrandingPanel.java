@@ -319,7 +319,10 @@ public class BrandingPanel extends Composite
 		int height;
 		int wrapperPanelHeight;
 		int contentPanelHeight;
+		int browserHeight;
+		int maxHeight;
 		String heightStr;
+		Command cmd;
 		
 		// Set the height of the background image to be equal to the height of the content of the branding panel.
 		// Have a minimum height of 50 pixels.
@@ -328,8 +331,16 @@ public class BrandingPanel extends Composite
 		height = Math.max( wrapperPanelHeight, contentPanelHeight );
 		if ( height < 50 )
 			height = 50;
-		heightStr = Integer.toString( height ) + "px";
+
+		// The max height of branding is 1/3 the height of the browser window.
+		browserHeight = Window.getClientHeight();
+		maxHeight = browserHeight / 3;
+		if ( height > maxHeight )
+			height = maxHeight;
 		
+		heightStr = Integer.toString( height ) + "px";
+
+
 		// Are we using a background image?
 		if ( m_bgImg != null )
 		{
@@ -355,6 +366,9 @@ public class BrandingPanel extends Composite
 					if ( bgImgHeight > height )
 					{
 						// Yes, use the height of the bg image for the height of the branding panel.
+						if ( bgImgHeight > maxHeight )
+							bgImgHeight = maxHeight;
+						
 						heightStr = Integer.toString( bgImgHeight ) + "px";
 					}
 				}
@@ -370,12 +384,20 @@ public class BrandingPanel extends Composite
 		//!!! m_wrapperPanel.setHeight( heightStr );
 		m_bgPanel.setHeight( heightStr );
 		
-		// Notify all OnSizeChangeHandler that have registered.
-		for (Iterator<ActionHandler> oschIT = m_actionHandlers.iterator(); oschIT.hasNext(); )
+		// Issue a deferred command to notify all OnSizeChangeHandlers.
+		cmd = new Command()
 		{
-			// Calling each OnSizeChangeHandler
-			oschIT.next().handleAction( TeamingAction.SIZE_CHANGED, this );
-		}
+			public void execute()
+			{
+				// Notify all OnSizeChangeHandler that have registered.
+				for (Iterator<ActionHandler> oschIT = m_actionHandlers.iterator(); oschIT.hasNext(); )
+				{
+					// Calling each OnSizeChangeHandler
+					oschIT.next().handleAction( TeamingAction.SIZE_CHANGED, this );
+				}
+			}
+		};
+		DeferredCommand.addCommand( cmd );
 	}// end adjustBrandingPanelHeight()
 
 	

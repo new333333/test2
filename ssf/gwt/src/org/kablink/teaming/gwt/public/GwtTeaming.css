@@ -1581,6 +1581,7 @@ body, table td, select
 /* Style used for the branding panel. */
 .brandingPanel
 {
+	overflow: hidden;
 	position: relative;
 	width: 100%;
 	z-index: 0;
