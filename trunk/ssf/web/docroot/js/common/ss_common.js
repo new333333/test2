@@ -66,6 +66,7 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ssDragEntryZ = 400;
 	var ssSlidingTableInfoZ = 40;
 	var ssDashboardTargetZ = 1000;
+	var ss_gwtLightboxZ = 200;  
 	
 	//colors (defined at onLoad time by ss_defineColorValues)
 	var ss_style_background_color = "";
@@ -982,7 +983,7 @@ function ss_trackedItemsDelete(obj, id) {
 	ajaxRequest.sendRequest();  //Send the request
 	
 	//Delete the row from the parent table
-	var trObj = obj.parentNode.parentNode
+	var trObj = obj.parentNode;
 	trObj.parentNode.removeChild(trObj)
 }
 
@@ -1745,6 +1746,7 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
 				//This is in the popup iframe
 				if (self.parent.ss_hidePopupDiv) {
 					self.parent.ss_hidePopupDiv();
+					if (typeof self.ss_setEntryDivHeight != 'undefined') ss_setEntryDivHeight();
 					return false;
 				}
 			} else if (self.window.name == "gwtContentIframe") {
@@ -2244,6 +2246,9 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var menuObj = self.document.getElementById(divId);
     if (menuObj == null) {return}
 
+    //Put a lightbox under the menu
+    ss_showHideMenuLightbox(divId, window.name);
+    
 	var x = 0;
 	var y = 0;
     if (parentDivId != "") {
@@ -2288,6 +2293,9 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     	menuObj.style.zIndex = ssMenuZ;
     }
 
+    //Put a lightbox under the menu
+    ss_showHideMenuLightbox(divId, window.name);
+    
     ss_ShowHideDivXY(divId, x, y);
     ss_setFocusToFirstA(divId)
     var scrollTop = parseInt(dojo.coords(menuObj, true).y - dojo.coords(menuObj, false).y);
@@ -2317,6 +2325,74 @@ function ss_setLayerFlag() {
 }
 
 ss_createOnLoadObj('ss_layerFlag', ss_setLayerFlag);
+
+//Routine to put a lightbox under the menu div
+var ss_menuLightboxDivIds = new Array();
+var ss_menuLightboxWindowNames = new Array();
+function ss_showHideMenuLightbox(divId, windowName) {
+	return;  // This has been turned off because it doesn't work for folder "Add" menus
+	if (window.name == windowName) {
+		//If in the same window, do the check to see if the menu is being shown
+		var divObj = self.document.getElementById(divId);
+		if (divObj != null && divObj.style.display == 'block') {
+			//The div is visible, so don't add the lightbox
+			return;
+		}
+	}
+	
+	//Do this in the top most frame
+	if (self != self.parent && typeof parent.ss_showHideMenuLightbox != 'undefined') {
+		self.parent.ss_showHideMenuLightbox(divId, windowName);
+		return;
+	}
+	var lightBox = document.getElementById('ss_entry_menu_light_box')
+	if (!lightBox) {
+		//Add the lightbox div onto this frame if it doesn't exist
+		var bodyObj = document.getElementsByTagName("body").item(0)
+		lightBox = document.createElement("div");
+        lightBox.setAttribute("id", "ss_entry_menu_light_box");
+        lightBox.style.position = "relative";
+        bodyObj.appendChild(lightBox);
+	}
+	lightBox.style.backgroundColor = "#ffffff";
+	ss_setOpacity(lightBox, .2);
+    lightBox.style.display = "block";
+    lightBox.style.top = 0 + "px";
+    lightBox.style.left = 0 + "px";
+    lightBox.style.width = ss_getBodyWidth() + "px";
+    lightBox.style.height = ss_getBodyHeight()  + "px";
+    lightBox.style.zIndex = parseInt(ss_gwtLightboxZ);
+    lightBox.style.visibility = "visible";			
+    
+    //Save the divId
+    var i = ss_menuLightboxDivIds.length;
+    ss_menuLightboxDivIds[i] = divId;
+    ss_menuLightboxWindowNames[i] = windowName;
+}
+function ss_hideMenuLightbox() {
+	//Do this in the top most frame
+	if (self != self.parent && typeof parent.ss_hideMenuLightbox != 'undefined') {
+		self.parent.ss_hideMenuLightbox();
+		return;
+	}
+	var lightBox = document.getElementById('ss_entry_menu_light_box')
+	if (lightBox) {
+	    lightBox.style.display = "none";
+	}
+	//Hide all of the menus
+    if (ss_menuLightboxDivIds.length > 0) {
+        for (var i = 0; i < ss_menuLightboxDivIds.length; i++) {
+        	var windowName = ss_menuLightboxWindowNames[i];
+        	var divId = ss_menuLightboxDivIds[i];
+        	if (typeof window.frames[windowName].document != 'undefined') {
+        		window.frames[windowName].ss_HideDivXY(divId);
+        		window.frames[windowName].ss_hideAllDivsToBeHidden();
+        	}
+	    }
+    }
+    ss_menuLightboxDivIds = new Array();
+    ss_menuLightboxWindowNames = new Array();
+}
 
 //Routine to set the focus onto the first anchor in a div (for accessibility)
 function ss_setFocusToFirstA(divId) {
@@ -2358,6 +2434,27 @@ function ss_ShowHideDivXY(divName, x, y) {
         if (x != null && y != null && x != '' && y != '') ss_positionDiv(ss_divBeingShown, x, y);
         ss_showDiv(ss_divBeingShown)
         ss_hideSpannedAreas();
+    }
+}
+//General routine to hide a div given its name and coordinates
+function ss_HideDivXY(divName) {
+    if (ss_divBeingShown == divName) {
+        ss_hideDiv(ss_divBeingShown)
+        ss_divBeingShown = null;
+        ss_lastDivBeingShown = null;
+    } else {
+        if (ss_lastDivBeingShown == divName) {
+            ss_hideDiv(divName)
+            ss_divBeingShown = null;
+            ss_lastDivBeingShown = null;
+            return
+        }
+        ss_lastDivBeingShown = null;
+        if (ss_divBeingShown != null) {
+            ss_hideDiv(ss_divBeingShown)
+        }
+        ss_divBeingShown = null;
+        ss_lastDivBeingShown = null;
     }
 }
 
@@ -2555,6 +2652,25 @@ function ss_hideDivNone(divName) {
 	}
 }
 
+function ss_hideAllDivsToBeHidden() {
+	//hide any lightbox divs
+	ss_hideMenuLightbox();
+	
+    if (ss_divToBeHidden.length > 0) {
+        for (var i = 0; i < ss_divToBeHidden.length; i++) {
+	        if (ss_divToBeHidden[i] != '') {
+	            if (ss_divToBeDelayHidden[ss_divToBeHidden[i]]) {
+	                ss_divToBeDelayHidden[ss_divToBeHidden[i]] = null
+	            } else {
+	                if (ss_divBeingShown == ss_divToBeHidden[i]) {
+	                	ss_divBeingShown = '';
+	                }
+	                setTimeout("ss_hideDivToBeHidden('"+i+"');",100);
+	            }
+	        }
+	    }
+    }
+}
 
 function ss_positionDiv(divName, x, y) {
 	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
@@ -2586,21 +2702,7 @@ function captureXY(e) {
 
     //See if there is a div to be hidden
     ss_lastDivBeingShown = ss_divBeingShown;
-    if (ss_divToBeHidden.length > 0) {
-        for (var i = 0; i < ss_divToBeHidden.length; i++) {
-	        if (ss_divToBeHidden[i] != '') {
-	            if (ss_divToBeDelayHidden[ss_divToBeHidden[i]]) {
-	                ss_divToBeDelayHidden[ss_divToBeHidden[i]] = null
-	            } else {
-	                if (ss_divBeingShown == ss_divToBeHidden[i]) {
-	                	ss_divBeingShown = '';
-	                }
-	                ss_debug('captureXY hiding div ' + ss_divToBeHidden[i])
-	                setTimeout("ss_hideDivToBeHidden('"+i+"');",100);
-	            }
-	        }
-	    }
-    }
+    ss_hideAllDivsToBeHidden();
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
         ss_mousePosY = e.pageY
@@ -2834,7 +2936,7 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 	return false;
 }
 var ss_popupFrameWidthFudge = 40;
-var ss_popupFrameHeightFudge = 0;
+var ss_popupFrameHeightFudge = 40;
 var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
@@ -2854,9 +2956,10 @@ function ss_resizePopupDiv() {
 			}
 
 		} else {
-			if (parseInt(popupIframe.style.height) != height ||
-					parseInt(popupIframe.style.width) != width) {
+			if (parseInt(popupIframe.style.height) != scrollHeight) {
 				popupIframe.style.height = parseInt(height) + "px";
+			}
+			if (parseInt(popupIframe.style.width) != width) {
 				popupIframe.style.width = parseInt(width) + "px";
 			}
 		}
