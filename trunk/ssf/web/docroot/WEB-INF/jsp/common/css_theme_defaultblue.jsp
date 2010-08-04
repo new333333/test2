@@ -229,8 +229,8 @@
 --%><c:set var="ss_sliding_table_border_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_sliding_table_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_sliding_table_link_hover_color" value="#AFC8E3" scope="request"/><%--
---%><c:set var="ss_sliding_table_row0_background_color" value="#FAFAFA" scope="request"/><%--
---%><c:set var="ss_sliding_table_row1_background_color" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row0_background_color" value="#fff" scope="request"/><%--
+--%><c:set var="ss_sliding_table_row1_background_color" value="#fafafa" scope="request"/><%--
 --%><%--
   --
   -- TAG
