@@ -361,7 +361,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Go through each user search criteria
 		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
 		{
-			if( Validator.isNotNull( searchInfo.getFilter() ) )
+			if( Validator.isNotNull( searchInfo.getFilterWithoutCRLF() ) )
 			{
 				int scope;
 				SearchControls searchCtrls;
@@ -373,7 +373,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				try
 				{
 					// Search for users using the base dn and filter criteria.
-					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilter(), searchCtrls );
+					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
 					while ( ctxSearch.hasMore() )
 					{
 						String userName;
@@ -513,7 +513,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Go through each group search criteria
 		for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getGroupSearches() )
 		{
-			if( Validator.isNotNull( searchInfo.getFilter() ) )
+			if( Validator.isNotNull( searchInfo.getFilterWithoutCRLF() ) )
 			{
 				int scope;
 				SearchControls searchCtrls;
@@ -525,7 +525,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				try
 				{
 					// Search for groups using the base dn and filter criteria.
-					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilter(), searchCtrls );
+					ctxSearch = ldapContext.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), searchCtrls );
 					while ( ctxSearch.hasMore() )
 					{
 						String groupName;
@@ -773,7 +773,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
 			
 						search = "(" + config.getUserIdAttribute() + "=" + userName + ")";
-						filter = searchInfo.getFilter();
+						filter = searchInfo.getFilterWithoutCRLF();
 						if(!Validator.isNull(filter))
 						{
 							search = "(&"+search+filter+")";
@@ -850,7 +850,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					SearchControls sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
 		
 					String search = "(" + config.getUserIdAttribute() + "=" + ldapUserName + ")";
-					String filter = searchInfo.getFilter();
+					String filter = searchInfo.getFilterWithoutCRLF();
 					if(!Validator.isNull(filter)) {
 						search = "(&"+search+filter+")";
 					}
@@ -1436,7 +1436,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		la.add(userIdAttribute);
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
-			if(Validator.isNotNull(searchInfo.getFilter())) {
+			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
 				String ldapGuidAttribute;
 
 				// Get the ldap attribute name that we will use for a guid.
@@ -1445,7 +1445,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilter(), sch);
+				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
 				while (ctxSearch.hasMore()) {
 					String	userName;
 					String	fixedUpUserName;
@@ -1847,7 +1847,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		attributesToRead = groupCoordinator.getAttributeNamesToRead( config );
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
-			if(Validator.isNotNull(searchInfo.getFilter())) {
+			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
 				String ldapGuidAttribute;
 				
 				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
@@ -1860,7 +1860,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilter(), sch);
+				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
 				while (ctxSearch.hasMore()) {
 					String groupName;
 					String fixedUpGroupName;
