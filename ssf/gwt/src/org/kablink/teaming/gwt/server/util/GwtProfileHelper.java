@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtUser;
@@ -234,7 +235,7 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return ProfileInfo  The main class that contains other helper classes
 	 */
-	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) throws OperationAccessControlExceptionNoName {
+	public static ProfileInfo buildQuickViewProfileInfo(HttpServletRequest request, AllModulesInjected bs, Long binderId) throws Exception {
 		ProfileInfo profile = new ProfileInfo();
 
 		//get the binder
@@ -816,7 +817,7 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return
 	 */
-	public static ProfileStats getStats(HttpServletRequest request, AllModulesInjected bs, String binderId) {
+	public static ProfileStats getStats(HttpServletRequest request, AllModulesInjected bs, String binderId) throws Exception {
 		
     	//Get the tracked persons by this user
 		ProfileStats stats = new ProfileStats();
@@ -824,8 +825,6 @@ public class GwtProfileHelper {
 		
 		List<String> trackedIds = getTrackedPersonsIds(bs, binderId);
 		for(String trackedId: trackedIds) {
-			
-			try {
 				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
 				principal = Utils.fixProxy(principal);
 				Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
@@ -840,16 +839,6 @@ public class GwtProfileHelper {
 				user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
 				
 				stats.addTrackedUser(user);
-			}
-			catch (AccessControlException ex)
-			{
-				//No rights to view this user so don't add them to the list
-			}
-			catch ( Exception e )
-			{
-				//Log error
-				logger.error("Error getting stats for user with binderId "+binderId, e);
-			}
 		}
 
 		//Get the number of recent entries

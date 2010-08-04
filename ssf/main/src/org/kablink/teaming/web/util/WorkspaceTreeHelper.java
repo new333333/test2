@@ -375,6 +375,8 @@ public class WorkspaceTreeHelper {
 				    			url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 				    			url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 				    			model.put(WebKeys.DELETE_ENTRY_ADAPTER, url.toString());
+				        	} else {
+				    			model.put(WebKeys.DELETE_ENTRY_ADAPTER, "");
 				        	}
 				        }
 						
