@@ -168,26 +168,29 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				}
 			} catch (Exception ex) {};
 		}
-		NotificationDef nDef = fEntry.getRootFolder().getNotificationDef();
-		if (nDef.getStyle() == style) {
-			//add in email address only subscriptions
-	 		String addrs = nDef.getEmailAddress();
-	 		if (Validator.isNull(addrs)) return languageMap;
-			String [] emailAddrs = StringUtil.split(addrs);
-			//done if no-one is interested
-			if (emailAddrs.length == 0)  return languageMap;
-
-			Set emailSet = new HashSet();
-			//add email address listed 
-			for (int j=0; j<emailAddrs.length; ++j) {
-				if (!Validator.isNull(emailAddrs[j]))
-					emailSet.add(emailAddrs[j].trim());
+		
+		if (!redacted) {
+			NotificationDef nDef = fEntry.getRootFolder().getNotificationDef();
+			if (nDef.getStyle() == style) {
+				//add in email address only subscriptions
+		 		String addrs = nDef.getEmailAddress();
+		 		if (Validator.isNull(addrs)) return languageMap;
+				String [] emailAddrs = StringUtil.split(addrs);
+				//done if no-one is interested
+				if (emailAddrs.length == 0)  return languageMap;
+	
+				Set emailSet = new HashSet();
+				//add email address listed 
+				for (int j=0; j<emailAddrs.length; ++j) {
+					if (!Validator.isNull(emailAddrs[j]))
+						emailSet.add(emailAddrs[j].trim());
+				}
+					
+				Locale l = NLT.getTeamingLocale();
+				Set address = (Set)languageMap.get(l);
+				if (address != null) address.addAll(emailSet);
+				else languageMap.put(l, emailSet);
 			}
-				
-			Locale l = NLT.getTeamingLocale();
-			Set address = (Set)languageMap.get(l);
-			if (address != null) address.addAll(emailSet);
-			else languageMap.put(l, emailSet);
 		}
 		return languageMap;
 	}
