@@ -644,17 +644,6 @@ a.ss_new_thread:hover {
   background-color: #fff!important;
   } 
 
-/*******Discussion Filter Panel*****************/
-
-div.ssPageNavi {
-	margin: 0px;
-	border-top: solid 1px #FFF;
-	border-bottom: solid 1px #FFF;
-	padding-left: 10px;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	background-color: #E9F1F1;
-	}
 /*******replies -s comments*****************/	
 div.ss_entryContent {
 	margin-left: 0px;

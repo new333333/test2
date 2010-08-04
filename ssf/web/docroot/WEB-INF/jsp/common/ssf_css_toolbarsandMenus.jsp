@@ -157,7 +157,7 @@ li.ss_actions_bar_separator {
 	color: #fff ;
 	font-size: 11px;
 	padding: 2px 10px;
-	margin-right: 10px;
+	margin-right: 5px;
 	display:block;
 	background-color: #949494;
 	-moz-border-radius:10px 10px 10px 10px;
@@ -195,7 +195,6 @@ table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 .ss_actions_bar2, table.ss_actions_bar2_pane {
 	/* background-image: url(<html:imagesPath/>pics/background_toolbar2.gif); 
 	background-repeat: repeat-x; */
-	background-color: #666666;
 	}	
 .ss_actions_bar2 {
 	font-weight: normal;

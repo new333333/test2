@@ -1126,12 +1126,14 @@ img.ss_sliding_table_column_image {
   background-color: ${ss_sliding_table_row0_background_color}; 
   line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
+  border-bottom: 1px solid #e0e0e0;
 }
 .ss_sliding_table_row1 {
   height:26px;
   background-color: ${ss_sliding_table_row1_background_color}; 
   line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
+  border-bottom: 1px solid #e0e0e0;
 }
 .ss_highlightEntry {
   background-color: #FAFAFA !important;
@@ -1140,7 +1142,7 @@ img.ss_sliding_table_column_image {
   color: ${ss_sliding_table_text_color};
 }
 .ss_sliding_table_column a, .ss_sliding_table_column a:visited {
-  color: ${ss_sliding_table_text_color};
+  color: #fff;
 }
 .ss_sliding_table_column a:hover {
   color: ${ss_sliding_table_link_hover_color};
@@ -1233,13 +1235,12 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style {
-	font-size: 9px!important;
+.ss_tableheader_style, th.ss_sliding_table_row0 {
 	background:url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
 	}
-.ss_tableheader_style a {
+.ss_tableheader_style a, th.ss_sliding_table_row0 a, .ss_title_menu {
 	color: #fff;
 	}
 
