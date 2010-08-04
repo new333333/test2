@@ -118,7 +118,7 @@ span.pad-left20 {
 	background-color: #c3c5c0;
 	background-image: url(images/mobile/level_one_pattern4.gif);
 	background-repeat: repeat-x;
-	border-bottom: 1px solid #1C5894;
+	border-bottom: 1px solid #999;
 	white-space:nowrap;
 	}
 #actions a {
@@ -260,13 +260,13 @@ span.pad-left20 {
 	
 .folder-head {
 	clear: both; 
-	color: #000;
+	color: #fff;
 	font-size: 1em;
 	vertical-align: middle;
 	padding: 5px 5px 5px 10px;
 	letter-spacing: 1px;
-	background-color: #ffe59b; /* #ffe086;  #d8e3e5; */
-	background-image:url(images/mobile/HeaderBlend_med_yellow.png);
+	background-image:url(images/pics/trans30_black.png);
+	background-repeat:repeat;
 	}
 .folder-item {
 	font-size: 1.1em;
