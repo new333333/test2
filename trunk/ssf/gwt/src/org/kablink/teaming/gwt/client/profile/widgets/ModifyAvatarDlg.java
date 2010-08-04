@@ -200,6 +200,8 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		formPanel.getElement().setId("form1");
 		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
 		
+		if( profileRequestInfo.isBinderAdmin() || profileRequestInfo.isOwner() ) {
+		
 		final Anchor setDefaultAvatar = new Anchor();
 		content.add(setDefaultAvatar);
 		setDefaultAvatar.addStyleName("qView-a");
@@ -248,6 +250,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 			public void onMouseOut(MouseOutEvent event) {
 				removeAvatar.removeStyleName("qView-action2");
 			}});
+		}
 		
 		return panel;
 	}
