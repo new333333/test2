@@ -264,7 +264,7 @@ span.pad-left20 {
 	font-size: 1em;
 	vertical-align: middle;
 	padding: 5px 5px 5px 10px;
-	letter-spacing: 1px;
+	letter-spacing: .3px;
 	background-image:url(images/pics/trans30_black.png);
 	background-repeat:repeat;
 	}
