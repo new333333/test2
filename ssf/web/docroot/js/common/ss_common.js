@@ -3106,6 +3106,7 @@ function ss_hideLightbox(id) {
 		lightBox.parentNode.removeChild(lightBox);
 	}
 	ss_showSpannedAreas();
+	ss_hidePopupDivs();
 }
 
 //Support routines for the help system
@@ -5227,6 +5228,7 @@ function ss_createPopupDiv(obj, divId) {
 }
 
 // Lightbox a dialog centered.  Optionally take an id to set focus on.
+var ss_popupDivsBeingShown = new Array();
 function ss_showPopupDivCentered(divId, focusId, cancelable) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
 	if (cancelable || typeof cancelable === undefined) {
@@ -5236,6 +5238,7 @@ function ss_showPopupDivCentered(divId, focusId, cancelable) {
     ss_moveObjectToBody(divObj); 
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	ss_setupPopupDiv(divObj);
+	ss_popupDivsBeingShown[ss_popupDivsBeingShown.length] = divId;
 	if (ss_isGwtUIActive && window.name != "ss_showentryframe") {
 		ss_hideEntryDiv();
 	}
@@ -5244,24 +5247,33 @@ function ss_showPopupDivCentered(divId, focusId, cancelable) {
 	}
 }
 
+function ss_hidePopupDivs() {
+	for (var i = 0; i < ss_popupDivsBeingShown.length; i++) {
+		var divId = ss_popupDivsBeingShown[i];
+		ss_hideDiv(divId);
+	}
+	ss_popupDivsBeingShown = new Array();
+}
+
 function ss_centerPopupDiv(targetDiv, inContainer) {
-		if(inContainer) {
-			var x = inContainer.offsetWidth / 2;
-			var y = inContainer.offsetHeight / 2;
-	    	var bodyX = inContainer.offsetLeft
-	    	var bodyY = inContainer.offsetTop
-		} else {
-			var x = parseInt(ss_getWindowWidth() / 2);
-			var y = parseInt(ss_getWindowHeight() / 2);
-	    	var bodyX = ss_getScrollXY()[0]
-	    	var bodyY = ss_getScrollXY()[1]
-	    }
-		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
-		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
-		if (x < 0) x = 0;
-		if (y < 0) y = 0;
-		targetDiv.style.left = x + "px";
-		targetDiv.style.top = y + "px";
+	if(inContainer) {
+		var x = inContainer.offsetWidth / 2;
+		var y = inContainer.offsetHeight / 2;
+    	var bodyX = inContainer.offsetLeft
+    	var bodyY = inContainer.offsetTop
+	} else {
+		var x = parseInt(ss_getWindowWidth() / 2);
+		var y = parseInt(ss_getWindowHeight() / 2);
+    	var bodyX = ss_getScrollXY()[0]
+    	var bodyY = ss_getScrollXY()[1]
+    }
+	x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
+	y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
+	if (x < 0) x = 0;
+	if (y < 0) y = 0;
+	targetDiv.style.left = x + "px";
+	targetDiv.style.top = y + "px";
+	ss_popupDivsBeingShown[ss_popupDivsBeingShown.length] = targetDiv.id;
 }
 
 function ss_setupPopupDiv(targetDiv) {
