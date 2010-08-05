@@ -211,6 +211,11 @@ public class GwtProfileHelper {
 			//Read the custom attribute
 			Document defDoc = ((DefinableEntity)u).getEntryDef().getDefinition();
 			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
+			
+			if(cAttr == null) {
+				return attribute;
+			}
+			
 			//Get the actual caption
 			String caption = DefinitionHelper.findCaptionForAttribute(cAttr.getName(), defDoc);
 			attribute.setTitle(NLT.getDef(caption));
