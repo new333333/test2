@@ -69,7 +69,6 @@
   </c:if>
 
   <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-	<table cellspacing="0" cellpadding="0">
 	 <tr>
 	  <td>
 		<div class="ss_entryContent ss_entrySignature margintop2">
@@ -77,12 +76,16 @@
 		  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 		  <b><ssf:nlt tag="entry.reservedBy"/></b>
 		  </span>
+	  </td>
+	  <td>
 		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/></b>
 		</div>
 	  </td>
+	  <td>
+	  </td>
 	 </tr>
-	</table>
   </c:if>
+  </table>
   <c:if test="${!empty ssConfigDefinition}">
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
     configElement="${item}" 
@@ -90,7 +93,7 @@
   </c:if>
 </c:if>
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
-<table cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top">
   <c:if test="${property_showPicture && !empty ssDefinitionEntry.top}">
@@ -171,7 +174,7 @@
 </c:if>
 
 <c:if test="${propertyValues_displayType[0] == 'inlineWithRating'}">
-<table cellspacing="0" cellpadding="0" width="100%">
+<table cellspacing="0" cellpadding="0">
 <tr><td>
 <table cellspacing="0" cellpadding="0">
 <tr>
@@ -238,4 +241,3 @@
   configJspStyle="${ssConfigJspStyle}" />
 </c:if>
 </c:if>
-
