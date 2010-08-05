@@ -457,22 +457,29 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-		
-				List result = session.createCriteria(LicenseStats.class)
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-						.add(Restrictions.ge("snapshotDate", startDate.getTime()))
-						.add(Restrictions.lt("snapshotDate", endDate.getTime()))
-						.setProjection(Projections.projectionList()
-								.add(Projections.max("internalUserCount"))
-								.add(Projections.max("externalUserCount")))
-					.list();
+				List result = null;
+				try {
+					result = session.createCriteria(LicenseStats.class)
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+					.add(Restrictions.ge("snapshotDate", startDate.getTime()))
+					.add(Restrictions.lt("snapshotDate", endDate.getTime()))
+					.setProjection(Projections.projectionList()
+							.add(Projections.max("internalUserCount"))
+							.add(Projections.max("externalUserCount")))
+							.list();
+				} 
+				catch (Exception ex) {
+				}
+				
 				return result;
 			}});
 		LicenseStats stats = new LicenseStats();
 		try {
-			Object cols[] = (Object[]) marks.get(0);
-			stats.setInternalUserCount(((Long) cols[0]).longValue());
-			stats.setExternalUserCount(((Long) cols[1]).longValue());
+			if(marks != null && marks.size() > 0) {
+				Object cols[] = (Object[]) marks.get(0);
+				stats.setInternalUserCount(((Long) cols[0]).longValue());
+				stats.setExternalUserCount(((Long) cols[1]).longValue());
+			}
 		} catch(Exception e) {
 			// Ignore problems at startup that cause cols[] to have nulls
 		}
