@@ -68,7 +68,7 @@
 							name="profile" value="1" /></ssf:url>',
 				quotasUserMaximum : '${ssDiskQuota}',
 				quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
-	            modifyUrl : '${ss_modifyEntryAdapter}',
+	            modifyUrl : '${ss_modifyEntryAdapter}&profile=1&reload=true',
 				isQuotasEnabled : ${ss_quotasEnabled},
 				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
 				isDiskQuotaHighWaterMarkExceeded: ${ss_diskQuotaHighWaterMarkExceeded},
