@@ -695,7 +695,6 @@ public class AdminControl extends Composite
 	public AdminControl()
 	{
 		FlowPanel mainPanel;
-		Command cmd;
 
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "adminControl" );
@@ -735,19 +734,6 @@ public class AdminControl extends Composite
 				}
 			}// end onSuccess()
 		};
-
-		// Set the position of the content control.
-        cmd = new Command()
-        {
-        	/**
-        	 * 
-        	 */
-            public void execute()
-            {
-				relayoutPage();
-            }
-        };
-        DeferredCommand.addCommand( cmd );		
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -914,7 +900,7 @@ public class AdminControl extends Composite
 			// Get the height of the browser window's client area.
 			clientHeight = Window.getClientHeight();
 			
-			height = clientHeight - m_contentControl.getAbsoluteTop() - 20;
+			height = clientHeight - m_adminActionsTreeControl.getAbsoluteTop() - 20;
 		}
 		
 		// Set the width and height of the content control.
@@ -967,6 +953,30 @@ public class AdminControl extends Composite
 	{
 		Command cmd;
 		
+		// Set the position of the content control.
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
+            	Command cmd2;
+            	
+				relayoutPage();
+				
+				cmd2 = new Command()
+				{
+					public void execute()
+					{
+						setVisible( true );
+					}
+				};
+				DeferredCommand.addCommand( cmd2 );
+            }
+        };
+        DeferredCommand.addCommand( cmd );		
+
 		// Issue an ajax request to get the upgrade information from the server.
         cmd = new Command()
         {
@@ -982,8 +992,6 @@ public class AdminControl extends Composite
             }
         };
         DeferredCommand.addCommand( cmd );		
-
-		setVisible( true );
 	}// end showControl()
 	
 	/**
