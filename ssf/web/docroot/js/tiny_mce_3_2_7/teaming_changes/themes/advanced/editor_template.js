@@ -703,8 +703,11 @@
 						if (s.theme_advanced_resize_horizontal)
 							c.style.width = Math.max(10, o.cw) + 'px';
 
-						c.style.height = Math.max(10, o.ch) + 'px';
-						DOM.get(ed.id + '_ifr').style.height = Math.max(10, parseInt(o.ch) + t.deltaHeight) + 'px';
+						var newHeight = Math.max(10, o.ch);
+						//Never go so small there is no room to add text
+						if (newHeight < 100) newHeight = 100;
+						c.style.height = parseInt(newHeight) + 'px';
+						DOM.get(ed.id + '_ifr').style.height = parseInt(newHeight + t.deltaHeight) + 'px';
 					});
 				}
 
