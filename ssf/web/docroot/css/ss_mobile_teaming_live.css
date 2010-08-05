@@ -66,6 +66,8 @@ span.pad-left20 {
 	background-color: #5691a6;
 	border: 1px solid #7abcba;
 	white-space:nowrap;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 	}
 
 .homelink { 
@@ -78,6 +80,8 @@ span.pad-left20 {
 	background-color: #5691a6;
 	border: 1px solid #7abcba;
 	white-space:nowrap;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 	}
 
 .backlink { 
@@ -89,6 +93,8 @@ span.pad-left20 {
 	background-color: #5691a6;
 	border: 1px solid #7abcba;
 	white-space:nowrap;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 	}
 .lastupdated {
 	font-size: .6em;
@@ -265,7 +271,7 @@ span.pad-left20 {
 	vertical-align: middle;
 	padding: 5px 5px 5px 10px;
 	letter-spacing: .3px;
-	background-image:url(images/pics/trans30_black.png);
+	background-image:url(images/mobile/trans30_black.png);
 	background-repeat:repeat;
 	}
 .folder-item {
