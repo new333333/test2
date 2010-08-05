@@ -68,7 +68,7 @@
 							name="profile" value="1" /></ssf:url>',
 				quotasUserMaximum : '${ssDiskQuota}',
 				quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
-	            modifyUrl : '${ss_modifyEntryAdapter}&profile=1&reload=true',
+	            modifyUrl : '${ss_modifyEntryAdapter}',
 				isQuotasEnabled : ${ss_quotasEnabled},
 				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
 				isDiskQuotaHighWaterMarkExceeded: ${ss_diskQuotaHighWaterMarkExceeded},
@@ -91,7 +91,7 @@
 				  <c:set var="pictureCount" value="0"/>
 				  <c:forEach var="selection" items="${selections}">
 				    <c:if test="${pictureCount == 0}">
-					   <img  src="<ssf:fileUrl webPath="readScaledFile" file="${selection}"/>" alt="${userTitle}" />
+					   <img  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" alt="${userTitle}" />
 				    </c:if>
 				    <c:set var="pictureCount" value="${pictureCount + 1}"/>
 				  </c:forEach>
