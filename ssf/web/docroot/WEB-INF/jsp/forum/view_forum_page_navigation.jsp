@@ -146,7 +146,7 @@
 					<td class="ss_paginationFont">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-							<span class="ss_pageNext"><ssf:nlt tag="general.Next"/></span>
+							<span class="ss_pageNext"><img src="<html:rootPath/>images/pics/sym_arrow_right_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
 				  			</c:when>
 				  		<c:otherwise>
 						<a href="<ssf:url action="${action}" actionUrl="true"> 
@@ -168,6 +168,11 @@
 						</c:choose>
 					</td>
 					<td class="ss_pagination_arrows">
+						<c:choose>
+				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
+							<span class="ss_pageNext"><img src="<html:rootPath/>images/pics/sym_arrow_right_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
+				  			</c:when>
+				  		<c:otherwise>
 					<a href="<ssf:url action="${action}" actionUrl="true"> 
 			  			<c:if test="${!empty ssForumPageNav_ShowTrash && 'true' == ssForumPageNav_ShowTrash}">
 							<ssf:param name="showTrash" value="true"/> 
@@ -183,6 +188,8 @@
 						onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '${ssPageLastStartingIndex}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						><img src="<html:rootPath/>images/pics/sym_arrow_gotoEnd.png" border="0" id="last" <ssf:alt tag="title.goto.last.page"/> align="absmiddle" />
 					</a>
+				  		</c:otherwise>
+						</c:choose>
 			</td></tr></tbody></table>	</div>
 			</td>
 			<td align="right">
