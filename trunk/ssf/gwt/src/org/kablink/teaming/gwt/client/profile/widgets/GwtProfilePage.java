@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -72,9 +73,6 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		// Get information about the request we are dealing with.
 		profileRequestInfo = getProfileRequestInfo();
-		
-		//Register with GwtMainPage, so we can fire an event
-		GwtClientHelper.jsRegisterActionHandler(this);
 
 		// Outer div around the page
 		mainProfilePage = new FlowPanel();
@@ -83,7 +81,6 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		// Main Panel
 		profilePanel = new FlowPanel();
-		profilePanel.setHeight("600px");
 		profilePanel.addStyleName("profileSection");
 		mainProfilePage.add(profilePanel);
 
@@ -111,13 +108,13 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 	private void initialize() {
 
-		Timer timer = new Timer() {
-			public void run() {
-				createProfileInfoSections();
-			}// end run()
-		};
+		//Register with GwtMainPage, so we can fire an event
+		try {
+			GwtClientHelper.jsRegisterActionHandler(this);
+		} catch(Exception e) {
+		}
 
-		timer.schedule(25);
+		createProfileInfoSections();
 	}
 
 	private HorizontalPanel createHorizontalPanel() {
@@ -201,14 +198,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	}
 
 	private void relayoutPage() {
-		Timer timer = new Timer() {
-			public void run() {
-				profilePanel.setHeight("");
-				triggerAction(TeamingAction.SIZE_CHANGED);
-			}
-		};
-		
-		timer.schedule(25);
+		triggerAction(TeamingAction.SIZE_CHANGED);
 	}
 	
 	/**
