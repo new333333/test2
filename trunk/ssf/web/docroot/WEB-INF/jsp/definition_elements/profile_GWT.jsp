@@ -91,7 +91,7 @@
 				  <c:set var="pictureCount" value="0"/>
 				  <c:forEach var="selection" items="${selections}">
 				    <c:if test="${pictureCount == 0}">
-					   <img  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>" alt="${userTitle}" />
+					   <img  src="<ssf:fileUrl webPath="readFile" file="${selection}"/>" alt="${userTitle}" />
 				    </c:if>
 				    <c:set var="pictureCount" value="${pictureCount + 1}"/>
 				  </c:forEach>
