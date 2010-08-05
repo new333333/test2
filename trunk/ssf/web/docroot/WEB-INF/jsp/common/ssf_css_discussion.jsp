@@ -442,9 +442,12 @@ a.ss_new_thread:hover {
 /*	font-weight:bold;	*/
 	}	
 .ss_navbar_current {
+	color: #fff;
 	font-weight: bold !important;
-	border: dotted 1px #135c8f !important; /* text-decoration: underline; */
-	padding:1px 5px 1px 5px;
+	background-color: #81B2BD;
+	padding: 2px 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}	
 .ss_navbar_new {
 	font-family: Arial;
@@ -538,7 +541,6 @@ a.ss_new_thread:hover {
 }
 /***********This is the style sub-group for Page N of M ***********/
 .ss_paginationDiv {
-	background-color: #E9F1F1 !important;
 	padding:4px 0px;
 	<c:if test="<%= isIE %>">
   		padding:4px 0px 6px 0px;
@@ -550,20 +552,13 @@ a.ss_new_thread:hover {
 /*	white-space: nowrap !important; */
 	}
 .ss_pagination_arrows {
-	vertical-align: middle;
-	padding-top: 1px;
-	padding-left: 0px !important;
-	padding-right: 0px !important;
-	<c:if test="<%= isIE %>">
-  		padding-top: 4px;
- 	</c:if>
+	padding-top: 2px;
 	}
 .ss_paginationFont {
-	font-size: ${ss_style_font_fineprint} !important;
+	font-size: 11px !important;
 	padding-left: 2px;
-	padding-right: 5px;
 	padding-top: 2px;
-	background-color: #e9f1f1;
+	white-space: nowrap;
 	<c:if test="<%= isIE %>">
   		margin-top: 5px;
   		padding-top: 4px;
@@ -572,14 +567,14 @@ a.ss_new_thread:hover {
  	/* overflow:hidden; */
 	}
 .ss_paginationFont a{
-	border:solid 1px #DDDDDD !important;
-	margin-right:2px;
+	/* border:solid 1px #DDDDDD !important;
+	margin-right:2px; */
 	}
 .ss_pageActive{
-	color:#408080!important;
-	font-weight:normal;
+	color: #3e6978 !important;
+	font-weight: bold;
 	vertical-align:middle;
-	padding:1px 4px 0px 6px;
+	padding:2px 4px 0px 6px;
 	<c:if test="<%= isIE %>">
   		padding:1px 4px 0px 6px;
  	</c:if>

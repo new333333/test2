@@ -115,10 +115,9 @@ div.ss_blog_sidebar {
 }
 .ss_blog_sidebar_subhead {
 	font-weight: bold;
-	font-style: italic;
 	font-size: ${ss_style_font_largeprint} !important;
-	color: #0066CC !important; /* ${ss_style_muted_label_color}; */
-	border-bottom: 1px solid #0066CC;
+	color: ${ss_style_muted_label_color};
+	background-color: #949494;
 	padding-top: 2px;
 	padding-bottom: 2px;
 }

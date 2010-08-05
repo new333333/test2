@@ -132,7 +132,7 @@
 
 	<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
 	  action="<ssf:url action="configure_user_access" actionUrl="true"/>">
-		<div class="ss_buttonBarRight">LynnTest
+		<div class="ss_buttonBarRight">
 		<br/>
 		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
