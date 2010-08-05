@@ -99,9 +99,6 @@
 					</tr>
 					<tr>
 						<td>
-							<!-- This hidden input is used to store a unique id used to identify the sync results. -->
-							<input id="ldapSyncResultsId" name="ldapSyncResultsId" type="hidden" value="" />
-
 							<!-- This hidden input is used to store the flag that indicates whether to sync guids. -->
 							<input id="syncGuids" name="syncGuids" type="hidden" value="false" />
 			
@@ -485,6 +482,9 @@ var LDAP_SYNC_STATUS_COMPLETED = 1;
 var LDAP_SYNC_STATUS_STOP_COLLECTING_RESULTS = 2;
 var LDAP_SYNC_STATUS_ABORTED_BY_ERROR = 3;
 
+var m_ldapSyncResultsId = null;
+var m_syncAllUsersAndGroups = false;
+var m_syncGuids = false;
 var m_syncResultsTimerId = null;
 var m_ldapConfigId = null;
 var m_ldapSyncStatus = -1;
@@ -589,19 +589,13 @@ function closeSyncResultsDlg()
  */
 function getSyncResults()
 {
-	var	input;
-	var	id;
 	var url;
 	var obj;
-
-	// Get the id of the sync results we are looking for.
-	input = document.getElementById( 'ldapSyncResultsId' );
-	id = input.value;
 
 	// Set up the object that will be used in the ajax request.
 	obj = new Object();
 	obj.operation = 'getLdapSyncResults'
-	obj.ldapSyncResultsId = id;
+	obj.ldapSyncResultsId = m_ldapSyncResultsId;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -736,7 +730,11 @@ function handleResponseToRemoveExistingLdapSyncResults( responseData )
  */
 function handleResponseToStartLdapSync( responseData )
 {
-	// Nothing to do here.  The function, handleResponseToGetSyncResults(), will report any errors.
+	// Start a timer.  Whenever the timer goes off we will issue an ajax request
+	// to get the latest results from the ldap sync.
+	m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
+
+	m_ldapSyncStatus = LDAP_SYNC_STATUS_IN_PROGRESS;
 }// end handleResponseToStartLdapSync()
 
 
@@ -764,24 +762,17 @@ function onUnloadEventHandler()
  */
 function removeExistingLdapSyncResults()
 {
-	var	input;
-	var	id = null;
 	var url;
 	var obj;
 
-	// Get the id of the sync results we are looking for.
-	input = document.getElementById( 'ldapSyncResultsId' );
-	if ( input != null )
-		id = input.value;
-
 	// Do we have an ldap sync results?
-	if ( id != null && id.length > 0 )
+	if ( m_ldapSyncResultsId != null && m_ldapSyncResultsId.length > 0 )
 	{
 		// Yes
 		// Set up the object that will be used in the ajax request.
 		obj = new Object();
 		obj.operation = 'removeLdapSyncResults'
-		obj.ldapSyncResultsId = id;
+		obj.ldapSyncResultsId = m_ldapSyncResultsId;
 	
 		// Build the url used in the ajax request.
 		url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -830,10 +821,8 @@ function showSyncResultsDlg()
 /**
  * Issue an ajax request to start the ldap sync.
  */
-function startLdapSync( syncAllUsersAndGroups, syncGuids )
+function startLdapSync()
 {
-	var input;
-	var id;
 	var url;
 	var obj;
 	var status;
@@ -853,16 +842,14 @@ function startLdapSync( syncAllUsersAndGroups, syncGuids )
 	
 	// Generate a unique id that will identify the sync results.  We will use
 	// this id in subsequent ajax calls.
-	input = document.getElementById( 'ldapSyncResultsId' );
-	input.value = Math.random();
-	id = input.value;
+	m_ldapSyncResultsId = Math.random();
 
 	// Set up the object that will be used in the ajax request.
 	obj = new Object();
 	obj.operation = 'startLdapSync'
-	obj.ldapSyncResultsId = id;
-	obj.syncUsersAndGroups = syncAllUsersAndGroups;
-	obj.syncGuids = syncGuids;
+	obj.ldapSyncResultsId = m_ldapSyncResultsId;
+	obj.syncUsersAndGroups = m_syncAllUsersAndGroups;
+	obj.syncGuids = m_syncGuids;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -875,11 +862,6 @@ function startLdapSync( syncAllUsersAndGroups, syncGuids )
 	status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.inProgress"/></ssf:escapeJavaScript>';
 	setSyncResultsStatus( status, m_syncStatusInProgressImg );
 
-	// Start a timer.  Whenever the timer goes off we will issue an ajax request
-	// to get the latest results from the ldap sync.
-	m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
-
-	m_ldapSyncStatus = LDAP_SYNC_STATUS_IN_PROGRESS;
 }// end startLdapSync()
 
 
@@ -888,19 +870,13 @@ function startLdapSync( syncAllUsersAndGroups, syncGuids )
  */
 function stopCollectingSyncResults()
 {
-	var	input;
-	var	id;
 	var url;
 	var obj;
-
-	// Get the id of the sync results we are looking for.
-	input = document.getElementById( 'ldapSyncResultsId' );
-	id = input.value;
 
 	// Set up the object that will be used in the ajax request.
 	obj = new Object();
 	obj.operation = 'stopCollectingLdapSyncResults'
-	obj.ldapSyncResultsId = id;
+	obj.ldapSyncResultsId = m_ldapSyncResultsId;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
@@ -1549,17 +1525,14 @@ jQuery(document).ready(function() {
 		// Are we supposed to start an ldap sync?
 		<c:if test="${!empty startLdapSync}">
 			// Yes
-			var syncAllUsersAndGroups = false;
-			var syncGuids = false;
-			
 			if ( '${syncAllUsersAndGroups}' == 'true' )
-				syncAllUsersAndGroups = true;
+				m_syncAllUsersAndGroups = true;
 
 			if ( '${syncGuids}' == 'true' )
-				syncGuids = true;
+				m_syncGuids = true;
 			
 			// Start an ldap sync.
-			startLdapSync( syncAllUsersAndGroups, syncGuids );
+			setTimeout( startLdapSync, 500 );
 		</c:if>
 	});
 </script>
