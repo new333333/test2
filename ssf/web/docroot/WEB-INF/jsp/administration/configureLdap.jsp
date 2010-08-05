@@ -304,7 +304,6 @@
 	color: red;
 }
 
-@import "flora.css";
 
 /* Caution! Ensure accessibility in print and other media types... */
 @media projection , screen {
