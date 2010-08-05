@@ -49,6 +49,7 @@ import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -62,6 +63,7 @@ import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
@@ -172,6 +174,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
+        	
+        	getTransactionTemplate().execute(new TransactionCallback() {
+        		public Object doInTransaction(TransactionStatus status) {
+		        	//See if there were any file notes added
+		        	Set<Attachment> atts = entry.getAttachments();
+		        	for (Attachment att : atts) {
+		        		if (att instanceof FileAttachment) {
+		        			FileAttachment fa = (FileAttachment)att;
+		        			String itemName = fa.getName();
+		        			if (itemName != null) {
+		        				String fileNote = inputData.getSingleValue(itemName + ".description");
+		        				if (fileNote != null) {
+		        					fa.getFileItem().setDescription(fileNote);
+		        					VersionAttachment hVer = fa.getHighestVersion();
+		        					if (hVer != null && hVer.getParentAttachment() == fa) {
+		        						hVer.getFileItem().setDescription(fileNote);
+		        					}
+		        				}
+		        			}
+		        		}
+		        	}
+		        	return null;
+        		}
+        	});
         	SimpleProfiler.stopProfiler("addEntry_processFiles");
         
         	// 	The following part requires update database transaction.
@@ -515,6 +541,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
            	SimpleProfiler.startProfiler("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
+	    	getTransactionTemplate().execute(new TransactionCallback() {
+	    		public Object doInTransaction(TransactionStatus status) {
+		        	//See if there were any file notes added
+		        	Set<Attachment> atts = entry.getAttachments();
+		        	for (Attachment att : atts) {
+		        		if (att instanceof FileAttachment) {
+		        			FileAttachment fa = (FileAttachment)att;
+		        			String itemName = fa.getName();
+		        			if (itemName != null) {
+		        				String fileNote = inputData.getSingleValue(itemName + ".description");
+		        				if (fileNote != null) {
+		        					fa.getFileItem().setDescription(fileNote);
+		        					VersionAttachment hVer = fa.getHighestVersion();
+		        					if (hVer != null && hVer.getParentAttachment() == fa) {
+		        						hVer.getFileItem().setDescription(fileNote);
+		        					}
+		        				}
+		        			}
+		        		}
+		        	}
+		        	return null;
+	    		}
+	    	});
 	    	SimpleProfiler.stopProfiler("modifyEntry_processFiles");
 
 
@@ -535,7 +584,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.stopProfiler("modifyEntry_done");
 	    	
 	    	if(filesErrors.getProblems().size() > 0) {
-	    		// At least one error occured during the operation. 
+	    		// At least one error occurred during the operation. 
 	    		throw new WriteFilesException(filesErrors);
 	    	}	    	
         } catch(WriteFilesException ex) {
