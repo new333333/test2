@@ -68,10 +68,10 @@
 		  <ssf:textFormat formatAction="textToHtml">${ssDefinitionEntry.description.text}</ssf:textFormat>
 		</c:if>
 		<c:if test="${textFormat != '2'}">
-		  <span>
+		  <div>
 			<ssf:markup entity="${ssDefinitionEntry}" leaveSectionsUnchanged="true" 
 			>${ssDefinitionEntry.description.text}</ssf:markup>
-		  </span>
+		  </div>
 		</c:if>
 		<div class="ss_clear"></div>
 	  </ssf:editable>
