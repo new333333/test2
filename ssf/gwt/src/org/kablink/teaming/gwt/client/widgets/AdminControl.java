@@ -227,8 +227,10 @@ public class AdminControl extends Composite
 			// Add a row for the Teaming release information
 			{
 				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
+				cellFormatter.setWordWrap( row, 0, false );
 				m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
-				cellFormatter.setWidth( row, 1, "100%" );
+				cellFormatter.setWordWrap( row, 1, false );
+				m_table.setText( row, 2, " " );
 				
 				++row;
 			}
@@ -241,6 +243,7 @@ public class AdminControl extends Composite
 				// Add text to let the user know there are upgrade tasks that need to be completed.
 				++row;
 				cellFormatter.setColSpan( row, 0, 2 );
+				cellFormatter.setWordWrap( row, 0, false );
 				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
 				++row;
 
@@ -296,12 +299,14 @@ public class AdminControl extends Composite
 						}
 						
 						cellFormatter.setColSpan( row, 0, 2 );
+						cellFormatter.setWordWrap( row, 0, false );
 						m_table.setHTML( row, 0, uList.getString() );
 					}
 				}
 				else
 				{
 					cellFormatter.setColSpan( row, 0, 2 );
+					cellFormatter.setWordWrap( row, 0, false );
 					m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
 					++row;
 				}
@@ -555,6 +560,7 @@ public class AdminControl extends Composite
 				header = new Label( GwtTeaming.getMessages().administrationHeader() );
 				header.addStyleName( "adminActionsTreeControlHeader2" );
 				table.setWidget( 0, 0, header );
+				cellFormatter.setWordWrap( 0, 0, false );
 				
 				// Add an image the user can click on to get administration information
 				{
