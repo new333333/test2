@@ -580,13 +580,13 @@ a.ss_new_thread:hover {
  	</c:if>
 	}
 .ss_pageNext {
-	color:#333333;
+	/* color:#333333;
 	padding:3px 6px 3px 6px;
 	text-decoration:none;
 	background-color:#E9F1F1 !important;
 	background:transparent !important;	
 	border:solid 1px #DDDDDD !important;
-	margin-right:5px;
+	margin-right:5px; */
 	}
 .ss_paginationFont a:link,
 .ss_paginationFont a:visited {
@@ -595,10 +595,6 @@ a.ss_new_thread:hover {
 	text-decoration:none;
 	background-color:#E9F1F1 !important;
 	background:transparent !important;	
-	}
-.ss_paginationFont a:hover{
-	border:solid 1px #666666 !important;
-	background-color: #CCDFDE !important;
 	}
 .ss_paginationTextBox {
 	line-height: 10px;
