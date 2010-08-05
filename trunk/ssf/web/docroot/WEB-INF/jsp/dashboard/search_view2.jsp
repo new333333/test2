@@ -104,7 +104,7 @@
 			<div class="ss_clear"></div>
 		</div>
 
-		<c:set var="ssFolderEntries" value="${ssResultEntries}" />
+		<c:set var="ssFolderEntriesResults" value="${ssResultEntries}" />
 		<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 		<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
 		
