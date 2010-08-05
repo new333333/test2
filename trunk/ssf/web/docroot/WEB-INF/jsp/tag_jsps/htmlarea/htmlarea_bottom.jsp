@@ -35,7 +35,7 @@
 %><%@ include file="/WEB-INF/jsp/common/include.jsp" 
 %></textarea>
 </div>
-<c:if test="${!empty wikiLinkBinderId}">
+<c:if test="${!empty wikiLinkBinderId && editor_toolbar != 'minimal'}">
    <div class="ss_editorHints">
      <ssf:nlt tag="editor.wikilink.tip1"/>
      <div style="padding-left:20px;">
