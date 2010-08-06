@@ -209,6 +209,7 @@ public class PersonalPreferencesDlg extends DlgBox
 			};
 			m_editorOverridesAnchor.addMouseOutHandler( mouseOutHandler );
 
+			table.getFlexCellFormatter().setColSpan( nextRow, 0, 2 );
 			table.setWidget( nextRow, 0, m_editorOverridesAnchor );
 			++nextRow;
 		}
