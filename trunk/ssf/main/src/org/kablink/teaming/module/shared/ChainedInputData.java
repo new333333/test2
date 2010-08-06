@@ -148,12 +148,5 @@ public class ChainedInputData implements InputDataAccessor {
 	public boolean isFieldsOnly() {
 		return this.fieldsOnly;
 	}
-
-	public Set<String> keySetForPotentialStringValues() {
-		Set set = new HashSet();
-		for(InputDataAccessor accessor : chainedAccessors)
-			set.addAll(accessor.keySetForPotentialStringValues());
-		return set;
-	}
-
+	
 }

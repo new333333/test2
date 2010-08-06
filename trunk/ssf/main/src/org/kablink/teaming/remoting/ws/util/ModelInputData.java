@@ -237,13 +237,4 @@ public class ModelInputData implements InputDataAccessor {
 		return this.fieldsOnly;
 	}
 
-	public Set<String> keySetForPotentialStringValues() {
-		Set<String> set = new HashSet<String>();
-		set.add("definitionId");
-		set.add("title");
-		set.add("description");
-		set.addAll(entity.customStringFieldNames());
-		set.addAll(entity.customStringArrayFieldNames());
-		return set;
-	}
 }

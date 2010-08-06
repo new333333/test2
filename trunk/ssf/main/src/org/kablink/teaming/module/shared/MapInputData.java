@@ -133,7 +133,4 @@ public class MapInputData implements InputDataAccessor {
 		return this.fieldsOnly;
 	}
 
-	public Set<String> keySetForPotentialStringValues() {
-		return source.keySet();
-	}
 }
