@@ -81,10 +81,12 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.repository.RepositoryUtil;
@@ -94,6 +96,7 @@ import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -1338,6 +1341,18 @@ public class DefinitionHelper {
     		definitionTree = definition.getDefinition();
     	String[] dataTypes = SPropsUtil.getStringArray("definition.textual.datatype.names", ",");
     	return getInstance().getDefinitionModule().filterInputDataKeysByDataType(definitionTree, inputData, Arrays.asList(dataTypes));
+	}
+
+	public static Set<String> getTextualInputDataKeys(Long folderId, Long entryId,InputDataAccessor inputData) {
+		FolderModule fm = (FolderModule) SpringContextUtil.getBean("folderModule");
+		FolderEntry entry = fm.getEntry(folderId, entryId);
+		return getTextualInputDataKeys(entry.getEntryDef().getId(), inputData);
+	}
+	
+	public static Set<String> getTextualInputDataKeys(Long binderId,InputDataAccessor inputData) {
+		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
+		Binder binder = bm.getBinder(binderId);
+		return getTextualInputDataKeys(binder.getEntryDef().getId(), inputData);
 	}
 
 }
