@@ -446,7 +446,7 @@ div.ss_utils_bar ul.ss_utils_bar li {
     list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
 	}
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
-	color:#003782;
+	color:#135c8f;
 	display:block;
 	margin:0px;
 	border:0px;	
@@ -459,9 +459,6 @@ div.ss_utils_bar ul.ss_utils_bar li a span {
 	font-size:${ss_style_font_smallprint};
     list-style:none !important;
     list-style-image: url(<html:imagesPath/>pics/1pix.gif) !important;
-	}
-.ss_utils_bar li a:hover {
-	text-decoration:underline;
 	}
 div.ss_utils_bar_submenu {
 	/* background-color: #EFEFEF; */

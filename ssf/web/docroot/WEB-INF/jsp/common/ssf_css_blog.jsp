@@ -101,24 +101,29 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 div.ss_blog_content {
 	background-color:#f6f6f6;
-	margin-bottom: 30px;
+	margin-bottom: 20px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 div.ss_blog_content2 {
-	padding: 0px 8px;
+	padding: 0px;
 }
+div.ss_blog_content2 .ss_entryContent {
+	margin: 2px 5px 5px 27px;
+	}
+div.ss_blog_content2 .ss_replies {
+	background-color: #ebf5f5; 
+	}	
 div.ss_blog_sidebar {
-    padding-left:5px;
- 	padding-right: 5px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+    padding: 10px;
     background-color:${ss_style_background_color_side_panel_featured};
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 .ss_blog_sidebar_subhead {
 	font-weight: bold;
 	font-size: ${ss_style_font_largeprint} !important;
 	color: ${ss_style_muted_label_color};
-	background-color: #949494;
-	padding-top: 2px;
 	padding-bottom: 2px;
 }
 div.ss_blog_sidebar_box {
@@ -126,7 +131,7 @@ div.ss_blog_sidebar_box {
 	border: 1px solid ${ss_blog_sidebar_box_outline}; */
 	margin-bottom: 10px;
 	margin-top: 2px;
-	padding: 2px 5px;
+	padding: 3px 5px 5px 0px;
 }
 a.ss_displaytag {
 	color: ${ss_style_metadata_color};
@@ -150,12 +155,11 @@ table.ss_blog_title table {
   background-color:${ss_style_header_bar_background};
 }
 div.ss_blog_title  {
-
-  padding-top: 12px;
-  padding-bottom: 3px;
-  padding-left: 2px;
-  padding-right: 5px;
+  padding: 7px;
 }
+div.ss_replies div.ss_blog_title {
+	margin-left: 20px;
+	}
 div.ss_header_bar_timestamp {
 	font-family: ${ss_style_title_font_family};
 	font-size: 11px;
@@ -165,11 +169,10 @@ div.ss_header_bar_timestamp {
 }
 .ss_blog_footer {
 	background-color:${ss_blog_footer_color};
-	padding-bottom: 5px; 
-	padding-top: 4px;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding: 2px 4px;
 	margin: 0px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 .ss_blog_footer ul {
 	margin:0px;
@@ -183,20 +186,16 @@ div.ss_header_bar_timestamp {
 }	
 .ss_blog_footer * span {
     font-family: ${ss_style_title_font_family};
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 10px;
     line-height: 16px;
-    color: ${ss_style_muted_label_color};
 	padding: 2px 8px;
 }
 .ss_blog_footer * img {
-	vertical-align: baseline;
+	vertical-align: middle;
 	padding-right: 2px;
 }
 .ss_blog_footer * a {
-  font-size: 11px;
-  font-weight: bold;
-  color: ${ss_style_muted_label_color};
+  font-size: 10px;
   white-space: nowrap;
 }
 
