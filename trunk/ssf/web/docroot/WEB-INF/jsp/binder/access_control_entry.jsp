@@ -85,7 +85,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet diag_modal2">
 	<ssf:form titleTag="access.configure">
-	<ssf:inlineHelp jsp="workspaces_folders/menus_toolbars/access_control"/>
+	<ssf:showHelp guideName="adv_user" pageId="access_mngusers" sectionId="access_mngusers_entry" />
 	<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 		<div>
 			<table cellpadding="0" cellspacing="0" width="100%">
