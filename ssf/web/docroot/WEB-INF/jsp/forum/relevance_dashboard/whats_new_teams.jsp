@@ -103,7 +103,7 @@
 								<a href="javascript: ;"
 									onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									title="${path}"
-									><span>${title}</span></a>
+									><span><ssf:makeWrapable>${title}</ssf:makeWrapable></span></a>
 							</c:if>
 						  </span>
 						</div>

@@ -634,7 +634,7 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, model, String.valueOf(pageNumber), type);
+			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, model, String.valueOf(pageNumber), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 		}
@@ -767,7 +767,7 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, topBinder, topBinderId, model, String.valueOf(pageNumber), type);
+			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, String.valueOf(pageNumber), type);
 			Criteria crit = SearchUtils.bindersForAncestryBinders(bs, tbs);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
 	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
