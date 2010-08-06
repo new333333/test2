@@ -146,7 +146,7 @@
 					<td class="ss_paginationFont">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-							<span class="ss_pageNext"><img src="<html:rootPath/>images/pics/sym_arrow_right_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
+							<span class="ss_pageNext" style="padding-left: 8px;"><img src="<html:rootPath/>images/pics/sym_arrow_right_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
 				  			</c:when>
 				  		<c:otherwise>
 						<a href="<ssf:url action="${action}" actionUrl="true"> 
@@ -170,7 +170,7 @@
 					<td class="ss_pagination_arrows">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-							<span class="ss_pageNext"><img src="<html:rootPath/>images/pics/sym_arrow_right_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
+							<span class="ss_pageNext" style="padding-left: 8px;"><img src="<html:rootPath/>images/pics/sym_arrow_gotoEnd_g.png" title="<ssf:nlt tag="general.Next"/>" border="0" id="nextdisabled" align="absmiddle" /></span>
 				  			</c:when>
 				  		<c:otherwise>
 					<a href="<ssf:url action="${action}" actionUrl="true"> 
