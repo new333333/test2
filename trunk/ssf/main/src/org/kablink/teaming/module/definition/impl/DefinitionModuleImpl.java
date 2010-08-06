@@ -40,6 +40,7 @@ import java.io.StringReader;
 import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -2885,4 +2886,52 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			return false;
 		}
 	}
+	
+    public Set<String> filterInputDataKeysByDataType(Document definitionTree, InputDataAccessor inputData, List<String> dataTypes) {
+    	// IMPORTANT: This method MUST be kept in synch with getEntryData() method.
+    	
+    	Set<String> result = new HashSet<String>();
+    	
+    	// Let's first handle "known" attributes that may not be in the definition.
+    	// We don't want these known attributes to be excluded just because they
+    	// are not defined in the definition.
+    	// Since we're using a set, it won't be a problem even if the same attribute
+    	// was actually found in the definition later on (hence put in twice).
+    	if(dataTypes.contains("title") && inputData.exists("title"))
+    		result.add("title");
+    	if(dataTypes.contains("description") && inputData.exists("description"))
+    		result.add("description");
+    	if(dataTypes.contains("text") && inputData.exists("_zoneUUID"))
+    		result.add("_zoneUUID");
+    	
+    	// Now handle those data elements in the definition.
+    	if(definitionTree != null) {
+			Element root = definitionTree.getRootElement();
+			Element entryFormItem = (Element)root.selectSingleNode("item[@type='form']");
+			if (entryFormItem != null) {
+				String itemName;
+				String itemDataType;
+				String nameValue;
+				List<Element> itItems = entryFormItem.selectNodes(".//item[@type='data']");
+				for (Element nextItem: itItems) {
+					itemName = (String) nextItem.attributeValue("name");
+					if(!Validator.isNull(itemName)) {
+						itemDataType = (String) nextItem.attributeValue("dataType");
+						if(Validator.isNull(itemDataType)) {
+							Element configItem = this.definitionBuilderConfig.getItem(this.definitionConfig, itemName);
+							itemDataType = (String) configItem.attributeValue("dataType");
+						}
+						if(itemDataType != null && dataTypes.contains(itemDataType)) {
+							nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+							if (Validator.isNull(nameValue))
+								nameValue = nextItem.attributeValue("name");
+							if(nameValue != null && inputData.exists(nameValue))
+								result.add(nameValue);
+						}
+					}
+				}				
+			}
+    	}
+    	return result;
+    }
 }

@@ -33,10 +33,10 @@
 package org.kablink.teaming.module.definition;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -49,8 +49,6 @@ import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.security.AccessControlException;
-
-import org.xml.sax.SAXException;
 
 /**
  * @author hurley
@@ -161,4 +159,15 @@ public interface DefinitionModule {
   	 * @return true if the definition is being referenced.
   	 */
   	public boolean checkDefInUse(String id);
+  	
+  	/**
+  	 * Only return a subset of the keys in the input data where the keys correspond to 
+  	 * data elements of the specified data types. 
+  	 * 
+  	 * @param definitionTree
+  	 * @param inputData
+  	 * @param dataTypes
+  	 * @return
+  	 */
+    public Set<String> filterInputDataKeysByDataType(Document definitionTree, InputDataAccessor inputData, List<String> dataTypes);
 }

@@ -35,6 +35,7 @@ package org.kablink.teaming.web.util;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Collection;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.SortedMap;
@@ -84,6 +86,7 @@ import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -1326,6 +1329,15 @@ public class DefinitionHelper {
 		entryElem.setText(entry.getName());
 
 		return entryElem;
+	}
+
+	public static Set<String> getTextualInputDataKeys(String definitionId, InputDataAccessor inputData) {
+    	Definition definition = getDefinition(definitionId);
+    	Document definitionTree = null;
+    	if(definition != null)
+    		definitionTree = definition.getDefinition();
+    	String[] dataTypes = SPropsUtil.getStringArray("definition.textual.datatype.names", ",");
+    	return getInstance().getDefinitionModule().filterInputDataKeysByDataType(definitionTree, inputData, Arrays.asList(dataTypes));
 	}
 
 }
