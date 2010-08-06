@@ -1323,7 +1323,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/pwd_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
