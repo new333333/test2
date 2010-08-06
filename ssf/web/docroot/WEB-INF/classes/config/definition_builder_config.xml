@@ -7,6 +7,16 @@
 	- Item type="data" indicates a data element to be processed and saved during "Add" and "Modify" operations.
 	- Item type="dataView" indicates that this item is shadowing a data element from the "form" definition.
 	- Item type="form" indicates that the item is a "<form>...</form>" element. 
+	
+	- Each form item has a "dataType" that identifies the type of data to be added into the customAttribute element
+	  - dataType values:
+	       text             title           branding          id             radio              fileList
+	       description      icon            userName          timeZone       selectbox          groupList
+	       number           event           password          locale         checkbox           binderIdList
+	       email            guestName       name              birthday       userList           teamList
+	       phone            remoteApp       organization      graphic        externalUserList   survey
+	       date             url             address           workflowState  workflowThread     mashupLayout
+	       customJsp
 -->
 
 <!-- Definitions -->
@@ -75,7 +85,7 @@
 	
 	
 <!-- Items -->
-	<item name="title" caption="__title" type="data" canBeDeleted="true" 
+	<item name="title" caption="__title" type="data" dataType="title" canBeDeleted="true"
 		multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
@@ -265,7 +275,8 @@
 		</jsps>
 	</item>
 <!-- folder entry form data items -->
-	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false" category="entryData" display="form">
+	<item name="entryIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" 
+	  category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -313,7 +324,7 @@
 	</item>
 -->
 	
-	<item name="event" caption="__event" type="data" category="entryData" display="form">
+	<item name="event" caption="__event" type="data" dataType="event" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -347,7 +358,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
-	<item name="guestName" caption="__guestName" type="data" multipleAllowed="false" 
+	<item name="guestName" caption="__guestName" type="data" dataType="guestName" multipleAllowed="false" 
 		category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__guest.default.caption" />
@@ -666,7 +677,8 @@
 	</item>
 	
 <!-- Folder form items	-->
-	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false" category="folderData" display="form">
+	<item name="folderIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" 
+	  category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -681,7 +693,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderIcon" />
 	</item>
 
-	<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
+	<item name="folderRemoteApp" caption="__remoteApp" type="data" dataType="remoteApp" multipleAllowed="true" 
 			category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__remoteApp"/>
@@ -692,7 +704,7 @@
 		</jsps>
 	</item>
 	
-	<item name="folderBranding" caption="__branding" type="data" multipleAllowed="false" 
+	<item name="folderBranding" caption="__branding" type="data" dataType="branding" multipleAllowed="false" 
 			category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__branding"/>
@@ -1138,7 +1150,7 @@
 	</item>
 		
 <!-- Profile entry form items-->
-	<item name="profileName" caption="__profile_name" type="data" 
+	<item name="profileName" caption="__profile_name" type="data" dataType="userName"
 		canBeDeleted="false" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
@@ -1156,7 +1168,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderName" />
 	</item>
 	
-	<item name="profilePassword" caption="__profile_password" type="data" 
+	<item name="profilePassword" caption="__profile_password" type="data" dataType="password"
 		canBeDeleted="false" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_password"/>
@@ -1169,7 +1181,7 @@
 		</jsps>
 	</item>
 	
-	<item name="profileFirstName" caption="__firstName" type="data" 
+	<item name="profileFirstName" caption="__firstName" type="data" dataType="name"
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__firstName"/>
@@ -1188,7 +1200,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
-	<item name="profileLastName" caption="__lastName" type="data" 
+	<item name="profileLastName" caption="__lastName" type="data" dataType="name" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__lastName"/>
@@ -1206,7 +1218,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileMiddleName" caption="__middleName" type="data" 
+	<item name="profileMiddleName" caption="__middleName" type="data" dataType="name" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__middleName"/>
@@ -1225,7 +1237,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileOrganization" caption="__organization" type="data" 
+	<item name="profileOrganization" caption="__organization" type="data" dataType="organization" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__organization"/>
@@ -1243,7 +1255,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
+	<item name="profileEmailAddress" caption="__emailAddress" type="data" dataType="email" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
@@ -1261,7 +1273,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" 
+	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" dataType="email" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mobileEmailAddress"/>
@@ -1279,7 +1291,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" 
+	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data"  dataType="email" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__txtEmailAddress"/>
@@ -1297,7 +1309,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileConferencingID" caption="__conferencingID" type="data" 
+	<item name="profileConferencingID" caption="__conferencingID" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__conferencingID"/>
@@ -1312,7 +1324,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
-	<item name="profileConferencingPwd" caption="__conferencingPwd" type="data" 
+	<item name="profileConferencingPwd" caption="__conferencingPwd" type="data" dataType="password" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__conferencingPwd"/>
@@ -1326,7 +1338,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
-	<item name="profileTimeZone" caption="__timeZone" type="data" 
+	<item name="profileTimeZone" caption="__timeZone" type="data" dataType="timeZone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__timeZone"/>
@@ -1340,7 +1352,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileLocale" caption="__locale" type="data" 
+	<item name="profileLocale" caption="__locale" type="data" dataType="locale" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__locale"/>
@@ -1355,7 +1367,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profilePhone" caption="__phone" type="data" 
+	<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
@@ -1373,7 +1385,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileSkypeId" caption="__skypeId" type="data" 
+	<item name="profileSkypeId" caption="__skypeId" type="data" dataType="id"
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__skypeId"/>
@@ -1391,7 +1403,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileTwitterId" caption="__twitterId" type="data" 
+	<item name="profileTwitterId" caption="__twitterId" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__twitterId"/>
@@ -1406,7 +1418,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileInstantMessage" caption="__instantMessage" type="data" 
+	<item name="profileInstantMessage" caption="__instantMessage" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__instantMessage"/>
@@ -1421,7 +1433,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profilePresence" caption="__presenceID" type="data" 
+	<item name="profilePresence" caption="__presenceID" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__presenceID"/>
@@ -1436,7 +1448,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
-	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
+	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" dataType="graphic" multipleAllowed="false"
 		category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_entry_picture" />
@@ -1461,7 +1473,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 	
-	<item name="profileJobTitle" caption="__jobTitle" type="data" 
+	<item name="profileJobTitle" caption="__jobTitle" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__jobTitle"/>
@@ -1480,7 +1492,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
-	<item name="profileDepartment" caption="__department" type="data" 
+	<item name="profileDepartment" caption="__department" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__department"/>
@@ -1499,7 +1511,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileOffice" caption="__office" type="data" 
+	<item name="profileOffice" caption="__office" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__office"/>
@@ -1518,7 +1530,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileLocation" caption="__location" type="data" 
+	<item name="profileLocation" caption="__location" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__location"/>
@@ -1537,7 +1549,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileManager" caption="__manager" type="data" 
+	<item name="profileManager" caption="__manager" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__manager"/>
@@ -1556,7 +1568,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileWorkPhone" caption="__workPhone" type="data" 
+	<item name="profileWorkPhone" caption="__workPhone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__workPhone"/>
@@ -1575,7 +1587,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
-	<item name="profileHomePhone" caption="__homePhone" type="data" 
+	<item name="profileHomePhone" caption="__homePhone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__homePhone"/>
@@ -1594,7 +1606,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
-	<item name="profileMobilePhone" caption="__mobilePhone" type="data" 
+	<item name="profileMobilePhone" caption="__mobilePhone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mobilePhone"/>
@@ -1613,7 +1625,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>	
 	
-	<item name="profileFax" caption="__fax" type="data" 
+	<item name="profileFax" caption="__fax" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__fax"/>
@@ -1632,7 +1644,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>	
 
-	<item name="profileMailStop" caption="__mailStop" type="data" 
+	<item name="profileMailStop" caption="__mailStop" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mailStop"/>
@@ -1651,7 +1663,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileStreet" caption="__street" type="data" 
+	<item name="profileStreet" caption="__street" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__street"/>
@@ -1670,7 +1682,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 
-	<item name="profileCity" caption="__city" type="data" 
+	<item name="profileCity" caption="__city" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__city"/>
@@ -1689,7 +1701,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileState" caption="__state" type="data" 
+	<item name="profileState" caption="__state" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__state"/>
@@ -1708,7 +1720,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileBirthDay" caption="__birthDay" type="data" 
+	<item name="profileBirthDay" caption="__birthDay" type="data" dataType="birthday" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__birthDay"/>
@@ -1727,7 +1739,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileBirthYear" caption="__birthYear" type="data" 
+	<item name="profileBirthYear" caption="__birthYear" type="data" dataType="birthday" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__birthYear"/>
@@ -1746,7 +1758,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileRank" caption="__rank" type="data" 
+	<item name="profileRank" caption="__rank" type="data" dataType="text" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__rank"/>
@@ -1765,7 +1777,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileState" caption="__state" type="data" 
+	<item name="profileState" caption="__state" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__state"/>
@@ -1784,7 +1796,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profilePostalCode" caption="__postalCode" type="data" 
+	<item name="profilePostalCode" caption="__postalCode" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__postalCode"/>
@@ -2256,7 +2268,7 @@
 		</jsps>
 	</item>
 	
-	<item name="workspaceRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
+	<item name="workspaceRemoteApp" caption="__remoteApp" type="data" dataType="remoteApp" multipleAllowed="true" 
 			category="workspaceData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__remoteApp"/>
@@ -2267,7 +2279,7 @@
 		</jsps>
 	</item>
 	
-	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false" category="workspaceData" display="form">
+	<item name="workspaceIcon" caption="__icon" type="data" dataType="icon" multipleAllowed="false" category="workspaceData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -2281,7 +2293,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderGraphic" />
 	</item>
 	
-	<item name="workspaceBranding" caption="__branding" type="data" multipleAllowed="false" 
+	<item name="workspaceBranding" caption="__branding" type="data" dataType="branding" multipleAllowed="false" 
 			category="workspaceData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__branding"/>
@@ -2456,7 +2468,7 @@
 	</item>
 			
 <!-- Common entry form items -->
-	<item name="text" caption="__text" type="data" category="commonEntryData" display="form">
+	<item name="text" caption="__text" type="data" dataType="text" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2483,7 +2495,8 @@
 		<notify />
 	</item>
 	
-	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form">
+	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" dataType="description" 
+	  category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2513,7 +2526,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="textarea" caption="__text_area" type="data" category="commonEntryData" display="form">
+	<item name="textarea" caption="__text_area" type="data" dataType="description" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2536,7 +2549,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="number" caption="__number" type="data" category="commonEntryData" display="form">
+	<item name="number" caption="__number" type="data" dataType="number" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2563,7 +2576,7 @@
 		<notify />
 	</item>
 	
-	<item name="url" caption="__url" type="data" category="commonEntryData" display="form">
+	<item name="url" caption="__url" type="data" dataType="url" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2586,7 +2599,7 @@
 		<notify />
 	</item>
 	
-	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" display="form">
+	<item name="selectbox" caption="__selectbox" type="data" dataType="selectBox" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2636,7 +2649,8 @@
 		</jsps>
 	</item>
 
-	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="entryData" display="form">
+	<item name="userListSelectbox" caption="__userListSelectbox" type="data" dataType="userList" 
+	  category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
@@ -2695,7 +2709,7 @@
 		</item>
 -->
 
-	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" display="form">
+	<item name="radio" caption="__radio_buttons" type="data" dataType="radio" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2749,7 +2763,7 @@
 		</jsps>
 	</item>
 	
-	<item name="places" caption="__places" type="data" category="entryData" display="form">
+	<item name="places" caption="__places" type="data" dataType="binderIdList" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2772,7 +2786,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces"/>
 	</item>
 
-	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form">
+	<item name="checkbox" caption="__checkbox" type="data" dataType="checkbox" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2796,7 +2810,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
-	<item name="hidden" caption="__hidden" type="data" category="commonEntryData" display="form">
+	<item name="hidden" caption="__hidden" type="data" dataType="text" category="commonEntryData" display="form">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
@@ -2810,7 +2824,7 @@
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderHidden" />
 	</item>
 	
-	<item name="graphic" caption="__graphic" type="data" category="commonEntryData" display="form">
+	<item name="graphic" caption="__graphic" type="data" dataType="graphic" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2838,7 +2852,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
+	<item name="attachFiles" caption="__attach_files" type="data" dataType="fileList" canBeDeleted="false"
 			multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__attach_files"/>
@@ -2856,7 +2870,8 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderAttachments" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderAttachments" />
 	</item>
-	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData" display="form">
+	<item name="description" caption="__description" type="data" dataType="description" 
+	  multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2881,7 +2896,7 @@
 		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="file" caption="__file_upload" type="data" category="commonEntryData" display="form">
+	<item name="file" caption="__file_upload" type="data" dataType="fileList" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2904,7 +2919,7 @@
 		<notify  notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderFile"/>
 	</item>
 	
-	<item name="date" caption="__date" type="data" category="commonEntryData" display="form">
+	<item name="date" caption="__date" type="data" dataType="date" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2935,7 +2950,7 @@
 		<notify velocity="date.vm"/> 
 	</item>
 	
-	<item name="date_time" caption="__date_time" type="data" category="commonEntryData" display="form">
+	<item name="date_time" caption="__date_time" type="data" dataType="date" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2966,7 +2981,7 @@
 		<notify velocity="date_time.vm"/> 
 	</item>
 	
-	<item name="user_list" caption="__user_list" type="data" category="commonEntryData" display="form">
+	<item name="user_list" caption="__user_list" type="data" dataType="userList" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2991,7 +3006,8 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
-	<item name="external_user_list" caption="__external_user_list" type="data" category="commonEntryData" display="form">
+	<item name="external_user_list" caption="__external_user_list" type="data" dataType="externalUserList" 
+	  category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" value="responsible_external" readonly="true"/>
@@ -3005,7 +3021,7 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderExternalUserlist" />
 	</item>
 	
-	<item name="group_list" caption="__group_list" type="data" category="commonEntryData" display="form">
+	<item name="group_list" caption="__group_list" type="data" dataType="groupList" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -3029,7 +3045,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>	
 	
-	<item name="team_list" caption="__team_list" type="data" category="commonEntryData" display="form">
+	<item name="team_list" caption="__team_list" type="data" dataType="teamList" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -3053,7 +3069,7 @@
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces" />
 	</item>		
 
-	<item name="survey" caption="__survey_queries" type="data" category="entryData" display="form">
+	<item name="survey" caption="__survey_queries" type="data" dataType="survey" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -3417,7 +3433,7 @@
 	</item>
 
 	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
-		type="data" canBeDeleted="true" multipleAllowed="false" display="form">
+		type="data" dataType="mashupLayout" canBeDeleted="true" multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
 			<property name="name" caption="__name" type="text"/>
@@ -3485,7 +3501,7 @@
 		</jsps>
 		<notify velocity="html.vm" />
 	</item>
-	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout" display="form">
+	<item name="customJsp" caption="__custom_jsp" type="data" dataType="customJsp" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -3540,7 +3556,7 @@
 		</options>
 		<help>ihelp.designers.custom_jsp</help>
 	</item>
-	<item name="remoteApp" caption="__remoteApp" type="data" category="entryData" display="form">
+	<item name="remoteApp" caption="__remoteApp" type="data" dataType="remoteApp" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -3602,7 +3618,7 @@
 		</options>
 	</item>
 	
-	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" type="data">
+	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" type="data" dataType="workflowState" >
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']"
@@ -3672,7 +3688,8 @@
 		</options>
 	</item>
 	
-	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" type="data">
+	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" 
+	  multipleAllowed="true" type="data" dataType="workflowThread" >
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
