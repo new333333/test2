@@ -176,16 +176,4 @@ public class DomInputData implements InputDataAccessor {
 		return this.fieldsOnly;
 	}
 
-	public Set<String> keySetForPotentialStringValues() {
-		Set<String> set = new HashSet<String>();
-		List<Element> result = root.selectNodes("attribute");
-		if(result != null) {
-			for(Element elem:result) {
-				String nameValue = elem.attributeValue("name");
-				if(nameValue != null)
-					set.add(nameValue);
-			}
-		}
-		return set;		
-	}
 }

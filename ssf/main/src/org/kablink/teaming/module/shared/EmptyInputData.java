@@ -94,7 +94,4 @@ public class EmptyInputData implements InputDataAccessor{
 		return false;
 	}
 
-	public Set<String> keySetForPotentialStringValues() {
-		return new HashSet<String>();
-	}
 }
