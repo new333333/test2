@@ -79,7 +79,7 @@
 				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry.parentBinder.id}" 
 				  action="view_folder_entry" entryId="${entry.id}" actionUrl="true" />
 			</ssf:param>
-			<c:out value="${entry.title}" escapeXml="false"/>
+			<ssf:makeWrapable><c:out value="${entry.title}" escapeXml="false"/></ssf:makeWrapable>
 		</ssf:titleLink>
 
 		<div class="item-sub margintop1">
