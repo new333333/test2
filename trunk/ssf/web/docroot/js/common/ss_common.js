@@ -568,7 +568,16 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 function ss_showPermalink(obj, namespace) {
 	if (typeof namespace == 'undefined' && typeof ss_namespace != 'undefined') namespace = ss_namespace;
 	var divObj = document.getElementById('ss_permalink_display_div');
+	var scrollIntoView = false;
+	if (divObj != null && divObj.style && divObj.style.display && divObj.style.display == 'none') {
+		scrollIntoView = true;
+	}
 	ss_toggleShowDiv('ss_permalink_display_div', namespace)	;
+	if (scrollIntoView) {
+		var x = 0;
+		var y = parseInt(ss_mousePosY) + 100;
+		smoothScroll(x, y);
+	}
 }
 //Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
@@ -1277,6 +1286,7 @@ function ss_toggleShowDiv(divName, namespace) {
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
+	ssf_onLayoutChange();
 }
 
 //Routine to show and hide file action menus
