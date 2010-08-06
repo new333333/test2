@@ -442,7 +442,7 @@ a.ss_new_thread:hover {
 /*	font-weight:bold;	*/
 	}	
 .ss_navbar_current {
-	color: #fff;
+	color: #fff !important;
 	font-weight: bold !important;
 	background-color: #81B2BD;
 	padding: 2px 5px;
