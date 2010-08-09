@@ -47,6 +47,7 @@ public class TextFormat extends BodyTagSupport {
 	private String _bodyContent;
 	private String formatAction;
 	private String textMaxWords;
+	private String textMaxChars;
 	private Boolean stripHtml = false;
 	private Boolean breakOnLines = false;
 	
@@ -79,12 +80,14 @@ public class TextFormat extends BodyTagSupport {
 			
 			if (formatAction == null) formatAction = ""; 
 			
-			if (formatAction.equals("limitedDescription")) {
+			if (formatAction.equals("limitedDescription") && textMaxWords != null) {
 				int intMaxAllowedWords = 0;
 
 				//Check for the Text Max Words settings and value format
-				if (textMaxWords == null) throw new JspException("TextFormat: Text Max Words not specified");
-				
+				if (textMaxWords == null) {
+					throw new JspException("TextFormat: Text Max Words or Chars not specified");
+				}
+
 				try {
 					//See if this is a constant read in from the properties file
 					String max = SPropsUtil.getString(textMaxWords, "");
@@ -162,6 +165,32 @@ public class TextFormat extends BodyTagSupport {
 				
 				JspWriter jspOut = pageContext.getOut();
 				jspOut.print(summary.trim());
+				
+			} else if (formatAction.equals("limitedCharacters")) {
+				int intMaxAllowedChars = 0;
+
+				
+				try {
+					//See if this is a constant read in from the properties file
+					String max = SPropsUtil.getString(textMaxChars, "");
+					if (max.equals("")) {
+						intMaxAllowedChars = Integer.parseInt(textMaxChars); 
+					} else {
+						intMaxAllowedChars = Integer.parseInt(max); 
+					}
+				} catch (NumberFormatException nfe) {
+					throw new JspException("TextFormat: Text Max Chars not a numeric value");
+				}
+				
+				textContent = textContent.trim();
+				
+				String summary = textContent;
+				if (intMaxAllowedChars >= 0 && textContent.length() > intMaxAllowedChars) {
+					summary = summary.substring(0, intMaxAllowedChars) + "...";
+				}
+				
+				JspWriter jspOut = pageContext.getOut();
+				jspOut.print(summary.trim());
 					
 			} else if (formatAction.equals("simpleLimitedDescription")) {
 				int intMaxAllowedWords = 0;
@@ -212,6 +241,7 @@ public class TextFormat extends BodyTagSupport {
 		} finally {
 			this.formatAction = null;
 			this.textMaxWords = null;			
+			this.textMaxChars = null;			
 			this.breakOnLines = false;
 			this.stripHtml = false;
 		}
@@ -223,6 +253,10 @@ public class TextFormat extends BodyTagSupport {
 	
 	public void setTextMaxWords(String textMaxWords) {
 		this.textMaxWords = textMaxWords;
+	}
+	
+	public void setTextMaxChars(String textMaxChars) {
+		this.textMaxChars = textMaxChars;
 	}
 	
 	public void setStripHtml(Boolean stripHtml) {

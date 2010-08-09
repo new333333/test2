@@ -583,11 +583,13 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:if test="${empty seenStyleburst}">
 		<c:if test="${slidingTableStyle == 'fixed'}">
     		<span <%= seenStyle %>><c:if test="${empty entry1.title}" 
-    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><ssf:textFormat formatAction="limitedCharacters" 
+    		textMaxChars="folder.title.charCount"><c:out value="${entry1.title}"/></ssf:textFormat></span></a> 
 		</c:if>
 	  	<c:if test="${slidingTableStyle != 'fixed'}">
     		<span <%= seenStyle %>><c:if test="${empty entry1.title}" 
-    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><ssf:textFormat formatAction="limitedCharacters" 
+    		textMaxChars="folder.title.charCount"><c:out value="${entry1.title}"/></ssf:textFormat></span></a> 
 		</c:if> 		
 	</c:if>  	
 	
