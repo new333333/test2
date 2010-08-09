@@ -1194,8 +1194,8 @@ public class MarkupUtil {
 								//This permalink was exported from another system. See if it can be recast to this system
 								String url = "";
 								if (!s_binderId.equals("") && binderIdMap.containsKey(Long.valueOf(s_binderId)) && 
-										(EntityType.folder.name().equals(s_entityType)) || 
-										EntityType.workspace.name().equals(s_entityType)) {
+										((EntityType.folder.name().equals(s_entityType)) || 
+										EntityType.workspace.name().equals(s_entityType))) {
 									s_binderId = String.valueOf(binderIdMap.get(Long.valueOf(s_binderId)));
 									url = PermaLinkUtil.getPermalink(Long.valueOf(s_binderId), EntityType.valueOf(s_entityType));
 								}
