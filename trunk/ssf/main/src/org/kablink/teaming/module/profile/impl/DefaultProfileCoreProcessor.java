@@ -522,16 +522,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		User p = (User)entry;
        		//mark deleted, cause their ids are used all over
        		//profileDao will delete all associations and groups
-       		p.setDeleted(true);
-      		Map updatesCtx = new HashMap();
-       		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
-       		String newName = Validator.replacePathCharacters(NLT.get("profile.deleted.label") + " " + 
-       				dateFmt.format(entry.getModification().getDate()) + " " + 
-       				entry.getModification().getDate().getTime()); //need long value for uniqueness otherwise time isn't enough
-       		p.setName(newName); //mark as deleted - change name incase re-added -unique key
-      		p.setForeignName(newName); //clear name incase re-added - unique key
-      	    p.setTitle(p.getTitle() + " (" + newName + ")");
-       		checkUserTitle(p, updatesCtx);
+       		if (!p.isDeleted()) {
+	       		p.setDeleted(true);
+	      		Map updatesCtx = new HashMap();
+	       		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
+	       		String newName = Validator.replacePathCharacters(NLT.get("profile.deleted.label") + " " + 
+	       				dateFmt.format(entry.getModification().getDate()) + " " + 
+	       				entry.getModification().getDate().getTime()); //need long value for uniqueness otherwise time isn't enough
+	       		p.setName(newName); //mark as deleted - change name incase re-added -unique key
+	      		p.setForeignName(newName); //clear name incase re-added - unique key
+	      	    p.setTitle(p.getTitle() + " (" + newName + ")");
+	       		checkUserTitle(p, updatesCtx);
+       		}
        	}
     	getProfileDao().delete((Principal)entry);   
     }
