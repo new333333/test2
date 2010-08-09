@@ -507,9 +507,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								.openWriteSession(nodeNames);
 						try {
 							luceneSession.clearIndex();
-	
 						} catch (Exception e) {
-							logger.info("Exception:" + e);
+							logger.warn("Exception:" + e);
 						} finally {
 							luceneSession.close();
 						}
@@ -546,6 +545,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					// update transaction
 					// on the database.
 					IndexSynchronizationManager.applyChanges();
+					
+					// If complete re-indexing, put the index files in an optimized
+					// state for subsequent searches. It will also help cut down on
+					// the number of file descriptors opened during the indexing.
+					if (clearAll) {
+						LuceneWriteSession luceneSession = getLuceneSessionFactory()
+								.openWriteSession(nodeNames);
+						try {
+							luceneSession.optimize();
+						} catch (Exception e) {
+							logger.warn("Exception:" + e);
+						} finally {
+							luceneSession.close();
+						}
+					}					
 				} finally {
 					IndexSynchronizationManager.clearNodeNames();
 				}
