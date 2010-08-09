@@ -121,6 +121,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -1125,7 +1126,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					UserProperties userProperties;
 					String value;
-					int numEntriesPerPage = 10;
+					Integer numEntriesPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 					
 					userProperties = getProfileModule().getUserProperties( user.getId() );
 					value = (String) userProperties.getProperty( ObjectKeys.PAGE_ENTRIES_PER_PAGE );
