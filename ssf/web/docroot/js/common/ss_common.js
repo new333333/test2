@@ -4409,14 +4409,17 @@ function ss_showContentFrame() {
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
+	return ss_loadEntryUrl(obj.href, id, binderId, entityType, namespace, isDashboard);
+}
+function ss_loadEntryUrl(url, id, binderId, entityType, namespace, isDashboard) {
 	if (ss_getUserDisplayStyle() == "accessible") {
-		self.location.href = obj.href;
+		self.location.href = url;
 		return false;
 	}
 	
 	ss_highlightLine(id, namespace);
 
-	ss_showForumEntry(obj.href, isDashboard);
+	ss_showForumEntry(url, isDashboard);
 	ss_hideSunburst(id, binderId);
 	return false;
 }
