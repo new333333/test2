@@ -207,6 +207,7 @@ public class WebKeys {
 	public static final String URL_SECTION_PLACEHOLDER = "ss_sectionPlaceholder";
 	public static final String URL_SECTION_TO_EDIT = "_section";
 	public static final String URL_SEND_MAIL_LOCATION = "sendMailLocation";
+	public static final String URL_SEEN_BY_GWT = "seen_by_gwt";
     public static final String URL_SHOW_TRASH="showTrash";
 	public static final String URL_START_DATE = "ss_startDate";
 	public static final String URL_STATUS_TICKET_ID = "ss_statusId";
@@ -370,6 +371,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_CREDITS="view_credits";
 	public static final String ACTION_VIEW_EDITABLE_HISTORY="view_editable_history";
 	public static final String ACTION_VIEW_FILE="viewFile";
+	public static final String ACTION_VIEW_SUCCESS="view_success";
 	public static final String ACTION_VIEW_WORKFLOW_HISTORY="view_workflow_history";
 	
 	

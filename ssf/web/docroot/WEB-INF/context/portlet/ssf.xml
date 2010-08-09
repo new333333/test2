@@ -28,6 +28,7 @@
 	<bean id="advancedSearchController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.binder.AdvancedSearchController" />	
 	<bean id="entryVersionController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryVersionController" />
 	<bean id="entryWorkflowHistoryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.EntryWorkflowHistoryController" />
+	<bean id="viewSuccessController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ViewSuccessController" />
 
 	<bean id="profileModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.ModifyEntryController" />
@@ -157,6 +158,7 @@
 						<entry key="custom"><ref bean="customExtensionController"/></entry>
 						<entry key="binder_reports"><ref bean="binderReportsController"/></entry>
 						<entry key="view_entry_acl_report"><ref bean="entryAclReportController"/></entry>
+						<entry key="view_success"><ref bean="viewSuccessController"/></entry>
 
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
