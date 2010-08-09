@@ -272,6 +272,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private void ajaxMobileDoAddEntry(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		//Add an entry
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
@@ -281,8 +282,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
-			entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
+			entryId = getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			
+			//If we just added a MiniBlog entry, update the user's status
+			BinderHelper.updateUserStatus(folderId, entryId, user);
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
