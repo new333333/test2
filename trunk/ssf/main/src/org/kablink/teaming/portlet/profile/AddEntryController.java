@@ -147,7 +147,7 @@ public class AddEntryController extends SAbstractController {
     				}
     			}
 
-    			addUser(request, response, entryType, inputData, fileMap, null);
+    			User newUser = addUser(request, response, entryType, inputData, fileMap, null);
 
     			// Are we running the new GWT UI and doing a self registration?
     			if ( GwtUIHelper.isGwtUIActive( request ) && isGuestUser() )
@@ -159,13 +159,12 @@ public class AddEntryController extends SAbstractController {
     			{
     				// No
     				if (context.equals("adminMenu")) {
-    					setupReloadOpener(response, binderId);
+    					setupShowSuccess(response, binderId, newUser.getId());
     				} else {
     					setupReloadBinder(response, binderId);
+	        			//flag reload of folder listing
+	    				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
     				}
-
-        			//flag reload of folder listing
-    				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
     			}
     		}
 		} else if (formData.containsKey("cancelBtn")) {
@@ -175,6 +174,10 @@ public class AddEntryController extends SAbstractController {
 
 		}
 			
+	}
+	private void setupShowSuccess(ActionResponse response, Long binderId, Long userId) {
+		//return to view profile
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SUCCESS);
 	}
 	private void setupReloadBinder(ActionResponse response, Long folderId) {
 		//return to view entry
