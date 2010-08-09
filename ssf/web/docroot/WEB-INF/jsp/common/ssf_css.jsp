@@ -4452,7 +4452,7 @@ div.ssPageNavi {
 	padding-left: 10px;
 	padding-top: 3px;
 	padding-bottom: 3px;
-	background-color: #E9F1F1;
+	background-color: #ebf5f5; /* teal 5*/
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
