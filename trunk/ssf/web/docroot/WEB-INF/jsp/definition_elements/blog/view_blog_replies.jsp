@@ -50,29 +50,30 @@
 <c:if test="${!thisEntryIsEntry && ssDefinitionEntry._entryType == 'entry'}" >
 <div class="ss_clear"></div>
 <div class="ss_blog_footer">
-<ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
-	offsetX="0" offsetY="8" 
-	title="<ssf:nlt tag="helpSpot.moreBlogTools"/>">
-</ssHelpSpot>
-<ul class="ss_nobullet">
-<c:if test="${!empty ss_blog_reply_url}">
-<li>
-<a href="${ss_blog_reply_url}" 
-  onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry._docId}');return false;"
-  <ssf:title tag="title.add.comment" />
-  ><span><img src="<html:imagesPath/>icons/add_comment.gif"/><ssf:nlt tag="blog.addComment"/></span></a>
-</li>
-</c:if>
-<li>
-<a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');return false;"
-<ssf:title tag="title.view.comments">
-	<ssf:param name="value" value="${ssDefinitionEntry._totalReplyCount}" />
-</ssf:title>
-><span><img src="<html:imagesPath/>icons/view_something.gif"/><ssf:nlt tag="blog.viewComments"/>
-[<span style="padding:0px !important;" 
-  id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}"
->${ssDefinitionEntry._totalReplyCount}</span>]</span></a>
-</li>
+	<ssHelpSpot helpId="workspaces_folders/misc_tools/more_blog_tools" 
+		offsetX="0" offsetY="8" 
+		title="<ssf:nlt tag="helpSpot.moreBlogTools"/>">
+	</ssHelpSpot>
+
+	<ul class="ss_nobullet">
+	<c:if test="${!empty ss_blog_reply_url}">
+	<li>
+		<a href="${ss_blog_reply_url}" 
+		  onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry._docId}');return false;"
+		  <ssf:title tag="title.add.comment" />
+		  ><span><img src="<html:imagesPath/>icons/add_comment.gif"/><ssf:nlt tag="blog.addComment"/></span></a>
+	</li>
+	</c:if>
+	<li>
+		<a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry._docId}');return false;"
+		<ssf:title tag="title.view.comments">
+			<ssf:param name="value" value="${ssDefinitionEntry._totalReplyCount}" />
+		</ssf:title>
+		><span><img src="<html:imagesPath/>icons/view_something.gif"/><ssf:nlt tag="blog.viewComments"/>
+		[<span style="padding:0px !important;" 
+		  id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry._docId}"
+		>${ssDefinitionEntry._totalReplyCount}</span>]</span></a>
+	</li>
 <c:if test="${!empty ssUser.emailAddress}">
 	<li>
 	<a href="<ssf:url adapter="true" 
