@@ -1755,6 +1755,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>textMaxChars</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>stripHtml</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

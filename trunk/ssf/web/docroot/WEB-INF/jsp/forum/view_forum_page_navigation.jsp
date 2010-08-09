@@ -38,6 +38,10 @@
 <c:if test="${!empty ssPageCount}">
 <c:if test="${ssPageLast == '0'}"><c:set var="ssPageLast" value="1" scope="request"/></c:if>
 
+<c:if test="${empty ssFolderColumns['number']}">
+  <c:set var="ssForumPageNav_HideGoBox" value="true" scope="request" />
+</c:if>
+
 <ssf:skipLink tag='<%= NLT.get("skip.paging.links") %>' id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
