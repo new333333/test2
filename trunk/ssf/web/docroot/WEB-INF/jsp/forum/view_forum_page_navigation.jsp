@@ -38,11 +38,23 @@
 <c:if test="${!empty ssPageCount}">
 <c:if test="${ssPageLast == '0'}"><c:set var="ssPageLast" value="1" scope="request"/></c:if>
 
-<c:if test="${empty ssFolderColumns['number']}">
-  <c:set var="ssForumPageNav_HideGoBox" value="true" scope="request" />
-</c:if>
-
 <ssf:skipLink tag='<%= NLT.get("skip.paging.links") %>' id="navigationLinks_${renderResponse.namespace}">
+
+<script type="text/javascript">
+//Routine called when "find photo" is clicked
+function ss_clickGoToEntry_${renderResponse.namespace}(id) {
+	var url = "<ssf:url     
+	    adapter="true" 
+	    portletName="ss_forum" 
+	    folderId="${ssBinder.id}" 
+	    action="view_folder_entry" 
+	    entryId="ss_entryIdPlaceholder" 
+	    actionUrl="true" ></ssf:url>";
+	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
+	ss_loadEntryUrl(url, id, '${ssBinder.id}', 'folderEntry', '${renderResponse.namespace}', 'no')
+	return false;
+}
+</script>
 
 <c:if test="${ssConfigJspStyle != 'template'}">
 <div class="ss_pagination ss_style">
@@ -78,12 +90,16 @@
 							name="entryViewStyle" value="full"/><ssf:param 
 							name="operation" value="go_to_entry"/></ssf:url>" >
 							<c:if test="${ssBinder.entityType != 'profiles'}">
-								<input name="ssGoToEntry" id="ssGoToEntry${renderResponse.namespace}" size="10" 
-								  type="text" class="ss_paginationTextBox" />&nbsp;
-								<a class="ss_tinyButton" href="javascript: ;" 
-								<ssf:title tag="entry.goTo" />
-								onClick="ss_clickGoToEntry_${renderResponse.namespace}('ss_goToEntryForm_${renderResponse.namespace}');return false;"
-								><ssf:nlt tag="button.go"/></a>
+							   <ssf:find formName="ss_goToEntryForm_${renderResponse.namespace}" 
+							    formElement="searchTitle" 
+							    type="entries"
+							    width="160px" 
+							    binderId="${ssBinder.id}"
+							    searchSubFolders="false"
+								showFolderTitles="false"
+							    singleItem="true"
+							    clickRoutine="ss_clickGoToEntry_${renderResponse.namespace}"/> 
+						       <input type="hidden" name="searchTitle"/>
 							</c:if>
 							<c:if test="${ssBinder.entityType == 'profiles'}">
 							  <ssf:find type="user"
