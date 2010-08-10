@@ -473,9 +473,10 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 		if (self.window != self.top) {
 			ss_debug('Not at top window')
 			//See if we are in an iframe inside a portlet 
-			var windowName = self.window.name    
+			var windowName = self.window.name  
 			if ((windowName.indexOf("ss_workareaIframe") == 0) ||
-				(windowName.indexOf("gwtContentIframe")  == 0)) {
+					(windowName.indexOf("gwtContentIframe")  == 0) ||
+					(windowName.indexOf("adminContentControl")  == 0)) {
 				//This is inside the workarea iframe, just let the url be called
 				return true;
 			} else {
