@@ -113,7 +113,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* TOP PART OF DISCUSSION TOPIC PAGE */	
 	
 #ss_diss_inset {
-	width:95%;
+	width:99%;
 	}
 #ss_diss_top{
 	/* width: 90%; */
@@ -450,20 +450,16 @@ a.ss_new_thread:hover {
 	-webkit-border-radius: 3px;
 	}	
 .ss_navbar_new {
+	color: #fff;
 	font-family: Arial;
 	font-size: 11px;
 	text-align: center;
 	font-weight: bold !important;
-	border:dotted 1px #000 !important; 
 	padding:2px 5px 2px 5px;
-	background-color: #CCDFDE !important;
 	white-space: nowrap;
 	}
-.ss_navbar_new a {
-	color: #333 !important;
-	}	
 .ss_navbar_new a:hover {
-	color: #000 !important;
+	color: #fff !important;
 	}	
 .ss_navbar_padRt {
 	padding-right: 8px;
