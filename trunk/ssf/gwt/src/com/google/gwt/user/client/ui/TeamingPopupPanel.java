@@ -32,6 +32,10 @@
  */
 package com.google.gwt.user.client.ui;
 
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.EventTarget;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
@@ -67,5 +71,40 @@ public class TeamingPopupPanel extends PopupPanel {
 	 */
 	public void setAnimationTypeToRollDown() {
 		setAnimationType(PopupPanel.AnimationType.ROLL_DOWN);
+	}
+
+	/*
+	 * Overrides PopupPanel.onPreviewNativeEvent() to address an issue
+	 * with PopupPanel's in FF closing with auto hide if the user
+	 * scrolls them by clicking the browser's scroll bar.
+	 * 
+	 * Note:  This was implemented as a fix for Bugzilla bug#628120.
+	 */
+	protected void onPreviewNativeEvent(NativePreviewEvent nativeEvent) {
+		// Is this an auto hide PopupPanel?
+		if (isAutoHideEnabled()) {
+			// Yes!  Is this mouse event?
+		    Event event = Event.as(nativeEvent.getNativeEvent());
+		    int type = event.getTypeInt();
+		    if (0 != (type & Event.MOUSEEVENTS)) {
+				// Yes!  Is it targeted to the root <HTML>?
+			    EventTarget target = event.getEventTarget();
+			    Element element = Element.as(target);
+				String tagName = element.getTagName();
+				if (tagName.equalsIgnoreCase("html")) {
+					// Yes!  Then we don't want the PopupPanel to have it.
+					// On FF, if it gets it, it won't let the user scroll
+					// by clicking on the scroll bar.
+					nativeEvent.consume();
+					nativeEvent.cancel();
+					
+					return;
+				}
+		    }
+		}
+		
+		// If we get here, we need to pass the event on through the
+		// PopupPanel's handler.
+		super.onPreviewNativeEvent(nativeEvent);
 	}
 }
