@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.module.mail;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -56,11 +57,16 @@ import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 
 
+/**
+ * 
+ * @author ?
+ */
 public class MimeNotifyPreparator extends AbstractMailPreparator {
 	EmailFormatter processor;
 	Binder binder;
@@ -79,6 +85,16 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	boolean sendVTODO;
 	IcalModule icalModule;
 	Notify notify;
+	
+	/**
+	 * Class constructor.
+	 * 
+	 * @param processor
+	 * @param binder
+	 * @param startDate
+	 * @param logger
+	 * @param sendVTODO
+	 */
 	public MimeNotifyPreparator(EmailFormatter processor, Binder binder, Date startDate, Log logger, boolean sendVTODO) {
 		super(logger);
 		this.processor = processor;
@@ -87,43 +103,122 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		this.sendVTODO = sendVTODO;
 		icalModule = (IcalModule)SpringContextUtil.getBean("icalModule");
 	}
+	
+	/**
+	 * Stores the CC: addresses to send to.
+	 * 
+	 * @param ccAddrs
+	 */
 	public void setCcAddrs(Collection<String> ccAddrs) {
 		this.ccAddrs = MiscUtil.validateEmailAddressCollection(MailModule.CC, ccAddrs);			
 	}
+	
+	/**
+	 * Stores the BCC: addresses to send to.
+	 * 
+	 * @param bccAddrs
+	 */
 	public void setBccAddrs(Collection<String> bccAddrs) {
 		this.bccAddrs = MiscUtil.validateEmailAddressCollection(MailModule.BCC, bccAddrs);			
 	}
+	
+	/**
+	 * Stores the TO: addresses to send to.
+	 * 
+	 * @param toAddrs
+	 */
 	public void setToAddrs(Collection<String> toAddrs) {
 		this.toAddrs = MiscUtil.validateEmailAddressCollection(MailModule.TO, toAddrs);			
 	}
+
+	/**
+	 * Stores the entry the notification is being sent about.
+	 * 
+	 * @param entry
+	 */
 	public void setEntry(Entry entry) {
 		this.entry = entry;		
 	}
+	
+	/**
+	 * Stores the start date of the notification.
+	 * 
+	 * @param startDate
+	 */
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	
+	/**
+	 * Stores whether or not attachments are to be included in the
+	 * notification.
+	 * 
+	 * @param sendAttachments
+	 */
 	public void setSendAttachments(boolean sendAttachments) {
 		this.sendAttachments = sendAttachments;
 	}
+	
+	/**
+	 * Stores whether or not the from address is supposed to be hidden.
+	 * 
+	 * @param redacted
+	 */
 	public void setRedacted(boolean redacted) {
 		this.redacted = redacted;
 	}
+	
+	/**
+	 * Stores a Collection of entries the notification is being sent
+	 * about.
+	 * 
+	 * @param entries
+	 */
 	@SuppressWarnings("unchecked")
 	public void setEntries(Collection entries) {
 		this.entries = entries;
 	}
+	
+	/**
+	 * Stores the locale the notification is to be sent in.
+	 * 
+	 * @param locale
+	 */
 	public void setLocale(Locale locale) {
 		this.locale = locale;
 	}
+	
+	/**
+	 * Stores the time zone the notification is to be sent from.
+	 * 
+	 * @param timezone
+	 */
 	public void setTimeZone(String timezone) {			
 		this.timezone = TimeZoneHelper.getTimeZone(timezone);
 	}
+	
+	/**
+	 * Stores the type of notification to be sent.
+	 * 
+	 * @param type
+	 */
 	public void setType(Notify.NotifyType type) {
 		messageType = type;
 	}
+	
+	/**
+	 * Stores the subject to include in the notification.
+	 * 
+	 * @param helper
+	 * 
+	 * @throws MessagingException
+	 */
 	protected void setSubject(MimeMessageHelper helper) throws MessagingException {
 		helper.setSubject(processor.getSubject(binder, entry, notify));
 	}
+	
+	/*
+	 */
 	protected void setFrom(MimeMessageHelper helper) throws MessagingException {
 		String from = processor.getFrom(binder, notify);
 		if (Validator.isNull(from)) {
@@ -131,49 +226,68 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		}
 		helper.setFrom(from);
 	}
+	
+	/*
+	 */
 	protected void setCcAddrs(MimeMessageHelper helper) throws MessagingException {
 		if (null != ccAddrs) {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
 			helper.setCc(ccAddrs.toArray(new String[ccAddrs.size()]));
 		}
 	}
+	
+	/*
+	 */
 	protected void setBccAddrs(MimeMessageHelper helper) throws MessagingException {
 		if (null != bccAddrs) {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
 			helper.setBcc(bccAddrs.toArray(new String[bccAddrs.size()]));
 		}
 	}
+	
+	/*
+	 */
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
 		if (null != toAddrs) {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
 			helper.setTo(toAddrs.toArray(new String[toAddrs.size()]));
 		}
 	}
+	
+	/**
+	 * Constructs the MimeMessage to be sent.
+	 * 
+	 * @param mimeMessage
+	 */
 	@SuppressWarnings("unchecked")
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
-		//make sure nothing saved yet
+		// Make sure nothing saved yet.
 		notify = new Notify(messageType, locale, timezone, startDate);
 		notify.setAttachmentsIncluded(sendAttachments);
 		notify.setRedacted(redacted);
 				
 		message = null;
 		Map result=null;
-		//set up events here
-		if (!messageType.equals(Notify.NotifyType.text)) {
-			if (entry != null) {
-				result = processor.buildMessage(binder, entry, notify);
-			} else {
-				result = processor.buildMessage(binder, entries, notify);
-			}
-		}
-		int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 
+		// If we're not sending a text message...
+		boolean textMessage = messageType.equals(Notify.NotifyType.text);
+		if (!textMessage) {
+			// ...build the message as appropriate for the entry or
+			// ...entries.
+			if (entry != null)
+			     result = processor.buildMessage(binder, entry,   notify);
+			else result = processor.buildMessage(binder, entries, notify);
+		}
+		
+		// Set up events here.
+		int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 		if (notify.getEvents() != null && notify.getEvents().entrySet().size() > 0) {
-			// Need to attach icalendar as alternative content,
-			// if there is more then one icals then
-			// all are merged and add ones to email as alternative content
+			// Need to attach iCalendar as alternative content.  If
+			// there is more then one iCal then, all are merged and
+			// add ones to email as alternative content.
 			multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 		}
+		
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		setSubject(helper);
@@ -181,22 +295,52 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		setBccAddrs(helper);
 		setToAddrs(helper);
 		setFrom(helper);
-		
-		if (!messageType.equals(Notify.NotifyType.text)) {
-			//use MailHelper so alternative part added for calendars
-			setText((String)result.get(EmailFormatter.TEXT), (String)result.get(EmailFormatter.HTML), helper);
-			if (sendAttachments) prepareAttachments(notify.getAttachments(), helper);
+
+		// Are we sending a text message?
+		if (textMessage) {
+			// Yes!  We only send a plain text MIME part that contains
+			// permalink URLs to the entries we sending notification
+			// about.
+			StringBuffer plainText = new StringBuffer("");
+			Collection msgEntries;
+			if (entry != null) {
+				msgEntries = new ArrayList();
+				msgEntries.add(entry);
+			} else {
+				msgEntries = entries;
+			}
+			if ((null != msgEntries) && (!(msgEntries.isEmpty()))) {
+				int count = 0;
+				for (Iterator i = msgEntries.iterator(); i.hasNext(); count += 1) {
+					if (0 < count) {
+						plainText.append("\r\n");
+					}
+					plainText.append(PermaLinkUtil.getPermalink(((Entry) i.next())));
+				}
+			}
+			setText(plainText.toString(), null, helper);
+			
+		} else {
+			// No, we aren't sending a text message!  Use MailHelper so
+			// the alternative part get added for calendars.
+			setText(
+				((String) result.get(EmailFormatter.TEXT)),
+				((String) result.get(EmailFormatter.HTML)),
+				helper);
+			if (sendAttachments) {
+				prepareAttachments(notify.getAttachments(), helper);
+			}
 			notify.clearAttachments();
 			prepareICalendars(helper);
-		} else {
-			//just a subject line
-			setText("", "", helper);
 		}
 		
-		//save message incase cannot connect and need to resend;
+		// Finally, save the message in case we cannot connect and need
+		// to re-send it.
 		message = mimeMessage;
 	}
 	
+	/*
+	 */
 	@SuppressWarnings("unchecked")
 	protected void prepareICalendars(MimeMessageHelper helper) throws MessagingException {
 		int c = 0;
