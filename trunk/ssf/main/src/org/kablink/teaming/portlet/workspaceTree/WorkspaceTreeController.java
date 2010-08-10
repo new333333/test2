@@ -98,9 +98,9 @@ public class WorkspaceTreeController extends SAbstractController  {
         		accessible_simple_ui && 
         		ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
         	MapInputData  inputData = new MapInputData (updates);
-        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 			try {
 				getProfileModule().modifyEntry(user.getId(), inputData);
 			} catch(WriteEntryDataException e) {
@@ -108,9 +108,9 @@ public class WorkspaceTreeController extends SAbstractController  {
         } else if (user != null && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
         		(user.getDisplayStyle() == null || user.getDisplayStyle().equals(""))) {
 			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
         	MapInputData  inputData = new MapInputData (updates);
-        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 			try {
 				getProfileModule().modifyEntry(user.getId(), inputData);
 			} catch(WriteEntryDataException e) {

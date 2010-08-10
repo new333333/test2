@@ -64,7 +64,7 @@
 <div id="ss_showentrydiv${renderResponse.namespace}" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden; display:none;">
-  <c:if test="${ssUser.displayStyle != 'newpage'}">
+  <c:if test="${ssUser.displayStyle != 'newpage' && ssUser.displayStyle != 'accessible'}}">
 	  <ssf:box>
 	    <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />
 	    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
@@ -97,7 +97,7 @@
 	  </div>
 	  </ssf:box>
   </c:if>
-  <c:if test="${ssUser.displayStyle == 'newpage'}">
+  <c:if test="${ssUser.displayStyle == 'newpage' || ssUser.displayStyle == 'accessible'}}">
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
 	    <div id="ss_iframe_holder_div${renderResponse.namespace}">
 	      <div class="ss_newpage_box_header" style="width:100%;">

@@ -353,6 +353,7 @@ public interface ObjectKeys {
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
 
     //User properties
+    public static final String USER_DISPLAY_STYLE_DEFAULT = "newpage";
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
     public static final String USER_DISPLAY_STYLE_NEWPAGE = "newpage";

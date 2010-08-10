@@ -1473,7 +1473,7 @@ public class ListFolderHelper {
 			RenderResponse response, Folder folder, String forumId, Map model, String viewType) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		
         String topFolderId = folder.getId().toString();
 		if (!folder.isTop()) {

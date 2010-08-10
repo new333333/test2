@@ -123,7 +123,7 @@ var ss_userDisplayStyle = "${ssUser.displayStyle}";
 </c:if>
 <c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'accessible'}">
 <% if (!accessible_simple_ui) { %>
-	ss_userDisplayStyle = "iframe";	
+	ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";	
 <% } %>
 </c:if>
 <c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'popup'}">
