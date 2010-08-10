@@ -40,7 +40,7 @@
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getDisplayStyle();
 if (displayStyle == null || displayStyle.equals("")) {
-	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 }
 
 String ssLoadEntryUrl = (String) renderRequest.getAttribute("ssLoadEntryUrl");

@@ -121,8 +121,8 @@ public class PersonalPreferencesDlg extends DlgBox
 			// Create a listbox that will hold all the possible values for the "Entry Display Style".
 			m_entryDisplayStyleListbox = new ListBox( false );
 			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
-			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
+			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
 			++nextRow;

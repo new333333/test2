@@ -1173,7 +1173,7 @@ public class BinderHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("")) {
-			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		}
 		String viewListingJspName;
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
@@ -1289,7 +1289,7 @@ public class BinderHelper {
 		if (displayStyle == null || displayStyle.equals("") || 
 				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
 				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
-			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
 		
@@ -1304,7 +1304,7 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
 					ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 			} else {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 			}
@@ -3697,7 +3697,7 @@ public class BinderHelper {
 			RenderResponse response, Toolbar folderActionsToolbar, String forumId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
         
 		Map qualifiers;
 		PortletURL url;

@@ -293,7 +293,7 @@ public class ProfilesBinderHelper {
 			ProfileBinder binder, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
         String binderId = binder.getId().toString();
         
 		//Build the toolbar arrays
@@ -426,7 +426,7 @@ public class ProfilesBinderHelper {
 	protected static Toolbar buildViewEntryToolbar (AllModulesInjected bs, RenderRequest request, RenderResponse response, ProfileBinder binder) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		if (bs.getProfileModule().testAccess(binder, ProfileOperation.addEntry)) {
