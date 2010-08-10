@@ -52,14 +52,14 @@
 <tr>
 <c:choose>
   <c:when test="${ss_defFam == 'entry'}">
-		<td valign="middle" nowrap colspan="2">  
+		<td class="ss_nowrap" valign="middle" colspan="2" align="right">  
 		  <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 		</td>
   </c:when>
   <c:otherwise>
-		<td valign="middle" nowrap>  
+		<td class="ss_nowrap" valign="middle" align="right">  
 		 <ssHelpSpot helpId="workspaces_folders/entries/rating" offsetX="-20" offsetY="-3" 
   			title="<ssf:nlt tag="helpSpot.rating"/>"></ssHelpSpot>
 			<%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
@@ -68,7 +68,7 @@
 </c:choose> 
 </tr>
 <tr>
- <td valign="middle" nowrap align="right"> 
+ <td class="ss_nowrap" valign="middle" align="right"> 
 <c:if test="${ssDefinitionEntry.top}">
 
    <c:if test="${!empty ssDefinitionEntry.popularity}">

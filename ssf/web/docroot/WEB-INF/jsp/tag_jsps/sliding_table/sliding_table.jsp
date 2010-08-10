@@ -235,7 +235,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" class="ss_style ss_sliding_table_column"  
-  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;padding-left:1px;">
+  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;padding-left:0px;">
 <table cellspacing="0" cellpadding="2" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td class="<%= rowStyle %>" ><div style="position:absolute; padding-left:4px;"><a id="drag<%= String.valueOf(iCol + 1) %>" 
@@ -311,5 +311,5 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <input type="hidden" name="column_positions">
 </form>
 <div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup" 
-  style="z-index: <%= slidingTableInfoZ %>; overflow:hidden; padding-left:2px;"></div>
+  style="z-index: <%= slidingTableInfoZ %>; overflow:hidden; padding-left:1px;"></div>
 <div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden; overflow:hidden;"></div>
