@@ -1133,7 +1133,10 @@ img.ss_sliding_table_column_image {
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
-  background-color: #FAFAFA !important;
+  background-color: #ebf5f5 !important;
+}
+td.ss_highlightEntry a span {
+  color: #135c8f !important;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
