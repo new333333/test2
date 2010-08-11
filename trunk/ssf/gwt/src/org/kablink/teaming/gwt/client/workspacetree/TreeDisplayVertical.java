@@ -73,7 +73,8 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
-	private FlowPanel				m_rootPanel;		//
+	private BusyInfo				m_busyInfo;			// Stores a BusyInfo while we're busy switching contexts.
+	private FlowPanel				m_rootPanel;		// The top level FlowPanel containing the sidebar tree's contents.
 	private HashMap<String,Integer> m_renderDepths;		// A map of the depths the Binder's are are displayed at.
 	private long 					m_selectedBinderId;	// The ID of the currently selected binder.
 
@@ -257,6 +258,49 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			selectorPanel_New.addClassName("workspaceTreeControlRowHover");
 		}
 	}
+
+	/*
+	 * Inner class used to track information about the sidebar tree
+	 * being in a busy state.
+	 */
+	private static class BusyInfo {
+		private TreeInfo m_busyTI;	// TreeInfo running a busy animation, if there is one.  May be null.
+
+		/**
+		 * Class constructor.
+		 */
+		public BusyInfo() {
+			// Nothing to do.
+		}
+		
+		/**
+		 * Returns any TreeInfo associated with this BusyInfo object.
+		 * 
+		 * @return
+		 */
+		public TreeInfo getBusyTI() {
+			return m_busyTI;
+		}
+
+		/**
+		 * Returns true if this BusyInfo is tracking a TreeInfo and
+		 * false otherwise.
+		 * 
+		 * @return
+		 */
+		public boolean hasBusyTI() {
+			return (null != m_busyTI);
+		}
+
+		/**
+		 * Stores a TreeInfo in this BusyInfo object.
+		 * 
+		 * @param busyTI
+		 */
+		public void setBusyTI(TreeInfo busyTI) {
+			m_busyTI = busyTI;
+		}
+	}
 	
 	/**
 	 * Constructor method.
@@ -307,6 +351,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		return reply;
 	}
 
+	/**
+	 * Returns true if the context can be changed and false otherwise.
+	 * 
+	 * Overrides TreeDisplayBase.canChangeContext().
+	 * 
+	 * @return
+	 */
+	@Override
+	boolean canChangeContext() {
+		// We can only change contexts if we're not already in the
+		// process of changing contexts.
+		return (null == m_busyInfo);
+	}
+	
 	/*
 	 * Removes the widgets from a Grid row.
 	 */
@@ -315,6 +373,29 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		grid.remove(grid.getWidget(row, 1));
 	}
 
+	/**
+	 * Called after a new context has been loaded.
+	 * 
+	 * Overrides TreeDisplayBase.contextLoaded().
+	 * 
+	 * @param binderId
+	 */
+	@Override
+	public void contextLoaded(String binderId) {
+		// Are we tracking a BusyInfo indicating that we're in the
+		// middle of a context switch?
+		if (null != m_busyInfo) {
+			// Yes!  Does it contain a TreeInfo?
+			if (m_busyInfo.hasBusyTI()) {
+				// Yes!  Restore its default image.
+				setBinderImageResource(m_busyInfo.getBusyTI());
+			}
+			
+			// ...and forget about it.
+			m_busyInfo = null;
+		}
+	}
+	
 	/*
 	 * Returns the depth that TreeInfo was last rendered at.
 	 */
@@ -504,26 +585,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		Grid selectorGrid = new Grid(1, 3);
 		selectorGrid.setCellSpacing(0);
 		selectorGrid.setCellPadding(0);
-		Image binderImg;
-		String binderIconName = ti.getBinderIconName();
-		if (GwtClientHelper.hasString(binderIconName)) {
-			binderImg = new Image();
-			binderImg.setUrl(getImagesPath() + binderIconName);
-		}
-		else {
-			ImageResource binderImgRes = ti.getBinderImage();
-			if (null == binderImgRes) {
-				binderImgRes = getImages().spacer_1px();
-				binderImg = new Image(binderImgRes);
-			}
-			else {
-				binderImg = new Image(binderImgRes);
-			}
-			binderImg.setVisibleRect(0, 0, BINDER_WIDTH_INT, BINDER_HEIGHT_INT);
-		}
+		Image binderImg = new Image();
+		ti.setBinderUIImage(binderImg);
+		setBinderImageResource(ti);
 		binderImg.addStyleName("workspaceTreeBinderImg");
-		binderImg.setWidth(BINDER_WIDTH);
-		binderImg.setHeight(BINDER_HEIGHT);
 		selectorGrid.setWidget(0, 0, binderImg);
 		Widget selectorLabel = getSelectorLabel(ti);
 		selectorGrid.setWidget(0, 1, selectorLabel);
@@ -691,7 +756,33 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Always use the initial form of the method.
 		reRootTree(newRootBinderId, null);
 	}
-	
+
+	/*
+	 * Sets the image resource on a binder image based on its TreeInfo.
+	 */
+	private void setBinderImageResource(TreeInfo ti) {
+		Image binderImg = ((Image) ti.getBinderUIImage());
+		if (null != binderImg) {
+			String binderIconName = ti.getBinderIconName();
+			if (GwtClientHelper.hasString(binderIconName)) {
+				binderImg.setUrl(getImagesPath() + binderIconName);
+			}
+			else {
+				ImageResource binderImgRes = ti.getBinderImage();
+				if (null == binderImgRes) {
+					binderImgRes = getImages().spacer_1px();
+					binderImg.setResource(binderImgRes);
+				}
+				else {
+					binderImg.setResource(binderImgRes);
+				}
+				binderImg.setVisibleRect(0, 0, BINDER_WIDTH_INT, BINDER_HEIGHT_INT);
+			}
+			binderImg.setWidth(BINDER_WIDTH);
+			binderImg.setHeight(BINDER_HEIGHT);
+		}
+	}
+		
 	/**
 	 * Called to change the binder being displayed by the
 	 * WorkspaceTreeControl.
@@ -774,5 +865,47 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void setSelectedBinderId(String selectedBinderId) {
 		m_selectedBinderId = Long.parseLong(selectedBinderId);
+	}
+	
+	/**
+	 * Called when a selection change is in progress.
+	 *
+	 * Shows a busy animation icon while a context switch is in
+	 * progress.
+	 * 
+	 * Overrides TreeDisplayBase.showBusyBinder().
+	 * 
+	 * @param osbInfo
+	 */
+	@Override
+	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
+		// Are we already in the process of changing contexts?
+		if (canChangeContext()) {			
+			// No!  We will be now.
+			m_busyInfo = new BusyInfo();
+			
+			// Can find the TreeInfo for the binder?
+			TreeInfo ti = null;
+			TreeInfo rootTI = getRootTreeInfo();
+			if (osbInfo.isTrash()) {
+				ti = TreeInfo.findBinderTrash(rootTI);
+			}
+			if (null == ti) {
+				String binderId = osbInfo.getBinderId().toString();
+				ti = TreeInfo.findBinderTI(rootTI, binderId);
+			}
+			if (null != ti) {
+				// Yes!  Set the busy animation image for this
+				// TreeInfo's binder...
+				Image binderImg = ((Image) ti.getBinderUIImage());
+				if (null != binderImg) {
+					binderImg.setResource(getImages().busyAnimation());
+				}
+				
+				// ...and keep track of as being the one that we're
+				// ...switching to.
+				m_busyInfo.setBusyTI(ti);
+			}
+		}
 	}
 }

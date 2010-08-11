@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.workspacetree;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -68,6 +67,10 @@ public class TreeInfo implements IsSerializable {
 	private List<Long> m_bucketList;
 	private String m_bucketFirstTitle;
 	private String m_bucketLastTitle;
+
+	// Used by the sidebar tree to cache the Image object used for the
+	// binder.
+	private transient Object m_binderUIImg;
 		
 	/**
 	 * Constructor method.
@@ -138,10 +141,9 @@ public class TreeInfo implements IsSerializable {
 		List<TreeInfo> childBindersList = ti.getChildBindersList();
 		if ((null != childBindersList) && (0 < childBindersList.size())) {
 			// ...scan them...
-			for (Iterator<TreeInfo> tii = childBindersList.iterator(); tii.hasNext(); ) {
+			for (TreeInfo childTI: childBindersList) {
 				// ...and if one of them references the Binder ID in
 				// ...question...
-				TreeInfo childTI = tii.next();
 				TreeInfo reply = findBinderTI(childTI, binderId);
 				if (null != reply) {
 					// ...return it.
@@ -151,6 +153,40 @@ public class TreeInfo implements IsSerializable {
 		}
 
 		// If we get here, the binder ID was nowhere to be found in the
+		// TreeInfo.  Return null.
+		return null;
+	}
+
+	/**
+	 * Returns the TreeInfo of the first trash binder found in another
+	 * TreeInfo.
+	 * 
+	 * @param ti
+	 * 
+	 * @return
+	 */
+	public static TreeInfo findBinderTrash(TreeInfo ti) {
+		// If this TreeInfo is a trash binder...
+		if (ti.getBinderInfo().isBinderTrash()) {
+			// ...return it.
+			return ti;
+		}
+		
+		// Otherwise, if the TreeInfo has child Binder's...
+		List<TreeInfo> childBindersList = ti.getChildBindersList();
+		if ((null != childBindersList) && (0 < childBindersList.size())) {
+			// ...scan them...
+			for (TreeInfo childTI: childBindersList) {
+				// ...and if one of them is a trash binder...
+				TreeInfo reply = findBinderTrash(childTI);
+				if (null != reply) {
+					// ...return it.
+					return reply;
+				}
+			}
+		}
+		
+		// If we get here, we could not find a trash binder in the
 		// TreeInfo.  Return null.
 		return null;
 	}
@@ -273,6 +309,15 @@ public class TreeInfo implements IsSerializable {
 		return reply;
 	}
 
+	/**
+	 * Returns this TreeInfo's UI image.
+	 * 
+	 * @return
+	 */
+	public Object getBinderUIImage() {
+		return m_binderUIImg;
+	}
+	
 	/**
 	 * Returns the List<Long> of the Binder ID's in this bucket.
 	 * 
@@ -477,6 +522,15 @@ public class TreeInfo implements IsSerializable {
 		m_binderInfo = binderInfo;
 	}
 
+	/**
+	 * Stores the TreeInfo's UI image.
+	 * 
+	 * @param binderUIImg
+	 */
+	public void setBinderUIImage(Object binderUIImg) {
+		m_binderUIImg = binderUIImg;
+	}
+	
 	/**
 	 * Stores information about a bucket of Binders.
 	 * 

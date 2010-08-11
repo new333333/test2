@@ -54,6 +54,10 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource bucket();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/busyanim16b.gif")
+	public ImageResource busyAnimation();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_calendar.png")
 	public ImageResource folder_calendar();
 	
