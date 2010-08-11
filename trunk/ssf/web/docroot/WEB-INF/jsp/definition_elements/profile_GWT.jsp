@@ -47,7 +47,16 @@
 	    <c:set var="ssDiskQuota" ><fmt:formatNumber value="${ss_diskQuotaUserMaximum/1048576}" maxFractionDigits="0"/></c:set>
 	    <c:set var="ssDiskSpaceUsed" ><fmt:formatNumber value="${ssUser.diskSpaceUsed/1048576}" maxFractionDigits="2"/></c:set>
 	</c:if>
-  </c:if>
+	<c:set var="ss_quotaMessage" value="" />
+	<c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
+	<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+		    ><fmt:formatNumber value="${(ss_diskQuotaUserMaximum - ssUser.diskSpaceUsed)/1048576}" 
+		    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+	</c:if>
+	<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
+	<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+	</c:if> 
+ </c:if>
 </ssf:ifLoggedIn>
 
 <script type="text/javascript" language="javascript">
@@ -68,6 +77,7 @@
 							name="profile" value="1" /></ssf:url>',
 				quotasUserMaximum : '${ssDiskQuota}',
 				quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
+				quotasDiskMessage : '${ss_quotaMessage}',
 	            modifyUrl : '${ss_modifyEntryAdapter}',
 				isQuotasEnabled : ${ss_quotasEnabled},
 				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
