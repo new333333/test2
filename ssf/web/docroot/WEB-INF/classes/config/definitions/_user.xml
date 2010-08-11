@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="134" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
+<definition name="_user" caption="__definition_default_user" type="7" nextId="136" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007"> 
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="profileEntryFormForm" caption="__form" id="2"> 
@@ -200,18 +200,26 @@
             <property name="width" value=""/> 
           </properties> 
         </item>  
-        <item name="profileConferencingID" caption="__conferencingID" type="data" category="profileEntryData" display="form" id="132">
+        <item name="profileConferencingID" caption="__conferencingID" type="data" category="profileEntryData" display="form" id="132"> 
+          <properties> 
+            <property name="caption" value="__conferencingID"/>  
+            <property name="name" value="conferencingID"/>  
+            <property name="width" value=""/> 
+          </properties> 
+        </item>  
+        <item name="profileConferencingPwd" caption="__conferencingPwd" type="data" category="profileEntryData" display="form" id="133"> 
+          <properties> 
+            <property name="caption" value="__conferencingPwd"/>  
+            <property name="name" value="conferencingPwd"/>  
+            <property name="width" value=""/> 
+          </properties> 
+        </item>  
+        <item name="profileSkypeId" caption="__skypeId" type="data" dataType="id" category="profileEntryData" display="form" id="134">
           <properties>
-            <property name="caption" value="__conferencingID"/>
-            <property name="name" value="conferencingID"/>
+            <property name="caption" value="__skypeId"/>
+            <property name="name" value="skypeId"/>
             <property name="width" value=""/>
-          </properties>
-        </item>
-        <item name="profileConferencingPwd" caption="__conferencingPwd" type="data" category="profileEntryData" display="form" id="133">
-          <properties>
-            <property name="caption" value="__conferencingPwd"/>
-            <property name="name" value="conferencingPwd"/>
-            <property name="width" value=""/>
+            <property name="required" value="false"/>
           </properties>
         </item>
       </item>  
@@ -457,7 +465,13 @@
           <property name="name" value="presenceID"/>  
           <property name="width" value=""/> 
         </properties> 
-      </item> 
+      </item>  
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="135" formItem="profileSkypeId">
+        <properties>
+          <property name="caption" value="__skypeId"/>
+          <property name="name" value="skypeId"/>
+        </properties>
+      </item>
     </item>  
     <item name="profileHeadingOrgView" caption="__profile_heading_Org_div" category="userViewLayout" display="view" id="76"> 
       <properties> 
@@ -558,20 +572,21 @@
   <item name="profileEntrySimpleView" caption="__profile_entry_simple_view" id="62"> 
     <properties/>  
     <item name="profileEntrySimpleViewElements" caption="__profile_entry_simple_view_elements" id="63" display="view"> 
-      <properties> 
-        <property name="_elements" value="workPhone"/>  
-        <property name="_elements" value="mobilePhone"/>  
-        <property name="_elements" value="emailAddress"/>  
-        <property name="_elements" value="mobileEmailAddress"/>  
-        <property name="_elements" value="txtEmailAddress"/>  
-        <property name="_elements" value="instantMessageID"/> 
-      </properties>  
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" display="view" id="94" formItem="profileEntryPicture"> 
         <properties> 
           <property name="caption" value="__profile_entry_picture"/>  
           <property name="name" value="picture"/> 
         </properties> 
-      </item> 
+      </item>  
+      <properties>
+        <property name="_elements" value="workPhone"/>
+        <property name="_elements" value="mobilePhone"/>
+        <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
+        <property name="_elements" value="instantMessageID"/>
+        <property name="_elements" value="skypeId"/>
+      </properties>
     </item> 
   </item>  
   <export-mappings/>
