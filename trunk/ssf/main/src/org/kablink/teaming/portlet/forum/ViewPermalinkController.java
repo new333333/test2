@@ -441,9 +441,19 @@ public class ViewPermalinkController  extends SAbstractController {
 						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
 			 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
 					} else {
-			 			entity = getBinderModule().getBinder(workspaceId);
-			 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-			 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+			 			try {
+			 				entity = getBinderModule().getBinder(workspaceId);
+				 			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+				 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
+			 			} catch  (AccessControlException ac) {
+			 				if (WebHelper.isUserLoggedIn(request)) {
+			 					//The workspace is not accessible, so show the profile
+			 					url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
+			 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			 				} else {
+			 					throw ac;
+			 				}
+			 			}
 					}
 	 			}
 	 		}

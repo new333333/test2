@@ -1212,6 +1212,7 @@ public class WebKeys {
     public static final String SHOW_GROUP_INSTANCE_COUNT="ss_showGroupInstanceCount";
     public static final String SHOW_USER_CLOSE="ss_showUserClose";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
+    public static final String SHOW_USER_PROFILE_ENTRY="ss_showUserProfileEntry";
     public static final String SHOW_USER_WORKSPACE_PREDELETED="ss_showUserWorkspacePredeleted";
     public static final String SHOW_USER_TARGET="ss_showUserTarget";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";

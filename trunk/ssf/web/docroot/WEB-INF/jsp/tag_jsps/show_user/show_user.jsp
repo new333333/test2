@@ -40,7 +40,6 @@
 <%
 	java.util.Set ss_showUserGroupMembers = (java.util.Set) request.getAttribute("ss_showUserGroupMembers");
 %>
-
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
@@ -48,10 +47,16 @@
 
 	<c:choose>
 		<c:when test="${!ss_showUserIsGroup}">
-			<c:if test="${ss_showUserShowPresence}">
+			<c:if test="${ss_showUserShowPresence && !ss_showUserProfileEntry}">
 				<ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" 
-				  titleStyle="${ss_showUserTitleStyle}" target="${ss_showUserTarget}" workspacePreDeleted="${ss_showUserWorkspacePredeleted}" /> 
+				  titleStyle="${ss_showUserTitleStyle}" 
+				  target="${ss_showUserTarget}" 
+				  workspacePreDeleted="${ss_showUserWorkspacePredeleted}" /> 
 			</c:if>		
+			<c:if test="${ss_showUserShowPresence && ss_showUserProfileEntry}">
+			  <img border="0" align="absmiddle" style="padding-left:4px;" 
+			    src="<html:imagesPath/>pics/sym_s_white_dude.gif" />
+			</c:if>
 		</c:when>
 		<c:otherwise>
 			<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
@@ -59,10 +64,10 @@
 	</c:choose>
 	
 
-	<c:if test="${!ss_showUserShowPresence || ss_showUserIsGroup}">
+	<c:if test="${!ss_showUserShowPresence || ss_showUserIsGroup || ss_showUserProfileEntry}">
 		<c:if test="${ss_showUserUser.active}">
 			<ssf:ifadapter>
-				<c:if test="${!empty ss_showUserUser.workspaceId}">
+				<c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
 				  	<c:if test="${!ss_showUserIsGroup}">
 					  <a 
 					    <c:if test="${!empty ss_showUserTarget}">target="${ss_showUserTarget}"</c:if>
@@ -89,7 +94,7 @@
 			  		</c:otherwise>
 			  	</c:choose>	
          	  </c:if>
-         	  <c:if test="${empty ss_showUserUser.workspaceId}">
+         	  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
          	    <c:if test="${!empty ss_showUserUser.parentBinder.id}">
           	      <a href="<ssf:url     
 				    binderId="${ss_showUserUser.parentBinder.id}" 
@@ -108,7 +113,7 @@
               </c:if>		  	
 			</ssf:ifadapter>
 			<ssf:ifnotadapter>
-			  <c:if test="${!empty ss_showUserUser.workspaceId}">
+			  <c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
 			  <a 
 		  	  	<c:choose>
 				  	<c:when test="${!ss_showUserIsGroup}">
@@ -136,7 +141,7 @@
 			  		</div>
 			    </c:if>
 			  </c:if>
-			  <c:if test="${empty ss_showUserUser.workspaceId}">
+			  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
 			    <c:if test="${!empty ss_showUserUser.parentBinder.id}">
           	      <a href="<ssf:url     
 				    binderId="${ss_showUserUser.parentBinder.id}" 
@@ -162,7 +167,7 @@
 	</c:if>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
-  <c:if test="${!empty ss_showUserUser.workspaceId}">
+  <c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
   	  	<c:choose>
 		  	<c:when test="${!ss_showUserIsGroup}">  
 		  	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -179,7 +184,7 @@
 	  		</c:otherwise>
 	  	</c:choose>
   </c:if>
-  <c:if test="${empty ss_showUserUser.workspaceId}">
+  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
   <span><ssf:userTitle user="${ss_showUserUser}"/></span>
   </c:if>
 </c:if>
