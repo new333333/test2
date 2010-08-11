@@ -763,7 +763,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  						Element process = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']");
  						runAsId = WorkflowProcessUtils.getRunAsUser(process, (WorkflowSupport)entry, ws);
  						if (runAsId == null) {
- 							throw new TimerException(entry, ws, "User not found to process workflow timout");
+ 							throw new TimerException(entry, ws, "... User not found to process workflow timout. To fix this, change the folder owner to be an active user");
  						}
 	        			try {
 	        				RunasTemplate.runas(new RunasCallback() {
