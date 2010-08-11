@@ -1,4 +1,11 @@
 /* */
+
+/* general styles to override the GWT standard.css file */
+
+a, a:visited, a:hover {
+	color: #135c8f !important;
+	}
+
 /* Style used for the AdminActionControl. */
 .adminActionControl
 {
@@ -1123,20 +1130,21 @@ body, table td, select
 /* Styles for the search options dialog. */
 .searchOptionsDlg_AdvancedSearchA
 {
-	color: #ffffff;
 	cursor: pointer;
 	text-decoration: none;
 }
 .searchOptionsDlg_AdvancedSearchLabel
 {
 
-	font-size: 11px;
-	padding: 4px 8px;
+	font-size: 13px;
+	padding: 5px;
 	vertical-align: middle;
 	margin: 0px !important;
 }
 .searchOptionsDlg_AdvancedSearchPanel
 {
+		border-top: 1px solid #949494;
+		padding-top: 10px;
 }
 .searchOptionsDlg_CloseA
 {
@@ -1150,12 +1158,18 @@ body, table td, select
 }
 .searchOptionsDlg_Content
 {
-	color: #FFFFFF;
+	color: #333 !important;
 	font-size: .85em;
+	background-color: #f6f6f6;
+	margin: 0 5px 5px;
+	border-top: 1px solid #808384;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;	
 }
 .searchOptionsDlg_FindersRadio
 {
-	color: #ffffff;
 	font-size: 1em;
 	padding-right: 4px;
 }
@@ -1177,8 +1191,9 @@ body, table td, select
 }
 .searchOptionsDlg_SavedSearchesLabelPanel
 {
-	color: #ffffff;
 	font-size: 1em;
+	border-top: 1px solid #949494;
+	padding-top: 10px;
 }
 .searchOptionsDlg_SavedSearchesSelect
 {

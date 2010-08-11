@@ -160,7 +160,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private void addAdvancedSearch() {
 		// Create the button label...
 		InlineLabel asLabel = new InlineLabel(m_messages.mainMenuSearchOptionsAdvancedSearch());
-		asLabel.addStyleName("searchOptionsDlg_AdvancedSearchLabel mediumtext inside-btn2 btn-bg3 roundcornerSM");
+		asLabel.addStyleName("searchOptionsDlg_AdvancedSearchLabel");
 
 		// ...create the button Anchor...
 		Anchor asAnchor = new Anchor();
@@ -212,7 +212,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 
 		// ...and add a finder widget for it.
 		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.PERSON, 30);
-		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2");
+		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
 		m_mainPanel.add(m_finderControl);
 	}
 	
@@ -256,7 +256,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	private void addSavedSearches() {
 		// Create a label for the save search widgets...
 		FlowPanel ssLabelPanel = new FlowPanel();
-		ssLabelPanel.addStyleName("searchOptionsDlg_SavedSearchesLabelPanel mediumtext margintop3");
+		ssLabelPanel.addStyleName("searchOptionsDlg_SavedSearchesLabelPanel margintop3");
 		InlineLabel ssLabel = new InlineLabel(m_messages.mainMenuSearchOptionsSavedSearches());
 		ssLabel.addStyleName("searchOptionsDlg_SavedSearchesLabel");
 		ssLabelPanel.add(ssLabel);
@@ -264,7 +264,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 
 		// ...create the saved searches list box...
 		FlowPanel ssListPanel = new FlowPanel();
-		ssListPanel.addStyleName("searchOptionsDlg_SavedSearchesSelectPanel mediumtext margintop2");
+		ssListPanel.addStyleName("searchOptionsDlg_SavedSearchesSelectPanel margintop1");
 		ListBox ssList = new ListBox();
 		ssListPanel.add(ssList);
 		m_mainPanel.add(ssListPanel);
