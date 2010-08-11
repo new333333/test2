@@ -103,6 +103,8 @@ public class ProfileRequestInfo extends JavaScriptObject
 
 	public final native String getDeleteUserUrl() /*-{ return this.deleteUserUrl }-*/;
 
+	public final native String getQuotaMessage() /*-{ return this.quotasDiskMessage }-*/;
+	
 	/**
 	 * Is the workspace being referenced owned by the current user
 	 * @return

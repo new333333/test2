@@ -65,13 +65,16 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -422,12 +425,59 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			}
 		});
 		
+		//add message tags if necessary
+		FlowPanel qDiskMsgDiv = createMessageDiv();
+		if(qDiskMsgDiv != null){
+			panel.add(qDiskMsgDiv);
+		}
+		
 		//panel.add(upload);
 		int row = grid.getRowCount();
 		grid.setWidget(row, 0, panel );
 		grid.getFlexCellFormatter().setColSpan(row, 0 , 2);
 		// remove the bottom border from the section heading titles
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
+		
+		formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+			public void onSubmitComplete(SubmitCompleteEvent event) {
+				// When the form submission is successfully completed, this event is
+		        // fired. Assuming the service returned a response of type text/html,
+		        // we can get the result text here (see the FormPanel documentation for
+		        // further explanation).
+				if(event != null) {
+					String result = event.getResults();
+					if(GwtClientHelper.hasString(result)) {
+						if(result.contains("ss_error_msg")) {
+							int beginIndex = result.indexOf("ss_error_msg");
+							int endIndex = result.indexOf("ss_error_code");
+						
+							String part1 = result.substring(beginIndex, endIndex);
+							beginIndex = part1.indexOf('\'');
+							String part2 = part1.substring(beginIndex+1);
+							endIndex = part2.indexOf('\'');
+							String msg = part2.substring(0, endIndex);
+							Window.alert(msg);
+						}
+					}
+				}
+
+			}
+	    }); 
+	}
+	
+	private FlowPanel createMessageDiv() {
+		FlowPanel msgDiv = null; 
+		InlineLabel msgLabel = null;
+
+		String quota = profileRequestInfo.getQuotaMessage();
+		if(GwtClientHelper.hasString(quota)) {
+			msgDiv = new FlowPanel();
+			msgLabel = new InlineLabel(quota);
+			msgDiv.addStyleName("stats_error_msg");
+			msgDiv.add(msgLabel);
+		}
+		
+		return msgDiv;
 	}
 	
 	/**
@@ -730,4 +780,11 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		return editAvatarSuccessHandler;
 	}
+	
+	public final native boolean isFileError() /*-{  if( wnd.profileEmptyFrame.ss_error_code != null ) {
+															return true; 
+													} else {
+													 		return false;
+													}}-*/;
+	public final native String getFileError() /*-{ return window.profileEmptyFrame.ss_error_msg; }-*/;
 }

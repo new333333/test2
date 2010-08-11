@@ -91,27 +91,6 @@ public class ProfileSidePanel extends Composite {
 		initWidget(columnr);
 	}
 
-	private void createMessageDiv() {
-		if(profileRequestInfo.isQuotasEnabled() && profileRequestInfo.isOwner()) {
-			FlowPanel msgDiv = null; 
-			InlineLabel msgLabel = null;
-
-			if(profileRequestInfo.isDiskQuotaExceeded()){
-				msgDiv = new FlowPanel();
-				msgLabel = new InlineLabel("Data quota exceeded!");
-			} else if (profileRequestInfo.isDiskQuotaHighWaterMarkExceeded() && !profileRequestInfo.isDiskQuotaExceeded()) {
-				msgDiv = new FlowPanel();
-				msgLabel = new InlineLabel("Data quota almost exceeded!");
-			}
-
-			if(msgDiv != null && msgLabel != null) {
-				msgDiv.addStyleName("stats_error_msg");
-				msgDiv.add(msgLabel);
-				topContent.add(msgDiv);
-			}
-		}
-	}
-
 	public void setCategory(ProfileCategory cat) {
 
 		if (attrExist(cat, "profileStats")) {
@@ -124,9 +103,6 @@ public class ProfileSidePanel extends Composite {
 			topContent.add(statsPanel);
 		}
 		
-		//Add error Div
-		createMessageDiv();
-
 		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "aboutMe");
 		if (aboutMeAttr != null) {
 			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
