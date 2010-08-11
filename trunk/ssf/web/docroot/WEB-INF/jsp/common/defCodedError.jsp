@@ -33,10 +33,14 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
 <body class="tundra">
+<script type="text/javascript">
+var ss_error_msg = '${exception.localizedMessage }' ;
+var ss_error_code = 1;
+</script>
 
 <div class="ss_style ss_portlet">
-
 <h1><spring:message code="exception.codedError.title"/></h1>
 
 <p>${exception.localizedMessage }<br/></p>
