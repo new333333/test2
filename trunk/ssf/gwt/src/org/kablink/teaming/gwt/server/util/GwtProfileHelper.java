@@ -434,7 +434,12 @@ public class GwtProfileHelper {
 			}
 			if (desc != null) {
 				String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
-				pAttr.setValue(text);
+				if(text != null){
+					//added a length of one to skip over a return characters that are in somehow in the value of the attribute
+					if(text.length() > 1){
+						pAttr.setValue(text);
+					}
+				}
 			}
 		} else if ("selectbox".equals(attrType)) {
 			Map selectionMap = DefinitionHelper.findSelectboxSelectionsAsMap(name, defDoc);
