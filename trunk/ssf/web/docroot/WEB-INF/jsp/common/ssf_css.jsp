@@ -1236,7 +1236,7 @@ table.ss_mouseOverInfo {
 	border-top: 1px solid #72AEB6;
 	}	
 .ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
-	background:url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
+	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
 	}
@@ -1645,7 +1645,7 @@ div.ss_box_top_rounded {
 
 .ss_box_title,
 .ss_box_title:visited {
-	color: ${ss_box_title_color};
+	color: ${ss_box_title_color} !important;
 	text-decoration:none;
 	font-size: 14px;
 	font-weight: bold;
