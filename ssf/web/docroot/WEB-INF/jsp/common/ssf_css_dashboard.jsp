@@ -706,7 +706,7 @@ div.item-sub a {
 	margin-bottom: 5px;
 	}
 #ss_tabsC .ss_tabsCCurrent a {
-	color: #000;
+	color: #000 !important;
 	font-weight: bold;
     font-size:100%;
 	}
