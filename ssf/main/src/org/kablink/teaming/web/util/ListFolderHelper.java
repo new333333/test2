@@ -341,11 +341,13 @@ public class ListFolderHelper {
 					//options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
 					model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
 				}
-			}
-			else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 				Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
 				boolean showModeSelect = (BinderHelper.isBinderUserWorkspace(binderWs));
 				model.put(WebKeys.FOLDER_SHOW_MODE_SELECT, new Boolean(showModeSelect));
+			} else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+				options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_WIKI);
+				options.put(ObjectKeys.SEARCH_OFFSET, 0);
 			}
 	
 			//Checking the Sort Order that has been set. If not using the Default Sort Order

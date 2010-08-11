@@ -1282,7 +1282,6 @@ function ss_toggleShowDiv(divName, namespace) {
 		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 		try {
 			if (self != self.parent && parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
-			if (self != self.parent && parent.ss_setWikiIframeSize) setTimeout("parent.ss_setWikiIframeSize('"+namespace+"');", 100);
 		} catch(e) {}
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
@@ -2952,7 +2951,8 @@ var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
-	if (popupDiv != null && popupIframe != null && typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block") {
+	if (popupDiv != null && popupIframe != null && 
+			typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block") {
 		var scrollHeight = parseInt(window.ss_showpopupframe.document.body.scrollHeight);
 		var height = parseInt(scrollHeight + ss_popupFrameHeightFudge);
 		var width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge);
@@ -4161,7 +4161,6 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 	} catch(e) {}
 }
 
@@ -4173,7 +4172,6 @@ function ss_hideAddAttachmentBrowse(entryId, namespace) {
 
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 	} catch(e) {}
 }
 
@@ -4205,7 +4203,6 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 	} catch(e) {}
 }
 
@@ -4238,7 +4235,6 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
-		if (parent.ss_setWikiIframeSize) parent.ss_setWikiIframeSize(namespace);
 	} catch(e) {}
 }
 

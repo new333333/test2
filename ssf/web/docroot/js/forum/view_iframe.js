@@ -99,8 +99,9 @@ function ss_showForumEntryInIframe(url) {
         iframeObj.style.display = "block"
         //iframeObj.style.position = "relative"
         //iframeObj.style.left = "5px"
-        iframeObj.style.width = "99%"
-        iframeObj.style.height = "99%"
+        iframeObj.style.width = "99%";
+        iframeObj.style.height = "99%";
+        iframeObj.style.backgroundColor = "#fff";
         iframeObj.frameBorder = "0"
         iframeObj.onload = ss_iframeOnloadSetHeight;
 		wObj2.appendChild(iframeObj);

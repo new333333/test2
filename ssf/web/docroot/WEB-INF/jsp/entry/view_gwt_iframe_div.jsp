@@ -88,8 +88,8 @@
 		  <div id="ss_iframe_holder_div" style="padding: 0 4px;">
 		  <iframe id="ss_showentryframe"
 		  	title="<ssf:nlt tag = "iframe.entry"/>" 
-		    name="ss_showentryframe" style="width:100%; 
-		    display:block;"
+		    name="ss_showentryframe" 
+		    style="width:100%; display:block; background-color:#fff;"
 		    src="<html:rootPath/>js/forum/null.html" 
 		    onLoad="ss_setEntryDivHeightOnload();" 
 		    frameBorder="0" >xxx</iframe>
@@ -98,7 +98,7 @@
   </c:if>
   <c:if test="${ssUser.displayStyle == 'newpage' || ssUser.displayStyle == 'accessible'}">
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
-	    <div id="ss_iframe_holder_div">
+	    <div id="ss_iframe_holder_div" >
 	      <div class="ss_newpage_box_header" >
 	        <table width="100%" cellspacing="0" cellpadding="0">
 	        <tr>
@@ -117,7 +117,7 @@
 	      <iframe id="ss_showentryframe"
 	  	    title="<ssf:nlt tag = "iframe.entry"/>" 
 	        name="ss_showentryframe" style="width:100%; 
-	        display:block;"
+	        display:block; background-color:#fff;"
 	        src="<html:rootPath/>js/forum/null.html" 
 	        onLoad="ss_setEntryDivHeightOnload();" 
 	        frameBorder="0" >xxx</iframe>
