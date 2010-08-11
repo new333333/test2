@@ -115,15 +115,20 @@
 	}
 	
 	User user = ((User) entry.get("_principal"));
-	boolean workspacePreDeleted;
+	boolean showProfileEntry = false;
+	boolean workspacePreDeleted = false;
 	Long showUser_workspaceId = ((null == user) ? null : user.getWorkspaceId());
 	if (null == showUser_workspaceId) {
 		workspacePreDeleted = false;
 	}
 	else {
 		Set showUser_workspaces = org.kablink.teaming.util.ResolveIds.getBinders(String.valueOf(showUser_workspaceId));
-		org.kablink.teaming.domain.Workspace showUser_workspace = ((Workspace) (showUser_workspaces.iterator().next()));
-		workspacePreDeleted = showUser_workspace.isPreDeleted();
+		if (!showUser_workspaces.isEmpty()) {
+			org.kablink.teaming.domain.Workspace showUser_workspace = ((Workspace) (showUser_workspaces.iterator().next()));
+			workspacePreDeleted = showUser_workspace.isPreDeleted();
+		} else {
+			showProfileEntry = true;
+		}
 	}
 %>
 
@@ -131,7 +136,8 @@
   oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}">
 
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
-  <ssf:showUser user='<%= user %>' workspacePreDeleted="<%= workspacePreDeleted %>" />
+  <ssf:showUser user='<%= user %>' workspacePreDeleted="<%= workspacePreDeleted %>" 
+    showProfileEntry="<%= showProfileEntry %>" />
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
