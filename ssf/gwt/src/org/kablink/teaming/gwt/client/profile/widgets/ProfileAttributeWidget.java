@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -77,12 +78,18 @@ public class ProfileAttributeWidget  {
 			if(attr.getDisplayType()!= null && attr.getDisplayType().equals("email") ) {
 				if(attr.getValue() != null) {
 					String url = "mailto:"+ attr.getValue().toString();
-					widget = new Anchor(attr.getValue().toString(), url);
+					String val = "..";
+					if(attr.getValue() != null){
+						if(GwtClientHelper.hasString(attr.getValue().toString())) {
+							val = attr.getValue().toString();
+						}
+					}
+					widget = new Anchor(val, url);
 				} 
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
 			} else if (attr.getDataName().equals("labeledUri")) {
-				String label = "";
+				String label = "..";
 				String uri = "";
 				if(attr.getValue() != null) {
 					String labeledUri = attr.getValue().toString();
@@ -138,7 +145,9 @@ public class ProfileAttributeWidget  {
 									} else {
 										String val = "..";
 										if(valItem.getValue() != null) {
-											val = valItem.getValue().toString();
+											if(GwtClientHelper.hasString(valItem.getValue().toString())){
+												val = valItem.getValue().toString();
+											}
 										}
 										
 										((FlowPanel)widget).add(new Label(val));
