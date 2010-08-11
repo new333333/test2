@@ -2096,23 +2096,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					continue;
 				} else if (att.size() == 1) {
 					mods.put(mapping.get(ldapAttrNames[i]), val);					
-				} else {
-					String combinedValues = "";
+				}
+				else
+				{
+					String value = "";
+					NamingEnumeration valEnum;
 					
 					// This attribute is a multi-valued attribute.  Teaming doesn't understand
-					// multi-valued attributes.  So we need to concatenate all of the values
-					// into one value.
-					for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();)
+					// multi-valued attributes.  So we will sync the first value.
+					valEnum = att.getAll();
+					while ( valEnum.hasMoreElements() && value != null && value.length() == 0 )
 					{
-						Object nextValue;
+						Object firstValue;
 						
-						nextValue = valEnum.nextElement();
+						firstValue = valEnum.nextElement();
 						
 						// We only know how to deal with Strings
-						combinedValues += nextValue.toString() + " ";
+						value = firstValue.toString();
 					}
 	
-					mods.put( mapping.get(ldapAttrNames[i]), combinedValues );
+					mods.put( mapping.get( ldapAttrNames[i]), value );
 				}
 			}
 		}
