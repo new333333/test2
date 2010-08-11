@@ -107,6 +107,19 @@ public class ProfileAttributeWidget  {
 				} 
 				widget.addStyleName("profile-value");
 				widget.addStyleName("profile-anchor");
+			} else if (attr.getDataName().equals("skypeId")) {
+				String label = "..";
+				String uri = "";
+				if(attr.getValue() != null) {
+					label = attr.getValue().toString();
+					if(GwtClientHelper.hasString(label)){
+						String html ="<script type=\"text/javascript\" src=\"http://download.skype.com/share/skypebuttons/js/skypeCheck.js\"></script>" +
+						"<a href=\"skype:"+label+"?call\"><img src=\"http://download.skype.com/share/skypebuttons/buttons/call_blue_transparent_70x23.png\" style=\"border: none;\" width=\"70\" height=\"23\" alt=\"Call Me!\" /></a>";
+						widget = new HTML(html);
+					}
+				} 
+				widget.addStyleName("profile-value");
+				widget.addStyleName("profile-anchor");
 			} else {
 				int type = attr.getValueType();
 				switch(type){
