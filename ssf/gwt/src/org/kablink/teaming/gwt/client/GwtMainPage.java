@@ -1043,12 +1043,14 @@ public class GwtMainPage extends Composite
 			{
 				// Yes!  Update the menu bar accordingly.
 				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
+				m_wsTreeCtrl.contextLoaded( m_selectedBinderId );
 			}
 			else
 			{
 				// No, we aren't handling a context change in the
 				// content panel! Tell the content panel to view the
 				// selected binder.
+				m_wsTreeCtrl.showBinderBusy( binderInfo );
 				m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
 			}
 		}

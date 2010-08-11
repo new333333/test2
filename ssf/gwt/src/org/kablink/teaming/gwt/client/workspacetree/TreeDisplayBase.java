@@ -94,15 +94,18 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 				// so that the hover, ... works.
 			}
 			else {
-				// No, the item is not a bucket!  Select the Binder and
-				// tell the WorkspaceTreeControl to handle it.
-				selectBinder(m_ti);
-				triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
+				// No, the item is not a bucket!  Are we in a state
+				// where we can change contexts?
+				if (canChangeContext()) {
+					// Yes!  Select the Binder and tell the
+					// WorkspaceTreeControl to handle it.
+					selectBinder(m_ti);
+					triggerAction(TeamingAction.SELECTION_CHANGED, buildOnSelectBinderInfo(m_ti));
+				}
 			}
 		}
 	}
-
-
+	
 	/**
 	 * Constructor method.  (1 of 2)
 	 *
@@ -163,6 +166,32 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 //!		reply.setWidth("9");
 		
 		return reply;
+	}
+
+	/**
+	 * Returns true if the context can be changed and false otherwise.
+	 * 
+	 * Subclasses of TreeDisplayBase base should override this if they
+	 * require any special considerations that must be enforced to
+	 * change contexts.
+	 * 
+	 * @return
+	 */
+	boolean canChangeContext() {
+		// By default, we can always change contexts.
+		return true;
+	}
+	
+	/**
+	 * Called after a new context has been loaded.
+	 * 
+	 * Subclasses of TreeDisplayBase base should override this if they
+	 * need to do any processing AFTER a new context has been loaded.
+	 * 
+	 * @param binderId
+	 */
+	public void contextLoaded(String binderId) {
+		// By default, we do nothing special.
 	}
 	
 	/**
@@ -277,5 +306,18 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
+	}
+	
+	/**
+	 * Called when a selection change is in progress.
+	 *
+	 * Subclasses of TreeDisplayBase base should override this if they
+	 * need to do something special while a selection change is in
+	 * progress.
+	 * 
+	 * @param osbInfo
+	 */
+	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
+		// By default, we do nothing special.
 	}
 }

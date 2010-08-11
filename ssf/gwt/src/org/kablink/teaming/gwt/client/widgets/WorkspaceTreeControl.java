@@ -155,6 +155,16 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	}
 
 	/**
+	 * Called after a new context has been loaded.
+	 * 
+	 * @param binderId
+	 */
+	public void contextLoaded(String binderId) {
+		// Simply tell the display that the context has been loaded.
+		m_treeDisplay.contextLoaded(binderId);
+	}
+	
+	/**
 	 * Returns the RequestInfo object associated with this
 	 * WorkspaceTreeControl.
 	 * 
@@ -209,6 +219,15 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		style.setHeight( height, Style.Unit.PX );
 	}
 
+	/**
+	 * Called when a selection change is in progress.
+	 *
+	 * @param osbInfo
+	 */
+	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
+		m_treeDisplay.showBinderBusy(osbInfo);
+	}
+	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
 	 * 
