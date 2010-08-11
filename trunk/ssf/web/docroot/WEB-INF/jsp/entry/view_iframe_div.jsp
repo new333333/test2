@@ -86,11 +86,11 @@
 	    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
 	    <ssf:param name="box_show_close_icon" value="true" />
 	    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-	  <div id="ss_iframe_holder_div${renderResponse.namespace}" style="padding: 0 4px;">
+	  <div id="ss_iframe_holder_div${renderResponse.namespace}" style="padding: 0 4px; background-color:#fff;">
 	  <iframe id="ss_showentryframe${renderResponse.namespace}"
 	  	title="<ssf:nlt tag = "iframe.entry"/>" 
-	    name="ss_showentryframe${renderResponse.namespace}" style="width:100%; 
-	    display:block;"
+	    name="ss_showentryframe${renderResponse.namespace}" 
+	    style="width:100%; display:block; background-color:#fff;"
 	    src="<html:rootPath/>js/forum/null.html" 
 	    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
 	    frameBorder="0" >xxx</iframe>
@@ -99,7 +99,7 @@
   </c:if>
   <c:if test="${ssUser.displayStyle == 'newpage' || ssUser.displayStyle == 'accessible'}}">
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
-	    <div id="ss_iframe_holder_div${renderResponse.namespace}">
+	    <div id="ss_iframe_holder_div${renderResponse.namespace}" style="background-color:#fff;">
 	      <div class="ss_newpage_box_header" style="width:100%;">
 	        <table width="100%" cellspacing="0" cellpadding="0">
 	        <tr>
@@ -115,7 +115,8 @@
 	      </div>
 		    <iframe id="ss_showentryframe${renderResponse.namespace}"
 		  	  title="<ssf:nlt tag = "iframe.entry"/>" 
-		      name="ss_showentryframe${renderResponse.namespace}" style="width:100%; display:block;"
+		      name="ss_showentryframe${renderResponse.namespace}" 
+		      style="width:100%; display:block; background-color:#fff;"
 		      src="<html:rootPath/>js/forum/null.html" 
 		      onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
 		      frameBorder="0" >xxx</iframe>

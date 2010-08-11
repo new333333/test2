@@ -34,40 +34,156 @@
 %>
 
 <% //View the listing part of a wiki folder %>
-        <div id="ss_wikiEntryDiv${renderResponse.namespace}">
-          <iframe id="ss_wikiIframe${renderResponse.namespace}" 
-            name="ss_wikiIframe${renderResponse.namespace}" 
-            style="width:100%;"
-    		<c:if test="${empty ss_wikiHomepageEntryId && empty ssEntryIdToBeShown}">
-    		  src="<ssf:url     
-		    		adapter="true" 
-		    		portletName="ss_forum" 
-		    		folderId="${ssFolder.id}" 
-		    		action="view_folder_entry" 
-		    		actionUrl="false" ><ssf:param 
-		    		name="operation" value="show_no_entries" /><ssf:param
-		    		name="ssBinderEntryDefs" value="${ssBinderEntryDefs}" /><ssf:param
-		    		name="ssBinderEntryAdd" value="${ssBinderEntryAdd}" /><ssf:param
-		    		name="entryViewStyle" value="popup" /><ssf:param 
-		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
-    		</c:if>
-    		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">
-    		  <c:set var="entryId" value="${ss_wikiHomepageEntryId}"/>
-    		  <c:if test="${!empty ssEntryIdToBeShown}">
-    		    <c:set var="entryId" value="${ssEntryIdToBeShown}"/>
-    		  </c:if>
-    		  src="<ssf:url     
-		    		adapter="true" 
-		    		portletName="ss_forum" 
-		    		folderId="${ssFolder.id}" 
-		    		action="view_folder_entry" 
-		    		entryId="${entryId}" 
-		    		actionUrl="true" ><ssf:param 
-		    		name="entryViewStyle" value="popup" /><ssf:param 
-		    		name="namespace" value="${renderResponse.namespace}" /></ssf:url>" 
-    		</c:if>
-    		height="95%"
-    		onLoad="ss_setWikiIframeSize('${renderResponse.namespace}');" 
-    		frameBorder="0" title="<ssf:nlt tag = "iframe.entry"/>">xxx</iframe>
-        </div>
+
+<% //View the listing part of a wiki folder %>
+<%@ page import="java.util.Date" %>
+
+<div class="ss_wiki_folder">
    
+	<ssHelpSpot helpId="workspaces_folders/misc_tools/wiki_controls" offsetX="-14" offsetY="8" 
+	   			title="<ssf:nlt tag="helpSpot.wikiControls"/>">
+	</ssHelpSpot>
+
+	<table class="ss_wiki_search_bar">
+	  <tr>
+	    <td valign="baseline">
+	      <c:if test="${!empty ss_wikiHomepageEntryId}">
+		    <a class="ss_linkButton" href="<ssf:url     
+			    adapter="true" 
+			    portletName="ss_forum" 
+			    folderId="${ssFolder.id}" 
+			    action="view_folder_entry" 
+			    entryId="${ss_wikiHomepageEntryId}" 
+			    actionUrl="true"><ssf:param
+			    name="entryViewStyle" value="popup"/><ssf:param
+			    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
+			    name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+			    <ssf:title tag="title.open.folderEntrySimple" />
+			    onclick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}', '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');return false;" 
+			><ssf:nlt tag="wiki.homePage"/></a>
+	      </c:if>
+	    </td>
+	    
+	    <td valign="baseline">        
+	      <c:if test="${ssConfigJspStyle != 'template'}">
+		    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
+		    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/></ssf:url>">
+          	 <span><ssf:nlt tag="wiki.findPage"/></span>
+			 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
+			    formElement="searchTitle" 
+			    type="entries"
+			    width="140px" 
+			    binderId="${ssBlogSetBinder.id}"
+			    searchSubFolders="true"
+			    showFolderTitles="true"
+			    singleItem="true"
+			    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"
+			    accessibilityText="wiki.findPage"
+			    /> 
+		     <input type="hidden" name="searchTitle"/>
+		    </form>
+		  </c:if>
+		</td>
+
+	  </tr>
+	</table>
+	
+	
+	<div style="padding:10px 0px 10px 0px;">
+	<table cellspacing="0" cellpadding="0">
+	  <tbody>
+	    <tr>
+	      <th align="left">
+		    <span>
+		      <ssf:nlt tag="wiki.topics"/>
+		    </span>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td>
+			 <div class="ss_navbar_inline">
+				<ul>
+			     <c:forEach var="blogPage" items="${ssBlogPages}">
+		 		   <li>
+			           <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
+							   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
+						  href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
+			           >${blogPage.title}</a>
+			       </li>
+			     </c:forEach>
+			    </ul>
+		    </div>
+		  </td>
+		</tr>
+		
+	  </tbody>
+	</table>
+	</div>
+
+	<table cellspacing="0" cellpadding="0" width="100%">
+	  <tbody>
+	    <tr>
+	      <th align="left">
+		    <span>
+		      <ssf:nlt tag="wiki.pages"/>
+		    </span>
+		  </td>
+		</tr>
+		
+		<tr>
+		  <td>
+			<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_folder_list">
+		      <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
+		    </div>
+		  </td>
+		</tr>
+	  </tbody>
+	</table>
+		
+
+    <c:if test="${0 == 1}">
+    <c:if test="${!empty ssFolderEntryCommunityTags}"> 
+		<div class="ss_wiki_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
+	    <div class="ss_wiki_sidebar_box">		
+			 <c:if test="${!empty ssFolderEntryCommunityTags}">
+			   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
+				   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="cTag" value="${tag.ssTag}"/></ssf:url>" 
+						class="ss_displaytag  ${tag.searchResultsRatingCSS} 
+						<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
+						<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>"
+						  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
+						  	<ssf:param name="value" value="${tag.ssTag}" />
+						  </ssf:title>
+						>${tag.ssTag}</a>&nbsp;&nbsp;
+			   </c:forEach>
+			 </c:if>
+	    </div>
+    </c:if>
+    <c:if test="${!empty ssFolderEntryPersonalTags}"> 
+		<div class="ss_wiki_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+	    <div class="ss_wiki_sidebar_box">		
+			<c:if test="${!empty ssFolderEntryPersonalTags}">
+			  <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
+			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
+					name="pTag" value="${tag.ssTag}"/></ssf:url>" 
+					class="ss_displaytag  ${tag.searchResultsRatingCSS} 
+					<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>
+					<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>"
+					  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
+					  	<ssf:param name="value" value="${tag.ssTag}" />
+					  </ssf:title>
+					>${tag.ssTag}</a>&nbsp;&nbsp;
+							
+			  </c:forEach>
+			</c:if>
+	    </div>		
+	</c:if>
+	</c:if>
+		
+</div>
+    

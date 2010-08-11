@@ -41,33 +41,16 @@
 	var ss_columnCount = 0;
 	function ss_loadWikiEntry(obj,id) {
 		ss_highlightLineById('folderLine_' + id);
-		var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
+		var iframeDiv = document.getElementById('ss_wikiIframe')
 		iframeDiv.src = obj.href;
 		return false;
-	}
-	
-	function ss_loadWikiEntryInParent(obj,id) {
-		self.parent.location.href = obj.href;
 	}
 	
 	//Routine called when "find wiki page" is clicked
 	function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 		var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}', entryViewStyle:'popup'};
-		var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
-		iframeDiv.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
-	}
-	
-	var ss_wikiIframeOffset = 60;
-	function ss_setWikiIframeSize(namespace) {
-		var targetDiv = document.getElementById('ss_wikiEntryDiv' + namespace)
-		var iframeDiv = document.getElementById('ss_wikiIframe' + namespace)
-		if (window.frames['ss_wikiIframe' + namespace] != null) {
-			eval("var iframeHeight = parseInt(window.ss_wikiIframe" + namespace + ".document.body.scrollHeight);")
-			if (iframeHeight > 0) {
-				iframeDiv.style.height = parseInt(parseInt(iframeHeight) + ss_wikiIframeOffset) + "px";
-				targetDiv.style.height = parseInt(parseInt(iframeHeight) + ss_wikiIframeOffset) + "px";
-			}
-		}
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
+		ss_loadEntryUrl(url, id, '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');
 	}
 	
 	function ss_confirmSetWikiHomepage(url) {
@@ -79,15 +62,6 @@
 		}
 	}
 	
-	<ssf:ifnotaccessible>
-	  var ss_wikiAjaxUrl${renderResponse.namespace} = "";
-	</ssf:ifnotaccessible>
-	<ssf:ifaccessible>
-	  var ss_wikiAjaxUrl${renderResponse.namespace} = "<ssf:url 
-		action="view_folder_listing" ><ssf:param 
-	  	name="binderId" value="${ssBinder.id}"/><ssf:param 
-		name="type" value="ss_typePlaceHolder" /></ssf:url>";
-	</ssf:ifaccessible>
 </script>
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
@@ -103,17 +77,4 @@
 <div class="ss_clear"></div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 
-<table cellspacing="0" cellpadding="0" width="100%" style="padding-top:10px;">
-  <tbody>
-	<tr>
-		<td valign="top">
-		   <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
-		</td>
-		<td valign="top" width="200" style="padding-left: 6px;">
-		   <div id="ss_sideNav_wrap">
-			  <jsp:include page="/WEB-INF/jsp/sidebars/wiki.jsp" />
-		   </div>
-		</td>
-	</tr>
-  </tbody>
-</table>
+<%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_listing.jsp" %>
