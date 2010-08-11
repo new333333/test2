@@ -207,7 +207,8 @@ if (typeof ss_hideEntryDivOnLoad != "undefined") ss_hideEntryDivOnLoad();
 </c:if>
 <link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value=""/>
-	    </ssf:url>" rel="stylesheet" type="text/css" />
+	    </ssf:url>?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>" 
+	    rel="stylesheet" type="text/css" />
 <c:if test="${!empty ss_toolbar_url_subscribe_rss}">
 <link rel="alternate" type="application/rss+xml" id="ss_rssLink"
   <c:if test="${empty ss_windowTitle}"> title="RSS: ${ssBinder.title}" </c:if>
