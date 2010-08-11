@@ -254,7 +254,7 @@ div.ss_canvas {
 	font-style: italic;
 	}
 #ss_nextPage{			/* to use when need to display left right arrows */
-	margin:5px;
+	padding-left: 10px;
 	padding-right: 5px;
 	}
 #ss_col3_para {			/* to use for 3rd column displays */

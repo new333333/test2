@@ -60,54 +60,60 @@ function ss_showMiniblogPage${renderResponse.namespace}(id, currentPage, directi
 <div class="ss_style ss_portlet">
   <ssf:form title='<%= NLT.get("miniblog") %>'>
   <div>
-    <div align="right">
-	      <span class="ss_labelAbove ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
+    <div>
+	      <span class="ss_labelminiBlog"><ssf:nlt tag="navigation.findPerson"/></span>
 	      <ssf:find type="user"
 		    clickRoutine="ss_showMiniblog${renderResponse.namespace}"
 		    leaveResultsVisible="false"
 		    width="100px" singleItem="true"/> 
 	</div>
-    <div class="ss_form_subhead"><ssf:showUser user="${ss_miniblog_user}" target="_blank" close="true" /></div>
     
   </div>
-  <div id="ss_nextPage" align="right">
-	<c:if test="${ss_miniblogPage > '0'}">
-	<a href="javascript: ;" 
-	  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'previous');return false;">
-	<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
-	  title="<ssf:nlt tag="general.previousPage"/>"/>
-	</a>
-	</c:if>
-	<c:if test="${empty ss_miniblogPage || ss_miniblogPage <= '0'}">
-	<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
-	</c:if>
-	<c:if test="${!empty ss_miniblog_statuses}">
-	<a href="javascript: ;" 
-	  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'next');return false;">
-	<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
-	  title="<ssf:nlt tag="general.nextPage"/>"/>
-	</a>
-	</c:if>
-	<c:if test="${empty ss_miniblog_statuses}">
-	<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
-	</c:if>
-  </div>
   
-  <table>
+  <table class="margintop3">
   <tr>
-  <td valign="top" align="center">
+  	<td rowspan="2" valign="top">
 	  <ssf:buddyPhoto style="ss_thumbnail_standalone ss_thumbnail_standalone_small" 
 					user="${ss_miniblog_user}" 
 					folderId="${ss_miniblog_user.parentBinder.id}" entryId="${ss_miniblog_user.id}" />
-  </td>
-  <td valign="top" style="padding-left:10px;">
-	  <ul>
+  	</td>
+	<td>
+	    <div class="ss_form_subhead ss_nowrap margintop3"><span class="ss_size_14px"><ssf:showUser user="${ss_miniblog_user}" target="_blank" close="true" /></span>
+			<span id="ss_nextPage">
+				<c:if test="${ss_miniblogPage > '0'}">
+				<a href="javascript: ;" 
+				  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'previous');return false;">
+				<img src="<html:imagesPath/>pics/sym_arrow_left_.png" 
+				  align="absmiddle" title="<ssf:nlt tag="general.previousPage"/>"/>
+				</a>
+				</c:if>
+				<c:if test="${empty ss_miniblogPage || ss_miniblogPage <= '0'}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_left_g.png"/>
+				</c:if>
+				<c:if test="${!empty ss_miniblog_statuses}">
+				<a href="javascript: ;" 
+				  onClick="ss_showMiniblogPage${renderResponse.namespace}('${ss_miniblog_user.id}', '${ss_miniblogPage}', 'next');return false;">
+				<img src="<html:imagesPath/>pics/sym_arrow_right_.png"
+				  align="absmiddle" title="<ssf:nlt tag="general.nextPage"/>"/>
+				</a>
+				</c:if>
+				<c:if test="${empty ss_miniblog_statuses}">
+				<img align="absmiddle" src="<html:imagesPath/>pics/sym_arrow_right_g.png"/>
+				</c:if>
+			</span>	
+		</div>
+	</td>
+  </tr>
+  <tr>
+	<td valign="top">
+	  <ul style="padding-left: 3px; margin-top: 0px;">
 	  <c:forEach var="status" items="${ss_miniblog_statuses}">
 	    <li class="ss_list-style-image_miniblog">
-		  <span class="ss_miniblog_subhead"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-					      value="${status.date}" type="both" 
-						  timeStyle="short" dateStyle="short" /></span><br/>
-		  <span class="">${status.description}</span>
+		  <span class="ss_miniblog_subhead ss_bold" style="font-size: 11px;"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				value="${status.date}" type="both" 
+				timeStyle="short" dateStyle="short" />
+		  </span>
+		  <div class="ss_size_13px">${status.description}</div>
 	    </li>
 	  </c:forEach>
 	  </ul>
