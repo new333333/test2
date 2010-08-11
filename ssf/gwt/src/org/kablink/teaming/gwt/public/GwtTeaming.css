@@ -876,6 +876,13 @@ body, table td, select
 }
 .breadCrumb_Browser
 {
+	background-color: #f6f6f6;
+	margin: 0 5px 5px;
+	border-top: 1px solid #808384;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 }
 .breadCrumb_CloseA
 {
@@ -901,10 +908,8 @@ body, table td, select
 }
 .breadCrumb_ContentNode_Anchor
 {
-	color: #FFFFFF;
 	margin-top: 2px;
 	margin-right: 15px;
-	font-size: 1.1em;
 }
 
 /* Styles used by the MainMenuControl. */
