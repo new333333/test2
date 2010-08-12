@@ -108,33 +108,27 @@ function ss_checkForFileSelected() {
 			action="import_profiles" 
 			actionUrl="true" ><ssf:param 
 		    name="binderId" value="${ssBinder.id}"/></ssf:url>" >
-<span class="ss_titlebold"><ssf:nlt tag="administration.import.profiles" /></span>
-<br>
 
-<div class="ss_divider"></div>
-<br>
-<label for="profiles"><span class="ss_bold"><ssf:nlt tag="administration.profiles.file"/></span></label>
-<br>
-<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
-<tr><td>
-<input type="file" size="80" class="ss_text" name="profiles" id="profiles"><br>
-</td></tr></table>
-<div class="ss_divider"></div>
+	<label for="profiles"><span class="ss_bold"><ssf:nlt tag="administration.profiles.file"/></span></label>
+	<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
+		<tr><td>
+			<input type="file" size="80" class="ss_text" name="profiles" id="profiles"><br>
+		</td></tr>
+	</table>
 
-<br/>
-<div class="ss_formBreak"/>
+	<div class="ss_formBreak margintop3"/>
+		<div class="ss_buttonBarLeft">
+	
+			<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
+			  onclick="return ss_checkForFileSelected();"
+			/>
+			
+			<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+			onClick="return handleCloseBtn();"/>
+		
+		</div>
+	</div>
 
-<div class="ss_buttonBarLeft">
-
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
-  onclick="return ss_checkForFileSelected();"
-/>
-
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-onClick="return handleCloseBtn();"/>
-
-</div>
-</div>
 </form>
 </ssf:form>
 </div>

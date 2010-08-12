@@ -47,7 +47,7 @@
 	User currentUser = null;
 %>
 
-<body class="ss_style_body tundra" onunload="onUnloadEventHandler();">
+<body class="ss_style_body tundra" onUnload="onUnloadEventHandler();">
 <div class="ss_pseudoPortal">
 	<div class="ss_style ss_portlet">
 		<ssf:form titleTag="ldap.title">
@@ -60,17 +60,12 @@
 			<form class="ss_style ss_form" name="${renderResponse.namespace}fm"
 				method="post"
 				action="<ssf:url action="configure_ldap" actionUrl="true"/>">
+
+
+				<button id="ldapAddConnection" class="ss_submit margintop2"><ssf:nlt tag="ldap.connection.add" /></button>
 		
-				<div class="ss_buttonBarRight"><br />
-					<input type="submit" class="ss_submit" name="okBtn"
-						value="<ssf:nlt tag="button.apply"/>">
-					<input type="button"
-						class="ss_submit" name="closeBtn"
-						value="<ssf:nlt tag="button.close" text="Close"/>"
-						onClick="handleCloseBtn();return false;" />
-				</div>
 				
-				<div>
+				<div class="margintop3">
 					<div id="funkyDiv">
 						<div id="ulDiv">
 							<ul>
@@ -79,17 +74,21 @@
 								</li>
 							</ul>
 						</div>
-						<div id="funkyDiv2"></div>
-						<div id="wah"></div>
+						<div class="ss_buttonBarRight margintop1">
+							<input type="submit" class="ss_submit" name="okBtn"
+								value="<ssf:nlt tag="button.apply"/>">
+							<input type="button"
+								class="ss_submit" name="closeBtn"
+								value="<ssf:nlt tag="button.close" text="Close"/>"
+								onClick="handleCloseBtn();return false;" />
+						</div>
+
+						<div id="funkyDiv2" class="margintop2"></div>
+						<div id="wah" class="margintop2"></div>
 					</div>
-	
-					<button id="ldapAddConnection" class="ss_submit"><ssf:nlt tag="ldap.connection.add" /></button>
 				</div>
-			
-				<div class="ss_divider"></div>
-				<br />
 		
-				<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+				<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
 					<tr>
 						<td><input type="checkbox" id="enabled" name="enabled"
 							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
@@ -111,13 +110,12 @@
 					</tr>
 				</table>
 		
-				<br />
-				<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
-					<c:set var="schedule" value="${ssLdapConfig.schedule}" />
-					<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-					<div class="ss_divider">
-					</div>
-				</ssf:expandableArea> <br />
+				<div class="margintop2" style="margin-left: 2.5em;"
+					<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
+						<c:set var="schedule" value="${ssLdapConfig.schedule}" />
+						<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+					</ssf:expandableArea>
+				</div>	
 			
 				<fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt
 					tag="ldap.users" /></legend>
@@ -391,9 +389,7 @@
 }
 
 .ui-tabs-panel {
-	border: 1px solid #519e2d;
 	padding: 10px;
-	background: #fff;
 	/* declare background color for container to avoid distorted fonts in IE while fading */
 }
 
@@ -1657,14 +1653,12 @@ jQuery(document).ready(function() {
 	</div>
 </div>
 
-<div id="ldapTemplate" style="display: none;">
-	<fieldset class="ldapConfig ss_fieldset">
-		<legend class="ldapTitle ss_legend"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle"></span></legend>
+<div id="ldapTemplate" style="display: none; margin: 15px;">
+	<div class="ldapConfig ss_tertiaryTabs">
+		<span class="ldapTitle ss_size_16px"><ssf:nlt tag="ldap.connection.title" /> <span class="ldapTitle ss_bold"></span></span><button class="ldapDelete ss_submit marginleft1"><ssf:nlt tag="ldap.connection.delete" /></button>
 		<div>
-			<button class="ldapDelete ss_submit"><ssf:nlt tag="ldap.connection.delete" /></button>
-			<br />
-			<br />
-			<table>
+			
+			<table class="margintop3">
 				<tr>
 					<td nowrap></td>
 					<td nowrap><span class="ss_fineprint ss_bright"><ssf:nlt tag="ldap.user.url.title" /></span></td>
@@ -1701,7 +1695,7 @@ jQuery(document).ready(function() {
 			</div>
 
 			<fieldset class="ss_fieldset">
-				<legend class="ss_legend"><ssf:nlt tag="ldap.users" /></legend>
+				<legend class="ss_legend ss_bold"><ssf:nlt tag="ldap.users" /></legend>
 				<label for="ldapUserIdAttribute"><ssf:nlt tag="ldap.user.idmapping" />&nbsp;&nbsp;</label>
 				<input class="ldapUserIdAttribute" id="ldapUserIdAttribute" type="text" value="" size="40" />
 				<br />
@@ -1713,19 +1707,19 @@ jQuery(document).ready(function() {
 				<br />
 				<div class="ldapUserSearches">
 					<div class="ldapSearchList"></div>
-					<button class="addSearch ss_submit"><ssf:nlt tag="ldap.search.add" /></button>
+					<button class="addSearch ss_submit" style="margin: 5px;"><ssf:nlt tag="ldap.search.add" /></button>
 				</div>
 			</fieldset>
 
 			<fieldset class="ss_fieldset">
-				<legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
+				<legend class="ss_legend ss_bold"><ssf:nlt tag="ldap.groups" /></legend>
 				<div class="ldapGroupSearches">
 					<div class="ldapSearchList"></div>
-					<button class="addSearch ss_submit"><ssf:nlt tag="ldap.search.add" /></button>
+					<button class="addSearch ss_submit" style="margin: 5px;"><ssf:nlt tag="ldap.search.add" /></button>
 				</div>
 			</fieldset>
 		</div>
-	</fieldset>
+	</div>
 </div>
 
 <div id="ldapSearchTemplate" style="display: none">
@@ -1759,13 +1753,16 @@ jQuery(document).ready(function() {
 					<td><textarea class="ldapFilter" id="ldapFilter" wrap="off" rows="6" cols="70"></textarea>
 					</td>
 				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree" value="true" />
+						<label for="ldapSearchSubtree"><span style="padding-left: 4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
+					</td>
+				</tr>
 			</table>
 		</div>
-		<br />
-		<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree" value="true" />
-		<label for="ldapSearchSubtree"><span style="padding-left: 4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
-		<br />
-		<button class="deleteSearch ss_submit"><ssf:nlt tag="ldap.search.delete" /></button>
+		<button class="deleteSearch ss_submit" style="margin: 5px;"><ssf:nlt tag="ldap.search.delete" /></button>
 	</div>
 </div>
 </body>

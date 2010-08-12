@@ -68,8 +68,8 @@
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" action="configure_configuration" 
 			actionUrl="true" ><ssf:param name="operation" value="import"/></ssf:url>">
-<div class="ss_divider"></div>
-<br>
+
+<div class="margintop2">&nbsp;</div>
 
 <table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="50%">
 <thead><th><ssf:nlt tag="administration.import.replace"/></th>
@@ -87,7 +87,7 @@
 <tr><td><input type="checkbox" name="template5ck"></td>
 <td><input type="file" size="80" class="ss_text" name="template5ck" ></td></tr>
 </tr></tbody></table>
-<div class="ss_divider"></div>
+<div class="margintop2"></div>
 
 <br/>
 <div class="ss_formBreak"/>
@@ -102,7 +102,7 @@
 </c:if>
 
 <c:if test="${ssOperation == 'reset'}">
-<div class="ss_divider"></div>
+<div class="margintop2">&nbsp;</div>
 <br>
 
 <form class="ss_style ss_form" method="post" 

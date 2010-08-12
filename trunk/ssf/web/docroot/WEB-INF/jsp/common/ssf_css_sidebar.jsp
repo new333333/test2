@@ -478,7 +478,6 @@ textarea.ss_input_myStatus {
 button { 
   	border:0; 
   	cursor:pointer; 
-  	padding:0 20px 0 0; 
   	text-align:center; 
 	}
 button span {
