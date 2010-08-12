@@ -1148,8 +1148,8 @@ body, table td, select
 }
 .searchOptionsDlg_AdvancedSearchPanel
 {
-		border-top: 1px solid #949494;
-		padding-top: 10px;
+	border-top: 1px solid #949494;
+	padding-top: 10px;
 }
 .searchOptionsDlg_CloseA
 {
@@ -1158,8 +1158,8 @@ body, table td, select
 .searchOptionsDlg_CloseImg
 {
 	position: absolute;
-	right: 4px;
-	top: 4px;
+	right: 10px;
+	top: 5px;
 }
 .searchOptionsDlg_Content
 {
