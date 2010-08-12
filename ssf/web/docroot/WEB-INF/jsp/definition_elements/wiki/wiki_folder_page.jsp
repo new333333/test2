@@ -60,7 +60,7 @@
           name="namespace" value="${renderResponse.namespace}"/></ssf:url>" 
         <ssf:title tag="title.open.folderEntry">
 	      <ssf:param name="value" useBody="true"><c:choose><c:when 
-	        test="${!empty entry1.title}">${entry1.title}</c:when><c:otherwise>--<ssf:nlt 
+	        test="${!empty entry1.title}"><c:out value="${entry1.title}" escapeXml="true"/></c:when><c:otherwise>--<ssf:nlt 
 	        tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
         </ssf:title>
         onClick="ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
@@ -68,7 +68,7 @@
       ><span id="folderLineSeen_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
         >--<ssf:nlt tag="entry.noTitle"/>--</span
       ></c:if><span id="folderLineSeen_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
-        ><c:out value="${entry1.title}"/></span></a>
+        ><c:out value="${entry1.title}" escapeXml="true"/></span></a>
     </div>
     <c:if test="${!secondColumn && fn:length(ssFolderEntries) > 1 && status.count >= fn:length(ssFolderEntries)/2 }">
       <c:set var="secondColumn" value="true" />
