@@ -36,8 +36,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <table class="ss_surveys_list">
-	<tr>
-		<th>
+	<tr class="ss_tableheader_style">
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -112,7 +112,7 @@
 </c:if>		
 		
 		</th>
-		<th>
+		<th colspan="2">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -163,7 +163,7 @@
 			</c:if>
 				
 			<tr>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<span class="ss_entryTitle ss_normalprint">
 					
 		   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
@@ -171,7 +171,7 @@
 						  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
 						  title="<ssf:nlt tag="sunburst.click"/>"
 						  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-						><span 
+						><span
 						  style="display:${ss_sunburstVisibilityHide};"
 						  id="ss_sunburstShow${renderResponse.namespace}" 
 						  class="ss_fineprint">
@@ -181,28 +181,29 @@
 											    
 						<% } %>
 					
-						<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
-						binderId="${entry._binderId}" entityType="${entry._entityType}" 
-						namespace="${renderResponse.namespace}">
-						
-							<ssf:param name="url" useBody="true">
-								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-								action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-							</ssf:param>
-						
-							<c:out value="${entry.title}" escapeXml="false"/>
-						</ssf:titleLink>
+							<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
+							binderId="${entry._binderId}" entityType="${entry._entityType}" 
+							namespace="${renderResponse.namespace}">
+							
+								<ssf:param name="url" useBody="true">
+									<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+									action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+								</ssf:param>
+							
+								<c:out value="${entry.title}" escapeXml="false"/>
+							</ssf:titleLink>
 					</span>
 				</td>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<ssf:showUser user="${entry._principal}" />
 				</td>
-				<td ${tdClass}>
+				<td ${tdClass} style="white-space: nowrap; border-bottom: solid 1px #D2D5D1; font-size: 12px !important; padding: 4px 10px 2px 3px;">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
 					<c:if test="${overdue}">
 						<ssf:nlt tag="survey.overdue"/>
 					</c:if>		
 				</td>
+				<td class="ss_fixed_TD ss_nowrap" width="100%">&nbsp;</td>				
 			</tr>
 		</c:forEach>
 	</c:if>

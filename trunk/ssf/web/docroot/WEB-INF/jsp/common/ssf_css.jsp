@@ -1205,7 +1205,7 @@ table.ss_mouseOverInfo {
 .ss_fixed_TD{
 	border-bottom: solid 1px #D2D5D1;
 	font-size: 12px !important;
-	padding: 4px 10px 2px 3px;
+	padding: 4px 10px 4px 4px;
 	}
 .ss_fixed_TD_left{
 	padding-left: 4px;
@@ -1241,6 +1241,9 @@ table.ss_mouseOverInfo {
 	background-position:bottom;
 	text-decoration: none;
 	}
+.ss_tableheader_style th {
+	padding: 4px;
+	}	
 .ss_tableheader_style a, th.ss_sliding_table_row0 a, .ss_title_menu {
 	color: #fff;
 	}
@@ -4016,20 +4019,21 @@ div.ss_content_outer table.ss_milestones_list, div.ss_content_outer table.ss_sur
 
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
-	margin-top:6px;
 	padding: 0px;
 }
-table.ss_surveys_list th, table.ss_milestones_list th {
+table.ss_surveys_list th-table.ss_milestones_list th {
 	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
 	text-align: left;
 	padding: 3px 3px 3px 3px;
 }
-table.ss_surveys_list td, table.ss_milestones_list td {
+
+/*  table.ss_surveys_list td, table.ss_milestones_list td {
 	padding: 6px 3px 6px 3px;
 	border-bottom: 1px solid #b8b8b8;
-}
+}  */
+
 div.ss_questionContainer input.ss_survay_checkbox, div.ss_questionContainer input.ss_survay_radio {
 	width:20px;
 	vertical-align:bottom;
