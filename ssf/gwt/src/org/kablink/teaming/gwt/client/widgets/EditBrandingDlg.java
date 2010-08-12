@@ -978,6 +978,8 @@ public class EditBrandingDlg extends DlgBox
 					// When we get the response, updateListOfFileAttachments() will be called.
 					getListOfFileAttachmentsFromServer();
 
+					m_addFileAttachmentDlg.hide();
+					
 					return true;
 				}// end editSuccessful()
 			};

@@ -101,7 +101,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				// The binder was indeed deleted.  Finish it up.
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");			
 			}
-		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn")) && WebHelper.isMethodPost(request)) {
+		} else if ((formData.containsKey("okBtn") || formData.containsKey("applyBtn") || formData.containsKey( "gwtAddFileAttachment")) && WebHelper.isMethodPost(request)) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			
 				//	The modify form was submitted. Go process it
 				Map fileMap = null;
@@ -130,8 +130,12 @@ public class ModifyBinderController extends AbstractBinderController {
 		   		}
 		   		try {
 		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts, null);				
-		   			if (formData.containsKey("okBtn")) setupReloadOpener(response, binderId);	
-		   			if (formData.containsKey("applyBtn")) response.setRenderParameters(formData);
+		   			if (formData.containsKey("okBtn"))
+		   				setupReloadOpener(response, binderId);	
+		   			if (formData.containsKey("applyBtn"))
+		   				response.setRenderParameters(formData);
+		   			if ( formData.containsKey( "gwtAddFileAttachment" ) )
+		   				response.setRenderParameters( formData );
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
 		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
@@ -201,6 +205,14 @@ public class ModifyBinderController extends AbstractBinderController {
 			model.put(WebKeys.BINDER, binder);
 			path = WebKeys.VIEW_CONFIRM_DELETE_MIRRRED_BINDER;
 		} else {
+			String btn;
+			
+			btn = PortletRequestUtils.getStringParameter( request, "gwtAddFileAttachment", "");
+			if ( btn != null && btn.length() > 0 )
+			{
+				return new ModelAndView( "forum/success", model );
+			}
+
 			Binder binder = getBinderModule().getBinder(binderId);
 //			String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE, "");
 
