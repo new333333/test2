@@ -36,8 +36,8 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <table class="ss_milestones_list">
-	<tr>
-		<th>
+	<tr class="ss_tableheader_style">
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -74,7 +74,7 @@
 			    </a>
 </c:if>		
 		</th>
-		<th>
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -111,7 +111,7 @@
 			    </a>
 </c:if>				
 		</th>
-		<th>
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -148,7 +148,7 @@
 			    </a>
 </c:if>			
 		</th>
-		<th>
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 					name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -185,7 +185,7 @@
 			    </a>
 </c:if>		
 		</th>
-		<th>
+		<th class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -224,7 +224,7 @@
 		</th>
 	</tr>
 	<c:if test="${empty ssFolderEntries}">
-		<tr><td colspan="5"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
+		<tr><td colspan="5" class="ss_fixed_TD ss_nowrap"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
 	</c:if>
 	<c:if test="${!empty ssFolderEntries}">
 		<c:forEach var="entry" items="${ssFolderEntries}" >
@@ -243,7 +243,7 @@
 			</c:if>
 			
 			<tr>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<span class="ss_entryTitle ss_normalprint">
 					
 	   					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
@@ -274,14 +274,14 @@
 						</ssf:titleLink>
 					</span>
 				</td>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<ul class="ss_nobullet">
 					<c:forEach var="principal" items='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("responsible"), false) %>' >
 						<li><ssf:showUser user="${principal}" /></li>
 					</c:forEach>
 					</ul>
 				</td>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<ul class="ss_nobullet">
 						<c:forEach var="selection" items='<%= org.kablink.teaming.util.ResolveIds.getBinderTitlesAndIcons(entry.get("tasks")) %>' varStatus="status">
 							<li><a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
@@ -320,7 +320,7 @@
 						</c:forEach>
 					</ul>
 				</td>
-				<td>
+				<td class="ss_fixed_TD ss_nowrap">
 					<%
 						java.util.Map statusCaptions = org.kablink.teaming.web.util.DefinitionHelper.findSelectboxSelectionsAsMap("status", (String)entry.get("_commandDef"));
 						String caption = (String)statusCaptions.get(entry.get("status"));
@@ -330,7 +330,7 @@
 					<ssf:nlt tag="<%= caption %>"/>
 					<%  }  %>
 				</td>
-				<td ${tdClass}>
+				<td width="100%" ${tdClass}  style="white-space: nowrap;	border-bottom: solid 1px #D2D5D1;font-size: 12px !important; padding: 4px 10px 2px 3px;">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry.due_date}" type="both" dateStyle="medium" timeStyle="short" />
 					<c:if test="${overdue && entry.status != 'completed'}">
 						<ssf:nlt tag="milestone.overdue"/>
