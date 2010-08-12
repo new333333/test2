@@ -4585,7 +4585,6 @@ table.ssMeetingRecords .ssHeader {
 	margin: 0px;		/* see also ss_content_outer */
 	padding:0px;
 	border:0px solid white;
-	background: white;
 }
 .ss_pseudoPortalUpperRightToolbar {
     position:relative;
