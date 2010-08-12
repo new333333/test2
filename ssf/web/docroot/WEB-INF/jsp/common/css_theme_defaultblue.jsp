@@ -269,7 +269,7 @@
   --
   -- REPLYS
   --
---%><c:set var="ss_replies_background_color" value="#e9f1f1" scope="request"/><%--
+--%><c:set var="ss_replies_background_color" value="#ebf5f5" scope="request"/><%--
 --%><%--
   --
   -- TITLE
