@@ -34,6 +34,10 @@
 	 */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp"%>
+<c:set var="presenceAltText" value="${ss_presence_text}" />
+<c:if test="${ss_presence_show_hint}">
+  <c:set var="presenceAltText" >${ss_presence_user.title}</c:set>
+</c:if>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet"%>
 <%@ taglib prefix="portletadapter"
@@ -56,7 +60,7 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 		onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"><img
 		border="0" align="absmiddle"
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
-		alt="<c:out value="${ss_presence_text}"/>" /></a>
+		alt="<c:out value="${presenceAltText}"/>" /></a>
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -115,12 +119,12 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 		<c:set var="current" value="current" />
 	</c:if>
-	<a href="javascript: ;" title="<c:out value="${ss_presence_text}"/>"
+	<a href="javascript: ;" title="<c:out value="${presenceAltText}"/>"
 		class="ss_presence_dude"
 		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
 		border="0" align="absmiddle"
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
-		alt="<c:out value="${ss_presence_text}"/>" /></a>
+		alt="<c:out value="${presenceAltText}"/>" /></a>
 	<c:if test="${ss_presence_show_title}">
 		<ssf:ifadapter>
 			<c:if test="${ss_presence_workspace_predeleted}">
@@ -135,18 +139,21 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 						href="<ssf:permalink entity="${ss_presence_user}"/>"
 						onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 						id="${ss_presence_user.id}"
-						class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
-						user="${ss_presence_user}" /></span></a>
+						class="${ss_presence_title_style} ss_muster_users"
+						title="<c:out value="${presenceAltText}"/>"
+				    ><ssf:userTitle user="${ss_presence_user}" /></span></a>
 				</c:if>
 				<c:if test="${empty ss_presence_user.workspaceId}">
 					<c:if test="${!empty ss_presence_user.parentBinder.id}">
 						<a
 							<c:if test="${!empty ss_presence_target}">target="${ss_presence_target}"</c:if>
 							href="<ssf:url     
-			      binderId="${ss_presence_user.parentBinder.id}" 
-			      action="view_profile_entry" 
-			      entryId="${ss_presence_user.id}"><ssf:param 
-		  	      name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>">
+						      binderId="${ss_presence_user.parentBinder.id}" 
+						      action="view_profile_entry" 
+						      entryId="${ss_presence_user.id}"><ssf:param 
+					  	      name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>"
+					  	    title="<c:out value="${presenceAltText}"/>"
+					  	>
 						<span id="${ss_presence_user.id}"
 							class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 							user="${ss_presence_user}" /></span> </a>
@@ -163,12 +170,13 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 			<c:if test="${!empty ss_presence_user.workspaceId}">
 				<a
 					href="<ssf:url windowState="maximized"><ssf:param 
-	  	name="action" value="view_ws_listing"/><ssf:param 
-	  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
+					  	name="action" value="view_ws_listing"/><ssf:param 
+					  	name="binderId" value="${ss_presence_user.workspaceId}"/></ssf:url>"
 					onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><span
 					id="${ss_presence_user.id}"
-					class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
-					user="${ss_presence_user}" /></span></a>
+					class="${ss_presence_title_style} ss_muster_users"
+					title="<c:out value="${presenceAltText}"/>"
+				><ssf:userTitle user="${ss_presence_user}" /></span></a>
 			</c:if>
 			<c:if test="${empty ss_presence_user.workspaceId}">
 				<span id="${ss_presence_user.id}"

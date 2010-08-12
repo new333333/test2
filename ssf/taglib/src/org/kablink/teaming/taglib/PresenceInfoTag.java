@@ -63,6 +63,7 @@ import org.kablink.util.servlet.StringServletResponse;
 public class PresenceInfoTag extends BodyTagSupport {
     private Principal user = null;
     private Boolean showTitle = false;
+    private Boolean showHint = false;
     private Boolean workspacePreDeleted = false;
 	private String titleStyle = "";
 	private String target = "";
@@ -176,6 +177,7 @@ public class PresenceInfoTag extends BodyTagSupport {
 			// Pass the user status to the jsp
 			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
+			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_HINT, this.showHint);
 			httpReq.setAttribute(WebKeys.PRESENCE_WORKSPACE_PREDELETED, this.workspacePreDeleted);
 			httpReq.setAttribute(WebKeys.PRESENCE_TITLE_STYLE, this.titleStyle);
 			httpReq.setAttribute(WebKeys.PRESENCE_TARGET, this.target);
@@ -205,6 +207,7 @@ public class PresenceInfoTag extends BodyTagSupport {
 		finally {
 			userStatus = -1;
 			showTitle = false;
+			showHint = false;
 			workspacePreDeleted = false;
 			titleStyle="";
 			target="";
@@ -227,6 +230,9 @@ public class PresenceInfoTag extends BodyTagSupport {
 	}
 	public void setShowTitle(Boolean showTitle) {
 		this.showTitle = showTitle;
+	}
+	public void setShowHint(Boolean showHint) {
+		this.showHint = showHint;
 	}
 	public void setWorkspacePreDeleted(Boolean workspacePreDeleted) {
 		this.workspacePreDeleted = workspacePreDeleted;
