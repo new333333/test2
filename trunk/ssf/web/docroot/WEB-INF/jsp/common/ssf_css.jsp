@@ -792,6 +792,7 @@ div.ss_send_friend {
 }
 
 .ss_hover_over {
+  font-family: ${ss_style_title_font_family};
   position:absolute;
   border:1px solid #d6dede;
   margin:2px;
