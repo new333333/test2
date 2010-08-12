@@ -641,10 +641,13 @@ div.ss_replies{
 div.ss_replies_indent {
 	margin-left:20px;
 	}
-div.ss_replies_indent_picture {
+td.ss_replies_indent_picture {
 	width: 140px;
+	}
+td.ss_replies_indent_picture div {
 	overflow: hidden;
 	}
+	
 .ss_topic_replies{
 	padding-left: 10px;
 	padding-top: 25px;
@@ -654,4 +657,9 @@ div.ss_replies_indent_picture {
 	font-family: Arial, Helvetica, sans-serif;	
 	color:#5691A6!important;
 	}
-	  
+
+.ss_clipped_signature div.ss_entrySignatureUser {
+    width: 160px;
+    overflow: hidden;
+    padding-right: 4px;
+    }

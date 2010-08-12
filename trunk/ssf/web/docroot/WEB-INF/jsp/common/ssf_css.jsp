@@ -463,7 +463,7 @@ div.ss_entryContent a:hover {
 .ss_entryContent table {
   background-color:inherit;
   	}
-.ss_entrySignature {
+.ss_entrySignature, .ss_entrySignatureUser {
   	font-size: 11px;
   	padding-right: 5px;
   	color: ${ss_style_metadata_color};

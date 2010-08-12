@@ -34,6 +34,7 @@
 %><%--
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<div class="ss_clipped_signature">
 <c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
 	<table cellspacing="0" cellpadding="0" class="margintop1">
 		<tr>
@@ -56,7 +57,7 @@
 		<div class="ss_entryContent ss_entrySignature" style="padding-right:5px;"><ssf:nlt tag="entry.modifiedBy"/></div>
 	  </td>
 	  <td>
-		<div class="ss_entryContent ss_entrySignature"><ssf:showUser user="${ssDefinitionEntry.modification.principal}"/></div>
+		<div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
 	  </td>
 	  <td>
 		<div class="ss_entryContent ss_entrySignature">
@@ -78,7 +79,7 @@
 		  </span>
 	  </td>
 	  <td>
-		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/></b>
+		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true" /></b>
 		</div>
 	  </td>
 	  <td>
@@ -95,12 +96,8 @@
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
-<td valign="top">
-  <c:if test="${property_showPicture && !empty ssDefinitionEntry.top}">
-    <div 
-      <c:if test="${!ssDefinitionEntry.top}">class="ss_replies_indent_picture" </c:if>
-    >
-  </c:if>
+<td valign="top" <c:if test="${!ssDefinitionEntry.top}">class="ss_replies_indent_picture" </c:if> >
+  <div>
   <c:out value="${property_caption}" />
   <c:if test="${property_showPicture}">
 	<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
@@ -131,9 +128,9 @@
 			ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 		   <tr>
 			<td>
-				<div class="ss_entryContent ss_entrySignature margintop2">
+				<div class="ss_entryContent ss_entrySignatureUser margintop2">
 				  <div style="padding-right:8px; font-weight: bold;"><ssf:nlt tag="entry.modifiedBy"/></div>
-				  <div><ssf:showUser user="${ssDefinitionEntry.modification.principal}"/></div>
+				  <div><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
 				</div>
 				<div class="ss_entryContent ss_entrySignature" style="padding-left: 20px;">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -147,20 +144,18 @@
 		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 		   <tr>
 			<td>
-				<div class="ss_entryContent ss_entrySignature margintop3">
+				<div class="ss_entryContent ss_entrySignatureUser margintop3">
 				  <span style="padding-right:5px;">
 				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 				  </span>
-				  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+				  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 				</div>
 			</td>
 		   </tr>
 		  </c:if>
 		</table>
 
-  <c:if test="${property_showPicture}">
-    </div>
-  </c:if>
+  </div>
 </td>
 <td style="padding-left:10px;">
 <c:if test="${!empty ssConfigDefinition}">
@@ -186,7 +181,9 @@
 				<c:set var="property_caption" value=""/>
 			  </td>
 			  <td>
+			    <div style="overflow:hidden; width:140px;"
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
+				</div>
 			  </td>
 			  <td>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
@@ -196,13 +193,13 @@
 				ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 			   <tr>
 				<td>
-				  <div class="ss_entrySignature">
+				  <div class="ss_entrySignatureUser">
 					<span><ssf:nlt tag="entry.modifiedBy"/></span>
 				  </div>
 				</td>
 				<td>
-				  <div class="ss_entrySignature">
-					<ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
+				  <div class="ss_entrySignatureUser">
+					<ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</td>
 				<td>
@@ -218,27 +215,27 @@
 			  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 			   <tr>
 				<td colspan="3">
-				  <div class="ss_entrySignature margintop3">
+				  <div class="ss_entrySignatureUser margintop3">
 					<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
-					<ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
+					<ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 				  </div>
 				</td>
 			  </tr>
-			  </c:if>
-
-			</table>
-		</td>
-		<td align="right" width="100%" valign="top">
+			</c:if>
+		</table>
+	</td>
+	<td align="right" width="100%" valign="top">
 		  <div>
 			<%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 		  </div>
-		</td>
-		</tr>
-		</table>
+	</td>
+  </tr>
+</table>
 		
-		<c:if test="${!empty ssConfigDefinition}">
-		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-		  configElement="${item}" 
-		  configJspStyle="${ssConfigJspStyle}" />
-		</c:if>
-		</c:if>
+	<c:if test="${!empty ssConfigDefinition}">
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}" />
+	</c:if>
+</c:if>
+</div>

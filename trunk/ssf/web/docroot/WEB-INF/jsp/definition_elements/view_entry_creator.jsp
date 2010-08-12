@@ -34,10 +34,10 @@
 %>
 <% //Entry creator view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent ss_entrySignature">
+<div class="ss_entryContent ss_entrySignatureUser">
   <c:out value="${property_caption}" />
 <c:if test="${!empty ssDefinitionEntry.creation.principal}">
-    <ssf:showUser user="${ssDefinitionEntry.creation.principal}"/>
+    <ssf:showUser user="${ssDefinitionEntry.creation.principal}" showHint="true" />
 
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <br/>
