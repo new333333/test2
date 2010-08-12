@@ -4020,14 +4020,15 @@ table.ss_surveys_list, table.ss_milestones_list {
 	padding: 0px;
 }
 table.ss_surveys_list th, table.ss_milestones_list th {
-	background-color: #dbe6f2;
-	border:1px solid #afc8e3;
+	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
+	background-position:bottom;
+	text-decoration: none;
 	text-align: left;
 	padding: 3px 3px 3px 3px;
 }
 table.ss_surveys_list td, table.ss_milestones_list td {
-	padding: 6px  3px 6px 3px;
-	border-bottom: 1px solid #afc8e3;
+	padding: 6px 3px 6px 3px;
+	border-bottom: 1px solid #b8b8b8;
 }
 div.ss_questionContainer input.ss_survay_checkbox, div.ss_questionContainer input.ss_survay_radio {
 	width:20px;
@@ -4044,7 +4045,7 @@ ul.ss_survey_users_list {
 }
 
 table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
-	color: #135c8f966;
+	color: #135c8f;
 }
 
 table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a {
