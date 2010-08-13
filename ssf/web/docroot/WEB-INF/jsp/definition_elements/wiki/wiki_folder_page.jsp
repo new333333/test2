@@ -35,6 +35,7 @@
       
 <c:forEach var="entry1" items="${ssFolderEntries}" varStatus="status" >
 	<jsp:useBean id="entry1" type="java.util.HashMap" />
+	<c:set var="seenStyleburst" value=""/>
 	<%
 		String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 		String seenStyle = "";
@@ -42,9 +43,19 @@
 		if (!ssSeenMap.checkIfSeen(entry1)) {
 			seenStyle = "ss_unseen";
 			seenStyleFine = "ss_unseen ss_fineprint";
+			%><c:set var="seenStyleburst" value="1"/><%
 		}
 	%>
     <div class="margintop2 marginleft2">
+	  <!-- Sunburst -->
+	  <c:if test="${!empty seenStyleburst}">
+	  	<a id="ss_sunburstDiv${ssBinder.id}_${entry1._docId}" href="javascript: ;" 
+	  		title="<ssf:nlt tag="sunburst.click"/>"
+	  		onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
+		><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+	  	  align="text-bottom" border="0" <ssf:alt tag="sunburst.click"/> />&nbsp;
+	    </a>
+	  </c:if>
       <a 
         href="<ssf:url     
           adapter="true" 
@@ -59,7 +70,7 @@
 	        test="${!empty entry1.title}"><c:out value="${entry1.title}" escapeXml="true"/></c:when><c:otherwise>--<ssf:nlt 
 	        tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
         </ssf:title>
-        onClick="ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
+        onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
       ><c:if test="${empty entry1.title}"
       ><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyleFine %>"
         >--<ssf:nlt tag="entry.noTitle"/>--</span
