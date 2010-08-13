@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -368,7 +368,8 @@
 									<c:when test="${count > 0}" > value="${count}" </c:when>
 									<c:otherwise> value="10" </c:otherwise>
 								</c:choose>
-								onfocus="${prefix}_checkRadio('${prefix}_rangeSel_count'); ${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_count'), '${prefix}_rangeSel_count_row'); " />
+								onfocus="${prefix}_checkRadio('${prefix}_rangeSel_count'); ${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_count'), '${prefix}_rangeSel_count_row'); "
+								onBlur="intRequiredBlur(this, INT_MODE_GT_ZERO, '<ssf:escapeJavaScript><ssf:nlt tag="event.error.integerRequired" /></ssf:escapeJavaScript>');" />
 						<label for="${prefix}_repeatCount"><ssf:nlt tag="event.times" /></label>
 					</td>
 				</tr>
@@ -440,6 +441,7 @@
 		${prefix}ssEventEditor.locale.weekday = "<ssf:nlt tag="calendar.day.names.weekday" />";
 		${prefix}ssEventEditor.locale.weekendday = "<ssf:nlt tag="calendar.day.names.weekendday" />";
 		${prefix}ssEventEditor.locale.weekFirstDayDefault = (Number( ${ssUser.weekFirstDayDefault} ) - 1);
+		${prefix}ssEventEditor.locale.integerRequired = "<ssf:escapeJavaScript><ssf:nlt tag="event.error.integerRequired" /></ssf:escapeJavaScript>";
 			
 		${prefix}ssEventEditor.setFrequency();
 	

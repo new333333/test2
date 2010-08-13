@@ -9047,6 +9047,196 @@ function ss_launchSimpleProfile(element, workspaceId, userName, errorText) {
 	return;
 }
 
+/*
+ * Deletes the character at index i from String s.
+ */
+function delCFromS(s, i) {
+	// Can we delete the i'th character from s?
+	if ((null != s) && (i < s.length)) {
+		var	sA;
+		var	sB;
+
+
+		// Yes!  Delete it.
+		sB = s.substring(0, i );	// Substring before the i'th character.
+		sA = s.substring(i + 1);	// Substring after  the i'th character.
+		return (sB + sA);
+	}
+
+
+	// If we get here, we couldn't delete the i'th character from s.
+	// Return null.
+	return null;
+}
+
+/*
+ * Selects the text in and gives the focus to a widget.
+ */
+function focusAndSelect(eElement) {
+	// Were we given an Element to select and give the focus to?
+	if (eElement) {
+		// Do it.
+		if (eElement.focus)  eElement.focus();
+		if (eElement.select) eElement.select();
+	}
+}
+
+/*
+ * Selects the text in and gives the focus to a widget.
+ */
+function focusAndSelectByID(sID) {
+	focusAndSelect(document.getElementById(sID));
+}
+
+/*
+ * Selects the text in and gives the focus to a widget.
+ */
+function focusAndSelectByID_Delayed(eID) {
+	window.setTimeout("focusAndSelectByID('" + eID + "' )", 500);
+}
+
+/*
+ * Does a string contain a value?
+ */
+function hasString(sValue) {
+	return((null != sValue) && (0 < sValue.length));
+}
+
+/*
+ * Is an element hidden?
+ */
+function isHidden(e) {
+	return(e.type && ("hidden" == e.type));
+}
+
+// Modes handled by intRequiredBlur().
+var	INT_MODE_ALL		= 0;		// Any integer, position or negative.
+var	INT_MODE_GE_ZERO	= 1;		// Any integer >= 0.
+var	INT_MODE_GT_ZERO	= 2;		// Any integer >  0.
+var	INT_MODE_LE_ZERO	= 3;		// Any integer <= 0.
+var	INT_MODE_LT_ZERO	= 4;		// Any integer <  0.
+var	INT_MODE_NE_ZERO	= 5;		// Any integer != 0.
+
+/*
+ * Set in a widget's onBlur event handler to mark it as requiring an
+ * integer value.
+ * 
+ * Note that we brute force this validation because building a
+ * validator around isNaN allows numbers to be in scientific
+ * notation, which are invalid as integers.
+ */
+function intRequiredBlur(eWidget, mode, sFixupMsg) {
+	var	aM;
+	var	c;
+	var	i;
+	var	l;
+	var	s;
+	var	sIn;
+
+
+	// Validate the mode that this integer can be.
+	if (!mode) mode = INT_MODE_ALL;
+	else       mode = Number(mode);
+	switch (mode) {
+	default:                mode = INT_MODE_ALL;	// Fall through.
+	case INT_MODE_ALL:      aM   = true;  break;
+	case INT_MODE_GE_ZERO:  aM   = false; break;
+	case INT_MODE_GT_ZERO:  aM   = false; break;
+	case INT_MODE_LE_ZERO:  aM   = true;  break;
+	case INT_MODE_LT_ZERO:  aM   = true;  break;
+	case INT_MODE_NE_ZERO:  aM   = true;  break;
+	}
+
+
+	// Scan the widget's value.
+	s   =
+	sIn = eWidget.value;
+	if (null == s) s = "";
+	l = s.length;
+	for (i = 0; i < l; i += 1) {
+		// What character are we on?
+		c = s.charAt(i);
+		switch (c) {
+		case '0':  case '1':  case '2':  case '3':  case '4':
+		case '5':  case '6':  case '7':  case '8':  case '9':
+			// A digit.  Leave it alone.
+			break;
+
+
+		case '-':
+			// A minus sign.  Is this the first character when a minus
+			// sign is allowed?
+			if ((0 == i) && aM) {
+				// Yes!  Leave it alone.
+				break;
+			}
+
+			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+			// Fall through and handle with the default case.  This  //
+			// will delete this invalid minus sign.                  //
+			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+
+		default:
+			// This character isn't part of an integer.  Delete it...
+			s = delCFromS(s, i);
+
+			// ...adjust the index and length to account for the
+			// ...deletion...
+			i -= 1; l -= 1;
+
+			// ...and continue on.
+			break;
+		}
+	}
+
+
+	// After validating, do we still have a value?
+	if (hasString(s)) {
+		// Yes!  Is it valid for the INT_MODE_... that was specified?
+		i = Number(s);
+		switch (mode) {
+		case INT_MODE_ALL:                          break;	//   Valid.
+		case INT_MODE_GE_ZERO:  if (0 >  i) s = ""; break;	// Invalid.
+		case INT_MODE_GT_ZERO:  if (0 >= i) s = ""; break;	// Invalid.
+		case INT_MODE_LE_ZERO:  if (0 <  i) s = ""; break;	// Invalid.
+		case INT_MODE_LT_ZERO:  if (0 <= i) s = ""; break;	// Invalid.
+		case INT_MODE_NE_ZERO:  if (0 == i) s = ""; break;	// Invalid.
+		}
+	}
+
+
+	// Did we change the value of the string we pulled from eWidget?
+	if (s != sIn) {
+		var	eWidgetHidden;
+		
+		
+		// Yes!  Store it...
+		eWidget.value = s;
+		eWidgetHidden = isHidden(eWidget);
+		if (!eWidgetHidden) focusAndSelect(eWidget);
+
+		// ...and if we supposed to tell the user that we changed
+		// ...the value...
+		if (sFixupMsg && hasString(sFixupMsg)) {
+			// ...tell them...
+			alert(sFixupMsg);
+
+			// ...and give the widget the focus again AFTER having
+			// ...displayed the fixup message.
+			if (!eWidgetHidden) {
+				var	sID;
+
+
+				sID = eWidget.getAttribute("id");
+				if (hasString(sID))
+					 focusAndSelectByID_Delayed(sID    );
+				else focusAndSelect(            eWidget);
+			}
+		}
+	}
+}
+
 
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
