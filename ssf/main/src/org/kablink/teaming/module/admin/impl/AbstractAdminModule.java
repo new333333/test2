@@ -902,6 +902,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
 		}
     	User user = RequestContextHolder.getRequestContext().getUser();
+   		String userName = Utils.getUserTitle(user);
 		List errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
@@ -920,9 +921,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			for (String e: emailAddresses) {
 				if (!Validator.isNull(e)) {
 					try {
-						emailSet.add(new InternetAddress(e.trim()));
+						InternetAddress ia = new InternetAddress(e.trim());
+						ia.validate();
+						emailSet.add(ia);
 					} catch (Exception ex) {
-						errors.add(NLT.get("errorcode.badToAddress", new Object[] {"", e, ex.getLocalizedMessage()}));						
+						errors.add(NLT.get("errorcode.badToAddress", new Object[] {userName, e, ex.getLocalizedMessage()}));						
 					}
 				}
 			}
@@ -941,7 +944,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        			fromEMA = user.getEmailAddress();
        		}
        		InternetAddress ia = new InternetAddress(fromEMA);
-       		String userName = Utils.getUserTitle(user);
        		if ((null != userName) && (0 < userName.length())) {
        			ia.setPersonal(userName);
        		}
