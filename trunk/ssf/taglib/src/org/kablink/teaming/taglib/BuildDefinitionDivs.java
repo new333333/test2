@@ -46,6 +46,7 @@ import javax.servlet.ServletRequest;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1428,6 +1429,24 @@ public class BuildDefinitionDivs extends TagSupport {
 
 				}
 			} 
+			
+			//remove the customJsp field only for the _user definition with profile GWT View
+			boolean bCustomJSP = true;
+			Node userNode = sourceRoot.selectSingleNode("//definition[@name='_user']");
+			if(userNode != null){
+				Node typeNode = sourceRoot.selectSingleNode("//definition/properties/property[@name='type']");
+				if(typeNode != null) {
+					String value = ((Element)typeNode).attributeValue("value");
+					if(value != null && value.equals("profileGWT")){
+						bCustomJSP = false;
+					}
+				}
+			} 
+			
+			if(!bCustomJSP){
+				return;
+			}
+			
 			String display=rootConfigElement.attributeValue("display");
 			if (!Validator.isNull(display)) {
 				if ("form".equals(display)) {
