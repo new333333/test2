@@ -433,10 +433,10 @@ a.ss_new_thread:hover {
 	}	
 .ss_navbar_inline ul li{
 	display: inline!important;
-	margin-right: 12px!important;
+	margin-right: 10px!important;
+	line-height: 1.5em;
 	}
 .ss_navbar_inline ul a{
-	color:#666666;
 	}	
 .ss_navbar_inline ul a:active{
 /*	font-weight:bold;	*/

@@ -105,3 +105,10 @@ div.ss_wiki_sidebar_box {
 .ss_wiki_sidebar table {
 	background-color: transparent;
 }
+
+.ss_wiki_folder_list {
+	font-size: 12px !important;
+	border-top: 1px solid #D2D5D1;
+	border-bottom: 1px solid #D2D5D1;
+	padding: 5px 0px 10px 0px;
+	}
