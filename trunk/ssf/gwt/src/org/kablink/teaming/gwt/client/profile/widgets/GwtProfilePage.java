@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
@@ -110,8 +111,11 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		//Register with GwtMainPage, so we can fire an event
 		try {
-			GwtClientHelper.jsRegisterActionHandler(this);
+			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
 		} catch(Exception e) {
+			if(GwtClientHelper.jsIsIE()) {
+				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
+			}
 		}
 
 		createProfileInfoSections();
