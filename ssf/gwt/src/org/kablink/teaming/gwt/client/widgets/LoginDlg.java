@@ -69,6 +69,8 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 
 
 /**
@@ -90,6 +92,7 @@ public class LoginDlg extends DlgBox
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
 	private AsyncCallback<GwtSelfRegistrationInfo> m_rpcGetSelfRegInfoCallback = null;
+	private int m_submitCount;
 
 	/**
 	 * 
@@ -170,6 +173,22 @@ public class LoginDlg extends DlgBox
 		m_formPanel.setAction( m_loginUrl );
 		m_formPanel.setMethod( FormPanel.METHOD_POST );
 		DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
+		
+		// Chrome will submit the form when the user presses enter.  Our key-up handler will also
+		// submit the form when we see the enter key.  Add an addSubmitHandler() to prevent
+		// the form from being submitted twice.
+		m_submitCount = 0;
+		m_formPanel.addSubmitHandler( new FormPanel.SubmitHandler()
+		{
+			public void onSubmit(SubmitEvent event)
+			{
+				++m_submitCount;
+				if ( m_submitCount > 1 )
+				{
+					event.cancel();
+				}
+			}
+		});
 		
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
@@ -505,6 +524,8 @@ public class LoginDlg extends DlgBox
 		
 		super.show();
 		
+		m_submitCount = 0;
+		
 		cmd = new Command()
 		{
 			public void execute()
@@ -541,15 +562,23 @@ public class LoginDlg extends DlgBox
 	 */
 	private void submitLoginRequest()
 	{
-		// Hide the "login failed" message.
-		hideLoginFailedMsg();
+		Command cmd;
 		
-		// Show the the "authenticating..." message.
-		showAuthenticatingMsg();
-		
-		// Submit the form requesting authentication.
-		m_formPanel.submit();
-		
+		cmd = new Command()
+		{
+			public void execute()
+			{
+				// Hide the "login failed" message.
+				hideLoginFailedMsg();
+				
+				// Show the the "authenticating..." message.
+				showAuthenticatingMsg();
+				
+				// Submit the form requesting authentication.
+				m_formPanel.submit();
+			}
+		};
+		DeferredCommand.addCommand( cmd );
 	}// end submitLoginRequest()
 	
 	
