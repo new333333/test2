@@ -441,6 +441,7 @@ function setStateMachine(newState) {
 		loadDiv('copyDefinition', "", "")
 	} else if (state == "deleteDefinition") {
 		ss_setDivHtml("displaydiv", "")
+		ss_addToDiv("displaydiv", "delete_item")
 		showDisplayButtons()
 		loadDiv('deleteDefinition', "", "")
 	} else if (state == "viewItem") {
