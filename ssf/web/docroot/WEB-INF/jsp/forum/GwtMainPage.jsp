@@ -70,6 +70,41 @@
 			topWSId: '${topWSId}'
 		};
 
+		// Initialize tinyMCE.  This must be done here so that tinyMCE can bring in the other
+		// necessary js files.
+		tinyMCE.init(
+		{
+			mode : "none",
+			editor_selector : "mceEditable_standard",
+			theme : "advanced", 
+		    language : '${ssUser.locale.language}',
+			content_css : "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
+			relative_urls : false, 
+			remove_script_host : false,
+			// document_base_url : "<ssf:fileUrl entity="${ssDefinitionEntry}" baseUrl="true"/>",
+			width : "100%",
+			accessibility_warnings : true,
+			accessibility_focus : true,
+			entities :  "39,#39,34,quot,38,amp,60,lt,62,gt",
+			gecko_spellcheck : true,
+			plugins : "compat2x,pdw,table,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
+			theme_advanced_toolbar_location : "top",
+			theme_advanced_toolbar_align : "left", 
+			theme_advanced_statusbar_location : "bottom", 
+			theme_advanced_resizing: true, 
+			convert_fonts_to_spans: true,
+			theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
+			theme_advanced_buttons1_add: "",
+			theme_advanced_buttons2_add: "|,ss_addimage,ss_wikilink,ss_youtube",
+			theme_advanced_path: false,
+			pdw_toggle_on : 1,
+			pdw_toggle_toolbars : "2",
+			// pdw_element_id : "ss_htmleditor_${element_name}",
+			theme_advanced_resizing_use_cookie : true
+		} );
+
+		
+
 		var ss_workareaIframeMinOffset = 12;
 		function ss_setWorkareaIframeSize() {
 			//If possible, try to directly set the size of the iframe
