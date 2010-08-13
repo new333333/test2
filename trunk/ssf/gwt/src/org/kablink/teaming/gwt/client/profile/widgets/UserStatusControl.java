@@ -74,6 +74,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private InlineLabel textAmount; 
 	private int totalChar = 0;
 	private InlineLabel limitExceeded;
+	private boolean savingUserStatusInProgress = false;;
 
 	public UserStatusControl () {
 
@@ -205,6 +206,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 
 	private void setUserStatus(final String status) {
 		
+		if( savingUserStatusInProgress )
+			return;
+		
 		AsyncCallback<Boolean> rpcCallback = new AsyncCallback<Boolean>(){
 
 			public void onFailure(Throwable t) {
@@ -212,6 +216,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 					t,
 					GwtTeaming.getMessages().rpcFailure_SetStatus(),
 					getBinderId());
+				
+				savingUserStatusInProgress = false;
 			}
 
 			public void onSuccess(Boolean result) {
@@ -233,6 +239,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				} else {
 					showStatus(false);
 				}
+				
+				savingUserStatusInProgress = false;
 			}
 			
 		};
@@ -247,6 +255,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		{
 			GwtRpcServiceAsync rpcService;
 			rpcService = GwtTeaming.getRpcService();
+			
+			savingUserStatusInProgress = true;
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
