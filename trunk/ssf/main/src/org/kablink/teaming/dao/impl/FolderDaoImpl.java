@@ -734,6 +734,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 		}
 			
 		//delete logs
+		if (tokenIds.isEmpty()) return;
 		session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
   			.setParameterList("pList", tokenIds)
  			.executeUpdate();
