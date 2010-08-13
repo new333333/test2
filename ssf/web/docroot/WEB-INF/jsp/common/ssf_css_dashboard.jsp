@@ -679,7 +679,7 @@ div.item-sub a {
 	margin-right: 4px;
 	}
 #ss_tabsC a {
-	color: #000 !important;
+	color: #fff !important;
       }
 #ss_tabsC a span {
     display:block;

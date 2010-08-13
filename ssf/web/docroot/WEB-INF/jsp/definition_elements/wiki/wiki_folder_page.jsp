@@ -32,11 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-	<table cellspacing="0" cellpadding="0" width="100%">
-	  <tbody>
-	    <tr>
-	      <td valign="top">
-	      
+      
 <c:forEach var="entry1" items="${ssFolderEntries}" varStatus="status" >
 	<jsp:useBean id="entry1" type="java.util.HashMap" />
 	<%
@@ -48,7 +44,7 @@
 			seenStyleFine = "ss_unseen ss_fineprint";
 		}
 	%>
-    <div style="padding:0px 4px 4px 8px;">
+    <div class="margintop2 marginleft2">
       <a 
         href="<ssf:url     
           adapter="true" 
@@ -65,16 +61,11 @@
         </ssf:title>
         onClick="ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
       ><c:if test="${empty entry1.title}"
-      ><span id="folderLineSeen_${entry1._docId}" class="ss_smallprint <%= seenStyleFine %>"
+      ><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyleFine %>"
         >--<ssf:nlt tag="entry.noTitle"/>--</span
-      ></c:if><span id="folderLineSeen_${entry1._docId}" class="ss_smallprint <%= seenStyle %>"
+      ></c:if><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyle %>"
         ><c:out value="${entry1.title}" escapeXml="true"/></span></a>
     </div>
-    <c:if test="${!secondColumn && fn:length(ssFolderEntries) > 1 && status.count >= fn:length(ssFolderEntries)/2 }">
-      <c:set var="secondColumn" value="true" />
-	  </td>
-	  <td valign="top">
-	</c:if>
     
 </c:forEach>
     

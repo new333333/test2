@@ -46,25 +46,7 @@
 
 	<table class="ss_wiki_search_bar">
 	  <tr>
-	    <td valign="baseline">
-	      <c:if test="${!empty ss_wikiHomepageEntryId}">
-		    <a class="ss_linkButton" href="<ssf:url     
-			    adapter="true" 
-			    portletName="ss_forum" 
-			    folderId="${ssFolder.id}" 
-			    action="view_folder_entry" 
-			    entryId="${ss_wikiHomepageEntryId}" 
-			    actionUrl="true"><ssf:param
-			    name="entryViewStyle" value="popup"/><ssf:param
-			    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
-			    name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
-			    <ssf:title tag="title.open.folderEntrySimple" />
-			    onclick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}', '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');return false;" 
-			><ssf:nlt tag="wiki.homePage"/></a>
-	      </c:if>
-	    </td>
-	    
-	    <td valign="baseline">        
+	    <td align="right">        
 	      <c:if test="${ssConfigJspStyle != 'template'}">
 		    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
 		    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
@@ -85,62 +67,62 @@
 		    </form>
 		  </c:if>
 		</td>
-
 	  </tr>
 	</table>
 	
 	
-	<div style="padding:10px 0px 10px 0px;">
-	<table cellspacing="0" cellpadding="0">
-	  <tbody>
-	    <tr>
-	      <th align="left">
-		    <span>
-		      <ssf:nlt tag="wiki.topics"/>
-		    </span>
-		  </td>
-		</tr>
-		
-		<tr>
-		  <td>
-			 <div class="ss_navbar_inline">
-				<ul>
-			     <c:forEach var="blogPage" items="${ssBlogPages}">
-		 		   <li>
-			           <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
-							   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
-						  href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
-			           >${blogPage.title}</a>
-			       </li>
-			     </c:forEach>
-			    </ul>
-		    </div>
-		  </td>
-		</tr>
-		
-	  </tbody>
-	</table>
+	<div class="ssPageNavi" style="margin-top: 3px; padding:5px 10px;">
+		<table cellspacing="0" cellpadding="0">
+		  <tbody>
+			<tr>
+			  <th>
+				<span class="ss_nowrap"><ssf:nlt tag="wiki.topics"/></span>
+			  </td>
+			  <td>
+				 <div class="ss_navbar_inline">
+					<ul>
+					 <c:forEach var="blogPage" items="${ssBlogPages}">
+					   <li>
+						   <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
+								   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
+							  href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
+						   >${blogPage.title}</a>
+					   </li>
+					 </c:forEach>
+					</ul>
+				</div>
+			  </td>
+			</tr>
+			
+		  </tbody>
+		</table>
 	</div>
 
-	<table cellspacing="0" cellpadding="0" width="100%">
-	  <tbody>
-	    <tr>
-	      <th align="left">
-		    <span>
-		      <ssf:nlt tag="wiki.pages"/>
-		    </span>
-		  </td>
-		</tr>
-		
-		<tr>
-		  <td>
-			<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_folder_list">
-		      <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
-		    </div>
-		  </td>
-		</tr>
-	  </tbody>
-	</table>
+	<div class="margintop3" style="padding: 5px 10px">
+		<div class="ss_size_12px ss_bold">
+		  <span><ssf:nlt tag="wiki.pages"/></span>
+		  <span>
+				<c:if test="${!empty ss_wikiHomepageEntryId}">
+					<a class="ss_linkButton" href="<ssf:url     
+						adapter="true" 
+						portletName="ss_forum" 
+						folderId="${ssFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ss_wikiHomepageEntryId}" 
+						actionUrl="true"><ssf:param
+						name="entryViewStyle" value="popup"/><ssf:param
+						name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
+						name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+						<ssf:title tag="title.open.folderEntrySimple" />
+						onclick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}', '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');return false;" 
+					><ssf:nlt tag="wiki.homePage"/></a>
+				  </c:if>		  
+		  </span>
+		</div>
+		<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_folder_list margintop3">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
+		</div>
+	</div>
 		
 
     <c:if test="${0 == 1}">
