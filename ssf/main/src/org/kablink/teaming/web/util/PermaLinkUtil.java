@@ -74,6 +74,17 @@ public class PermaLinkUtil {
 		getPermalinkURL(url, entity.getId(), entity.getEntityType());
 		return url.toString();
 	}
+	
+	/**
+	 * 
+	 */
+	public static String getPermalink( HttpServletRequest request, Long entityId, EntityIdentifier.EntityType entityType )
+	{
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL( request, "ss_forum", true, false );
+		getPermalinkURL(adapterUrl, entityId, entityType);
+		return adapterUrl.toString();
+	}
+
 	public static String getPermalink(Long entityId, EntityIdentifier.EntityType entityType) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		getPermalinkURL(adapterUrl, entityId, entityType);

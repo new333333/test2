@@ -226,7 +226,7 @@ public class LoginFilter  implements Filter {
 			Long binderId = homePageConfig.getDefaultGuestHomePageId();
 			if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
 			if (binderId != null) {
-				return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+				return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
 			}
 		} else if (!WebHelper.isGuestLoggedIn(req)) {
 			//This user is logged in. Look for a default home page
@@ -240,7 +240,7 @@ public class LoginFilter  implements Filter {
 						if (userHomePageId != null) {
 							//The user has defined a home page. See if it is accessible
 							Binder binder = getBinderModule().getBinder(userHomePageId);
-							return PermaLinkUtil.getPermalink(userHomePageId, EntityType.folder);
+							return PermaLinkUtil.getPermalink(req, userHomePageId, EntityType.folder);
 						}
 						return null;
 					}
@@ -256,7 +256,7 @@ public class LoginFilter  implements Filter {
 							//See if this binder exists and is accessible. 
 							//  If not, go to the user workspace page instead
 							Binder binder = getBinderModule().getBinder(binderId);
-							return PermaLinkUtil.getPermalink(binderId, EntityType.folder);
+							return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
 						}
 					}, WebHelper.getRequiredZoneName(req), WebHelper.getRequiredUserId(req));									
 				} catch(Exception e) {}
