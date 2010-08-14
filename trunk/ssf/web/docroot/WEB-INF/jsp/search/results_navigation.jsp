@@ -34,26 +34,12 @@
 %>
 
 
-			<div class="ss_searchResult_numbers ssVisibleEntryNumbers">			
-				<c:choose>
-				  <c:when test="${ssTotalRecords == '0'}">
-					[<ssf:nlt tag="search.NoResults" />]
-				  </c:when>
-				  <c:otherwise>
-					<ssf:nlt tag="search.results">
-					<ssf:param name="value" value="${ssPageStartIndex}"/>
-					<ssf:param name="value" value="${ssPageEndIndex}"/>
-					<ssf:param name="value" value="${ssTotalRecords}"/>
-					</ssf:nlt>
-				  </c:otherwise>
-				</c:choose>
-			</div>
-			<div class="ss_paginator"> 
+			<div class="ss_paginator margintop2" style="margin-bottom: 5px;"> 
 			
 			<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 				<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
 				<input class="form-text" type="text" size="4" id="ssGoToPageInput${renderResponse.namespace}"/>
-				<a class="ss_linkButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput${renderResponse.namespace}'); return false;" href="javascript: ;"><ssf:nlt tag="button.go"/></a>
+				<a class="ss_tinyButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput${renderResponse.namespace}'); return false;" href="javascript: ;"><ssf:nlt tag="button.go"/></a>
 			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">

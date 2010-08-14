@@ -39,27 +39,50 @@
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
-				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_basic" /></h4>
-				<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-					name="tabTitle" value=""/><ssf:param 
-					name="newTab" value="1"/><ssf:param 
-					name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
-					name="operation" value="ss_searchResults"/><ssf:param 
-					name="showAdvancedSearchForm" value="true"/></ssf:url>" 
-					class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
-				<div class="ss_clear"></div>
+				<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_basic" /></div>
 								
 				<table>
-					<tr><th><ssf:nlt tag="searchForm.searchText"/>:</th>
-						<td><input type="text" name="searchText" value="<ssf:escapeQuotes>${ss_filterMap.searchText}</ssf:escapeQuotes>" id="searchText_adv"/></td>
-						<td>
-							<a class="ss_searchButton" 
-							  href="javascript: document.getElementById('advSearchForm').submit();" ><img 
-							  src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /> <ssf:nlt tag="searchForm.button.label"/></a> 
+					<tr>
+						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.quicksearch.Title"/></th>
+						<td colspan="2"><input type="text" name="searchText" value="<ssf:escapeQuotes>${ss_filterMap.searchText}</ssf:escapeQuotes>" id="searchText_adv"/></td>
+						<td width="100%" style="vertical-align: middle;">
+							<a class="ss_tinyButton" href="javascript: document.getElementById('advSearchForm').submit();" >
+							  <ssf:nlt tag="searchForm.button.label"/>
+							</a> 
 							<input type="hidden" name="quickSearch" value="true"/>
 							<input type="hidden" name="operation" value="ss_searchResults"/>
 						</td>
 					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<div class="ss_size_11px" style="color: #666;">			
+								<c:choose>
+								  <c:when test="${ssTotalRecords == '0'}">
+									[<ssf:nlt tag="search.NoResults" />]
+								  </c:when>
+								  <c:otherwise>
+									<ssf:nlt tag="search.results">
+									<ssf:param name="value" value="${ssPageStartIndex}"/>
+									<ssf:param name="value" value="${ssPageEndIndex}"/>
+									<ssf:param name="value" value="${ssTotalRecords}"/>
+									</ssf:nlt>
+								  </c:otherwise>
+								</c:choose>
+							</div>
+						</td>
+						<td style="text-align: right;">
+							<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+								name="tabTitle" value=""/><ssf:param 
+								name="newTab" value="1"/><ssf:param 
+								name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
+								name="operation" value="ss_searchResults"/><ssf:param 
+								name="showAdvancedSearchForm" value="true"/></ssf:url>" >
+								<ssf:nlt tag="searchForm.advanced.Title"/>
+							</a>
+						</td>
+						<td></td>
+					</tr>	
 				</table>
 			</div>
 		</div>
