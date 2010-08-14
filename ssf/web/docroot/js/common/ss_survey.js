@@ -113,7 +113,7 @@ if (!window.ssSurvey) {
 			removerLink.href = "javascript: //;";
 			dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
 			var removerImg = document.createElement('img');
-			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
 			removerLink.appendChild(removerImg);
 			questionHeader.appendChild(removerLink);
 			var label = document.createElement('span');
@@ -350,7 +350,7 @@ if (!window.ssSurvey) {
 			removerLink.href = "javascript: //;";
 			dojo.connect(removerLink, "onclick", ss_callRemoveAnswer(that, index, lastAnswerNo));
 			var removerImg = document.createElement('img');
-			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
 			removerLink.appendChild(removerImg);
 			answer.appendChild(removerLink);
 		

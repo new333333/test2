@@ -472,8 +472,8 @@ div.ss_entryContent a:hover {
 .ss_entryDescription {
   	color: #333;
 	font-family: ${ss_style_title_font_family};
-  	font-size: 14px;
-	line-height: 18px;
+  	font-size: 13px;
+	line-height: 17px;
   	padding: 2px 15px;
   	background-color: #E9F1F1;
 	-moz-border-radius: 5px;
@@ -3867,7 +3867,12 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	padding: 0px 24px 0px 0px;
 }
 
-div.ss_thumbnail {float: left; width:24px; text-align:center;}
+div.ss_thumbnail {
+	float: left;
+	font-size: 8px;
+	width:24px;
+	text-align:center;
+	}
 div.ss_thumbnail img {width:24px;height:24px;padding:0px; margin:0px;}
 div.ss_entry {
 	float: left;

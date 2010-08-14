@@ -6612,7 +6612,7 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				var txt = '<div class="ss_popupMenuClose" align="right" style="width:250px;">';
 				txt += '<a href="javascript: ;" ';
 				txt += 'onClick="ss_hideDivNone(this.parentNode.parentNode.id);">'
-				txt += '<img src="' + ss_imagesPath + 'pics/sym_s_delete.gif" border="0"/></a></div>'
+				txt += '<img src="' + ss_imagesPath + 'pics/delete.png" border="0"/></a></div>'
 				txt += "<h1>" + ss_savedSearchTitle + "</h1><ul>";
 				for (var queryNo = 0; queryNo < data.length; queryNo++) {
 					txt += "<li><a href=\"" + resultUrl + "&operation=ss_savedQuery&newTab=1&ss_queryName=" + data[queryNo] + "\""
@@ -8978,7 +8978,8 @@ function ss_checkIfVisible(obj) {
 function ss_toggleGwtUI(goToUserWorkspace) {
 	ajaxToggleGwtUI_Submit(goToUserWorkspace);
 }
-/*
+
+/*
  * Called to handle the response from an AJAX operation to
  * toggle the GWT UI mode.
  */

@@ -261,7 +261,7 @@
 			<table>
 			  <tbody>
 			    <tr>
-			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4></td>
+			      <td valign="top"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Author"/></div></td>
 			      <td>
 	 			    <div id="ss_authors_container" class="ss_options_container">			
 	  				  <div id="ss_authors_options" class="ss_options"></div>

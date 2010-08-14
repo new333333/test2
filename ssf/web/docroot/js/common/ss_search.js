@@ -123,7 +123,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue, stepTitles) {
 	
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	workflowsContainer.appendChild(remover);
 	workflowsContainer.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + ": "));
 
@@ -281,7 +281,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 	div.style.marginBottom = "3px";
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelEntry + ": "));
 	
@@ -747,7 +747,7 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	div.appendChild(remover);
 
 	var pDiv = document.createElement('div');
@@ -808,7 +808,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	div.appendChild(remover);
 
 	var aDiv = document.createElement('div');
@@ -890,7 +890,7 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
-	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	div.appendChild(remover);
 	div.appendChild(document.createTextNode(" " + ss_searchFormLabelDate + ": "));
 	
@@ -1089,7 +1089,7 @@ function ss_addSavedSearchToView(data) {
 		removerLink.href = "javascript: //;";
 		dojo.connect(removerLink, "onclick", ss_callRemoveSavedQuery(data.savedQueryName,'ss_saveQueryErrMsg', newLi));
 		var removerImg = document.createElement('img');
-		removerImg.setAttribute("src", ss_imagesPath + "pics/delete.gif");
+		removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
 		removerLink.appendChild(removerImg);
 		
 		var queryLink = document.createElement("a");
