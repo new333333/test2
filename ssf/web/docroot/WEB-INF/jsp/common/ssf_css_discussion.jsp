@@ -661,5 +661,5 @@ td.ss_replies_indent_picture div {
 .ss_clipped_signature div.ss_entrySignatureUser {
     width: 160px;
     overflow: hidden;
-    padding-right: 4px;
+    margin: 0px 10px;
     }

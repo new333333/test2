@@ -54,7 +54,7 @@
     ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 	 <tr>
 	  <td>
-		<div class="ss_entryContent ss_entrySignature" style="padding-right:5px;"><ssf:nlt tag="entry.modifiedBy"/></div>
+		<div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
 	  </td>
 	  <td>
 		<div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
@@ -63,7 +63,7 @@
 		<div class="ss_entryContent ss_entrySignature">
 		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
-			 timeStyle="short" dateStyle="medium" />
+			 timeStyle="short" dateStyle="long" />
 		</div>
 	  </td>
 	 </tr>
@@ -128,14 +128,16 @@
 			ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 		   <tr>
 			<td>
-				<div class="ss_entryContent ss_entrySignatureUser margintop2">
+				<div class="ss_entryContent margintop2">
 				  <div style="padding-right:8px; font-weight: bold;"><ssf:nlt tag="entry.modifiedBy"/></div>
-				  <div><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
+				  <div class="ss_entrySignatureUser">
+				    <ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
+				  </div>
 				</div>
 				<div class="ss_entryContent ss_entrySignature" style="padding-left: 20px;">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					 value="${ssDefinitionEntry.modification.date}" type="both" 
-					 timeStyle="short" dateStyle="medium" />
+					 timeStyle="short" dateStyle="long" />
 				</div>
 			</td>
 		   </tr>
@@ -144,11 +146,13 @@
 		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 		   <tr>
 			<td>
-				<div class="ss_entryContent ss_entrySignatureUser margintop3">
+				<div class="ss_entryContent margintop3">
 				  <span style="padding-right:5px;">
 				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 				  </span>
-				  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+				  <div class="ss_entrySignatureUser">
+				    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+				  </div>
 				</div>
 			</td>
 		   </tr>
@@ -181,9 +185,7 @@
 				<c:set var="property_caption" value=""/>
 			  </td>
 			  <td>
-			    <div style="overflow:hidden; width:140px;"
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
-				</div>
 			  </td>
 			  <td>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
@@ -193,7 +195,7 @@
 				ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 			   <tr>
 				<td>
-				  <div class="ss_entrySignatureUser">
+				  <div class="ss_entrySignature">
 					<span><ssf:nlt tag="entry.modifiedBy"/></span>
 				  </div>
 				</td>
@@ -206,7 +208,7 @@
 				  <div class="ss_entrySignature">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					value="${ssDefinitionEntry.modification.date}" type="both" 
-					timeStyle="short" dateStyle="medium" />
+					timeStyle="short" dateStyle="long" />
 				  </div>
 				</td>
 			   </tr>
@@ -215,9 +217,11 @@
 			  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 			   <tr>
 				<td colspan="3">
-				  <div class="ss_entrySignatureUser margintop3">
+				  <div class="ss_entrySignature margintop3">
 					<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
-					<ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+					<div class="ss_entrySignatureUser">
+					  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+					</div>
 				  </div>
 				</td>
 			  </tr>

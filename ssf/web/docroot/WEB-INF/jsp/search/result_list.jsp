@@ -152,7 +152,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 							       <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-							       <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+							       <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 									<c:if test="${!empty entry._totalReplyCount}">
 									    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
 									      tag="popularity.CommentsOrReplies"/>: ${entry._totalReplyCount}</span>
@@ -232,7 +232,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 									<c:if test="${!empty entry._totalReplyCount}">
 									    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
 									      tag="popularity.CommentsOrReplies"/>: ${entry._totalReplyCount}</span>
@@ -290,7 +290,7 @@
 								  src="<ssf:fileUrl webPath="readThumbnail" search="${entry}"/>" />
 								</c:if>
 								<c:if test="${empty entry._fileID}"><img alt="<ssf:nlt tag="alt.entry"/>"
-								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg/>"/></c:if>
+								  src="<html:brandedImagesPath/>pics/thumbnail_no_photo.jpg"/></c:if>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -332,7 +332,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 								</p>
 							</div>
 				</c:when>
@@ -365,7 +365,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 								</p>
 								<p><ssf:nlt tag="searchResult.label.user" />:
 										<c:if test="${isDashboard == 'yes'}">
@@ -407,7 +407,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 								</p>
 							</div>
 				</c:when>
@@ -485,7 +485,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label">${createdByText}</span> <ssf:showUser user="${entryPrincipal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 								</p>
 							</div>
 			    </c:when>
@@ -530,7 +530,7 @@
 							<div id="details_${status.count}" class="ss_entryDetails">
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
-								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
+								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="long" />
 								   </p>
 									<p>${binderLabel}: <a 
 									<c:if test="${isDashboard == 'yes'}">
