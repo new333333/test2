@@ -46,7 +46,7 @@
 						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.quicksearch.Title"/></th>
 						<td colspan="2"><input type="text" name="searchText" value="<ssf:escapeQuotes>${ss_filterMap.searchText}</ssf:escapeQuotes>" id="searchText_adv"/></td>
 						<td width="100%" style="vertical-align: middle;">
-							<a class="ss_tinyButton" href="javascript: document.getElementById('advSearchForm').submit();" >
+							<a class="ss_tinyButton ss_bold" href="javascript: document.getElementById('advSearchForm').submit();" >
 							  <ssf:nlt tag="searchForm.button.label"/>
 							</a> 
 							<input type="hidden" name="quickSearch" value="true"/>

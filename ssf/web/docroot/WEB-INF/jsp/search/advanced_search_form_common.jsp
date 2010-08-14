@@ -61,9 +61,6 @@
 <c:otherwise>
     <div id="ss_searchForm_changeBox">
 		<%@ include file="/WEB-INF/jsp/search/filterSummary.jsp" %>
-        <p style="text-align: center;">
-          <a class="ss_tinyButton" href="javascript: ss_showObjBlock('ss_searchForm_container'); ss_hideObj('ss_searchForm_changeBox');"><ssf:nlt tag="search.button.reviseAdvQuery"/></a>
-        </p>
     </div>
 	<div id="ss_searchForm_container" class="tundra" style="display:none;">
 </c:otherwise>
@@ -246,7 +243,7 @@
 							<td colspan="2" 
 							  style="padding-bottom: 10px; padding-top: 15px;">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
-								<a class="ss_tinyButton" href="javascript: ss_search();" ><ssf:nlt tag="searchForm.button.label"/></a> 
+								<a class="ss_tinyButton ss_bold" href="javascript: ss_search();" ><ssf:nlt tag="searchForm.button.label"/></a> 
 								</c:if>
 							</td>
 						</tr>
@@ -380,7 +377,7 @@
 			
 			<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
 			<div class="ss_searchFormFooter" style="text-align: center; padding: 10px;">
-					<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
+					<a class="ss_tinyButton ss_bold" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
 					  src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 	
 			</div>
 			</c:if>
