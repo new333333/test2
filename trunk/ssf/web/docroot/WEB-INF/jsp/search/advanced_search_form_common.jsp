@@ -77,7 +77,7 @@
 				<table>
 					<tr>
 						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.advanced.Title"/></th>
-						<td colspan="2" width="100%">
+						<td class="ss_nowrap" colspan="2" width="100%">
 						  <input type="text" name="searchText" 
 						    id="searchText_adv" 
 						    value="<ssf:escapeQuotes>${ss_filterMap.searchText}</ssf:escapeQuotes>" 
@@ -87,10 +87,10 @@
 						</td>
 					</tr>
 					<tr>
-						<td style="vertical-align: top; padding-top: 5px; text-align: right;" >
+						<td class="ss_nowrap" style="vertical-align: top; padding-top: 5px; text-align: right;" >
 							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>
 						</td>
-						<td>
+						<td class="ss_nowrap" style="padding-right: 25px;">
 							<c:if test="${!filterDefinition}">
 								<ul>
 									<c:if test="${empty ssFolderList && not empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}">
@@ -188,7 +188,7 @@
 							 	> <label for="ss_searchPreDeletedOnly"><ssf:nlt tag="searchForm.search_preDeletedOnly"/></label>
 							</div>
  						</td>
-						<td class="ss_nowrap" style="vertical-align: top; padding-top: 10px;">
+						<td class="ss_nowrap" style="vertical-align: top; padding-top: 5px;" width="100%">
 						    <div class="ss_bold"><ssf:nlt tag="searchForm.advanced.presentationOptions"/></div>
 							<table class="margintop1">
 								<tr>
