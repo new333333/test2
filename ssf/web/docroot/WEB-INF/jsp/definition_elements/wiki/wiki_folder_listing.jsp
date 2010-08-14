@@ -37,6 +37,18 @@
 
 <% //View the listing part of a wiki folder %>
 <%@ page import="java.util.Date" %>
+<c:set var="topWikiFolder" value="${ssBinder}"/>
+<c:forEach var="blogPage" items="${ssBlogPages}">
+  <c:set var="blogPageParentFound" value="false"/>
+  <c:forEach var="blogPage2" items="${ssBlogPages}">
+    <c:if test="${blogPage.parentBinder == blogPage2}">
+      <c:set var="blogPageParentFound" value="true"/>
+    </c:if>
+  </c:forEach>
+  <c:if test="${!blogPageParentFound}">
+    <c:set var="topWikiFolder" value="${blogPage}"/>
+  </c:if>
+</c:forEach>
 
 <div class="ss_wiki_folder">
    
@@ -67,40 +79,7 @@
 		    </form>
 		  </c:if>
 		</td>
-	  </tr>
-	</table>
-	
-	
-	<div class="ssPageNavi" style="margin-top: 3px; padding:5px 10px;">
-		<table cellspacing="0" cellpadding="0">
-		  <tbody>
-			<tr>
-			  <th>
-				<span class="ss_nowrap"><ssf:nlt tag="wiki.topics"/></span>
-			  </td>
-			  <td>
-				 <div class="ss_navbar_inline">
-					<ul>
-					 <c:forEach var="blogPage" items="${ssBlogPages}">
-					   <li>
-						   <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
-								   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
-							  href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
-						   >${blogPage.title}</a>
-					   </li>
-					 </c:forEach>
-					</ul>
-				</div>
-			  </td>
-			</tr>
-			
-		  </tbody>
-		</table>
-	</div>
-
-	<div class="margintop3" style="padding: 5px 10px">
-		<div class="ss_size_12px ss_bold">
-		  <span><ssf:nlt tag="wiki.pages"/></span>
+		<td style="padding-left:10px;">
 		  <span>
 				<c:if test="${!empty ss_wikiHomepageEntryId}">
 					<a class="ss_linkButton" href="<ssf:url     
@@ -118,6 +97,48 @@
 					><ssf:nlt tag="wiki.homePage"/></a>
 				  </c:if>		  
 		  </span>
+		</td>
+	  </tr>
+	</table>
+	
+	
+	<div class="ssPageNavi" style="margin-top: 3px; padding:5px 10px;">
+		<table cellspacing="0" cellpadding="0">
+		  <tbody>
+			<tr>
+			  <th>
+				<span class="ss_nowrap"><ssf:nlt tag="wiki.topics"/></span>
+			  </td>
+			  <td>
+				 <div class="ss_navbar_inline">
+					<ul>
+					   <li>
+						   <a class="<c:if test="${topWikiFolder.id == ssBinder.id}"> ss_navbar_current</c:if>" 
+							  href="<ssf:url action="view_folder_listing" binderId="${topWikiFolder.id}"/>"
+						   ><c:out value="${topWikiFolder.title}" escapeXml="true" /></a>
+					   </li>
+					 <c:forEach var="blogPage" items="${ssBlogPages}">
+					   <c:if test="${topWikiFolder != blogPage}">
+					     <li>
+						   <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
+								   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
+							  href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
+						   ><c:out value="${blogPage.title}" escapeXml="true" /></a>
+					     </li>
+					   </c:if>
+					 </c:forEach>
+					</ul>
+				</div>
+			  </td>
+			</tr>
+			
+		  </tbody>
+		</table>
+	</div>
+
+	<div class="margintop3" style="padding: 5px 10px">
+		<div class="ss_size_12px ss_bold">
+		  <span><c:out value="${ssBinder.title}" escapeXml="true"/></span>
 		</div>
 		<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_folder_list margintop3">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
