@@ -51,6 +51,11 @@
 		var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}', entryViewStyle:'popup'};
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
 		ss_loadEntryUrl(url, id, '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');
+		var formObj = self.document.getElementById("ss_findWikiPageForm${renderResponse.namespace}");
+		if (formObj != null && typeof formObj.searchTitle != "undefined") {
+			formObj.searchTitle.value="";
+			try {formObj.searchTitle.focus()} catch(e) {}
+		}
 	}
 	
 	function ss_confirmSetWikiHomepage(url) {
