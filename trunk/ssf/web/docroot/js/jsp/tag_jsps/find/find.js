@@ -818,7 +818,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			that.removeValueByElement(evt.target.parentNode, id, spanObj.innerHTML);
 	    });	
 		var newImgObj = document.createElement("img");
-		newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
+		newImgObj.setAttribute("src", ss_imagesPath + "pics/delete.png");
 		newImgObj.setAttribute("border", "0");
 		newImgObj.style.paddingLeft = "10px";
 		newAnchorObj.appendChild(newImgObj);
@@ -852,7 +852,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 			that.removeValueByElement(evt.target.parentNode, id, spanObj.innerHTML);
 	    });	
 		var newImgObj = document.createElement("img");
-		newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
+		newImgObj.setAttribute("src", ss_imagesPath + "pics/delete.png");
 		newImgObj.setAttribute("border", "0");
 		newImgObj.style.paddingLeft = "10px";
 		newAnchorObj.appendChild(newImgObj);
