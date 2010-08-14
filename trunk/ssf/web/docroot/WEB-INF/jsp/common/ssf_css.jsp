@@ -3915,7 +3915,10 @@ div.ss_entryDetails p {
 	color: #666;
 }
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
-.ss_label {}
+.ss_label {
+	font-size: 11px;
+	color: #666;
+	}
 
 .ss_rating_box {
 	margin:0px 0px 4px 0px;
@@ -3964,7 +3967,13 @@ a:hover.ss_button {
   margin-top: 1px;
   margin-bottom: 2px;
 }
-#ss_filterSummary_content h4 {margin:0px 0px 0px 33px;}
+#ss_filterSummary_content .searchsummarytitle {
+	display: inline-block;
+	font-size: 14px;
+	font-weight: bold;
+	margin:0px 0px 0px 10px;
+	padding-right: 30px;
+	}
 #ss_filterSummary_switch {float:right; padding: 6px 12px 6px 0px;}
 #ss_searchForm_filterSummary {border-bottom:1px solid #afc8e3;}
 
