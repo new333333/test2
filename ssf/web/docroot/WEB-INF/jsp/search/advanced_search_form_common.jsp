@@ -38,7 +38,7 @@
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <style type="text/css">
         @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
-        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css";
 </style>
 
 <script type="text/javascript">
@@ -71,15 +71,13 @@
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<c:if test="${!filterDefinition}">
-					<h4><ssf:nlt tag="searchForm.advanced.Title"/> <ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_advanced" /> </h4>
+					<div class="n-buttonright"><ssf:showHelp guideName="user" pageId="informed_search" sectionId="informed_search_advanced" /></div>
 				</c:if>
 				<div class="ss_clear"></div>
 				<table>
 					<tr>
-						<label for="searchText_adv">
-							<td><ssf:nlt tag="searchForm.searchText"/>:</td>
-						</label>
-						<td>
+						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.advanced.Title"/></th>
+						<td colspan="2" width="100%">
 						  <input type="text" name="searchText" 
 						    id="searchText_adv" 
 						    value="<ssf:escapeQuotes>${ss_filterMap.searchText}</ssf:escapeQuotes>" 
@@ -87,48 +85,12 @@
 						      onkeypress="return ss_submitViaEnter(event)"
 						    </c:if>/>
 						</td>
-						<td rowspan="3">
-						    <b><ssf:nlt tag="searchForm.advanced.presentationOptions"/></b><br/>
-							
-							<label for="data_resultsCount">
-								<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
-							</label>
-							<select class="ss_compactSelectBox" name="data_resultsCount" id="data_resultsCount">
-								<option value="1" <c:if test="${resultsCount == 1}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems.single"/></option>
-								<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="5"/></ssf:nlt></option>
-								<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="10"/></ssf:nlt></option>
-								<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="25"/></ssf:nlt></option>
-								<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="50"/></ssf:nlt></option>
-								<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
-							</select>
-							<br/>
-
-							<label for="data_summaryWordCount">
-								<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
-							</label>
-							<select class="ss_compactSelectBox" name="data_summaryWordCount" id="data_summaryWordCount">
-								<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="15"/></ssf:nlt></option>
-								<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="20"/></ssf:nlt></option>
-								<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="30"/></ssf:nlt></option>
-								<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="50"/></ssf:nlt></option>
-								<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="100"/></ssf:nlt></option>
-							</select>
-							<br/>
-
-							<label for="data_sortBy">
-								<ssf:nlt tag="searchForm.advanced.options.sortBy"/> 
-							</label>
-							<select class="ss_compactSelectBox" name="data_sortBy" id="data_sortBy">
-								<option value="sortByRelevance" <c:if test="${sortyBy == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
-								<option value="sortByDate" <c:if test="${sortBy == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
-							</select>
-						</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="vertical-align: top; padding-top: 5px; text-align: right;" >
 							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>
 						</td>
-						<td >
+						<td>
 							<c:if test="${!filterDefinition}">
 								<ul>
 									<c:if test="${empty ssFolderList && not empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}">
@@ -226,15 +188,65 @@
 							 	> <label for="ss_searchPreDeletedOnly"><ssf:nlt tag="searchForm.search_preDeletedOnly"/></label>
 							</div>
  						</td>
+						<td class="ss_nowrap" style="vertical-align: top; padding-top: 10px;">
+						    <div class="ss_bold"><ssf:nlt tag="searchForm.advanced.presentationOptions"/></div>
+							<table class="margintop1">
+								<tr>
+									<td>
+										<label for="data_resultsCount">
+											<ssf:nlt tag="searchForm.advanced.options.limitResults"/>:
+										</label>
+									</td>
+									<td width="100%">
+										<select class="ss_compactSelectBox" name="data_resultsCount" id="data_resultsCount">
+											<option value="1" <c:if test="${resultsCount == 1}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems.single"/></option>
+											<option value="5" <c:if test="${resultsCount == 5}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="5"/></ssf:nlt></option>
+											<option value="10" <c:if test="${resultsCount == 10}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="10"/></ssf:nlt></option>
+											<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="25"/></ssf:nlt></option>
+											<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="50"/></ssf:nlt></option>
+											<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
+										</select>
+									</td>
+								</tr>	
+									<td>
+										<label for="data_summaryWordCount">
+											<ssf:nlt tag="searchForm.advanced.options.limitWords"/>: 
+										</label>
+									</td>
+									<td width="100%">
+										<select class="ss_compactSelectBox" name="data_summaryWordCount" id="data_summaryWordCount">
+											<option value="15" <c:if test="${summaryWordCount == 15}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="15"/></ssf:nlt></option>
+											<option value="20" <c:if test="${summaryWordCount == 20}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="20"/></ssf:nlt></option>
+											<option value="30" <c:if test="${summaryWordCount == 30}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="30"/></ssf:nlt></option>
+											<option value="50" <c:if test="${summaryWordCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="50"/></ssf:nlt></option>
+											<option value="100" <c:if test="${summaryWordCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectWords"><ssf:param name="value" value="100"/></ssf:nlt></option>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<label for="data_sortBy">
+											<ssf:nlt tag="searchForm.advanced.options.sortBy"/> 
+										</label>
+									</td>
+									<td width="100%">
+										<select class="ss_compactSelectBox" name="data_sortBy" id="data_sortBy">
+											<option value="sortByRelevance" <c:if test="${sortyBy == 'sortByRelevance'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.relevance"></ssf:nlt></option>
+											<option value="sortByDate" <c:if test="${sortBy == 'sortByDate'}">selected="selected"</c:if>><ssf:nlt tag="searchForm.advanced.options.sortBy.date"></ssf:nlt></option>
+										</select>
+									</td>
+								</tr>
+							</table>		
+						</td>
 					</tr>
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
-							<td colspan="3" 
-							  style="text-align: center !important; padding-bottom: 3px; padding-top: 8px;">
+							<td></td>
+							<td colspan="2" 
+							  style="padding-bottom: 10px; padding-top: 15px;">
 								<c:if test="${empty disableSearchButton || disableSearchButton == 0}">
-								<a class="ss_searchButton" href="javascript: ss_search();" ><img <ssf:alt tag="alt.search"/> 
-					  				src="<html:imagesPath/>pics/1pix.gif" /> <ssf:nlt tag="searchForm.button.label"/></a> 
+								<a class="ss_tinyButton" href="javascript: ss_search();" ><ssf:nlt tag="searchForm.button.label"/></a> 
 								</c:if>
 							</td>
 						</tr>

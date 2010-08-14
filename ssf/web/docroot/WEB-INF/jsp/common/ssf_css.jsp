@@ -679,6 +679,12 @@ input[type="button"].n-button:hover {
 	background-position: center;
 	}
 
+.n-buttonright {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	}
+
 input.ss_submit:hover, 
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
@@ -1601,7 +1607,6 @@ a.ss_tree_highlight_not  {
   text-decoration: none;
   }
 span.ss_tree_highlight_not {
-  color: ${ss_tree_highlight_line_color};
 }
 a.ss_tree_highlight_not:active, a.ss_tree_highlight_not:hover {
   color: ${ss_tree_highlight_line_color};
@@ -1898,7 +1903,6 @@ div.ss_box_top_rounded {
 
 /* -------------------Skins-------------------- */
 div.ss_content_outer {		/* also see ss_pseudoPortal */
-    background: #FFFFFF;
 	margin-top: 0px;
 	margin-right: 15px;		/* give right margin to match pseudoPortal */
 	border: 0px solid #ccc;
@@ -3659,18 +3663,13 @@ tr.ss_tab_table_row td {
 	Search and surveys styles / start
 */
 #ss_tab_content {
-	padding:6px 6px 12px 6px;
-}
+	}
 #ss_tabs_container {
-	border-left: 1px solid #cccccc;
-	border-right:1px solid #cccccc;
-	border-bottom:1px solid #cccccc;
 	position:relative;
     margin: 0px;
     padding: 0px;
     width: 100%;
 }
-
 #ss_rankings { 
 	width: 215px;
 	vertical-align: top;
@@ -3680,7 +3679,25 @@ tr.ss_tab_table_row td {
     margin:0px;
     vertical-align:top;
 }
-div.ss_searchContainer, div.ss_surveyContainer {
+div.ss_searchContainer {
+	background-color: #fff;
+	padding: 3px 3px 0px 0px;
+	margin: 0px;
+<c:if test="<%= isIE %>">
+  zoom:1; /* a workaround IE bug */
+</c:if>	
+}
+div.ss_searchContainer ul.ss_nobullet {
+	margin-left: 10px;
+	}
+
+div.ss_searchContainer div.ssPageNavi {
+	-moz-border-radius-topleft: 0px;
+	-moz-border-radius-topright: 0px;
+	-webkit-border-top-left-radius: 0px;
+	-webkit-border-top-right-radius: 0px;	
+	}
+div.ss_surveyContainer {
 	background: transparent url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	padding:5px 0px 0px 0px;
 	margin: 0px 0px 0px 15px;
@@ -3694,43 +3711,41 @@ p.ss_survey_question, span.ss_survey_answer {
 	font-size: ${ss_style_font_normalprint};
 	color:#333333;
 }
-
 div.ss_searchContainer #ss_content { 
-	border-left: 1px solid #afc8e3; 
-    border-bottom: 1px solid #afc8e3; 
 	margin: 0px;
 	padding: 0px;
 <c:if test="<%= isIE %>">
   zoom:1; /* a workaround IE bug */
 </c:if>	
 }
-
-#ss_searchForm_container, #ss_surveyForm_container {margin:0px; padding:0px; width:100%;}
+#ss_searchForm_container, #ss_surveyForm_container {
+	margin:0px; padding:0px; width:100%;
+	}
 #ss_searchForm, #ss_surveyForm, #ss_searchForm_changeBox {
-	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
-	padding: 6px 6px 2px 6px;
+	background: #ebf5f5;
+	padding: 10px 5px 2px 0px;
 	margin:0px;
-	border-bottom:1px solid #afc8e3;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 #DMGTEST {
-    background-color: #e8eff7;
+    background-color: #ebf5f5;
 }
 div.ss_searchFormFooter {
-    background-color: #e8eff7;
+    background-color: #ebf5f5;
 }
 #ss_surveyForm_main form {
 	background-color: transparent;
 }
 #ss_searchForm table, #ss_surveyForm_main {
-	background-color: #e8eff7;
+	background-color: #ebf5f5;
 }
 #ss_searchForm input { 
 	width: 400px;
-	border: 1px solid #333;
+	font-size: ${ss_style_font_largerprint};
 	}
-#ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
-#ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
-#ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
+#ss_searchForm th {text-align:left;padding: 0px 0px 0px 10px;}
+#ss_searchForm td {text-align:left;padding: 0px 5px 0px 5px;}
 #ss_searchForm ul {
 	margin: 0px 0px 5px 0px;
 	padding: 0px;
@@ -3744,14 +3759,6 @@ div.ss_searchFormFooter {
 	margin:0px;
 	padding:0px;
 	width:100%;
-}
-a.ss_searchButton img {
-	width: 20px;
-	height: 16px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
@@ -3789,27 +3796,19 @@ a.ss_searchButton2:hover img {
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
 	color: #135C8F;
-	text-decoration:underline;
 	margin:0px 0px 0px 6px;
 }
 a.ss_parentPointer:hover, a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:active {
-	color: #333333;
-	text-decoration:underline;
 	margin:0px 0px 0px 0px;
-    outline: dotted 1px gray;
 	}
 a.ss_parentPointer:hover {
 	color: #135C8F;
-	text-decoration:underline;
-    outline: dotted 1px gray;
 }
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
-	color: purple;
-	text-decoration:underline;
+	color: #d47f0a;
 }	
 a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	color: #135C8F;
-	text-decoration:underline;
 }
 
 .ss_searchResult {
@@ -3821,10 +3820,13 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 </c:if>
 }
 .ss_searchResult li {
-	border-bottom: 1px solid #cccccc;
+	border-bottom: 1px solid #D2D5D1;
 	display:block;
-	margin:12px 12px 12px 12px;	
+	margin: 6px;	
 }
+.ss_searchResult li p {
+	margin-left:6px;
+	}
 
 .ss_searchResult li.last {
 	border-bottom: none;
@@ -3839,11 +3841,11 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 }
 
 .ss_searchResult_header_top {
-	border-bottom: 1px solid #afc8e3;	
 }
 
 .ss_searchResult_header_bottom {
-	border-top: 1px solid #afc8e3;	
+	border-top: 1px solid #d2d5d1;
+	margin-bottom: 3px;
 }
 
 .ss_searchResult_numbers {
@@ -3895,17 +3897,17 @@ div.ss_entry_folderListView {
 }
 
 .ss_entryTitleSearchResults a:visited {
-	color:  purple;
+	color: #d47f0a;
 }
 div.ss_more {
     text-align:left;
     font-size: 10px;
 }
-div.ss_entryDetails {padding:0px 0px 6px 24px;}
+div.ss_entryDetails {padding:0px 0px 5px 30px;}
 div.ss_entryDetails p {
-	margin:0px 3px 1px 0px;
+	margin: 0px 3px 1px 0px;
 	font-size: ${ss_style_font_smallprint};
-	color: #135c8f;
+	color: #666;
 }
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px; margin:0px;}
 .ss_label {}
@@ -3961,13 +3963,11 @@ a:hover.ss_button {
 #ss_filterSummary_switch {float:right; padding: 6px 12px 6px 0px;}
 #ss_searchForm_filterSummary {border-bottom:1px solid #afc8e3;}
 
-#ss_searchForm_main h4 {float:left;}
-#ss_searchForm_main a.ss_advanced {float:right;}
 #ss_searchForm_main table {
 	width: 100%;
 }
 #ss_searchForm_main th, #ss_searchForm_main td, #ss_surveyForm_main th, #ss_surveyForm_main td {
-	vertical-align: top;
+
 }
 #ss_searchForm_main table div.ss_additionals {
 	margin-top: 10px;
@@ -4458,9 +4458,10 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 
 div.ssPageNavi {
 	margin: 0px;
+	margin-bottom: 2px;
 	padding-left: 10px;
 	padding-top: 3px;
-	padding-bottom: 3px;
+	padding-bottom: 4px;
 	background-color: #ebf5f5; /* teal 5*/
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -4477,7 +4478,7 @@ div.ssPageNavi table td {
 	color: #666666;
 	}
 .ssPageNavi .ss_go_to_page {
-	font-size: 10px;
+	font-size: 11px;
 	color: #333333;
 	}
 .ssPageNavi input.form-text {
@@ -4491,15 +4492,14 @@ div.ssPageNavi table td {
 }
 
 .ssPageNavi .ssCurrentPage {
-	font-size: 11px;
+	font-size: 12px;
 	color: #333333;
+	font-weight: bold;
 }
 
 .ssPageNavi a.ssPageNumber {
-	font-size: 11px;
-	color: #3333FF;
-	text-decoration: underline;
-	margin: 0px 2px 0px 2px;
+	font-size: 12px;
+	padding: 0 3px;
 }
 
 .ssPageNavi a.ssPageNumber:visited {
