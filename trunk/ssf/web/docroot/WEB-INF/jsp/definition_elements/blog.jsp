@@ -117,6 +117,19 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 }
 </script>
 
+<c:set var="topBlogFolder" value="${ssBinder}"/>
+<c:forEach var="blogPage" items="${ssBlogPages}">
+  <c:set var="blogPageParentFound" value="false"/>
+  <c:forEach var="blogPage2" items="${ssBlogPages}">
+    <c:if test="${blogPage.parentBinder == blogPage2}">
+      <c:set var="blogPageParentFound" value="true"/>
+    </c:if>
+  </c:forEach>
+  <c:if test="${!blogPageParentFound}">
+    <c:set var="topBlogFolder" value="${blogPage}"/>
+  </c:if>
+</c:forEach>
+
 <div class="ss_folder_border">
 <% // Add the toolbar with the navigation widgets, commands  %>
 <div class="ss_clear"></div>
@@ -143,16 +156,22 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 	   <td colspan="2" align="right">
 	     <div class="ss_navbar_inline ss_navbar_padRt">
 	     <ul>
+		   <li>
+			   <a class="<c:if test="${topBlogFolder.id == currentPage}"> ss_navbar_current</c:if>" 
+				  href="<ssf:url action="view_folder_listing" binderId="${topBlogFolder.id}"/>"
+			   ><c:out value="${topBlogFolder.title}" escapeXml="true" /></a>
+		   </li>
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
-	       <li>
-	         <a class="ss_link_8
-	         		<c:if test="${blogPage.id == currentPage}"> ss_navbar_current</c:if>
-					<c:if test="${blogPage.id != currentPage}"></c:if>
-	         	" 
-	         	href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
-	         	name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
-	         >${blogPage.title}</a>
-	       </li>
+	       <c:if test="${topBlogFolder != blogPage}">
+		       <li>
+		         <a class="ss_link_8
+		         		<c:if test="${blogPage.id == currentPage}"> ss_navbar_current</c:if>
+		         	" 
+		         	href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+		         	name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
+		         >${blogPage.title}</a>
+		       </li>
+	       </c:if>
 	     </c:forEach>
 	     </ul>
 	     </div>

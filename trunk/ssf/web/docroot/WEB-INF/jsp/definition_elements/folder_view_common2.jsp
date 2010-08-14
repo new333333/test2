@@ -185,7 +185,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
   
   <c:if test="${!empty ssFolderColumns['author']}">
-    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="24%">
 
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -222,7 +222,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${!empty ssFolderColumns['comments']}">
-    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="12%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
       <div class="ss_title_menu">
         <c:if test="${ss_folderViewStyle == 'folder'}"><ssf:nlt tag="folder.column.Replies"/></c:if>
         <c:if test="${ss_folderViewStyle != 'folder'}"><ssf:nlt tag="folder.column.Comments"/></c:if>
