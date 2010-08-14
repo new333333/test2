@@ -60,7 +60,9 @@
 	  <tr>
 	    <td align="right">        
 	      <c:if test="${ssConfigJspStyle != 'template'}">
-		    <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
+		    <form method="post" 
+		        name="ss_findWikiPageForm${renderResponse.namespace}"
+		        id="ss_findWikiPageForm${renderResponse.namespace}"
 		    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
 						name="binderId" value="${ssBinder.id}"/></ssf:url>">
           	 <span><ssf:nlt tag="wiki.findPage"/></span>
@@ -75,11 +77,10 @@
 			    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"
 			    accessibilityText="wiki.findPage"
 			    /> 
-		     <input type="hidden" name="searchTitle"/>
 		    </form>
 		  </c:if>
 		</td>
-		<td style="padding-left:10px;">
+		<td style="padding-left:20px;">
 		  <span>
 				<c:if test="${!empty ss_wikiHomepageEntryId}">
 					<a class="ss_linkButton" href="<ssf:url     
