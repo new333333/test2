@@ -100,12 +100,9 @@ function handleCloseBtn() {
 			<c:if test="${!empty ssDefaultHomePageBinder}">
 			 <div style="padding-left:20px;">
 			  <span class="ss_bold"><ssf:nlt tag="administration.config.currentDefaultHomePage"><ssf:param
-			    name="value" useBody="true"><a
-			    href="<ssf:url action="viewFolderList" binderId="${ssDefaultHomePageBinder.id}"/>"
-			    title="${ssDefaultHomePageBinder.pathName}"
-			  >
+			    name="value" useBody="true">
 			    <span class="ss_normal">${ssDefaultHomePageBinder.title}</span>
-			  </a></ssf:param></ssf:nlt></span>
+			    </ssf:param></ssf:nlt></span>
 			  <br/>
 			  <table cellspacing="0" cellpadding="0">
 			  <tr>
@@ -138,12 +135,9 @@ function handleCloseBtn() {
 			<c:if test="${!empty ssDefaultGuestHomePageBinder}">
 			  <div style="padding-left:20px;">
 			    <span class="ss_bold"><ssf:nlt tag="administration.config.currentDefaultGuestHomePage"><ssf:param
-			      name="value" useBody="true"><a
-			      href="<ssf:url action="viewFolderList" binderId="${ssDefaultGuestHomePageBinder.id}"/>"
-			      title="${ssDefaultGuestHomePageBinder.pathName}"
-			    >
-			    <span class="ss_normal">${ssDefaultGuestHomePageBinder.title}</span>
-			    </a></ssf:param></ssf:nlt></span><br/>
+			      name="value" useBody="true">
+			      <span class="ss_normal">${ssDefaultGuestHomePageBinder.title}</span>
+			      </ssf:param></ssf:nlt></span><br/>
 			    <table cellspacing="0" cellpadding="0">
 			    <tr>
 			    <td align="bottom"><input type="checkbox" name="deleteGuestHomePage"/></td>
