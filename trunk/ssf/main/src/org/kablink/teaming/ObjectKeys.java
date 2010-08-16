@@ -215,6 +215,7 @@ public interface ObjectKeys {
     public static final int MAX_BINDER_ENTRIES_RESULTS = 2000;
     public static final long SEEN_TIMEOUT_DAYS = (long)30;  //entries older than 30 days are marked seen
     public static final long SEEN_MAP_TIMEOUT = (long)SEEN_TIMEOUT_DAYS*24*60*60*1000;  //older than 30 days return seen
+    public static final int MAX_FILE_SIZE_DECIMAL_PLACES = 8;
     
     public static final String BINDER_PROPERTY_FILTERS = "binderFilters";
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
@@ -668,5 +669,8 @@ public interface ObjectKeys {
     public static final String MOBILE_WHATS_NEW_VIEW_TRACKED = "tracked";
     public static final String MOBILE_WHATS_NEW_VIEW_SITE = "site";
     public static final String MOBILE_WHATS_NEW_VIEW_MICROBLOG = "microblog";
+    
+    //License Activity
+    public static final int LOGIN_ACTIVITY_YEARS = 1;
 	
 }
