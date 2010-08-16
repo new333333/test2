@@ -173,7 +173,7 @@
 							  <span class="ss_link_4">
 								<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 								value="${entryWn._modificationDate}" type="both" 
-								timeStyle="short" dateStyle="long" />
+								timeStyle="short" dateStyle="medium" />
 							  </span>
 							   
 							  <div class="ss_link_2 list-indent">

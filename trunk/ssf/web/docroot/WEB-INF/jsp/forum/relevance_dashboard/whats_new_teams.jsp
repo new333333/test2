@@ -86,7 +86,7 @@
 					<span class="ss_link_4">
 						<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					  value="${entry._modificationDate}" type="both" 
-					  timeStyle="short" dateStyle="long" />
+					  timeStyle="short" dateStyle="medium" />
 					</span>
 			  
 					<c:set var="path" value=""/>

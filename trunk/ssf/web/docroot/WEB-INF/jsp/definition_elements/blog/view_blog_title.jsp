@@ -154,7 +154,7 @@
 <span> | </span>
  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${creationDate}" type="both" 
-	 dateStyle="long" timeStyle="short" /> 
+	 dateStyle="medium" timeStyle="short" /> 
 <span> | </span>
 <ssf:nlt tag="popularity.Comments"/>: ${totalReplyCount}</div>
 </div>
