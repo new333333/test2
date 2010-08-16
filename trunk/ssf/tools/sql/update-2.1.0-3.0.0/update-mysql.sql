@@ -46,4 +46,5 @@ ALTER TABLE SS_Attachments add column minorVersion integer;
 ALTER TABLE SS_Attachments add column fileStatus integer;
 ALTER TABLE SS_ZoneConfig add column defaultHomePageId bigint;
 ALTER TABLE SS_ZoneConfig add column defaultGuestHomePageId bigint;
-INSERT INTO SS_SchemaInfo values (11);
+ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
+INSERT INTO SS_SchemaInfo values (12);
