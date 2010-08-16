@@ -11,6 +11,7 @@
     <property name="snapshotDate"/>
     <property name="internalUserCount"/>
     <property name="externalUserCount"/>
+    <property name="activeUserCount"/>
  	<property name="checksum"/>
   </class>
 </hibernate-mapping>
