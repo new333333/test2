@@ -79,6 +79,7 @@ import org.kablink.teaming.jobs.WorkflowProcess;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowAction;
@@ -445,7 +446,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			tMsg.append(Html.stripHtml((msgHtml)));
 			tMsg.append("\n");
 		}
-		details.put(MailModule.TEXT_MSG, tMsg.toString());
+		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
 		StringBuffer hMsg = new StringBuffer();
 		hMsg.append("<a href=\"");
 		hMsg.append(permaLink);
@@ -472,7 +473,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			details.put(MailModule.FROM, ia);
 		} catch  (Exception useDefault) {}
 		
-		details.put(MailModule.HTML_MSG, hMsg.toString());
+		EmailUtil.putHTML(details, MailModule.HTML_MSG, hMsg.toString());
 		try {
 			//to keep transaction small, schedule it
 			getMailModule().scheduleMail(entry.getParentBinder(), details, "Workflow notify for binder " + 
