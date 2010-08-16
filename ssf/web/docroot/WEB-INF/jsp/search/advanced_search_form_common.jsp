@@ -258,115 +258,115 @@
 			<table>
 			  <tbody>
 			    <tr>
-			      <td valign="top"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Author"/></div></td>
-			      <td>
-	 			    <div id="ss_authors_container" class="ss_options_container">			
+			      <td class="ss_fixed_TD" style="padding-top: 5px;"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Author"/></div></td>
+			      <td class="ss_fixed_TD">
+	 			    <div id="ss_authors_container">			
 	  				  <div id="ss_authors_options" class="ss_options"></div>
-					  <div class="ss_more">
-					    <a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addAuthor"/></a>
+					  <div class="margintop1">
+					    <a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addAuthor"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>
 				      </div>
 					</div>
 				  </td>
 			    </tr>
 			    <tr>
-			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4></td>
-			      <td>
-					<div id="ss_tags_container" class="ss_options_container">	
+			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></div></td>
+			      <td class="ss_fixed_TD">
+					<div id="ss_tags_container">	
 						<div id="ss_tags_options" class="ss_options"></div>
-						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addTag"/></a>
+						<div class="margintop1">
+							<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addTag"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>
 						</div>
 					</div>	
 			      </td>
 			    </tr>
 			    <tr>
-			      <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4></td>
-			      <td>
-					<div id="ss_workflows_container" class="ss_options_container">	
+			      <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></div></td>
+			      <td class="ss_fixed_TD">
+					<div id="ss_workflows_container">	
 						<div id="ss_workflows_options" class="ss_options"></div>
-						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addWorkflow"/></a>
+						<div class="margintop1">
+							<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addWorkflow"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>
 						</div>
 					</div>			      
 			      </td>
 			    </tr>
 				<tr>
-				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4></td>
-				  <td>
-					<div id="ss_entries_container" class="ss_options_container">
+				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></div></td>
+				  <td class="ss_fixed_TD">
+					<div id="ss_entries_container">
 						<div id="ss_entries_options" class="ss_options"></div>
-						<div class="ss_more" style="clear: left;">
-							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addField"/></a>				
+						<div class="margintop1" style="clear: left;">
+							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addField"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>				
 						</div>
 					</div>				  
 				  </td>
 				</tr>
 				<tr>
-				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></h4></td>
-				  <td style="padding-top:10px;">
-					<div id="ss_lastActivities_container" class="ss_options_container">				
+				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.LastActivity"/></div></td>
+				  <td class="ss_fixed_TD">
+					<div id="ss_lastActivities_container">				
 						<div id="ss_lastActivities_options" class="ss_options"></div>
 					</div>
 				  </td>
 				</tr>
 				<tr>
-				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4></td>
-				  <td>
-					<div id="ss_creationDates_container" class="ss_options_container">				
+				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></div></td>
+				  <td class="ss_fixed_TD">
+					<div id="ss_creationDates_container">				
 						<div id="ss_creationDates_options" class="ss_options"></div>
-						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addDate"/></a>
+						<div class="margintop1">
+							<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addDate"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>
 						</div>
 					</div>
 				  </td>
 				</tr>
 				<tr>
-				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></h4></td>
-				  <td>
-					<div id="ss_modificationDates_container" class="ss_options_container">
+				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></div></td>
+				  <td class="ss_fixed_TD">
+					<div id="ss_modificationDates_container">
 						<div id="ss_modificationDates_options" class="ss_options"></div>
-						<div class="ss_more">
-							<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.filterButton.addDate"/></a>
+						<div class="margintop1">
+							<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addDate"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>
 						</div>
 					</div>
 				  </td>
 				</tr>
 			<c:if test="${!filterDefinition}">
 				<tr>
-				  <td valign="top"><h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></h4></td>
-				  <td>
-						<div id="ss_itemTypes_container" class="ss_options_container">					
+				  <td class="ss_fixed_TD"><div class="ss_sectionTitle ss_bold"><ssf:nlt tag="searchForm.sectionTitle.ItemType"/></div></td>
+				  <td class="ss_fixed_TD">
+						<div id="ss_itemTypes_container">					
 							<div id="ss_itemType_options" class="ss_options">
 								<input type="checkbox" name="searchItemType" value="workspace" id="ss_itemType_workspace"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.workspace}">
 										checked="true"
 									</c:if>
-								/>&nbsp;<label for="ss_itemType_workspace"><ssf:nlt tag="searchForm.itemType.workspace"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_workspace"><ssf:nlt tag="searchForm.itemType.workspace"/></label></span>
 								<input type="checkbox" name="searchItemType" value="folder" id="ss_itemType_folder"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.folder}">
 										checked="true"
 									</c:if>
-								/>&nbsp;<label for="ss_itemType_folder"><ssf:nlt tag="searchForm.itemType.folder"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_folder"><ssf:nlt tag="searchForm.itemType.folder"/></label></span>
 								<input type="checkbox" name="searchItemType" value="user" id="ss_itemType_user"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.user}">
 										checked="true"
 									</c:if>					
-								/>&nbsp;<label for="ss_itemType_user"><ssf:nlt tag="searchForm.itemType.user"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_user"><ssf:nlt tag="searchForm.itemType.user"/></label></span>
 								<input type="checkbox" name="searchItemType" value="attachment" id="ss_itemType_attachment"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.attachment}">
 										checked="true"
 									</c:if>						
-								/>&nbsp;<label for="ss_itemType_attachment"><ssf:nlt tag="searchForm.itemType.attachment"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_attachment"><ssf:nlt tag="searchForm.itemType.attachment"/></label></span>
 								<input type="checkbox" name="searchItemType" value="entry" id="ss_itemType_entry"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.entry}">
 										checked="true"
 									</c:if>						
-								/>&nbsp;<label for="ss_itemType_entry"><ssf:nlt tag="searchForm.itemType.entry"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_entry"><ssf:nlt tag="searchForm.itemType.entry"/></label></span>
 								<input type="checkbox" name="searchItemType" value="reply" id="ss_itemType_reply"
 									<c:if test="${empty ss_filterMap || ss_filterMap.additionalFilters.item_types.reply}">
 										checked="true"
 									</c:if>						
-								/>&nbsp;<label for="ss_itemType_reply"><ssf:nlt tag="searchForm.itemType.reply"/></label>
+								/>&nbsp;<span style="padding-right: 10px;"><label for="ss_itemType_reply"><ssf:nlt tag="searchForm.itemType.reply"/></label></span>
 							</div>
 						</div>
 				  </td>
