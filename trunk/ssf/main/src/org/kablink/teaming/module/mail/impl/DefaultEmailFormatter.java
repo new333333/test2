@@ -67,7 +67,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
@@ -79,6 +78,7 @@ import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailFormatter;
+import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -91,9 +91,10 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
 /**
+ * 
  * @author Janet McCann
- *
  */
+@SuppressWarnings("unchecked")
 public class DefaultEmailFormatter extends CommonDependencyInjection implements EmailFormatter {
 	public static Log logger = LogFactory.getLog(DefaultEmailFormatter.class);
     protected DefinitionModule definitionModule;
@@ -314,7 +315,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			}
 			//Add users wanting the same style messages 
 			for (Subscription notify: (Collection<Subscription>)subscriptions) {
-				//user may reenable - who knows
+				// User may re-enable - who knows.
 				if (notify.hasStyle(style)) {
 					Principal p = getProfileDao().loadPrincipal(notify.getId().getPrincipalId(), folder.getZoneId(), true);
 					if (p.getEntityType().equals(EntityType.user)) {
@@ -656,8 +657,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			
 		doTOC((Folder)binder, toc, notify, tocWriter, NotifyVisitor.WriterType.HTML);
 		doTOC((Folder)binder, toc, notify, tocWriterText, NotifyVisitor.WriterType.TEXT);
-		result.put(EmailFormatter.HTML, tocWriter.toString() + entryWriter.toString());
-		result.put(EmailFormatter.TEXT, tocWriterText.toString() + entryWriterText.toString());
+		EmailUtil.putHTML(result, EmailFormatter.HTML, (tocWriter.toString()     + entryWriter.toString()));
+		EmailUtil.putText(result, EmailFormatter.TEXT, (tocWriterText.toString() + entryWriterText.toString()));
 		
 		return result;
 	}
@@ -697,17 +698,17 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
 
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
-			result.put(EmailFormatter.HTML, writer.toString());
+			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
-			result.put(EmailFormatter.TEXT, writer.toString());
+			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 			
 		} else {
 			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
-			result.put(EmailFormatter.HTML, writer.toString());
+			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
 			doEntry((FolderEntry)entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
-			result.put(EmailFormatter.TEXT, writer.toString());
+			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 		}
 
 		
@@ -721,6 +722,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		doEntry(entry.getParentEntry(), notify, writer, type, params); 
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
 	}
+	
 	/**
 	 * Build a message for and entry and replies you can see.
 	 * Don't use for email notifications which go to multiple users who may not be able to see
@@ -731,13 +733,13 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * @param entry
 	 * @param replies
 	 * @param notify
+	 * 
 	 * @return
 	 */
-
 	protected class AclChecker {
 		private User user;
 		private String [] emails;
-		//keep an ordered list for easier comparision
+		// Keep an ordered list for easier comparison.
 		protected List entries = new ArrayList();
 		
 		protected AclChecker(User user, String[] emails) {

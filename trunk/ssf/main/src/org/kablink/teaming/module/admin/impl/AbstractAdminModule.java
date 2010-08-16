@@ -91,6 +91,7 @@ import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.report.ReportModule;
@@ -959,8 +960,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			//cannot send without valid from address
 			return result;
     	}
-   		message.put(MailModule.HTML_MSG, body.getText());
-   		message.put(MailModule.TEXT_MSG, Html.stripHtml(body.getText()) + "\r\n");
+   		EmailUtil.putHTML(message, MailModule.HTML_MSG, body.getText());
+   		EmailUtil.putText(message, MailModule.TEXT_MSG, (Html.stripHtml(body.getText()) + "\r\n"));
    		
     	message.put(MailModule.SUBJECT, subject);
  		message.put(MailModule.TO, emailSet);
