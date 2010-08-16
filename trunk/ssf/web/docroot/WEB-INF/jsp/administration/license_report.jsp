@@ -230,22 +230,12 @@
 							&nbsp;<ssf:nlt tag="smallWords.and"/>&nbsp;<fmt:formatDate value="${endDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
 							<br/>
 			<c:if test="${not empty ssLicenseData}"><%--
-						--%><c:set var="highWater" value="-1"/><%--
-						--%><c:set var="highWaterDate" value=""/><%--
 						--%><c:set var="currentUser" value="0"/><%--
-							--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
-							--%><c:if test="${datum.activeUserCount > highWater}"><%--
-							    --%><c:set var="highWater" value="${datum.activeUserCount}"/><%--
-							    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
-							--%></c:if><%--
+						--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
 							--%><c:set var="currentUser" value="${datum.activeUserCount}"/><%--
 						--%></c:forEach>
 						
 							<table cellspacing="6" cellpadding="2">
-								<tr>
-									<td><ssf:nlt tag="license.users.highwater"/></td>
-									<td>${highWater}&nbsp;(<fmt:formatDate value="${highWaterDate}" timeZone="${ssUser.timeZone.ID}" type="both" dateStyle="medium" timeStyle="short"/>)</td>
-								</tr>
 								<tr>
 									<td><ssf:nlt tag="license.current.users"/></td><td>${currentUser}</td>
 								</tr>
