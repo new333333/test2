@@ -184,4 +184,6 @@ alter table SS_Attachments add fileStatus int null;
 alter table SS_ZoneConfig add defaultHomePageId numeric(19,0);
 alter table SS_ZoneConfig add defaultGuestHomePageId numeric(19,0);
 
-INSERT INTO SS_SchemaInfo values (11);
+alter table SS_LicenseStats add activeUserCount numeric(19,0);
+
+INSERT INTO SS_SchemaInfo values (12);
