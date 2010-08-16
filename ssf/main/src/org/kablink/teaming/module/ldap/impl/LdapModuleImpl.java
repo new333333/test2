@@ -152,6 +152,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final int PRINCIPAL_FOREIGN_NAME = 4;
 	private static final int PRINCIPAL_LDAP_GUID = 5;
 	
+	// An ldap sync should not be started while another ldap sync is running.
+	private static boolean m_syncInProgress = false;
+	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
 	protected HashMap zones = new HashMap();
@@ -915,97 +918,113 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		boolean syncGuids,
 		LdapSyncResults syncResults ) throws LdapSyncException
 	{
-		// Sync guids if called for.
-		if ( syncGuids == true )
-			syncGuidAttributeForAllUsersAndGroups( syncResults );
-		
-		// If we don't need to sync users and groups then bail.
-		if ( syncUsersAndGroups == false )
+		// Is an ldap sync currently going on?
+		if ( m_syncInProgress )
+		{
+			// Yes, don't start another sync.
+	    	logger.error( "Unable to start ldap sync because an ldap sync is currently running" );
 			return;
+		}
 		
-		Workspace zone = RequestContextHolder.getRequestContext().getZone();
-		LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
-   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
-	   		LdapContext ctx=null;
-	  		try {
-				ctx = getUserContext(zone.getId(), config);
-				logger.info("InitialContext: " + ctx.getNameInNamespace());
-				
-				syncUsers(zone, ctx, config, userCoordinator);
-			}
-	  		catch (NamingException namingEx)
-	  		{
-	  			logError(NLT.get("errorcode.ldap.context"), namingEx);
-	  			
-	  			LdapSyncException	ldapSyncEx;
-	  			
-	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-	  			// the LdapConnectionConfig object that was being used when the error happened.
-	  			ldapSyncEx = new LdapSyncException( config, namingEx );
-	  			throw ldapSyncEx;
-	  		}
-	  		finally {
-				if (ctx != null) {
-					try
-					{
-						ctx.close();
+		try
+		{
+			m_syncInProgress = true;
+			
+			// Sync guids if called for.
+			if ( syncGuids == true )
+				syncGuidAttributeForAllUsersAndGroups( syncResults );
+			
+			// If we don't need to sync users and groups then bail.
+			if ( syncUsersAndGroups == false )
+				return;
+			
+			Workspace zone = RequestContextHolder.getRequestContext().getZone();
+			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
+	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
+	   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
+			for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
+		   		LdapContext ctx=null;
+		  		try {
+					ctx = getUserContext(zone.getId(), config);
+					logger.info("InitialContext: " + ctx.getNameInNamespace());
+					
+					syncUsers(zone, ctx, config, userCoordinator);
+				}
+		  		catch (NamingException namingEx)
+		  		{
+		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
+		  			
+		  			LdapSyncException	ldapSyncEx;
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			ldapSyncEx = new LdapSyncException( config, namingEx );
+		  			throw ldapSyncEx;
+		  		}
+		  		finally {
+					if (ctx != null) {
+						try
+						{
+							ctx.close();
+						}
+						catch (NamingException namingEx)
+				  		{
+				  			LdapSyncException	ldapSyncEx;
+				  			
+				  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+				  			// the LdapConnectionConfig object that was being used when the error happened.
+				  			ldapSyncEx = new LdapSyncException( config, namingEx );
+				  			throw ldapSyncEx;
+				  		}
 					}
-					catch (NamingException namingEx)
-			  		{
-			  			LdapSyncException	ldapSyncEx;
-			  			
-			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-			  			// the LdapConnectionConfig object that was being used when the error happened.
-			  			ldapSyncEx = new LdapSyncException( config, namingEx );
-			  			throw ldapSyncEx;
-			  		}
 				}
 			}
-		}
-		Map dnUsers = userCoordinator.wrapUp();
-
-   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
-   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
-	   		LdapContext ctx=null;
-	  		try {
-				ctx = getGroupContext(zone.getId(), config);
-				logger.info("InitialContext: " + ctx.getNameInNamespace());
-				syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
-			}
-	  		catch (NamingException namingEx)
-	  		{
-	  			logError(NLT.get("errorcode.ldap.context"), namingEx);
-	  			
-	  			LdapSyncException	ldapSyncEx;
-	  			
-	  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-	  			// the LdapConnectionConfig object that was being used when the error happened.
-	  			ldapSyncEx = new LdapSyncException( config, namingEx );
-	  			throw ldapSyncEx;
-	  		}
-	  		finally {
-				if (ctx != null) {
-					try
-					{
-						ctx.close();
-					}
-					catch (NamingException namingEx)
-			  		{
-			  			LdapSyncException	ldapSyncEx;
-			  			
-			  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-			  			// the LdapConnectionConfig object that was being used when the error happened.
-			  			ldapSyncEx = new LdapSyncException( config, namingEx );
-			  			throw ldapSyncEx;
-			  		}
+			Map dnUsers = userCoordinator.wrapUp();
+	
+	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
+	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
+		   		LdapContext ctx=null;
+		  		try {
+					ctx = getGroupContext(zone.getId(), config);
+					logger.info("InitialContext: " + ctx.getNameInNamespace());
+					syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
 				}
-							
+		  		catch (NamingException namingEx)
+		  		{
+		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
+		  			
+		  			LdapSyncException	ldapSyncEx;
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			ldapSyncEx = new LdapSyncException( config, namingEx );
+		  			throw ldapSyncEx;
+		  		}
+		  		finally {
+					if (ctx != null) {
+						try
+						{
+							ctx.close();
+						}
+						catch (NamingException namingEx)
+				  		{
+				  			LdapSyncException	ldapSyncEx;
+				  			
+				  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+				  			// the LdapConnectionConfig object that was being used when the error happened.
+				  			ldapSyncEx = new LdapSyncException( config, namingEx );
+				  			throw ldapSyncEx;
+				  		}
+					}
+								
+				}
 			}
+	   		groupCoordinator.deleteObsoleteGroups();
+		}// end try
+		finally
+		{
+			m_syncInProgress = false;
 		}
-   		groupCoordinator.deleteObsoleteGroups();
-   		
 	}
 
 	

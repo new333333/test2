@@ -726,6 +726,11 @@ function handleResponseToRemoveExistingLdapSyncResults( responseData )
  */
 function handleResponseToStartLdapSync( responseData )
 {
+	// Current the ajax request to start the ldap sync does not return until the ldap sync
+	// has completed.  When we implement the ldap sync as a thread on the server we should
+	// remove the following return statement.
+	return;
+	
 	// Start a timer.  Whenever the timer goes off we will issue an ajax request
 	// to get the latest results from the ldap sync.
 	m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
@@ -858,6 +863,11 @@ function startLdapSync()
 	status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.inProgress"/></ssf:escapeJavaScript>';
 	setSyncResultsStatus( status, m_syncStatusInProgressImg );
 
+	// Start a timer.  Whenever the timer goes off we will issue an ajax request
+	// to get the latest results from the ldap sync.
+	m_syncResultsTimerId = setTimeout( getSyncResults, 2000 );
+
+	m_ldapSyncStatus = LDAP_SYNC_STATUS_IN_PROGRESS;
 }// end startLdapSync()
 
 
