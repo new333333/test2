@@ -301,7 +301,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			// Yes!  We only send a plain text MIME part that contains
 			// permalink URLs to the entries we sending notification
 			// about.
-			StringBuffer ptBuffer = new StringBuffer("");
+			StringBuffer ptBuf = new StringBuffer("");
 			Collection msgEntries;
 			if (entry != null) {
 				msgEntries = new ArrayList();
@@ -313,15 +313,16 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				int count = 0;
 				for (Iterator i = msgEntries.iterator(); i.hasNext(); count += 1) {
 					if (0 < count) {
-						ptBuffer.append("\r\n");
+						ptBuf.append("\r\n");
 					}
-					ptBuffer.append(PermaLinkUtil.getPermalink(((Entry) i.next())));
+					ptBuf.append(PermaLinkUtil.getPermalink(((Entry) i.next())));
 				}
 			}
 			
-			String plainTextString = ptBuffer.toString();
-			String htmlString = ("<a href=\"" + plainTextString + "\">" + plainTextString + "</a>");
-			setText(plainTextString, htmlString, helper);
+			String ptStr = ptBuf.toString();
+			String hStr = EmailUtil.validateHTMLForEmail(
+				"<a href=\"" + ptStr + "\">" + ptStr + "</a>");
+			setText(ptStr, hStr, helper);
 			
 		} else {
 			// No, we aren't sending a text message!  Use MailHelper so

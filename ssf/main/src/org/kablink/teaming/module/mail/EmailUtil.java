@@ -80,11 +80,15 @@ public class EmailUtil {
 		map.put(key, text);
 	}
 
-	/*
+	/**
 	 * Validates that a string containing HTML has <HTML>, <HEAD> and
 	 * <BODY> tags.
+	 * 
+	 * @param html
+	 * 
+	 * @return
 	 */
-	private static String validateHTMLForEmail(String html) {
+	public static String validateHTMLForEmail(String html) {
 		// If the string is null...
 		if (null == html) {
 			// ...set it to an empty string.
