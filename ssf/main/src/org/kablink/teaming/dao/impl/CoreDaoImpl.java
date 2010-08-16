@@ -59,6 +59,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
@@ -88,6 +89,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -2363,4 +2365,23 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "loadZoneConfig(Long)");
     	}	        
 	}
+	
+	public int getLoginCount(final Date startDate) {
+		List result = new ArrayList();
+		result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+	
+				List auditTrail = session.createCriteria(LoginInfo.class)
+					.setProjection(Projections.projectionList()
+									.add(Projections.groupProperty("startBy"))
+									.add(Projections.max("startDate"))
+									.add(Projections.rowCount()))
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+						.add(Restrictions.ge("startDate", startDate))
+					.list();
+				return auditTrail;
+			}});
+		return result.size();
+	}
+	
  }

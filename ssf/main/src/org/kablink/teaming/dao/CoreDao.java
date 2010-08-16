@@ -221,4 +221,6 @@ public interface CoreDao {
 	 * @return
 	 */
     public boolean checkInUse(Definition def);
+    
+    public int getLoginCount(final Date startDate);
 }

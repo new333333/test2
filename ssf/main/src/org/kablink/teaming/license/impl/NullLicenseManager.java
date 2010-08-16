@@ -54,7 +54,7 @@ public class NullLicenseManager implements LicenseManager {
 	{
 	}
 	
-	public void recordUserCount(long internal, long external)
+	public void recordUserCount(long internal, long external, long active)
 	{
 	}
 	
