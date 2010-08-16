@@ -47,3 +47,7 @@ In SS_ZoneConfig:
   ALTER TABLE SS_ZoneConfig add column defaultHomePage varchar(19);
   ALTER TABLE SS_ZoneConfig add column defaultGuestHomePage varchar(19);
   
+Version 12:
+In SS_ZoneConfig:
+  ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
+
