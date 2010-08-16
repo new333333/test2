@@ -789,6 +789,37 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     		end(begin, "countObjects(Class,FilterControls,Long)");
     	}	        
 	}
+   
+   public long countObjects(final Class clazz, FilterControls filter, Long zoneId, final StringBuffer sbuf) {
+		long begin = System.currentTimeMillis();
+		try {
+			final FilterControls myFilter = filter==null?new FilterControls():filter;
+			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+			Long result = (Long)getHibernateTemplate().execute(
+			    new HibernateCallback() {
+			        public Object doInHibernate(Session session) throws HibernateException {
+			        	StringBuffer query = new StringBuffer();
+	                  	query.append(" select count(*) from x in class " + clazz.getName());
+	                  	myFilter.appendFilter("x", query);
+	                  	query.append(sbuf.toString());
+	                  	Query q = session.createQuery(query.toString());
+	            		List filterValues = myFilter.getFilterValues();
+	            		for (int i=0; i<filterValues.size(); ++i) {
+	            			q.setParameter(i, filterValues.get(i));
+	            		}
+	 	                 List result = q.list();
+	 	                 if (result.isEmpty()) return null;
+	               	 	 return result.get(0);
+	               }
+	            }
+			);
+	       if (result==null) return 0;
+		   return result.longValue(); 	
+   	}
+   	finally {
+   		end(begin, "countObjects(Class,FilterControls,Long)");
+   	}	        
+	}
 	
 	public double averageColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
 		long begin = System.currentTimeMillis();

@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -77,6 +78,7 @@ public interface CoreDao {
     public void clearFileNames(Binder binder);
     public void clearTitles(Binder binder);
 	public long countObjects(Class clazz, FilterControls filter, Long zoneId);
+	public long countObjects(Class clazz, FilterControls filter, Long zoneId, StringBuffer buff);
 	public void delete(Object obj);
 	public void delete(Binder binder);
 	public void delete(Binder binder, Class entryClass);
@@ -223,4 +225,6 @@ public interface CoreDao {
     public boolean checkInUse(Definition def);
     
     public int getLoginCount(final Date startDate);
+    
+	
 }
