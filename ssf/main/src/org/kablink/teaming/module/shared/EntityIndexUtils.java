@@ -918,7 +918,7 @@ public class EntityIndexUtils {
         	doc.add(fileIDField); 
         	Field fileOwnerIdField = new Field(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(fileOwnerIdField); 
-        	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(fileSizeField); 
         	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(fileTimeField); 
@@ -936,7 +936,7 @@ public class EntityIndexUtils {
     	doc.add(fileIDField); 
     	Field fileOwnerIdField = new Field(FILE_CREATOR_ID_FIELD, String.valueOf(fa.getCreation().getPrincipal().getId()), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileOwnerIdField); 
-    	Field fileSizeField = new Field(FILE_SIZE_FIELD, String.valueOf(fa.getFileItem().getLengthKB()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	Field fileSizeField = new Field(FILE_SIZE_FIELD, getSortableNumber(String.valueOf(fa.getFileItem().getLengthKB()), ObjectKeys.MAX_FILE_SIZE_DECIMAL_PLACES), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileSizeField); 
     	Field fileTimeField = new Field(FILE_TIME_FIELD, String.valueOf(fa.getModification().getDate().getTime()), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileTimeField); 
@@ -950,6 +950,13 @@ public class EntityIndexUtils {
        	doc.add(fileExtField);   	
        	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(fa.isCurrentlyLocked()), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(uniqueField);     	
+    }
+    
+    public static String getSortableNumber(String number, int maxLength) {
+    	final String zeros = "00000000000000000000";
+    	int leadingZeros = maxLength - number.length();
+    	if (leadingZeros <= 0) return number;
+    	return zeros.substring(0, leadingZeros) + number;
     }
     
     // in the _allText field for this attachment, just add the contents of
