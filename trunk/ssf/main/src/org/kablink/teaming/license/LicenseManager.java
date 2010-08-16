@@ -56,8 +56,9 @@ public interface LicenseManager {
 	 * Record snapshot of number of current users, for compliance monitoring
 	 * @param internal
 	 * @param external
+	 * @param active
 	 */
-	public void recordUserCount(long internal, long external);
+	public void recordUserCount(long internal, long external, long active);
 	
 	/**
 	 *  

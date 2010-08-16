@@ -234,11 +234,11 @@
 						--%><c:set var="highWaterDate" value=""/><%--
 						--%><c:set var="currentUser" value="0"/><%--
 							--%><c:forEach var="datum" items="${ssLicenseData}" ><%--
-							--%><c:if test="${(datum.internalUserCount + datum.externalUserCount) > highWater}"><%--
-							    --%><c:set var="highWater" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
+							--%><c:if test="${datum.activeUserCount > highWater}"><%--
+							    --%><c:set var="highWater" value="${datum.activeUserCount}"/><%--
 							    --%><c:set var="highWaterDate" value="${datum.snapshotDate}"/><%--
 							--%></c:if><%--
-							--%><c:set var="currentUser" value="${datum.internalUserCount + datum.externalUserCount}"/><%--
+							--%><c:set var="currentUser" value="${datum.activeUserCount}"/><%--
 						--%></c:forEach>
 						
 							<table cellspacing="6" cellpadding="2">
@@ -256,6 +256,7 @@
 									<th><ssf:nlt tag="license.table.date"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.localUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.syncdUsers"/>&nbsp;</th>
+									<th>&nbsp;<ssf:nlt tag="license.table.activeUsers"/>&nbsp;</th>
 									<th>&nbsp;<ssf:nlt tag="license.table.check"/>&nbsp;</th>
 								</tr>
 								<c:forEach var="datum" items="${ssLicenseData}" >
@@ -263,6 +264,7 @@
 										<td><fmt:formatDate value="${datum.snapshotDate}" timeZone="${ssUser.timeZone.ID}" type="date" dateStyle="medium"/></td>
 										<td align="center">${datum.internalUserCount}</td>
 										<td align="center">${datum.externalUserCount}</td>
+										<td align="center">${datum.activeUserCount}</td>
 										<td align="center">${datum.checksum}</td>
 									</tr>
 								</c:forEach>

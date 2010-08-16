@@ -32,12 +32,15 @@
  */
 package org.kablink.teaming.module.license.impl;
 
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.dom4j.Document;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
@@ -106,6 +109,16 @@ implements LicenseModule, ZoneSchedule {
 		this.reportModule = reportModule;
 	}
 
+	protected long countActiveUsers(Long zoneId)
+	{
+		// Find all users that have logged in during the past year
+		Calendar cal = Calendar.getInstance();
+		Date startDate = new Date();
+		cal.setTime(startDate);
+		cal.add(Calendar.YEAR, -1);
+		return getCoreDao().getLoginCount(cal.getTime());
+	}
+	
 	protected long countInternalUsers(Long zoneId)
 	{
 		// Find all users that are not disabled and not deleted and who have a password.
@@ -146,7 +159,7 @@ implements LicenseModule, ZoneSchedule {
 			stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
 					getLicenseManager().getExpirationDate());
 			getLicenseManager().recordUserCount(stats.getInternalUserCount(),
-					stats.getExternalUserCount());
+					stats.getExternalUserCount(), stats.getActiveUserCount());
 		}
 	}
 
@@ -159,7 +172,7 @@ implements LicenseModule, ZoneSchedule {
 		LicenseStats stats = getReportModule().getLicenseHighWaterMark(getLicenseManager().getEffectiveDate(),
 											      getLicenseManager().getExpirationDate());
 		getLicenseManager().recordUserCount(stats.getInternalUserCount(),
-											stats.getExternalUserCount());
+											stats.getExternalUserCount(), stats.getActiveUserCount());
 	}
 	
 	public void validateLicense() throws LicenseException

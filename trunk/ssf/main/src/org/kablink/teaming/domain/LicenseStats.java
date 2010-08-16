@@ -48,6 +48,7 @@ public class LicenseStats extends ZonedObject {
     protected Date snapshotDate;
 	protected long internalUserCount;
 	protected long externalUserCount;
+	protected Long activeUserCount;
 	protected long checksum;
 
 	/**
@@ -63,12 +64,13 @@ public class LicenseStats extends ZonedObject {
 	 * @param externalUserCount
 	 * @param checksum
 	 */
-	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, long checksum) {
+	public LicenseStats(Long zoneId, Date snapshotDate, long internalUserCount, long externalUserCount, long activeUserCount, long checksum) {
 		super();
 		setZoneId(zoneId);
 		setSnapshotDate(snapshotDate);
 		setInternalUserCount(internalUserCount);
 		setExternalUserCount(externalUserCount);
+		setActiveUserCount(activeUserCount);
 		setChecksum(checksum);
 	}
 	
@@ -134,6 +136,22 @@ public class LicenseStats extends ZonedObject {
 	 */
 	public void setInternalUserCount(long internalUserCount) {
 		this.internalUserCount = internalUserCount;
+	}
+
+	/**
+	 * @hibernate.property  
+	 * @return the activeUserCount
+	 */
+	public long getActiveUserCount() {
+		if (activeUserCount == null) return 0;
+		return activeUserCount;
+	}
+
+	/**
+	 * @param activeUserCount  the activeUserCount to set
+	 */
+	public void setActiveUserCount(Long activeUserCount) {
+		this.activeUserCount = activeUserCount;
 	}
 
 	/**
