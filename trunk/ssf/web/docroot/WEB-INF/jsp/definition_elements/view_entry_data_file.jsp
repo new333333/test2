@@ -50,7 +50,7 @@ if (isIECheck) strBrowserType = "ie";
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 <c:forEach var="selection" items="${selections}">
 <a target="_blank" 
-  href="<ssf:fileUrl file="${selection}"/>" 
+  href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 >${selection.fileItem.name}
 </a>
 <br>
@@ -69,7 +69,7 @@ if (isIECheck) strBrowserType = "ie";
 	<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 	<c:forEach var="selection" items="${selections}">
 	<a target="_blank" 
-	  href="<ssf:fileUrl file="${selection}"/>" 
+	  href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 	>${selection.fileItem.name}
 	</a>
 	<br>

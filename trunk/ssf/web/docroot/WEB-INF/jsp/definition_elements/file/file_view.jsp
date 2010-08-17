@@ -144,13 +144,13 @@
       <td>
       <div class="ss_thumbnail_tiny">
         <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
-		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+		  src="<ssf:fileUrl webPath="readThumbnail" file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>"/>
       </div>
       </td>
       <td>
 	  <div class="ss_entryTitleFile">
       <a target="_blank" 
-      href="<ssf:fileUrl file="${selection}"/>" 
+      href="<ssf:fileUrl file="${selection}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
       >${selection.fileItem.name}
       </a>
       </div>

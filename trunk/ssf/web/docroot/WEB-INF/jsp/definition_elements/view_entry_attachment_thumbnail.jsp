@@ -60,13 +60,14 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 <%
 	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 %>
-	<a style="text-decoration: none;" href="<ssf:fileUrl file="${ss_attachedFile}"/>" 
+	<a style="text-decoration: none;" href="<ssf:fileUrl file="${ss_attachedFile}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 			    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${ss_attachedFile.fileItem.name}"/>');"
 			
 		    <ssf:title tag="title.open.file">
 			    <ssf:param name="value" value="${ss_attachedFile.fileItem.name}" />
 		    </ssf:title>
-			     ><img border="0" <ssf:alt text="${ss_attachedFile.fileItem.name}"/> src="<ssf:fileUrl webPath="readThumbnail" file="${ss_attachedFile}"/>"/></a>
+			     ><img border="0" <ssf:alt text="${ss_attachedFile.fileItem.name}"/> 
+			       src="<ssf:fileUrl webPath="readThumbnail" file="${ss_attachedFile}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>"/></a>
 
 <%  }
 	if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
@@ -87,7 +88,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			      <ssf:param name="value" value="${ss_attachedFile.fileItem.name}" />
 		    	</ssf:title>
 			><img border="0" <ssf:alt text="${ss_attachedFile.fileItem.name}"/> 
-			  src="<ssf:fileUrl webPath="readThumbnail" file="${ss_attachedFile}"/>"/></a>
+			  src="<ssf:fileUrl webPath="readThumbnail" file="${ss_attachedFile}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>"/></a>
 		</ssf:isFileEditorConfiguredForOS>
 	</ssf:editorTypeToUseForEditInPlace>
 	

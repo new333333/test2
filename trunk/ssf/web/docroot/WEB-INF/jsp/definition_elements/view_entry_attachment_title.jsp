@@ -77,7 +77,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 %>
     <a style="text-decoration: none;" 
-				href="<ssf:fileUrl file="${ss_attachedFile}"/>" 
+				href="<ssf:fileUrl file="${ss_attachedFile}" useVersionNumber="${ss_useExplicitFileVersionNumbers}"/>" 
 			    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${ss_attachedFile.fileItem.name}"/>');"
 
 		    <ssf:title tag="title.open.file">

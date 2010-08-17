@@ -329,12 +329,21 @@ public class WebUrlUtil {
 		return adapterUrl.toString();
 	}
 	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt);
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, false);
+	}
+	public static String getFileUrl(PortletRequest req, String path, FileAttachment fAtt, boolean useVersionNumber) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber);
 	}
 	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt);
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, false);
+	}
+	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt, boolean useVersionNumber) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber);
 	}
 	public static String getFileUrl(String webPath, String action, FileAttachment fAtt) {
+		return getFileUrl(webPath, action, fAtt, false);
+	}
+	public static String getFileUrl(String webPath, String action, FileAttachment fAtt, boolean useVersionNumber) {
 		DefinableEntity entity = fAtt.getOwner().getEntity();
 
 		if (fAtt instanceof VersionAttachment) {
@@ -343,9 +352,15 @@ public class WebUrlUtil {
 					String.valueOf(version.getModification().getDate().getTime()), String.valueOf(version.getVersionNumber()), 
 					version.getFileItem().getName());
 		}
-		return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
-				String.valueOf(fAtt.getModification().getDate().getTime()), null, 
-				fAtt.getFileItem().getName());
+		if (useVersionNumber) {
+			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
+					String.valueOf(fAtt.getModification().getDate().getTime()), fAtt.getLastVersion().toString(), 
+					fAtt.getFileItem().getName());
+		} else {
+			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
+					String.valueOf(fAtt.getModification().getDate().getTime()), null, 
+					fAtt.getFileItem().getName());
+		}
 	}
 	public static String getFileUrl(PortletRequest req, String action, DefinableEntity entity, String fileName) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileName);
