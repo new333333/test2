@@ -190,17 +190,17 @@ div.ss_canvas {
 
 #ss_Box{
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 4px 0 6px 0;
 	}	
 	/*SHARED*/
 #ss_networkupdates{
 	padding: 0;
-	margin: 2% 0 2% 0;
+	margin: 4px 0 4px 0;
 	}
 #ss_shared{
-	margin: 0% 0 5% 0;
+	margin: 0 0 6px 0;
 	<c:if test="<%= isIE %>">
- 	margin: 3px 0 5% 0;
+ 	margin: 3px 0 6px 0;
  	</c:if>	
 	line-height:1.6em;
 	}
@@ -211,17 +211,17 @@ div.ss_canvas {
 	/*MINIBLOG*/
 
 #ss_blogs{
-	margin: 0% 0 5% 0;
+	margin: 4px 0 6px 0;
 	<c:if test="<%= isIE %>">
- 	margin: 3px 0 5% 0;
+ 	margin: 3px 0 6px 0;
  	</c:if>	
 	color:#444444;
 	line-height:1.6em;
 	}
  	/*TASKS*/
 #ss_tasks{
-	margin: 1% 0 5% 0;
-	padding: 0.5% 0 15px;
+	margin: 4px 0 6px 0;
+	padding: 2px 0 15px;
 	line-height: 1.6em;
 	}
 #ss_tasks_para {
@@ -262,8 +262,8 @@ div.ss_canvas {
 	}			
 	/*TRACKED ITEMS*/	
 #ss_trackedItems{
-	margin: 1% 0 5% 0;
-	padding: 0% 0 1% 0;
+	margin: 4px 0 6px 0;
+	padding: 0 0 2px 0;
 	}
 #ss_trackedPeople{
 	background-color:transparent;
@@ -285,8 +285,8 @@ div.ss_canvas {
 	/*CALENDAR*/
 #ss_calendar{
 	padding: 0;
-	margin: 1% 0 5% 0;
-	padding: 0.5% 0 0px;
+	margin: 4px 0 6px 0;
+	padding: 2px 0 0px;
 	line-height: 1.5em;
 	}
 #ss_visit_para {
@@ -380,13 +380,13 @@ div.item-sub a {
 	/* WHATS HOT */
 
 #ss_whatshot{
-	margin: 1% 0 5% 0;
-	padding: 0% 0 1% 0;
+	margin: 4px 0 6px 0;
+	padding: 0 0 2px 0;
 	line-height: 1.6em;
 	}
 	/* SURVEY*/
 #ss_survey{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	border:1px solid #5691A6;
 	}
@@ -404,33 +404,33 @@ div.item-sub a {
 	}
 	/* NOTES */
 #ss_notes{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	border:1px solid #5691A6;
 	}
 	/* BOOKMARKS */
 #ss_bookmarks{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	}
 	/* ACTIVITIES */
 .ss_activity{
-	margin: 1% 1% 5% 15px;
+	margin: 4px 4px 6px 15px;
 	color:#555;
 	}
 	/* WHATS NEW */
 #ss_whatsnew{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	}
 	/* PERSONAL TRACKER */
 #ss_personaltracker{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	border:1px solid #A7A9AC
 	}
 	/* EMAIL */
 #ss_email{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	font-family:  Arial, sans serif;
 	line-height: 1.5em;
@@ -438,7 +438,7 @@ div.item-sub a {
 	}
 	/* PEOPLE */
 #ss_people{
-	margin: 1% 0 5% 0;
+	margin: 4px 0 6px 0;
 	color:#555;
 	}
 	/* DOCUMENTS */
@@ -454,7 +454,7 @@ div.item-sub a {
 #ss_subtitle{
 	font-size:14px;
 	color:#555555;
-	padding: 0.5% 0 1% 6px;
+	padding: 2px 0 4px 6px;
 	}
 
 /*  BOX TITLES */
@@ -478,7 +478,7 @@ div.item-sub a {
 /* ******************************  */
 
 .ss_pt_para { 	
-	margin: 1%; 
+	margin: 4px; 
 	}
 .ss_pt_para ul{
 	color:#555555;
@@ -564,7 +564,7 @@ div.item-sub a {
 	padding-left: 15px;
 	padding-bottom: 15px;
 	color: #555555;
-	margin-top: 1%;
+	margin-top: 4px;
 	line-height: 1.6em;
 	list-style-type: square;
 	}
@@ -703,7 +703,6 @@ div.item-sub a {
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
       }  
 #ss_tabsC .ss_tabsC_other {
-	margin-bottom: 5px;
 	}
 #ss_tabsC .ss_tabsCCurrent a {
 	color: #000 !important;
@@ -759,7 +758,7 @@ div.item-sub a {
 	}		
 #ss_task_list{
 	padding: 0;
-	margin: 1% 0 2% 2%;
+	margin: 4px 0 6px 6px;
 	color:#333333;
 	border:1px solid #A7A9AC;
 	}
@@ -778,8 +777,8 @@ div.item-sub a {
 	margin:0 auto;
 	}	
 .ss_para_lists{
-	margin-top: 1%;
-	padding: 0.5% 1% 1% 5px;
+	margin-top: 4px;
+	padding: 2px 4px 4px 5px;
 	border: 1px dotted #cccccc;
 	}	
 .ss_para_lists ul{
@@ -791,7 +790,7 @@ div.item-sub a {
 	border-bottom:1px dashed #444444;
 	line-height:2.5em;
 	padding-bottom:10px;
-	padding-right:1%;
+	padding-right:4px;
 	}
 #ss_tracker{
 	position:absolute;
