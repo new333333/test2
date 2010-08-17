@@ -95,10 +95,14 @@ function ss_doReload() {
 <c:if test="${!empty ss_errorMessage}">
 <ssf:form titleTag="general.error.anErrorOccurred">
 <c:if test="${empty ss_errorMessageFormat || ss_errorMessageFormat == 'pre'}">
-  <span class="ss_largestprint"><pre>${ss_errorMessage}</pre></span>
+  <div style="padding-top:10px;">
+    <span class="ss_largestprint"><pre>${ss_errorMessage}</pre></span>
+  </div>
 </c:if>
 <c:if test="${ss_errorMessageFormat == 'normal'}">
-  <span class="ss_largestprint">${ss_errorMessage}</span>
+  <div style="padding-top:10px;">
+    <span class="ss_largestprint">${ss_errorMessage}</span>
+  </div>
 </c:if>
 <br/>
 <br/>
