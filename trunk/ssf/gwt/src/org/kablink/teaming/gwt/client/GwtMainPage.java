@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -93,6 +94,7 @@ public class GwtMainPage extends Composite
 	private TeamingPopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
+	private UIStateManager m_uiStateManager;
 
 	
 	/**
@@ -131,6 +133,10 @@ public class GwtMainPage extends Composite
 		
 		// Initialize JavaScript that handles the landing page options
 		initHandleLandingPageOptionsJS( this );
+		
+		// Create a UIStateManager that we will use to save/restore the ui state.
+		m_uiStateManager = new UIStateManager();
+		m_uiStateManager.addActionHandler( this );
 		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
@@ -683,6 +689,9 @@ public class GwtMainPage extends Composite
 		switch (action)
 		{
 		case ADMINISTRATION:
+			// Save the current ui state
+			saveUIState();
+			
 			// Hide any popup entry iframe divs.
 			hideEntryPopupDiv();
 			
@@ -705,15 +714,34 @@ public class GwtMainPage extends Composite
 			break;
 		
 		case CLOSE_ADMINISTRATION:
+			Command cmd;
+			
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
 				m_adminControl.hideControl();
 			
 			// Show everything on the menu, the workspace tree control and the content control.
 			m_mainMenuCtrl.hideAdministrationMenubar();
-			m_wsTreeCtrl.setVisible( true );
 			m_contentCtrl.setVisible( true );
-			relayoutPage( true );
+
+			// Restore the ui state to what it was before we opened the site administration.
+			cmd = new Command()
+			{
+				public void execute()
+				{
+					restoreUIState();
+				}
+			};
+			DeferredCommand.addCommand( cmd );
+			
+			cmd = new Command()
+			{
+				public void execute()
+				{
+					relayoutPage( true );
+				}
+			};
+			DeferredCommand.addCommand( cmd );
 			break;
 			
 		case EDIT_BRANDING:
@@ -921,6 +949,9 @@ public class GwtMainPage extends Composite
 	@SuppressWarnings("unused")
 	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
 	{
+		// Save the current ui state so we can restore it when the user moves to another page.
+		saveUIState();
+		
 		// Hide or show the sidebar.
 		if ( hideSidebar )
 			handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
@@ -1359,6 +1390,19 @@ public class GwtMainPage extends Composite
 			Window.alert( "in savedSearch() and obj is not a String object" );
 	}//end savedSearch()
 
+	/**
+	 * Save the current ui state.
+	 */
+	private void saveUIState()
+	{
+		UIState uiState;
+		
+		uiState = m_uiStateManager.new UIState();
+		uiState.setMastheadVisibility( m_mastHead.isVisible() );
+		uiState.setSidebarVisibility( m_wsTreeCtrl.isVisible() );
+		m_uiStateManager.saveUIState( uiState );
+	}
+
 	/*
 	 * This method will be called to perform a recent place search on
 	 * an integer received as a parameter.
@@ -1387,6 +1431,9 @@ public class GwtMainPage extends Composite
 	 * Implements the PRE_CONTEXT_SWITCH teaming action.
 	 */
 	private void preContextSwitch() {
+		// Restore any ui state that may be saved.
+		restoreUIState();
+		
 		if ( null != m_mainMenuCtrl )
 		{
 			m_mainMenuCtrl.clearContextMenus();
@@ -1504,6 +1551,15 @@ public class GwtMainPage extends Composite
 		// ActionHandler to the ActionRequestor.
 		actionRequestor.addActionHandler( this );
 	}// end registerActionHandler()
+	
+	/**
+	 * Restore the previous ui state.
+	 */
+	private void restoreUIState()
+	{
+		m_uiStateManager.restoreUIState();
+	}
+	
 	
 	/*
 	 * Invoke the Simple Profile Dialog
