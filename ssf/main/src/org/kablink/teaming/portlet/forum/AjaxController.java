@@ -38,7 +38,6 @@ import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
 import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.in;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -64,8 +63,11 @@ import net.sf.json.util.JSONUtils;
 
 import org.apache.commons.collections.OrderedMap;
 import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.HttpsURL;
+import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
@@ -106,7 +108,6 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -143,10 +144,8 @@ import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
@@ -158,7 +157,6 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsThread;
 import org.kablink.teaming.web.util.GwtUIHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.UserAppConfig;
@@ -1617,12 +1615,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String iCalURL = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ICAL_URL, null);
 		
 		if (folderId != -1) {
-			HttpClient httpClient = new HttpClient();
-			GetMethod getMethod = new GetMethod(iCalURL);
+			HttpURL hrl = getHttpURL(iCalURL);
+			HttpClient httpClient = getHttpClient(hrl);
+			GetMethod getMethod = new GetMethod(hrl.getPathQuery());
 			try {
 				int statusCode = httpClient.executeMethod(getMethod);
 				if (statusCode == 200) {
-					// get the resonse as an InputStream
+					// Get the response as an InputStream.
 					InputStream icalInputStream = getMethod.getResponseBodyAsStream();
 					try {
 						attendedEntries = getIcalModule().parseToEntries(folderId, icalInputStream);
@@ -1634,7 +1633,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					response.setRenderParameter("ssICalendarException", "wrongURL");
 				}
 			} catch(Exception e){
-				logger.debug("Get iCalendar by URL [" + iCalURL + "].", e);
+				logger.error("AjaxController.ajaxLoadICalendarByURL():  Get iCalendar by URL [" + iCalURL + "].", e);
 				response.setRenderParameter("ssICalendarException", "wrongURL");
 			} finally{
 				//release the connection
@@ -3230,5 +3229,25 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		return new ModelAndView("forum/miniblog", model);
 	}
-	
+
+	/*
+	 * Creates an HttpClient from an HttpURL.
+	 */
+	private static HttpClient getHttpClient(HttpURL hrl) throws URIException {
+		HttpClient client = new HttpClient();
+		HostConfiguration hc = client.getHostConfiguration();
+		hc.setHost(hrl);
+		return client;
+	}
+
+	/*
+	 * Creates an HttpURL from a URL string.
+	 */
+	private static HttpURL getHttpURL(String urlStr) throws URIException  {
+		HttpURL reply;
+		if(urlStr.startsWith("https"))
+			 reply = new HttpsURL(urlStr);
+		else reply = new HttpURL(urlStr);
+		return reply;
+	}
 }
