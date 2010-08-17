@@ -129,6 +129,7 @@ public interface ProfileDao {
 	public Set<Long> getPrincipalIds(Principal principal);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
+	public Long getReservedGroupId(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
       
     public Group loadGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
