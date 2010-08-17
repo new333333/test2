@@ -165,7 +165,7 @@ var ss_buttonCancel = "<ssf:nlt tag="button.cancel"/>";
 var ss_buttonOK = "<ssf:nlt tag="button.ok"/>";
 var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
-var ss_clickOkToSubmit = "<ssf:nlt tag="form.clickOkToSubmit"/>";
+var ss_clickOkToSubmit = "<ssf:nlt quoteDoubleQuote="true" tag="form.clickOkToSubmit"/>";
 
 if (self != self.parent) {
 	//Check if this is a permalink being shown in the content frame
