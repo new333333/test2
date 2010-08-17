@@ -123,7 +123,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
   </td>
   <td valign="top" align="right">
     <input type="button" value="<ssf:nlt tag="button.ok"/>" style="margin:0px 20px 0px 0px;" 
-      onClick="submitRevertForm();return false;"/>
+      onClick="ss_buttonSelect('okBtn');submitRevertForm();return false;"/>
   </td>
   </tr>
   </table>
