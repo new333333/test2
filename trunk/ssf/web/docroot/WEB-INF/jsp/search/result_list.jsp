@@ -89,10 +89,10 @@
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">
 								<c:if test="${entry._entryType != 'reply'}">
-								  <img alt="<ssf:nlt tag="alt.entry"/>" src="<html:imagesPath/>pics/entry_icon.gif"/>
+								  <img alt="<ssf:nlt tag="alt.entry"/>" src="<html:imagesPath/>pics/entry_24.png"/>
                                 </c:if>
 								<c:if test="${entry._entryType == 'reply'}">
-								  <img alt="<ssf:nlt tag="alt.comment"/>" src="<html:imagesPath/>pics/entry_comment_icon.gif"/>
+								  <img alt="<ssf:nlt tag="alt.comment"/>" src="<html:imagesPath/>pics/comment_24.png"/>
                                 </c:if>
 							</div>
 							<div class="ss_entry">
@@ -205,7 +205,7 @@
 				</c:when>
 		  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
 							<div class="ss_thumbnail">
-								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_24.png"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -339,7 +339,7 @@
 				
 				<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
 							<div class="ss_thumbnail">
-								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_24.png"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -386,7 +386,7 @@
 				
 				<c:when test="${entry._entityType == 'group'}">
 							<div class="ss_thumbnail">
-								<img alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.group"/>" src="<html:imagesPath/>pics/group_24.png"/>
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
@@ -418,17 +418,17 @@
 								<c:set var="entryDocId" value="${entry._docId}"/>
 								<c:if test="${entry._entityType == 'folder'}">
 								  <img <ssf:alt tag="general.type.folder"/> 
-								    src="<html:imagesPath/>pics/folder_icon.gif"/>
+								    src="<html:imagesPath/>pics/folder_24.png"/>
 								  <c:set var="actionVar" value="view_folder_listing"/>
 								</c:if>
 								<c:if test="${entry._entityType == 'workspace'}">
 								  <img <ssf:alt tag="general.type.workspace"/> 
-								    src="<html:imagesPath/>pics/workspace_icon.gif"/>
+								    src="<html:imagesPath/>pics/workspace_24.png"/>
 								  <c:set var="actionVar" value="view_ws_listing"/>
 								</c:if>								
 								<c:if test="${entry._entityType == 'profiles'}">
 								  <img <ssf:alt tag="general.type.workspace"/> 
-								    src="<html:imagesPath/>pics/workspace_icon.gif"/>
+								    src="<html:imagesPath/>pics/profile_24.png"/>
 								  <c:set var="actionVar" value="view_profile_listing"/>
 								</c:if>								
 							</div>
@@ -491,7 +491,7 @@
 			    </c:when>
 		  		<c:when test="${entry._docType == 'attachment'}">
 							<div class="ss_thumbnail">
-								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_icon.gif"/>
+								<img alt="<ssf:nlt tag="alt.attachment"/>" src="<html:imagesPath/>pics/attachment_24.png"/>
 							</div>
 								<c:if test="${entry._entityType == 'folder'}">
 								<c:set var="actionVar" value="view_folder_listing"/>
