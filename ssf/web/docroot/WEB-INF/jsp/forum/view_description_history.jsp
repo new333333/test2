@@ -35,6 +35,7 @@
 <%@ page import="org.dom4j.Element" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:set var="ss_useExplicitFileVersionNumbers" value="true" scope="request" />
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>

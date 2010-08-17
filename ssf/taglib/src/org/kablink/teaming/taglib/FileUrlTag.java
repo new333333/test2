@@ -58,6 +58,7 @@ public class FileUrlTag extends BodyTagSupport {
 	private String fileId=null;
 	private boolean baseUrl = false;
 	private boolean zipUrl = false;
+	private boolean useVersionNumber = false;
 	public FileUrlTag() {
 		setup();
 	}
@@ -75,6 +76,7 @@ public class FileUrlTag extends BodyTagSupport {
 		webPath = WebKeys.ACTION_READ_FILE;
 		baseUrl = false;
 		zipUrl = false;
+		useVersionNumber = false;
 	}
 	
 	public int doEndTag() throws JspException {
@@ -82,11 +84,11 @@ public class FileUrlTag extends BodyTagSupport {
 			HttpServletRequest req =
 				(HttpServletRequest)pageContext.getRequest();
 			String webUrl = null;
-			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
+			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber);
 			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, searchResult);
 			else if (fileId != null && !this.zipUrl) {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
-				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment);
+				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber);
 			} else {
 				if (this.baseUrl) {
 					//We are building a base url that has no file name
@@ -101,7 +103,7 @@ public class FileUrlTag extends BodyTagSupport {
 					//try the first entity
 					Set<FileAttachment> atts = entity.getFileAttachments(); 
 					if (!atts.isEmpty())
-						webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next());
+						webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next(), useVersionNumber);
 				}
 				
 			}
@@ -134,6 +136,9 @@ public class FileUrlTag extends BodyTagSupport {
 	}
 	public void setZipUrl(boolean zipUrl) {
 	    this.zipUrl = zipUrl;
+	}
+	public void setUseVersionNumber(boolean useVersionNumber) {
+	    this.useVersionNumber = useVersionNumber;
 	}
 }
 

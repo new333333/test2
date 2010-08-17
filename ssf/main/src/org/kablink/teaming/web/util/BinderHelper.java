@@ -2154,55 +2154,6 @@ public class BinderHelper {
 			}
 		}
 		
-		//Build the title, description and all of the Custom Attributes 
-		Map attributeMap = new HashMap();
-		Iterator itAttr = root.attributeIterator();
-		while (itAttr.hasNext()) {
-			Attribute attr = (Attribute) itAttr.next();
-			attributeMap.put(attr.getName(),attr.getValue());
-		}
-
-		Iterator itAttributes = root.selectNodes("//attribute").iterator();
-		while (itAttributes.hasNext()) {
-			Element ele = (Element) itAttributes.next();
-			//Add the attributes
-			String name = (String)ele.attributeValue("name");
-			String type = (String)ele.attributeValue("type");
-			attributeMap = new HashMap();
-			itAttr = ele.attributeIterator();
-			while (itAttr.hasNext()) {
-				Attribute attr = (Attribute) itAttr.next();
-				attributeMap.put(attr.getName(), attr.getValue());
-			}
-			//Add the data
-			if (!Validator.isNull(name)) {
-				String itemType = DefinitionHelper.findAttributeType(name, defDoc);
-				if (name.equals("title")) {
-					entry.setTitle((String)ele.getData());
-				} else if (name.equals("description")) {
-					Description desc = new Description((String)ele.getData());
-					entry.setDescription(desc);
-				} else {
-					//This must be a custom attribute
-					Object attrValue = getAttributeValueFromChangeLog(type, itemType, (String)ele.getData());
-					if (type.equals("file") || type.equals("graphic")) {
-						String fileAttachmentId = (String) attrValue;
-						Set<FileAttachment> fAtts = entity.getFileAttachments();
-						for (FileAttachment fa : fAtts) {
-							if (fa.getId().equals(fileAttachmentId)) {
-								Set faSet = new HashSet();
-								faSet.add(fa);
-								entry.addCustomAttribute(name, faSet);
-								break;
-							}
-						}
-					} else {
-						entry.addCustomAttribute(name, attrValue);
-					}
-				}
-			}
-		}
-		
 		//Set up the file attachments
 		List<Element> fileAttachments = new ArrayList<Element>();
 		
@@ -2344,6 +2295,63 @@ public class BinderHelper {
 			if (!attFound) {
 				//The attachment wasn't found, so add this one
 				entry.addAttachment(fa);
+			}
+		}
+		
+		//Build the title, description and all of the Custom Attributes 
+		Map attributeMap = new HashMap();
+		Iterator itAttr = root.attributeIterator();
+		while (itAttr.hasNext()) {
+			Attribute attr = (Attribute) itAttr.next();
+			attributeMap.put(attr.getName(),attr.getValue());
+		}
+
+		Iterator itAttributes = root.selectNodes("//attribute").iterator();
+		while (itAttributes.hasNext()) {
+			Element ele = (Element) itAttributes.next();
+			//Add the attributes
+			String name = (String)ele.attributeValue("name");
+			String type = (String)ele.attributeValue("type");
+			attributeMap = new HashMap();
+			itAttr = ele.attributeIterator();
+			while (itAttr.hasNext()) {
+				Attribute attr = (Attribute) itAttr.next();
+				attributeMap.put(attr.getName(), attr.getValue());
+			}
+			//Add the data
+			if (!Validator.isNull(name)) {
+				String itemType = DefinitionHelper.findAttributeType(name, defDoc);
+				if (name.equals("title")) {
+					entry.setTitle((String)ele.getData());
+				} else if (name.equals("description")) {
+					Description desc = new Description((String)ele.getData());
+					entry.setDescription(desc);
+				} else {
+					//This must be a custom attribute
+					Object attrValue = getAttributeValueFromChangeLog(type, itemType, (String)ele.getData());
+					if (type.equals("file") || type.equals("graphic")) {
+						String fileAttachmentId = (String) attrValue;
+						Set<FileAttachment> fAtts = entity.getFileAttachments();
+						for (FileAttachment fa : fAtts) {
+							if (fa.getId().equals(fileAttachmentId)) {
+								Set faSet = new HashSet();
+								//See if the file already exists as an attachment
+								Set<FileAttachment> entry_fAtts = entry.getFileAttachments();
+								for (FileAttachment entry_fa : entry_fAtts) {
+									if (entry_fa.getFileItem().getName().equals(fa.getFileItem().getName())) {
+										fa = entry_fa;
+										break;
+									}
+								}
+								faSet.add(fa);
+								entry.addCustomAttribute(name, faSet);
+								break;
+							}
+						}
+					} else {
+						entry.addCustomAttribute(name, attrValue);
+					}
+				}
 			}
 		}
 		
