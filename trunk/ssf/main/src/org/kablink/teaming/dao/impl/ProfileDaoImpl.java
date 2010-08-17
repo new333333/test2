@@ -1142,6 +1142,23 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedGroup(String,Long)");
     	}	        
     }
+    public Long getReservedGroupId(String internalId, Long zoneId) {
+		long begin = System.currentTimeMillis();
+		try {
+	    	Long id = getReservedId(internalId, zoneId);
+	    	if (id == null) {
+	    		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
+	    		if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
+	    		Group g = objs.get(0);
+	    		setReservedId(internalId, zoneId, g.getId());
+	    		return g.getId();
+	    	}
+	    	return id;
+    	}
+    	finally {
+    		end(begin, "getReservedGroup(String,Long)");
+    	}	        
+    }
     public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) {
 		long begin = System.currentTimeMillis();
 		try {

@@ -265,8 +265,8 @@ public class Utils {
 	public static Long getAllUsersGroupId() {
 		ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 		try {
-			Group allUsersGroup = profileDao.getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
-		return allUsersGroup.getId();
+			Long allUsersGroupId = profileDao.getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
+			return allUsersGroupId;
 		} catch(Exception e) {
 			//Can't find the All Users group, return null
 			return null;
