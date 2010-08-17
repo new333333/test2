@@ -2185,7 +2185,20 @@ public class BinderHelper {
 				} else {
 					//This must be a custom attribute
 					Object attrValue = getAttributeValueFromChangeLog(type, itemType, (String)ele.getData());
-					entry.addCustomAttribute(name, attrValue);
+					if (type.equals("file") || type.equals("graphic")) {
+						String fileAttachmentId = (String) attrValue;
+						Set<FileAttachment> fAtts = entity.getFileAttachments();
+						for (FileAttachment fa : fAtts) {
+							if (fa.getId().equals(fileAttachmentId)) {
+								Set faSet = new HashSet();
+								faSet.add(fa);
+								entry.addCustomAttribute(name, faSet);
+								break;
+							}
+						}
+					} else {
+						entry.addCustomAttribute(name, attrValue);
+					}
 				}
 			}
 		}
