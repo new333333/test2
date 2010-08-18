@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,8 @@
 <% // Calendar view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.teaming.domain.Entry" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
@@ -59,8 +61,15 @@
 <c:set var="prefix" value="${renderResponse.namespace}" />
 <% // Add the toolbars with the navigation widgets, commands and filter %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-
-<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
+<% if (BrowserSniffer.is_ie(request) && ("hu_HU".equals(NLT.get("Teaming.Lang")))) { %>
+	<% /* Fixes Bugzilla 516059. */ %>
+	<style>
+		.ss_actions_barIEFix {
+			height: 100% !important;
+		}
+	</style>
+<% } %>
+<ssf:toolbar style="ss_actions_bar5 ss_actions_bar ss_actions_barIEFix">
 <ssHelpSpot 
   		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="6" 
   		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>">
