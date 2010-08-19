@@ -49,15 +49,37 @@
 <% } %>
 <c:if test="${empty ssUrl}"><c:set var="ssUrl" value="${ss_reloadUrl}" scope="request"/></c:if>
 <div class="ss_mashup_element">
- <div class="ss_mashup_round_top"><div></div></div>
- <div class="ss_mashup_element_content">
-	<div class="ss_style" style="padding-left:10px;">
-	  <c:set var="ss_loginFormStyle" value="mashup" scope="request"/>
-	  <jsp:include page="/WEB-INF/jsp/forum/login_form.jsp" />
+	<script type="text/javascript">
+		/**
+		 * Invoke the GWT login dialog.
+		 */
+		function invokeLoginDlg()
+		{
+			if ( window.parent.ss_invokeLoginDlg )
+			{
+				if ( window.name == "gwtContentIframe" )
+				{
+					window.parent.ss_invokeLoginDlg( true );
+				}
+			}
+		}
+	</script>
+
+	<div class="ss_mashup_round_top">
+		<div></div>
 	</div>
- </div>
- <div class="ss_mashup_round_bottom"><div></div></div>
+	
+	<div class="ss_mashup_element_content">
+		<div class="ss_style" style="padding-left:10px;">
+		  	<input class="ss_submit" type="button" title="<ssf:nlt tag="login"/>" value="<ssf:nlt tag="login"/>"
+			  	onclick="invokeLoginDlg(); return false;"/>
+		</div>
+	</div>
+	<div class="ss_mashup_round_bottom">
+		<div></div>
+	</div>
 </div>
+
 <% if (ss_mashupListDepth > 0) { %>
 </li>
 <% } %>

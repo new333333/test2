@@ -134,6 +134,9 @@ public class GwtMainPage extends Composite
 		// Initialize JavaScript that handles the landing page options
 		initHandleLandingPageOptionsJS( this );
 		
+		// Initialize the JavaScript that calls the login dialog.
+		initInvokeLoginDlgJS( this );
+		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
 		m_uiStateManager.addActionHandler( this );
@@ -302,6 +305,16 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handlePageWithGWT(Ljava/lang/String;)( pageName );
 		}//end ss_handlePageWithGWT()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that can be called to invoke the login dialog.
+	 */
+	private native void initInvokeLoginDlgJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_invokeLoginDlg = function( allowCancel )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeLoginDlg(Z)( allowCancel );
+		}
 	}-*/;
 
 	/*
