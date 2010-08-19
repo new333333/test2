@@ -56,7 +56,8 @@
 			if (inSearch && ("function" == typeof ss_getSearchTabId)) {
 				searchTabId = ss_getSearchTabId();
 			}
-			if (typeof window.top.ss_contextLoaded != "undefined" && window.name == "gwtContentIframe") {
+			if ((typeof window.top.ss_contextLoaded != "undefined") &&
+					((window.name == "gwtContentIframe") || (window.name == "ss_showentryframe"))) {
 				window.top.ss_contextLoaded("${ssBinder.id}", String(inSearch), searchTabId);
 			}
 		}
@@ -328,11 +329,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		self.location.href = obj.href;
 	}
 }
-function ss_navbarUnload() {
-	//Call the GWT parent to clear any context specific menu items
-	if (typeof preContextSwitch != "undefined") preContextSwitch();
-}
-ss_createEventObj('ss_navbarUnload', 'unload', ss_navbarUnload);
 </script>
 <c:if test="${(!ss_mashupHideMasthead || ss_mashupShowBranding || 
 	ss_mashupShowFavoritesAndTeams) && (empty ss_captive || !ss_captive)}">

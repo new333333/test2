@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -80,7 +80,6 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
@@ -93,6 +92,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -191,7 +191,7 @@ public class ViewEntryController extends  SAbstractController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
-			return BinderHelper.CommonPortletDispatch(this, request, response);
+			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
 		Map<String,Object> model = new HashMap();
 		
@@ -203,14 +203,14 @@ public class ViewEntryController extends  SAbstractController {
 			String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 			model.put(WebKeys.REFERER_URL, refererUrl);
 			model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
-			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+			return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 		}
 		if (!entryId.equals("")) {
 			//See if this id needs to be corrected
 			Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
 			if (targetEntryId == null) {
 				model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported"));
-				return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 			}
 			entryId = targetEntryId.toString();
 		}
@@ -290,9 +290,9 @@ public class ViewEntryController extends  SAbstractController {
 						model.put(WebKeys.URL_BINDER_ENTRY_ADD, binderParam);
 					}
 					if (operation.equals(WebKeys.OPERATION_SHOW_NO_MORE_ENTRIES)) {
-						return new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model));
 					}
-					return new ModelAndView(WebKeys.VIEW_NO_ENTRIES, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_NO_ENTRIES, model));
 				}
 				
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
@@ -310,17 +310,17 @@ public class ViewEntryController extends  SAbstractController {
 							folder = getFolderModule().getFolder(folderId);
 						} catch(NoBinderByTheIdException e) {
 							model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {folderId.toString()}));
-							return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
+							return prepBeans(request, new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model));
 						}
 						buildNoEntryBeans(request, response, folder, entryId, model);
-						return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model));
 					} else {
 						//There are multiple matches
 						model.put(WebKeys.FOLDER_ENTRIES, entries);
-						return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model));
 					}
 				} else {
-					return new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_NO_MORE_ENTRIES, model));
 				}
 			} else {
 				try {
@@ -362,12 +362,12 @@ public class ViewEntryController extends  SAbstractController {
 						//Access is not allowed
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
-						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model));
 					} else {
 						//Please log in
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
-						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model));
 					}
 				} catch(AccessControlException e) {
 					//Access is not allowed
@@ -376,12 +376,12 @@ public class ViewEntryController extends  SAbstractController {
 						//Access is not allowed
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
-						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model));
 					} else {
 						//Please log in
 						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 						model.put(WebKeys.URL, refererUrl);
-						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+						return prepBeans(request, new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model));
 					}
 				}
 			}
@@ -404,7 +404,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 					model.clear();
 					model.put(WebKeys.RELOAD_URL_FORCED, adapterUrl.toString());			
-					return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model));
 				} 
 			} else {
 				PortletURL reloadUrl = response.createRenderURL();
@@ -417,7 +417,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 					model.clear();
 					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-					return new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model);
+					return prepBeans(request, new ModelAndView(WebKeys.VIEW_LISTING_IFRAME, model));
 				} 
 			}
 
@@ -484,28 +484,28 @@ public class ViewEntryController extends  SAbstractController {
 				//Access is not allowed
 				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 				model.put(WebKeys.URL, refererUrl);
-				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model));
 			} else {
 				//Please log in
 				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 				model.put(WebKeys.URL, refererUrl);
-				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model));
 			}
 		}
 		
 		if(fe == null) {
 			Document config = getDefinitionModule().getDefinitionConfig();
 			model.put(WebKeys.CONFIG_DEFINITION, config);
-			return new ModelAndView("entry/deleted_entry", model);		
+			return prepBeans(request, new ModelAndView("entry/deleted_entry", model));		
 		} else {
 			if (operation.equals(WebKeys.OPERATION_VIEW_PHOTO)) {
-				return new ModelAndView(WebKeys.VIEW_PHOTO, model);
+				return prepBeans(request, new ModelAndView(WebKeys.VIEW_PHOTO, model));
 			}
 			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
 				model.put(WebKeys.SNIPPET, true);
 				viewPath = "entry/view_entry_snippet";
 			}
-			return new ModelAndView(viewPath, model);
+			return prepBeans(request, new ModelAndView(viewPath, model));
 		}
 	} 
 
@@ -1054,5 +1054,15 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
 		
 		return entry;
+	}
+	
+	/*
+	 * Ensures the beans in the ModelAndView are ready to go.
+	 */
+	private static ModelAndView prepBeans(RenderRequest request, ModelAndView mv) {
+		// Nothing to do here.  Unlike the various 'binder'
+		// controllers, we don't want or need to call
+		// GwtUIHelper.cacheToolbarBeans(request, mv);
+		return mv;
 	}
 }
