@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.TitleException;
@@ -1178,8 +1179,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
    				VersionAttachment v = (VersionAttachment) i.next();
    				if (v.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) break;
-   				User user = getProfileDao().loadUser(v.getCreation().getPrincipal().getId(), RequestContextHolder.getRequestContext().getZoneName());
-   				user.decrementDiskSpaceUsed(v.getFileItem().getLength());
+   				
+   				// Decrement the disk space used by this user.
+   				try
+   				{
+   					User user = getProfileDao().loadUser(v.getCreation().getPrincipal().getId(), RequestContextHolder.getRequestContext().getZoneName());
+   					user.decrementDiskSpaceUsed(v.getFileItem().getLength());
+   				}
+   				catch ( NoUserByTheIdException ex )
+   				{
+   					// Nothing to do here.  This means that we are deleting a file
+   					// that is in a deleted user's workspace.
+   				}
    			}
    		}
    		
