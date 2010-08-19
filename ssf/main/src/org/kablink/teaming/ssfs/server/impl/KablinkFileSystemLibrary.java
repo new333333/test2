@@ -986,15 +986,42 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 		FileAttachment fa = getFileAttachment(objMap);
 
 		try {
-			// Bug #554284 - Whether the parent binder is a mirrored folder or not, delete the entire enclosing 
-			// entry when deleting its associated file through WebDAV interface.
-			bs.getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);
+			if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+				// The file being deleted is a mirrored file.
+				// In this case, we delete the entire entry regardless of what else the
+				// entry might contain, since we don't want to leave an entry that no 
+				// longer mirrors any source file 
+				FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
+			}
+			else {
+				if(entry.getFileAttachments().size() > 1) {
+					// This file being deleted isn't the only file associated with the entry.
+					// Just delete the file only, and leave the entry.
+					// This will honor the Bug #632304.
+					List faId = new ArrayList();
+					faId.add(fa.getId());
+					
+					bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null, null);
+				}
+				else {
+					// This file being deleted is the only file associated with the entry.
+					// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
+					// This will honor the Bug #554284.
+					bs.getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
+				}
+			}
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} 
 		catch (ReservedByAnotherUserException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
+		} 
+		catch (WriteFilesException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
+		} 
+		catch (WriteEntryDataException e) {
+			throw new KablinkFileSystemException(e.getLocalizedMessage());
 		} 
 	}
 	
