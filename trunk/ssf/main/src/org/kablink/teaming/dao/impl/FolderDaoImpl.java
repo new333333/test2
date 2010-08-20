@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.ObjectKeys;
@@ -60,13 +59,11 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 /**
  * @author Jong Kim
@@ -733,22 +730,34 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 				
 		}
 			
-		//delete logs
-		if (tokenIds.isEmpty()) return;
-		session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
-  			.setParameterList("pList", tokenIds)
- 			.executeUpdate();
-		//delete comments
-		session.createQuery("Delete org.jbpm.graph.exe.Comment where token.id in (:pList)")
-   			.setParameterList("pList", tokenIds)
-   			.executeUpdate();
-		//delete variables
-		session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token.id in (:pList)")
-			.setParameterList("pList", tokenIds)
-			.executeUpdate();
-		session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token.id in (:pList)")
-  			.setParameterList("pList", tokenIds)
-   			.executeUpdate();
+		if (!tokenIds.isEmpty()) {
+			//delete logs
+			logger.debug("Cleaning jbpm tables for FolderDaoImpl.workflowdelete()...");
+			if (logger.isDebugEnabled()) {
+				for (java.util.Iterator tIT = tokenIds.iterator(); tIT.hasNext(); ) {
+					Object t = tIT.next();
+					logger.debug("...cleaning token:  '" + ((null == t) ? "<null>" : t.toString()) + "'");
+				}
+			}
+			logger.debug("Cleaning tokens from org.jbpm.logging.log.ProcessLog...");
+			session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
+	  			.setParameterList("pList", tokenIds)
+	 			.executeUpdate();
+			//delete comments
+			logger.debug("Cleaning tokens from org.jbpm.graph.exe.Comment...");
+			session.createQuery("Delete org.jbpm.graph.exe.Comment where token.id in (:pList)")
+	   			.setParameterList("pList", tokenIds)
+	   			.executeUpdate();
+			//delete variables
+			logger.debug("Cleaning tokens from org.jbpm.context.exe.VariableInstance...");
+			session.createQuery("Delete org.jbpm.context.exe.VariableInstance where token.id in (:pList)")
+				.setParameterList("pList", tokenIds)
+				.executeUpdate();
+			logger.debug("Cleaning tokens from org.jbpm.context.exe.TokenVariableMap...");
+			session.createQuery("Delete org.jbpm.context.exe.TokenVariableMap where token.id in (:pList)")
+	  			.setParameterList("pList", tokenIds)
+	   			.executeUpdate();
+		}
 		
 		session.createQuery("Delete org.jbpm.graph.exe.RuntimeAction where processInstance.id in (:pList)")
 			.setParameterList("pList", pIs)
