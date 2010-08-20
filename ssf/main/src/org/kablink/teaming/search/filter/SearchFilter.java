@@ -554,7 +554,11 @@ public class SearchFilter {
 	}
 		
 	public void addTeamFilter() {
-		addPlacesFilter("", placeTypes);
+		addTeamFilter("");
+	}
+	
+	public void addTeamFilter(String searchText) {
+		addPlacesFilter(searchText, placeTypes);
 		addIsTeam();
 	}
 		
