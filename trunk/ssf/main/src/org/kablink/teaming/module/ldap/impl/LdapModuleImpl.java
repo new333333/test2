@@ -1617,6 +1617,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.groupAttributes = groupAttributes;
 			this.groupAttributeNames = 	(String[])(groupAttributes.keySet().toArray(sample));
 		}
+		
+		/**
+		 * Return the list of attribute names we deal with for a group.
+		 */
+		public String[] getAttributeNames()
+		{
+			return groupAttributeNames;
+		}
+		
 
 		/**
 		 * @param dn
@@ -1833,25 +1842,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return (Object [])dnGroups.get(dn);
 		}
 
-	
-		/**
-		 * Return the list of attribute names we need to read from the ldap directory.
-		 */
-		public String[] getAttributeNamesToRead( LdapConnectionConfig ldapConnectionConfig )
-		{
-			String[] attributeNames = null;
-			String ldapGuidAttribute;
-			
-			// Get the name of the ldap attribute that holds the guid.
-			ldapGuidAttribute = ldapConnectionConfig.getLdapGuidAttribute();
-			
-			attributeNames = new String[3];
-			attributeNames[0] = "cn";
-			attributeNames[1] = "member";
-			attributeNames[2] = ldapGuidAttribute;
-			
-			return attributeNames;
-		}// end getAttributeNamesToRead()
 	}// end GroupCoordinator
 
 	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
@@ -1860,26 +1850,65 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//ssname=> forum info
 		String [] sample = new String[0];
 		//ldap dn => forum info
-		String[] attributesToRead;
-
-		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
-		attributesToRead = groupCoordinator.getAttributeNamesToRead( config );
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
 			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
 				String ldapGuidAttribute;
+				String[] attributesToRead;
+				String[] attributeNames;
+				List memberAttributes;
+				int i;
 				
 				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 				ldapGuidAttribute = config.getLdapGuidAttribute();
 				
+				// Get the mapping of attributes for a group.
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
 				groupCoordinator.setAttributes(groupAttributes);
+				
 				Set la = new HashSet(groupAttributes.keySet());
 				la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
+				
 				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
 	
+				// Create a String[] of all the attributes we need to read from the directory.
+				{
+					int len;
+					int index;
+					
+					// Get the names of the attributes that may hold the group membership.
+					memberAttributes = (List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
+
+					// Get the names of the group attributes
+					attributeNames = groupCoordinator.getAttributeNames();
+					
+					len = 1;
+					if ( attributeNames != null )
+						len += attributeNames.length;
+					
+					if ( memberAttributes != null )
+						len += memberAttributes.size();
+					
+					index = 0;
+					attributesToRead = new String[len];
+					for (i = 0; i < attributeNames.length; ++i)
+					{
+						attributesToRead[index] = attributeNames[i];
+						++index;
+					}
+					
+					for (i = 0; i < memberAttributes.size(); ++i)
+					{
+						attributesToRead[index] = (String)memberAttributes.get( i );
+						++index;
+					}
+					
+					attributesToRead[index] = ldapGuidAttribute;
+				}
+				
 				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
+
 				while (ctxSearch.hasMore()) {
 					String groupName;
 					String fixedUpGroupName;
@@ -1893,6 +1922,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					fixedUpGroupName = fixupName( groupName );
 					fixedUpGroupName = fixedUpGroupName.trim();
 					
+					// Read the given attributes for this group from the directory.
 					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName, attributesToRead );
 					
 					String relativeName = groupName.trim();
@@ -1926,9 +1956,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if (gRow == null) continue; //not created
 						Long groupId = (Long)gRow[PRINCIPAL_ID];
 						if (groupId == null) continue; // never got created
-						List memberAttributes = (List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
 						Attribute att = null;
-						for (int i=0; i<memberAttributes.size(); i++) {
+						for (i=0; i<memberAttributes.size(); i++) {
 							att = lAttrs.get((String)memberAttributes.get(i));
 							if(att != null && att.get() != null && att.size() != 0) {
 								break;
