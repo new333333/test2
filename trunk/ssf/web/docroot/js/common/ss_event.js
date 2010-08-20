@@ -237,15 +237,21 @@ function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 					"<option  value=\"Saturday\" " +
 					(monthDays.dayOfWeek == 'Saturday'?" selected=\"selected\" ":"" ) + ">" + 
 					that.locale.dayNamesShort[6] + "</option>" +																															
-
-					"<option  value=\"weekday\" " +
-					(monthDays.dayOfWeek == 'weekday'?" selected=\"selected\" ":"" ) + ">" + 
-					that.locale.weekday + "</option>" +
-					
-					"<option  value=\"weekendday\" " +
-					(monthDays.dayOfWeek == 'weekendday'?" selected=\"selected\" ":"" ) + ">" + 
-					that.locale.weekendday + "</option>" +					
-
+// -----
+//					Bugzilla 588387:
+//						Since there is no infrastructure on the server
+//						side to support weekday or weekend day, and
+//						they have never worked, I'm simply removing
+//						them to fix this.
+// -----
+//					"<option  value=\"weekday\" " +
+//					(monthDays.dayOfWeek == 'weekday'?" selected=\"selected\" ":"" ) + ">" + 
+//					that.locale.weekday + "</option>" +
+//					
+//					"<option  value=\"weekendday\" " +
+//					(monthDays.dayOfWeek == 'weekendday'?" selected=\"selected\" ":"" ) + ">" + 
+//					that.locale.weekendday + "</option>" +					
+// -----
 					"</select>";
 			
 		frequencyContainer.innerHTML = html;
