@@ -369,10 +369,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			versionName = ((VersionAttachment) fa).getVersionName();
 		}
 		else {
-			if(fa.getFileLock() == null)
-				versionName = fa.getHighestVersion().getVersionName();
-			else
-				latestVersionName = fa.getHighestVersion().getVersionName();
+			if(fa.getHighestVersion() != null) {
+				if(fa.getFileLock() == null)
+					versionName = fa.getHighestVersion().getVersionName();
+				else
+					latestVersionName = fa.getHighestVersion().getVersionName();				
+			}
+			else {
+				// There is no content to read.
+				return;
+			}
 		}
 		
 		RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
@@ -387,10 +393,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			versionName = ((VersionAttachment) fa).getVersionName();
 		}
 		else {
-			if(fa.getFileLock() == null)
-				versionName = fa.getHighestVersion().getVersionName();
-			else
-				latestVersionName = fa.getHighestVersion().getVersionName();
+			if(fa.getHighestVersion() != null) {
+				if(fa.getFileLock() == null)
+					versionName = fa.getHighestVersion().getVersionName();
+				else
+					latestVersionName = fa.getHighestVersion().getVersionName();
+			}
+			else {
+				// There is no content to read.
+				return new ByteArrayInputStream(new byte[0]);
+			}
 		}
 		
 		return RepositoryUtil.readVersioned(fa.getRepositoryName(), binder, entry, 
@@ -737,7 +749,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
 		VersionAttachment hVer = fileAtt.getHighestVersion();
-		if (hVer.getParentAttachment() == fileAtt) {
+		if (hVer != null && hVer.getParentAttachment() == fileAtt) {
 			hVer.setMajorVersion(fileAtt.getMajorVersion());
 			hVer.setMinorVersion(fileAtt.getMinorVersion());
 		}
@@ -760,19 +772,35 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
 	throws UncheckedIOException, RepositoryServiceException {
-		// Rename the file in the repository
-		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
-				fa.getFileItem().getName(), binder, entity, newName);
+		if(fileExistsInRepository(fa)) {
+			// Rename the file in the repository
+			RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+					fa.getFileItem().getName(), binder, entity, newName);
+		}
+		else {
+			// This use case is caused by Map Network Place on Windows 7.
+			// When you create a new file through Map Network Place on Windows 7,
+			// it first creates an empty file with the default name and then rename
+			// it. In that case, we want the title of the entry to be the same as
+			// the final name that user specifies, not the default name Windows 7
+			// uses. 
+			if(entity.getTitle().equals(fa.getFileItem().getName())) {
+				entity.setTitle(newName);
+			}
+		}
+		
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
 		//binder files are not registered
-		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateFileName(binder, entity, fa.getFileItem().getName(), newName);
+		if (binder.isLibrary() && !binder.equals(entity)) 
+			getCoreDao().updateFileName(binder, entity, fa.getFileItem().getName(), newName);
         if ((entity.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDef().getDefinition(), fa.getName(), "title")) {
           	//if tracking unique titles, remove old title
         	String oldTitle = entity.getNormalTitle();
             //check title
         	entity.setTitle(newName);			   			   
-           	if ((entity.getParentBinder() != null) && entity.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entity.getParentBinder(), entity, oldTitle, entity.getNormalTitle());
+           	if ((entity.getParentBinder() != null) && entity.getParentBinder().isUniqueTitles()) 
+           		getCoreDao().updateTitle(entity.getParentBinder(), entity, oldTitle, entity.getNormalTitle());
         }
 		fa.getFileItem().setName(newName);
 		
@@ -1556,50 +1584,66 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					fui.getOriginalFilename());
 		}
     	
-    	FileAttachment.FileLock lock = fAtt.getFileLock();
-    	
-    	// All expired locks were taken care of higher up in the call stack.
-    	// Also owner check was done already. So we can assume that lock, 
-    	// if exists, is effective and owned by the calling user.
-    	
     	String versionName = null;
-    	Long fileSize = null;
-    	int fileInfo = session.fileInfo(binder, entry, relativeFilePath);
-    	if(fileInfo == RepositorySession.VERSIONED_FILE) { // Normal condition
-    		UpdateInfo updateInfo = updateVersionedFile(session, binder, entry, fui, lock);
-    		versionName = updateInfo.versionName;
-    		fileSize = updateInfo.fileLength;
-    	}
-    	else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
-			// For some reason the file doesn't exist in the repository.
-			// That is, our metadata says it exists, but the repository 
-			// says otherwise. This reflects some previous error condition.
-			// For example, previous attempt to add the file may have
-			// failed partially. Or someone may have gone and errorneously
-			// deleted the file from the repository. At any rate, the
-			// end result is descrepency between the repository system
-			// and our metadata. Although not ideal, better response to
-			// this kind of situation appears to be the one that is more
-			// forgiving or self-curing. This part of code implements that.
+
+    	if(!fileExistsInRepository(fAtt) &&
+				fAtt.getLastVersion().intValue() == 1 &&
+				fAtt.getMajorVersion().intValue() == 1 &&
+				fAtt.getMinorVersion().intValue() == 0) {
+			// This is the special scenario captured in Bug #632279. 
+			// This part adds special logic to work around the issue.
     		versionName = createVersionedFile(session, binder, entry, fui);
-    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-    	}
-    	else {
-    		throw new InternalException();
-    	}
-    	
-    	if(lock != null && versionName == null) {
-    		// A lock existed at the time of writing the content and the writing
-    		// didn't create a new version as of yet. This means that we have a
-    		// pending change that we need to commit/checkin when we release the
-    		// lock later. So mark the lock as dirty.
-    		lock.setDirty(Boolean.TRUE);
-    	}
-    	
-		//if we are adding a new version of an existing attachment to 
-		//a uniqueName item, set flag - (will already be set if originally added
-		//through a unique element.  In other works, once unique always unique
-		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
+    		long fsize = session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName);
+			fAtt.getFileItem().setLength(fsize);
+			createVersionAttachment(fAtt, versionName);	    		
+			if(logger.isDebugEnabled())
+				logger.debug("Updating existing file " + relativeFilePath + " with initial version");
+		}
+		else {
+	    	FileAttachment.FileLock lock = fAtt.getFileLock();
+	    	
+	    	// All expired locks were taken care of higher up in the call stack.
+	    	// Also owner check was done already. So we can assume that lock, 
+	    	// if exists, is effective and owned by the calling user.
+	    	
+	    	Long fileSize = null;
+	    	int fileInfo = session.fileInfo(binder, entry, relativeFilePath);
+	    	if(fileInfo == RepositorySession.VERSIONED_FILE) { // Normal condition
+	    		UpdateInfo updateInfo = updateVersionedFile(session, binder, entry, fui, lock);
+	    		versionName = updateInfo.versionName;
+	    		fileSize = updateInfo.fileLength;
+	    	}
+	    	else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
+				// For some reason the file doesn't exist in the repository.
+				// That is, our metadata says it exists, but the repository 
+				// says otherwise. This reflects some previous error condition.
+				// For example, previous attempt to add the file may have
+				// failed partially. Or someone may have gone and errorneously
+				// deleted the file from the repository. At any rate, the
+				// end result is descrepency between the repository system
+				// and our metadata. Although not ideal, better response to
+				// this kind of situation appears to be the one that is more
+				// forgiving or self-curing. This part of code implements that.
+	    		versionName = createVersionedFile(session, binder, entry, fui);
+	    		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
+	    	}
+	    	else {
+	    		throw new InternalException();
+	    	}
+	    	
+	    	if(lock != null && versionName == null) {
+	    		// A lock existed at the time of writing the content and the writing
+	    		// didn't create a new version as of yet. This means that we have a
+	    		// pending change that we need to commit/checkin when we release the
+	    		// lock later. So mark the lock as dirty.
+	    		lock.setDirty(Boolean.TRUE);
+	    	}
+	    	
+			//if we are adding a new version of an existing attachment to 
+			//a uniqueName item, set flag - (will already be set if originally added
+			//through a unique element.  In other works, once unique always unique
+			updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
+		}
 		
 		return versionName;
     }
@@ -1740,14 +1784,26 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 				
 		FileAttachment fAtt = createFileAttachment(entry, fui);
-		
-		String versionName = createVersionedFile(session, binder, entry, fui);
-						
-		long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
-				
-		fAtt.getFileItem().setLength(fileSize);
-
-		createVersionAttachment(fAtt, versionName);			
+			
+		if(fui.makeReentrant() > 0) {
+			String versionName = createVersionedFile(session, binder, entry, fui);
+							
+			long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
+					
+			fAtt.getFileItem().setLength(fileSize);
+	
+			createVersionAttachment(fAtt, versionName);	
+		}
+		else {
+			// Bug #632279 - When creating a new file through Map Network Drive
+			// interface from Windows 7, Windows WebDAV implementation issues PUT
+			// requests twice - first with empty content, and second with the real
+			// content. This results in creating two versions in Teaming. 
+			// To work around this undesirable effect, we add this special logic.
+			
+			if(logger.isDebugEnabled())
+				logger.debug("Creating new file " + fui.getOriginalFilename() + " without initial version");
+		}
 
 		return fAtt;
 	}
@@ -1851,6 +1907,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		} else // set mod date equal to creation date
 			mod = fAtt.getCreation();
 		fAtt.setModification(mod);
+		fAtt.setLastVersion(1);
 		fAtt.setMajorVersion(1);
 		fAtt.setMinorVersion(0);
     	fAtt.setRepositoryName(fui.getRepositoryName());
@@ -1881,8 +1938,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * @param versionName
 	 */
 	private void createVersionAttachment(FileAttachment fAtt, String versionName) {
-		fAtt.setLastVersion(new Integer(1));
-
 		VersionAttachment vAtt = new VersionAttachment();
 		// Since this is the only version for the file, we can safely set its
 		// dates equal to those of FileAttachment.
@@ -2015,24 +2070,33 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		boolean metadataDirty = false; 
 		boolean tryCheckin = false;
 		
-		if(session.getFactory().supportSmartCheckin()) {			
-			// Attempt to check in. If the file was previously checked out (and
-			// only if any change has made since checkout??), this will create 
-			// a new version and return the name of the new version. If not,
-			// it will return the name of the latest existing version.
-			
-			// Let the repository make the decision as to whether we should 
-			// create a new version or not. Although client has enough info
-			// to make this decision, I prefer delegating it to the repository
-			// to increase the chance of being in the right state after the
-			// call is finished (ie, post-condition is better met this way
-			// in an non-ideal world).
-			tryCheckin = true;
+		if(fileExistsInRepository(fa)) {
+			if(session.getFactory().supportSmartCheckin()) {			
+				// Attempt to check in. If the file was previously checked out (and
+				// only if any change has made since checkout??), this will create 
+				// a new version and return the name of the new version. If not,
+				// it will return the name of the latest existing version.
+				
+				// Let the repository make the decision as to whether we should 
+				// create a new version or not. Although client has enough info
+				// to make this decision, I prefer delegating it to the repository
+				// to increase the chance of being in the right state after the
+				// call is finished (ie, post-condition is better met this way
+				// in an non-ideal world).
+				tryCheckin = true;
+			}
+			else {
+				// Let the client make the decision.
+				if(Boolean.TRUE.equals(lock.isDirty()))
+					tryCheckin = true;
+			}
 		}
 		else {
-			// Let the client make the decision.
-			if(Boolean.TRUE.equals(lock.isDirty()))
-				tryCheckin = true;
+			// For this file, only the metadata exists, but not the actual file in the
+			// repository.
+			// This can happen when WebDAV client initializes a new file with zero-length
+			// content. Since there's no file in the repository, there is nothing to
+			// commit anything to either.
 		}
 		
 		if(tryCheckin) {
@@ -2206,5 +2270,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	now.setTime(new Date());
 		fa.setModification(new HistoryStamp(user, now.getTime()));
 
+    }
+    
+    private boolean fileExistsInRepository(FileAttachment fa) {
+    	// This special condition is introduced to deal with the scenario 
+    	// reported in the Bug #632279.
+    	return (fa.getFileVersionsUnsorted().size() > 0);
     }
 }
