@@ -264,15 +264,15 @@ function ss_saveWindowHeight_${renderResponse.namespace}() {
 }
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
-	ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
+	//ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
 	var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
 	var resizeRoutineExists = "undefined";
 	try {
 		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
 	} catch(e) {}
-	ss_debug('resizeRoutineExists = '+resizeRoutineExists)
+	//ss_debug('resizeRoutineExists = '+resizeRoutineExists)
 	if (resizeRoutineExists != "undefined") {
-		ss_debug('namespace = ${renderResponse.namespace}')
+		//ss_debug('namespace = ${renderResponse.namespace}')
 		try {eval("self.parent."+resizeRoutineName+"()");} catch(e) {
 			//If all else fails, use the slower method of passing the height through an iframe
 			ss_saveWindowHeight_${renderResponse.namespace}();
@@ -285,6 +285,7 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 			}
 		} catch(e) {
 			//If all else fails, use the slower method of passing the height through an iframe
+			ss_debug('Calling ss_saveWindowHeight_${renderResponse.namespace}');
 			ss_saveWindowHeight_${renderResponse.namespace}();
 		}
 	}

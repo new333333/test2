@@ -42,13 +42,14 @@
 	var ss_popupBackgroundColor = "${ss_style_background_color}";
 
 	function ss_popupFrameLoaded() {
+		ss_debug("**** "+ss_debugTrace());
 		var frameObj = self.document.getElementById("ss_showpopupframe");
 		if (frameObj != null && !(frameObj.src.indexOf("null.html") >= 0)) {
 			var entryContentDiv = self.document.getElementById("ss_entryContentDiv");
 			if (entryContentDiv != null) {
 				entryContentDiv.style.display = "none";
 			}
-			ss_resizePopupDiv()
+			setTimeout("ss_resizePopupDiv();", 50);
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) {
 				setTimeout("ssf_onLayoutChange();", 100);
@@ -69,6 +70,6 @@
       frameBorder="0" >xxx</iframe>
 </div>
 <script type="text/javascript">
-ss_createOnResizeObj("ss_showpopupdiv", ss_resizePopupDiv);
-ss_createOnLayoutChangeObj("ss_showpopupdiv", ss_resizePopupDiv);
+ss_createOnResizeObj("ss_showpopupdiv", function(){setTimeout("ss_resizePopupDiv();", 100);});
+ss_createOnLayoutChangeObj("ss_showpopupdiv", function(){setTimeout("ss_resizePopupDiv();", 150);});
 </script>

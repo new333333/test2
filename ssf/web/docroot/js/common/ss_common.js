@@ -1,36 +1,36 @@
 /**
  * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
- * This work is governed by the Common Public Attribution License Version 1.0 (the
- * "CPAL"); you may not use this file except in compliance with the CPAL. You may
- * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
- * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
- * have been added to cover use of software over a computer network and provide
- * for limited attribution for the Original Developer. In addition, Exhibit A has
- * been modified to be consistent with Exhibit B.
+ * This work is governed by the Common Public Attribution License Version 1.0
+ * (the "CPAL"); you may not use this file except in compliance with the CPAL.
+ * You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla
+ * Public License Version 1.1 but Sections 14 and 15 have been added to cover
+ * use of software over a computer network and provide for limited attribution
+ * for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
  * 
- * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
- * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
- * language governing rights and limitations under the CPAL.
+ * Software distributed under the CPAL is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the CPAL for the
+ * specific language governing rights and limitations under the CPAL.
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
  * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
- * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
- * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
- * Attribution URL: [www.kablink.org]
- * Graphic Image as provided in the Covered Code
- * [ssf/images/pics/powered_by_icecore.png].
- * Display of Attribution Information is required in Larger Works which are
- * defined in the CPAL as a work which combines Covered Code or portions thereof
- * with code not governed by the terms of the CPAL.
+ * Attribution Information: Attribution Copyright Notice: Copyright (c)
+ * 1998-2010 Novell, Inc. All Rights Reserved. Attribution Phrase (not exceeding
+ * 10 words): [Powered by Kablink] Attribution URL: [www.kablink.org] Graphic
+ * Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png]. Display of Attribution Information
+ * is required in Larger Works which are defined in the CPAL as a work which
+ * combines Covered Code or portions thereof with code not governed by the terms
+ * of the CPAL.
  * 
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-//Common javascript functions for forum portlets
+// Common javascript functions for forum portlets
 //
 
 // browser-specific vars
@@ -44,15 +44,17 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ss_isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	var ss_isIE6 = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("MSIE 6") > -1));
+	var ss_isOpera = ((navigator.userAgent.indexOf("Opera/") > -1));
 	
-	//Random number seed (for building urls that are unique)
+	// Random number seed (for building urls that are unique)
 	var ss_now = new Date();
 	var ss_random = Math.round(Math.random()*ss_now.getTime());
 	
-	//Files that don't pop-up in a new window when viewing them (space separated)
+	// Files that don't pop-up in a new window when viewing them (space
+	// separated)
 	var ss_files_that_do_not_pop_up = "doc xls";
 	
-	//zIndex map
+	// zIndex map
 	var ssPortletZ = 5
 	var ssLightboxZ = 2000;
 	var ssHelpZ = 2000;
@@ -68,7 +70,7 @@ if (typeof ss_common_loaded == "undefined" ) {
 	var ssDashboardTargetZ = 1000;
 	var ss_gwtLightboxZ = 200;  
 	
-	//colors (defined at onLoad time by ss_defineColorValues)
+	// colors (defined at onLoad time by ss_defineColorValues)
 	var ss_style_background_color = "";
 	var ss_dashboard_table_border_color = "";
 	
@@ -142,8 +144,8 @@ if (typeof ss_common_loaded == "undefined" ) {
 }
 var ss_common_loaded = 1;
 
-//Function to load javascript files after the "head" has been output
-//This routine prevents the file from being loaded twice
+// Function to load javascript files after the "head" has been output
+// This routine prevents the file from being loaded twice
 function ss_loadJsFile(rootPath, jsFile) {
 	var spath = rootPath + jsFile;
 	var scripts = document.getElementsByTagName("script");
@@ -159,9 +161,9 @@ function ss_loadJsFile(rootPath, jsFile) {
 	}
 }
 
-//Routine called by the body's onLoad event
+// Routine called by the body's onLoad event
 function ss_onLoadInit() {
-    //Call any routines that want to be called at onLoad time
+    // Call any routines that want to be called at onLoad time
     for (var i = 0; i < ss_onLoadList.length; i++) {
         if (ss_onLoadList[i].initRoutine) {
         	ss_onLoadList[i].initRoutine();
@@ -172,7 +174,7 @@ function ss_onLoadInit() {
     	if (window.onload != null) window.onload();
     }
     
-	//Add the onResize routine to the onresize event
+	// Add the onResize routine to the onresize event
 	if (!ss_onResizeRoutineLoaded) {
 		ss_onResizeRoutineLoaded = 1;
 		ss_savedOnResizeRoutine = window.onresize;
@@ -180,7 +182,7 @@ function ss_onLoadInit() {
 	}
 }
 
-//Add the onLoadInit routine to the onload event
+// Add the onLoadInit routine to the onload event
 if (!ss_onLoadRoutineLoaded) {
 	ss_onLoadRoutineLoaded = 1;
 	ss_savedOnLoadRoutine = window.onload;
@@ -213,10 +215,10 @@ function ss_getUserDisplayStyle() {
 	}
 }
 
-//Routines to support Ajax
-//suggest moving towards ss_get_url so errors can be handled consistantly
-//Updated to dojo, result is text/plain
-//used to fetch plain data and replace a div
+// Routines to support Ajax
+// suggest moving towards ss_get_url so errors can be handled consistantly
+// Updated to dojo, result is text/plain
+// used to fetch plain data and replace a div
 function ss_fetch_div(url, divId, signal) {
 	var bindArgs = {
 	    	url: url,
@@ -226,7 +228,7 @@ function ss_fetch_div(url, divId, signal) {
 			load: function(data) {
 	  		  try {
 	  		  	dojo.byId(divId).innerHTML = data;
-				//Signal that the layout changed
+				// Signal that the layout changed
 				if (signal) ssf_onLayoutChange();
 		      } catch (e) {alert(e);}
 			},
@@ -234,9 +236,9 @@ function ss_fetch_div(url, divId, signal) {
 	};   
 	dojo.xhrGet(bindArgs);
 }
-//suggest moving towards ss_get_url so errors can be handled consistantly
-//Updated to dojo, result is text/plain
-//used to fetch plain data
+// suggest moving towards ss_get_url so errors can be handled consistantly
+// Updated to dojo, result is text/plain
+// used to fetch plain data
 function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
 	eval(toggleCall);
@@ -252,7 +254,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 					ss_fetch_url_debug("received " + data);
 					if (callbackRoutine) callbackRoutine(data, callbackData);
 				} catch (e) {alert(e);}
-				//Signal that the layout changed
+				// Signal that the layout changed
 				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 				
 			},
@@ -260,7 +262,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 	};   
 	dojo.xhrGet(bindArgs);
 }                
-//Same as ss_fetch_url only do it as a post instead of a get
+// Same as ss_fetch_url only do it as a post instead of a get
 function ss_post_to_url(url, formName, callbackRoutine, callbackData, toggleCall) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
 	eval(toggleCall);
@@ -277,7 +279,7 @@ function ss_post_to_url(url, formName, callbackRoutine, callbackData, toggleCall
 					ss_fetch_url_debug("received " + data);
 					if (callbackRoutine) callbackRoutine(data, callbackData);
 				} catch (e) {alert(e);}
-				//Signal that the layout changed
+				// Signal that the layout changed
 				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 				
 			},
@@ -287,10 +289,10 @@ function ss_post_to_url(url, formName, callbackRoutine, callbackData, toggleCall
 }                
 
 function ss_fetch_url_debug(str) {
-    //ss_debug(str);
+    // ss_debug(str);
 }
-//Use dojo to post a form, results in text/json
-//When result contains failure, message display
+// Use dojo to post a form, results in text/json
+// When result contains failure, message display
 function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 	eval(toggleCall);
 	var bindArgs = {
@@ -314,8 +316,8 @@ function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
 	};   
 	dojo.xhrPost(bindArgs);
 }     
-//Use dojo to get a url.  Results in text/json. 
-//When result contains failure, message display
+// Use dojo to get a url. Results in text/json.
+// When result contains failure, message display
 function ss_get_url(url, callBackRoutine, callbackData, toggleCall) {
 	eval(toggleCall);
 	var bindArgs = {
@@ -357,7 +359,7 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 	return url;
 }
 
-//use for callbacks into objects.  Keeps object references from hanging around.
+// use for callbacks into objects. Keeps object references from hanging around.
 function ss_createDelegate(object, method)
 {
     var shim = function() {
@@ -366,7 +368,7 @@ function ss_createDelegate(object, method)
     return shim;
 }
 
-//Routine to go to a permalink without actually using the permalink
+// Routine to go to a permalink without actually using the permalink
 function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, useParentOrOpener) {
 
 	var url = ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab);
@@ -382,7 +384,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 		} else if (self.parent) {
 			self.parent.location.href = url;		
 		} else {
-			//See if this should be opened in ss_workarea
+			// See if this should be opened in ss_workarea
 			if (typeof ss_workarea_showId != "undefined" && entityType == "workspace") {
 				ss_workarea_showId(binderId, "view_ws_listing");
 			} else if (typeof ss_workarea_showId != "undefined" && entityType == "user") {
@@ -394,7 +396,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 			}
 		}
 	} else {
-		//See if this should be opened in ss_workarea
+		// See if this should be opened in ss_workarea
 		if (typeof ss_workarea_showId != "undefined" && entityType == "workspace") {
 			ss_workarea_showId(binderId, "view_ws_listing");
 		} else if (typeof ss_workarea_showId != "undefined" && entityType == "user") {
@@ -408,7 +410,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 	return false;
 }
 
-//Routine to open a url in the workarea portlet if it exists
+// Routine to open a url in the workarea portlet if it exists
 function ss_openUrlInWorkarea(url, id, action) {
 	if (typeof ss_workarea_showId != "undefined" && id != '') {
 		ss_workarea_showId(id, action);
@@ -441,7 +443,7 @@ function ss_openUrlInParentWorkarea(url, id, action, target, close) {
 	}
 }
 
-//Routine to navigate to a point on the navigation list
+// Routine to navigate to a point on the navigation list
 function ss_navigation_goto(url) {
 	try {
 		if (self.window != self.top) {
@@ -455,40 +457,45 @@ function ss_navigation_goto(url) {
 	}
 }
 
-//Routine to open a url in the portlet. This routine determines if the current code is
-//  running inside an iframe. It it is, then the url is opened in the parent of the iframe.
-//This routine returns "true" without opening the url if the caller is not inside a frame.
-//If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
+// Routine to open a url in the portlet. This routine determines if the current
+// code is
+// running inside an iframe. It it is, then the url is opened in the parent of
+// the iframe.
+// This routine returns "true" without opening the url if the caller is not
+// inside a frame.
+// If the caller is in a frame (or iframe), then the routine opens the url in
+// the parent and returns false.
 function ss_openUrlInPortlet(url, popup, width, height) {
 	if (width == null) width = "";
 	if (height == null) height = "";
-	//Is this a request to pop up?
+	// Is this a request to pop up?
 	ss_debug('popup = '+popup+', url = '+url)
 	if (popup) {
 		ss_toolbarPopupUrl(url, "_blank", width, height);
 		return false;
 	}
-	//Are we at the top window?
+	// Are we at the top window?
 	try {
 		if (self.window != self.top) {
 			ss_debug('Not at top window')
-			//See if we are in an iframe inside a portlet 
+			// See if we are in an iframe inside a portlet
 			var windowName = self.window.name  
 			if ((windowName.indexOf("ss_workareaIframe") == 0) ||
 					(windowName.indexOf("gwtContentIframe")  == 0) ||
 					(windowName.indexOf("adminContentControl")  == 0)) {
-				//This is inside the workarea iframe, just let the url be called
+				// This is inside the workarea iframe, just let the url be
+				// called
 				return true;
 			} else {
-				// We are running inside a portlet iframe.  Is the GWT
+				// We are running inside a portlet iframe. Is the GWT
 				// UI active?
 				if (ss_isGwtUIActive) {
-					// Yes!  Then submit the url to the GWT UI content
+					// Yes! Then submit the url to the GWT UI content
 					// frame.
 					window.top.gwtContentIframe.location.href = url;
 				}
 				else {
-					// No, the GWT UI isn't active!  Submit the URL
+					// No, the GWT UI isn't active! Submit the URL
 					// to the parent frame.
 					parent.location.href = url;
 				}
@@ -500,9 +507,10 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 				// Replace the contents of the current window with the new page.
 				self.location.href = url;
 				
-				// The following two lines of code were commented out as part of the fix for bug 492902
-//				self.opener.location.href = url
-//				setTimeout('self.window.close();', 200)
+				// The following two lines of code were commented out as part of
+				// the fix for bug 492902
+// self.opener.location.href = url
+// setTimeout('self.window.close();', 200)
 				return false;
 			} catch (e) {
 				ss_debug('opener is not addressable anymore, it must have been deleted.')
@@ -518,11 +526,12 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 }
 
 
-//Routine to open a page by following a "title" markup link
+// Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
 	if (showInParent != null && showInParent) {
 		try {
-			//This is a request to just open the url in the parent (if it exists and if not in the content frame)
+			// This is a request to just open the url in the parent (if it
+			// exists and if not in the content frame)
 			var windowName = self.window.name    
 			if (windowName.indexOf("gwtContentIframe") == 0) {
 				self.location.href = obj.href;
@@ -550,12 +559,12 @@ function ss_postOpenTitleUrl(s) {
 	alert('ss_postOpenTitleUrl: '+s)
 }
 
-//Routine to open a url in a new window
+// Routine to open a url in a new window
 function ss_openUrlInWindow(obj, windowName, width, height) {
 	if (typeof width == "undefined") width = ss_getWindowWidth();
 	if (typeof height == "undefined") height = ss_getWindowHeight();
 	if (typeof windowName == "undefined" || windowName == "") {
-		//There is no window, so open it in this window
+		// There is no window, so open it in this window
 		return true;
 	} else {
 		var url = obj.href
@@ -565,7 +574,7 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 	return false;
 }
 
-//Routine to show the permalink url so it can by cut/pasted
+// Routine to show the permalink url so it can by cut/pasted
 function ss_showPermalink(obj, namespace) {
 	if (typeof namespace == 'undefined' && typeof ss_namespace != 'undefined') namespace = ss_namespace;
 	var divObj = document.getElementById('ss_permalink_display_div');
@@ -580,17 +589,17 @@ function ss_showPermalink(obj, namespace) {
 		smoothScroll(x, y);
 	}
 }
-//Routine to go to a binder when it is clicked
+// Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
 function ss_treeShowId(id, obj, action, addParam) {
 	var binderId = id;
-	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	// See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
 		var binderData = id.substr(13).split("_");
 		binderId = binderData[binderData.length - 1];
 	}
 
-	//Build a url to go to
+	// Build a url to go to
 	var url = ss_baseBinderUrl;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
@@ -598,7 +607,7 @@ function ss_treeShowId(id, obj, action, addParam) {
 		url += addParam;
 	}
 
-	//console.log(url);
+	// console.log(url);
 	self.location.href = url;
 	return false;
 }
@@ -606,29 +615,29 @@ function ss_treeShowId(id, obj, action, addParam) {
 function ss_treeShowIdNoWS(id, obj, action, namespace) {
 	if (typeof namespace == "undefined" || namespace == null) namespace = "";
 	var binderId = id;
-	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	// See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
 		var binderData = id.substr(13).split("_");
 		binderId = binderData[binderData.length - 1];
 	}
 
-	//Try to find the base urls from this namespace 
+	// Try to find the base urls from this namespace
 	var url = "";
 	try {
 		eval("url = ss_baseBinderUrlNoWS" + namespace)
 	} catch(e) {}
 	
-	//Build a url to go to
+	// Build a url to go to
 	if (url == "") url = ss_baseBinderUrlNoWS;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	//console.log(url);
+	// console.log(url);
 	self.location.href = url;
 	return false;
 }
 
 
-//Routine to fetch a url in a iframe window (for accessibility mode)
+// Routine to fetch a url in a iframe window (for accessibility mode)
 function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
     var iframeDivObj = self.document.getElementById("ss_reusableIframeDiv");
     var iframeObj = self.document.getElementById("ss_reusableIframe");
@@ -669,27 +678,28 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 }
 
 
-//Routine to close a pop-up form window if the cancel button is clicked
-//  This routine checks to see if it is in a pop-up or in an iframe
+// Routine to close a pop-up form window if the cancel button is clicked
+// This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {
 	if (ss_isGwtUIActive) {
 		if ( self.window.name != "gwtContentIframe" && window.parent.ss_closeAdministrationContentPanel ) {
-			// Tell the Teaming GWT ui to close the administration content panel.
+			// Tell the Teaming GWT ui to close the administration content
+			// panel.
 			window.parent.ss_closeAdministrationContentPanel();
 			return;
 		}
 	}
 	if (self == self.parent) {
-		//This looks like it is a pop-up form
+		// This looks like it is a pop-up form
 		self.window.close();
 		return
 	} else if (self != self.parent) {
 		if (self.window.name == "ss_showpopupframe") {
-			//This is in the popup iframe
+			// This is in the popup iframe
 			if (self.parent.ss_hidePopupDiv) self.parent.ss_hidePopupDiv();
 			return;
 		} else if (self.window.name == "gwtContentIframe") {
-				//This is in the main content iframe
+				// This is in the main content iframe
 				self.history.go(-1);
 				return;
 		} else {
@@ -707,7 +717,7 @@ function ss_cancelButtonCloseWindow() {
 }
 
 function ss_reloadOpenerParent(fallBackUrl) {
-	//Are we at the top window?
+	// Are we at the top window?
 	if (self.opener) {
 		try {
 			if (self.opener.window != self.opener.top) {
@@ -738,11 +748,11 @@ function ss_reloadOpenerParent(fallBackUrl) {
 }
 
 function ss_reloadOpener(fallBackUrl) {
-	//Are we at the top window?
+	// Are we at the top window?
 	if (self.window != self.top) {
-		// No!  Are we running in the GWT UI?
+		// No! Are we running in the GWT UI?
 		if (ss_isGwtUIActive) {
-			// Yes!  Then submit the fallBackUrl to the GWT UI
+			// Yes! Then submit the fallBackUrl to the GWT UI
 			// content frame.
 			window.top.gwtContentIframe.location.href = fallBackUrl;
 		}
@@ -778,7 +788,7 @@ function ss_reloadOpener(fallBackUrl) {
 	return false;
 }
 
-//Routine to do a post to a URL
+// Routine to do a post to a URL
 function ss_postToThisUrl(url) {
 	formObj = document.createElement("form");
 	formObj.method = "POST";
@@ -787,23 +797,25 @@ function ss_postToThisUrl(url) {
 	formObj.submit();
 }
 
-//Routines to move an object (or a div) to the "body"
-//  This is usefull for any absolutly positioned div.
-//  The positioning of that div will work correctly when using absolute coordinates.
+// Routines to move an object (or a div) to the "body"
+// This is usefull for any absolutly positioned div.
+// The positioning of that div will work correctly when using absolute
+// coordinates.
 function ss_moveDivToBody(name) {
 	if (document.getElementById(name)) ss_moveObjectToBody(document.getElementById(name));
 }
 function ss_moveObjectToBody(obj) {
     if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
-    	//move the object to the body tag so it goes to the right x,y
+    	// move the object to the body tag so it goes to the right x,y
     	var id = obj.id;
     	obj.parentNode.removeChild(obj);
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
 }
 
-//Function to resize the top div of the folder pages to get the data to display in sight
-//This is the margin offset of the top div style (ss_pseudoPortal)
+// Function to resize the top div of the folder pages to get the data to display
+// in sight
+// This is the margin offset of the top div style (ss_pseudoPortal)
 var ss_topDivMarginOffset = 32; 
 var ss_origianalTopDivSize = 0;
 var ss_origianalWindowSize = 0;
@@ -828,7 +840,7 @@ function ss_resizeTopDiv(namespace) {
 	}
 }
 
-//Functions to save the user status
+// Functions to save the user status
 function ss_updateStatusSoon(obj, evt, maxLength) {
 	if ((typeof evt == "undefined" || typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
 	
@@ -837,7 +849,7 @@ function ss_updateStatusSoon(obj, evt, maxLength) {
 		clearTimeout(ss_statusTimer)
 		ss_statusTimer = null;
 	}
-	//If the string is too long to fit in the database, truncate it
+	// If the string is too long to fit in the database, truncate it
 	if (obj.value.length >= maxLength) {
 		obj.value = obj.value.substr(0,maxLength-1);
 		alert(ss_miniblogTextTooBigErrorMsg);
@@ -849,14 +861,14 @@ function ss_updateStatusSoon(obj, evt, maxLength) {
 	}
 	
     var charCode = (evt.which) ? evt.which : event.keyCode
-    //check for tab or cr; tab or 2 cr's signals the end of the input
+    // check for tab or cr; tab or 2 cr's signals the end of the input
     if (charCode == 9) {
-    	//ss_updateStatusNow(obj)
+    	// ss_updateStatusNow(obj)
     } else if (charCode == 10 || charCode == 13) {
     	if (obj.value.length >= 2 && (obj.value.charCodeAt(obj.value.length - 1) == 10 || 
     			obj.value.charCodeAt(obj.value.length - 1) == 13)) {
-    		//Double cr also ends new status
-    		//ss_updateStatusNow(obj)
+    		// Double cr also ends new status
+    		// ss_updateStatusNow(obj)
     	} else {
     		ss_setStatusBackground(obj, 'focus');
     	}
@@ -865,7 +877,7 @@ function ss_updateStatusSoon(obj, evt, maxLength) {
     }
 }
 function ss_updateStatusNowAccessible(id) {
-	//This is the id of the text box
+	// This is the id of the text box
 	var obj = document.getElementById(id);
 	ss_updateStatusNow(obj);
 }
@@ -939,7 +951,8 @@ function ss_setStatusBackground(obj, op) {
 			clearTimeout(ss_statusTimer)
 			ss_statusTimer = null;
 		}
-		//if (ss_statusObj != null) ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+		// if (ss_statusObj != null) ss_statusTimer =
+		// setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
 	}
 	if (op == 'mouseOver') {
 		obj.style.backgroundColor = '#CCFFFF';
@@ -988,11 +1001,11 @@ function ss_postRequestTrackThis(s, namespace) {
 function ss_trackedItemsDelete(obj, id) {
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder_delete", binderId:id}, "__ajax_relevance");
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 	
-	//Delete the row from the parent table
+	// Delete the row from the parent table
 	var trObj = obj.parentNode;
 	trObj.parentNode.removeChild(trObj)
 }
@@ -1000,17 +1013,17 @@ function ss_trackedItemsDelete(obj, id) {
 function ss_trackedPeopleDelete(obj, id) {
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_person_delete", binderId:id}, "__ajax_relevance");
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 	
-	//Delete the row from the parent table
+	// Delete the row from the parent table
 	var trObj = obj.parentNode;
 	trObj.parentNode.removeChild(trObj)
 }
 
 function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
-	//Clear "current" tab
+	// Clear "current" tab
 	var currentTab = window["ss_relevanceTabCurrent_"+namespace];
 	if (currentTab != null && obj != null) {
 		currentTab.parentNode.className = "";
@@ -1019,7 +1032,7 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 		window["ss_relevanceTabCurrent_"+namespace] = obj;
 		obj.parentNode.className = "ss_tabsCCurrent";
 	}
-	//Switch to the new tab
+	// Switch to the new tab
 	var url = window["ss_relevanceAjaxUrl"+namespace];
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_type3PlaceHolder", type3);
@@ -1027,11 +1040,12 @@ function ss_selectRelevanceTab(obj, type, type3, binderId, namespace) {
 	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 	if (ss_getUserDisplayStyle() == "accessible") {
-		//If in accessible mode, just jump to the url directly
+		// If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
 		if (type == 'profile' || type == 'overview' || type == 'tasks_and_calendars') {
-			//Special case for the profile, overview and tasks_and_calendars tabs; always refresh the whole page
+			// Special case for the profile, overview and tasks_and_calendars
+			// tabs; always refresh the whole page
 			if ( type == 'profile' )
 				url = window["ss_relevanceProfileUrl"+namespace];
 			else if ( type == 'overview' )
@@ -1058,7 +1072,7 @@ function ss_showRelevanceTab(s, namespace) {
 	canvasObj.style.visibility = 'visible'
 	canvasObj.focus();
 	ss_executeJavascript(canvasObj); // calendar view is generated in js
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
@@ -1092,7 +1106,7 @@ function ss_showFolderPageIndex(hrefUrl, binderId, currentPageIndex, divId, cTag
 	
 	var divObj = self.document.getElementById(divId);
 	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
-		//In accessible mode, redraw the whole page
+		// In accessible mode, redraw the whole page
 		self.location.href = hrefUrl;
 	} else {
 		ss_setupStatusMessageDiv();
@@ -1104,7 +1118,7 @@ function ss_showFolderPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
 	divObj.innerHTML = s;
 	ss_executeJavascript(divObj);
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
@@ -1114,7 +1128,7 @@ function ss_showWikiFolderPage(hrefUrl, binderId, currentPageIndex, divId, cTag,
 	
 	var divObj = self.document.getElementById(divId);
 	if (divObj == null || ss_getUserDisplayStyle() == "accessible") {
-		//In accessible mode, redraw the whole page
+		// In accessible mode, redraw the whole page
 		self.location.href = hrefUrl;
 	} else {
 		ss_setupStatusMessageDiv();
@@ -1130,7 +1144,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 	if (direction == 'previous') page = page - 1;
 	
 	if (ss_getUserDisplayStyle() == "accessible") {
-		//In accessible mode, redraw the whole page
+		// In accessible mode, redraw the whole page
 		var url = "";
 		eval("url = ss_relevanceAjaxUrl"+namespace);
 		url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
@@ -1148,7 +1162,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 function ss_showDashboardPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
 	divObj.innerHTML = s;
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 	ss_showEmailLinks();
 }
@@ -1159,7 +1173,7 @@ function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId,
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
 	if (ss_getUserDisplayStyle() == "accessible") {
-		//In accessible mode, redraw the whole page
+		// In accessible mode, redraw the whole page
 		var url = obj.href;
 		self.location.href = url;
 	} else {
@@ -1175,7 +1189,7 @@ function ss_showWhatsNewPageDiv(s, divId) {
 	divObj.style.display = 'block';
 	divObj.style.visibility = 'visible';
 	divObj.focus();
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, divId, namespace) {
@@ -1184,7 +1198,7 @@ function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, d
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
 	if (ss_getUserDisplayStyle() == "accessible") {
-		//In accessible mode, redraw the whole page
+		// In accessible mode, redraw the whole page
 		var url = obj.href;
 		self.location.href = url;
 	} else {
@@ -1195,7 +1209,7 @@ function ss_clearWhatsUnseen(obj, binderId, ids, type, currentPage, direction, d
 	}
 }
 
-//Function to create a named div in the body
+// Function to create a named div in the body
 function ss_createDivInBody(divId, className) {
 	var divObj = document.getElementById(divId);
 	if (divObj == null) {
@@ -1207,7 +1221,7 @@ function ss_createDivInBody(divId, className) {
 	return divObj;
 }
 
-//Routines to show or hide a pop-up hover over div
+// Routines to show or hide a pop-up hover over div
 function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	if (typeof offsetX == 'undefined') offsetX = 0;
 	if (typeof offsetY == 'undefined') offsetY = 0;
@@ -1232,7 +1246,7 @@ function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
 }
 
-//Routines to show or hide an object
+// Routines to show or hide an object
 function ss_showObjBlock(objName) {
 	ss_showHideObj(objName, 'visible', 'block')
 }
@@ -1258,13 +1272,13 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		    	try{obj.focus()} catch(e){}
 		    }
 		}
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (!obj.style.position || obj.style.position != "absolute") {
 			ssf_onLayoutChange();
-			//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
+			// ss_debug("ss_showHideObj: " + objName + " = " + visibility)
 		}
 	} else {
-		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
+		// ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
 }
 function ss_toggleShowDiv(divName, namespace) {
@@ -1278,18 +1292,18 @@ function ss_toggleShowDiv(divName, namespace) {
 			obj.style.display = "block";
 			obj.focus();
 		}
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 		try {
 			if (self != self.parent && parent.ss_positionEntryDiv) setTimeout("parent.ss_positionEntryDiv();", 100);
 		} catch(e) {}
 	} else {
-		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
+		// ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
 	ssf_onLayoutChange();
 }
 
-//Routine to show and hide file action menus
+// Routine to show and hide file action menus
 function ss_showHideMenuDiv(divId) {
 	var divObj = document.getElementById(divId);
 	if (divObj != null && divObj.style.display == "block") {
@@ -1300,7 +1314,7 @@ function ss_showHideMenuDiv(divId) {
 	ssf_onLayoutChange();
 }
 
-//Routine to hide or show a region using a collapse/expand button
+// Routine to hide or show a region using a collapse/expand button
 function ss_toggleRegionInit(divId, imgId, ss_toggleRegionSize, initialRegionClass) {
 	var divHeight = ss_getDivHeight(divId);
 	if (parseInt(divHeight) >= ss_toggleRegionSize) {
@@ -1326,14 +1340,14 @@ function ss_toggleRegion(aObj, divId, regionId, baseClassName, ss_toggleRegionSi
 		aObj.firstChild.src = buttonSrc.replace(reCollapse, "expand$1")
 		urlParams.state = "collapsed";
 	}
-	//Remember this setting
+	// Remember this setting
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
 }
 
-//Routines to handle tabs
+// Routines to handle tabs
 var ss_currentTabShowing = new Array();
 var ss_currentHoverOverTab = new Array();
 function ss_initTab(tabName, id) {
@@ -1355,7 +1369,7 @@ function ss_showTab(tabName, id) {
 	divObj.style.display = "block";
 	tabObj.className = "wg-tab roundcornerSM on";
 	
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
@@ -1421,7 +1435,7 @@ function ss_showHide(objId){
 			obj.style.display="block";
 			if (ss_checkIfVisible(obj)) obj.focus();
 			
-			//Signal that the layout changed
+			// Signal that the layout changed
 			if (!obj.style.position || obj.style.position != "absolute") {
 				ssf_onLayoutChange();
 			}
@@ -1430,7 +1444,7 @@ function ss_showHide(objId){
 			obj.style.visibility="hidden";
 			obj.style.display="none";
 			
-			//Signal that the layout changed
+			// Signal that the layout changed
 			if (!obj.style.position || obj.style.position != "absolute") {
 				ssf_onLayoutChange();
 			}
@@ -1496,19 +1510,19 @@ function ss_showHideBusinessCard(op, scope) {
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 }
 
-//Routine to set the opacity of a div
-//  (Note: this may not work if "width" is not explicitly set on the div)
+// Routine to set the opacity of a div
+// (Note: this may not work if "width" is not explicitly set on the div)
 function ss_setOpacity(obj, opacity) {
 	dojo.style(obj, "opacity", opacity);
 }
 
-//Routine to fade in a div
+// Routine to fade in a div
 function ss_showDivFadeIn(id, ms) {
 	if (ss_divFadeInArray[id] == null || ss_divFadeInArray[id] < 0) {
 		ss_divFadeInArray[id] = 0;
 	}
 	ss_divFadeInArray[id]++;
-    //Is this already being shown? If yes, return.
+    // Is this already being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
     if (document.getElementById(id).style.visibility == 'hidden') {
@@ -1518,13 +1532,13 @@ function ss_showDivFadeIn(id, ms) {
     dojo.fadeIn({node:id, delay:ms}).play();
 }
 
-//Routine to fade out a div
+// Routine to fade out a div
 function ss_hideDivFadeOut(id, ms) {
 	if (ss_divFadeInArray[id] == null || ss_divFadeInArray[id] < 1) {
 		ss_divFadeInArray[id] = 1;
 	}
 	ss_divFadeInArray[id]--;
-    //Is this still being shown? If yes, return.
+    // Is this still being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
     dojo.fadeOut({node:id, delay:ms, onEnd:function(){
@@ -1533,7 +1547,7 @@ function ss_hideDivFadeOut(id, ms) {
     }}).play();
 }
 
-//Routine to add the innerHMTL of one div to another div
+// Routine to add the innerHMTL of one div to another div
 function ss_addToDiv(target, source) {
     var objTarget = self.document.getElementById(target)
     var objSource = self.document.getElementById(source)
@@ -1541,17 +1555,17 @@ function ss_addToDiv(target, source) {
     var sourceHtml = ss_getDivHtml(source)
     ss_setDivHtml(target, targetHtml + sourceHtml)
 
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-//Routine to add html to a div
+// Routine to add html to a div
 function ss_addHtmlToDiv(target, text) {
     var objTarget = self.document.getElementById(target)
     var targetHtml = ss_getDivHtml(target)
     ss_setDivHtml(target, targetHtml + text)
 
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 function ss_addHtmlToDivFront(target, text) {
@@ -1559,11 +1573,11 @@ function ss_addHtmlToDivFront(target, text) {
     var targetHtml = ss_getDivHtml(target)
     ss_setDivHtml(target, text + targetHtml)
 
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-//Routines to get and set the html of an area
+// Routines to get and set the html of an area
 function ss_getDivHtml(divId) {
     var obj = self.document.getElementById(divId)
     var value = "";
@@ -1579,11 +1593,11 @@ function ss_setDivHtml(divId, value) {
     	obj.innerHTML = value
     }
 
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-//Routines for the definition builder
+// Routines for the definition builder
 function ss_setDeclaredDiv(id) {
 	for (var i = 0; i < ss_declaredDivs.length; i++) {
 		if (ss_declaredDivs[i] == id) return;
@@ -1598,7 +1612,7 @@ function ss_hideAllDeclaredDivs() {
 	}
 }
 
-//Routine to get the form object of the containing form
+// Routine to get the form object of the containing form
 function ss_getContainingForm(obj) {
 	var formObj = obj;
 	while (formObj.nodeName.toLowerCase() != "body") {
@@ -1608,7 +1622,7 @@ function ss_getContainingForm(obj) {
 	return formObj;
 }
 
-//Routines to show and hide the hover over info
+// Routines to show and hide the hover over info
 function ss_showTreeHover(obj, id) {
 	var divObj = document.getElementById("info_div_" + id);
 	if (divObj != null) {
@@ -1622,9 +1636,10 @@ function ss_hideTreeHover(obj, id) {
 	}
 }
 
-//Routine to create a new "ss_eventObj" object
-//ss_eventObj objects are set up whenever you want to call a routine on an event.
-//   event_name is the event name (e.g., "MOUSEDOWN")
+// Routine to create a new "ss_eventObj" object
+// ss_eventObj objects are set up whenever you want to call a routine on an
+// event.
+// event_name is the event name (e.g., "MOUSEDOWN")
 function ss_createEventObj(function_name, event_name, function_def) {
     var fn = -1;
     for (var i = 0; i < ss_eventList.length; i++) {
@@ -1645,12 +1660,12 @@ function ss_createEventObj(function_name, event_name, function_def) {
     next = ss_eventTypeList.length;
     ss_eventTypeList[next] = event_name;
     
-    //Enable the event
+    // Enable the event
     if (ss_isNSN) {
-        //eval("self.document.captureEvents(Event."+event_name+")")
+        // eval("self.document.captureEvents(Event."+event_name+")")
     }
     if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
-    	//Add the unload event
+    	// Add the unload event
     	window.onunload = ssf_event_handler;
     } else {
     	eval("self.document.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
@@ -1671,8 +1686,8 @@ function m_setFunctionDef(function_def) {
     this.functionDef = function_def;
 }
 
-//Common event handler
-//  This function will call the desired routines on an event
+// Common event handler
+// This function will call the desired routines on an event
 function ssf_event_handler(e) {
     if (!ss_isNSN) {e = event}
     for (var i = 0; i < ss_eventList.length; i++) {
@@ -1687,8 +1702,9 @@ function ssf_event_handler(e) {
 }
 
 
-//Routine to create a new "onLoadObj" object
-//onLoadObj objects are set up whenever you want to call something at onLoad time.
+// Routine to create a new "onLoadObj" object
+// onLoadObj objects are set up whenever you want to call something at onLoad
+// time.
 function ss_createOnLoadObj(name, initName) {
     for (var i = 0; i < ss_onLoadList.length; i++) {
     	if (ss_onLoadList[i].name == name) return;
@@ -1710,8 +1726,9 @@ function m_setInitRoutine(initRoutine) {
     this.initRoutine = initRoutine;
 }
 
-//Routine to create a new "onSubmitObj" object
-//onSubmitObj objects are set up whenever you want to call something at form submit time.
+// Routine to create a new "onSubmitObj" object
+// onSubmitObj objects are set up whenever you want to call something at form
+// submit time.
 function ss_createOnSubmitObj(name, formName, submitRoutine) {
     for (var i = 0; i < ss_onSubmitList.length; i++) {
     	if (ss_onSubmitList[i].name == name) return;
@@ -1734,33 +1751,35 @@ function m_setSubmitRoutine(submitRoutine) {
     this.submitRoutine = submitRoutine;
 }
 
-//Common onSubmit handler
-//  This function will call the desired routines at form submit time
-//  unless the onClick for the submit button called ss_selectButton('cancelBtn').
-//  If any routine returns "false", then this routine returns false.
+// Common onSubmit handler
+// This function will call the desired routines at form submit time
+// unless the onClick for the submit button called ss_selectButton('cancelBtn').
+// If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj, checkIfButtonClicked) {
 	if (typeof checkIfButtonClicked == "undefined") {
 		checkIfButtonClicked = false;
 	}
-    //Take this opportunity to fill in the action if blank. Some browsers want this to be non-blank.
+    // Take this opportunity to fill in the action if blank. Some browsers want
+	// this to be non-blank.
     if (typeof obj.action != 'undefined' && obj.action == '') obj.action = self.location.href;
     
     var result = true;
     if (ss_buttonSelected == "" && checkIfButtonClicked) {
-    	//This must be IE. Don't let them submit using the Enter key since it doesn't submit the whole form that way.
+    	// This must be IE. Don't let them submit using the Enter key since it
+		// doesn't submit the whole form that way.
     	alert(ss_clickOkToSubmit);
     	return false;
     } else if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
 		if (self != self.parent) {
 			if (self.window.name == "ss_showpopupframe") {
-				//This is in the popup iframe
+				// This is in the popup iframe
 				if (self.parent.ss_hidePopupDiv) {
 					self.parent.ss_hidePopupDiv();
 					if (typeof self.ss_setEntryDivHeight != 'undefined') ss_setEntryDivHeight();
 					return false;
 				}
 			} else if (self.window.name == "gwtContentIframe") {
-				//This is in the main content iframe
+				// This is in the main content iframe
 				self.history.back();
 				return false;
 			}
@@ -1773,9 +1792,9 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
         }
     }
     if (!ss_validate(obj)) result = false;
-    //After all of the other checks are done, and if the result is still true, 
-    //  check if the required fields are filled in.
-    //Do this last in case some fields get filled in by the other routines
+    // After all of the other checks are done, and if the result is still true,
+    // check if the required fields are filled in.
+    // Do this last in case some fields get filled in by the other routines
     if (result && !ss_checkForRequiredFields(obj)) result = false;
     return result;
 }
@@ -1787,8 +1806,9 @@ function ss_buttonSelect(btn) {
 }
 	
 
-//Routine to create a new "onResizeObj" object
-//onResizeObj objects are set up whenever you want to call something at onResize time.
+// Routine to create a new "onResizeObj" object
+// onResizeObj objects are set up whenever you want to call something at
+// onResize time.
 function ss_createOnResizeObj(name, resizeName) {
     for (var i = 0; i < ss_onResizeList.length; i++) {
     	if (ss_onResizeList[i].name == name) return;
@@ -1810,11 +1830,11 @@ function m_setResizeRoutine(resizeRoutine) {
     this.resizeRoutine = resizeRoutine;
 }
 function ssf_onresize_event_handler() {
-    //Call any routines that want to be called at resize time
+    // Call any routines that want to be called at resize time
     for (var i = 0; i < ss_onResizeList.length; i++) {
         if (ss_onResizeList[i].resizeRoutine) {
         	ss_onResizeList[i].resizeRoutine();
-        	//ss_debug("Resize event: " + ss_onResizeList[i].name + "\n");
+        	// ss_debug("Resize event: " + ss_onResizeList[i].name + "\n");
         }
     }
     if (ss_savedOnResizeRoutine != null) {
@@ -1824,8 +1844,9 @@ function ssf_onresize_event_handler() {
     }
 }
 
-//Routine to create a new "onLayoutChangeObj" object
-//onLayoutChangeObj objects are set up whenever you want to be called if the layout changes dynamically.
+// Routine to create a new "onLayoutChangeObj" object
+// onLayoutChangeObj objects are set up whenever you want to be called if the
+// layout changes dynamically.
 function ss_createOnLayoutChangeObj(name, layoutRoutine) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
     	if (ss_onLayoutChangeList[i].name == name) return;
@@ -1847,12 +1868,13 @@ function m_setLayoutRoutine(layoutRoutine) {
     this.layoutRoutine = layoutRoutine;
 }
 
-//Common onLayoutChange handler
-//  This function will call the layout routines if the layout changes
+// Common onLayoutChange handler
+// This function will call the layout routines if the layout changes
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
-        	//alert("ssf_onLayoutChange executing routine: " + ss_onLayoutChangeList[i].name)
+        	// alert("ssf_onLayoutChange executing routine: " +
+			// ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -1949,28 +1971,28 @@ function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return dojo.coords(obj, true).y;
-    //return parseInt(obj.scrollTop);
+    // return parseInt(obj.scrollTop);
 }
 
 function ss_getDivScrollLeft(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return dojo.coords(obj, true).x;
-    //return parseInt(obj.scrollLeft);
+    // return parseInt(obj.scrollLeft);
 }
 
 function ss_getDivHeight(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return parseInt(dojo.contentBox(obj).h);
-    //return parseInt(obj.offsetHeight);
+    // return parseInt(obj.offsetHeight);
 }
 
 function ss_getDivWidth(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
     return parseInt(dojo.contentBox(obj).w);
-    //return parseInt(obj.offsetWidth);
+    // return parseInt(obj.offsetWidth);
 }
 
 function ss_getImageTop(imageName) {
@@ -2052,17 +2074,19 @@ function ss_setObjectWidth(obj, width) {
 		obj.style.width = parseInt(width) + 'px';
 	}
 
-    //Call the routines that want to be called on layout changes
+    // Call the routines that want to be called on layout changes
     if (obj && obj.style && parseInt(oldWidth) != parseInt(width) &&
     		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
+	ss_debug("**** "+ss_debugTrace());
 	if (obj == null) return;
+	ss_debug("   ss_setObjectHeight, "+obj.id+" height: "+height)
 	var oldHeight = obj.style.height;
     if (obj && parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
-    //Call the routines that want to be called on layout changes
+    // Call the routines that want to be called on layout changes
     if (obj && obj.style && parseInt(oldHeight) != parseInt(height) && 
     		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
@@ -2070,7 +2094,7 @@ function ss_setObjectHeight(obj, height) {
 function ss_setObjectLeft(obj, value) {
 	var oldLeft = obj.style.left;
     obj.style.left = parseInt(value) + "px";
-    //Call the routines that want to be called on layout changes
+    // Call the routines that want to be called on layout changes
     if (parseInt(oldLeft) != parseInt(value) &&
     		(!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
@@ -2078,62 +2102,96 @@ function ss_setObjectLeft(obj, value) {
 function ss_setObjectTop(obj, value) {
 	var oldTop = obj.style.top;
     obj.style.top = parseInt(value) + "px";
-    //Call the routines that want to be called on layout changes
+    // Call the routines that want to be called on layout changes
     if (parseInt(oldTop) != parseInt(value) && (
     		!obj.style.position || obj.style.position != "absolute")) ssf_onLayoutChange();
 }
 
-function ss_getWindowWidth() {
-	if( typeof( window.innerWidth ) == 'number' ) {
-		//Non-IE
-		myWidth = window.innerWidth;
-		myHeight = window.innerHeight;
-	} else if( document.documentElement &&
-		( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
-		//IE 6+ in 'standards compliant mode'
-		myWidth = document.documentElement.clientWidth;
-		myHeight = document.documentElement.clientHeight;
-	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-		//IE 4 compatible
-		myWidth = document.body.clientWidth;
-		myHeight = document.body.clientHeight;
+function ss_getWindowWidth(windowObj) {
+	if (typeof windowObj == "undefined") windowObj = self.window;
+	if( typeof( windowObj.innerWidth ) == 'number' ) {
+		// Non-IE
+		myWidth = windowObj.innerWidth;
+		myHeight = windowObj.innerHeight;
+	} else if( windowObj.document.documentElement &&
+		( windowObj.document.documentElement.clientWidth || windowObj.document.documentElement.clientHeight ) ) {
+		// IE 6+ in 'standards compliant mode'
+		myWidth = windowObj.document.documentElement.clientWidth;
+		myHeight = windowObj.document.documentElement.clientHeight;
+	} else if( windowObj.document.body && ( windowObj.document.body.clientWidth || windowObj.document.body.clientHeight ) ) {
+		// IE 4 compatible
+		myWidth = windowObj.document.body.clientWidth;
+		myHeight = windowObj.document.body.clientHeight;
 	} else {
-		var viewport = dijit.getViewport();
-		myWidth = viewport.w;
+		var winW = 630, winH = 460;
+		if (parseInt(navigator.appVersion)>3) {
+			 if (navigator.appName=="Netscape") {
+				 winW = windowObj.innerWidth;
+				 winH = windowObj.innerHeight;
+			 }
+			 if (navigator.appName.indexOf("Microsoft")!=-1) {
+				 winW = windowObj.document.body.offsetWidth;
+				 winH = windowObj.document.body.offsetHeight;
+			 }
+		}
+		myWidth = winW;
 	}
 	return myWidth;
 }
 
-function ss_getWindowHeight() {
-	if( typeof( window.innerWidth ) == 'number' ) {
-		//Non-IE
-		myWidth = window.innerWidth;
-		myHeight = window.innerHeight;
-	} else if( document.documentElement &&
-		( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
-		//IE 6+ in 'standards compliant mode'
-		myWidth = document.documentElement.clientWidth;
-		myHeight = document.documentElement.clientHeight;
-	} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
-		//IE 4 compatible
-		myWidth = document.body.clientWidth;
-		myHeight = document.body.clientHeight;
+function ss_getWindowHeight(windowObj) {
+	if (typeof windowObj == "undefined") windowObj = self.window;
+	if( typeof( windowObj.innerWidth ) == 'number' ) {
+		// Non-IE
+		myWidth = windowObj.innerWidth;
+		myHeight = windowObj.innerHeight;
+	} else if( windowObj.document.documentElement &&
+		( windowObj.document.documentElement.clientWidth || windowObj.document.documentElement.clientHeight ) ) {
+		// IE 6+ in 'standards compliant mode'
+		myWidth = windowObj.document.documentElement.clientWidth;
+		myHeight = windowObj.document.documentElement.clientHeight;
+	} else if( windowObj.document.body && ( windowObj.document.body.clientWidth || windowObj.document.body.clientHeight ) ) {
+		// IE 4 compatible
+		myWidth = windowObj.document.body.clientWidth;
+		myHeight = windowObj.document.body.clientHeight;
 	}
 	return myHeight;
 }
 
+function ss_getBodyHeightWidth(windowObj) {
+	if (typeof windowObj == "undefined") windowObj = self;
+	var screenWidth, screenHeight;
+	if (windowObj.innerHeight) // all except Explorer
+	{
+		screenWidth = windowObj.innerWidth;
+		screenHeight = windowObj.innerHeight;
+	}
+	else if (windowObj.document.documentElement && windowObj.document.documentElement.clientHeight)
+		// Explorer 6 Strict Mode
+	{
+		screenWidth = windowObj.document.documentElement.clientWidth;
+		screenHeight = windowObj.document.documentElement.clientHeight;
+	}
+	else if (windowObj.document.body) // other Explorers
+	{
+		screenWidth = windowObj.document.body.clientWidth;
+		screenHeight = windowObj.document.body.clientHeight;
+	}
+	return [screenWidth, screenHeight];
+}
 
 function ss_getBodyHeight() {
     var h;
     if (window.innerHeight && window.scrollMaxY) {	
 		h = window.innerHeight + window.scrollMaxY;
 	} else {
+		//h = ss_getBodyHeightWidth()[1];
 		h = self.document.body.scrollHeight;
 	}
     if (ss_getWindowHeight() > h) {
         h = ss_getWindowHeight();
     }
-    return h
+    return h;
 }
 
 function ss_getBodyWidth() {
@@ -2147,15 +2205,15 @@ function ss_getBodyWidth() {
 function ss_getScrollXY() {
 	var scrOfX = 0, scrOfY = 0;
 	if( typeof( window.pageYOffset ) == 'number' ) {
-		//Netscape compliant
+		// Netscape compliant
 		scrOfY = window.pageYOffset;
 		scrOfX = window.pageXOffset;
 	} else if( document.body && ( document.body.scrollLeft || document.body.scrollTop ) ) {
-		//DOM compliant
+		// DOM compliant
 		scrOfY = document.body.scrollTop;
 		scrOfX = document.body.scrollLeft;
 	} else if( document.documentElement && ( document.documentElement.scrollLeft || document.documentElement.scrollTop ) ) {
-		//IE6 standards compliant mode
+		// IE6 standards compliant mode
 		scrOfY = document.documentElement.scrollTop;
 		scrOfX = document.documentElement.scrollLeft;
 	}
@@ -2222,8 +2280,9 @@ function ss_hideAccessibleMenu(divId) {
 // Pop-up menu support
 // clicking anywhere will hide the div
 
-//Create a clone of the menu before showing it; attach it to the "body" outside of any div
-//  This makes sure that the z-index will be on top of everything else (IE fix)
+// Create a clone of the menu before showing it; attach it to the "body" outside
+// of any div
+// This makes sure that the z-index will be on top of everything else (IE fix)
 function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
 	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
 	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft=ss_activateMenuOffsetLeft}
@@ -2256,7 +2315,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var menuObj = self.document.getElementById(divId);
     if (menuObj == null) {return}
 
-    //Put a lightbox under the menu
+    // Put a lightbox under the menu
     ss_showHideMenuLightbox(divId, window.name);
     
 	var x = 0;
@@ -2265,13 +2324,15 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     	var pObj = document.getElementById(parentDivId);
     	x = dojo.coords(pObj, true).x
     	y = dojo.coords(pObj, true).y
-	    //Add the offset to the x and y positions so the div isn't occluding too much
+	    // Add the offset to the x and y positions so the div isn't occluding
+		// too much
 	    x = parseInt(parseInt(x) + parseInt(offsetLeft))
 	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + parseInt(offsetTop))
     } else {
 	    x = ss_getClickPositionX();
 	    y = ss_getClickPositionY();
-	    //Add a little to the x and y positions so the div isn't occluding too much
+	    // Add a little to the x and y positions so the div isn't occluding too
+		// much
 	    x = parseInt(parseInt(x) + parseInt(offsetLeft));
 	    y = parseInt(parseInt(y) + parseInt(offsetTop));
 	}
@@ -2288,22 +2349,23 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
         maxWidth = parseInt(window.innerWidth);
     } else {
         divWidth = parseInt(divWidth) + 20;
+        //maxWidth = parseInt(ss_getBodyHeightWidth()[0]);
         maxWidth = parseInt(document.body.scrollWidth);
     }
 
-	//console.log(divId, " dw ", divWidth, " mw ", maxWidth);
+	// console.log(divId, " dw ", divWidth, " mw ", maxWidth);
 	
     if (x + divWidth > maxWidth) {
         x = maxWidth - divWidth;
     } 
   
-    //alert('divId: ' + divId + ', x: ' + x + ', y: ' + y)
-    //alert(document.getElementById(divId).innerHTML)
+    // alert('divId: ' + divId + ', x: ' + x + ', y: ' + y)
+    // alert(document.getElementById(divId).innerHTML)
     if (!menuObj.style || !menuObj.style.zIndex || menuObj.style.zIndex == 0) {
     	menuObj.style.zIndex = ssMenuZ;
     }
 
-    //Put a lightbox under the menu
+    // Put a lightbox under the menu
     ss_showHideMenuLightbox(divId, window.name);
     
     ss_ShowHideDivXY(divId, x, y);
@@ -2312,7 +2374,7 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
     var menuBottom = parseInt(y + parseInt(ss_getObjectHeight(menuObj)));
     var screenBottom = parseInt(scrollTop + ss_getWindowHeight())
     if (menuBottom > screenBottom) {
-    	//The menu is off the bottom of the screen, scroll until it is in view
+    	// The menu is off the bottom of the screen, scroll until it is in view
     	var scrollAmount = parseInt(menuBottom - screenBottom + 10)
     	if (scrollAmount > parseInt(ss_getWindowHeight())) scrollAmount = parseInt(ss_getWindowHeight());
     	if (scrollAmount < 0) scrollAmount = 0;
@@ -2336,28 +2398,29 @@ function ss_setLayerFlag() {
 
 ss_createOnLoadObj('ss_layerFlag', ss_setLayerFlag);
 
-//Routine to put a lightbox under the menu div
+// Routine to put a lightbox under the menu div
 var ss_menuLightboxDivIds = new Array();
 var ss_menuLightboxWindowNames = new Array();
 function ss_showHideMenuLightbox(divId, windowName) {
-	return;  // This has been turned off because it doesn't work for folder "Add" menus
+	return;  // This has been turned off because it doesn't work for folder
+				// "Add" menus
 	if (window.name == windowName) {
-		//If in the same window, do the check to see if the menu is being shown
+		// If in the same window, do the check to see if the menu is being shown
 		var divObj = self.document.getElementById(divId);
 		if (divObj != null && divObj.style.display == 'block') {
-			//The div is visible, so don't add the lightbox
+			// The div is visible, so don't add the lightbox
 			return;
 		}
 	}
 	
-	//Do this in the top most frame
+	// Do this in the top most frame
 	if (self != self.parent && typeof parent.ss_showHideMenuLightbox != 'undefined') {
 		self.parent.ss_showHideMenuLightbox(divId, windowName);
 		return;
 	}
 	var lightBox = document.getElementById('ss_entry_menu_light_box')
 	if (!lightBox) {
-		//Add the lightbox div onto this frame if it doesn't exist
+		// Add the lightbox div onto this frame if it doesn't exist
 		var bodyObj = document.getElementsByTagName("body").item(0)
 		lightBox = document.createElement("div");
         lightBox.setAttribute("id", "ss_entry_menu_light_box");
@@ -2374,13 +2437,13 @@ function ss_showHideMenuLightbox(divId, windowName) {
     lightBox.style.zIndex = parseInt(ss_gwtLightboxZ);
     lightBox.style.visibility = "visible";			
     
-    //Save the divId
+    // Save the divId
     var i = ss_menuLightboxDivIds.length;
     ss_menuLightboxDivIds[i] = divId;
     ss_menuLightboxWindowNames[i] = windowName;
 }
 function ss_hideMenuLightbox() {
-	//Do this in the top most frame
+	// Do this in the top most frame
 	if (self != self.parent && typeof parent.ss_hideMenuLightbox != 'undefined') {
 		self.parent.ss_hideMenuLightbox();
 		return;
@@ -2389,7 +2452,7 @@ function ss_hideMenuLightbox() {
 	if (lightBox) {
 	    lightBox.style.display = "none";
 	}
-	//Hide all of the menus
+	// Hide all of the menus
     if (ss_menuLightboxDivIds.length > 0) {
         for (var i = 0; i < ss_menuLightboxDivIds.length; i++) {
         	var windowName = ss_menuLightboxWindowNames[i];
@@ -2404,7 +2467,7 @@ function ss_hideMenuLightbox() {
     ss_menuLightboxWindowNames = new Array();
 }
 
-//Routine to set the focus onto the first anchor in a div (for accessibility)
+// Routine to set the focus onto the first anchor in a div (for accessibility)
 function ss_setFocusToFirstA(divId) {
 	var divObj = self.document.getElementById(divId);
 	if (divObj != null) {
@@ -2420,11 +2483,11 @@ function ss_setFocusToFirstA(divId) {
 	}
 }
 
-//Support for positioning divs at x,y 
-//Enable the event handler
+// Support for positioning divs at x,y
+// Enable the event handler
 ss_createEventObj('captureXY', 'MOUSEUP')
 
-//General routine to show a div given its name and coordinates
+// General routine to show a div given its name and coordinates
 function ss_ShowHideDivXY(divName, x, y) {
     if (ss_divBeingShown == divName) {
         ss_hideDiv(ss_divBeingShown)
@@ -2446,7 +2509,7 @@ function ss_ShowHideDivXY(divName, x, y) {
         ss_hideSpannedAreas();
     }
 }
-//General routine to hide a div given its name and coordinates
+// General routine to hide a div given its name and coordinates
 function ss_HideDivXY(divName) {
     if (ss_divBeingShown == divName) {
         ss_hideDiv(ss_divBeingShown)
@@ -2485,7 +2548,7 @@ function ss_showBackgroundIFrame(divId, frmId) {
 		return;
 	}
 	if (ss_showBackgroundIframeDivId != null && ss_showBackgroundIframeDivId != divId) {
-		//Delete the previous iframe if any
+		// Delete the previous iframe if any
 		var frm = document.getElementById(frmId);
 		try {
 			if (frm) {
@@ -2559,7 +2622,7 @@ function ss_showDivActivate(divName, nofocus) {
     ss_divBeingShown = divName;
     ss_lastDivBeingShown = divName;
     if (nofocus) {
-    	//Show the div by hand and don't set focus to it.
+    	// Show the div by hand and don't set focus to it.
     	var divObj = document.getElementById(divName);
     	divObj.style.display = "block";
     	divObj.style.visibility = "visible";
@@ -2569,7 +2632,7 @@ function ss_showDivActivate(divName, nofocus) {
 	ss_HideDivOnSecondClick(divName);
 }
 
-//General routine to show a div given its name
+// General routine to show a div given its name
 function ss_HideDivIfActivated(divName) {
     if (divName == ss_divBeingShown) {
         ss_hideDiv(ss_divBeingShown);
@@ -2581,13 +2644,13 @@ function ss_HideDivIfActivated(divName) {
     }
 }
 
-//Routine to make div's be hidden on next click
+// Routine to make div's be hidden on next click
 function ss_HideDivOnSecondClick(divName) {
     ss_divToBeHidden[ss_divToBeHidden.length] = divName;
     ss_debug('ss_divToBeHidden length = '+ss_divToBeHidden.length)
 }
 
-//Routine to make div's be hidden on next click
+// Routine to make div's be hidden on next click
 function ss_NoHideDivOnNextClick(divName) {
     ss_divToBeDelayHidden[divName] = divName;
 }
@@ -2614,10 +2677,10 @@ function ss_showDivObj(divObj, backgroundIframe) {
     try {divObj.focus();} catch(e) {}
 	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') 
 		ss_showBackgroundIFrame(divObj.id, "ss_background_iframe");
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (!divObj || divObj.style.position != "absolute") {
 		ssf_onLayoutChange();
-		//ss_debug("ss_showDivObj: " + divObj.id)
+		// ss_debug("ss_showDivObj: " + divObj.id)
 	}
 }
 
@@ -2637,11 +2700,11 @@ function ss_hideDivObj(divObj) {
     }
     ss_divBeingShown = null;
     ss_hideBackgroundIFrame("ss_background_iframe");
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (divObj != null && divObj.style.position != "absolute") {
 		if (doLayoutChange) {
 			ssf_onLayoutChange();
-			//alert("ss_hideDiv: " + divObj.id)
+			// alert("ss_hideDiv: " + divObj.id)
 		}
 	}
 }
@@ -2654,16 +2717,16 @@ function ss_hideDivNone(divName) {
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (document.getElementById(divName) == null || 
 	    	document.getElementById(divName).style.position != "absolute") {
 		ssf_onLayoutChange();
-		//ss_debug("ss_hideDiv: " + divName)
+		// ss_debug("ss_hideDiv: " + divName)
 	}
 }
 
 function ss_hideAllDivsToBeHidden() {
-	//hide any lightbox divs
+	// hide any lightbox divs
 	ss_hideMenuLightbox();
 	
     if (ss_divToBeHidden.length > 0) {
@@ -2703,14 +2766,14 @@ function ss_getClickPositionY() {
 function captureXY(e) {
     if (!e) e = window.contents.event;
 
-    //Is this click a "right click"? If yes, ignore it
+    // Is this click a "right click"? If yes, ignore it
     if (e && e.which && (e.which == 3 || e.which == 2)) {
         return false;
     } else if (e && e.button && (e.button == 2 || e.button == 3)) {
         return false;
     }
 
-    //See if there is a div to be hidden
+    // See if there is a div to be hidden
     ss_lastDivBeingShown = ss_divBeingShown;
     ss_hideAllDivsToBeHidden();
     if (ss_isNSN6 || ss_isMoz5) {
@@ -2731,8 +2794,8 @@ function captureXY(e) {
         }
         return(true)
     } else {
-        //ss_mousePosX = event.x + ss_getScrollXY()[0]
-        //ss_mousePosY = event.y + ss_getScrollXY()[1]
+        // ss_mousePosX = event.x + ss_getScrollXY()[0]
+        // ss_mousePosY = event.y + ss_getScrollXY()[1]
         ss_mousePosX = event.clientX + ss_getScrollXY()[0];
         ss_mousePosY = event.clientY + ss_getScrollXY()[1];
         ss_mouseX = event.clientX;
@@ -2745,14 +2808,14 @@ function captureXY(e) {
     }
 }
 
-//Routines to get an object handle given the x,y coordinates of the image
+// Routines to get an object handle given the x,y coordinates of the image
 function getNN4ImgObject(imgX, imgY) {
     var imgObj = getNN4ImgObjectObj(self, imgX, imgY)
     return imgObj
 }
 
 function getNN4ImgObjectObj(divObj, imgX, imgY) {
-    //Look in this div for the image
+    // Look in this div for the image
     for (var i = 0; i < divObj.document.images.length; i++) {
         var testImgObj = divObj.document.images[i]
         if ( testImgObj && testImgObj.x &&   (imgX >= testImgObj.x) && 
@@ -2762,7 +2825,7 @@ function getNN4ImgObjectObj(divObj, imgX, imgY) {
                 return(testImgObj)
         }
     }
-    //The image isn't in this div, look in the children divs
+    // The image isn't in this div, look in the children divs
     for (var n = 0; n < divObj.document.layers.length; n++) {
         var testObj = divObj.document.layers[n]
         var imgObj = getNN4ImgObjectObj(testObj, imgX, imgY)
@@ -2771,21 +2834,21 @@ function getNN4ImgObjectObj(divObj, imgX, imgY) {
     return null
 }
 
-//Routines to get a div handle of the owner of an image
+// Routines to get a div handle of the owner of an image
 function getNN4ImgDivObject(imgObj) {
     var divObj = getNN4ImgDivObjectObj(self, imgObj)
     return divObj
 }
 
 function getNN4ImgDivObjectObj(divObj, imgObj) {
-    //Look in this div for the image
+    // Look in this div for the image
     for (var i = 0; i < divObj.document.images.length; i++) {
         var testImgObj = divObj.document.images[i]
         if (testImgObj == imgObj) {
             return(divObj)
         }
     }
-    //The image isn't in this div, look in the children divs
+    // The image isn't in this div, look in the children divs
     for (var n = 0; n < divObj.document.layers.length; n++) {
         var testDivObj = divObj.document.layers[n]
         var testImgObj = getNN4ImgDivObjectObj(testDivObj, imgObj)
@@ -2794,8 +2857,9 @@ function getNN4ImgDivObjectObj(divObj, imgObj) {
     return null
 }
 
-//Routine to create a new "onErrorObj" object
-//onErrorObj objects are set up whenever you want to call something at onError time.
+// Routine to create a new "onErrorObj" object
+// onErrorObj objects are set up whenever you want to call something at onError
+// time.
 function ss_createOnErrorObj(name, onErrorName) {
     for (var i = 0; i < ss_onErrorList.length; i++) {
     	if (ss_onErrorList[i].name == name) return;
@@ -2825,9 +2889,9 @@ function ssf__onError_event_handler() {
     return ret
 }
 
-//Routine to create a new "spannedArea" object
-//spannedAreaObj objects are set up whenever you need some form elements to be 
-//   blanked when showing the menus
+// Routine to create a new "spannedArea" object
+// spannedAreaObj objects are set up whenever you need some form elements to be
+// blanked when showing the menus
 function ss_createSpannedAreaObj(name) {
 	for (var i = 0; i < ss_spannedAreasList.length; i++) {
 		if (ss_spannedAreasList[i].name == name) return ss_spannedAreasList[i];
@@ -2849,8 +2913,8 @@ function spannedAreaObj(name) {
 }
 function m_setShowRoutine(showRoutine) {
     this.showRoutine = showRoutine;
-    //See if there are any other arguments passed in
-    //  These will get passed on to the show routine
+    // See if there are any other arguments passed in
+    // These will get passed on to the show routine
     for (var i = 1; i < m_setShowRoutine.arguments.length; i++) {
         if (this.showArgumentString != '') {this.showArgumentString += ',';}
         this.showArgumentString += '"'+m_setShowRoutine.arguments[i]+'"';
@@ -2858,8 +2922,8 @@ function m_setShowRoutine(showRoutine) {
 }
 function m_setHideRoutine(hideRoutine) {
     this.hideRoutine = hideRoutine;
-    //See if there are any other arguments passed in
-    //  These will get passed on to the show routine
+    // See if there are any other arguments passed in
+    // These will get passed on to the show routine
     for (var i = 1; i < m_setHideRoutine.arguments.length; i++) {
         if (this.hideArgumentString != '') {this.hideArgumentString += ',';}
         this.hideArgumentString += '"'+m_setHideRoutine.arguments[i]+'"';
@@ -2881,7 +2945,7 @@ function ss_toggleSpannedAreas(spanName,newValue) {
 }
 
 function ss_hideSpannedAreas() {
-    //Hide any form elements that may be visible
+    // Hide any form elements that may be visible
     for (var i = 0; i < ss_spannedAreasList.length; i++) {
         var divObj = self.document.getElementById(ss_spannedAreasList[i].name);
         if (divObj != null) {
@@ -2892,7 +2956,7 @@ function ss_hideSpannedAreas() {
 }
 
 function ss_showSpannedAreas() {
-    //Show any form elements that should be returned to the visible state
+    // Show any form elements that should be returned to the visible state
     if (typeof ss_spannedAreasList == 'undefined' || ss_spannedAreasList == null) return;
     for (var i = 0; i < ss_spannedAreasList.length; i++) {
         var divObj = self.document.getElementById(ss_spannedAreasList[i].name);
@@ -2903,8 +2967,9 @@ function ss_showSpannedAreas() {
     }
 }
 
-//Routine to pop up a window with a url (used in common toolbar code)
+// Routine to pop up a window with a url (used in common toolbar code)
 function ss_toolbarPopupUrl(url, windowName, width, height) {
+	ss_debug("**** "+ss_debugTrace());
 	if (typeof width == "undefined") {
 		width = ss_getWindowWidth();
 		if (width < 600) width=600;
@@ -2935,29 +3000,47 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 		ss_resizePopupDiv();
 		popupIframe.src = url;
 	} else if (url != "" && self.window.name == "ss_showentryframe") {
-		//Instead of popping up into another window, we now use the current showEntry frame
+		// Instead of popping up into another window, we now use the current
+		// showEntry frame
 		self.location.href = url;
 	} else if (url != "" && self.window.name == "gwtContentIframe") {
-		//Instead of popping up into another window, we now use the current content frame
+		// Instead of popping up into another window, we now use the current
+		// content frame
 		self.location.href = url;
 	} else {
 		self.window.open(url?url:"", windowName?windowName:"_blank", "resizable=yes,scrollbars=yes"+hw);
 	}
 	return false;
 }
-var ss_popupFrameWidthFudge = 40;
-var ss_popupFrameHeightFudge = 40;
+var ss_popupFrameWidthFudge = 0;
+var ss_popupFrameHeightFudge = 0;
+if (ss_isIE) {
+	ss_popupFrameWidthFudge = 0;
+	ss_popupFrameHeightFudge = 0;   // account for the potential horizontal scroll bar
+}
 var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
+	ss_debug("**** "+ss_debugTrace());
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
-	if (popupDiv != null && popupIframe != null && 
-			typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block") {
-		var scrollHeight = parseInt(window.ss_showpopupframe.document.body.scrollHeight);
-		var height = parseInt(scrollHeight + ss_popupFrameHeightFudge);
-		var width = parseInt(parseInt(ss_getWindowWidth()) - ss_popupFrameWidthFudge);
+	if (popupDiv != null && popupIframe != null && typeof popupDiv.style != "undefined" &&
+			typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block" &&
+			typeof window.frames['ss_showpopupframe'] != "undefined" &&
+			typeof window.frames['ss_showpopupframe'].document != "undefined" &&
+			typeof window.frames['ss_showpopupframe'].document.body != "undefined" &&
+			typeof window.frames['ss_showpopupframe'].document.body.scrollHeight != "undefined") {
+		var scrollHeight = parseInt(window.frames['ss_showpopupframe'].document.body.scrollHeight);
+		var scrollWidth = parseInt(ss_getBodyHeightWidth(top.window.frames['ss_showpopupframe'])[0]);
+		ss_debug("   ss_resizePopupDiv, scroll height: "+scrollHeight);
+		ss_debug("   ss_resizePopupDiv, scroll width: "+scrollWidth);
+		var height = parseInt(scrollHeight);
+		var width = parseInt(scrollWidth);
 		var windowHeight = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge);
 		
+		ss_debug("   ss_resizePopupDiv, window height: "+windowHeight)
+		ss_debug("   ss_resizePopupDiv, parent window height: "+ss_getWindowHeight(self.parent))
+		ss_debug("   ss_resizePopupDiv, window width: "+ss_getWindowWidth())
+		var windowWidth = ss_getWindowWidth();
 		if (ss_getUserDisplayStyle() == "newpage") {
 			if (parseInt(popupIframe.style.height) != windowHeight ||
 					parseInt(popupIframe.style.width) != width) {
@@ -2967,15 +3050,31 @@ function ss_resizePopupDiv() {
 			}
 
 		} else {
-			if (parseInt(popupIframe.style.height) != scrollHeight) {
-				popupIframe.style.height = parseInt(height) + "px";
+			//See if the entry div needs to be resized first
+			if (typeof ss_setEntryDivObjectHeight != "undefined") {
+				var entryDivTop = ss_getEntryDivObjectTop();
+				var entryDivMaxHeight = ss_getEntryDivMaxHeight(entryDivTop);
+				ss_debug("   ss_resizePopupDiv entryDivMaxHeight: "+entryDivMaxHeight)
+				if (scrollHeight > ss_getWindowHeight()) {
+					if (typeof entryDivMaxHeight != "undefined" && scrollHeight > entryDivMaxHeight) {
+						ss_setEntryDivObjectHeight(entryDivMaxHeight);
+					} else {
+						ss_setEntryDivObjectHeight(scrollHeight);
+					}
+				}
 			}
-			if (parseInt(popupIframe.style.width) != width) {
-				popupIframe.style.width = parseInt(width) + "px";
+			if (parseInt(popupIframe.style.height) != parseInt(ss_getWindowHeight())) {
+				ss_debug("   ss_resizePopupDiv, set height to: "+ss_getWindowHeight())
+				popupIframe.style.height = parseInt(ss_getWindowHeight()) + "px"
+			}
+			if (parseInt(popupIframe.style.width) != parseInt(ss_getWindowWidth() - 22)) {
+				ss_debug("   ss_resizePopupDiv, set width to: "+parseInt(ss_getWindowWidth() - 22))
+				popupIframe.style.width = parseInt(ss_getWindowWidth() - 22) + "px"
 			}
 		}
 	}
 }
+
 function ss_hidePopupDiv() {
 	var entryContentDiv = self.document.getElementById("ss_entryContentDiv");
 	if (entryContentDiv != null) entryContentDiv.style.display = "block";
@@ -2983,18 +3082,19 @@ function ss_hidePopupDiv() {
 	if (popupDiv != null && popupDiv.style.display != "none") {
 		popupDiv.style.display = "none";
 		popupDiv.style.visibility = "hidden";
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) {
 			setTimeout("ssf_onLayoutChange();", 100);
 		}
 	}
 }
 
-//Routine to show a div at the bottom of the highest size attained by the window
+// Routine to show a div at the bottom of the highest size attained by the
+// window
 function setWindowHighWaterMark(divName) {
 	var currentPageHeight = ss_getBodyHeight()
 	if (parseInt(ss_forum_maxBodyWindowHeight) < parseInt(currentPageHeight)) {
-		//Time to set a new high water mark
+		// Time to set a new high water mark
 		ss_forum_maxBodyWindowHeight = currentPageHeight;
 	}
 	var dh = ss_getDivHeight(divName);
@@ -3005,9 +3105,10 @@ function setWindowHighWaterMark(divName) {
 }
 
 
-//Routines to replace substrings in a string
+// Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
-    //ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
+    // ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " +
+	// newSubStrVal)
     if (typeof str == 'undefined') return str;
     var newStr = str;
 	var i = str.indexOf(subStr);
@@ -3016,14 +3117,14 @@ function ss_replaceSubStr(str, subStr, newSubStrVal) {
     if (i >= 0) {
         newStr = str.substring(0, i) + newSubStrVal + str.substring(i+lenSS, lenS);
     }
-    //ss_debug("   new str = " + newStr)
+    // ss_debug(" new str = " + newStr)
 	return newStr;
 }
 function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
     if (typeof str == 'undefined') return str;
     var newStr = str;
     var i = -1
-    //Prevent a possible loop by only doing 1000 passes through this loop
+    // Prevent a possible loop by only doing 1000 passes through this loop
     while (1000) {
         i = newStr.indexOf(subStr, i);
         var lenS = newStr.length;
@@ -3038,11 +3139,11 @@ function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
     return newStr;
 }
 
-//Routine to build a status_message div if one doesn't exist yet
+// Routine to build a status_message div if one doesn't exist yet
 function ss_setupStatusMessageDiv() {
 	var smId = document.getElementById('ss_status_message');
 	if (!smId) {
-		//There isn't a status message div, so go build it
+		// There isn't a status message div, so go build it
 		var smDiv = document.createElement("div");
         smDiv.setAttribute("id", "ss_status_message");
         smDiv.style.visibility = "hidden";
@@ -3050,15 +3151,22 @@ function ss_setupStatusMessageDiv() {
     	document.getElementsByTagName("body").item(0).appendChild(smDiv);
 	}
 }
-//common processing for callback after ajax call
+// common processing for callback after ajax call
 function ss_postRequestAlertError(obj) {
-	//See if there was an error
+	// See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
 }
-//Routine to write text to the debug window
+
+// See if there is a javascript console for logging debug messages
+if (!window.console) console = {};
+console.log = console.log || function(){};
+
+// Routine to write text to the debug window
 function ss_debug(text) {
+	console.log(text);
+	return;
 	if (typeof ss_debugTextareaId == "undefined") return;
 	if (ss_debugTextareaId == '') return;
 	var debugTextarea = document.getElementById(ss_debugTextareaId);
@@ -3070,6 +3178,22 @@ function ss_debug(text) {
 		debugTextarea.value = html;
 		debugTextarea.scrollTop = 1000;
 	}
+}
+function ss_debugTrace(level) {
+	if (typeof level == "undefined") level = 2;
+	//Get the caller
+	var text = "";
+	var caller1 = arguments.callee.caller;
+	if (caller1 != null) {
+		text += caller1.name + " ";
+		var c = caller1.caller;
+		for (var i = 0; i < level; i++) {
+			if (c == null || c.name == "") break;
+			text += "<-- " + c.name + " ";
+			c = c.caller;
+		}
+	}
+	return text;
 }
 
 function ss_showNotLoggedInMsg() {
@@ -3121,7 +3245,7 @@ function ss_hideLightbox(id) {
 	ss_hidePopupDivs();
 }
 
-//Support routines for the help system
+// Support routines for the help system
 var ss_help_position_topOffset = 10;
 var ss_help_position_bottomOffset = 20;
 var ss_help_position_rightOffset = 20;
@@ -3136,7 +3260,7 @@ var ss_helpSystem = {
 	},
 	
 	show : function() {
-		//ss_debug('ss_helpSystem');
+		// ss_debug('ss_helpSystem');
 		var lightBox = ss_showLightbox("ss_help_light_box", ssHelpZ)
 	    lightBox.onclick = function(e) {if (ss_helpSystem) ss_helpSystem.hide();};
 	    
@@ -3149,18 +3273,23 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.visibility = "visible";
 	    	welcomeDiv.style.zIndex = ssHelpWelcomeZ;
 	    	welcomeDiv.style.display = "block";
-	        //welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
-	        //welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
+	        // welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
+	        // welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
 	        dijit.placeOnScreen(welcomeDiv, {x:50, y:0}, "TL", false);
 	        if (helpMenuAnchorDiv != null) {
 	        	helpMenuAnchorDiv.style.visibility = "visible";
 	        	helpMenuAnchorDiv.style.display = "block";
-	        	//ss_setObjectHeight(helpMenuAnchorDiv, ss_getObjectHeight(welcomeDiv));
+	        	// ss_setObjectHeight(helpMenuAnchorDiv,
+				// ss_getObjectHeight(welcomeDiv));
 	        	var offsetT = -2;
 	        	if (ss_isIE) offsetT = 6;
-	        	//welcomeDiv.style.top = parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) + "px";
+	        	// welcomeDiv.style.top =
+				// parseInt(ss_getObjectTopAbs(helpMenuAnchorDiv) - offsetT) +
+				// "px";
 	        	var offsetL = parseInt((ss_getObjectWidth(helpMenuAnchorDiv) - ss_getObjectWidth(welcomeDiv)) / 2);
-	        	//welcomeDiv.style.left = parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) + "px";
+	        	// welcomeDiv.style.left =
+				// parseInt(ss_getObjectLeftAbs(helpMenuAnchorDiv) + offsetL) +
+				// "px";
 	        }
 	    	ss_setOpacity(welcomeDiv, 0);
 	    	dojo.fadeIn({node:welcomeDiv, start:0, end:1.0, delay:150}).play();
@@ -3181,7 +3310,7 @@ var ss_helpSystem = {
 	    	welcomeDiv.style.visibility = "hidden";
 	    	welcomeDiv.style.display = "none";
 	    	dojo.disconnect(dojo.body(), "onscroll", this, "moveWelcomeIntoView");
-		    //Call the routines that want to be called on layout changes
+		    // Call the routines that want to be called on layout changes
 		    ssf_onLayoutChange();
 		}
 		var helpMenuAnchorDiv = document.getElementById('ss_helpMenuAnchor');
@@ -3191,7 +3320,8 @@ var ss_helpSystem = {
         }
 		if (lightBox.style.visibility && lightBox.style.visibility == 'visible') {
     		for (var i = 1; i < ss_helpSystemNextNodeId; i++) {
-    			//Delete all of the help spots that were added during the help session
+    			// Delete all of the help spots that were added during the help
+				// session
     			if (ss_helpSystemNodes[i] != null) {
     				bodyObj.removeChild(ss_helpSystemNodes[i]);
     				ss_helpSystemNodes[i] = null;
@@ -3199,13 +3329,14 @@ var ss_helpSystem = {
     		}
     		ss_helpSystemNextNodeId = 1;
 
-    		//Delete all of the help panels that were added during the help session
+    		// Delete all of the help panels that were added during the help
+			// session
 			for (var i = ss_helpSystemPanels.length; --i >= 0;) {
-				//ss_debug("panelObj = " + ss_helpSystemPanels[i])
+				// ss_debug("panelObj = " + ss_helpSystemPanels[i])
 				var pObj = document.getElementById(ss_helpSystemPanels[i]);
 				if (pObj != null && pObj.parentNode != null) pObj.parentNode.removeChild(pObj);
 			}
-    		//Delete all of the highlighted nodes
+    		// Delete all of the highlighted nodes
     		this.clearHighlights();
     		ss_showSpannedAreas();
 
@@ -3225,11 +3356,12 @@ var ss_helpSystem = {
 		this.clearTOC()
 		var bodyObj = document.getElementsByTagName("body").item(0)
 		var nodes = new Array();
-		//var time = new Date().getTime();
+		// var time = new Date().getTime();
 		nodes = document.getElementsByTagName("ssHelpSpot");
-		//ss_debug('Time: '+ parseInt(new Date().getTime() - time))
+		// ss_debug('Time: '+ parseInt(new Date().getTime() - time))
 		for (var i = 0; i < nodes.length; i++) {
-			//ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
+			// ss_debug(nodes[i].getAttribute("helpId") + " = " +
+			// ss_helpSystemNextNodeId)
 			var helpSpotNodeId = nodes[i].getAttribute("helpId");
 			helpSpotNodeId = ss_helpSystemNextNodeId + "___" + helpSpotNodeId;
 			var helpSpotTitle = "";
@@ -3257,7 +3389,7 @@ var ss_helpSystem = {
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
 			helpSpotGif.setAttribute("border", "0");
-            // Title can be 'show' or 'hide' (default)			
+            // Title can be 'show' or 'hide' (default)
 			if (nodes[i].getAttribute("titleFlag")) {
 			    helpSpotTitleFlag = nodes[i].getAttribute("titleFlag");
 			    if (helpSpotTitleFlag != 'hide') {
@@ -3274,7 +3406,7 @@ var ss_helpSystem = {
 			}
 			helpSpotTitle.appendChild(document.createTextNode(helpSpotTitleText));
 			
-			//Build a table containing the image and the title
+			// Build a table containing the image and the title
 			helpSpotNode.appendChild(helpSpotA);
 			helpSpotA.appendChild(helpSpotTable);
 			helpSpotTable.appendChild(helpSpotTbody);
@@ -3283,7 +3415,8 @@ var ss_helpSystem = {
 			helpSpotTr.appendChild(helpSpotTd2);
 			var aObj = document.createElement("a");
 			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "', '" + xAlignment + "', '" + yAlignment + "');");
-			// Associate link either to the text ('show' text) or the icon ('hide' text)
+			// Associate link either to the text ('show' text) or the icon
+			// ('hide' text)
 			if (helpSpotTitleFlag != 'hide') {
 			    helpSpotTd1.appendChild(helpSpotGif);
 			    aObj.appendChild(helpSpotTitle);
@@ -3339,7 +3472,7 @@ var ss_helpSystem = {
 	        	owningDiv = owningDiv.parentNode
 	        }
 	        if (okToShow == 1) helpSpotNode.style.visibility = "visible";
-			//ss_debug("nodes[i] width = "+dojo.marginBox(nodes[i]).w)
+			// ss_debug("nodes[i] width = "+dojo.marginBox(nodes[i]).w)
 		}
 	},
 	
@@ -3386,7 +3519,7 @@ var ss_helpSystem = {
 	},
 	
 	addTOC : function(id, title, xAlignment, yAlignment) {
-		//ss_debug("addToc " + id + ", " + title)
+		// ss_debug("addToc " + id + ", " + title)
 		// Don't add nodes with duplicate titles.
 		for (var i=0; i<ss_helpSystemTOC.length; i++) {
 		    if (ss_helpSystemTOC[i].title == title) {
@@ -3483,11 +3616,11 @@ var ss_helpSystem = {
 	},
 	
 	showHelpSpotInfo : function(id, xAlignment, yAlignment) {
-        //Hide moreinfo panel, if exists
+        // Hide moreinfo panel, if exists
         ss_hideDiv('ss_moreinfo_panel')
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		//ss_debug('showHelpSpotInfo id = '+id)
+		// ss_debug('showHelpSpotInfo id = '+id)
 		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
 			if (id == ss_helpSystemTOC[i].id) {
@@ -3495,7 +3628,7 @@ var ss_helpSystem = {
 				break;
 			}
 		}
-		//Find the help spot node
+		// Find the help spot node
 		var helpSpot = null;
 		for (var i = 0; i < ss_helpSystemNodes.length; i++) {
 			if (ss_helpSystemNodes[i] != null) {
@@ -3509,7 +3642,7 @@ var ss_helpSystem = {
 				}
 			}
 		}
-		//ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
+		// ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.coords(helpSpot, true).y);
 		    var left = parseInt(dojo.coords(helpSpot, true).x);
@@ -3533,7 +3666,7 @@ var ss_helpSystem = {
 		if (dy == "") dy = 0;
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		//ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
+		// ss_debug('showInlineHelpSpotInfo jspId = '+jspId)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.coords(helpSpot, true).y);
 		    var left = parseInt(dojo.coords(helpSpot, true).x);
@@ -3585,13 +3718,13 @@ var ss_helpSystem = {
 		}
 		ss_setupStatusMessageDiv()
 		this.clearHighlights();
-		//ss_debug("showHelpPanel " + id)
+		// ss_debug("showHelpPanel " + id)
 		var pObj = self.document.getElementById(panelId);
 		var startTop = -1;
 		var startLeft = -1;
 		var startVisibility = "";
 		if (!pObj) {
-			//There is no help panel, so create it on-the-fly
+			// There is no help panel, so create it on-the-fly
 			var bodyObj = document.getElementsByTagName("body").item(0)
 			pObj = document.createElement("div");
 	        pObj.setAttribute("id", panelId);
@@ -3601,10 +3734,12 @@ var ss_helpSystem = {
 	        bodyObj.appendChild(pObj);
 	        ss_helpSystemPanels[ss_helpSystemPanels.length] = panelId;
 		} else {
-			//See if this is a request for the same panel. If so, toggle it off.
-			//ss_debug("id = " + pObj.getAttribute("id") + ", helpId = " + pObj.getAttribute("helpId"))
+			// See if this is a request for the same panel. If so, toggle it
+			// off.
+			// ss_debug("id = " + pObj.getAttribute("id") + ", helpId = " +
+			// pObj.getAttribute("helpId"))
 			if (pObj.getAttribute("helpId") == id && pObj.style.visibility == "visible") {
-				//On the second click to the same help spot, turn the panel off
+				// On the second click to the same help spot, turn the panel off
 				pObj.style.visibility = "hidden"
 				pObj.style.display = "none"
 				return
@@ -3616,7 +3751,7 @@ var ss_helpSystem = {
 		}
 		
 		var orgHelpId = id;
-		//See if this is the actual name of the help panel
+		// See if this is the actual name of the help panel
 		var i1 = id.indexOf("___");
 		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
 		var urlParams = {operation:"show_help_panel", operation2:orgHelpId, tagId:tagId}; 
@@ -3744,9 +3879,10 @@ var ss_helpSystem = {
 		
 		ss_helpSystemRequestInProgress = 0;
 		
-		//Is there another request queued?
+		// Is there another request queued?
 		if (ss_helpSystemQueuedId != "") {
-			//ss_debug("\nLaunching queued request to show " + ss_helpSystemQueuedId)
+			// ss_debug("\nLaunching queued request to show " +
+			// ss_helpSystemQueuedId)
 			var id = ss_helpSystemQueuedId;
 			var panelId = ss_helpSystemQueuedPanelId;
 			var x = ss_helpSystemQueuedX;
@@ -3773,7 +3909,7 @@ var ss_helpSystem = {
 	},
 	
 	highlight : function(id) {
-		//ss_debug("Highlight " + id)
+		// ss_debug("Highlight " + id)
 		var obj = document.getElementById(id);
 		if (obj != null) {
 			ss_helpSystemHighlights[ss_helpSystemHighlights.length] = id;
@@ -3787,7 +3923,7 @@ var ss_helpSystem = {
 	
 	clearHighlights : function() {
 		for (var i = ss_helpSystemHighlights.length; --i >= 0;) {
-			//ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
+			// ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
 			var id = ss_helpSystemHighlights[i];
 			var hObj = document.getElementById(id);
 		    if (hObj != null) {
@@ -3803,18 +3939,19 @@ var ss_helpSystem = {
 	},
 	
 	blinkHighlight : function(id, count) {
-		//ss_debug("blinkHighlight " + id)
+		// ss_debug("blinkHighlight " + id)
 		if (ss_helpSystemHighlightsBorderTimer[id] != null) {
-			//ss_debug("clearTimeout " + id)
+			// ss_debug("clearTimeout " + id)
 			clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
 			ss_helpSystemHighlightsBorderTimer[id] = null;
 		} else {
-			//There is no timer value. The user must have moved on. Don't blink any more.
-			//ss_debug("Stopped blinking!")
+			// There is no timer value. The user must have moved on. Don't blink
+			// any more.
+			// ss_debug("Stopped blinking!")
 			return;
 		}
 		var obj = document.getElementById(id);
-		//ss_debug("  border color: " + obj.style.borderTopColor)
+		// ss_debug(" border color: " + obj.style.borderTopColor)
 		if (obj != null) {
 		    if (obj.style.borderTopColor == "red") {
 			    obj.style.border = "white 2px solid";
@@ -3838,11 +3975,11 @@ var ss_helpSystem = {
 	}
 }
 
-//Dashboard routines
+// Dashboard routines
 
 function ss_addDashboardComponents(divId) {
 	var panel = document.getElementById(divId);
-	//undefined for some shared access
+	// undefined for some shared access
 	if (panel == null) return;
 	ss_moveObjectToBody(panel);
 	panel.style.zIndex = parseInt(ssLightboxZ + 1);
@@ -3866,7 +4003,7 @@ function ss_showHideAllDashboardComponents(obj, divId, binderId) {
 		canvas.focus();
 	}
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "__ajax_dashboard"));
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 	
 }
@@ -3883,17 +4020,18 @@ function ss_toggle_dashboard_toolbars(prefix) {
 			obj.style.zIndex = parseInt(ssLightboxZ + 1);
 			obj.focus();
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
-			//var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-			//lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars(prefix);};
+			// var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+			// lightBox.onclick = function(e)
+			// {ss_toggle_dashboard_toolbars(prefix);};
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarAddContent;
-			//ss_hideLightbox()
+			// ss_hideLightbox()
 		}
 	}
 	
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 function ss_toggle_dashboard_hidden_controls(prefix) {
@@ -3923,14 +4061,17 @@ function ss_toggle_dashboard_hidden_controls(prefix) {
 			eval ("if (" + prefix + "_dashboard_border_classNames[i]) obj.className = " + prefix + "_dashboard_border_classNames[i];");
 		}
 	}
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 var ss_dashboardCallbacks = new Object();
 
 function ss_addDashboardEvent(componentId, 
-						when /* onBeforeShow, onAfterShow == onShow, onBeforeHide, onAfterHide == onHide */,
+						when /*
+								 * onBeforeShow, onAfterShow == onShow,
+								 * onBeforeHide, onAfterHide == onHide
+								 */,
 						routineToCall) {
 	if (when == "onShow") {
 		when = "onAfterShow";
@@ -3954,7 +4095,10 @@ function ss_addDashboardEvent(componentId,
 }
 
 function ss_callDashboardEvent(componentId, 
-						when /* onBeforeShow, onAfterShow == onShow, onBeforeHide, onAfterHide == onHide */) {
+						when /*
+								 * onBeforeShow, onAfterShow == onShow,
+								 * onBeforeHide, onAfterHide == onHide
+								 */) {
 	if (when == "onShow") {
 		when = "onAfterShow";
 	} else if (when == "onHide") {
@@ -3981,7 +4125,7 @@ function ss_callDashboardEvent(componentId,
 }
 
 function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace, scope) {
-	//ss_debug(obj.alt + ",    " + obj.src)
+	// ss_debug(obj.alt + ", " + obj.src)
 	var formObj = ss_getContainingForm(obj);
 	var urlParams = {namespace:namespace,rn:ss_dbrn++};
 	
@@ -4019,7 +4163,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			targetDiv.style.display = "none";
 			borderDiv = targetDiv.parentNode;
 			if (borderDiv.className == 'ss_content_window_content') borderDiv.className = 'ss_content_window_content_off';
-			//Signal that the layout changed 
+			// Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 		ss_callDashboardEvent(componentId, "onBeforeHide");
@@ -4031,7 +4175,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 			targetDiv.innerHTML = "";
 			targetDiv.style.visibility = "hidden";
 			targetDiv.style.display = "none";
-			//Signal that the layout changed
+			// Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 		ss_addDashboardEvent(componentId, "onAfterHide", ss_deleteComponentCallback)
@@ -4050,7 +4194,7 @@ function ss_showComponentCallback(s, data) {
 		targetDiv.style.visibility = "visible";
 		targetDiv.style.display = "block";
 		targetDiv.focus();
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 		ss_callDashboardEvent(data.componentId, "onAfterShow");
 		ss_showEmailLinks();
@@ -4119,9 +4263,9 @@ function ss_moreTeamMembers(binderId, pageNumber, pageSize, namespace, divId, co
 }
 
 
-//Start: Add Attachment Related Functions
+// Start: Add Attachment Related Functions
 
-//Browse Related Functions
+// Browse Related Functions
 
 
 var browseURL = "";
@@ -4137,7 +4281,7 @@ function setURLInIFrame(binderId, entryId, namespace) {
 }
 
 function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
-	//alert("Inside ss_showAddAttachmentBrowse...");
+	// alert("Inside ss_showAddAttachmentBrowse...");
 
 	ss_hideAddAttachmentDropbox(entryId, namespace);
 	
@@ -4149,15 +4293,15 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	var frameId = 'ss_iframe_browse' + entryId + namespace;
 	var frameObj = document.getElementById(frameId);
 	
-	//alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
+	// alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
 	
 	frameObj.src = ss_rootPath + "js/attachments/entry_attachment_browse.html";
 	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 	
-	//divObj.style.width = "360px";
-	//divObj.style.height = "150px";
+	// divObj.style.width = "360px";
+	// divObj.style.height = "150px";
 	
 	try {
 		if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
@@ -4188,13 +4332,13 @@ function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
 	ss_setupStatusMessageDiv();
 	
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:entryId, operation:"reload_entry_attachments", namespace:namespace});
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 }
 
 
-//Dropbox Functionality
+// Dropbox Functionality
 function ss_hideAddAttachmentDropbox(entryId, namespace) {
 	var divId = 'ss_div_dropbox' + entryId + namespace;
 	var divObj = document.getElementById(divId);
@@ -4209,7 +4353,7 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 	ss_hideAddAttachmentDropbox(entryId, namespace);
 	self.location.reload(true);
-	//ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+	// ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
@@ -4301,9 +4445,9 @@ function ss_resetEditClicked(entryId, namespace) {
 }
 
 
-//End: Add Attachment Related Functions
+// End: Add Attachment Related Functions
 
-//Title link Related Functions
+// Title link Related Functions
 function ss_highlightLine(id, namespace) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
@@ -4327,24 +4471,24 @@ function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashbo
 	return false;
 }
 
-//Initialize the ss_folder div
+// Initialize the ss_folder div
 function ss_initShowFolderDiv(namespace) {
 	var divObj = self.document.getElementById("ss_showfolder");
 	if (divObj != null) return;
-	//It hasn't been set up yet, use this first div to be defined
+	// It hasn't been set up yet, use this first div to be defined
 	divObj = self.document.getElementById("ss_showfolder"+namespace);
 	if (divObj == null) return;
 	divObj.id = "ss_showfolder";
 }
 
-//Initialize the floating div for viewing entries
+// Initialize the floating div for viewing entries
 function ss_showEntryDivInitialization(namespace) {
 	var divObj = self.document.getElementById("ss_showentrydiv");
 	if (divObj != null) return;
-	//See if there is a window iframe with this name already
+	// See if there is a window iframe with this name already
 	if (typeof window.ss_showentryframe != "undefined") return;
 	
-	//It hasn't been set up yet, use this prototype div
+	// It hasn't been set up yet, use this prototype div
 	divObj = self.document.getElementById("ss_showentrydiv"+namespace);
 	var iframeObj = self.document.getElementById("ss_showentryframe"+namespace);
 	var boxObj = self.document.getElementById("ss_iframe_box_div"+namespace);
@@ -4360,20 +4504,20 @@ function ss_showEntryDivInitialization(namespace) {
 }
 
 function ss_hideEntryDivOnLoad() {
-	//alert(window.name)
+	// alert(window.name)
 	if (window.name == '' || 
 			window.name == 'gwtContentIframe' || 
 			window.name == 'adminContentControl') {
 		ss_hideEntryDiv();
-		//Make sure the content div is visible
+		// Make sure the content div is visible
 		ss_showDiv('contentControl');
 	}
 }
 function ss_hideEntryDiv() {
 	// Are we running in the GWT UI?
 	if (ss_isGwtUIActive) {
-		// Yes!  Then we need see if the entry DIV is off window.top.
-		// Note that there appear to  be two of these now, one that's
+		// Yes! Then we need see if the entry DIV is off window.top.
+		// Note that there appear to be two of these now, one that's
 		// in window.top.document and one that's in self.document
 		// (which would be the GWT UI content IFRAME.)
 	    ss_hideEntryDivImpl(window.top.document.getElementById('ss_showentrydiv'));
@@ -4396,7 +4540,7 @@ function ss_hideEntryDivImpl(eDIV) {
 	}
 }
 
-//Routine to show the content frame
+// Routine to show the content frame
 function ss_showContentFrame() {
 	if (self != self.parent && typeof self.parent.ss_showContentFrame != "undefined") {
 		self.parent.ss_showContentFrame();
@@ -4460,7 +4604,7 @@ function ss_setWindowHighWaterMark(height) {
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
 var ss_loadEntryInPlaceNextId = 0;
-//Note: this routine can be called (below) with obj = null
+// Note: this routine can be called (below) with obj = null
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType, isDashboard, hoverOverId) {
 	if (ss_getUserDisplayStyle() == "accessible") {
 		if (obj != null) self.location.href = obj.href;
@@ -4491,7 +4635,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	tbodyObj.insertBefore(trObj.cloneNode(true), trObj)
 	ss_loadEntryInPlaceLastId = binderId + ',' + id;
 	
-	//Count the number of "td" elements
+	// Count the number of "td" elements
 	var count = 0
 	var childObj = trObj.firstChild
 	while (childObj != null) {
@@ -4509,7 +4653,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 	iframeCol.className = "ss_fixed_TD_frame";
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
-	//Draw Iframe for discussion thread
+	// Draw Iframe for discussion thread
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", entryViewStyle2:viewType, namespace:namespace}, "view_folder_entry");
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" ' +
 		'style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
@@ -4546,14 +4690,17 @@ function ss_pinEntry(obj, binderId, entryId) {
 
 var ss_entryInPlaceIframeOffset = 0;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
+	ss_debug("**** "+ss_debugTrace());
 	var targetDiv = document.getElementById(divId);
 	var iframeDiv = document.getElementById(iframeId);	
 	if (window.frames[iframeId] != null) {
+		//var iframeHeight = parseInt(ss_getBodyHeightWidth(window.frames[iframeId])[1]);
 		var iframeHeight = parseInt(window.frames[iframeId].document.body.scrollHeight);
 		if (iframeHeight > 0) {
+			ss_debug("   Setting "+divId+" height to: "+parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px")
 			iframeDiv.style.height = parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px"
 			iframeDiv.style.width= parseInt(parseInt(ss_getObjectWidth(targetDiv)) - 6) + "px";
-			//Signal that the layout changed
+			// Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
@@ -4561,9 +4708,11 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 }
 
 function ss_setCurrentIframeHeight() {
+	ss_debug("**** "+ss_debugTrace());
 	if (self == self.parent) return;
 	if (ss_getUserDisplayStyle() == "newpage") return;
 	var iframeId = window.name;
+	//var iframeHeight = parseInt(ss_getBodyHeightWidth()[1]);
 	var iframeHeight = parseInt(document.body.scrollHeight);
 	if (iframeHeight > 0) {
 		try {
@@ -4571,11 +4720,40 @@ function ss_setCurrentIframeHeight() {
 			if (parentIframeObj != null && 
 					parseInt(parentIframeObj.style.height) != parseInt(iframeHeight + ss_entryInPlaceIframeOffset)) {
 				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px";
-				//Signal that the layout changed
+				ss_debug("   Setting "+iframeId+" height to: "+parentIframeObj.style.height)
+				// Signal that the layout changed
 				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
 			}
 		} catch(e) {}
 	}
+}
+
+var ss_entryHistoryIframeOffset1 = 0;
+if (ss_isIE) ss_entryHistoryIframeOffset1 = 51;
+function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
+	ss_debug("**** "+ss_debugTrace());
+	var iframeDiv = document.getElementById(iframeId)
+	if (typeof loadingId != "undefined" && iframeDiv.src.indexOf("null.html") < 0) {
+		var spanObj = self.document.getElementById(loadingId);
+		if (spanObj != null) spanObj.style.display = "none";
+	}
+	try {
+		var frameWindow = window.frames[iframeId];
+		ss_debug("   frameWindow: "+frameWindow.name)
+		if (frameWindow && frameWindow.document && frameWindow.document.body) {
+			var iframeHeight = parseInt(frameWindow.document.body.scrollHeight);
+			ss_debug("   iframeHeight: "+iframeHeight)
+			if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
+					(parseInt(iframeDiv.style.height) != parseInt(iframeHeight) + ss_entryHistoryIframeOffset1)) {
+				ss_debug("   Setting "+iframeId+" to height: "+parseInt(iframeHeight) + ss_entryHistoryIframeOffset1 + "px")
+				iframeDiv.style.height = parseInt(iframeHeight) + ss_entryHistoryIframeOffset1 + "px"
+				//Signal that the layout changed
+				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 300);
+				//if (self.parent.ssf_onLayoutChange) setTimeout("self.parent.ssf_onLayoutChange();", 100);
+				//if (self.parent.parent.ssf_onLayoutChange) setTimeout("self.parent.parent.ssf_onLayoutChange();", 100);
+			}
+		}
+	} catch(e) {ss_debug("Error: "+e)}
 }
 
 function ss_showForumEntry(url, isDashboard) {	
@@ -4605,7 +4783,7 @@ function ss_showForumEntry(url, isDashboard) {
 			return ss_showForumEntryInIframe_Overlay(url);
 		}
 	} else {
-		//redefined for displayType
+		// redefined for displayType
 		if (typeof self.ss_showForumEntryInIframe != "undefined") {
 			return ss_showForumEntryInIframe(url);
 		} else {
@@ -4622,8 +4800,8 @@ function ss_showForumEntryInIframe_Overlay(url) {
 			return false;
 		}
 	} catch(e) {
-		//Most likely permission denied. Just return and let the url be shown
-		//alert('overlay1')
+		// Most likely permission denied. Just return and let the url be shown
+		// alert('overlay1')
 		return true;
 	}
     var wObj = self.document.getElementById('ss_showentryframe')
@@ -4638,13 +4816,13 @@ function ss_showForumEntryInIframe_Overlay(url) {
 		return true;
     }
     if (wObj == null) {
-    	//The iframe does not exist, create it
+    	// The iframe does not exist, create it
         iframeObj = self.document.createElement("iframe");
         iframeObj.setAttribute("id", "ss_showentryframe");
         iframeObj.setAttribute("name", "ss_showentryframe");
         iframeObj.style.display = "block"
         iframeObj.style.position = "relative"
-        //iframeObj.style.left = "5px"
+        // iframeObj.style.left = "5px"
         iframeObj.style.width = "99%"
         iframeObj.style.height = "99%"
         iframeObj.frameBorder = "0"
@@ -4659,8 +4837,8 @@ function ss_showForumEntryInIframe_Overlay(url) {
     wObj1.style.visibility = "visible";
     
     if (ss_getUserDisplayStyle() != "newpage") {
-    	//Resize the popup down to a starting size
-    	wObj.style.height = "300px";
+    	// Resize the popup down to a starting size
+    	wObj.style.height = "301px";
     }
 
     if (wObj.src && wObj.src == url) {
@@ -4675,15 +4853,15 @@ function ss_showForumEntryInIframe_Overlay(url) {
 
 	if (self.ss_positionEntryDiv) ss_positionEntryDiv(true);
     
-	//Signal that the layout changed
+	// Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 
     return false;
 }
 
 function ss_showForumEntryInIframe_Popup(url) {
-    //ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    //ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    // ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    // ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
 
 	if (wObj == null) {
@@ -4721,7 +4899,8 @@ function ss_dummyMethodCall() {
 function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab) {
 	var binderUrl = "";
 	var entryUrl = "";
-	//Try to find the base urls from this namespace or from the parent or the opener
+	// Try to find the base urls from this namespace or from the parent or the
+	// opener
 	try {
 		eval("binderUrl = ss_baseBinderUrl" + namespace)
 		eval("entryUrl = ss_baseEntryUrl" + namespace)
@@ -4762,7 +4941,7 @@ function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab)
 
 	if (binderUrl == "" || entryUrl == "") return "";
 
-	//Build a url to go to
+	// Build a url to go to
 	var url;
 	if (entityType == 'folderEntry') {
 		url = ss_replaceSubStr(entryUrl, "ssBinderIdPlaceHolder", binderId);
@@ -4773,15 +4952,15 @@ function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab)
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
 	} else if (entityType == 'folder') {
-		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		// url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_listing');	
 	} else if (entityType == 'workspace') {
-		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		// url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');	
 	} else if (entityType == 'profiles') {
-		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		// url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
@@ -4813,7 +4992,7 @@ function ssFavorites(namespace) {
 		fObj.style.zIndex = ssMenuZ;
 		fObj.style.visibility = "visible";
 		ss_setOpacity(fObj, 100)
-		//fObj.style.display = "none";
+		// fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
 		var navbarFavDivObj = document.getElementById("ss_navbar_favorites" + namespace);
@@ -5057,7 +5236,9 @@ function ss_moveThisTableRow(objToMove, namespace, upDown) {
 }
 
 /**
- * Return the <tr> that is before the given <tr>
+ * Return the
+ * <tr> that is before the given
+ * <tr>
  */
 function ss_getPrevRow( tr )
 {
@@ -5086,7 +5267,9 @@ function ss_getPrevRow( tr )
 
 
 /**
- * Return the <tr> that is after the given <tr>
+ * Return the
+ * <tr> that is after the given
+ * <tr>
  */
 function ss_getNextRow( tr )
 {
@@ -5171,7 +5354,7 @@ function ssTeams(namespace) {
 		fObj.style.zIndex = ssMenuZ;
 		fObj.style.visibility = "visible";
 		ss_setOpacity(fObj, 100)
-		//fObj.style.display = "none";
+		// fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
 		var navbarTeamsDivObj = document.getElementById("ss_navbar_myteams" + namespace);
@@ -5215,7 +5398,7 @@ function ssTeams(namespace) {
 	}
 }
 
-//show a div as a popup - no ajax
+// show a div as a popup - no ajax
 function ss_showPopupDiv(divId) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
 	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
@@ -5227,7 +5410,7 @@ function ss_showPopupDiv(divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-//Routine to configure the columns of a folder
+// Routine to configure the columns of a folder
 function ss_createPopupDiv(obj, divId) {
 	url = obj.href
 	url = ss_replaceSubStr(url, 'ss_randomNumberPlaceholder', ss_random++)
@@ -5238,7 +5421,7 @@ function ss_createPopupDiv(obj, divId) {
 	ss_fetch_url(url, ss_callbackPopupDiv, divId);
 }
 
-// Lightbox a dialog centered.  Optionally take an id to set focus on.
+// Lightbox a dialog centered. Optionally take an id to set focus on.
 var ss_popupDivsBeingShown = new Array();
 function ss_showPopupDivCentered(divId, focusId, cancelable) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
@@ -5293,7 +5476,7 @@ function ss_setupPopupDiv(targetDiv) {
 		targetDiv.style.visibility = "visible";
 		targetDiv.focus();
 		ss_showBackgroundIFrame(targetDiv.id, "ss_background_iframe");
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
@@ -5318,14 +5501,14 @@ function ss_cancelPopupDiv(divId) {
 
 function ss_dashboardInitialization(divId) {
     return;
-	//Turn off ie's 3d table look
+	// Turn off ie's 3d table look
 	var dashboardTable = document.getElementById(divId);
 	dashboardTable.setAttribute('borderColorDark', ss_style_background_color);
 	dashboardTable.setAttribute('borderColorLight', ss_style_background_color);
 
 	var penlets = ss_getElementsByClass('ss_dashboard_component', dashboardTable, 'div')
 	for (var i = 0; i < penlets.length; i++) {
-// dojo_xxx		new dojo.dnd.ss_dashboard_source(penlets[i], "penlet");
+// dojo_xxx new dojo.dnd.ss_dashboard_source(penlets[i], "penlet");
 	}
 
 	var bodyObj = document.getElementsByTagName("body").item(0);
@@ -5335,7 +5518,7 @@ function ss_dashboardInitialization(divId) {
 		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
 		ss_dashboardClones[i].style.visibility = "hidden";
 		bodyObj.appendChild(ss_dashboardClones[i])
-// dojo_xxx		new dojo.dnd.ss_dashboard_target(ss_dashboardClones[i], ["penlet"]);
+// dojo_xxx new dojo.dnd.ss_dashboard_target(ss_dashboardClones[i], ["penlet"]);
 	}
 }
 
@@ -5350,10 +5533,11 @@ function ss_clearDashboardSlider() {
 
 function ss_enableDashboardDropTargets() {
 	return;
-	//ss_debug('enable drop targets')
+	// ss_debug('enable drop targets')
 	var dashboardTable = document.getElementById('ss_dashboardTable');
 	ss_dashboardTableBorderColor = dashboardTable.style.borderColor;
-	//ss_debug('dashboardTable.borderColor = '+dashboardTable.style.borderColor)
+	// ss_debug('dashboardTable.borderColor =
+	// '+dashboardTable.style.borderColor)
 	dashboardTable.className = "ss_dashboardTable_on";
 	var tableElements = ss_getElementsByClass('ss_dashboardTable_.*', dashboardTable, 'td')
 	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_on";
@@ -5372,14 +5556,15 @@ function ss_enableDashboardDropTargets() {
 		ss_dashboardClones[i].style.visibility = "visible";
 		ss_dashboardClones[i].style.zIndex = ssDashboardTargetZ;
 		ss_setOpacity(ss_dashboardClones[i], .5);
-		//ss_debug('  position: '+ss_dashboardClones[i].style.left+', '+ss_dashboardClones[i].style.top)
+		// ss_debug(' position: '+ss_dashboardClones[i].style.left+',
+		// '+ss_dashboardClones[i].style.top)
 		
-		//See if the drop target needs to be enlarged
+		// See if the drop target needs to be enlarged
 		var sourceNode = targets[i];
 		var children = sourceNode.parentNode.getElementsByTagName('div');
-		//ss_debug('sourceNode parent id = '+sourceNode.parentNode.id)
+		// ss_debug('sourceNode parent id = '+sourceNode.parentNode.id)
 		if (sourceNode.parentNode.id == "wide_top") {
-			//The top target gets enlarged upward
+			// The top target gets enlarged upward
 			if (children[0] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
 				var top = parseInt(dojo.coords(targets[i], true).y);
@@ -5398,7 +5583,7 @@ function ss_enableDashboardDropTargets() {
 			}
 
 		} else if (sourceNode.parentNode.id == "narrow_fixed") {
-			//See if this is the last target in this group
+			// See if this is the last target in this group
 			if (children[children.length - 1] == sourceNode && narrowFixedHeight < narrowVariableHeight) {
 				var height = parseInt(narrowVariableHeight - narrowFixedHeight);
 				if (height < parseInt(ss_dashboardDropTargetHeight)) height = parseInt(ss_dashboardDropTargetHeight);
@@ -5406,7 +5591,7 @@ function ss_enableDashboardDropTargets() {
 			}
 		
 		} else if (sourceNode.parentNode.id == "narrow_variable") {
-			//See if this is the last target in this group
+			// See if this is the last target in this group
 			if (children[children.length - 1] == sourceNode && narrowVariableHeight < narrowFixedHeight) {
 				var height = parseInt(narrowFixedHeight - narrowVariableHeight);
 				if (height < parseInt(ss_dashboardDropTargetHeight)) height = parseInt(ss_dashboardDropTargetHeight);
@@ -5417,7 +5602,7 @@ function ss_enableDashboardDropTargets() {
 }
 
 function ss_disableDashboardDropTargets() {
-	//ss_debug('disable drop targets')
+	// ss_debug('disable drop targets')
 	var dashboardTable = document.getElementById('ss_dashboardTable');
 	dashboardTable.className = "ss_dashboardTable_off";
 	var tableElements = ss_getElementsByClass('ss_dashboardTable_.*', dashboardTable, 'td')
@@ -5449,7 +5634,7 @@ function ss_savePenletLayout() {
 
 
 
-//Presence support
+// Presence support
 function ss_popupPresenceMenu(x, userId, userTitle, status, imURL, sweepTime, emailName, emailHost, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId, workspaceId) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     if (obj == null) {
@@ -5515,19 +5700,28 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, 
             }
             m += '</tr>';
         }
-        //var schedule_meeting_url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"schedule_meeting", users:userId});
+        // var schedule_meeting_url = ss_buildAdapterUrl(ss_AjaxBaseUrl,
+		// {operation:"schedule_meeting", users:userId});
         //
-        //m += '<tr>';
-        //m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgimtg'+ssNamespace+'"></td>';
-        //m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + ss_escapeSQ(screenName) + '">'+ss_ostatus_startIm+'</a></td></tr>';
-        //m += '<tr>';
-        //m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgsched'+ssNamespace+'"></td>';
-        //m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
-        //m += '<tr>';
-        //if (ssPresenceZonBridge == 'enabled') {
-        //	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgphone'+ssNamespace+'"></td>';
-        //	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_escapeSQ(schedule_meeting_url) + '\');">'+ss_ostatus_call+'</a></td></tr>';
-        //}
+        // m += '<tr>';
+        // m += '<td class="ss_bglightgray"><img border="0" alt=""
+		// id="ppgimtg'+ssNamespace+'"></td>';
+        // m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' +
+		// ss_escapeSQ(screenName) + '">'+ss_ostatus_startIm+'</a></td></tr>';
+        // m += '<tr>';
+        // m += '<td class="ss_bglightgray"><img border="0" alt=""
+		// id="ppgsched'+ssNamespace+'"></td>';
+        // m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\''
+		// + ss_escapeSQ(schedule_meeting_url) +
+		// '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
+        // m += '<tr>';
+        // if (ssPresenceZonBridge == 'enabled') {
+        // m += '<td class="ss_bglightgray"><img border="0" alt=""
+		// id="ppgphone'+ssNamespace+'"></td>';
+        // m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\''
+		// + ss_escapeSQ(schedule_meeting_url) +
+		// '\');">'+ss_ostatus_call+'</a></td></tr>';
+        // }
 	}
 	if (userId != '' && current == '') {
         if (emailName != '') {
@@ -5541,11 +5735,13 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, 
             m += '<td><a class="ss_graymenu" href="mailto:' + emailAdr + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + emailAdr + ')...</a></td></tr>';
         }
         // Bugzilla 532282:
-        //   Commented out the "Add to Your E-Mail Contacts" option
-        //   from the popup menu.
+        // Commented out the "Add to Your E-Mail Contacts" option
+        // from the popup menu.
         // m += '<tr>';
-        // m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgvcard'+ssNamespace+'"></td>';
-        // m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';	
+        // m += '<td class="ss_bglightgray"><img border="0" alt=""
+		// id="ppgvcard'+ssNamespace+'"></td>';
+        // m += '<td><a class="ss_graymenu" href="' + vcard +
+		// '">'+ss_ostatus_outlook+'</a></td></tr>';
     }
 
 	if (userId != '') {
@@ -5560,7 +5756,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, 
         m += '<td id="skypeId' + userId + '"><a class="ss_graymenu" href="skype:' + skypeId + '?call">' +ss_ostatus_skype+'</a></td></tr>';
     }
 
-    //View MiniBlog
+    // View MiniBlog
     if (workspaceId != "") {
     	m += '<tr>';
     	m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgminiblog' +ssNamespace+'"></td>';
@@ -5630,7 +5826,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, imURL, sweepTime, 
 	               ss_positionDiv(objId, mousePosX, mousePosY - divHt);
 	            }
 	        }
-	        //See if we need to make the portlet longer to hold the pop-up menu
+	        // See if we need to make the portlet longer to hold the pop-up menu
 	        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssNamespace);
 	        if (sizerObj != null) {
 	        	var menuTop = ss_getDivTop(objId);
@@ -5669,14 +5865,14 @@ function ss_getActionFromEntity(entityType) {
 	return 'view_folder_entry'
 }
 
-//FOLDER_ENTRY=1;
-//FOLDER_VIEW=5;
-//PROFILE_VIEW=6;
-//PROFILE_ENTRY_VIEW=7;
-//WORKSPACE_VIEW=8;
-//FILE_FOLDER_VIEW=9;
-//FILE_ENTRY_VIEW=10;
-//USER_WORKSPACE_VIEW=12;
+// FOLDER_ENTRY=1;
+// FOLDER_VIEW=5;
+// PROFILE_VIEW=6;
+// PROFILE_ENTRY_VIEW=7;
+// WORKSPACE_VIEW=8;
+// FILE_FOLDER_VIEW=9;
+// FILE_ENTRY_VIEW=10;
+// USER_WORKSPACE_VIEW=12;
 function ss_getActionFromDefinitionType(definitionType) {
 	ss_debug("getActionFromDefinitionType: " + definitionType + this.type_workspace)
 	if (definitionType == 'folderEntry') return 'view_folder_entry';
@@ -5691,7 +5887,7 @@ function ss_launchUrlInNewWindow(obj, fileName) {
 	var pattern = /\.([^\/\.]*)$/
 	var results = pattern.exec(fileName)
 	if (!ss_isIE && results != null) {
-		//IE doesn't work on the second attempt to open the same file.
+		// IE doesn't work on the second attempt to open the same file.
 		var docList = ss_files_that_do_not_pop_up.split(" ")
 		for (var i = 0; i < docList.length; i++) {
 			if (results[0] == docList[i] || results[0] == "."+docList[i]) {
@@ -5704,7 +5900,7 @@ function ss_launchUrlInNewWindow(obj, fileName) {
 	return false;
 }
 
-//UI support
+// UI support
 
 function ss_showSubmenu(obj) {
 	ss_debug('ss_showSubmenu')
@@ -5732,9 +5928,9 @@ function ss_hideSubmenu(obj) {
 
 
 
-//Profile functions
+// Profile functions
 function ss_showProfileImg(obj, targetImgId) {
-	//Get the url of the current image
+	// Get the url of the current image
 	var imgObjs = obj.getElementsByTagName('img');
 	if (imgObjs != null) {
 		var imgObj = imgObjs.item(0);
@@ -5749,7 +5945,7 @@ function ss_showProfileImg(obj, targetImgId) {
 }
 
 function ss_showThisImage(obj) {
-	//Get the url of the current image
+	// Get the url of the current image
 	var imgObjs = obj.getElementsByTagName('img');
 	if (imgObjs != null) {
 		var imgObj = imgObjs.item(0);
@@ -5760,7 +5956,7 @@ function ss_showThisImage(obj) {
 	}
 }
 
-//Mustering routines
+// Mustering routines
 function ss_Clipboard () {
 	var usersCheckboxes = new Array();
 	var contributorsIds = new Array();
@@ -5779,11 +5975,11 @@ function ss_Clipboard () {
 	}
 		
 	function buildDiv (musterClass) {
-		//Build the muster form
+		// Build the muster form
 		var musterDiv = document.getElementById('ss_muster_div');
 		if (musterDiv != null) musterDiv.parentNode.removeChild(musterDiv);
 		
-		//Build a new muster div
+		// Build a new muster div
 		musterDiv = document.createElement("div");
 	    musterDiv.setAttribute("id", "ss_muster_div");
 	    musterDiv.setAttribute("align", "left");
@@ -5856,7 +6052,7 @@ function ss_Clipboard () {
 		divObj.id = "ss_muster_list_container";
 		formObj.appendChild(divObj);
 		
-		//Add the buttons 		
+		// Add the buttons
 		var deleteBtnObj = document.createElement("input");
 		deleteBtnObj.style.marginRight = "15px"
 		deleteBtnObj.setAttribute("type", "button");
@@ -6006,7 +6202,7 @@ function ss_Clipboard () {
 	}
 	
 	function showDiv () {
-		//Show the muster form
+		// Show the muster form
 		ss_showPopupDivCentered('ss_muster_div');
 	}
 	
@@ -6083,8 +6279,8 @@ function ss_Clipboard () {
 var ss_muster = new ss_Clipboard();
 
 /*
- 	Launch the meeting
-*/
+ * Launch the meeting
+ */
 function ss_launchMeeting(url) {
 	var win = self.window.open(url, "_blank");
 	if (win != null && win.focus) win.focus();
@@ -6093,10 +6289,11 @@ function ss_launchMeeting(url) {
 }
 
 /*
-	Creates a new meeting and launch it now.
-	
-	ajaxLoadingIndicatorPane: add loading indicator as child of this HTML element (if exists)
-*/
+ * Creates a new meeting and launch it now.
+ * 
+ * ajaxLoadingIndicatorPane: add loading indicator as child of this HTML element
+ * (if exists)
+ */
 function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 	ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane, true);
 	
@@ -6128,13 +6325,13 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 }
 
 /*
-	Show/Hide ajax loading animated icon. The icon displays/disappears in given HTML-Element as child.
-	
-	objId: HTML element id OR HTML element
-	append: 
-		true - append loading indicator as child to objId
-		false - replace objId content with loading indicator
-*/
+ * Show/Hide ajax loading animated icon. The icon displays/disappears in given
+ * HTML-Element as child.
+ * 
+ * objId: HTML element id OR HTML element append: true - append loading
+ * indicator as child to objId false - replace objId content with loading
+ * indicator
+ */
 
 function ss_toggleAjaxLoadingIndicator(obj, append) {
 	var divObj = dojo.byId(obj);
@@ -6162,34 +6359,35 @@ function ss_toggleAjaxLoadingIndicator(obj, append) {
 	}
 }
 
-/* 
-	== document.getElementById(id) 
-*/
+/*
+ * == document.getElementById(id)
+ */
 function $(id) {
 	return document.getElementById(id);
 }
 
 /*
- 	Summary:
- 	
- 	Use this routine to create 'select all' checkbox.
- 	
- 	Description:
- 	
- 	Routine synchronize checbox 'selectAllCheckboxId' with group of checkboxes with name 'checkboxesName'. If checkbox 'selectAllCheckboxId' is
- 	checked/unchecked then all 'checkboxesName' checkboxes are checked/unchecked too.
- 	
- 	Example:
- 	 
- 	 	HTML:
- 	 		<input type="checkbox" name="team_member_ids" value="998" /> Joe Bloggs
- 	 		<input type="checkbox" name="team_member_ids" value="999" /> Bob Dao
- 	 		
- 	 		<input type="checkbox" id="team_member_all_ids" /> Select all 
- 	 		
- 	 	JavaScript:
- 			ss_synchronizeCheckboxes("team_member_all_ids", "team_member_ids");
-  
+ * Summary:
+ * 
+ * Use this routine to create 'select all' checkbox.
+ * 
+ * Description:
+ * 
+ * Routine synchronize checbox 'selectAllCheckboxId' with group of checkboxes
+ * with name 'checkboxesName'. If checkbox 'selectAllCheckboxId' is
+ * checked/unchecked then all 'checkboxesName' checkboxes are checked/unchecked
+ * too.
+ * 
+ * Example:
+ * 
+ * HTML: <input type="checkbox" name="team_member_ids" value="998" /> Joe Bloggs
+ * <input type="checkbox" name="team_member_ids" value="999" /> Bob Dao
+ * 
+ * <input type="checkbox" id="team_member_all_ids" /> Select all
+ * 
+ * JavaScript: ss_synchronizeCheckboxes("team_member_all_ids",
+ * "team_member_ids");
+ * 
  */
 function ss_synchronizeCheckboxes(selectAllCheckboxId, checkboxesName) {
     var selectAllCheckboxObj = $(selectAllCheckboxId);
@@ -6222,7 +6420,7 @@ function ss_synchronizeCheckboxes(selectAllCheckboxObj, synchronizedCheckboxesOb
 	}
 }
 
-//Routine to pop-up an edit window for editing an element
+// Routine to pop-up an edit window for editing an element
 var ss_minEditWidth = 680;
 var ss_minEditHeight = 580;
 var ss_editWidthOffset = 20;
@@ -6271,25 +6469,26 @@ function ss_submitParentForm(htmlObj) {
 
 function ss_ajaxValidate(url, obj, labelId, msgBoxId) {
 	ss_setupStatusMessageDiv();
- 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+ 	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.addKeyValue("ss_ajaxId",obj.id);
 	ajaxRequest.addKeyValue("ss_ajaxValue",obj.value);
 	ajaxRequest.addKeyValue("ss_ajaxLabelId",labelId);
 	ajaxRequest.addKeyValue("ss_ajaxMsgId",msgBoxId);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.sendRequest();  //Send the request
+	// ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.sendRequest();  // Send the request
 }
 
-//Routine to pop-up a "find user" window
+// Routine to pop-up a "find user" window
 var ss_launchFindUserWindowElement = null;
 function ss_launchFindUserWindow(elementId) {
 	ss_launchFindUserWindowElement = elementId;
 	alert('Not implemented yet. Entry user id directly into text box on the left.')
 }
 
-// Rountine submits form when ENTER pressed, 
-// Use: attache event onkeypress="return ss_submitViaEnter(event)" to form fields
+// Rountine submits form when ENTER pressed,
+// Use: attache event onkeypress="return ss_submitViaEnter(event)" to form
+// fields
 function ss_submitViaEnter(evt) {
     evt = (evt) ? evt : event;
     var target = (evt.target) ? evt.target : evt.srcElement;
@@ -6364,7 +6563,8 @@ function ss_createValidationErrorsDiv()
 		p.setAttribute("id", "ss_ved_text");
 		var i = document.createElement("input");
 		i.setAttribute("type", "button");
-		// i.setAttribute("onclick", "ss_cancelPopupDiv('ss_validation_errors_div')");
+		// i.setAttribute("onclick",
+		// "ss_cancelPopupDiv('ss_validation_errors_div')");
 		dojo.connect(i, "onclick", function(evt) {
 			ss_cancelPopupDiv('ss_validation_errors_div');
 			return false;
@@ -6384,9 +6584,9 @@ function ss_createValidationErrorsDiv()
 	}
 }
 
-//Common validator handler
-//  This function will call the desired routines at form validate time
-//  If any routine returns "false", then this routine returns false.
+// Common validator handler
+// This function will call the desired routines at form validate time
+// If any routine returns "false", then this routine returns false.
 function ss_validate(obj) {
 	var errors = new Array();
     for (var i = 0; i < ss_validatorList.length; i++) {
@@ -6406,15 +6606,15 @@ function ss_validate(obj) {
     return (errors.length == 0);
 }
 
-//Check for required fields
-//Return false if there is a field left blank (after giving a alert)
+// Check for required fields
+// Return false if there is a field left blank (after giving a alert)
 function ss_checkForRequiredFields(obj) {
 	if (typeof tinyMCE != "undefined" && tinyMCE.triggerSave) tinyMCE.triggerSave();
 	var objs = ss_getElementsByClass("ss_required", obj, "span")
 	for (var i_obj = 0; i_obj < objs.length; i_obj++) {
 		var id = objs[i_obj].id.substring(12);
 		var title = objs[i_obj].title;
-		//See if the form element is empty
+		// See if the form element is empty
 		eleObj = obj[id];
 		eleObj0 = eleObj
 		if (eleObj != null && typeof(eleObj) != 'undefined' && typeof(eleObj.length) != 'undefined') eleObj0 = eleObj[0];
@@ -6424,7 +6624,7 @@ function ss_checkForRequiredFields(obj) {
 					for (var j = 0; j < eleObj.length; j++) {
 						var radioClicked = false;
 						if (eleObj[j].checked) {
-							//alert('radio found: '+eleObj[j].value);
+							// alert('radio found: '+eleObj[j].value);
 							radioClicked = true;
 							break;
 						}
@@ -6433,7 +6633,7 @@ function ss_checkForRequiredFields(obj) {
 				} else if (typeof(eleObj.tagName) != 'undefined' && eleObj.tagName.toLowerCase() == 'select') {
 					if (typeof(eleObj.selectedIndex) != 'undefined') {
 						if (eleObj.selectedIndex >= 0) {
-							//alert('selection found: '+eleObj0.value);
+							// alert('selection found: '+eleObj0.value);
 							continue;
 						}
 					}
@@ -6441,11 +6641,11 @@ function ss_checkForRequiredFields(obj) {
 						(eleObj0.type.toLowerCase() == 'text' || eleObj0.type.toLowerCase() == 'hidden' ||
 						 eleObj0.type.toLowerCase() == 'file')) {
 					if (typeof(eleObj0.value) != 'undefined' && ss_trim(eleObj0.value) != "") {
-						//alert('text found: xxx'+eleObj0.value+'xxx');
+						// alert('text found: xxx'+eleObj0.value+'xxx');
 						continue;
 					}
 					
-					//See if this is a date field.
+					// See if this is a date field.
 					var dateId = id + "_fullDate";
 					var timeId = id + "_0_fullTime";
 					var formObj = ss_findOwningElement(eleObj0, "form");
@@ -6460,11 +6660,11 @@ function ss_checkForRequiredFields(obj) {
 					}
 					if (tObj != null && typeof(tObj) != 'undefined' && typeof(tObj.length) != 'undefined') tObj = tObj[0];
 					if ((dObj != null && dObj.value != '') || (tObj != null && tObj.value != '')) {
-						//alert('date found: '+dObj.value);
+						// alert('date found: '+dObj.value);
 						continue;
 					}
 	
-					//See if this is an event
+					// See if this is an event
 					var startId = "dp_" + id + "_";
 					var endId = "dp2_" + id + "_";
 					var sObj = obj[startId]
@@ -6472,25 +6672,26 @@ function ss_checkForRequiredFields(obj) {
 					var eObj = obj[endId]
 					if (typeof(eObj) != 'undefined' && typeof(eObj.length) != 'undefined') eObj = eObj[0];
 					if ((sObj && sObj.value != '') || (eObj && eObj.value != '')) {
-						//alert('event found: '+sObj.value);
+						// alert('event found: '+sObj.value);
 						continue;
 					}
 				} else if (eleObj0.tagName.toLowerCase() == 'textarea') {
 					if (typeof(eleObj0.value) != 'undefined') {
 						var pattern = new RegExp("[\\s]*\\S");
 						if (pattern.test(eleObj0.value) ) {
-							//alert('textarea found: //'+eleObj0.value+'//');
+							// alert('textarea found: //'+eleObj0.value+'//');
 							continue;
 						}
 					}
 				}
 
-				//No special cases, just tell the user what field has to be filled in
+				// No special cases, just tell the user what field has to be
+				// filled in
 				if (typeof ss_viewing_entry_history == "undefined") alert(title);
 				return false;
 			}
 		} catch(e) {
-			//alert('Error processing element: '+id + ', ' + e);
+			// alert('Error processing element: '+id + ', ' + e);
 		}
 	}
 	return true;
@@ -6632,7 +6833,7 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				if (fObj != null) fObj.focus();
 	            ss_setOpacity(divId,0);
 	            dojo.fadeIn({node:divId, delay:50}).play();
-				//Signal that the layout changed
+				// Signal that the layout changed
 				if (ssf_onLayoutChange) ssf_onLayoutChange();
 			} catch (e) {alert(e)}
 		},
@@ -6655,18 +6856,20 @@ function ss_placeOnScreen(divId, rel, offsetTop, offsetLeft) {
 function ss_submitFormViaAjax(formName, doneRoutine) {
 	ss_setupStatusMessageDiv()
 	var formObj = document.forms[formName];
-	var ajaxRequest = new ss_AjaxRequest(formObj.action); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(formObj.action); // Create
+															// AjaxRequest
+															// object
 	ajaxRequest.addFormElements(formName);
-	//ajaxRequest.setEchoDebugInfo();
+	// ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setData("doneRoutine", doneRoutine)
 	ajaxRequest.setPostRequest(ss_postSubmitFormViaAjax);
 	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 	return false;
 }
 
 function ss_postSubmitFormViaAjax(obj) {
-	//See if there was an error
+	// See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	} else {
@@ -6683,7 +6886,7 @@ function ss_editAppConfig() {
 	menuDIV.style.visibility = "hidden";
 	menuDIV.style.zIndex = parseInt(ssLightboxZ + 1);
 
-	// ...and run the dialog in it.	
+	// ...and run the dialog in it.
 	var editAppConfig = new ssEditAppConfig(menuDIV);
 	editAppConfig.showDialog();	
 }
@@ -6765,7 +6968,7 @@ function ssEditAppConfig(menuDIV) {
 		this.idBase += 1;
 		sID           = String(this.idBase);
 		
-		// ...and create it.		
+		// ...and create it.
 		eTR      = this.dataTABLE.insertRow(this.dataTABLE.rows.length);
 		eTR.id   = ("dataTR_" + sID);
 		eTR.n_id = sID;
@@ -6835,32 +7038,32 @@ function ssEditAppConfig(menuDIV) {
 		var	i;
 				
 
-		// Are there any overrides defined?		
+		// Are there any overrides defined?
 		if (this.hasData())
 		{
 			var	inUse;
 			var	iR;
 			
 			
-			// Yes!  Are any those being 'used in' already defined?
+			// Yes! Are any those being 'used in' already defined?
 			for (i in useWhat) {
 				if ((-1) != this.findRowByExtension(i)) {
-					// Yes!  Does the user want to overwite them?
+					// Yes! Does the user want to overwite them?
 					if (!(confirm(this.strings['sidebar.appConfig.Confirm.Overwrite']))) {
-						// No!  Bail.
+						// No! Bail.
 						return;
 					}
 					
 					
-					// Yes!  Break out of the scan loop since once the
+					// Yes! Break out of the scan loop since once the
 					// user says ok, we don't want to ask again.
 					break;
 				}
 			}
 
 
-			// Yes, the user wants to overwrite them.  Delete the
-			// existing rows.			
+			// Yes, the user wants to overwrite them. Delete the
+			// existing rows.
 			for (i in useWhat) {
 				iR = this.findRowByExtension(i);
 				while ((-1) != iR) {
@@ -6891,7 +7094,7 @@ function ssEditAppConfig(menuDIV) {
 		var	dataS;
 		
 
-		// Allocate an Array to hold the bundled data.		
+		// Allocate an Array to hold the bundled data.
 		dataA = new Array();
 		
 		
@@ -6913,7 +7116,7 @@ function ssEditAppConfig(menuDIV) {
 	}	
 	
 	
-	// Called to close the Edit Application Configuration dialog.	
+	// Called to close the Edit Application Configuration dialog.
 	this.closeDialog = function() {
 		this.hidePopups();
 		
@@ -6936,7 +7139,7 @@ function ssEditAppConfig(menuDIV) {
 		var	eTR;
 		
 
-		// Define the data table's header.		
+		// Define the data table's header.
 		eDIV    = document.createElement("div");
 		eDIV.id = "tableHeaderDIV";
 		this.menuDIV.appendChild(eDIV);
@@ -7130,7 +7333,7 @@ function ssEditAppConfig(menuDIV) {
 		var	eUseMenu_SPAN;
 		
 
-		// Create a <SPAN><DIV> to contain the entire Use menu...		
+		// Create a <SPAN><DIV> to contain the entire Use menu...
 		eUseMenu_SPAN                = document.createElement("span");
 		eUseMenu_SPAN.id             = "usePopupMenuSPAN";
 		eUseMenu_SPAN.style.position = "relative";
@@ -7139,7 +7342,7 @@ function ssEditAppConfig(menuDIV) {
 		eUseMenu_DIV.className       = "ss_objlist_menu_popupDIV";
 		eUseMenu_SPAN.appendChild(eUseMenu_DIV);
 
-		// ...create the popup menu's title bar...		
+		// ...create the popup menu's title bar...
 		eDIV = document.createElement("div");
 		eDIV.className = "ss_objlist_menu_titleDIV";
 		eA = document.createElement("a");
@@ -7159,7 +7362,7 @@ function ssEditAppConfig(menuDIV) {
 		eDIV.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Menu.Use']));
 		eUseMenu_DIV.appendChild(eDIV);
 
-		// ...create the Open Office menu item...		
+		// ...create the Open Office menu item...
 		eDIV           = document.createElement("div");
 		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
@@ -7193,7 +7396,7 @@ function ssEditAppConfig(menuDIV) {
 		eDIV.appendChild(eIMG);
 		eUseMenu_DIV.appendChild(eDIV);
 		
-		// ...create the Star Office menu item...		
+		// ...create the Star Office menu item...
 		eDIV           = document.createElement("div");
 		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
@@ -7227,7 +7430,7 @@ function ssEditAppConfig(menuDIV) {
 		eDIV.appendChild(eIMG);
 		eUseMenu_DIV.appendChild(eDIV);
 
-		// ...create the Microsoft Office menu item...		
+		// ...create the Microsoft Office menu item...
 		eDIV           = document.createElement("div");
 		eDIV.className = "ss_objlist_menu_itemDIV";
 		eIMG           = document.createElement("img");
@@ -7261,7 +7464,7 @@ function ssEditAppConfig(menuDIV) {
 		eDIV.appendChild(eIMG);
 		eUseMenu_DIV.appendChild(eDIV);
 
-		// ...create the popup menu's footer...		
+		// ...create the popup menu's footer...
 		eDIV = document.createElement("div");
 		eDIV.className = "ss_objlist_menu_bottomDIV";
 		eIMG        = document.createElement("img");
@@ -7284,12 +7487,12 @@ function ssEditAppConfig(menuDIV) {
 		var	eDIV;
 		
 		
-		// Create a footer div to contain the push buttons... 
+		// Create a footer div to contain the push buttons...
 		eDIV = document.createElement("div");
 		eDIV.className = "ss_objlist_table_footer";
 		this.menuDIV.appendChild(eDIV);
 
-		// ...create the OK push button...		
+		// ...create the OK push button...
 		eBUTTON = document.createElement("input");
 		eBUTTON.className = "ss_submit";
 		eBUTTON.type = "button";
@@ -7303,7 +7506,7 @@ function ssEditAppConfig(menuDIV) {
 		eBUTTON.n_editAppConfig = this;
 		eDIV.appendChild(eBUTTON);
 
-		// ...and create the Cancel push button.		
+		// ...and create the Cancel push button.
 		eDIV.appendChild(document.createTextNode(this.NBSP2));		
 		eBUTTON = document.createElement("input");
 		eBUTTON.className = "ss_submit";
@@ -7320,9 +7523,9 @@ function ssEditAppConfig(menuDIV) {
 		// Is other than the first item selected?
 		var	iSEL = eSEL.selectedIndex;
 		if (0 < iSEL) {
-			// Yes!  Is the first item the Select an Extension string?
+			// Yes! Is the first item the Select an Extension string?
 			if (eSEL.options[0].text == this.strings['sidebar.appConfig.SelectAnExtension']) {
-				// Yes!  Remove it.
+				// Yes! Remove it.
 				iSEL              -= 1;
 				eSEL.options[0]    = null;
 				eSEL.selectedIndex = (-1);
@@ -7334,7 +7537,7 @@ function ssEditAppConfig(menuDIV) {
 		// Is there a row besides this one that's already using this
 		// extension?
 		if ((-1) != this.findRowByExtension(eSEL.options[iSEL].text, eSEL.id)) {
-			// Yes!  Warn the user.
+			// Yes! Warn the user.
 			alert(this.strings['sidebar.appConfig.Warning.DuplicateExtension']);
 		}
 	}
@@ -7357,8 +7560,8 @@ function ssEditAppConfig(menuDIV) {
 	}
 	
 	
-	// Returns the index of a row using ext as its extension.  Returns
-	// -1 if such a row is not found.  Any row whose extension SELECT
+	// Returns the index of a row using ext as its extension. Returns
+	// -1 if such a row is not found. Any row whose extension SELECT
 	// widget's ID is sSkipSELID is skipped.
 	this.findRowByExtension = function(ext, sSkipSELID) {
 		var	reply = (-1);
@@ -7372,9 +7575,9 @@ function ssEditAppConfig(menuDIV) {
 			var	sSELID;
 		
 
-			// Yes!  If we're not skipping any of them...		
+			// Yes! If we're not skipping any of them...
 			if (!sSkipSELID) {
-				// ...make sure we have a defined string for the skip 
+				// ...make sure we have a defined string for the skip
 				// ...ID compare.
 				sSkipSELID = "";
 			}
@@ -7386,12 +7589,12 @@ function ssEditAppConfig(menuDIV) {
 				eTR    = this.dataTABLE.rows[i];
 				sSELID = ("extensionSELECT_" + String(eTR.n_id));
 				if (sSkipSELID != sSELID) {
-					// No!  Does it correspond to the extension in
+					// No! Does it correspond to the extension in
 					// question?
 					eSEL = document.getElementById(sSELID);
 					sSEL = eSEL.options[eSEL.selectedIndex].text;
 					if (this.extensionsEqual(ext, sSEL)) {
-						// Yes!  Return its index.
+						// Yes! Return its index.
 						reply = i;
 						break;
 					}
@@ -7401,7 +7604,7 @@ function ssEditAppConfig(menuDIV) {
 		
 		
 		// If we get here, reply contains the index of the row
-		// containing ext of -1.  Return it.
+		// containing ext of -1. Return it.
 		return reply;	
 	}
 		
@@ -7411,7 +7614,7 @@ function ssEditAppConfig(menuDIV) {
 		this.hidePopups();
 		this.addRow('', '');
 
-		// ...and put the input focus in its extension SELECT widget.		
+		// ...and put the input focus in its extension SELECT widget.
 		var	eTR = this.dataTABLE.rows[this.dataTABLE.rows.length - 1];
 		try {document.getElementById("extensionSELECT_" + String(eTR.n_id)).focus();} catch(e){}
 	}	
@@ -7422,7 +7625,7 @@ function ssEditAppConfig(menuDIV) {
 		var	count;
 		
 		
-		// Scan the rows in the data table...  (Note that the row at
+		// Scan the rows in the data table... (Note that the row at
 		// index 0 is for the column headers and the row at index 1 is
 		// for spacing above the data and we skip those.)
 		this.hidePopups();
@@ -7439,14 +7642,14 @@ function ssEditAppConfig(menuDIV) {
 		
 		// Did we delete anything?
 		if (0 == count) {
-			// No!  Tell the user.
+			// No! Tell the user.
 			alert(this.strings['sidebar.appConfig.Error.NoDelete']);
 		}
 
 		
-		// Yes, we deleted something!  Are there any data rows left?
+		// Yes, we deleted something! Are there any data rows left?
 		else if (!(this.hasData())) {
-			// No!  Put the No Data string back.
+			// No! Put the No Data string back.
 			this.updateEmptyMessage();
 		}
 	}	
@@ -7485,24 +7688,24 @@ function ssEditAppConfig(menuDIV) {
 		var	eINPUT;
 		
 
-		// Is the information in the data table valid? 		
+		// Is the information in the data table valid?
 		this.hidePopups();
 		eINPUT = this.isDataValid();
 		if (null != eINPUT) {
-			// No!  isDataValid() will have told the user about the
-			// problem.  Set the focus into the widget in error and
+			// No! isDataValid() will have told the user about the
+			// problem. Set the focus into the widget in error and
 			// bail.
 			window.setTimeout(function(){eINPUT.focus();}, 100);
 			return false;
 		}
 		
 		
-		// The data is valid.  Issue an AJAX request to save it...
+		// The data is valid. Issue an AJAX request to save it...
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_appconfig", appConfigs:this.bundleData()});
 		ss_get_url(url, ss_createDelegate(this, this.saveResults));
 
-		// ...and return false.  saveResults() will close the dialog
-		// ...AFTER a successful save.		
+		// ...and return false. saveResults() will close the dialog
+		// ...AFTER a successful save.
 		return false;
 	}	
 	
@@ -7514,12 +7717,12 @@ function ssEditAppConfig(menuDIV) {
 		var	eTR;
 		
 
-		// Is the select all checkbox checked or unchecked?		
+		// Is the select all checkbox checked or unchecked?
 		this.hidePopups();
 		check = eCBOX.checked;
 		
 		
-		// Scan the rows in the data table...  (Note that the row at
+		// Scan the rows in the data table... (Note that the row at
 		// index 0 is for the column headers and the row at index 1 is
 		// for spacing above the data and we skip those.)
 		for (var i = this.NON_DATA_ROWS; i < this.dataTABLE.rows.length; i += 1) {
@@ -7530,7 +7733,7 @@ function ssEditAppConfig(menuDIV) {
 	}
 	
 	
-	// Returns true if  there are any rows defined in the data table
+	// Returns true if there are any rows defined in the data table
 	// and false otherwise.
 	this.hasData = function() {
 		return (this.dataTABLE && (this.NON_DATA_ROWS < this.dataTABLE.rows.length));
@@ -7564,7 +7767,7 @@ function ssEditAppConfig(menuDIV) {
 		var	sEXT2;
 		
 
-		// Scan rows containing data in the data table.		
+		// Scan rows containing data in the data table.
 		for (var i = this.NON_DATA_ROWS; i < this.dataTABLE.rows.length; i += 1) {
 			// Does this row contain an extension selection?
 			eTR1     = this.dataTABLE.rows[i];
@@ -7572,13 +7775,13 @@ function ssEditAppConfig(menuDIV) {
 			eSELECT1 = document.getElementById("extensionSELECT_" + sID1);
 			sEXT1    = eSELECT1.options[eSELECT1.selectedIndex].text;
 			if (sEXT1 == this.strings['sidebar.appConfig.SelectAnExtension']) {
-				// No!  Tell the user about the problem and bail.
+				// No! Tell the user about the problem and bail.
 				alert(this.strings['sidebar.appConfig.Error.SelectAnExtension']);
 				return eSELECT1;
 			}
 
 
-			// Scan the rows below the one that we're looking at.			
+			// Scan the rows below the one that we're looking at.
 			for (var j = (i + 1); j < this.dataTABLE.rows.length; j += 1) {
 				// Does this row contain the same extension as the row
 				// that we're looking at above?
@@ -7587,25 +7790,25 @@ function ssEditAppConfig(menuDIV) {
 				eSELECT2 = document.getElementById("extensionSELECT_" + sID2);
 				sEXT2    = eSELECT2.options[eSELECT2.selectedIndex].text;
 				if (this.extensionsEqual(sEXT1, sEXT2)) {
-					// Yes!  Tell the user about the problem and bail.
+					// Yes! Tell the user about the problem and bail.
 					alert(this.strings['sidebar.appConfig.Error.DuplicateExtension']);
 					return eSELECT2;
 				}
 			}
 
 
-			// Does this row contain an application?			
+			// Does this row contain an application?
 			eINPUT1 = document.getElementById("applicationINPUT_" + sID1);
 			sAPP1   = ss_trim(eINPUT1.value);
 			if ((null == sAPP1) || (0 == sAPP1.length)) {
-				// No!  Tell the user about the problem and bail.
+				// No! Tell the user about the problem and bail.
 				alert(this.strings['sidebar.appConfig.Error.ApplicationMissing']);
 				return eINPUT1;
 			}
 		}
 		
 
-		// If we get here, the data in data table is valid.  Return it.		
+		// If we get here, the data in data table is valid. Return it.
 		return null;		
 	}	
 	
@@ -7624,7 +7827,7 @@ function ssEditAppConfig(menuDIV) {
 	}
 	
 		
-	// Called to release the resources held by this object.	
+	// Called to release the resources held by this object.
 	this.release = function() {
 		// Forget the links back to this object...
 		this.lightBox.n_editAppConfig =
@@ -7641,7 +7844,7 @@ function ssEditAppConfig(menuDIV) {
 		this.ooMap =
 		this.soMap = null;
 		
-		// ...the object's data members...		
+		// ...the object's data members...
 		this.dataTABLE =	
 		this.dlgDIV =
 		this.idBase =	
@@ -7696,7 +7899,7 @@ function ssEditAppConfig(menuDIV) {
 	    this.dlgDIV.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Caption']));
 	    
 
-		// Create some instructions at the top of the dialog...	    
+		// Create some instructions at the top of the dialog...
 	    eDIV = document.createElement("div");
 	    eDIV.style.width = "400px";
 	    eDIV.style.padding = "10px";
@@ -7716,7 +7919,7 @@ function ssEditAppConfig(menuDIV) {
 		// ...create a footer containing the dialog's push buttons...
 		this.createFooter();
 
-		// ...and show the dialog.			
+		// ...and show the dialog.
 		var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
 		lightBox.n_editAppConfig = this;
 		this.lightBox = lightBox;
@@ -7737,7 +7940,7 @@ function ssEditAppConfig(menuDIV) {
 	
 	
 	// Starts the processing to run the Edit Application Configuration
-	// dialog.  Simply submits an AJAX request for the data.
+	// dialog. Simply submits an AJAX request for the data.
 	this.showDialog = function() {
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_user_appconfig"});
 		ss_get_url(url, ss_createDelegate(this, this.runDialog));
@@ -7831,8 +8034,8 @@ function ss_cancelAbout(divId) {
 
 
 
-//Hemanth: This method will be called by the links that get created in tiny MCE
-//Refer to link.js insertLink() method.
+// Hemanth: This method will be called by the links that get created in tiny MCE
+// Refer to link.js insertLink() method.
 function ss_checkTypeOfLink(linkObj) {
 	var targetValue = linkObj.target;
 	var url = linkObj.href;
@@ -7875,7 +8078,7 @@ function ss_scrollOuter() {
 
 /* TREE WIDGET */
 
-//Routines to display an expandable/contractable tree
+// Routines to display an expandable/contractable tree
 //
 var ss_treeIds;
 if (ss_treeIds == null) ss_treeIds = new Array();
@@ -7892,13 +8095,13 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
     var iObj = self.document.getElementById(treeName + "icon" + id);
     var showTreeIdRoutine = window["ss_treeShowIdRoutine_"+treeName];
     if (tObj == null) {
-        //See if the tree is in the process of being loaded
+        // See if the tree is in the process of being loaded
         if (ss_treeIds[treeName + "div" + id] != null) return;
         ss_treeIds[treeName + "div" + id] = "1";
-        //The div hasn't been loaded yet. Go get the div via ajax
+        // The div hasn't been loaded yet. Go get the div via ajax
 		var url = window["ss_treeAjaxUrl_" + treeName];
 		url = ss_replaceSubStrAll(url, "&amp;", "&");
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
 		ajaxRequest.addKeyValue("page", page)
@@ -7909,7 +8112,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
 		if (treeKey != null)
 			ajaxRequest.addKeyValue("treeKey", treeKey);
 	    var seObj = window["ss_treeSelected_"+treeName];
-	    //add single select id
+	    // add single select id
 	    if (seObj != null) {
 	    	ajaxRequest.addKeyValue("select", seObj);
 	    }
@@ -7920,11 +8123,11 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
 		ajaxRequest.setData("parentId", parentId)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
-		//ajaxRequest.setEchoDebugInfo();
-		//ajaxRequest.setPreRequest(ss_preRequest);
+		// ajaxRequest.setEchoDebugInfo();
+		// ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
 		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
+		ajaxRequest.sendRequest();  // Send the request
     } else {
 	    if (tObj.style.display == "none" || tObj.style.visibility == 'hidden') {
 	        tObj.style.display = "block";
@@ -7944,9 +8147,11 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
 				}
 			} else {
 				if (parentId == "") {
-					jObj.className = "ss_minusTop";        // minus_top.gif (no join lines)
+					jObj.className = "ss_minusTop";        // minus_top.gif (no
+															// join lines)
 				} else {
-					jObj.className = "ss_minus";           // minus.gif (no join lines)
+					jObj.className = "ss_minus";           // minus.gif (no
+															// join lines)
 				}
 			}
 			if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
@@ -7967,14 +8172,16 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, sh
 				}
 			} else {
 				if (parentId == "") {
-					jObj.className = "ss_plusTop";        // plus_top.gif (no join lines)
+					jObj.className = "ss_plusTop";        // plus_top.gif (no
+															// join lines)
 				} else {
-					jObj.className = "ss_plus";           // plus.gif (no join lines)
+					jObj.className = "ss_plus";           // plus.gif (no join
+															// lines)
 				}
 			}
 			if (iObj != null && ss_treeIconsClosed[type]) iObj.src = ss_treeIconsClosed[type];
 	    }
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 		
 		self.focus();
@@ -8019,9 +8226,10 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 		dojo.connect(iframeObj, "onload", function(evt) {
 			var iframeDiv = document.getElementById('ss_treeIframe');
 			if (window.frames['ss_treeIframe'] != null) {
+				//var iframeHeight = parseInt(ss_getBodyHeightWidth(window.frames['ss_treeIframe'])[1]);
 				eval("var iframeHeight = parseInt(window.ss_treeIframe" + ".document.body.scrollHeight);");
 				if (iframeHeight > 0) {
-					iframeDiv.style.height = iframeHeight + 50 + "px";
+					iframeDiv.style.height = iframeHeight + 51 + "px";
 				}
 			}
 			return false;
@@ -8048,7 +8256,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	if (parent) {
 		var selectedIds = parent.window["ss_treeCurrentChoosen_" + treeName];
 	}
-	//add single select id
+	// add single select id
 	if (seObj != null && !selectedIds) {
 	   	url += "&select=" + seObj;
 	}
@@ -8076,9 +8284,9 @@ function ss_createTreeCheckbox(treeName, prefix, id) {
 	var divObj = document.getElementById("ss_hiddenTreeDiv"+treeName);
 	var cbObj = document.getElementById("ss_tree_checkbox" + treeName + prefix + id)
 	if (cbObj == null) {
-		//alert("null: ss_tree_checkbox" + treeName + prefix + id)
+		// alert("null: ss_tree_checkbox" + treeName + prefix + id)
 	} else {
-		//alert("Not null: ss_tree_checkbox" + treeName + prefix + id)
+		// alert("Not null: ss_tree_checkbox" + treeName + prefix + id)
 	}
 }
 
@@ -8092,7 +8300,7 @@ function ss_positionAccessibleIframe(treeName, id) {
 
 function ss_postTreeDivRequest(obj) {
 	ss_hideBucketText()
-	//See if there was an error
+	// See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_treeNotLoggedInMsg); 
 	} else {
@@ -8107,13 +8315,14 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
     if (tObj == null) {
-    	//alert("ss_treeOpen div obj = null: " + treeName + "div" + id)
+    	// alert("ss_treeOpen div obj = null: " + treeName + "div" + id)
     } else {
-    	//alert("ss_treeOpen id: " + tObj.id)
+    	// alert("ss_treeOpen id: " + tObj.id)
     }
     if (tObj == null) {
-		//nothing came back treat as empty
-		//this happens when don't have access or binder type when go to get data
+		// nothing came back treat as empty
+		// this happens when don't have access or binder type when go to get
+		// data
 		if (jObj != null) {
 			if (bottom == '0') {
 				jObj.className = "ss_twJoin";
@@ -8140,15 +8349,18 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 				}
 			} else {
 				if (parentId == "") {
-					jObj.className = "ss_minus_top";         // minus_top.gif (no join lines)
+					jObj.className = "ss_minus_top";         // minus_top.gif
+																// (no join
+																// lines)
 				} else {
-					jObj.className = "ss_minus";             // minus.gif (no join lines)
+					jObj.className = "ss_minus";             // minus.gif (no
+																// join lines)
 				}
 			}
 		}
 		if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 
-		//Signal that the layout changed
+		// Signal that the layout changed
 		if (ssf_onLayoutChange) setTimeout('ssf_onLayoutChange();', 100);
 		
 		self.focus();
@@ -8161,7 +8373,7 @@ function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey,
 	if (showFullLineOnHover == null) showFullLineOnHover = "false";
     var tObj = self.document.getElementById(treeName + "div" + id);
     if (tObj == null) {
-    	//The div hasn't been loaded yet. Only load one div at a time
+    	// The div hasn't been loaded yet. Only load one div at a time
     	ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey, showFullLineOnHover)
     	return
     }
@@ -8220,12 +8432,12 @@ function ssTree_defineBasicIcons(imageBase) {
 	ss_treeIconsClosed['xls'] = imageBase + "/trees/file_types/xls.gif";
 }
 
-//Routines to show and hide a tool tip at an object
+// Routines to show and hide a tool tip at an object
 function ss_showBucketText(obj, text) {
-	//ss_debug('ss_showTip: '+text)
+	// ss_debug('ss_showTip: '+text)
 	var tipObj = document.getElementById('ss_treeBucketTextDiv')
 	if (tipObj == null) {
-		//Build a new tip div
+		// Build a new tip div
 		tipObj = document.createElement("div");
 	    tipObj.setAttribute("id", "ss_treeBucketTextDiv");
 	    tipObj.style.visibility = "hidden";
@@ -8303,7 +8515,7 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 			idChoices.value = obj.name + "_" + obj.value;
 			if (treeName) {
 
-				// accessible mode only - unselect last choice if visible 
+				// accessible mode only - unselect last choice if visible
 				var treeIframe = document.getElementById("ss_treeIframe");
 				if (treeIframe && window["ss_treeCurrentChoosen_" + treeName] && 
 					window["ss_treeCurrentChoosen_" + treeName] != placeId &&
@@ -8360,7 +8572,7 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 				
 				var idsList = parent.window["ss_treeCurrentChoosen_" + treeName];
 				if (obj.checked) {
-						// add new id to list							
+						// add new id to list
 					idsList.push(placeId);
 				} else {
 						// remove id from list
@@ -8375,7 +8587,8 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 	}
 }
 
-//checkboxes on designer forms need to be present even if they are unchecked.  Use hidden field. 
+// checkboxes on designer forms need to be present even if they are unchecked.
+// Use hidden field.
 function ss_saveCheckBoxValue(box, hiddenFieldId) {
 	var hiddenField = document.getElementById(hiddenFieldId);
 	var cbChecked = box.checked;
@@ -8385,17 +8598,18 @@ function ss_saveCheckBoxValue(box, hiddenFieldId) {
 	// Did the user just check the notify assignee/attendee checkbox on
 	// a task/calendar entry?
 	if (cbChecked &&
-			((hiddenFieldId == "hidden_attendee_notify") ||		// Calendar entry.
+			((hiddenFieldId == "hidden_attendee_notify") ||		// Calendar
+																// entry.
 			 (hiddenFieldId == "hidden_assignment_notify"))) {	// Task entry.
-		// Yes!  Can we access the subject, its default and the title?
+		// Yes! Can we access the subject, its default and the title?
 		var eSubject        = document.getElementById("_sendMail_subject");
 		var eSubjectDefault = document.getElementById("_sendMail_subject_default");
 		var eTitle          = document.getElementById("title");
 		var sTitle          = ((null == eTitle) ? "" : eTitle.value);
 		if (eSubject && eSubjectDefault && eTitle && sTitle.length) {
-			// Yes!  Does the subject still contain the default?
+			// Yes! Does the subject still contain the default?
 			if (eSubject.value == eSubjectDefault.value) {
-				// Yes!  Default the email subject to the title.
+				// Yes! Default the email subject to the title.
 				eSubject.value = sTitle;
 			}
 		}
@@ -8415,7 +8629,7 @@ function ss_showAttachmentVersions(prefix, start, end) {
 	while (more) {
 		var rowObj = document.getElementById(prefix + count);
 		if (!rowObj) {
-			//Call the routines that want to be called on layout changes
+			// Call the routines that want to be called on layout changes
 		    ssf_onLayoutChange();
 			return;
 		}
@@ -8429,13 +8643,13 @@ function ss_showAttachmentVersions(prefix, start, end) {
 		rowObj.style.display = 'block';
 		rowObj.style.visibility = 'visible';
 	}	
-	//Call the routines that want to be called on layout changes
+	// Call the routines that want to be called on layout changes
     ssf_onLayoutChange();
 }
 
 
 
-//Routine to show or hide the sidebar
+// Routine to show or hide the sidebar
 function ss_showHideSidebar(namespace) {
 	var divObj = self.document.getElementById('ss_sidebarDiv'+namespace);
 	if (divObj == null) return;
@@ -8444,7 +8658,7 @@ function ss_showHideSidebar(namespace) {
 	var sidebarShow = self.document.getElementById('ss_sidebarShow'+namespace);
 	var sidebarVisibility = "";
 	if (divObj.style.display == 'block') {
-		//Hide it
+		// Hide it
    		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 		    	divObj.style.visibility = "hidden";
 		    	divObj.style.display = "none";
@@ -8455,7 +8669,7 @@ function ss_showHideSidebar(namespace) {
    		}}).play();
    		sidebarVisibility = "none";
 	} else {
-		//Show it
+		// Show it
 		tdObj.className = 'ss_view_sidebar';
     	ss_setOpacity(divObj, 0);
 		divObj.style.display = 'block';
@@ -8469,12 +8683,12 @@ function ss_showHideSidebar(namespace) {
 	ssf_onLayoutChange()
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_sidebar_visibility", visibility:sidebarVisibility}, "");
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 }
 
-//Routine to hide the sunburst
+// Routine to hide the sunburst
 function ss_hideSunburst(s_id, s_binderId) {
 	var divObj = self.document.getElementById('ss_sunburstDiv'+s_binderId+'_'+s_id);
 	var titleObj = self.document.getElementById('folderLineSeen_' + s_id);
@@ -8483,7 +8697,7 @@ function ss_hideSunburst(s_id, s_binderId) {
 		titleObj.className = ss_replaceSubStrAll(cn, "ss_unseen", "")
 	}
 
-	//Hide it
+	// Hide it
 	if (divObj != null) {
 		dojo.fadeOut({node: divObj, end: 0, delay: 400, onEnd: function() {
 			    	divObj.style.visibility = "hidden";
@@ -8497,14 +8711,16 @@ function ss_hideSunburst(s_id, s_binderId) {
 		{operation:"set_sunburst_visibility", 
 		entryId:s_id,
 		binderId:s_binderId}, "");
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
+	ajaxRequest.sendRequest();  // Send the request
 }
 
-//Routine to get the current url and post it to the login controller so we can return here after logging in
+// Routine to get the current url and post it to the login controller so we can
+// return here after logging in
 function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
-	//If we are looking at the guest user workspace, don't return here. Go to the new user's workspace
+	// If we are looking at the guest user workspace, don't return here. Go to
+	// the new user's workspace
 	if (userName == "guest" && binderId == userWorkspaceId) return true;
 	var formObj = ss_findOwningElement(obj, "form");
 	if (formObj == null) return true;
@@ -8553,7 +8769,8 @@ function ss_printSchedulerTime(hoursObjId, minutesObjId, paneObjId, timeZoneOffs
 	var minutes = minutesObj.options[minutesObj.selectedIndex].value;
 	
 	var date = new Date();
-	// It is assumed that the hours and minutes obtained from the select controls are in GMT.
+	// It is assumed that the hours and minutes obtained from the select
+	// controls are in GMT.
 	// That is why we call date.setUTCxxx()
 	date.setUTCHours(hours);
 	date.setUTCMinutes(minutes);
@@ -8583,16 +8800,13 @@ function ss_FileUploadProgressBar(container) {
 	var _progress = false;
 	
 	/* Returns true if needs more updates or false otherwise. */
-	/* Parameters:
-			progress - how many % done
-			mbytes_read - bytes already read (in MB)
-			content_length - bytes total to transfer (in MB)
-			speed - upload speed (in kB/sec)
-			left_time - approximated left time (in sec)
-			running_time  - time already gone (in sec)
-			legendProgress - example: "0:01 (at 120kB/sec)"
-			legendTimeAndSpeed - example: "100 MB / 1000 MB ( 10% )"
-	*/
+	/*
+	 * Parameters: progress - how many % done mbytes_read - bytes already read
+	 * (in MB) content_length - bytes total to transfer (in MB) speed - upload
+	 * speed (in kB/sec) left_time - approximated left time (in sec)
+	 * running_time - time already gone (in sec) legendProgress - example: "0:01
+	 * (at 120kB/sec)" legendTimeAndSpeed - example: "100 MB / 1000 MB ( 10% )"
+	 */
 	this.update = function(data) {
 		if (!_initialized && data && data.progress > _MAX_PROGRESS_TO_SHOW_BAR) {
 			// it's fast upload, don't show progress bar at all
@@ -8685,7 +8899,12 @@ ss_FileUploadProgressBar.reloadProgressStatus = function(progressBar, url) {
 		load: function(data) {
 					if (progressBar.update(data)) {
 			  		  	setTimeout(function() {
-			  		  		if (window.ss_FileUploadProgressBar.reloadProgressStatus) {// prevent error if window already unloaded
+			  		  		if (window.ss_FileUploadProgressBar.reloadProgressStatus) {// prevent
+																						// error
+																						// if
+																						// window
+																						// already
+																						// unloaded
 				  		  		ss_FileUploadProgressBar.reloadProgressStatus(progressBar, url);
 				  		  	}
 			  		  	}, 1200);
@@ -8706,17 +8925,17 @@ function ss_saveWindowHeightInServer(height, communicationIframeName) {
 			alert(ss_not_logged_in);
 		},
 		load: function(data) {
-			//Signal that the iframe height in the portlet needs to be changed
+			// Signal that the iframe height in the portlet needs to be changed
 			parent.frames[communicationIframeName].location.href = ss_rootPath + 'js/forum/null.html?'+ ss_random++;
 		},
 		preventCache: true
 	});
 }
 
-//Attributes support
+// Attributes support
 function ss_deleteAttributeSet(obj, id) {
 	if (obj.tagName != 'input') return false;
-	//Find the form then specify the set to be deleted
+	// Find the form then specify the set to be deleted
 	var formObj = ss_findOwningElement(obj, "form");
 	if (formObj != null) {
 		formObj[id].value = 'on';
@@ -8724,7 +8943,7 @@ function ss_deleteAttributeSet(obj, id) {
 	return true;
 }
 function ss_deleteAttribute(obj, id) {
-	//Find the row and delete it from the table
+	// Find the row and delete it from the table
 	var rowObj = document.getElementById("row_"+id);
 	if (rowObj != null) rowObj.parentNode.removeChild(rowObj);
 	return true;
@@ -8756,7 +8975,7 @@ function updateElementsTextNode(
 		// Is this child a text node?
 		if (3 == kids[i].nodeType)
 		{
-			// Yes!  Replace its text with the new text.
+			// Yes! Replace its text with the new text.
 			kids[i].data = newText;
 			found        = true;
 		}
@@ -8767,7 +8986,7 @@ function updateElementsTextNode(
 	{
 		var	textNode;
 
-		// No!  Create one and add it to the element.
+		// No! Create one and add it to the element.
 		textNode = element.ownerDocument.createTextNode( newText );
 		element.appendChild( textNode );
 	}
@@ -8797,7 +9016,7 @@ function input_setCaretToPos(input, pos) {
   input_setSelectionRange(input, pos, pos);
 }
 
-//Mailto: replacement routines
+// Mailto: replacement routines
 function ss_showEmailLinks() {
 	var mailtoElements = document.getElementsByTagName('ssmailto')
 	while (mailtoElements != null && mailtoElements.length > 0) {
@@ -8822,7 +9041,7 @@ function ss_showEmailLinks() {
 	}
 }
 
-//Session timeout
+// Session timeout
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
 	if (typeof maxInactiveInterval == 'undefined' || maxInactiveInterval == '') return;
 	var maxInt = parseInt(maxInactiveInterval);
@@ -8837,7 +9056,7 @@ function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
 		ss_setupStatusMessageDiv();
 		ss_random++;
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"check_if_logged_in", rn:ss_random});
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
 		ajaxRequest.setData("maxInactiveInterval", maxInactiveInterval);
 		ajaxRequest.setPostRequest(ss_resetSessionTimeoutTimer2);	
 		ajaxRequest.sendRequest();
@@ -8845,7 +9064,7 @@ function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
 }
 function ss_resetSessionTimeoutTimer2(obj) {
 	var maxInactiveInterval = obj.getData("maxInactiveInterval");
-	//See if there was an error
+	// See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	} else {
@@ -8853,8 +9072,8 @@ function ss_resetSessionTimeoutTimer2(obj) {
 	}
 }
 function ss_trim(str) {
-    //skip leading and trailing whitespace
-    //and return everything in between
+    // skip leading and trailing whitespace
+    // and return everything in between
     var x=str;
     x=x.replace(/^\s*(.*)/, "$1");
     x=x.replace(/(.*?)\s*$/, "$1");
@@ -8964,7 +9183,7 @@ function ss_escapeSQ(s) {
 	return ss_replaceSubStrAll(s, "'", "\\'");
 }
 function ss_checkIfVisible(obj) {
-	//Make sure this element is visible
+	// Make sure this element is visible
 	var loopCounter = 0;
 	while (obj != null) {
 		if (obj.style && obj.style.display && obj.style.display == 'none' || 
@@ -8980,8 +9199,8 @@ function ss_toggleGwtUI(goToUserWorkspace) {
 }
 
 /*
- * Called to handle the response from an AJAX operation to
- * toggle the GWT UI mode.
+ * Called to handle the response from an AJAX operation to toggle the GWT UI
+ * mode.
  */
 function ajaxToggleGwtUI_Response(data, goToUserWorkspace) {
 	if (goToUserWorkspace) {
@@ -9004,13 +9223,13 @@ function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
 }
 
 /*
- * Called to force the GWT content IFRAME to resize itself based on
- * it's contents.
+ * Called to force the GWT content IFRAME to resize itself based on it's
+ * contents.
  */
 function resizeGwtContent(reason) {
 	if (ss_isGwtUIActive) {
 		if ("function" == typeof window.top.ss_setWorkareaIframeSize) {
-//			alert("resizeGwtContent( reason:  '" + reason + "' )");
+			ss_debug("resizeGwtContent( reason:  '" + reason + "' )");
 			window.top.ss_setWorkareaIframeSize();
 		}
 		ss_showContentFrame();
@@ -9029,7 +9248,7 @@ function preContextSwitch() {
 	}
 }
 
-//Routine to confirm the deletion of multiple file versions
+// Routine to confirm the deletion of multiple file versions
 function ss_deleteMultipleFileVersions(formId, confirmText) {
 	var formObj = self.document.getElementById(formId);
 	if (confirm(ss_deleteFileVersionsConfirmText)) {
@@ -9058,9 +9277,9 @@ function delCFromS(s, i) {
 		var	sB;
 
 
-		// Yes!  Delete it.
+		// Yes! Delete it.
 		sB = s.substring(0, i );	// Substring before the i'th character.
-		sA = s.substring(i + 1);	// Substring after  the i'th character.
+		sA = s.substring(i + 1);	// Substring after the i'th character.
 		return (sB + sA);
 	}
 
@@ -9113,18 +9332,18 @@ function isHidden(e) {
 // Modes handled by intRequiredBlur().
 var	INT_MODE_ALL		= 0;		// Any integer, position or negative.
 var	INT_MODE_GE_ZERO	= 1;		// Any integer >= 0.
-var	INT_MODE_GT_ZERO	= 2;		// Any integer >  0.
+var	INT_MODE_GT_ZERO	= 2;		// Any integer > 0.
 var	INT_MODE_LE_ZERO	= 3;		// Any integer <= 0.
-var	INT_MODE_LT_ZERO	= 4;		// Any integer <  0.
+var	INT_MODE_LT_ZERO	= 4;		// Any integer < 0.
 var	INT_MODE_NE_ZERO	= 5;		// Any integer != 0.
 
 /*
- * Set in a widget's onBlur event handler to mark it as requiring an
- * integer value.
+ * Set in a widget's onBlur event handler to mark it as requiring an integer
+ * value.
  * 
- * Note that we brute force this validation because building a
- * validator around isNaN allows numbers to be in scientific
- * notation, which are invalid as integers.
+ * Note that we brute force this validation because building a validator around
+ * isNaN allows numbers to be in scientific notation, which are invalid as
+ * integers.
  */
 function intRequiredBlur(eWidget, mode, sFixupMsg) {
 	var	aM;
@@ -9160,26 +9379,26 @@ function intRequiredBlur(eWidget, mode, sFixupMsg) {
 		switch (c) {
 		case '0':  case '1':  case '2':  case '3':  case '4':
 		case '5':  case '6':  case '7':  case '8':  case '9':
-			// A digit.  Leave it alone.
+			// A digit. Leave it alone.
 			break;
 
 
 		case '-':
-			// A minus sign.  Is this the first character when a minus
+			// A minus sign. Is this the first character when a minus
 			// sign is allowed?
 			if ((0 == i) && aM) {
-				// Yes!  Leave it alone.
+				// Yes! Leave it alone.
 				break;
 			}
 
 			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-			// Fall through and handle with the default case.  This  //
-			// will delete this invalid minus sign.                  //
+			// Fall through and handle with the default case. This //
+			// will delete this invalid minus sign. //
 			// * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 
 		default:
-			// This character isn't part of an integer.  Delete it...
+			// This character isn't part of an integer. Delete it...
 			s = delCFromS(s, i);
 
 			// ...adjust the index and length to account for the
@@ -9194,10 +9413,10 @@ function intRequiredBlur(eWidget, mode, sFixupMsg) {
 
 	// After validating, do we still have a value?
 	if (hasString(s)) {
-		// Yes!  Is it valid for the INT_MODE_... that was specified?
+		// Yes! Is it valid for the INT_MODE_... that was specified?
 		i = Number(s);
 		switch (mode) {
-		case INT_MODE_ALL:                          break;	//   Valid.
+		case INT_MODE_ALL:                          break;	// Valid.
 		case INT_MODE_GE_ZERO:  if (0 >  i) s = ""; break;	// Invalid.
 		case INT_MODE_GT_ZERO:  if (0 >= i) s = ""; break;	// Invalid.
 		case INT_MODE_LE_ZERO:  if (0 <  i) s = ""; break;	// Invalid.
@@ -9212,7 +9431,7 @@ function intRequiredBlur(eWidget, mode, sFixupMsg) {
 		var	eWidgetHidden;
 		
 		
-		// Yes!  Store it...
+		// Yes! Store it...
 		eWidget.value = s;
 		eWidgetHidden = isHidden(eWidget);
 		if (!eWidgetHidden) focusAndSelect(eWidget);
