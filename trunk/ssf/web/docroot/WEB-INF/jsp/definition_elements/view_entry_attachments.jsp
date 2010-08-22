@@ -70,28 +70,6 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 	ss_resizeEntryHistoryIframe(iframeId);
 }
 
-var ss_entryHistoryIframeOffset = 50;
-function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
-	var iframeDiv = document.getElementById(iframeId)
-	if (typeof loadingId != "undefined" && iframeDiv.src.indexOf("null.html") < 0) {
-		var spanObj = self.document.getElementById(loadingId);
-		if (spanObj != null) spanObj.style.display = "none";
-	}
-	try {
-		var frameWindow = window.frames[iframeId];
-		if (frameWindow && frameWindow.document && frameWindow.document.body) {
-			var iframeHeight = parseInt(frameWindow.document.body.scrollHeight);
-			if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
-					(parseInt(iframeDiv.style.height) != parseInt(iframeHeight) + ss_entryHistoryIframeOffset)) {
-				iframeDiv.style.height = parseInt(iframeHeight) + ss_entryHistoryIframeOffset + "px"
-				//Signal that the layout changed
-				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 300);
-				if (self.parent.ssf_onLayoutChange) setTimeout("self.parent.ssf_onLayoutChange();", 100);
-				if (self.parent.parent.ssf_onLayoutChange) setTimeout("self.parent.parent.ssf_onLayoutChange();", 100);
-			}
-		}
-	} catch(e) {}
-}
 </script>
 
 <div class="ss_entryContent">
