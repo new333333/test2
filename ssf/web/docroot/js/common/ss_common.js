@@ -6745,7 +6745,7 @@ function ss_startSpinner()
 		spinner = document.createElement("div");
 		spinner.className = "ss_style";
 	    spinner.setAttribute("id", "ss_spinner");
-        spinner.setAttribute("style", "width:300px;background-color:#fff;border:1px solid #cecece;text-align:center;padding:10px;");
+        spinner.setAttribute("style", "width:300px;background-color:#fff;text-align:center;padding:10px;");
 		var spinImgDiv = document.createElement("div");
 		spinImgDiv.setAttribute("id", "ss_spinnerImgDiv");
 		spinImgDiv.setAttribute("align", "center");
