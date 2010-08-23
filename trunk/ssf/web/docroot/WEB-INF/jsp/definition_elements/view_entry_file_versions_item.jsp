@@ -205,7 +205,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 	  	</td>
 	</tr>
 	
-	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
+	<c:if test="${!empty selection.fileVersions && versionCount > 1 && !ss_isBinderMirroredFolder}">
 		  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 			<c:if test="${!empty fileVersion.fileItem.name}">
 			<jsp:useBean id="fileVersion" type="org.kablink.teaming.domain.FileAttachment" />
