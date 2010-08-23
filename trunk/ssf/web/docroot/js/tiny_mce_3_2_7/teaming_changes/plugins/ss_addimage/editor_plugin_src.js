@@ -18,7 +18,7 @@
 				if (typeof ss_diskQuotaExceeded == "undefined" || !ss_diskQuotaExceeded) {
 					ed.windowManager.open({
 						file : url + '/image.htm',
-						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
+						width : 650 + parseInt(ed.getLang('advimage.delta_width', 0)),
 						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
 						scrollbars : true,
 						inline : 1
@@ -29,7 +29,7 @@
 				if (typeof ss_diskQuotaExceeded != "undefined" && ss_diskQuotaExceeded) {
 					ed.windowManager.open({
 						file : url + '/image_no.htm',
-						width : 550 + parseInt(ed.getLang('advimage.delta_width', 0)),
+						width : 650 + parseInt(ed.getLang('advimage.delta_width', 0)),
 						height : 460 + parseInt(ed.getLang('advimage.delta_height', 0)),
 						scrollbars : true,
 						inline : 1

@@ -83,8 +83,8 @@ var urlToView = "${ss_upload_file_url}";
 </script>
 </head>
 <body onLoad="saveImageUrl(urlToView);">
-<form action="" id="form0" name="form0" method="post" enctype="multipart/form-data">
-<input id="inputFile" name="file1" type="file" size="35" onChange="passBackUrl()" />
+<form action="" id="form0" name="form0" method="post" enctype="multipart/form-data" style="display:block;">
+<input id="inputFile" name="file1" type="file" style="width:250px;" onChange="passBackUrl()" />
 </form>
 </body>
 </html>
