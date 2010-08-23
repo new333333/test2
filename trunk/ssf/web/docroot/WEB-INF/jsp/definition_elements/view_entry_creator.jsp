@@ -41,7 +41,9 @@
 
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <br/>
-    <span>(<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)</span>
+    <span title="<c:out value="${ssDefinitionEntry.postedBy}"/>">
+      (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
+    </span>
   </c:if>
   <c:if test="${!empty ssDefinitionEntry.customAttributes['_guestName'].valueSet}">
     <c:forEach var="guestName" items="${ssDefinitionEntry.customAttributes['_guestName'].valueSet}" varStatus="status">
