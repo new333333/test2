@@ -761,7 +761,11 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 									
 									if(anchor != null) {
 										anchor.removeChild(oldChild);
-										anchor.appendChild(img.getElement());
+										if(img.getElement() != null){
+											img.getElement().removeAttribute("width");
+											img.getElement().removeAttribute("height");
+											anchor.appendChild(img.getElement());
+										}
 									}
 								}	
 							} catch (Exception e) {
