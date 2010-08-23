@@ -74,12 +74,15 @@
 	  <td>
 		<div class="ss_entryContent ss_entrySignature margintop3">
 		  <span style="padding-right:5px;">
-		  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/>
-		  <b><ssf:nlt tag="entry.reservedBy"/></b>
-		  </span>
+		  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
+		  	  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
+		</div>
 	  </td>
 	  <td>
-		  <b><ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true" /></b>
+		<div class="ss_entryContent margintop3">
+		<div class="ss_entrySignatureUser">
+		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+		</div>
 		</div>
 	  </td>
 	  <td>
@@ -148,7 +151,8 @@
 			<td>
 				<div class="ss_entryContent margintop3">
 				  <span style="padding-right:5px;">
-				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
+				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
+				  	  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 				  </span>
 				  <div class="ss_entrySignatureUser">
 				    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
@@ -218,7 +222,8 @@
 			   <tr>
 				<td colspan="3">
 				  <div class="ss_entrySignature margintop3">
-					<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
+					<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
+					  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 					<div class="ss_entrySignatureUser">
 					  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 					</div>
