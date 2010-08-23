@@ -916,6 +916,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				userIds.addAll(t.getTeamMemberIds());
 			}
 		}
+		boolean removedAllUsersGroup = checkIfRemovedSendToAllUsers(userIds);
 		Set emailSet = getEmail(userIds, errors);
 		if (emailAddresses != null) {
 			if (emailSet == null) emailSet = new HashSet();
@@ -931,9 +932,12 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				}
 			}
 		}
-		
+
+		if (removedAllUsersGroup) {
+			//errors.add(0, "Sending mail to All Users is not allowed");
+		}
 		if (emailSet == null || emailSet.isEmpty()) {
-			//no-one to send tos
+			//no-one to send to
 			errors.add(0, NLT.get("errorcode.noRecipients"));
 			return result;			
 		}
@@ -982,7 +986,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	if (ids != null && !ids.isEmpty()) {
     		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
     		Long allUsersGroupId = Utils.getAllUsersGroupId();
-    		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) ids.remove(allUsersGroupId);
+    		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) {
+    			ids.remove(allUsersGroupId);
+    		}
 			addrs = new HashSet();
  			Set<Long> cc = getProfileDao().explodeGroups(ids, 
  					RequestContextHolder.getRequestContext().getZoneId(), sendingToAllUsersIsAllowed);
@@ -1003,7 +1009,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  		}
     	return addrs;
     }
-  
+    private boolean checkIfRemovedSendToAllUsers(Collection<Long>ids) {
+    	if (ids != null && !ids.isEmpty()) {
+    		boolean sendingToAllUsersIsAllowed = SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
+    		Long allUsersGroupId = Utils.getAllUsersGroupId();
+    		if (!sendingToAllUsersIsAllowed && ids.contains(allUsersGroupId)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
    public List<ChangeLog> getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("owningBinderId", binderId);
