@@ -39,6 +39,7 @@
 	<div id="ss_today">
 	
 		<!-- Tracked Folders List -->
+		<c:set var="foldersTracked" value="false"/>
 		<c:forEach var="binder" items="${ss_trackedBinders}">
 		  <c:if test="${binder.entityType == 'folder'}">
 			  <c:set var="showThisBinder" value="true"/>
@@ -47,6 +48,7 @@
 			  </c:forEach>
 			
 			  <c:if test="${showThisBinder}">
+			    <c:set var="foldersTracked" value="true"/>
 				<div class="margintop1 marginleft1">
 					<img align="absmiddle" src="<html:rootPath/>images/icons/folder_green_sm.png" <ssf:alt tag="entry.Folder"/> border="0" />&nbsp;<a
 			   			href="<ssf:permalink entity="${binder}"/>"
@@ -63,6 +65,9 @@
 			  </c:if>
 		  </c:if>
 		</c:forEach>
+<c:if test="${!foldersTracked}">
+<span style="padding: 5px 15px;"><ssf:nlt tag="relevance.none"/></span>
+</c:if>
 	
 		<!-- Tracked Workspaces List -->
 		<div class="margintop3">
@@ -70,9 +75,10 @@
 			  <ssf:nlt tag="relevance.trackedWorkspaces"/>
 			</div>
 
-		
+			<c:set var="workspacesTracked" value="false"/>
 			<c:forEach var="binder" items="${ss_trackedBinders}">
 			  <c:if test="${binder.entityType == 'workspace'}">
+			    <c:set var="workspacesTracked" value="true"/>
 			  	<div class="margintop1 marginleft1">
 					<img align="absmiddle" src="<html:rootPath/>images/icons/workspace_generic.png" <ssf:alt tag="general.type.workspace"/> width="12" height="12" border="0" />&nbsp;<a
 					  href="<ssf:permalink entity="${binder}"/>"
@@ -85,6 +91,9 @@
 				</div>
 			  </c:if>
 			</c:forEach>
+<c:if test="${!workspacesTracked}">
+<span style="padding: 5px 15px;"><ssf:nlt tag="relevance.none"/></span>
+</c:if>
 		</div>
 	</div>	<!-- end of ss_today -->
 </div>		<!-- end of ss_para -->

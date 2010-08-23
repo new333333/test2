@@ -47,6 +47,11 @@
 			    </c:if>
 		    </div> <!-- end of ss_col3_para -->
 		</c:forEach>
+
+<c:if test="${empty ss_trackedPeople}">
+<span style="padding: 5px 15px;"><ssf:nlt tag="relevance.none"/></span>
+</c:if>
+
 	</div>		<!-- end of ss_today -->
 </div>			<!-- end of ss_para -->
 
