@@ -51,8 +51,10 @@
 <div class="ss_mashup_url_content">
   <c:if test="${!empty mashup_attributes['title']}">
     <a 
-    <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
-    href="${mashup_attributes['href']}">${mashup_attributes['title']}</a>
+      <c:if test="${!empty mashup_attributes['popup']}"> target="_blank" </c:if>
+      href="${mashup_attributes['href']}">
+      <span class="ss_title_link">${mashup_attributes['title']}</span>
+    </a>
   </c:if>
 </div>
 </c:if>
@@ -69,7 +71,7 @@
   <div class="ss_mashup_element">
     <div class="ss_mashup_form_element_header">
       <span class="ss_largeprint ss_bold"><ssf:nlt tag="mashup.type.url"/>: </span>
-      <span>${mashup_attributes['title']}</span>
+      <span class="ss_title_link">${mashup_attributes['title']}</span>
       <span class="ss_italic ss_smallprint">(${mashup_attributes['href']})</span>
     </div>
     <input type="submit" name="applyBtn" value="<ssf:nlt tag="button.delete"/>" 
