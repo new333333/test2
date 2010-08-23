@@ -32,13 +32,27 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="tag" value="toolbar.menu.modify_workspace"/>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:set var="tag" value="toolbar.menu.modify_folder"/>
+</c:if>
+<jsp:useBean id="tag" type="String" />
+<c:set var="ss_windowTitle" value='<%= NLT.get(tag) %>' scope="request"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<body class="ss_style_body tundra">
+
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <c:set var="ssBinderMarker" value="true" scope="request"/>
 <c:if test="${!empty ssException}">
 <span class="ss_formError"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
-</c:if><div class="ss_portlet"> 
+</c:if>
+
+<div class="ss_portlet"> 
 
 <% // Show the workspace according to its definition %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -46,5 +60,8 @@
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" 
   entry="${ssBinder}"/>
-
+  
 </div>
+
+</body>
+</html>
