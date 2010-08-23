@@ -835,7 +835,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
-		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+		if ((addrs == null) || addrs.isEmpty()) {
+			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
+		}
 
 		MailStatus status = new MailStatus(message);
 		Map currentMessage = new HashMap(message); //make changeable copy
