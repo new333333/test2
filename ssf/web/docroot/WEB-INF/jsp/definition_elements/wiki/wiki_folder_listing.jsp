@@ -80,25 +80,6 @@
 		    </form>
 		  </c:if>
 		</td>
-		<td style="padding-left:20px;">
-		  <span>
-				<c:if test="${!empty ss_wikiHomepageEntryId}">
-					<a class="ss_linkButton" href="<ssf:url     
-						adapter="true" 
-						portletName="ss_forum" 
-						folderId="${ssFolder.id}" 
-						action="view_folder_entry" 
-						entryId="${ss_wikiHomepageEntryId}" 
-						actionUrl="true"><ssf:param
-						name="entryViewStyle" value="popup"/><ssf:param
-						name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
-						name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
-						<ssf:title tag="title.open.folderEntrySimple" />
-						onclick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}', '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');return false;" 
-					><ssf:nlt tag="wiki.homePage"/></a>
-				  </c:if>		  
-		  </span>
-		</td>
 	  </tr>
 	</table>
 	
@@ -140,6 +121,33 @@
 	<div class="margintop3" style="padding: 5px 10px">
 		<div class="ss_size_12px ss_bold">
 		  <span><c:out value="${ssBinder.title}" escapeXml="true"/></span>
+		</div>
+		<div class="margintop3" >
+		  <span>
+				<c:if test="${!empty ss_wikiHomepageEntryId && !empty ss_wikiHomepageEntry}">
+					<a class="ss_linkButton" href="<ssf:url     
+						adapter="true" 
+						portletName="ss_forum" 
+						folderId="${ssFolder.id}" 
+						action="view_folder_entry" 
+						entryId="${ss_wikiHomepageEntryId}" 
+						actionUrl="true"><ssf:param
+						name="entryViewStyle" value="popup"/><ssf:param
+						name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param 
+						name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
+						<ssf:title tag="title.open.folderEntrySimple" />
+						onclick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}', '${ssFolder.id}', 'folderEntry', '${renderResponse.namespace}', 'no');return false;" 
+					><ssf:nlt tag="wiki.homePage"/></a>
+					<c:if test="${!empty ss_wikiHomepageEntry.title}">
+					  <span>(${ss_wikiHomepageEntry.title})</span>
+					</c:if>
+				</c:if>		  
+				<c:if test="${empty ss_wikiHomepageEntryId || empty ss_wikiHomepageEntry}">
+				  <a class="ss_linkButton" href="" 
+				      onclick="return false;" ><ssf:nlt tag="wiki.homePage"/></a>
+				  <span>(<ssf:nlt tag="None"/>)</span>
+				</c:if>
+		  </span>
 		</div>
 		<div id="ss_wikiFolderList${renderResponse.namespace}" class="ss_wiki_folder_list margintop3">
 		  <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_page.jsp" %>
@@ -190,4 +198,3 @@
 	</c:if>
 		
 </div>
-    
