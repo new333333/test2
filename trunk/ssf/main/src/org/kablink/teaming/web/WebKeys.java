@@ -1312,6 +1312,7 @@ public class WebKeys {
     public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
     public static final String WHATS_NEW_TOOLBAR="ss_whatsNewToolbar";
     public static final String WHATS_UNSEEN_TYPE="ss_whatsUnseenType";
+    public static final String WIKI_HOMEPAGE_ENTRY="ss_wikiHomepageEntry";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WINDOW_HEIGHT="ss_windowHeight";
