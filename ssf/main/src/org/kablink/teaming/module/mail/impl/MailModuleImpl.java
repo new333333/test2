@@ -714,7 +714,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					//remove from pending list
 					uStatus.removeAll(currentStatus);
 					params.put("ids", ids);
-					List<FolderEntry> entries = getCoreDao().loadObjects("from org.kablink.teaming.domain.FolderEntry where id in (:ids) order by HKey.sortKey", params);
+					List<FolderEntry> entriesFull = getCoreDao().loadObjects("from org.kablink.teaming.domain.FolderEntry where id in (:ids) order by HKey.sortKey", params);
+					List<FolderEntry> entries = new ArrayList<FolderEntry>();
+					for (FolderEntry fe:  entriesFull) {
+						if (!(fe.isPreDeleted())) {
+							entries.add(fe);
+						}
+					}
 					if (!entries.isEmpty()) {
 						//Handle digest subscriptions and notifications 
 						//get folder specific helper to build message
