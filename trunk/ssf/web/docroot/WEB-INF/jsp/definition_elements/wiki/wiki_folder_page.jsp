@@ -65,11 +65,10 @@
           entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true"><ssf:param
           name="entryViewStyle" value="popup"/><ssf:param
           name="namespace" value="${renderResponse.namespace}"/></ssf:url>" 
-        <ssf:title tag="title.open.folderEntry">
-	      <ssf:param name="value" useBody="true"><c:choose><c:when 
-	        test="${!empty entry1.title}"><c:out value="${entry1.title}" escapeXml="true"/></c:when><c:otherwise>--<ssf:nlt 
-	        tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
-        </ssf:title>
+    	<c:if test="${!empty entry1._desc}">
+    	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
+    	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
+    	</c:if>
         onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
       ><c:if test="${empty entry1.title}"
       ><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyleFine %>"
@@ -79,4 +78,19 @@
     </div>
     
 </c:forEach>
-    
+
+<c:if test="${!empty ssFolderEntries}">
+	<c:forEach var="entry2" items="${ssFolderEntries}" >
+	  <c:if test="${!empty entry2._desc}">
+	  <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
+	    style="visibility:hidden; display:none;">
+	      <span class="ss_style" >
+			  <ssf:textFormat formatAction="limitedDescription" textMaxWords="folder.preview.wordCount">
+			    <ssf:markup search="${entry2}">${entry2._desc}</ssf:markup>
+			    </ssf:textFormat>
+	      </span>
+	      <div class="ss_clear"></div>
+	  </div>
+	  </c:if>
+	</c:forEach>
+</c:if>

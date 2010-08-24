@@ -42,10 +42,10 @@
       </span>
     </td>
     <td valign="top" nowrap>
-      <span>${ssPermalink}</span><br/>
+      <div><a href="${ssPermalink}">${ssPermalink}</a></div>
       <c:if test="${!empty ssSimpleUrlNames}">
         <c:forEach var="name" items="${ssSimpleUrlNames}">
-          <span>${ssSimpleUrlPrefix}${name.name}</span><br/>
+          <div><a href="${ssSimpleUrlPrefix}${name.name}">${ssSimpleUrlPrefix}${name.name}</a></div>
         </c:forEach>
       </c:if>
     </td>
