@@ -934,7 +934,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 
 		if (removedAllUsersGroup) {
-			//errors.add(0, "Sending mail to All Users is not allowed");
+			errors.add(0, NLT.get("errorcode.noSendToAllUsers"));
 		}
 		if (emailSet == null || emailSet.isEmpty()) {
 			//no-one to send to
