@@ -663,3 +663,7 @@ td.ss_replies_indent_picture div {
     overflow: hidden;
     margin: 0px 10px;
     }
+td.ss_clipped_signature {
+    width: 160px;
+    }
+    
