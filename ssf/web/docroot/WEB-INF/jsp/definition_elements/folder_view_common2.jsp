@@ -525,10 +525,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     entryId="${entry1._docId}" actionUrl="true">
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
-<c:if test="${slidingTableStyle != 'fixed' || ssUser.displayStyle != 'iframe'}">
+<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.displayStyle != 'iframe'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-<c:if test="${slidingTableStyle == 'fixed' && ssUser.displayStyle == 'iframe'}">
+<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.displayStyle == 'iframe'}">
     onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;
@@ -560,11 +560,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     ><ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
     
-	<c:if test="${slidingTableStyle != 'fixed' || ssUser.displayStyle != 'iframe'}">
+	<c:if test="${slidingTableStyle != 'fixed_view_style_removed' || ssUser.displayStyle != 'iframe'}">
     	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 	</c:if>
 	
-	<c:if test="${slidingTableStyle == 'fixed' && ssUser.displayStyle == 'iframe'}">
+	<c:if test="${slidingTableStyle == 'fixed_view_style_removed' && ssUser.displayStyle == 'iframe'}">
     	onClick="ss_loadEntryInPlace(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
     </c:if>
     <c:if test="${slidingTableStyle == 'fixed'}">
@@ -700,10 +700,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true" >
     <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/>
     <ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}"/></ssf:url>" 
-<c:if test="${slidingTableStyle != 'fixed'}">
+<c:if test="${slidingTableStyle != 'fixed_view_style_removed'}">
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-<c:if test="${slidingTableStyle == 'fixed'}">
+<c:if test="${slidingTableStyle == 'fixed_view_style_removed'}">
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>

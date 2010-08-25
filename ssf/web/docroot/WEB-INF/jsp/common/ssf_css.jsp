@@ -619,7 +619,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 	color:#fff;
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: 12px;
-	background:none repeat scroll 0 0 #949494;
+	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
 	padding: 1px 10px;
 	text-decoration:none;
@@ -641,7 +641,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 1px 10px !important;
+  	padding: 2px 10px !important;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;
 	border: 0px;
@@ -688,7 +688,7 @@ input[type="button"].n-button:hover {
 input.ss_submit:hover, 
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
-	padding: 0px 6px 0px 6px;
+	padding: 2px 10px;
 	cursor: pointer;
 	color: #fff;
 	}	
@@ -697,7 +697,7 @@ a.ss_tinyButton:link,
 a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_smallprint};
-	background:none repeat scroll 0 0 #949494;
+	background: #949494 none repeat scroll 0 0;
 	color:#FFFFFF;
 	margin-right:3px;
 	padding:2px 10px;
