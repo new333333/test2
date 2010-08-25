@@ -621,7 +621,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
  	font-size: 12px;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
-	padding: 1px 10px;
+	padding: 2px 10px;
 	text-decoration:none;
   	cursor: pointer;
   	white-space: nowrap;
