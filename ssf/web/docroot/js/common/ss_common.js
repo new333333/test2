@@ -5408,6 +5408,24 @@ function ssTeams(namespace) {
 	}
 }
 
+//Routine to show some text to be copied
+function ss_popupUpText(text) {
+	var divObj = document.getElementById("ss_popupTextDiv");
+	if (divObj == null) {
+		//Create the div
+		divObj = document.createElement("div");
+		divObj.setAttribute("id", 'ss_popupTextDiv');
+		divObj.style.position = "absolute";
+		divObj.style.visibility = "hidden";
+		divObj.style.display = "none";
+		divObj.style.backgroundColor = "#fff";
+		divObj.style.padding = "10px";
+    	document.getElementsByTagName("body").item(0).appendChild(divObj);
+	}
+	divObj.innerHTML = text;
+	ss_showPopupDivCentered("ss_popupTextDiv", "ss_popupTextDiv", true);
+}
+
 // show a div as a popup - no ajax
 function ss_showPopupDiv(divId) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
