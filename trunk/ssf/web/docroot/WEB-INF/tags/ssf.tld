@@ -1235,6 +1235,18 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>org.kablink.teaming.domain.DefinableEntity</type>
 		</attribute>		
+		<attribute>
+			<name>entityId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+		<attribute>
+			<name>entityType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
 	</tag>
 
 	<tag>
