@@ -105,7 +105,7 @@ public class ProfileSidePanel extends Composite {
 		
 		ProfileAttribute aboutMeAttr = findAttrByDataName(cat, "aboutMe");
 		if (aboutMeAttr != null) {
-			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, "About Me", actionTrigger);
+			aboutMeSection = new ProfileFollowSectionPanel(profileRequestInfo, GwtTeaming.getMessages().profileAboutMe(), actionTrigger);
 			aboutMeSection.setStyleName("aboutHeading");
 			aboutMeSection.addStyleName("smalltext");
 			aboutMeSection.getHeadingLabel().setStyleName("aboutLabel");
@@ -121,18 +121,18 @@ public class ProfileSidePanel extends Composite {
 		}
 
 		if (attrExist(cat, "profileTeams")) {
-			teamsSection = new ProfileTeamsPanel(profileRequestInfo, "Teams", actionTrigger);
+			teamsSection = new ProfileTeamsPanel(profileRequestInfo, GwtTeaming.getMessages().profileTeams(), actionTrigger);
 			content.add(teamsSection);
 		}
 
 		if (attrExist(cat, "profileGroups")) {
-			groupsSection = new ProfileGroupsPanel(profileRequestInfo, "Groups", actionTrigger);
+			groupsSection = new ProfileGroupsPanel(profileRequestInfo, GwtTeaming.getMessages().profileGroups(), actionTrigger);
 			content.add(groupsSection);
 		}
 
 		if (attrExist(cat, "profileFollowing")) {
 			followingSection = new ProfileFollowSectionPanel(profileRequestInfo,
-					"Following", actionTrigger);
+					GwtTeaming.getMessages().profileFollowing(), actionTrigger);
 			content.add(followingSection);
 		}
 
@@ -145,7 +145,7 @@ public class ProfileSidePanel extends Composite {
 		if (attrExist(cat, "profileSavedSearches")) {
 			if (profileRequestInfo.isOwner()) {
 				savedSearches = new ProfileSearchesSectionPanel(
-						profileRequestInfo, "Saved Searches",actionTrigger);
+						profileRequestInfo, GwtTeaming.getMessages().profileSavedSearches(), actionTrigger);
 				content.add(savedSearches);
 			}
 		}

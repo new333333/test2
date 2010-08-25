@@ -611,6 +611,12 @@ public interface GwtTeamingMessages extends Messages
 	String profileEditTitle();
 	String profileNotFollowing();
 	String profileNoSavedSearches();
+	String profileSavedSearches();
+	String profileTeams();
+	String profileGroups();
+	String profileFollowing();
+	String profileAboutMe();
+
 	
 	// Presence related strings
 	String presenceAvailable();
