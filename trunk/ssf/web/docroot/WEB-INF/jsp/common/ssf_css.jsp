@@ -662,7 +662,7 @@ input[type="button"].n-button {
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 0px 10px 2px 10px !important;
+  	padding: 2px 10px 2px 10px !important;
 	margin-right: 15px;
 	background-color: #81b2bd;
 	border: 0px;
