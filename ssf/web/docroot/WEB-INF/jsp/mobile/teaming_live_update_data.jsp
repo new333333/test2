@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<c:set var="gwtUIActive" value="false" />
+<% if (GwtUIHelper.isGwtUIActive(request)) { %>
+	<c:set var="gwtUIActive" value="true" />
+<% } %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="newTeamingEntries" value="0" />
 	    <c:if test="${ss_whatsNewType != 'microblog'}">
@@ -42,9 +47,16 @@
 	    	</c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
-			    <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
-				  folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
-				  action="view_folder_listing" actionUrl="false" />"
+			    <a
+			    	target="_blank"
+			    	<c:if test="${gwtUIActive == 'true'}">
+				    	href="<ssf:permalink entityId="${entryWn._docId}" entityType="folderEntry" />"
+			    	</c:if>
+			    	<c:if test="${gwtUIActive != 'true'}">
+				    	href="<ssf:url adapter="true" portletName="ss_forum" 
+					  		folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
+					  		action="view_folder_listing" actionUrl="false" />"
+				  	</c:if>
 			    >
 			  	  <span><c:if test="${empty entryWn.title}">--<ssf:nlt tag="entry.noTitle"/>--</c:if>
 			  	    <ssf:makeWrapable><c:out value="${entryWn.title}" escapeXml="true"/></ssf:makeWrapable>
@@ -54,9 +66,16 @@
 		 
 		  	  <div class="entry-signature">
 		  	    <span class="entry-author">
-				  <a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="view_ws_listing"
-				    binderId="${entryWn._principal.workspaceId}" />"
+				  <a
+				  		target="_blank"
+				    	<c:if test="${gwtUIActive == 'true'}">
+					  		href="<ssf:permalink entityId="${entryWn._principal.workspaceId}" entityType="workspace" />"
+				    	</c:if>
+				    	<c:if test="${gwtUIActive != 'true'}">
+					  		href="<ssf:url adapter="true" portletName="ss_forum" 
+					    		action="view_ws_listing"
+					    		binderId="${entryWn._principal.workspaceId}" />"
+				    	</c:if>
 				  ><ssf:userTitle user="${entryWn._principal}"/></a>
 				</span>
 	
@@ -76,9 +95,16 @@
 				</c:if>
 				<c:set var="isDashboard" value="yes"/>
 				<c:if test="${!empty path}">
-	     			<a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
-						folderId="${entryWn._binderId}" 
-						action="view_folder_listing" actionUrl="false" />"
+	     			<a
+	     				target="_blank"
+				    	<c:if test="${gwtUIActive == 'true'}">
+		     				href="<ssf:permalink entityId="${entryWn._binderId}" entityType="folder" />"
+				    	</c:if>
+				    	<c:if test="${gwtUIActive != 'true'}">
+		     				href="<ssf:url adapter="true" portletName="ss_forum" 
+								folderId="${entryWn._binderId}" 
+								action="view_folder_listing" actionUrl="false" />"
+						</c:if>
 					 >${title}</a>
 				</c:if>
 				</span>
@@ -103,9 +129,17 @@
 	    	  </c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
-		    	<a target="_blank" href="<ssf:url adapter="true" portletName="ss_forum" 
-				  binderId="${activity.user.workspaceId}"
-				  action="view_ws_listing" />" ><ssf:userTitle user="${activity.user}"/></a>
+		    	<a
+		    		target="_blank"
+			    	<c:if test="${gwtUIActive == 'true'}">
+			    		href="<ssf:permalink entityId="${activity.user.workspaceId}" entityType="workspace" />"
+			    	</c:if>
+			    	<c:if test="${gwtUIActive != 'true'}">
+			    		href="<ssf:url adapter="true" portletName="ss_forum" 
+							binderId="${activity.user.workspaceId}"
+							action="view_ws_listing" />"
+					</c:if>
+				><ssf:userTitle user="${activity.user}"/></a>
 		      </div>
 		  	  <div>
 			  	<span class="entry-date">

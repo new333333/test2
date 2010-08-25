@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.taglib;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,14 +43,19 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
 /**
  * @author Peter Hurley
  *
  */
+@SuppressWarnings("serial")
 public class PermalinkTag extends BodyTagSupport {
-    private Map searchResult=null;
+    @SuppressWarnings("unchecked")
+	private Map searchResult=null;
 	private DefinableEntity entity=null;
+	private String entityId=null;
+	private String entityType=null;
 	public PermalinkTag() {
 		setup();
 	}
@@ -62,15 +68,24 @@ public class PermalinkTag extends BodyTagSupport {
 		//need to reinitialize - class must be cached
 		searchResult=null;
 		entity = null;
+		entityId =
+		entityType = null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public int doEndTag() throws JspException {
 		try {
 			HttpServletRequest req =
 				(HttpServletRequest)pageContext.getRequest();
 			String webUrl = null;
 			if (searchResult != null) webUrl = PermaLinkUtil.getPermalink(req, searchResult);
-			else webUrl = PermaLinkUtil.getPermalink(req, entity);
+			else if (entity != null) webUrl = PermaLinkUtil.getPermalink(req, entity);
+			else {
+				HashMap map = new HashMap();
+				map.put(Constants.DOCID_FIELD, entityId);
+				map.put(Constants.ENTITY_FIELD, entityType);
+				webUrl = PermaLinkUtil.getPermalink(req, map);
+			}
 			if (Validator.isNotNull(webUrl)) pageContext.getOut().print(webUrl);
 			return SKIP_BODY;
 		} catch (Exception e) {
@@ -80,11 +95,18 @@ public class PermalinkTag extends BodyTagSupport {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void setSearch(Map searchResult) {
 	    this.searchResult = searchResult;
 	}
 	public void setEntity(DefinableEntity entity) {
 		this.entity = entity;
+	}
+	public void setEntityId(String entityId) {
+		this.entityId = entityId;
+	}
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
 	}
 
 }
