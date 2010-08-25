@@ -93,12 +93,12 @@ class ExtensionViewDetailsDlg extends PopupPanel implements ClickHandler {
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
 		String sDateDeployed = info.getDateDeployed();
-		DateTimeFormat dtFormat = DateTimeFormat.getFormat(GwtTeaming.getMessages().extensionsDlgDateFormat());
+		
+		DateTimeFormat df = DateTimeFormat.getLongDateFormat();
 		Date dateDeployed = new Date();
-		dtFormat.parse(info.getDateDeployed(), 0, dateDeployed);
 		if(dateDeployed != null)
 		{
-			sDateDeployed = dtFormat.format(dateDeployed);
+			sDateDeployed = df.format(dateDeployed);
 		}
 		
 		table = new FlexTable();
