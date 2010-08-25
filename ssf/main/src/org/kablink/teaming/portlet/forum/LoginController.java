@@ -129,8 +129,12 @@ public class LoginController  extends SAbstractControllerRetry {
 		String refererUrl = request.getParameter("refererUrl");
 		if(Validator.isNull(refererUrl))
 			refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
-		if(Validator.isNotNull(refererUrl))
+		
+		if ( Validator.isNotNull( refererUrl ) )
+		{
 			model.put(WebKeys.URL, refererUrl);
+			model.put( "loginRefererUrl", refererUrl );
+		}
 		
 		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
 		if(BrowserSniffer.is_wap_xhtml(req) || 
