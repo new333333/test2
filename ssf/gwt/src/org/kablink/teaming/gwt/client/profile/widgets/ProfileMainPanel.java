@@ -95,10 +95,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private EditSuccessfulHandler editAvatarSuccessHandler;
 
 	private FileUpload fileUpload;
-
 	private Anchor uploadBtn;
-
 	private Anchor delete;
+	private FormPanel formPanel;
 
 	/**
 	 * Constructor
@@ -385,7 +384,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		panel.setWidth("100%");
 		
 		//create a form element in order to upload a new photo
-		final FormPanel formPanel = new FormPanel();
+		formPanel = new FormPanel();
 		panel.add(formPanel);
 		
 		formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
@@ -710,9 +709,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						profileAvatarArea.clear();
 					}
 					
-					if(fileUpload != null) {
-						InputElement input = fileUpload.getElement().cast();
-						input.setValue("");
+					if(formPanel != null) {
+						formPanel.reset();
 					}
 					
 					if(uploadBtn != null & uploadBtn.isVisible()){
