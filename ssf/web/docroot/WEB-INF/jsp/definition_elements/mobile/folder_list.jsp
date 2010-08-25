@@ -34,6 +34,17 @@
 %>
 <% //Folder list.  %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.Map" %>
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<%
+	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+	}
+%>
+<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
   <c:if test="${!empty ssFolders}">
   <div class="folders">
     <div class="folder-head">
@@ -66,6 +77,9 @@
 	    	<jsp:useBean id="entryFol" type="java.util.Map" />
 			<div class="entry">
 			  <div class="entry-title">
+			    <c:if test="${!empty ssFolderColumns['number'] && !empty entryFol._docNum}">
+			    <span style="font-weight: normal !important;">${entryFol._docNum}. </span>
+			    </c:if>
 			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  folderId="${entryFol._binderId}"  entryId="${entryFol._docId}"
 				  action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"

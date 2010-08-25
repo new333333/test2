@@ -33,6 +33,16 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<%
+	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+	}
+%>
+<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
@@ -63,7 +73,7 @@
 								operation="mobile_show_entry" 
 								actionUrl="false" />"
 					>
-					<c:if test="${!empty nextEntry.docNumber}">
+					<c:if test="${!empty nextEntry.docNumber && !empty ssFolderColumns['number']}">
 						${nextEntry.docNumber}.
 					</c:if>
 					<c:if test="${empty nextEntry.title}" >
@@ -87,7 +97,7 @@
 		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	  }
   %>
-  <c:if test="${!empty ssDefinitionEntry.docNumber}">
+  <c:if test="${!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
 	<div class="doc-number">${ssDefinitionEntry.docNumber}.</div>
   </c:if>
   <a href="<ssf:url adapter="true" portletName="ss_forum" 

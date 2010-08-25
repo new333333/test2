@@ -34,6 +34,16 @@
 %>
 <% //Title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<%
+	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+	}
+%>
+<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 
 <c:set var="ss_title_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_title_namespace" value="${ss_namespace}"/></c:if>
@@ -64,7 +74,7 @@
   entryId="${nextEntry.id}" 
   action="view_folder_entry"/>"
 >
-<c:if test="${!empty nextEntry.docNumber}">
+<c:if test="${!empty nextEntry.docNumber && !empty ssFolderColumns['number']}">
 ${nextEntry.docNumber}.
 </c:if>
 <c:if test="${empty nextEntry.title}" >
@@ -82,7 +92,7 @@ ${nextEntry.docNumber}.
 <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 <span class="ss_entryTitle ss_link_7">
 	<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
-	  	!empty ssDefinitionEntry.docNumber}">
+	  	!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>
 		<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
