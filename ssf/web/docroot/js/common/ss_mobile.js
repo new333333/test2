@@ -82,9 +82,11 @@ if (!ss_onLoadRoutineLoaded) {
 
 //Mailto: replacement routines
 function ss_showEmailLinks() {
+	alert('ss_showEmailLinks')
 	var mailtoElements = document.getElementsByTagName('ssmailto')
 	while (mailtoElements != null && mailtoElements.length > 0) {
 		var mailtoName = mailtoElements[0].getAttribute("name");
+		alert(mailtoName)
 		mailtoName = ss_replaceSubStrAll(mailtoName, "<", "&lt;")
 		mailtoName = ss_replaceSubStrAll(mailtoName, ">", "&gt;")
 		var mailtoHost = mailtoElements[0].getAttribute("host");

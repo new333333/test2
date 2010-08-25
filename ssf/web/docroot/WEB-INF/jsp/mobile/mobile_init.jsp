@@ -51,9 +51,9 @@
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 <script type="text/javascript">	
-	window.onload = function() {
+ss_createOnLoadObj("ss_scrollToTop", function() {
   		setTimeout(function(){window.scrollTo(0, 1);}, 100);
-	}
+	});
 </script>  
 <c:set var="ss_isMobile" value="true" scope="request" />
 <c:if test="${!empty ss_mashupCss}">
