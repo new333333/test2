@@ -55,7 +55,7 @@
 			errMsg : '${errMsg}',
 			isNovellTeaming : ${isNovellTeaming},
 			language : '${ssUser.locale.language}',
-			loginRefererUrl : '${ssUrl}',
+			loginRefererUrl : '${loginRefererUrl}',
 			loginPostUrl : '<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
 			isUserLoggedIn : ${isUserLoggedIn},
 			promptForLogin : ${promptForLogin},

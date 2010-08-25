@@ -78,6 +78,7 @@ import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
+import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -200,9 +201,15 @@ public class ViewPermalinkController  extends SAbstractController {
 				//There is no mapping to this entity, so fall through the render handler
 			}
 		} catch  (AccessControlException ac) {
+			String refererUrl = "";
+
 			//User must log in to see this
 			response.setRenderParameters(request.getParameterMap());
 			response.setRenderParameter("accessException", "true");
+			
+			refererUrl = Http.getCompleteURL( WebHelper.getHttpServletRequest( request ) );
+			response.setRenderParameter( WebKeys.REFERER_URL, refererUrl );
+			
 			return;
 		} catch (NoBinderByTheIdException nb) {
 			logger.debug("ViewPermalinkController.handleActionRequestAfterValidation(NoBinderByTheIdException):  Exception rendered to response.");
@@ -617,8 +624,15 @@ public class ViewPermalinkController  extends SAbstractController {
 					// Does Guest have rights to view the permalink?
 					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
 					{
+						String refererUrl;
+						
 						// No, add a flag that tells us to prompt for login.
 						model.put( "promptForLogin", "true" );
+						
+						// Remember the url the user is trying to go to.  When the user logs in
+						// we should take them to that url.
+						refererUrl = PortletRequestUtils.getStringParameter( request, WebKeys.REFERER_URL, "" );
+						model.put( "loginRefererUrl", refererUrl );
 					}
 					else
 					{
