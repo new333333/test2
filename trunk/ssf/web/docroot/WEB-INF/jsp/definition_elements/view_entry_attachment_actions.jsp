@@ -214,5 +214,16 @@
 		  </div>
 		</c:if>
 
+		<c:if test="${!ss_attachedFileIsVersion}">
+		  <div class="ss_inline_menu">
+		    <a href="<ssf:ssfsInternalAttachmentUrl 
+						binder="${ssDefinitionEntry.parentBinder}"
+						entity="${ssDefinitionEntry}"
+						fileAttachment="${ss_attachedFile}"/>"
+				onClick="ss_popupUpText(this.href);return false;"
+			><span><ssf:nlt tag="permalink.webdavUrl"/></span></a>
+		  </div>
+		</c:if>
+
 	</ul>
   </div>
