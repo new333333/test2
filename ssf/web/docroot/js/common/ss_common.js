@@ -1796,6 +1796,16 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
     // check if the required fields are filled in.
     // Do this last in case some fields get filled in by the other routines
     if (result && !ss_checkForRequiredFields(obj)) result = false;
+    if (result) {
+    	var els = obj.getElementsByTagName("input");
+    	var elsLen = els.length;
+     	for (i = 0, j = 0; i < elsLen; i++) {
+    		if (els[i].type == "submit" && els[i].name == ss_buttonSelected) {
+    			ss_startSpinner(els[i]);
+    		}
+    	}
+    	
+    }
     return result;
 }
 
@@ -6737,7 +6747,7 @@ function ss_confirmPost(label, text, url) {
 	}
 }
 
-function ss_startSpinner()
+function ss_startSpinner(btnObj)
 {
 	var spinner = document.getElementById("ss_spinner")
 	var bodyObj = document.getElementsByTagName("body").item(0)
@@ -6745,7 +6755,7 @@ function ss_startSpinner()
 		spinner = document.createElement("div");
 		spinner.className = "ss_style";
 	    spinner.setAttribute("id", "ss_spinner");
-        spinner.setAttribute("style", "width:300px;background-color:#fff;text-align:center;padding:10px;");
+        spinner.setAttribute("style", "width:300px;background-color:transparent;text-align:center;padding:10px;");
 		var spinImgDiv = document.createElement("div");
 		spinImgDiv.setAttribute("id", "ss_spinnerImgDiv");
 		spinImgDiv.setAttribute("align", "center");
@@ -6762,7 +6772,12 @@ function ss_startSpinner()
 		spinner.style.position='absolute';
 	    spinner.style.zIndex = 1000;
 		spinner.style.display='block';
-		ss_centerPopupDiv(spinner);
+		if (typeof btnObj != "undefined") {
+			ss_centerPopupDiv(spinner, btnObj);
+			return false;
+		} else {
+			ss_centerPopupDiv(spinner);
+		}
 	}
 	spinner.style.display='block';
 }
