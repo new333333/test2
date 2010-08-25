@@ -658,7 +658,8 @@ public class GwtServerHelper {
 	/*
 	 * Constructs a FavoriteInfo object from a JSONObject.
 	 */
-	private static FavoriteInfo fiFromJSON(JSONObject jso) {
+	private static FavoriteInfo fiFromJSON(AllModulesInjected bs, JSONObject jso) {
+		// Construct a FavoriteInfo based on the JSONObject.
 		FavoriteInfo reply = new FavoriteInfo();
 		
 		reply.setAction(  getSFromJSO(jso, "action"  ));
@@ -669,7 +670,45 @@ public class GwtServerHelper {
 		reply.setName(    getSFromJSO(jso, "name"    ));
 		reply.setType(    getSFromJSO(jso, "type"    ));
 		reply.setValue(   getSFromJSO(jso, "value"   ));
-		
+
+		// Is this favorite a binder?  (I'm not sure if it's every
+		// anything else.)
+		if (reply.getType().equalsIgnoreCase("binder")) {
+			// Yes!  Does it have a binder ID?
+			String idS = reply.getValue();
+			if (MiscUtil.hasString(idS)) {
+				// Yes!  Can access the binder?
+				Long id = Long.parseLong(idS);
+				Binder binder;
+				try {
+					binder = bs.getBinderModule().getBinder(id);
+				}
+				catch (Exception e) {
+					binder = null;
+				}
+				if (binder == null) {
+					// No!  Ignore the favorite.
+					reply = null;
+				}
+				else {
+					// Yes, we can access the binder!  Is it in the
+					// trash?
+					if (isBinderPreDeleted(binder)) {
+						// Yes!  Ignore the favorite.
+						reply = null;
+					}
+					else {
+						// No, it's not in the trash!  Valid the string
+						// we use for the mouse hover.  If this binder
+						// got moved, what's there may be wrong.
+						reply.setHover(binder.getPathName());
+					}
+				}
+			}
+		}
+
+		// If we get here, reply refers to the FavoriteInfo for the
+		// JSONObject or is null.  Return it.
 		return reply;
 	}
 	
@@ -1931,7 +1970,10 @@ public class GwtServerHelper {
 		List favoritesList = favorites.getFavoritesList();
 		for (Iterator flIT = favoritesList.iterator(); flIT.hasNext(); ) {
 			// ...constructing a FavoriteInfor object for each.
-			reply.add(fiFromJSON((JSONObject) flIT.next()));
+			FavoriteInfo fi = fiFromJSON(bs, ((JSONObject) flIT.next()));
+			if (null != fi) {
+				reply.add(fi);
+			}
 		}
 
 		// If we get here, reply refers to an ArrayList<FavoriteInfo>
