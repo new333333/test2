@@ -2528,6 +2528,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     			}
 
     			getProfileModule().deleteEntry(id, options, true);
+    			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
+    			
     			count++;
     			
     			if(syncResults != null && name != null)
