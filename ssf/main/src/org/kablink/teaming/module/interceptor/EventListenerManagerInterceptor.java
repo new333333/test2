@@ -42,6 +42,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.spring.web.context.ContextLoaderListener;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -81,44 +82,56 @@ public class EventListenerManagerInterceptor implements MethodInterceptor, Initi
 	}
 	
 	protected Object doInvoke(MethodInvocation invocation, Object[] listeners) throws Throwable {
-		int listenerIndex = -1;
-		
-		try {
-			// Apply pre-event methods of registered listeners.
-			for(int i = 0; i < listeners.length; i++) {
-				Object listener = listeners[i];
-				Method preMethod = getPreMethod(invocation, listener);
-				if(preMethod != null) {
-					Object returnValueFromPreMethod = preMethod.invoke(listener, invocation.getArguments());
-					if(Boolean.FALSE.equals(returnValueFromPreMethod)) {
-						runAfterCompletion(listeners, listenerIndex, invocation, null);
-						return null;
-					}
-				}
-				listenerIndex = i;
-			}
+		if(ContextLoaderListener.isInitializationInProgress()) {
+			// Spring context is in the process of being initialized. 
+			// If we call module listeners in this case, we might encounter a problem if/when
+			// some module listener is designed to depend on the Spring context having already
+			// been initialized. To avoid such circular dependency, we refrain from invoking 
+			// module listeners until the context initialization will have completed.
+			// See Bug #634830 for related info.
 			
-			// Invoke the actual module method
-			Object returnValue = invocation.proceed();
-			
-			// Apply post-event methods of registered listeners.
-			// These execute in the reverse order.
-			for(int i = listeners.length - 1; i >= 0; i--) {
-				runPostMethod(listeners[i], invocation, returnValue);
-			}
-			
-			// Apply after-completion methods for successful outcome.
-			runAfterCompletion(listeners, listenerIndex, invocation, null);
-			
-			return returnValue;
+			return invocation.proceed(); // Simply proceed with the actual module method.
 		}
-		catch(Throwable t) {
-			// Apply after-completion methods for thrown exception.
-			runAfterCompletion(listeners, listenerIndex, invocation, t);
-			if(t instanceof InvocationTargetException)
-				throw ((InvocationTargetException) t).getTargetException();
-			else
-				throw t;
+		else { // Let's invoke module listeners
+			int listenerIndex = -1;
+			
+			try {
+				// Apply pre-event methods of registered listeners.
+				for(int i = 0; i < listeners.length; i++) {
+					Object listener = listeners[i];
+					Method preMethod = getPreMethod(invocation, listener);
+					if(preMethod != null) {
+						Object returnValueFromPreMethod = preMethod.invoke(listener, invocation.getArguments());
+						if(Boolean.FALSE.equals(returnValueFromPreMethod)) {
+							runAfterCompletion(listeners, listenerIndex, invocation, null);
+							return null;
+						}
+					}
+					listenerIndex = i;
+				}
+				
+				// Invoke the actual module method
+				Object returnValue = invocation.proceed();
+				
+				// Apply post-event methods of registered listeners.
+				// These execute in the reverse order.
+				for(int i = listeners.length - 1; i >= 0; i--) {
+					runPostMethod(listeners[i], invocation, returnValue);
+				}
+				
+				// Apply after-completion methods for successful outcome.
+				runAfterCompletion(listeners, listenerIndex, invocation, null);
+				
+				return returnValue;
+			}
+			catch(Throwable t) {
+				// Apply after-completion methods for thrown exception.
+				runAfterCompletion(listeners, listenerIndex, invocation, t);
+				if(t instanceof InvocationTargetException)
+					throw ((InvocationTargetException) t).getTargetException();
+				else
+					throw t;
+			}
 		}
 	}
 	
