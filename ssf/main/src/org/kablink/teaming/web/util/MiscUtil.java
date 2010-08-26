@@ -52,8 +52,12 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -592,4 +596,35 @@ public final class MiscUtil
 	{
 		return ( ", " + name + ":  '" + ( ( null == value ) ? "" : value ) + "'" );
 	}// end getIAPartString()
+	
+	/**
+	 * Returns true if the FolderEntry is reserved and false otherwise.
+	 * 
+	 * @param binderId
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static boolean isEntryReserved(String binderIdS, String entryIdS) {
+		boolean reply = false;
+		
+		try {
+			Long binderId = Long.parseLong(binderIdS);
+			Long entryId  = Long.parseLong(entryIdS);
+			FolderModule fm = ((FolderModule) SpringContextUtil.getBean("folderModule"));
+			FolderEntry fe = fm.getEntry(binderId, entryId);
+			if (null != fe) {
+				HistoryStamp reservation = fe.getReservation();
+				if (null != reservation) {
+					UserPrincipal principal = reservation.getPrincipal(); 
+					reply = (null != principal);
+				}
+			}
+		}
+		catch (Exception e) {
+			// Ignore.
+		}
+		
+		return reply;
+	}
 }// end MiscUtil
