@@ -58,6 +58,7 @@ public class OnSelectBinderInfo {
 	public enum Instigator {
 		BREAD_CRUMB_TREE,
 		CONTENT_CONTEXT_CHANGE,
+		SIDEBAR_RELOAD,
 		SIDEBAR_TREE,
 		
 		OTHER,

@@ -170,6 +170,7 @@ public class RequestInfo extends JavaScriptObject
 	 */
 	public final native boolean forceSidebarReload() /*-{ return this.forceSidebarReload;  }-*/;
 	public final native void    clearSidebarReload() /*-{ this.forceSidebarReload = false; }-*/;
+	public final native void    setSidebarReload()   /*-{ this.forceSidebarReload = true;  }-*/;
 
 	/**
 	 * Returns the ID of the top workspace.

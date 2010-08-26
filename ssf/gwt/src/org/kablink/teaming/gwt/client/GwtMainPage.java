@@ -831,7 +831,8 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case TOGGLE_GWT_UI:
-			toggleGwtUI();
+			reloadLeftNavigation();
+//!			toggleGwtUI();
 			break;
 
 		case BROWSE_HIERARCHY:
@@ -890,6 +891,10 @@ public class GwtMainPage extends Composite
 			
 		case PRE_CONTEXT_SWITCH:
 			preContextSwitch();
+			break;
+			
+		case RELOAD_LEFT_NAVIGATION:
+			reloadLeftNavigation();
 			break;
 			
 		case TAG_SEARCH:
@@ -1088,7 +1093,9 @@ public class GwtMainPage extends Composite
 			// If we're not coming from a WorkspaceTreeControl context
 			// change...
 			instigator = binderInfo.getInstigator();
-			if (( Instigator.SIDEBAR_TREE != instigator ) || binderInfo.getForceSidebarReload() )
+			if (( Instigator.SIDEBAR_TREE   != instigator ) ||
+			    ( Instigator.SIDEBAR_RELOAD == instigator ) ||
+			      binderInfo.getForceSidebarReload() )
 			{
 				// Tell the WorkspaceTreeControl to change contexts.
 				m_wsTreeCtrl.setSelectedBinder( binderInfo );
@@ -1101,7 +1108,7 @@ public class GwtMainPage extends Composite
 				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
 				m_wsTreeCtrl.contextLoaded( m_selectedBinderId );
 			}
-			else
+			else if ( Instigator.SIDEBAR_RELOAD != instigator )
 			{
 				// No, we aren't handling a context change in the
 				// content panel! Tell the content panel to view the
@@ -1464,6 +1471,16 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.clearContextMenus();
 		}
 	}// end preContextSwitch()
+	
+	/*
+	 * Forces the workspace tree to reload itself.
+	 * 
+	 * Implements the RELOAD_LEFT_NAVIGATION teaming action.
+	 */
+	private void reloadLeftNavigation()
+	{
+		contextLoaded(m_selectedBinderId, Instigator.SIDEBAR_RELOAD);
+	}// end reloadLeftNavigation()
 
 	/*
 	 * This method will be called to perform a search on a tag name

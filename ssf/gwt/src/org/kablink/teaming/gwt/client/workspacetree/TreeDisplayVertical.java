@@ -800,13 +800,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Is the requested Binder available in those we've already
 		// got loaded?
-		final boolean forceReload = binderInfo.getForceSidebarReload();
+		Instigator instigator = binderInfo.getInstigator();
+		final boolean forceReload = (binderInfo.getForceSidebarReload() || (Instigator.SIDEBAR_RELOAD == instigator));
 		final String binderId = String.valueOf(binderInfo.getBinderId());
 		final TreeInfo targetTI = TreeInfo.findBinderTI(getRootTreeInfo(), binderId);
 		if (null != targetTI) {
 			// Yes!  Should the request cause the tree to be re-rooted?
-			switch (binderInfo.getInstigator()) {
+			switch (instigator) {
 			case CONTENT_CONTEXT_CHANGE:
+			case SIDEBAR_RELOAD:
 			case SIDEBAR_TREE:
 				if (forceReload)
 					 reloadTree();
