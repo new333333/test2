@@ -61,6 +61,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -79,6 +80,7 @@ import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowCondition;
@@ -363,7 +365,17 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	 * @return
 	 */
 	public static String processConditions(ExecutionContext executionContext, WorkflowSupport entry, WorkflowState state) {
-		return processConditions(executionContext, entry, state, false, false);
+		String toState = processConditions(executionContext, entry, state, false, false);
+		processChangeLog(toState, ChangeLog.MODIFYWORKFLOWSTATE, entry);
+		return toState;
+	}
+	
+	public static void processChangeLog(String toState, String change, WorkflowSupport entry) {
+		if (Validator.isNotNull(toState)) {
+			ChangeLog changes = new ChangeLog((DefinableEntity)entry, change);
+			ChangeLogUtils.buildLog(changes, (DefinableEntity)entry);
+			getInstance().getCoreDao().save(changes);
+		}
 	}
 
 	/**
@@ -477,6 +489,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 						context.save(t);
 						stateChange=true;
 						found = true;
+						processChangeLog(toState, ChangeLog.MODIFYWORKFLOWSTATE, entry);
 					}
 				}
 				//don't trigger onModify conditions after the first time through
