@@ -34,6 +34,7 @@
 %>
 <% // Folder listing %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
+<%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:if test="${empty ss_entryViewStyle}">
@@ -452,6 +453,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
+	String e1BinderId = ((String) entry1.get("_binderId"));
 	String e1DocId = ((String) entry1.get("_docId"));
 	if (!folderEntriesSeen.contains(e1DocId)) {
 		folderEntriesSeen.add(entry1.get("_docId"));
@@ -714,6 +716,12 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
+  	<% if (MiscUtil.isEntryReserved(e1BinderId, e1DocId)) { %><img
+		style="margin-right: 1px;"
+		align="absmiddle" 
+		src="<html:imagesPath/>pics/sym_s_caution.gif"
+		<ssf:alt tag="entry.reservedBy"/><ssf:title tag="entry.reservedBy"/>
+	/><% } %>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
