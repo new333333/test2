@@ -53,7 +53,7 @@
 		<ssf:param name="operation" value="modifyEntry" />
 		</ssf:url>"
 >
-	 <div class="ss_formButton">
+	 <div class="ss_formButtonRight">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
 	 	  onClick="ss_cancelButtonCloseWindow();return false;"/>
 	 </div>
@@ -165,7 +165,7 @@
     	</table> 
 	 <br />
 	 
-	 <div class="ss_formButton">
+	 <div class="ss_formButtonLeft">
 	 	<input type="button" name="Button" value="<ssf:nlt tag="button.close"/>" 
 	 	onClick="ss_cancelButtonCloseWindow();return false;"/>
 	 </div>	 

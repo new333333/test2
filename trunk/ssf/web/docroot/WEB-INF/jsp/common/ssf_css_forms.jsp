@@ -292,9 +292,13 @@ td.rightend
 	padding-top: 4px;
 	margin: 2px;
 	}
-.ss_formButton {
+.ss_formButtonRight {
 	background-position: right;
 	text-align: right;
+	}
+.ss_formButtonLeft {
+	background-position: left;
+	text-align: left;
 	}
 
 /********* CLIPBOARD POPUP ************/
