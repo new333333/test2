@@ -727,7 +727,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
 					Map qualifiers = new HashMap();
 					qualifiers.put("nosort", true);
-					qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage(this.href)} else {return false}");
+					qualifiers.put("onClick", "return ss_confirmPost(ss_setWikiHomePageConfirmation, '', this.href)");
 					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);

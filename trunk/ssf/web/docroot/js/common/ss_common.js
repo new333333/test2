@@ -6765,6 +6765,15 @@ function ss_confirmPost(label, text, url) {
 	}
 }
 
+function ss_confirmSetWikiHomepage(url) {
+	if (confirm(ss_setWikiHomePageConfirmation)) {
+		ss_postToThisUrl(url);
+		return false
+	} else {
+		return false;
+	}
+}
+
 function ss_startSpinner(btnObj)
 {
 	var spinner = document.getElementById("ss_spinner")
