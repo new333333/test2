@@ -33,13 +33,19 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,7 +66,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UserStatusControl extends Composite implements Event.NativePreviewHandler {
+public class UserStatusControl extends Composite implements ActionRequestor, Event.NativePreviewHandler {
 	
 	private final static int LINES = 3;
 	private final static int ONE_LINE = 1;
@@ -74,7 +80,9 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private InlineLabel textAmount; 
 	private int totalChar = 0;
 	private InlineLabel limitExceeded;
-	private boolean savingUserStatusInProgress = false;;
+	private boolean savingUserStatusInProgress = false;
+	
+	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 
 	public UserStatusControl () {
 
@@ -201,7 +209,21 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		//get the status of the current user
 		getUserStatus();
 
+		//register
+		initialize();
+		
 		initWidget(mainPanel);
+	}
+	
+	private void initialize() {
+		//Register with GwtMainPage, so we can fire an event
+		try {
+			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
+		} catch(Exception e) {
+			if(GwtClientHelper.jsIsIE()) {
+				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
+			}
+		}
 	}
 
 	private void setUserStatus(final String status) {
@@ -239,6 +261,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				} else {
 					showStatus(false);
 				}
+				
+				triggerAction(TeamingAction.RELOAD_LEFT_NAVIGATION);
 				
 				savingUserStatusInProgress = false;
 			}
@@ -498,5 +522,38 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 				this.timeLabel.setText(dateString);
 			}
 		}
-	} 
+	}
+
+    /**
+	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
+	 */
+	public void addActionHandler(ActionHandler actionHandler) {
+		m_actionHandlers.add(actionHandler);
+	}
+	
+	/**
+	 * Fires a TeamingAction at the registered ActionHandler's.
+	 * 
+	 * Implements the ActionTrigger.triggerAction() method. 
+	 *
+	 * @param action
+	 * @param obj
+	 */
+	public void triggerAction(TeamingAction action, Object obj) {
+		// Scan the ActionHandler's that have been registered...
+		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
+			// ...firing the action at each.
+			ahIT.next().handleAction(action, obj);
+		}
+	}
+	
+	/**
+	 * Use to trigger an action to GwtMainPage
+	 * @param action
+	 */
+	public void triggerAction(TeamingAction action) {
+		// Always use the initial form of the method.
+		triggerAction(action, null);
+	}
+
 }
