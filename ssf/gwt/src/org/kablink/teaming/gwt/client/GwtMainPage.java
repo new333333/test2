@@ -831,8 +831,7 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case TOGGLE_GWT_UI:
-			reloadLeftNavigation();
-//!			toggleGwtUI();
+			toggleGwtUI();
 			break;
 
 		case BROWSE_HIERARCHY:
