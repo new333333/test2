@@ -58,15 +58,6 @@
 		}
 	}
 	
-	function ss_confirmSetWikiHomepage(url) {
-		if (confirm("<ssf:nlt tag="wiki.confirmSetHomepage"/>")) {
-			ss_postToThisUrl(url);
-			return false
-		} else {
-			return false;
-		}
-	}
-	
 </script>
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
