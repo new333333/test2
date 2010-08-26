@@ -165,10 +165,22 @@ public class GwtMainPage extends Composite
 			// Yes, tell the user
 			Window.alert( errMsg );
 			
-			// Execute a deferred command to take the user to their workspace.
-			handleAction( TeamingAction.MY_WORKSPACE, null );
-			
-			return;
+			// Is the user logged in?
+			if ( m_requestInfo.isUserLoggedIn() )
+			{
+				Command cmd;
+				
+				// Yes
+				// Execute a deferred command to take the user to their workspace.
+				cmd = new Command()
+				{
+					public void execute()
+					{
+						handleAction( TeamingAction.MY_WORKSPACE, null );
+					}
+				};
+				DeferredCommand.addCommand( cmd );
+			}
 		}
 		
 		// Add the main menu to the page.

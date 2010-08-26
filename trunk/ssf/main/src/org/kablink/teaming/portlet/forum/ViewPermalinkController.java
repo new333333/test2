@@ -596,7 +596,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				// Add the "my workspace" url to the response.
 				{
 					String myWSUrl = PermaLinkUtil.getPermalink( request, user );
-					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1") );
+					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1/captive/true") );
 				}
 
 				// Add the ID of the top workspace.
