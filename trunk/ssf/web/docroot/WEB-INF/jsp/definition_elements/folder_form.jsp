@@ -78,7 +78,7 @@
 				onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">
 			&nbsp;
 			<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span>
-			<ssf:showHelp guideName="adv_user" pageId="mngfldrs_webdav_configure" />
+			<ssf:showHelp guideName="adv_user" pageId="mngfldrs_webdav" sectionId="mngfldrs_webdav_configure" />
 		</div>
 		<input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
 		<br/>
