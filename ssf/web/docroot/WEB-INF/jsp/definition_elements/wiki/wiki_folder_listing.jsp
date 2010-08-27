@@ -88,7 +88,7 @@
 		<table cellspacing="0" cellpadding="0">
 		  <tbody>
 			<tr>
-			  <th>
+			  <td>
 				<span class="ss_nowrap"><ssf:nlt tag="wiki.topics"/></span>
 			  </td>
 			  <td>
@@ -109,6 +109,7 @@
 					     </li>
 					   </c:if>
 					 </c:forEach>
+					 <li></li>
 					</ul>
 				</div>
 			  </td>
