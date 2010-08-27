@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoPrincipalByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
@@ -112,6 +113,10 @@ public class EnterExitEvent extends AbstractActionHandler {
 		Long id = new Long(token.getId());
 		String state = token.getNode().getName();
 		WorkflowSupport entry = loadEntry(ctx);
+		if (entry == null || (entry instanceof FolderEntry && 
+				(((FolderEntry)entry).isPreDeleted() || ((FolderEntry)entry).isDeleted()))) {
+			return;
+		}
 		WorkflowState ws = entry.getWorkflowState(id);
 		boolean isEnter = true;
 		if (debugEnabled) logger.debug("Workflow event (" + executionContext.getEvent().getEventType() + ")");
