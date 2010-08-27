@@ -851,7 +851,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			processor.processChangeLog(entry, ChangeLog.RESTOREENTRY);
 			processor.indexEntry(entry);
 		}
-	
+		WorkflowProcessUtils.resumeTimers(wfEntry);
     }
 	
 	//see if anything to do after some external event

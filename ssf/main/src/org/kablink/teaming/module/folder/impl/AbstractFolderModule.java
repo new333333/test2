@@ -113,6 +113,7 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneReadSession;
@@ -768,6 +769,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeleted(Boolean.TRUE);
         	entry.setPreDeletedWhen(System.currentTimeMillis());
         	entry.setPreDeletedBy(userId);
+        	
+        	//Suspend any workflow timers
+        	WorkflowProcessUtils.suspendTimers(entry);
         	
 			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.PREDELETEENTRY);

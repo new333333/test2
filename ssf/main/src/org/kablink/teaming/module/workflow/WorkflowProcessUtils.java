@@ -396,6 +396,45 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	public static boolean processConditions(WorkflowSupport entry, boolean isModify, boolean isReply) {
 		return processConditions(entry, (Token)null, isModify, isReply);
 	}
+
+	/**
+	 * When an entry is deleted, suspend all timers 
+	 * @param entry
+	 */
+public static void suspendTimers(WorkflowSupport entry) {
+		JbpmContext context=WorkflowFactory.getContext();
+		try {
+			Set states = new HashSet(entry.getWorkflowStates());
+			for (Iterator iter=states.iterator(); iter.hasNext(); ) {
+				WorkflowState ws = (WorkflowState)iter.next();
+				Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
+				//	make sure state hasn't been removed as the result of another thread
+				if (t.hasEnded() || (ws.getOwner() == null)) continue;
+				t.suspend();
+			}
+		} finally {
+			context.close();
+		}
+	}
+/**
+ * When an entry is undeleted, resume all timers that have been suspended
+ * @param entry
+ */
+public static void resumeTimers(WorkflowSupport entry) {
+	JbpmContext context=WorkflowFactory.getContext();
+	try {
+		Set states = new HashSet(entry.getWorkflowStates());
+		for (Iterator iter=states.iterator(); iter.hasNext(); ) {
+			WorkflowState ws = (WorkflowState)iter.next();
+			Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
+			//	make sure state hasn't been removed as the result of another thread
+			if (t.hasEnded() || (ws.getOwner() == null)) continue;
+			t.resume();
+		}
+	} finally {
+		context.close();
+	}
+}
 	public static void processManualTransition(WorkflowSupport entry, WorkflowState ws, String newState) {
 		JbpmContext context=WorkflowFactory.getContext();
 	    try {
