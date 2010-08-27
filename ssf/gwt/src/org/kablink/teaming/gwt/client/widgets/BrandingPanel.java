@@ -250,7 +250,7 @@ public class BrandingPanel extends Composite
 							}// end run()
 						};
 						
-						timer.schedule( 1000 );
+						timer.schedule( 1500 );
 					}
 				}
 			}
