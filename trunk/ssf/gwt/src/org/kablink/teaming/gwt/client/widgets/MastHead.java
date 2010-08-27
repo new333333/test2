@@ -844,6 +844,33 @@ public class MastHead extends Composite
 	
 	
 	/**
+	 * 
+	 */
+	public void setVisible( boolean visible )
+	{
+		super.setVisible( visible );
+
+		if ( visible == true )
+		{
+			Command cmd;
+			
+			cmd = new Command()
+			{
+				public void execute()
+				{
+					if ( m_siteBrandingPanel != null )
+						m_siteBrandingPanel.adjustBrandingPanelHeight();
+					
+					if ( m_binderBrandingPanel != null )
+						m_binderBrandingPanel.adjustBrandingPanelHeight();
+				}
+			};
+			DeferredCommand.addCommand( cmd );
+		}
+	}
+	
+	
+	/**
 	 * Show the site and binder branding based on the branding rule found in the site branding.
 	 */
 	private void showBranding()
