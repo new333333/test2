@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,9 @@
 <script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <script type="text/javascript">
 //need to shut off relative links and adding pictures for mail.
-tinyMCE.init(
- {mode: "specific_textareas", editor_selector: "mceEditable",
+tinyMCE.init({
+	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
+	mode: "specific_textareas", editor_selector: "mceEditable",
 <c:choose><%--
     --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--

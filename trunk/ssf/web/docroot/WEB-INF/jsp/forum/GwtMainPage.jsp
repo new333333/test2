@@ -74,6 +74,7 @@
 		// necessary js files.
 		tinyMCE.init(
 		{
+			paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 			mode : "none",
 			editor_selector : "mceEditable_standard",
 			theme : "advanced", 

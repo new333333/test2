@@ -9499,6 +9499,33 @@ function intRequiredBlur(eWidget, mode, sFixupMsg) {
 	}
 }
 
+/*
+ * WebKit Pasting Bug Cleanup.
+ * 
+ * The problem is that when pasting plain text into a WebKit based
+ * browser, EOL characters are NOT being handled correctly.
+ * 
+ * This is part of the fix for Bugzilla bug#625658 against Teaming.
+ * 
+ * As a reference as to how this issue is being addressed here, see
+ * bug#2866317 against TinyMCE at:
+ * 
+ * 		http://sourceforge.net/tracker/index.php?func=detail&aid=2866317&group_id=103281&atid=635682
+ */
+function TinyMCEWebKitPasteFixup(t, v) {
+	switch (t)
+	{
+	case "paste_postprocess":
+		var fixThis = /<div id="_mcePaste[^>]*>(?!<div>)([\s\S]*)<\/div>([\s\S]*)$/i;
+		v = v.replace(fixThis, '<p>$1</p>');
+		
+		fixThis = /<div id="_mcePaste[^>]*>/gi;
+		v = v.replace(fixThis, '<p>');
+		break;
+	}
+	return v;
+}
+
 
 dojo.require("dijit.dijit");
 dojo.require("dojo.fx");
