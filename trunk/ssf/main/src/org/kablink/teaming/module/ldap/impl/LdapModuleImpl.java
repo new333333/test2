@@ -61,7 +61,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -440,11 +439,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							Map userMods;
 							
 							// Yes
-							// Base64 encode the guid we read from the ldap directory.
+							// Get the guid we read from the ldap directory.
 							guid = null;
 							if ( ldapGuidAttribute != null )
 							{
-								guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 							}
 
 							// Create the map that will hold the attributes we want updated in the Teaming db.
@@ -562,7 +561,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Do we have an ldap guid attribute?
 						if ( ldapGuidAttribute != null )
 						{
-							guid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 						}
 	
 						// Does this group exist in Teaming.
@@ -1174,7 +1173,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				// Yes
 				// Get the ldap guid that was read from the ldap directory for this user.
-				ldapGuid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+				ldapGuid = getLdapGuid( lAttrs, ldapGuidAttribute );
 				
 				// Does the ldap user have a guid?
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
@@ -1651,7 +1650,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			{
 				// Yes
 				// Get the ldap guid that was read from the ldap directory for this user.
-				ldapGuid = getLdapGuidBase64Encoded( lAttrs, ldapGuidAttribute );
+				ldapGuid = getLdapGuid( lAttrs, ldapGuidAttribute );
 				
 				// Does the ldap group have a guid?
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
@@ -2041,7 +2040,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected LdapContext getGroupContext(Long zoneId, LdapConnectionConfig config) throws NamingException {
 		return getContext(zoneId, config, true);
 	}
-	protected LdapContext getContext(Long zoneId, LdapConnectionConfig config, boolean replaceDn) throws NamingException { 
+	protected LdapContext getContext(Long zoneId, LdapConnectionConfig config, boolean replaceDn) throws NamingException {
+		String ldapGuidAttributeName;
 		// Load user from ldap
 		String user = config.getPrincipal();
 		String pwd = config.getCredentials();
@@ -2064,6 +2064,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logger.debug("Using " + url + " for groups");
 		}
 		*/
+
+		// Do we have the name of the ldap attribute that holds the guid?
+		ldapGuidAttributeName = config.getLdapGuidAttribute();
+		if ( ldapGuidAttributeName != null && ldapGuidAttributeName.length() > 0 )
+		{
+			// Specify that we want the ldap guid attibute returned as binary data.
+			env.put( "java.naming.ldap.attributes.binary", ldapGuidAttributeName );
+		}
+		
 		env.put(Context.PROVIDER_URL, url);
 		String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
 		if (!Validator.isNull(socketFactory))
@@ -2171,21 +2180,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Do we have an ldap guid attribute?
 		if ( ldapGuidAttribute != null )
 		{
-			String base64EncodedString;
+			String ldapGuid;
 			
-			base64EncodedString = getLdapGuidBase64Encoded( attrs, ldapGuidAttribute );
-			mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, base64EncodedString );
+			ldapGuid = getLdapGuid( attrs, ldapGuidAttribute );
+			mods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, ldapGuid );
 		}
 	}
 	
 	
 	/**
-	 * Base64 encode the guid we read from the ldap directory.
+	 * Get the guid we read from the ldap directory.  Convert the guid byte array into a string where each
+	 * byte in the array is represented by hex characters.
 	 */
-	private static String getLdapGuidBase64Encoded( Attributes attrs, String ldapGuidAttribute )
+	private static String getLdapGuid( Attributes attrs, String ldapGuidAttribute )
 	{
 		Attribute attrib;
-		String base64EncodedString = null;
+		String ldapGuidStr = null;
 		
 		// Get the ldap attribute that holds the guid.
 		attrib = attrs.get( ldapGuidAttribute );
@@ -2196,21 +2206,34 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				
 				value = attrib.get();
-				if ( value != null && value instanceof String )
+				if ( value != null && value instanceof byte[] )
 				{
-					// Base64 encode the guid
-					try
+					int i;
+					byte[] bytes;
+					StringBuffer strBuffer;
+					
+					bytes = (byte[]) value;
+					
+					strBuffer = new StringBuffer();
+					
+					for (i = 0; i < bytes.length; ++i)
 					{
-						byte[] byteArray;
+						String hexStr;
 						
-						// Get the guid as a byte array.
-						byteArray = ((String)value).getBytes( "utf-8" );
+						// Get the next byte as a hex string.
+						hexStr = Integer.toHexString( bytes[i] & 0xff );
 						
-						base64EncodedString = new String( Base64.encodeBase64( byteArray ), "utf-8" );
-					} catch (UnsupportedEncodingException e)
-					{
-						// Nothing to do.
+						// If the hex string only has 1 char in it prepend a "0"
+						if ( hexStr != null )
+						{
+							if ( hexStr.length() == 1 )
+								strBuffer.append( "0" );
+							
+							strBuffer.append( hexStr );
+						}
 					}
+					
+					ldapGuidStr = strBuffer.toString();
 				}
 			}
 			catch (NamingException ex)
@@ -2219,8 +2242,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 
-		return base64EncodedString;
-	}// end getLdapGuidBase64Encoded()
+		return ldapGuidStr;
+	}// end getLdapGuid()
 	
 	/**
 	 * Read the default locale id from the global properties
