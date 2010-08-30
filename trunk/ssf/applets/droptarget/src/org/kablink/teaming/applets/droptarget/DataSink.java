@@ -68,6 +68,7 @@ final String AnimGif = "sym_s_animfolder.gif";
 static boolean GotColor = false;
 static Color BGColor = null;
 final String BGColorString = "#ffffff";
+boolean fileUploadInProgress = false;
 
 private static ArrayList xferFileList;
 private static ArrayList xferFileListNames;
@@ -133,6 +134,13 @@ private static ArrayList xferFileListNames;
    * This method is invoked when something is pasted onto our icon.
    */
   public void addFilesToList() {
+	// If we're already uploading files...
+    if (fileUploadInProgress) {
+      // ...we won't try anymore until they're done.
+      informUploadInProgress();
+      return;
+    }
+	  
       // Get the clipboard, and read its contents
     Clipboard c = this.getToolkit().getSystemClipboard();
     Transferable t = c.getContents(this);
@@ -294,6 +302,17 @@ private static ArrayList xferFileListNames;
 	makeJSCallWithAppletParam("noFileAlertMessage");
   }
   
+  private void informUploadInProgress() {
+    // 20100830 (DRF):  I left the following commented out for the
+    // following reasons:
+    // 1. I'm not sure we really want to jump in the user's face if
+    //    they paste or drag & drop more files while other files are
+    //    still being processed; and
+    // 2. At the date I put this in, we were past the Durango string
+    //    changes cutoff.
+    // makeJSCallWithAppletParam("uploadInProgress");
+  }
+	  
   private void errorMsgOnDirectoryLoad() {
 	makeJSCallWithAppletParam("directoryLoadErrorMessage");
   }
@@ -315,6 +334,13 @@ private static ArrayList xferFileListNames;
    * This method is invoked when the user drops something on us
    */
   public void drop(DropTargetDropEvent e){
+    // If we're already uploading files...
+    if (fileUploadInProgress) {
+      // ...we won't try anymore until they're done.
+      informUploadInProgress();
+	  return;
+    }  	  
+	  
     this.setBorder(null);                  // Restore the default border
     Transferable t = e.getTransferable();  // Get the data that was dropped
     xferFileList = new ArrayList();
@@ -596,6 +622,7 @@ private static ArrayList xferFileListNames;
       JSObject win = JSObject.getWindow(topframe);
       String args[] = {strFileNames};
       Object foo = win.call(strFileLoadingInProgress,args);
+      fileUploadInProgress = true;
     } catch (Exception ignored) { }
   }
 
@@ -607,6 +634,7 @@ private static ArrayList xferFileListNames;
       JSObject win = JSObject.getWindow(topframe);
       String args[] = {};
       Object foo = win.call(strFileLoadingEnded,args);
+      fileUploadInProgress = false;
     } catch (Exception ignored) { }
   }  
   
@@ -658,5 +686,4 @@ private static ArrayList xferFileListNames;
     item.addActionListener ( this );
     return item;
   } // makeMenuItem
-
 }

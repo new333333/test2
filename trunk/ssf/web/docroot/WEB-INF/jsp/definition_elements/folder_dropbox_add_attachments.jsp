@@ -184,6 +184,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
 			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory.for.nonlibrary.folder" />" />
 			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
+			    <PARAM NAME = "uploadInProgress" value="<ssf:nlt tag="binder.add.files.applet.upload.in.progress" />" />
 			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileLoadingEnded" value="ss_endLoadingFiles${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
