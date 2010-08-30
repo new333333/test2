@@ -28,7 +28,7 @@
  *#
 #if ($ssVisitor.isHtml())
 <div style="#ss_entryContent() ">
-#if (!$ssVisitor.Entity.getCustomAttributes($property_name).Value)
+#if (!$ssVisitor.Entity.getCustomAttribute($property_name).Value)
 ($ssVisitor.getNLT('notchecked'))
 #else
 ($ssVisitor.getNLT('checked'))
@@ -36,7 +36,7 @@
 <span style="#ss_labelRight()">${property_caption}</span>
 </div>
 #else
-#if (!$ssVisitor.Entity.getCustomAttributes($property_name).Value)
+#if (!$ssVisitor.Entity.getCustomAttribute($property_name).Value)
 #ss_print("($ssVisitor.getNLT('notchecked'))")
 #else
 #ss_print("($ssVisitor.getNLT('checked'))")
