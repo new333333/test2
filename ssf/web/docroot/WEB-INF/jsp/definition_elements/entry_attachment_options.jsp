@@ -104,6 +104,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
 			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory" />" />
 			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
+			    <PARAM NAME = "uploadInProgress" value="<ssf:nlt tag="binder.add.files.applet.upload.in.progress" />" />
 			    <PARAM NAME = "fileUploadNotSupported" value="<ssf:nlt tag="binder.add.files.applet.upload.not.supported" />" />
 			    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:nlt tag="applet.errorFileTooLarge" />" />
