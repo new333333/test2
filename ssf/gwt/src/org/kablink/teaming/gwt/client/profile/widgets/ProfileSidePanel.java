@@ -210,6 +210,8 @@ public class ProfileSidePanel extends Composite {
 		}
 		return null;
 	}
-	
-	
+
+	public void updateQuota(String usedQuota) {
+		statsPanel.updateQuota(usedQuota);
+	}
 }

@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.server.util;
 import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -50,6 +51,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+import org.apache.taglibs.standard.tag.common.fmt.FormatNumberSupport;
+import org.apache.taglibs.standard.tag.el.fmt.FormatNumberTag;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
@@ -63,10 +66,12 @@ import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeAttachment;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
@@ -74,6 +79,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.server.GwtRpcServiceImpl;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -88,6 +94,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -901,6 +908,62 @@ public class GwtProfileHelper {
     	
     	return ((entries != null) ? entries.size() : 0);
     }
+
+	public static void getDiskUsageInfo(HttpServletRequest request,
+			AllModulesInjected bs, String binderId,
+			DiskUsageInfo diskUsageInfo) {
+		
+		boolean isMirrored = false;
+		
+		Long binderIdL = Long.valueOf(binderId);
+		
+		Binder binder = bs.getBinderModule().getBinder(binderIdL);
+		if (binder instanceof Folder) {
+			isMirrored = ((Folder)binder).isMirrored();
+		}
+		
+		Principal p = getPrincipalByBinderId(bs, binderId);
+		
+		List <Long> userIds = new ArrayList<Long>();
+		userIds.add(p.getId());
+
+		//Get the User object for this principle
+		SortedSet<User> users = bs.getProfileModule().getUsers(userIds);
+		User u = null;
+		if (!users.isEmpty()) {
+			u = users.iterator().next();
+			u = (User)Utils.fixProxy(u);
+		}
+		
+		if(bs.getAdminModule().isQuotaEnabled()) {
+			
+			double quotaMax =  bs.getProfileModule().getMaxUserQuota();
+			double used = u.getDiskSpaceUsed();
+			double maxValue = 1048576;
+		
+	    	NumberFormat nf = NumberFormat.getInstance();
+	    	nf.setMaximumFractionDigits(2);
+	    	
+		    String quotaMessage = null;
+		    
+		    if(bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded()  && !bs.getProfileModule().isDiskQuotaExceeded() && !isMirrored){
+		    	double value = (quotaMax - used) / maxValue;
+		    	String number = nf.format(value);
+		    	quotaMessage = NLT.get("quota.nearLimit", new Object[]{number});  
+		    }
+
+		    if(bs.getProfileModule().isDiskQuotaExceeded() && !isMirrored){
+		    	quotaMessage = NLT.get("quota.diskQuotaExceeded");  
+		    }
+		    
+		    diskUsageInfo.setEnabled(bs.getAdminModule().isQuotaEnabled());
+			diskUsageInfo.setExceeded(bs.getProfileModule().isDiskQuotaExceeded());
+			diskUsageInfo.setHighWaterMarkExceeded(bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded());
+			diskUsageInfo.setMaxQuota((nf.format(quotaMax/maxValue)));
+			diskUsageInfo.setUsedQuota((nf.format(used/maxValue)));
+			diskUsageInfo.setQuotaMessage(quotaMessage);
+		}
+	}
 
 
     
