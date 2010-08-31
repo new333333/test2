@@ -264,8 +264,10 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		// Otherwise, read the users favorites.
 		m_rpcService.getFavorites(new AsyncCallback<List<FavoriteInfo>>() {
 			public void onFailure(Throwable t) {
-				Window.alert(t.toString());
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetFavorites());
 			}
+			
 			public void onSuccess(final List<FavoriteInfo> fList)  {
 				// Scan the favorites...
 				boolean currentIsFavorite = false;

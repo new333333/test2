@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
@@ -964,6 +965,10 @@ public class GwtMainPage extends Composite
 			Window.open( teamingFeedUrl, "_teaming_feed", "width=500,height=700,resizable,scrollbars" );
 			break;
 			
+		case ACTIVITY_STREAM:
+			activityStream( obj );
+			break;
+			
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -1501,6 +1506,27 @@ public class GwtMainPage extends Composite
 		else
 			Window.alert( "in tagSearch() and obj is not a String object" );
 	}//end tagSearch()
+
+	/*
+	 * This method will be called to load an Activity Stream based on
+	 * the Object received as a parameter.
+	 * 
+	 * Implements the ACTIVITY_STREAM teaming action.
+	 */
+	private void activityStream( Object obj )
+	{
+		// Do we have a String parameter?
+		if ( obj instanceof String )
+		{
+			// Yes!  Parse it as an ActivityStreamInfo.
+			ActivityStreamInfo asi = ActivityStreamInfo.parse((String) obj);
+			
+//!			...this needs to be implemented...
+			Window.alert( "activityStream( ...this needs to be implemented... ):  " + asi.getStringValue() );
+		}
+		else
+			Window.alert( "in activityStream() and obj is not a String object" );
+	}//end activityStream()
 
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only

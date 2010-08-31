@@ -37,9 +37,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.mainmenu.ActivityStreamsPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -84,6 +86,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
+	private boolean m_activityStreamsUI = GwtMainPage.m_requestInfo.isActivityStreamsEnabled();
 	private BinderInfo m_contextBinder;
 	private FlowPanel m_buttonsPanel;
 	private MenuBarButton m_bhButton;
@@ -166,6 +169,33 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 
 	/*
+	 * Adds the Activity Streams item to the context based portion of
+	 * the menu bar.
+	 */
+	private void addActivityStreamsToContext() {
+		// If we're not running in Activity Streams mode...
+		if (!m_activityStreamsUI) {
+			// ...we don't display the Activity Streams menu.
+			return;
+		}
+		
+		final ActivityStreamsPopup asp = new ActivityStreamsPopup(this);
+		asp.setCurrentBinder(m_contextBinder);
+		if (asp.shouldShowMenu()) {
+			final MenuBarBox activityStreamsBox = new MenuBarBox("ss_mainMenuActivityStreams", m_messages.mainMenuBarActivityStreams(), true);
+			activityStreamsBox.addClickHandler(
+				new ClickHandler() {
+					public void onClick(ClickEvent event) {
+						if (asp.isShowing())
+						     asp.hideMenu();
+						else asp.showMenu(activityStreamsBox);
+					}
+				});
+			m_contextPanel.add(activityStreamsBox);
+		}
+	}
+	
+	/*
 	 * Adds the "Close Administration" button to the common portion of the menu bar.
 	 * bar.
 	 */
@@ -229,10 +259,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		menuPanel.add(m_buttonsPanel);
 
 		// ...and finally, add the common drop down items to the menu bar.
-		addMyWorkspaceToCommon(menuPanel);
-		addMyTeamsToCommon(    menuPanel);
-		addMyFavoritesToCommon(menuPanel);
-		addCloseAdministrationToCommon( menuPanel );
+		addMyWorkspaceToCommon(        menuPanel);
+		addMyTeamsToCommon(            menuPanel);
+		addMyFavoritesToCommon(        menuPanel);
+		addCloseAdministrationToCommon(menuPanel);
 	}
 	
 	/*
@@ -297,6 +327,12 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Teams item to the common portion of the menu bar.
 	 */
 	private void addMyTeamsToCommon(FlowPanel menuPanel) {
+		// If we're running in Activity Streams mode...
+		if (m_activityStreamsUI) {
+			// ...we don't display the My Teams menu.
+			return;
+		}
+		
 		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
 		final ActionTrigger actionTrigger = this;
 		m_myTeamsBox.addClickHandler(
@@ -512,7 +548,8 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 							}
 							public void onSuccess(final TeamManagementInfo tmi)  {
 								// Handle inSearch vs. not inSearch.
-								addManageToContext(      toolbarItemList, tmi);
+								addManageToContext(toolbarItemList, tmi);
+								addActivityStreamsToContext();
 								addRecentPlacesToContext(toolbarItemList);
 								if (inSearch) {
 									addTopRankedToContext();
