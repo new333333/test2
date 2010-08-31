@@ -47,6 +47,7 @@
 		// Save away information such as the binder id and the adapted url for the request we are working with.
 		// Through an overlay we will access m_requestInfo from java.
 		var m_requestInfo = {
+			activityStreamsEnabled : ${activityStreamsEnabled},
 			binderId : '${binderId}',
 			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 			adaptedUrl : '${adaptedUrl}',

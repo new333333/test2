@@ -56,6 +56,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
@@ -686,6 +687,15 @@ public class GwtUIHelper {
 		
 		String reply = ((null == topWSId) ? "" : String.valueOf(topWSId.longValue()));
 		return reply;
+	}
+
+	/**
+	 * Returns true if Activity Streams are enabled and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isActivityStreamsEnabled() {
+		return SPropsUtil.getBoolean("enable.activity.streams", false);
 	}
 	
 	/**

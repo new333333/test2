@@ -176,7 +176,13 @@ public class RequestInfo extends JavaScriptObject
 	 * Returns the ID of the top workspace.
 	 * 
 	 * @return
-	 * @return
 	 */
 	public final native String getTopWSId() /*-{ return this.topWSId; }-*/;
+
+	/**
+	 * Returns true if Activity Streams are enabled and false otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean isActivityStreamsEnabled() /*-{ return this.activityStreamsEnabled; }-*/;
 }// end RequestInfo

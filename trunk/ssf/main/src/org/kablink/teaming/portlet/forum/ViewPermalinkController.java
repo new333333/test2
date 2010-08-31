@@ -56,14 +56,12 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -567,6 +565,14 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (durangoUI)
 		{
 			String param;
+
+			// Put out a true/false indicator for the RequestInfo
+			// object as to the state of the new Activity Streams based
+			// user interface.
+			model.put(
+				WebKeys.URL_ACTIVITY_STREAMS_ENABLED,
+				String.valueOf(
+					GwtUIHelper.isActivityStreamsEnabled() ) );
 			
 			// If this permalink has already been handled by the GWT page there will be
 			// a "seen_by_gwt" parameter on the url.

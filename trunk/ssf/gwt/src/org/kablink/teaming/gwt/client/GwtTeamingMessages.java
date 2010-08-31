@@ -210,6 +210,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetBinderPermalink();
 	String rpcFailure_GetBinderTags();
 	String rpcFailure_GetBranding();
+	String rpcFailure_GetFavorites();
 	String rpcFailure_GetFolder();
 	String rpcFailure_GetFolderDefinitionId();
 	String rpcFailure_GetFolderEntry();
@@ -310,11 +311,20 @@ public interface GwtTeamingMessages extends Messages
 	String showTutorialPanel();
 	
 	// Strings used in the main menu.
+	String mainMenuActivityStreamsCurrentBinder();
+	String mainMenuActivityStreamsCurrentFolder();
+	String mainMenuActivityStreamsCurrentWorkspace();
+	String mainMenuActivityStreamsFollowedPeople();
+	String mainMenuActivityStreamsFollowedPlaces();
+	String mainMenuActivityStreamsMyFavorites();
+	String mainMenuActivityStreamsMyTeams();
+	String mainMenuActivityStreamsSiteWide();
 	String mainMenuAltBrowseHierarchy();
 	String mainMenuAltGwtUI();
 	String mainMenuAltLeftNavHideShow();
 	String mainMenuAltMastHeadHideShow();
 	String mainMenuAltSearchOptions();
+	String mainMenuBarActivityStreams();
 	String mainMenuBarFolder();
 	String mainMenuBarManageSavedSearches();
 	String mainMenuBarMyFavorites();
