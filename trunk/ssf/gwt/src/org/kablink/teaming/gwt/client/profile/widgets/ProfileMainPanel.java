@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -98,6 +99,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private Anchor uploadBtn;
 	private Anchor delete;
 	private FormPanel formPanel;
+
+	private InlineLabel quotaMsgLabel;
 
 	/**
 	 * Constructor
@@ -466,14 +469,14 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	
 	private FlowPanel createMessageDiv() {
 		FlowPanel msgDiv = null; 
-		InlineLabel msgLabel = null;
+		msgDiv = new FlowPanel();
+		quotaMsgLabel = new InlineLabel();
+		msgDiv.addStyleName("stats_error_msg");
+		msgDiv.add(quotaMsgLabel);
 
 		String quota = profileRequestInfo.getQuotaMessage();
 		if(GwtClientHelper.hasString(quota)) {
-			msgDiv = new FlowPanel();
-			msgLabel = new InlineLabel(quota);
-			msgDiv.addStyleName("stats_error_msg");
-			msgDiv.add(msgLabel);
+			quotaMsgLabel.setText(quota);
 		}
 		
 		return msgDiv;
@@ -765,6 +768,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 											anchor.appendChild(img.getElement());
 										}
 									}
+									
+									updateQuota();
 								}	
 							} catch (Exception e) {
 								Window.alert("Error modifying avatar" + e.getMessage());
@@ -781,6 +786,36 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		}
 		
 		return editAvatarSuccessHandler;
+	}
+	
+	private void updateQuota() {
+		
+		GwtRpcServiceAsync gwtRpcService;
+		
+		AsyncCallback<DiskUsageInfo> callback = new AsyncCallback<DiskUsageInfo>() {
+			public void onFailure(Throwable t) {
+				// display error
+				GwtClientHelper.handleGwtRPCFailure(
+					GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
+					profileRequestInfo.getBinderId());
+			}
+			public void onSuccess(DiskUsageInfo info) {
+				if(info != null) {
+					if(info.getQuotaMessage() != null){
+						quotaMsgLabel.setText(info.getQuotaMessage());
+					} else {
+						quotaMsgLabel.setText("");
+					}
+					
+					if(info.getUsedQuota() != null) {
+						((GwtProfilePage)actionTrigger).updateQuota(info.getUsedQuota());
+					}
+				}
+			}
+		};
+		
+		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
+		gwtRpcService.getDiskUsageInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 	}
 	
 	public final native boolean isFileError() /*-{  if( wnd.profileEmptyFrame.ss_error_code != null ) {

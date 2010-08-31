@@ -56,6 +56,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
@@ -199,5 +200,8 @@ public interface GwtRpcService extends RemoteService
 	
 	// Get upgrade information
 	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException;
+	
+	//Get DiskUsageINfo
+	public  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	
 }// end GwtRpcService

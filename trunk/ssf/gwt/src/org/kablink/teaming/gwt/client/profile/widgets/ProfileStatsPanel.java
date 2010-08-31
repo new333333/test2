@@ -33,9 +33,12 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
@@ -49,6 +52,7 @@ public class ProfileStatsPanel extends Composite {
 	private FlowPanel mainPanel;
 	private Grid grid;
 	private ProfileRequestInfo profileRequestInfo;
+	private InlineLabel quotaUsedValueLabel;
 	
 	public ProfileStatsPanel(ProfileRequestInfo requestInfo) {
 		
@@ -78,50 +82,36 @@ public class ProfileStatsPanel extends Composite {
 
 		//if the quotas enable and is the owner or the admin then can see the quota
 		if(profileRequestInfo.isQuotasEnabled() && (profileRequestInfo.isOwner()) ) {
-			addStat(grid, "Data Quota:", profileRequestInfo.getQuotasUserMaximum(), " MB");
-			addStat(grid, "Quota Used:", profileRequestInfo.getQuotasDiskSpacedUsed(), " MB");
+
+			String end = " MB";
+			
+			String quotaTitle = GwtTeaming.getMessages().profileDataQuota();
+			Label quotaTitleLabel = new Label(quotaTitle);
+			InlineLabel quotaValueLabel = new InlineLabel(profileRequestInfo.getQuotasUserMaximum());
+			quotaValueLabel.addStyleName( "bold" );
+			InlineLabel endLabel = new InlineLabel(end);
+			quotaValueLabel.getElement().appendChild(endLabel.getElement());
+			
+			grid.insertRow(row);
+			grid.setWidget(row, 0, quotaTitleLabel);
+			grid.setWidget(row, 1, quotaValueLabel);
+			row = row + 1;
+
+			String usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
+			Label quotaUsedLabel = new Label(usedTitle);
+			quotaUsedValueLabel = new InlineLabel(profileRequestInfo.getQuotasDiskSpacedUsed());
+			quotaUsedValueLabel.addStyleName( "bold" );
+			InlineLabel endLabel2 = new InlineLabel(end);
+			quotaUsedValueLabel.getElement().appendChild(endLabel2.getElement());
+			
+			grid.insertRow(row);
+			grid.setWidget(row, 0, quotaUsedLabel);
+			grid.setWidget(row, 1, quotaUsedValueLabel);
+			row = row + 1;
 		}
 	}
-	
-	/**
-	 * Helper method to build the user stats
-	 * @param grid
-	 * @param title
-	 * @param value
-	 */
-	private void addStat(Grid grid, String title, String value) {
-		
-		Label titleLabel = new Label(title);
-		//Label valueLabel = new Label(value);
-		InlineLabel valueLabel = new InlineLabel(value);
-		valueLabel.addStyleName( "bold" );
-		
-		grid.insertRow(row);
-		grid.setWidget(row, 0, titleLabel);
-		grid.setWidget(row, 1, valueLabel);
-		row = row + 1;
-	}
-	
-	/**
-	 * Helper method to build the user stats
-	 * 
-	 * @param grid
-	 * @param title
-	 * @param value
-	 * @param end
-	 */
-	private void addStat(Grid grid, String title, String value, String end) {
-		
-		Label titleLabel = new Label(title);
-		//Label valueLabel = new Label(value);
-		InlineLabel valueLabel = new InlineLabel(value);
-		valueLabel.addStyleName( "bold" );
-		InlineLabel endLabel = new InlineLabel(end);
-		valueLabel.getElement().appendChild(endLabel.getElement());
-		
-		grid.insertRow(row);
-		grid.setWidget(row, 0, titleLabel);
-		grid.setWidget(row, 1, valueLabel);
-		row = row + 1;
+
+	public void updateQuota(String usedQuota) {
+		quotaUsedValueLabel.setText(usedQuota + " MB");
 	}
 }

@@ -604,7 +604,6 @@ public interface GwtTeamingMessages extends Messages
 	String qViewInstantMessageTitle();
 	String qViewErrorWorkspaceDoesNotExist();
 
-	
 	//Profile
 	String profileEdit();
 	String profileDelete();
@@ -616,7 +615,8 @@ public interface GwtTeamingMessages extends Messages
 	String profileGroups();
 	String profileFollowing();
 	String profileAboutMe();
-
+	String profileDataQuota();
+	String profileQuotaUsed();
 	
 	// Presence related strings
 	String presenceAvailable();

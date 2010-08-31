@@ -246,4 +246,8 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		triggerAction(action, null);
 	}
 
+	public void updateQuota(String usedQuota) {
+		profileSidePanel.updateQuota(usedQuota);
+	}
+
 }

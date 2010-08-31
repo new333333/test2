@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -54,6 +55,7 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
@@ -192,6 +194,9 @@ public interface GwtRpcServiceAsync
 
 	// Return upgrade information.
 	public void getUpgradeInfo( AsyncCallback<GwtUpgradeInfo> callback );
+	
+	//Get DiskUsage Info
+	public void getDiskUsageInfo(HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback);
 
 	
 }// end GwtRpcServiceAsync

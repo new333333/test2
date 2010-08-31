@@ -89,6 +89,7 @@ import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
@@ -3024,4 +3025,46 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		ProfileAttribute attr = GwtProfileHelper.getProfileAvatars(getRequest( ri ), this, Long.valueOf(binderId));
 		return attr;
 	}
+	
+	
+	/**
+	 * Get disk usage information per user
+	 */
+	public  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+		
+		DiskUsageInfo diskUsageInfo = null;
+		try {
+			
+			
+			diskUsageInfo = new DiskUsageInfo();
+			GwtProfileHelper.getDiskUsageInfo(getRequest( ri ), this, binderId, diskUsageInfo);
+			
+			return diskUsageInfo;
+		} 
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
+		}
+	}
+	
 }// end GwtRpcServiceImpl
