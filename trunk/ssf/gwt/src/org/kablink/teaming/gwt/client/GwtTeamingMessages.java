@@ -231,6 +231,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetToolbarItems();
 	String rpcFailure_GetTopRanked();
+	String rpcFailure_GetTrackedPeople();
+	String rpcFailure_GetTrackedPlaces();
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_IsPersonTracked();

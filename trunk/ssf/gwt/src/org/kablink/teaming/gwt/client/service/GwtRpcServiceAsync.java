@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -158,11 +157,13 @@ public interface GwtRpcServiceAsync
 	public void removeSavedSearch(                                            SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
 	public void saveSearch(                   String             searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
 
-	// The following are used to manage the tracking of binders.
-	public void trackBinder(   String binderId, AsyncCallback<Boolean> callback );
-	public void untrackBinder( String binderId, AsyncCallback<Boolean> callback );
-	public void untrackPerson( String binderId, AsyncCallback<Boolean> callback );
-	public void isPersonTracked( String binderId, AsyncCallback<Boolean> callback );
+	// The following are used to manage the tracking of information.
+	public void getTrackedPeople(                 AsyncCallback<List<String>> callback );
+	public void getTrackedPlaces(                 AsyncCallback<List<String>> callback );
+	public void isPersonTracked( String binderId, AsyncCallback<Boolean>      callback );
+	public void trackBinder(     String binderId, AsyncCallback<Boolean>      callback );
+	public void untrackBinder(   String binderId, AsyncCallback<Boolean>      callback );
+	public void untrackPerson(   String binderId, AsyncCallback<Boolean>      callback );
 	
 	// Save the branding data to the given binder.
 	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );

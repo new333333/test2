@@ -114,6 +114,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.presence.PresenceInfo;
 import org.kablink.teaming.presence.PresenceManager;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
@@ -1267,8 +1268,50 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteBrandingData()
 	
 	
+	/**
+	 * Returns a List<String> of the workspace ID's of the people the
+	 * current user is tracking.
+	 * 
+	 * @return
+	 */
+	public List<String> getTrackedPeople() {
+		// Scan the IDs of the people the current user is tracking.
+		List<String> reply = new ArrayList<String>();
+		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+		List<String> pIds = GwtProfileHelper.getTrackedPersonsIds(this, String.valueOf(wsId.longValue()));
+		ProfileModule pm = getProfileModule();
+		for (String pId:  pIds) {
+			// Does this tracked person have a workspace ID?
+			wsId = pm.getEntry(Long.valueOf(pId)).getWorkspaceId();
+			if (null != wsId) {
+				// Yes!  Add it to the reply ArrayList.
+				reply.add(String.valueOf(wsId.longValue()));
+			}
+		}
+		
+		// If we get here, reply refers to an ArrayList<String> of the
+		// IDs of the workspaces of the people the current user is
+		// tracking.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<String> of the binder ID's of the places the
+	 * current user is tracking.
+	 * 
+	 * @return
+	 */
+	public List<String> getTrackedPlaces() {
+		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+		Binder ws = getBinderModule().getBinder(wsId);
+		List<String> reply = SearchUtils.getTrackedPlacesIds(this, ws);
+		if (null == reply) {
+			reply = new ArrayList<String>();
+		}
+		return reply;
+	}
+	
     /**
-     * 
      */
     public String getTutorialPanelState()
     {
