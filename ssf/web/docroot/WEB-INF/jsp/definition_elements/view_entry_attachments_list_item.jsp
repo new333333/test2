@@ -37,8 +37,6 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
-<c:set var="owningBinder" value="${ssBinder}"/>
-<jsp:useBean id="owningBinder" type="org.kablink.teaming.domain.Binder" />
 
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
@@ -61,6 +59,12 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 <%  editInPlaceSupported = true;  %>
   </ssf:ifSupportsEditInPlace>
+
+<c:set var="owningBinder" value="${ssBinder}"/>
+<c:if test="${empty owningBinder}">
+<c:set var="owningBinder" value="${selection.owner.entity.parentBinder}"/>
+</c:if>
+<jsp:useBean id="owningBinder" type="org.kablink.teaming.domain.Binder" />
 
   <c:set var="selectionCount" value="${selectionCount + 1}"/>
   <c:set var="versionCount" value="0"/>
