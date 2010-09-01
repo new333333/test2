@@ -1465,11 +1465,28 @@ public class GwtServerHelper {
 					
 					brandingExt = new GwtBrandingDataExt();
 					
+					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
+					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
+					// 		<background color="" imgName="" />
+					// 	</brandingData>
+					xmlStr = brandingSourceBinder.getBrandingExt();
+					
 					// Is there old-style branding?
 					if ( branding != null && branding.length() > 0 )
 					{
 						// Yes
 						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_ADVANCED );
+						
+						// Is there additional branding data?
+						if ( xmlStr == null || xmlStr.length() == 0 )
+						{
+							// Yes, We are dealing with branding that was created before the Durango release.
+							// In order to have existing branding still look good even though we aren't
+							// using the old background image, we will set the background color to white
+							// and the font color to black.
+							brandingExt.setBackgroundColor( "white" );
+							brandingExt.setFontColor( "black" );
+						}
 					}
 					else
 					{
@@ -1477,12 +1494,6 @@ public class GwtServerHelper {
 						brandingExt.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
 					}
 
-					// Get the xml that represents the branding data.  The following is an example of what the xml should look like.
-					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
-					// 		<background color="" imgName="" />
-					// 	</brandingData>
-					xmlStr = brandingSourceBinder.getBrandingExt();
-					
 					if ( xmlStr != null )
 					{
 						try
