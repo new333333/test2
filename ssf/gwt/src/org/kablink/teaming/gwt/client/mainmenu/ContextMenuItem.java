@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.mainmenu;
 
+import org.kablink.teaming.gwt.client.util.ClientActionParameter;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -79,6 +80,7 @@ public class ContextMenuItem {
 		private String m_onClickJS;
 		private String m_url;
 		private TeamingAction m_teamingAction;
+		private ClientActionParameter m_clientActionParameter;
 		
 		/**
 		 * Class constructor.
@@ -156,15 +158,30 @@ public class ContextMenuItem {
 		 * @param id
 		 * @param url
 		 * @param teamingAction
+		 * @param clientActionParameter
 		 */
-		ContextItemClickHandler(String id, String url, TeamingAction teamingAction) {
+		ContextItemClickHandler(String id, String url, TeamingAction teamingAction, ClientActionParameter clientActionParameter) {
 			// Store the type of click handler...
 			m_type = ClickHandlerType.TEAMING_ACTION;
 			
 			// ...and the parameters.
-			m_id            = id;
-			m_url           = url;
-			m_teamingAction = teamingAction;
+			m_id                    = id;
+			m_url                   = url;
+			m_teamingAction         = teamingAction;
+			m_clientActionParameter = clientActionParameter;
+		}
+		
+		/**
+		 * Class constructor.
+		 *
+		 * @param id
+		 * @param url
+		 * @param teamingAction
+		 */
+		@SuppressWarnings("unused")
+		ContextItemClickHandler(String id, String url, TeamingAction teamingAction) {
+			// Always use the initial form of the constructor.
+			this(id, url, teamingAction, null);
 		}
 		
 		/**
@@ -194,7 +211,11 @@ public class ContextMenuItem {
 				break;
 				
 			case TEAMING_ACTION:
-				m_contextMenu.m_actionTrigger.triggerAction(m_teamingAction, m_url);
+				m_contextMenu.m_actionTrigger.triggerAction(
+					m_teamingAction,
+					((null == m_clientActionParameter) ?
+						m_url                          :
+						m_clientActionParameter));
 				break;
 
 			case URL_IN_CONTENT_FRAME:
@@ -261,6 +282,7 @@ public class ContextMenuItem {
 		ContextItemClickHandler reply;
 		String url = tbi.getUrl();
 		TeamingAction ta = tbi.getTeamingAction();
+		ClientActionParameter cap = tbi.getClientActionParameter();
 		switch (ta) {
 		case UNDEFINED:
 			// It's not based on a teaming action!  Is it based on an
@@ -289,7 +311,7 @@ public class ContextMenuItem {
 		default:
 			// It's based on a teaming action!  Generate the
 			// appropriate click handler for it.
-			reply = new ContextItemClickHandler(id, url, ta);
+			reply = new ContextItemClickHandler(id, url, ta, cap);
 		}
 
 		// If we get here, reply refers to the appropriate click

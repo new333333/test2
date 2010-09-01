@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.ClientActionParameter;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -56,6 +57,10 @@ public class ToolbarItem implements IsSerializable {
 	private String m_title;															// The display name for this toolbar item.
 	private String m_url;															// The URL to launch for this toolbar item.
 	private TeamingAction m_teamingAction = TeamingAction.UNDEFINED;				// If the toolbar item is to fire a teaming action.
+	
+	// The ClientActionParameter can only be specified and used
+	// on the client side.
+	private transient ClientActionParameter m_clientActionParameter;				// Optional parameter for the Teaming action.
 
 	/**
 	 * Inner class used to track name/value pairs.
@@ -216,6 +221,15 @@ public class ToolbarItem implements IsSerializable {
 	}
 	
 	/**
+	 * Returns the client action parameter from a toolbar item.
+	 * 
+	 * @return
+	 */
+	public ClientActionParameter getClientActionParameter() {
+		return m_clientActionParameter;
+	}
+	
+	/**
 	 * Returns the title of the toolbar item.
 	 * 
 	 * @return
@@ -266,6 +280,15 @@ public class ToolbarItem implements IsSerializable {
 	 */
 	public void setTeamingAction(TeamingAction teamingAction) {
 		m_teamingAction = teamingAction;
+	}
+	
+	/**
+	 * Stores a client action parameter in the toolbar item.
+	 * 
+	 * @param clientActionParameter
+	 */
+	public void setClientActionParameter(ClientActionParameter clientActionParameter) {
+		m_clientActionParameter = clientActionParameter;
 	}
 	
 	/**
