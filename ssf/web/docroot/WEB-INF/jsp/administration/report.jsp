@@ -34,6 +34,12 @@
 %>
 <%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<%
+java.util.List binderIds = new ArrayList();
+binderIds.add(ssBinder.getId());
+%>
+
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.report.title.activityByFolder") %>' scope="request"/>
@@ -109,7 +115,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <br/>
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
+     multiSelect="<%= binderIds %>" multiSelectPrefix="id" />
 
    <br/>
    <br/>
