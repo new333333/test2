@@ -56,11 +56,13 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class ActivityStreamsPopup extends MenuBarPopupBase {
 	private final String IDBASE = "activityStreams_";	// Base ID for the items created in this menu.
 	
-	private BinderInfo m_currentBinder;	// The currently selected binder.
-	private int m_menuLeft;				// Left coordinate of where the menu is to be placed.
-	private int m_menuTop;				// Top  coordinate of where the menu is to be placed.
-	private String[] m_myFavoritesIds;	// Binder IDs of the user's favorites.
-	private String[] m_myTeamsIds;		// Binder IDs of the user's team's
+	private BinderInfo m_currentBinder;		// The currently selected binder.
+	private int m_menuLeft;					// Left coordinate of where the menu is to be placed.
+	private int m_menuTop;					// Top  coordinate of where the menu is to be placed.
+	private String[] m_followedPeopleIds;	// Binder IDs of the people the user is following.
+	private String[] m_followedPlacesIds;	// Binder IDs of the places the user is following.
+	private String[] m_myFavoritesIds;		// Binder IDs of the user's favorites.
+	private String[] m_myTeamsIds;			// Binder IDs of the user's team's
 	
 	/**
 	 * Class constructor.
@@ -83,6 +85,48 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	    });		
 	}
 
+	/*
+	 * Adds the Followed People menu item to the Activity Streams popup
+	 * menu as needed.
+	 */
+	private void addFollowedPeopleMenuItem() {
+		// Do we have any followed people?
+		int followedPeople = ((null == m_followedPeopleIds) ? 0 : m_followedPeopleIds.length);
+		if (0 < followedPeople) {
+			// Yes!  Construct the ToolbarItem...
+			ToolbarItem tbi = new ToolbarItem();
+			tbi = new ToolbarItem();
+			tbi.setName("asFollowedPeople");
+			tbi.setTitle(m_messages.mainMenuActivityStreamsFollowedPeople());
+			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
+			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.FOLLOWED_PEOPLE, m_followedPeopleIds));
+
+			// ...and add it to the menu.
+			addContextMenuItem(IDBASE, tbi);
+		}
+	}
+	
+	/*
+	 * Adds the Followed Places menu item to the Activity Streams popup
+	 * menu as needed.
+	 */
+	private void addFollowedPlacesMenuItem() {
+		// Do we have any followed places?
+		int followedPlaces = ((null == m_followedPlacesIds) ? 0 : m_followedPlacesIds.length);
+		if (0 < followedPlaces) {
+			// Yes!  Construct the ToolbarItem...
+			ToolbarItem tbi = new ToolbarItem();
+			tbi = new ToolbarItem();
+			tbi.setName("asFollowedPlaces");
+			tbi.setTitle(m_messages.mainMenuActivityStreamsFollowedPlaces());
+			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
+			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.FOLLOWED_PLACES, m_followedPlacesIds));
+
+			// ...and add it to the menu.
+			addContextMenuItem(IDBASE, tbi);
+		}
+	}
+	
 	/*
 	 * Adds the My Favorites menu item to the Activity Streams popup
 	 * menu as needed.
@@ -123,22 +167,6 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
 		}
-	}
-	
-	/*
-	 * Adds the Followed People menu item to the Activity Streams popup
-	 * menu as needed.
-	 */
-	private void addFollowedPeopleMenuItem() {
-//!		...this needs to be implemented...
-	}
-	
-	/*
-	 * Adds the Followed Places menu item to the Activity Streams popup
-	 * menu as needed.
-	 */
-	private void addFollowedPlacesMenuItem() {
-//!		...this needs to be implemented...
 	}
 	
 	/*
@@ -184,6 +212,64 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 		addContextMenuItem(IDBASE, tbi);
 	}
 
+	/*
+	 * Pulls the user's followed people information from the server.
+	 */
+	private void getFollowedPeople() {
+		// Can we read the people the current user is following?
+		m_rpcService.getTrackedPeople(new AsyncCallback<List<String>>() {
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetTrackedPeople());
+			}
+			
+			public void onSuccess(List<String> pList)  {
+				// Yes!  Is the user following any people?
+				int pCount = pList.size();
+				m_followedPeopleIds = new String[pCount];
+				if (0 < pCount) {
+					// Yes!  Scan them...
+					int i = 0;
+					for (String pId: pList) {
+						// ...adding their IDs to the followed people
+						// ...IDs array.
+						m_followedPeopleIds[i++] = pId;
+					}
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Pulls the user's followed places information from the server.
+	 */
+	private void getFollowedPlaces() {
+		// Can we read the places the current user is following?
+		m_rpcService.getTrackedPlaces(new AsyncCallback<List<String>>() {
+			public void onFailure(Throwable t) {
+				// No!  Tell the user about the problem.
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetTrackedPlaces());
+			}
+			
+			public void onSuccess(List<String> pList)  {
+				// Yes!  Is the user following any places?
+				int pCount = pList.size();
+				m_followedPlacesIds = new String[pCount];
+				if (0 < pCount) {
+					// Yes!  Scan them...
+					int i = 0;
+					for (String pId: pList) {
+						// ...adding their IDs to the followed places
+						// ...IDs array.
+						m_followedPlacesIds[i++] = pId;
+					}
+				}
+			}
+		});
+	}
+	
 	/*
 	 * Pulls the user's team information from the server.
 	 */
@@ -240,20 +326,6 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 				}
 			}
 		});
-	}
-	
-	/*
-	 * Pulls the user's followed people information from the server.
-	 */
-	private void getFollowedPeople() {
-//!		...this needs to be implemented...		
-	}
-	
-	/*
-	 * Pulls the user's followed places information from the server.
-	 */
-	private void getFollowedPlaces() {
-//!		...this needs to be implemented...		
 	}
 	
 	/**

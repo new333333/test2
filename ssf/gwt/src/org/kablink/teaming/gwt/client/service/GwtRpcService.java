@@ -162,11 +162,13 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               removeSavedSearch(                                            SavedSearchInfo ssi           );
 	public SavedSearchInfo       saveSearch(                   String             searchTabId, SavedSearchInfo ssi           );
 	
-	// The following are used to manage the tracking of binders.
-	public Boolean trackBinder(   String binderId );
-	public Boolean untrackBinder( String binderId );
-	public Boolean untrackPerson( String binderId );
-	public Boolean isPersonTracked( String binderId );
+	// The following are used to manage the tracking of information.
+	public List<String> getTrackedPeople();
+	public List<String> getTrackedPlaces();
+	public Boolean      isPersonTracked( String binderId );
+	public Boolean      trackBinder(     String binderId );
+	public Boolean      untrackBinder(   String binderId );
+	public Boolean      untrackPerson(   String binderId );
 	
 	// Save the branding data to the given binder.
 	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
