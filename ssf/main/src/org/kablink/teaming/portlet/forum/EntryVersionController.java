@@ -153,6 +153,7 @@ public class EntryVersionController extends  SAbstractController {
 			if (entity != null && entity instanceof FolderEntry) {
 				accessControlMap.put("modifyEntry", 
 						getFolderModule().testAccess((FolderEntry)entity, FolderOperation.modifyEntry));
+				BinderHelper.setupStandardBeans(this, request, response, model, ((FolderEntry)entity).getParentBinder().getId());
 			}
 			Map<Long,FolderEntry> folderEntries = new HashMap<Long,FolderEntry>();
 			if (entity != null && operation.equals(WebKeys.OPERATION_VIEW_EDIT_HISTORY)) {
