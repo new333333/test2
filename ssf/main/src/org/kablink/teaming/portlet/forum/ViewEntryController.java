@@ -511,7 +511,7 @@ public class ViewEntryController extends  SAbstractController {
 
 
 	protected void setRepliesAccessControl(Map model, FolderEntry entry) {
-
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
 		HashMap entryAccessMap = new HashMap();
 		if (accessControlMap.containsKey(entry.getId())) {
@@ -522,7 +522,43 @@ public class ViewEntryController extends  SAbstractController {
 		if (replies != null)  {
 			for (int i=0; i<replies.size(); i++) {
 				FolderEntry reply = (FolderEntry)replies.get(i);
-				accessControlMap.put(reply.getId(), entryAccessMap);
+				Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, reply);
+				boolean reserveAccessCheck = false;
+				boolean isUserBinderAdministrator = false;
+				boolean isEntryReserved = false;
+				boolean isLockedByAndLoginUserSame = false;
+
+				if (getFolderModule().testAccess(reply, FolderOperation.reserveEntry)) {
+					reserveAccessCheck = true;
+				}
+				if (getFolderModule().testAccess(reply, FolderOperation.overrideReserveEntry)) {
+					isUserBinderAdministrator = true;
+				}
+				
+				HistoryStamp historyStamp = reply.getReservation();
+				if (historyStamp != null) isEntryReserved = true;
+
+				if (isEntryReserved) {
+					Principal lockedByUser = historyStamp.getPrincipal();
+					if (lockedByUser.getId().equals(user.getId())) {
+						isLockedByAndLoginUserSame = true;
+					}
+				}
+				if (getFolderModule().testAccess(reply, FolderOperation.addReply)) {
+					accessControlEntryMap.put("addReply", new Boolean(true));
+				}
+				if (getFolderModule().testAccess(reply, FolderOperation.modifyEntry)) {
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+					} else {
+						accessControlEntryMap.put("modifyEntry", new Boolean(true));
+					}
+				}
+				if (getFolderModule().testAccess(reply, FolderOperation.deleteEntry)) {
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+					} else {
+						accessControlEntryMap.put("deleteEntry", new Boolean(true));
+					}
+				}		
 			}
 		}
 		
@@ -1040,7 +1076,7 @@ public class ViewEntryController extends  SAbstractController {
 		DefinitionHelper.getPrimaryFile(entry, model);
 
 		//only start transaction if necessary
-		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
+		List<FolderEntry> replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
 			replies.add(entry);
 		}
