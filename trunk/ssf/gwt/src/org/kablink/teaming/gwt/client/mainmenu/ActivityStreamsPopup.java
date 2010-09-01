@@ -96,13 +96,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi = new ToolbarItem();
 			tbi.setName("asMyFavorites");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsMyFavorites());
-
-			// ...apply the selected Activity Stream...
-			ActivityStreamInfo asi = new ActivityStreamInfo(ActivityStream.MY_FAVORITES, m_myFavoritesIds);
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setUrl(asi.getStringValue());
+			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.MY_FAVORITES, m_myFavoritesIds));
 
-			// ...and add the ToolbarItem to the menu.
+			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
 		}
 	}
@@ -120,13 +117,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi = new ToolbarItem();
 			tbi.setName("asMyTeams");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsMyTeams());
-
-			// ...apply the selected Activity Stream...
-			ActivityStreamInfo asi = new ActivityStreamInfo(ActivityStream.MY_TEAMS, m_myTeamsIds);
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setUrl(asi.getStringValue());
+			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.MY_TEAMS, m_myTeamsIds));
 
-			// ...and add the ToolbarItem to the menu.
+			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
 		}
 	}
@@ -157,13 +151,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 		tbi = new ToolbarItem();
 		tbi.setName("asSiteWide");
 		tbi.setTitle(m_messages.mainMenuActivityStreamsSiteWide());
-
-		// ...apply the selected Activity Stream...
-		ActivityStreamInfo asi = new ActivityStreamInfo(ActivityStream.SITE_WIDE);
 		tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-		tbi.setUrl(asi.getStringValue());
+		tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.SITE_WIDE));
 
-		// ...and add the ToolbarItem to the menu.
+		// ...and add it to the menu.
 		addContextMenuItem(IDBASE, tbi);
 	}
 	
@@ -186,13 +177,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 		tbi = new ToolbarItem();
 		tbi.setName("asCurrentBinder");
 		tbi.setTitle(itemName);
-		
-		// ...apply the selected Activity Stream...
-		ActivityStreamInfo asi = new ActivityStreamInfo(ActivityStream.CURRENT_BINDER, m_currentBinder.getBinderId());
 		tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-		tbi.setUrl(asi.getStringValue());
+		tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.CURRENT_BINDER, m_currentBinder.getBinderId()));
 		
-		// ...and add the ToolbarItem to the menu.
+		// ...and add it to the menu.
 		addContextMenuItem(IDBASE, tbi);
 	}
 

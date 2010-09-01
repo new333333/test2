@@ -1515,17 +1515,17 @@ public class GwtMainPage extends Composite
 	 */
 	private void activityStream( Object obj )
 	{
-		// Do we have a String parameter?
-		if ( obj instanceof String )
+		// Do we have an ActivityStreamInfo parameter?
+		if ( obj instanceof ActivityStreamInfo )
 		{
-			// Yes!  Parse it as an ActivityStreamInfo.
-			ActivityStreamInfo asi = ActivityStreamInfo.parse((String) obj);
+			// Yes!
+			ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
 			
 //!			...this needs to be implemented...
 			Window.alert( "activityStream( ...this needs to be implemented... ):  " + asi.getStringValue() );
 		}
 		else
-			Window.alert( "in activityStream() and obj is not a String object" );
+			Window.alert( "in activityStream() and obj is not an ActivityStreamInfo object" );
 	}//end activityStream()
 
 	/**

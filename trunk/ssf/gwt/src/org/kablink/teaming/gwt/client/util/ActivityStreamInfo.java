@@ -39,7 +39,7 @@ package org.kablink.teaming.gwt.client.util;
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamInfo {
+public class ActivityStreamInfo implements ClientActionParameter {
 	/**
 	 * Enumeration describing the type of an Activity Stream.
 	 * 
@@ -121,6 +121,26 @@ public class ActivityStreamInfo {
 		this(as, new String[]{binderId});
 	}
 
+	/**
+	 * Returns the ActivityStreamInfo object's ActivityStream
+	 * enumeration value.
+	 * 
+	 * @return
+	 */
+	public ActivityStream getActivityStream() {
+		return m_as;
+	}
+	
+	/**
+	 * Returns the array of binder IDs this ActvitityStreamInfo object
+	 * corresponds to.
+	 * 
+	 * @return
+	 */
+	public String[] getBinderIds() {
+		return m_binderIds;
+	}
+	
 	/**
 	 * Returns a String representation of an ActivityStreamInfo object.
 	 * 
