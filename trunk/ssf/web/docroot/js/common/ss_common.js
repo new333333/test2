@@ -1310,8 +1310,20 @@ function ss_showHideMenuDiv(divId) {
 		ss_HideDivIfActivated(divId);
 	} else {
 		ss_showDivActivate(divId);
+		var divWidth = ss_getObjectWidth(divObj);
+        // need to bump layer an extra bit to the right to avoid horiz scrollbar
+        divWidth = parseInt(divWidth) + 35;
+		var x = ss_getObjectLeftAbs(divObj);
+		if (ss_isNSN6 || ss_isMoz5) {
+	        maxWidth = parseInt(window.innerWidth);
+	    } else {
+	        maxWidth = parseInt(document.body.scrollWidth);
+	    }
+	    if (x + divWidth > maxWidth) {
+	        x = maxWidth - divWidth;
+	        ss_setObjectLeft(divObj, x);
+	    }
 	}
-	ssf_onLayoutChange();
 }
 
 // Routine to hide or show a region using a collapse/expand button
