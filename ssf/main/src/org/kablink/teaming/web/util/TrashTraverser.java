@@ -182,7 +182,8 @@ public class TrashTraverser {
 	 */
 	private boolean descendEntry(Long binderId, Long entryId) {
 		// Can we access the Binder as other than a mirrored binder?
-		Binder binder = m_bs.getBinderModule().getBinder(binderId);
+		FolderEntry entry = m_bs.getFolderModule().getEntry(binderId, entryId);
+		Binder binder = entry.getParentBinder();
 		if ((null == binder) || binder.isMirrored()) {
 			// No!  Bail.
 			return TRAVERSE_MIRRORED_BINDERS;
@@ -315,7 +316,8 @@ public class TrashTraverser {
 	 */
 	private boolean ascendEntry(Long folderId, Long entryId, boolean traversingEntry) {
 		// Ascend the entry's ancestors (for replies to replies)...
-		Binder binder = m_bs.getBinderModule().getBinder(folderId);
+		FolderEntry entry = m_bs.getFolderModule().getEntry(folderId, entryId);
+		Binder binder = entry.getParentBinder();
 		if (!(ascendEntryAncestors(folderId, entryId, traversingEntry))) {
 			return false;
 		}

@@ -34,8 +34,10 @@
 %>
 <% //Title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.teaming.domain.FolderEntry" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
 	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
@@ -107,7 +109,9 @@ ${nextEntry.docNumber}.
 			</ssf:param>
 			<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
 		</ssf:titleLink>
-
+		<% if (ssDefinitionEntry instanceof FolderEntry && ((FolderEntry)ssDefinitionEntry).isPreDeleted()) { %>
+		  <span class="ss_smallprint">(<ssf:nlt tag="trash.column.LastActivity"/>)</span>
+		<% } %>
 </span>
 
 </div>
