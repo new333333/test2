@@ -614,7 +614,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		final FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
 		Binder binder = entry.getParentBinder();
 		if (getFolderModule().testAccess(entry, FolderOperation.report) || 
-				getBinderModule().testAccess(binder, BinderOperation.report)) {
+				(entry.hasEntryAcl() && entry.isIncludeFolderAcl() && 
+						getBinderModule().testAccess(binder, BinderOperation.report))) {
 
 			List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 				public Object doInHibernate(Session session) throws HibernateException {
