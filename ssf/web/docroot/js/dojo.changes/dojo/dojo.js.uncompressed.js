@@ -1644,7 +1644,8 @@ if(typeof window != 'undefined'){
 			//		dojo.addOnWindowUnload for more info.
 			var mll = d._windowUnloaders;
 			while(mll.length){
-				(mll.pop())();
+				//Novell changes by Peter: add the "try/catch" because of error when unloading after a "modify entry" execution
+				try{(mll.pop())();}catch(e){}
 			}
 		};
 
