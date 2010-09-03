@@ -98,6 +98,15 @@
 <br/>
 </c:if>
 
+<c:if test="${!empty ssFailedEmailAddressesCount && ssFailedEmailAddressesCount != '0'}">
+<span class="ss_titlebold">
+  <ssf:nlt tag="sendMail.mailFailedCount">
+    <ssf:param name="value" value="${ssFailedEmailAddressesCount}"/>
+  </ssf:nlt>  
+</span>
+<br/>
+</c:if>
+
 <c:if test="${!empty ssFailedEmailAccess}">
 <span class="ss_titlebold"><ssf:nlt tag="sendMail.mailFailedAccess"/></span><br/>
 <ul class="ss_nobullet">
@@ -105,6 +114,15 @@
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
+</c:if>
+
+<c:if test="${!empty ssFailedEmailAccessCount && ssFailedEmailAccessCount != '0'}">
+<span class="ss_titlebold">
+  <ssf:nlt tag="sendMail.mailFailedAccessCount">
+    <ssf:param name="value" value="${ssFailedEmailAccessCount}"/>
+  </ssf:nlt>  
+</span>
 <br/>
 </c:if>
 
@@ -118,6 +136,15 @@
 <br/>
 </c:if>
 
+<c:if test="${!empty ssQueuedEmailAddressesCount && ssQueuedEmailAddressesCount != '0'}">
+<span class="ss_titlebold">
+  <ssf:nlt tag="sendMail.mailQueuedCount">
+    <ssf:param name="value" value="${ssQueuedEmailAddressesCount}"/>
+  </ssf:nlt>  
+</span>
+<br/>
+</c:if>
+
 <c:if test="${!empty ssSentEmailAddresses}">
 <span class="ss_titlebold"><ssf:nlt tag="sendMail.mailSent"/></span><br/>
 <ul class="ss_nobullet">
@@ -125,6 +152,15 @@
 	<li>${item}</li>
 </c:forEach>
 </ul>
+<br/>
+</c:if>
+
+<c:if test="${!empty ssSentEmailAddressesCount && ssSentEmailAddressesCount != '0'}">
+<span class="ss_titlebold">
+  <ssf:nlt tag="sendMail.mailSentCount">
+    <ssf:param name="value" value="${ssSentEmailAddressesCount}"/>
+  </ssf:nlt>  
+</span>
 <br/>
 </c:if>
 

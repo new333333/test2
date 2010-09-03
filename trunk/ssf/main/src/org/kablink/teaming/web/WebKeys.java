@@ -782,9 +782,13 @@ public class WebKeys {
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
     public static final String EMAIL_SENT_ADDRESSES="ssSentEmailAddresses";
+    public static final String EMAIL_SENT_ADDRESSES_COUNT="ssSentEmailAddressesCount";
     public static final String EMAIL_QUEUED_ADDRESSES="ssQueuedEmailAddresses";
+    public static final String EMAIL_QUEUED_ADDRESSES_COUNT="ssQueuedEmailAddressesCount";
     public static final String EMAIL_FAILED_ADDRESSES="ssFailedEmailAddresses";
+    public static final String EMAIL_FAILED_ADDRESSES_COUNT="ssFailedEmailAddressesCount";
     public static final String EMAIL_FAILED_ACCESS="ssFailedEmailAccess";
+    public static final String EMAIL_FAILED_ACCESS_COUNT="ssFailedEmailAccessCount";
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY = "ss_entity";
 	public static final String ENTITY_ID = "ss_entityId";
