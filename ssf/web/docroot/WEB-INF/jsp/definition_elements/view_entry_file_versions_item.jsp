@@ -161,7 +161,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		</td>
 		
 		<td class="ss_att_meta">
-		  <span"><ssf:nlt tag="file.versionNumber"><ssf:param
+		  <span><ssf:nlt tag="file.versionNumber"><ssf:param
 			name="value" value="${selection.fileVersion}"/></ssf:nlt></span>
 		</td>
 
