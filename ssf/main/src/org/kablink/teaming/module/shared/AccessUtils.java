@@ -342,7 +342,7 @@ public class AccessUtils  {
       	
        	//Next, see if entry allows other operations such as CREATOR_READ, CREATOR_MODIFY, CREATOR_DELETE
        	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.equals(entry.getCreation().getPrincipal())) {
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
@@ -354,7 +354,7 @@ public class AccessUtils  {
   				}
   			} catch(OperationAccessControlException ex2) {}
        	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.equals(entry.getCreation().getPrincipal())) {
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
@@ -366,7 +366,7 @@ public class AccessUtils  {
   				}
   			} catch(OperationAccessControlException ex2) {}
        	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
-       			user.equals(entry.getCreation().getPrincipal())) {
+       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
   					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
@@ -388,19 +388,19 @@ public class AccessUtils  {
 	       	
 	      //Next, see if binder allows other operations such as CREATOR_MODIFY
 	       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	       			user.equals(entry.getCreation().getPrincipal())) {
+	       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
 	      			return;
       			} catch (OperationAccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	      			user.equals(entry.getCreation().getPrincipal())) {
+	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
 	      			return;
       			} catch (OperationAccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
-	      			user.equals(entry.getCreation().getPrincipal())) {
+	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
       				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
 	      			return;
@@ -472,7 +472,7 @@ public class AccessUtils  {
         		//See if this user has modify right instead
         		operationCheck(user, binder, entry, WorkAreaOperation.MODIFY_ENTRIES);
         	} catch (OperationAccessControlException ex2) {
-	       		if (user.equals(entry.getCreation().getPrincipal())) 
+	       		if (user.getId().equals(entry.getCreation().getPrincipal().getId())) 
 	       			getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
 	       		else throw ex2;
         	}

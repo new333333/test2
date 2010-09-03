@@ -1889,6 +1889,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	private Principal makeItFake(Principal p) {
 		User u = new User();
 		u.setId(p.getId());
+		u.setZoneId(p.getZoneId());
 		u.setName("__unavailable_" + p.getId().toString());
 		String title = NLT.get("user.redacted.title");
 		u.setLastName(title);
