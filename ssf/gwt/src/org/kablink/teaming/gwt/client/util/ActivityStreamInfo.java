@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+
 
 /**
  * Class used to communicate information about an Activity Stream
@@ -63,6 +66,51 @@ public class ActivityStreamInfo implements ClientActionParameter {
 			m_asValue = asValue;
 		}
 
+		/**
+		 * Return the localized name of this stream.
+		 */
+		public String getStreamName()
+		{
+			String reply;
+			GwtTeamingMessages messages;
+			
+			messages = GwtTeaming.getMessages();
+			switch (m_asValue)
+			{
+				case 1:
+					reply = messages.mainMenuActivityStreamsCurrentBinder();
+					break;
+					
+				case 2:
+					reply = messages.mainMenuActivityStreamsFollowedPeople();
+					break;
+					
+				case 3:
+					reply = messages.mainMenuActivityStreamsFollowedPlaces();
+					break;
+					
+				case 4:
+					reply = messages.mainMenuActivityStreamsMyFavorites();
+					break;
+					
+				case 5:
+					reply = messages.mainMenuActivityStreamsMyTeams();
+					break;
+					
+				case 6:
+					reply = messages.mainMenuActivityStreamsSiteWide();
+					break;
+				
+				case 0:
+				default:
+					reply = "Unknown";
+					break;
+			}
+			
+			return reply;
+		}
+		
+		
 		/**
 		 * Returns the integer value of the ActivityStream.
 		 * 
@@ -140,6 +188,15 @@ public class ActivityStreamInfo implements ClientActionParameter {
 	public String[] getBinderIds() {
 		return m_binderIds;
 	}
+	
+	/**
+	 * Return the name of this stream, ie "My Teams", "My Favorites"...
+	 */
+	public String getStreamName()
+	{
+		return m_as.getStreamName();
+	}
+	
 	
 	/**
 	 * Returns a String representation of an ActivityStreamInfo object.
