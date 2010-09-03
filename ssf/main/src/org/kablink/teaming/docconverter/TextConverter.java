@@ -104,7 +104,13 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		File intermediateFile = cacheFileStore.getFile(iPath);
 		try {
 			super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
-			getTextFromXML(intermediateFile, getNullTransformFile(), new FileOutputStream(convertedFile));
+			FileOutputStream fos = new FileOutputStream(convertedFile);
+			try {
+				getTextFromXML(intermediateFile, getNullTransformFile(), fos);
+			}
+			finally {
+				fos.close();
+			}
 		} catch (DocumentException de) {
 			logger.warn("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName(), de);
 		}
