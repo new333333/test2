@@ -1678,7 +1678,11 @@ function ss_createEventObj(function_name, event_name, function_def) {
     }
     if (ss_eventList[fn].eventName.toLowerCase() == "unload") {
     	// Add the unload event
-    	window.onunload = ssf_event_handler;
+    	if (typeof window.onunload == 'undefined' || window.onunload == '') {
+    		window.onunload = ssf_event_handler;
+    	} else {
+    		dojo.addOnWindowUnload(ssf_event_handler);
+    	}
     } else {
     	eval("self.document.on"+ss_eventList[fn].eventName.toLowerCase()+" = ssf_event_handler;")
     }
@@ -3047,9 +3051,9 @@ function ss_resizePopupDiv() {
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (popupDiv != null && popupIframe != null && typeof popupDiv.style != "undefined" &&
 			typeof popupDiv.style.display != "undefined" && popupDiv.style.display == "block" &&
-			typeof window.frames['ss_showpopupframe'] != "undefined" &&
-			typeof window.frames['ss_showpopupframe'].document != "undefined" &&
-			typeof window.frames['ss_showpopupframe'].document.body != "undefined" &&
+			typeof window.frames['ss_showpopupframe'] != "undefined" && window.frames['ss_showpopupframe'] != null &&
+			typeof window.frames['ss_showpopupframe'].document != "undefined" && window.frames['ss_showpopupframe'].document != null &&
+			typeof window.frames['ss_showpopupframe'].document.body != "undefined" && window.frames['ss_showpopupframe'].document.body != null &&
 			typeof window.frames['ss_showpopupframe'].document.body.scrollHeight != "undefined") {
 		var scrollHeight = parseInt(window.frames['ss_showpopupframe'].document.body.scrollHeight);
 		var scrollWidth = parseInt(ss_getBodyHeightWidth(top.window.frames['ss_showpopupframe'])[0]);
