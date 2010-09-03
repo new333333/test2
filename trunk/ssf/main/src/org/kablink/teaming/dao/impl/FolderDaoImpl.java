@@ -35,6 +35,7 @@ package org.kablink.teaming.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,12 +48,14 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -783,4 +786,37 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     	
     }
 
+    /**
+     * Used to find the folder entries associated to a given workflow state and definition
+     * @param defId - Definition Id
+     * @param stateValue - State of the workflow
+     * @return List of folder entry ids
+     */
+    public List<Long> findFolderIdsFromWorkflowState(final String defId, final String stateValue) {
+		long begin = System.currentTimeMillis();
+		try {
+	       	final String thisZoneId = String.valueOf(RequestContextHolder.getRequestContext().getZoneId());
+	       	return (List<Long>)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                	List<Long> result = new ArrayList<Long>();
+	                	List readObjs = new ArrayList();
+	                	List objs = session.createQuery("SELECT owner From org.kablink.teaming.domain.WorkflowState WHERE state='" + stateValue + "' AND definition='" + defId + "' AND ownerType='folderEntry' AND zoneId='" + thisZoneId + "'")
+				   			.list();
+	                	readObjs.add(objs);
+				      	HashMap tMap;
+				       	for (int i=0; i < objs.size(); ++i) {
+				       		AnyOwner owner = (AnyOwner) objs.get(i);
+				       		result.add(owner.getEntity().getId());
+				       	}
+				       	return result;
+	                }
+	            }
+			);  
+    	}
+    	finally {
+    		end(begin, "findFolderIdsFromWorkflowState(String,String)");
+    	}	        
+	}	
+	
 }

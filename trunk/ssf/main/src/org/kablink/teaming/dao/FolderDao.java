@@ -120,4 +120,12 @@ public interface FolderDao {
     public void moveEntries(Folder folder, List<Long> ids);
     public List<Tag> loadEntryTags(EntityIdentifier ownerIdentifier, Collection<Long> ids);
 
+    /**
+     * Find all of the Folder Entry Ids associated with a workflow state
+     * @param id - the Definition id
+     * @param stateValue - the workflows state
+     * @return
+     */
+	public List<Long> findFolderIdsFromWorkflowState(String id,	String stateValue);
+    
 }

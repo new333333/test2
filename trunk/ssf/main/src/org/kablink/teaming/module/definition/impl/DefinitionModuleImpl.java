@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EncryptedValue;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -91,6 +92,7 @@ import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -106,6 +108,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -1345,6 +1348,27 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						checkDataView(root, item);
 					}
 					setDefinition(def, definitionTree);
+					
+					//if we are modifying the readAccess then we should reindex all entries associated with this workflow
+					if(itemType.equals("readAccess")){
+						Element ele = item.getParent().getParent();
+						String stateValue = DefinitionUtils.getPropertyValue(ele, "name");
+					    
+						List<Long> ids = getFolderDao().findFolderIdsFromWorkflowState(def.getId(), stateValue);
+						final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+						List<FolderEntry> folderEntries = new ArrayList<FolderEntry>();
+						if(ids != null && ids.size() > 0) {
+							for(Long id: ids){
+								FolderEntry entry = getFolderDao().loadFolderEntry(id, zoneId);
+								folderEntries.add(entry);
+							}
+						}
+						
+						FolderModule folderModule = (FolderModule)SpringContextUtil.getBean("folderModule");
+						for(FolderEntry fEntry: folderEntries){
+							folderModule.indexEntry(fEntry, false);
+						}
+					}
 				}
 			}
 		}
