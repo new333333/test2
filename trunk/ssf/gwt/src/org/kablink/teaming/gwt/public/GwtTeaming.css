@@ -1,5 +1,86 @@
 /* */
 
+/* ########################################################################################################### */
+
+/* Styles used with the Activity Stream Control */
+.ActivityStreamCtrl
+{
+	background: #fff;
+	position: absolute;
+	left: 246px;
+	top: 8px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.ActivityStreamSearchingPanel
+{
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: .5em;
+	position: absolute;
+	top: 25px;
+	z-index: 100;
+}
+
+.ActivityStreamCtrlFooter
+{
+	background-color: #EFEEEC;
+	border-top: 1px solid #BABDB6;
+	vertical-align: middle;
+	width: 100%;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+}
+
+.ActivityStreamFooterImages
+{
+	text-align: center; 
+	vertical-align: middle;
+	width: 100%;
+}
+
+.ActivityStreamCtrlHeader
+{
+	color: #5691A6 !important;
+	font-size: 20px;
+	margin-bottom: 20px;
+	padding-left: 10px;
+	padding-top: 10px;
+}
+
+.ActivityStreamCtrlHeaderTitle
+{
+}
+
+.ActivityStreamCtrlHeaderSubtitle
+{
+	color: #333;
+	font-size: .75em;
+	padding-left: 15px;
+}
+
+.ActivityStreamCtrlHeaderRefresh
+{
+	cursor: pointer;
+	padding: 5px;
+	position: absolute;
+	right: 10px;
+	top: 10px;
+}
+
+.ActivityStreamCtrlSearchResultsPanel
+{
+	overflow: auto;
+}
+
+/* ########################################################################################################### */
+
 /* general styles to override the GWT standard.css file */
 
 a, a:visited, a:hover {

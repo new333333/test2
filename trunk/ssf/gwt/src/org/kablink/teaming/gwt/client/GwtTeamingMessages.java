@@ -648,5 +648,14 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeSearchIndex();
 	String adminInfoDlgUpgradeTasksNotDone();
 	String adminInfoDlgUpgradeTemplates();
-	
+
+	// The following strings are used in the Activity Stream control.
+	String refresh();
+	String whatsNewInCurrentWorkspace();
+	String whatsNewInMyTeams();
+	String whatsNewInMyFavorites();
+	String whatsNewInFollowedPeople();
+	String whatsNewInFollowedPlaces();
+	String whatsNewSiteWide();
+
 }// end GwtTeamingMessages

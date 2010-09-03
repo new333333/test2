@@ -576,8 +576,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Show My Workspace, My Teams and My Favorites.
 		m_myWorkspaceBox.setVisible(true);
-		m_myTeamsBox.setVisible(true);
-		m_myFavoritesBox.setVisible(true);
+		if ( m_myTeamsBox != null )
+			m_myTeamsBox.setVisible(true);
+		if ( m_myFavoritesBox != null )
+			m_myFavoritesBox.setVisible(true);
 		
 		// Show the panel that holds the menu items.
 		m_contextPanel.setVisible(true);
@@ -619,8 +621,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Hide My Workspace, My Teams and My Favorites.
 		m_myWorkspaceBox.setVisible(false);
-		m_myTeamsBox.setVisible(false);
-		m_myFavoritesBox.setVisible(false);
+		if ( m_myTeamsBox != null )
+			m_myTeamsBox.setVisible(false);
+		if ( m_myFavoritesBox != null )
+			m_myFavoritesBox.setVisible(false);
 		
 		// Hide the panel that holds the menu items.
 		m_contextPanel.setVisible(false);

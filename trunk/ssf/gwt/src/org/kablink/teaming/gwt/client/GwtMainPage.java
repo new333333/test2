@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
@@ -96,6 +97,7 @@ public class GwtMainPage extends Composite
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
 	private UIStateManager m_uiStateManager;
+	private ActivityStreamCtrl m_activityStreamCtrl = null;
 
 	
 	/**
@@ -203,6 +205,11 @@ public class GwtMainPage extends Composite
 		m_contentCtrl = new ContentControl( "gwtContentIframe" );
 		m_contentCtrl.addStyleName( "mainContentControl" );
 		m_contentPanel.add( m_contentCtrl );
+		
+		// Create an activity stream control.
+		m_activityStreamCtrl = new ActivityStreamCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+		m_activityStreamCtrl.hide();
+		m_contentPanel.add( m_activityStreamCtrl );
 		
 		// Do we have a url we should set the ContentControl to?
 		url = m_requestInfo.getAdaptedUrl();
@@ -725,6 +732,7 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.showAdministrationMenubar();
 			m_wsTreeCtrl.setVisible( false );
 			m_contentCtrl.setVisible( false );
+			m_activityStreamCtrl.hide();
 			
 			// Have we already created an AdminControl?
 			if ( m_adminControl == null )
@@ -928,6 +936,7 @@ public class GwtMainPage extends Composite
 				
 				// Reposition the content control to where the tree control used to be.
 				m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
+				m_activityStreamCtrl.addStyleName( "mainWorkspaceTreeControl" );
 			}
 
 			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.SHOW_LEFT_NAVIGATION );
@@ -947,6 +956,7 @@ public class GwtMainPage extends Composite
 			{
 				// Reposition the content control to its original position.
 				m_contentCtrl.removeStyleName( "mainWorkspaceTreeControl" );
+				m_activityStreamCtrl.removeStyleName( "mainWorkspaceTreeControl" );
 				
 				// Show the tree control.
 				m_wsTreeCtrl.setVisible( true );
@@ -1531,6 +1541,9 @@ public class GwtMainPage extends Composite
 			
 //!			...this needs to be implemented...
 			Window.alert( "activityStream( ...this needs to be implemented... ):  " + asi.getStringValue() );
+			
+			m_activityStreamCtrl.setActivityStream( asi );
+			m_activityStreamCtrl.show();
 		}
 		else
 			Window.alert( "in activityStream() and obj is not an ActivityStreamInfo object" );
@@ -1570,6 +1583,9 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_contentCtrl.setDimensions( width, height );
+			
+			// Set the width and height of the Activity Stream Control
+			m_activityStreamCtrl.setSize( width, height );
 			
 			// Do we have an Administration control?
 			if ( m_adminControl != null )
