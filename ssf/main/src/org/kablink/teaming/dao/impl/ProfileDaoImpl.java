@@ -1890,6 +1890,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		User u = new User();
 		u.setId(p.getId());
 		u.setZoneId(p.getZoneId());
+		u.setParentBinder(p.getParentBinder());
 		u.setName("__unavailable_" + p.getId().toString());
 		String title = NLT.get("user.redacted.title");
 		u.setLastName(title);
