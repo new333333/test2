@@ -48,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -2097,7 +2098,7 @@ public class BinderHelper {
 		HistoryStamp creation = new HistoryStamp();
 		creation.setPrincipal((UserPrincipal)pList.first());
 		String when = hs.attributeValue("when", "");
-		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+		SimpleDateFormat sdf = getSimpleDateFormat();
 		Date date;
 		try {
 			date = sdf.parse(when);
@@ -2121,7 +2122,7 @@ public class BinderHelper {
 					HistoryStamp modification = new HistoryStamp();
 					modification.setPrincipal((UserPrincipal)pList.first());
 					when = hs.attributeValue("when", "");
-					sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					sdf = getSimpleDateFormat();
 					try {
 						date = sdf.parse(when);
 						modification.setDate(date);
@@ -2144,7 +2145,7 @@ public class BinderHelper {
 					HistoryStamp workflowChange = new HistoryStamp();
 					workflowChange.setPrincipal((UserPrincipal)pList.first());
 					when = hs.attributeValue("when", "");
-					sdf = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+					sdf = getSimpleDateFormat();
 					try {
 						date = sdf.parse(when);
 						workflowChange.setDate(date);
@@ -2188,7 +2189,7 @@ public class BinderHelper {
 			HistoryStamp creation2 = new HistoryStamp();
 			creation2.setPrincipal((UserPrincipal)pList2.first());
 			String when2 = hs2.attributeValue("when", "");
-			SimpleDateFormat sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+			SimpleDateFormat sdf2 = getSimpleDateFormat();
 			Date date2;
 			try {
 				date2 = sdf2.parse(when2);
@@ -2209,7 +2210,7 @@ public class BinderHelper {
 			HistoryStamp modification2 = new HistoryStamp();
 			modification2.setPrincipal((UserPrincipal)pList2.first());
 			when2 = hs2.attributeValue("when", "");
-			sdf2 = new SimpleDateFormat("dd MMM yyyy HH:mm:ss z");
+			sdf2 = getSimpleDateFormat();
 			try {
 				date2 = sdf2.parse(when2);
 			} catch (ParseException e) {
@@ -4260,5 +4261,16 @@ public class BinderHelper {
 	public static boolean isTitleRegistered(Long binderId, String title) {
 		CoreDao cd = ((CoreDao) SpringContextUtil.getBean("coreDao"));
 		return (cd.isTitleRegistered(binderId, WebHelper.getNormalizedTitle(title)));
+	}
+	
+	private static SimpleDateFormat getSimpleDateFormat() {
+		// Teaming stores date value in string representation in the XML for the change log.
+		// This string representation can contain date format symbols that may not be meaningful 
+		// to some non-US locales. For example, the "month" values (eg. May) are not pertaining
+		// to the Japanese locale. Consequently, an attempt to parse such string using OS-default
+		// locale will fail when the default locale of the OS does not support those date format
+		// symbols. Therefore, we MUST explicitly specify to use US locale for parsing of such
+		// string.
+		return new SimpleDateFormat("dd MMM yyyy HH:mm:ss z", Locale.US);
 	}
 }
