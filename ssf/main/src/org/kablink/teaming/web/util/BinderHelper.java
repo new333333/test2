@@ -2776,27 +2776,29 @@ public class BinderHelper {
 		
 		// Does this user have a MiniBlog folder yet?
 		if (!userHasMiniBlog) {
-			Folder folder = folderModule.getFolder(folderId);
-			// Is this folder in the user's workspace
-			Long workspaceId = user.getWorkspaceId();
-			if (workspaceId != null) {
-				Binder parentBinder = folder.getParentBinder();
-				while (parentBinder != null) {
-					if (parentBinder.getId().longValue() == workspaceId.longValue()) {
-						// Does this Folder have a default view defined?
-				   		Definition defaultBinderView = folder.getDefaultViewDef();
-				   		if (null != defaultBinderView) {
-				   			// Yes!  Is the default view a MiniBlog Folder?
-				   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {
-			   					// Yes!  Use it as this user's MiniBlog.
-			   					miniBlogId = folder.getId();
-			   				}
-				   		}
-				   		break;
+			try {
+				Folder folder = folderModule.getFolder(folderId);
+				// Is this folder in the user's workspace
+				Long workspaceId = user.getWorkspaceId();
+				if (workspaceId != null) {
+					Binder parentBinder = folder.getParentBinder();
+					while (parentBinder != null) {
+						if (parentBinder.getId().longValue() == workspaceId.longValue()) {
+							// Does this Folder have a default view defined?
+					   		Definition defaultBinderView = folder.getDefaultViewDef();
+					   		if (null != defaultBinderView) {
+					   			// Yes!  Is the default view a MiniBlog Folder?
+					   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {
+				   					// Yes!  Use it as this user's MiniBlog.
+				   					miniBlogId = folder.getId();
+				   				}
+					   		}
+					   		break;
+						}
+						parentBinder = parentBinder.getParentBinder();
 					}
-					parentBinder = parentBinder.getParentBinder();
 				}
-			}
+			} catch(Exception e) {}
 		}
 
 		// Does the folderId refer to the user's MiniBlog? 
