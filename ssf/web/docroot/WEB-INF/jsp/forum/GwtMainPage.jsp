@@ -215,7 +215,7 @@
 			eval(jsString);
 		}
 	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
   </head>
