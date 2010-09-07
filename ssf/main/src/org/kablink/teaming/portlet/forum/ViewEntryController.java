@@ -815,6 +815,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 
 				
+			Map<String,Definition> workflowAssociations = entry.getParentBinder().getWorkflowAssociations();
 			List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
 			Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
 			if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty()) {
@@ -825,7 +826,8 @@ public class ViewEntryController extends  SAbstractController {
 				Map runningWorkflowDefs = new HashMap();
 				for (WorkflowState state:runningWorkflows) {
 					Definition workflowDef = state.getDefinition();
-					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId()) &&
+							(configWorkflows.contains(workflowDef) || !workflowAssociations.containsValue(workflowDef))) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
@@ -844,7 +846,8 @@ public class ViewEntryController extends  SAbstractController {
 				}
 				
 				for (Definition workflowDef:configWorkflows) {
-					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId()) &&
+							!workflowAssociations.containsValue(workflowDef)) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
