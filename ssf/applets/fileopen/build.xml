@@ -31,7 +31,7 @@
 		</antcall>
 
 		<signjar jar="${jar.file}" alias="selfsigned" 
-		keystore="kablink.keystore" storepass="password"/>
+		keystore="../kablink.keystore" storepass="password"/>
 	</target>
 	
 	<target name="compile" depends="compile_1.4"/>
