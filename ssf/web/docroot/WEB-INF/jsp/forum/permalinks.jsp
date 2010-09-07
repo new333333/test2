@@ -33,19 +33,25 @@
  */
 %>
 <div style="padding:10px;">
-<table cellspacing="2" cellpadding="6" border="1" style="background:#cecece;">
+<table cellspacing="2" cellpadding="6" border="1" style="width:100%; background:#cecece;">
   <tr>
-    <td valign="top" nowrap>
+    <td valign="top" nowrap width="10%">
       <span>
         <c:if test="${empty ssSimpleUrlNames}"><ssf:nlt tag="permalink"/></c:if>
         <c:if test="${!empty ssSimpleUrlNames}"><ssf:nlt tag="permalinks"/></c:if>
       </span>
     </td>
-    <td valign="top" nowrap>
-      <div><a href="${ssPermalink}">${ssPermalink}</a></div>
+    <td valign="top" nowrap width="90%">
+      <div style="padding-right:4px;">
+        <input type="text" value="${ssPermalink}" 
+          style="width:100%; background-color:#cecece; overflow:hidden;" onClick="this.select();"/>
+      </div>
       <c:if test="${!empty ssSimpleUrlNames}">
         <c:forEach var="name" items="${ssSimpleUrlNames}">
-          <div><a href="${ssSimpleUrlPrefix}${name.name}">${ssSimpleUrlPrefix}${name.name}</a></div>
+          <div style="padding-right:4px;">
+            <input type="text" value="${ssSimpleUrlPrefix}${name.name}" 
+              style="width:100%; background-color:#cecece; overflow:hidden;" onClick="this.select();"/>
+          </div>
         </c:forEach>
       </c:if>
     </td>
