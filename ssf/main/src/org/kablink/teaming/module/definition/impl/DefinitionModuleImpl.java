@@ -1885,7 +1885,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				} else {
 					//There is no title field. See if the title value is passed in anyway
 					if (inputData.exists("title")) {
-						entryData.put("title", inputData.getSingleObject("title"));
+						entryData.put("title", inputData.getSingleValue("title"));
 					} else {
 						Element familyProperty = (Element) root.selectSingleNode("//properties/property[@name='family']");
 						if (familyProperty != null) {
