@@ -571,7 +571,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				}
 				if (ObjectKeys.ROLE_TITLE_TEAM_MEMBER.equals(fn.getName())) {
 					fn.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
-					fn.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
 				}
 				if (ObjectKeys.ROLE_TITLE_BINDER_ADMIN.equals(fn.getName())) {
 					fn.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
@@ -1225,13 +1224,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 		function.addOperation(WorkAreaOperation.ADD_COMMUNITY_TAGS);
-		//function.addOperation(WorkAreaOperation.CREATE_FOLDERS);
+		//function.addOperation(WorkAreaOperation.CREATE_FOLDERS);  //Turned off to lessen the default power of a team member
 		//function.addOperation(WorkAreaOperation.CREATE_WORKSPACES);
 		//function.addOperation(WorkAreaOperation.DELETE_ENTRIES);
 		//function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		function.addOperation(WorkAreaOperation.CREATOR_CREATE_ENTRY_ACLS);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRY_ACLS);
 
 		//generate functionId
 		getFunctionManager().addFunction(function);
