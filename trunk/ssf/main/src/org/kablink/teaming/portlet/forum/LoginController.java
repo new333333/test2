@@ -148,6 +148,14 @@ public class LoginController  extends SAbstractControllerRetry {
 		{
 		   String isNovellTeaming;
 		   
+			// Put out a true/false indicator for the RequestInfo
+			// object as to the state of the new Activity Streams based
+			// user interface.
+			model.put(
+				WebKeys.URL_ACTIVITY_STREAMS_ENABLED,
+				String.valueOf(
+					GwtUIHelper.isActivityStreamsEnabled() ) );
+			
 			// Add the binder id to the response.
 			model.put( WebKeys.URL_BINDER_ID, binderId );
 
