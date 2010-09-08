@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value="${ssProductName}" scope="request"/>
 <c:set var="ss_skip_head_close" value="true" scope="request"/>
@@ -41,7 +42,7 @@
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
-	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
+	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	
 	<script type="text/javascript" language="javascript">
 		// Save away information such as the binder id and the adapted url for the request we are working with.
@@ -215,9 +216,9 @@
 			eval(jsString);
 		}
 	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
-	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
-	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
+	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
   </head>
 
   <body>

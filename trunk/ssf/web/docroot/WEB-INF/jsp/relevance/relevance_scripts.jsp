@@ -37,10 +37,10 @@
 <%
 	if (RelevanceUtils.isRelevanceEnabled()) {
 %>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js"></script>
-		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.droppable.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.draggable.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.droppable.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 		
 		<script type="text/javascript">
 			<% /* Store the localized string that might need to */ %>
@@ -52,5 +52,5 @@
 			g_relevanceStrings["entry.relatedWorkspaces.None"]	= "<ssf:nlt tag='entry.relatedWorkspaces.None' />";
 		</script>
 		
-		<script type="text/javascript" src="<html:rootPath/>js/common/ss_relatedFiles.js"></script>
+		<script type="text/javascript" src="<html:rootPath/>js/common/ss_relatedFiles.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <% } %>

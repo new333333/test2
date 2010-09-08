@@ -39,7 +39,7 @@
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <div class="ss_style ss_portlet_style">
 	
-<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
 <script type="text/javascript">
