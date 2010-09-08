@@ -461,10 +461,10 @@ function ss_checkForm(obj) {
     <input type="checkbox" name="announce"/>
 	<span class="ss_labelLeft"><label for="announce">
 	
-	<c:if test="${ssOperation == 'add_workspace'}">
+	<c:if test="${ssOperation == 'add_workspace' || ssOperation == 'add_team_workspace'}">
 	  <ssf:nlt tag="workspace.announceToTeam"/>
 	</c:if>
-	<c:if test="${ssOperation == 'add_folder' || ssOperation == 'add_subFolder'}">
+	<c:if test="${ssOperation != 'add_workspace' && ssOperation != 'add_team_workspace'}">
 	  <ssf:nlt tag="folder.announceToTeam"/>
 	</c:if>
 	  
@@ -474,7 +474,9 @@ function ss_checkForm(obj) {
 	<span class="ss_labelAbove"><label for="announcementText">
 	  <ssf:nlt tag="workspace.announcementText"/>
 	</label></span>
-	<ssf:htmleditor name="announcementText" height="200" />
+	<div>
+	  <ssf:htmleditor name="announcementText" height="150" toolbar="minimal" />
+	</div>
 </fieldset>
 </div>
 </td></tr>
