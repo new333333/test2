@@ -108,11 +108,11 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 	String sizingTableHeaderCellStyle;
 	String sizingTableRowCellStyle;
 	if ((null != browserType) && ((-1) != browserType.toLowerCase().indexOf("safari"))) {
-		sizingTableHeaderCellStyle = "padding-bottom: 1px;";
+		sizingTableHeaderCellStyle = "padding-bottom: 3px;";
 		sizingTableRowCellStyle    = "padding-bottom: 10px;";
 	}
 	else {
-		sizingTableHeaderCellStyle =
+		sizingTableHeaderCellStyle = "";
 		sizingTableRowCellStyle    = "";
 	}
 %>
