@@ -84,8 +84,12 @@ public class PWCallback implements CallbackHandler {
         			User user = getProfileDao().findUserByName(userName, zoneId);
     				// If we're still here, the user exists.
 
-        			String pwType = pc.getPasswordType();
-        			if(pwType != null && pwType.equals(WSConstants.PASSWORD_TEXT)) { // wsse:PasswordText
+        			String pwType = WSConstants.PASSWORD_TEXT; // This is our default.
+        			String pType = pc.getPasswordType();
+        			if(pType != null && !pType.equals(""))
+        				pwType = pType;
+        			
+        			if(pwType.equals(WSConstants.PASSWORD_TEXT)) { // wsse:PasswordText
         				String clearPassword = pc.getPassword();
         				
             			AuthenticationContextHolder.setAuthenticationContext(LoginInfo.AUTHENTICATOR_WS, null);
