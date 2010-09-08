@@ -126,6 +126,8 @@ tinyMCE.init({
   pdw_toggle_on : 1,
   pdw_toggle_toolbars : "2",
   pdw_element_id : "ss_htmleditor_${element_name}",
+  theme_advanced_resizing_min_width : 100,
+  theme_advanced_resizing_min_height : 100,
   theme_advanced_resizing_use_cookie : true});
 
 tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
@@ -198,6 +200,8 @@ tinyMCE.init({
 	  --%><c:if test="${!empty wikiLinkBinderId}">,ss_wikilink</c:if><c:if test="${isShowYouTube}">,ss_youtube</c:if>",
 	  theme_advanced_path: false,
 	  theme_advanced_disable : "image,advimage",
+	  theme_advanced_resizing_min_width : 100,
+	  theme_advanced_resizing_min_height : 100,
 	  theme_advanced_resizing_use_cookie : true});
 
 	tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{

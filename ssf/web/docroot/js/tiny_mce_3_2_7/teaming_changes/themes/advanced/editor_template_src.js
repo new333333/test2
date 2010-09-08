@@ -485,8 +485,8 @@
 			dh = e.clientHeight - ifr.clientHeight;
 
 			// Resize iframe and container
-			DOM.setStyle(ifr, 'height', h - dh);
-			DOM.setStyles(e, {width : w, height : h});
+			DOM.setStyle(ifr, 'height', Math.max(h - dh, 100));
+			DOM.setStyles(e, {width : w, height : Math.max(h, 100)});
 		},
 
 		destroy : function() {
@@ -701,9 +701,9 @@
 							return;
 
 						if (s.theme_advanced_resize_horizontal)
-							c.style.width = Math.max(10, o.cw) + 'px';
+							c.style.width = Math.max(100, o.cw) + 'px';
 
-						var newHeight = Math.max(10, o.ch);
+						var newHeight = Math.max(100, o.ch);
 						//Never go so small there is no room to add text
 						if (newHeight < 100) newHeight = 100;
 						c.style.height = parseInt(newHeight) + 'px';
@@ -759,9 +759,9 @@
 
 							// Resize placeholder
 							if (s.theme_advanced_resize_horizontal)
-								p.style.width = w + 'px';
+								p.style.width = Math.max(w, 100) + 'px';
 
-							p.style.height = h + 'px';
+							p.style.height = Math.max(h, 100) + 'px';
 
 							return Event.cancel(e);
 						});
@@ -782,15 +782,15 @@
 							ifr = DOM.get(ed.id + '_ifr');
 
 							if (s.theme_advanced_resize_horizontal)
-								c.style.width = Math.max(10, r.w + r.dx) + 'px';
+								c.style.width = Math.max(100, r.w + r.dx) + 'px';
 
-							c.style.height = Math.max(10, r.h + r.dy) + 'px';
-							ifr.style.height = Math.max(10, ifr.clientHeight + r.dy) + 'px';
+							c.style.height = Math.max(100, r.h + r.dy) + 'px';
+							ifr.style.height = Math.max(100, ifr.clientHeight + r.dy) + 'px';
 
 							if (s.theme_advanced_resizing_use_cookie) {
 								Cookie.setHash("TinyMCE_" + ed.id + "_size", {
-									cw : r.w + r.dx,
-									ch : r.h + r.dy
+									cw : Math.max(r.w + r.dx, 100),
+									ch : Math.max(r.h + r.dy, 100)
 								});
 							}
 						});
