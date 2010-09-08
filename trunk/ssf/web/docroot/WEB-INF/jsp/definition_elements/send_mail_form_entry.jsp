@@ -92,7 +92,9 @@
   <span class="ss_labelAbove"><label for="_sendMail_body">
     <ssf:nlt tag="entry.sendMail.body"/>
   </label></span>
-  <ssf:htmleditor name="_sendMail_body" height="200" />
+  <div>
+    <ssf:htmleditor name="_sendMail_body" height="200" toolbar="minimal" />
+  </div>
 
   <br/>
   <input type="checkbox" name="_sendMail_includeAttachments" />
