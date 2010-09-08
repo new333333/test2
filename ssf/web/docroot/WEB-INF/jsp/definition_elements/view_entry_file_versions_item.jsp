@@ -92,9 +92,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
 		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
 		>
-		<%
-			if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
-		%>
+		  <c:if test="${ss_isBinderMirroredFolder}">
+		    ${selection.fileItem.name}
+		  </c:if>
+		  <c:if test="${!ss_isBinderMirroredFolder}">
+		  <%
+			  if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
+		  %>
 		    <a style="text-decoration: none;" 
 						href="<ssf:fileUrl file="${selection}"/>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
@@ -103,9 +107,9 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
 				    </ssf:title>
 					><%= fnBr %></a>
-		<%  }
+		  <%  }
 			if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
-		%>
+		  %>
 			<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
 				<ssf:isFileEditorConfiguredForOS relativeFilePath="${selection.fileItem.name}" operatingSystem="<%= operatingSystem %>">
 					<a style="text-decoration: none;" href="<ssf:ssfsInternalAttachmentUrl 
@@ -132,7 +136,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 						fileAttachment="${selection}"/>"
 				><%= fnBr %></a>
 			</ssf:editorTypeToUseForEditInPlace>
-		<%  }  %>
+		  <%  }  %>
 
 			<c:if test="${selection.currentlyLocked}">
 			  <br/>
@@ -158,6 +162,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 			    </div>
 			  </c:if>
 			</c:if>
+		  </c:if>
 		</td>
 		
 		<td class="ss_att_meta">

@@ -65,7 +65,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 <div class="ss_entryContent"">
 
 <table width="99%" border="0" cellpadding="0" cellspacing="0" class="marginbottom2">
-<c:if test="${!empty ss_pseudoEntity}">
+<c:if test="${!empty ss_pseudoEntity && !ss_isBinderMirroredFolder}">
 <tr>
 	<td valign="top" style="padding-left: 9px; white-space: nowrap">
 		<c:if test="${!empty ss_pseudoEntityRevert}">

@@ -79,7 +79,13 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
+          <c:if test="${!ss_pseudoEntity || !ss_isBinderMirroredFolder}">
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
+          </c:if>
+          <c:if test="${ss_pseudoEntity && ss_isBinderMirroredFolder}">
+            <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
+			       src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+          </c:if>
 	    </div>
 		</td>
 		
@@ -88,7 +94,12 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> white-space: normal; <% } %>
 		  ">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
+          <c:if test="${!ss_pseudoEntity || !ss_isBinderMirroredFolder}">
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
+          </c:if>
+          <c:if test="${ss_pseudoEntity && ss_isBinderMirroredFolder}">
+            ${selection.fileItem.name}
+          </c:if>
 		</td>
 		<td class="ss_att_meta" style="border: 0px;">
 		  <ssf:nlt tag="file.versionNumber"><ssf:param name="value" value="${selection.fileVersion}"/></ssf:nlt>
