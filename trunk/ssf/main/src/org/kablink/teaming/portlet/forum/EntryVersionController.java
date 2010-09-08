@@ -95,29 +95,31 @@ public class EntryVersionController extends  SAbstractController {
 		    		return;
 				}
 				//The entry data is updated, now check for files to be reverted
-				Set<Attachment> attachments = entity.getAttachments();
-				Iterator itKeys = formData.keySet().iterator();
-				while (itKeys.hasNext()) {
-					String key = (String) itKeys.next();
-					FileAttachment fileAtt = null;
-					VersionAttachment fileVer = null;
-					if (key.startsWith("file_revert_")) {
-						String fileId = key.substring(12);
-						String[] values = (String[]) formData.get(key);
-						if (values[0].equals(("true"))) {
-							for (Attachment attachment : attachments) {
-								if (attachment instanceof FileAttachment) {
-									if (attachment.getId().equals(fileId)) {
-										fileAtt = (FileAttachment)attachment;
-										break;
+				if (!entity.getParentBinder().isMirrored()) {		// Never try to revert a mirrored file
+					Set<Attachment> attachments = entity.getAttachments();
+					Iterator itKeys = formData.keySet().iterator();
+					while (itKeys.hasNext()) {
+						String key = (String) itKeys.next();
+						FileAttachment fileAtt = null;
+						VersionAttachment fileVer = null;
+						if (key.startsWith("file_revert_")) {
+							String fileId = key.substring(12);
+							String[] values = (String[]) formData.get(key);
+							if (values[0].equals(("true"))) {
+								for (Attachment attachment : attachments) {
+									if (attachment instanceof FileAttachment) {
+										if (attachment.getId().equals(fileId)) {
+											fileAtt = (FileAttachment)attachment;
+											break;
+										}
+										fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
+										fileAtt = fileVer;
+										if (fileAtt != null) break;
 									}
-									fileVer = ((FileAttachment)attachment).findFileVersionById(fileId);
-									fileAtt = fileVer;
-									if (fileAtt != null) break;
 								}
-							}
-							if (fileVer != null) {
-								getFileModule().revertFileVersion(entity, fileVer);
+								if (fileVer != null) {
+									getFileModule().revertFileVersion(entity, fileVer);
+								}
 							}
 						}
 					}

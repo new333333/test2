@@ -103,7 +103,7 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
   </div>
   </td>
   </c:if>
-  <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
+  <c:if test="${!empty ssDefinitionEntry.fileAttachments && !ss_isBinderMirroredFolder}">
   <td valign="middle" width="1%" nowrap>
   <div id="viewFileVersions${ss_tabDivCount}Tab" 
     class="wg-tab roundcornerSM" 
@@ -144,10 +144,12 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 <c:set var="ss_seenHistoryTab" value="true" scope="request"/>
 </c:if>
 
-<div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
-  <c:set var="property_caption" value="" scope="request"/>
-  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
-</div>
+  <c:if test="${!empty ssDefinitionEntry.fileAttachments && !ss_isBinderMirroredFolder}">
+	<div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
+	  <c:set var="property_caption" value="" scope="request"/>
+	  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
+	</div>
+  </c:if>
 
 </div>
 

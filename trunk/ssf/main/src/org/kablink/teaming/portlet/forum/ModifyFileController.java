@@ -187,7 +187,7 @@ public class ModifyFileController extends SAbstractController {
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
-				if (fileVer != null) {
+				if (fileVer != null && !entity.getParentBinder().isMirrored()) {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
 					getFileModule().revertFileVersion(entity, fileVer);
 					BinderHelper.indexEntity(this, entity);
