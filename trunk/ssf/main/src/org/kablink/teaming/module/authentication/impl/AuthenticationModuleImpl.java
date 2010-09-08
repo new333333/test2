@@ -377,6 +377,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
         	if ( !MiscUtil.isSystemUserAccount( authentication.getName() ) )
         	{
         		// No, try to do an ldap authentication.
+        		// This will also try local authentication as fallback, if configured to do so.
 	    		try {
 	    			// Perform authentication
 	     			result = authenticators.get(zone).authenticate(authentication);
@@ -415,7 +416,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
         	}
         	
         	// Try to authenticate against the Teaming db.
-    		if(SZoneConfig.getAdminUserName(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName())).equals(authentication.getName())) {
+    		if(MiscUtil.isSystemUserAccount( authentication.getName())) {
     			result = localProviders.get(zone).authenticate(authentication);
     			// This is not used for authentication or synchronization but merely to log the authenticator.
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
