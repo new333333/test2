@@ -551,20 +551,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//An empty status indicates no update needed
 		TeamingFeedCache.updateMap(bs);
 		String status = "";
-		String type = (String)session.getAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_TYPE);
-		if (type != null && type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			if (TeamingFeedCache.checkIfBinderHasNewSiteEntries(bs, lastUpdateDate)) {
-				status = "update";
-			}
-		} else {
-			List<Long> trackedBinderIds = (List<Long>)session.getAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS);
-			if (trackedBinderIds == null) trackedBinderIds = new ArrayList<Long>();
-			for (Long binderId : trackedBinderIds) {
-				if (TeamingFeedCache.checkIfBinderHasNewEntries(bs, binderId, lastUpdateDate)) {
-					status = "update";
-					break;
-				}
-			}
+		Set<Long> trackedBinderIds = (Set<Long>)session.getAttribute(ObjectKeys.SESSION_TEAMING_LIVE_TRACKED_BINDER_IDS);
+		if (trackedBinderIds == null) trackedBinderIds = new HashSet<Long>();
+		if (TeamingFeedCache.checkBindersForNewEntries(bs, trackedBinderIds, lastUpdateDate)) {
+			status = "update";
 		}
 		model.put("ss_teamingLiveStatus", status);
 

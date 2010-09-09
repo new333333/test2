@@ -764,26 +764,15 @@ public class BinderHelper {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
-		List<Long> trackedBinders = new ArrayList<Long>();
+		Set<Long> trackedBinders = new HashSet<Long>();
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
 			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, String.valueOf(pageNumber), type);
-			Criteria crit = SearchUtils.bindersForAncestryBinders(bs, tbs);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, 0, 10000);
-	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-	    	if (items != null) {
-		    	Iterator it = items.iterator();
-		    	while (it.hasNext()) {
-		    		Map entry = (Map)it.next();
-					String id = (String)entry.get(Constants.DOCID_FIELD);
-					if (id != null) {
-						Long bId = Long.valueOf(id);
-						if (!trackedBinders.contains(bId)) {
-							trackedBinders.add(bId);
-						}
-					}
-		    	}
+			for (Long bId : tbs) {
+				if (!trackedBinders.contains(bId)) {
+					trackedBinders.add(bId);
+				}
 	    	}
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			List<Long> trackedPeople = RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
