@@ -70,6 +70,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.AuthenticationServiceException;
+import org.springframework.security.BadCredentialsException;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 import org.springframework.security.ldap.search.FilterBasedLdapUserSearch;
 import org.springframework.security.providers.AuthenticationProvider;
@@ -371,6 +372,11 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     	}
 
     	if(authenticators.containsKey(zone)) {
+    		// Don't allow anyone to log in without specifying a password (to prevent successful
+    		// authentication on an account that has no password).
+    		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
+    			throw new BadCredentialsException("Password is required");
+    		
        		Authentication result = null;
        		
         	// Are we dealing with one of Teaming's system accounts such as "admin" or "guest"?
@@ -414,9 +420,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    			exc = new UserIdNotUniqueException( errDesc );
 	    		}
         	}
-        	
-        	// Try to authenticate against the Teaming db.
-    		if(MiscUtil.isSystemUserAccount( authentication.getName())) {
+        	else { // Yes, system account
+        		// Do not try ldap authentication. Authenticate against Teaming db.
     			result = localProviders.get(zone).authenticate(authentication);
     			// This is not used for authentication or synchronization but merely to log the authenticator.
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
