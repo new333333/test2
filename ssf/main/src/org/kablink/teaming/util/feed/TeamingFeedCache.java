@@ -38,12 +38,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SZoneConfig;
@@ -97,6 +99,13 @@ public class TeamingFeedCache {
     						if (!newBinderMap.containsKey(Long.valueOf(binderId)) ||
     								newBinderMap.get(Long.valueOf(binderId)).before(entryModificationDate)) {
     							newBinderMap.put(Long.valueOf(binderId), entryModificationDate);
+    						}
+    					}
+    					SearchFieldResult ancestry = (SearchFieldResult)entry.get(Constants.ENTRY_ANCESTRY);
+    					for (Object id : ancestry.getValueSet()) {
+    						if (!newBinderMap.containsKey(Long.valueOf(id.toString())) ||
+    								newBinderMap.get(Long.valueOf(id.toString())).before(entryModificationDate)) {
+    							newBinderMap.put(Long.valueOf(id.toString()), entryModificationDate);
     						}
     					}
     					cache.setHasSiteEntries(true);
@@ -153,6 +162,25 @@ public class TeamingFeedCache {
     		Map<Long,Date> binderMap = cache.getBinderMap();
         	if (binderMap.containsKey(binderId) && 
         			binderMap.get(binderId).after(date)) return true;    		
+    	}
+    	return false;
+    }
+    public static boolean checkBindersForNewEntries(AllModulesInjected bs, Set<Long> binderIds, Date date) {
+    	FeedCache cache = getFeedCacheForTheZone();
+    	if(cache != null) {
+    		//Look to see if there are any binderIds in common, using the smallest list
+    		Map<Long,Date> binderMap = cache.getBinderMap();
+    		if (binderMap.size() < binderIds.size()) {
+	    		for (Long binderId : binderMap.keySet()) {
+		        	if (binderIds.contains(binderId) && 
+		        			binderMap.get(binderId).after(date)) return true;
+	    		}
+    		} else {
+        		for (Long binderId : binderIds) {
+    	        	if (binderMap.containsKey(binderId) && 
+    	        			binderMap.get(binderId).after(date)) return true;
+        		}
+    		}
     	}
     	return false;
     }
