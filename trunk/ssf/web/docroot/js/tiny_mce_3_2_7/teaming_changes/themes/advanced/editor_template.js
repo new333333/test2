@@ -68,7 +68,7 @@
 				theme_advanced_path : true,
 				theme_advanced_toolbar_location : 'bottom',
 				theme_advanced_buttons1 : "fontselect,fontsizeselect,formatselect,|,bold,italic,underline,|,forecolor,bullist,numlist,indent,outdent,|,justifyleft,justifycenter,justifyright,justifyfull,|,code,|,fullpage,pdw_toggle",
-				theme_advanced_buttons2 : "hr,link,unlink,backcolor,|,table,split_cells,merge_cells,row_props,cell_props,|,pastetext,pasteword,|,undo,redo,|,sub,sup,strikethrough,|,charmap,removeformat,anchor,cleanup",
+				theme_advanced_buttons2 : "hr,link,unlink,backcolor,|,table,col_after,col_before,delete_col,row_after,row_before,delete_row,split_cells,merge_cells,row_props,cell_props,|,pastetext,pasteword,|,undo,redo,|,sub,sup,strikethrough,|,charmap,removeformat,anchor,cleanup",
 				theme_advanced_buttons3 : "",
 				theme_advanced_blockformats : "p,address,pre,h1,h2,h3,h4,h5,h6",
 				theme_advanced_toolbar_align : "center",
