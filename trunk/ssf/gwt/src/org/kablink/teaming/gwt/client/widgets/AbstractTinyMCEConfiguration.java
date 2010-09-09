@@ -75,7 +75,7 @@ public abstract class AbstractTinyMCEConfiguration
 	
 	private String[] themeAdvancedButtons1 = new String[] {"fontselect", "fontsizeselect", "formatselect", "|", "bold", "italic", "underline", "|", "forecolor", "bullist", "numlist", "indent", "outdent", "|", "justifyleft", "justifycenter", "justifyright", "justifyfull", "|", "code", "|", "fullpage", "pdw_toggle"};
 	private String[] themeAdvancedButtons1Add = new String[] {""};
-	private String[] themeAdvancedButtons2 = new String[] {"hr", "link", "unlink", "backcolor", "|", "table", "split_cells", "merge_cells", "row_props", "cell_props", "|", "pastetext", "pasteword", "|", "undo", "redo", "|", "sub", "sup", "strikethrough", "|", "charmap", "removeformat", "anchor", "cleanup"};
+	private String[] themeAdvancedButtons2 = new String[] {"hr", "link", "unlink", "backcolor", "|", "table", "col_after", "col_before", "delete_col", "row_after", "row_before", "delete_row", "split_cells", "merge_cells", "row_props", "cell_props", "|", "pastetext", "pasteword", "|", "undo", "redo", "|", "sub", "sup", "strikethrough", "|", "charmap", "removeformat", "anchor", "cleanup"};
 	private String[] themeAdvancedButtons2Add = new String[] {"|", "ss_addimage", "ss_wikilink", "ss_youtube"};
 	private String[] themeAdvancedButtons3 = new String[] {""};
 	private String[] themeAdvancedButtons3Add = new String[] {"tablecontrols"};
