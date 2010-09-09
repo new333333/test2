@@ -111,6 +111,29 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 			}
 		}
 		
+		// Add the "url_created_by_teaming" parameter to every url.  This is needed starting in
+		// Durango so that we don't display the pre-Durango ui.  LoginFilter.java will look for
+		// this parameter.
+		{
+			if( adaptedPortletUrl.crawler)
+			{
+				sb.append( Constants.SLASH );
+			}
+			else
+			{
+				sb.append( Constants.AMPERSAND );
+			}
+			
+			sb.append( "url_created_by_teaming" );
+			
+			if( adaptedPortletUrl.crawler )
+				sb.append( Constants.SLASH );
+			else
+				sb.append( Constants.EQUAL );
+			
+			sb.append("1" );
+		}		
+		
 		return sb.toString();
 	}
 
