@@ -35,6 +35,8 @@ package org.kablink.teaming.web.servlet.filter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
+import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -107,6 +109,23 @@ public class LoginFilter  implements Filter {
 				}
 			}
 			else {
+				// Do we need to convert the url to a permalink?
+				if ( shouldUrlBeConvertedToAPermalink( req ) )
+				{
+					String permalinkUrl;
+					
+					// Yes
+					// Create a permalink from the given url.
+					permalinkUrl = convertUrlToPermalink( req );
+					
+					// Redirect to the permalink.
+					if ( permalinkUrl != null )
+					{
+						res.sendRedirect( permalinkUrl );
+						return;
+					}
+				}
+
 				if(WebHelper.isGuestLoggedIn(req)) {
 					// User is logged in as guest, which simply means that the user
 					// is currently accessing Teaming without logging in as a regular 
@@ -132,6 +151,85 @@ public class LoginFilter  implements Filter {
 		} catch(Exception e) {
 			res.sendRedirect(getErrorUrl(req, e.getLocalizedMessage()));
 		}
+	}
+	
+	
+	/**
+	 * Convert the given url to a permalink.
+	 */
+	private String convertUrlToPermalink( HttpServletRequest req )
+	{
+		String url;
+		String paramValue;
+		String action;
+		boolean pAction;
+		AdaptedPortletURL adaptedPortletUrl;
+		
+		action = req.getParameter( WebKeys.ACTION );
+		
+		pAction = false;
+		paramValue = req.getParameter( "p_action" );
+		if ( paramValue != null && paramValue.equalsIgnoreCase( "1" ) )
+			pAction = true;
+
+		adaptedPortletUrl = new AdaptedPortletURL( req, "ss_forum", pAction );
+		adaptedPortletUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK );
+	
+		// Add the parameters from the original url to the permalink url.
+		{
+			Enumeration paramNames;
+			
+			paramNames = req.getParameterNames();
+			if ( paramNames != null && paramNames.hasMoreElements() )
+			{
+				while ( paramNames.hasMoreElements() )
+				{
+					String paramName;
+					
+					// Get the next parameter name.
+					paramName = (String) paramNames.nextElement();
+					
+					// Is the parameter named "action" or "p_name" or "p_action"?
+					if ( paramName != null && paramName.equalsIgnoreCase( "action" ) == false &&
+						 paramName.equalsIgnoreCase( "p_name" ) == false &&
+						 paramName.equalsIgnoreCase( "p_action" ) == false )
+					{
+						String value;
+						
+						// No
+						// Get the parameter value.
+						value = (String) req.getParameter( paramName );
+						
+						// Add the parameter to the new url
+						adaptedPortletUrl.setParameter( paramName, value );
+					}
+				}
+			}
+		}
+		
+		// Add the "entityType" parameter with the appropriate value.
+		if ( action.equalsIgnoreCase( WebKeys.ACTION_VIEW_WS_LISTING ) )
+		{
+			adaptedPortletUrl.setParameter( WebKeys.URL_ENTITY_TYPE, "workspace" );
+		}
+		else if ( action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_LISTING ) )
+		{
+			adaptedPortletUrl.setParameter( WebKeys.URL_ENTITY_TYPE, "folder" );
+		}
+		else if ( action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PROFILE_LISTING ) )
+		{
+			adaptedPortletUrl.setParameter( WebKeys.URL_ENTITY_TYPE, "profiles" );
+		}
+		else if ( action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_ENTRY ) )
+		{
+			adaptedPortletUrl.setParameter( WebKeys.URL_ENTITY_TYPE, "folderEntry" );
+		}
+		else if ( action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PROFILE_ENTRY ) )
+		{
+		}
+		
+		url = adaptedPortletUrl.toString();
+		return url;
 	}
 	
 	public void destroy() {
@@ -349,4 +447,36 @@ public class LoginFilter  implements Filter {
 		return adapterUrl.toString();
 	}
 
+	/**
+	 * Look at the url in the request and determine if it should be converted to a permalink.
+	 * The url needs to be converted to a permalink if the action parameter equals
+	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
+	 * and the url does NOT have the parameter "url_created_by_teaming"
+	 */
+	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
+	{
+		String action;
+		String param;
+		
+		// Does the url have the "url_created_by_teaming" parameter.
+		param = req.getParameter( "url_created_by_teaming" );
+		if ( param != null && param.length() > 0 )
+		{
+			// Yes, no need to convert it.
+			return false;
+		}
+		
+		action = req.getParameter( "action" );
+		if ( action != null &&
+			 (action.equalsIgnoreCase( WebKeys.ACTION_VIEW_WS_LISTING ) ||
+			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_LISTING ) ||
+			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PROFILE_LISTING ) ||
+			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_FOLDER_ENTRY ) ||
+			  action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PROFILE_ENTRY )) )
+		{
+			return true;
+		}
+		
+		return false;
+	}
 }
