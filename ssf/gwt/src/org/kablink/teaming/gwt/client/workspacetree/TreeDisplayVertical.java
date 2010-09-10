@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -555,7 +556,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			reply = ti.getBinderInfo().getBinderId();
 			if (!(GwtClientHelper.hasString(reply))) {
 				if (ti.isActivityStream()) {
-					reply = ti.getBinderTitle();
+					ActivityStreamInfo asi = ti.getActivityStreamInfo();
+					ActivityStream as = ((null == asi) ? ActivityStream.UNKNOWN : asi.getActivityStream());
+					if (null == as) {
+						as = ActivityStream.UNKNOWN;
+					}
+					reply = (as.getValue() + "_" + ti.getBinderTitle());
 				}
 				else {
 					reply = "-unknown-";
@@ -844,8 +850,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Is this activity stream the one that's already selected?
 		if (!(asi.isEqual(m_selectedActivityStream))) {
 			// No!  Store it as being selected...
+
 			m_selectedActivityStream = asi;
-			
+
 			// ...and if we can find it in our TreeInfo objects...
 			TreeInfo ti = TreeInfo.findActivityStreamTI(getRootTreeInfo(), asi);
 			if (null != ti) {

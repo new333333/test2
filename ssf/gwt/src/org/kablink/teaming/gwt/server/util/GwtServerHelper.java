@@ -1741,6 +1741,38 @@ public class GwtServerHelper {
 		// accessed and null otherwise.  Return it.
 		return reply;
 	}
+	
+	/**
+	 * Wraps getBinderForWorkspaceTree() in a try/catch block and
+	 * eliminates the possibility of an exception being thrown.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param defaultToTop
+	 * 
+	 * @return
+	 */
+	public static Binder getBinderForWorkspaceTree_Safely(AllModulesInjected bs, String binderId, boolean defaultToTop) {
+		Binder reply;
+		try {
+			reply = getBinderForWorkspaceTree_Safely(bs, Long.parseLong(binderId), defaultToTop);
+		}
+		catch (Exception ex) {
+			reply = null;
+		}
+		return reply;
+	}
+	
+	public static Binder getBinderForWorkspaceTree_Safely(AllModulesInjected bs, Long binderId, boolean defaultToTop) {
+		Binder reply;
+		try {
+			reply = getBinderForWorkspaceTree(bs, binderId, defaultToTop);
+		}
+		catch (Exception ex) {
+			reply = null;
+		}
+		return reply;
+	}
 
 	/**
 	 * Returns a BinderInfo describing a binder.

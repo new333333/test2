@@ -1722,20 +1722,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Builds an ActivityStreamInfo object based on an ActivityStream
 	 * enumeration value and an String[] of Binder IDs.
 	 */
-	private static ActivityStreamInfo buildASI(ActivityStream as, String[] asIds) {
+	private static ActivityStreamInfo buildASI(ActivityStream as, String[] asIds, String title) {
 		ActivityStreamInfo reply = new ActivityStreamInfo();
-		
+
 		reply.setActivityStream(as);
 		if ((null != asIds) && ((1 < asIds.length) || (null != asIds[0]))) {
 			reply.setBinderIds(asIds);
 		}
+		reply.setTitle(title);
 		
 		return reply;
 	}
 	
-	private static ActivityStreamInfo buildASI(ActivityStream as, String asId) {
+	private static ActivityStreamInfo buildASI(ActivityStream as, String asId, String title) {
 		// Always use the initial form of the method.
-		return buildASI(as, new String[]{asId});
+		return buildASI(as, new String[]{asId}, title);
 	}
 
 	/*
@@ -1752,7 +1753,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			TeamingAction.ACTIVITY_STREAM,
 			buildASI(
 				as,
-				id));
+				id,
+				title));
 		
 		return reply;
 	}
@@ -1780,7 +1782,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		List<TreeInfo> rootASList = reply.getChildBindersList();
 		
 		// Can we access the Binder?
-		binder = GwtServerHelper.getBinderForWorkspaceTree(this, binderIdS, true);
+		binder = GwtServerHelper.getBinderForWorkspaceTree_Safely(this, binderIdS, true);
 		if (null != binder) {
 			// Yes!  Build a TreeInfo for it.
 			rootASList.add(
@@ -1815,7 +1817,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			for (FavoriteInfo myFavorite: myFavoritesList) {
 				// Can we access the next one's Binder?
 				id = myFavorite.getValue();
-				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				binder = GwtServerHelper.getBinderForWorkspaceTree_Safely(this, id, false);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIds[idIndex++] = id;					
@@ -1826,7 +1828,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			// Update the parent TreeInfo.
 			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.MY_FAVORITES, asIds));
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_FAVORITES,
+					asIds,
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the favorites TreeInfo to the root TreeInfo.
@@ -1846,7 +1853,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			for (TeamInfo myTeam: myTeamsList) {
 				// Can we access the next one's Binder?
 				id = myTeam.getBinderId();
-				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				binder = GwtServerHelper.getBinderForWorkspaceTree_Safely(this, id, false);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIds[idIndex++] = id;					
@@ -1857,7 +1864,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			// Update the parent TreeInfo.
 			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.MY_TEAMS, asIds));
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_TEAMS,
+					asIds,
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the teams TreeInfo to the root TreeInfo.
@@ -1877,7 +1889,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			for (String followedPersonId: followedPeopleList) {
 				// Can we access the next one's Binder?
 				id = followedPersonId;
-				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				binder = GwtServerHelper.getBinderForWorkspaceTree_Safely(this, id, false);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIds[idIndex++] = id;					
@@ -1888,7 +1900,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			// Update the parent TreeInfo.
 			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.FOLLOWED_PEOPLE, asIds));
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PEOPLE,
+					asIds,
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the followed people TreeInfo to the root TreeInfo.
@@ -1908,7 +1925,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			for (String followedPlaceId: followedPlacesList) {
 				// Can we access the next one's Binder?
 				id = followedPlaceId;
-				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				binder = GwtServerHelper.getBinderForWorkspaceTree_Safely(this, id, false);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIds[idIndex++] = id;
@@ -1919,7 +1936,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			// Update the parent TreeInfo.
 			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.FOLLOWED_PLACES, asIds));
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PLACES,
+					asIds,
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the followed places TreeInfo to the root TreeInfo.

@@ -114,6 +114,7 @@ public class ActivityStreamInfo implements ClientActionParameter, IsSerializable
 	}
 
 	private ActivityStream m_as;
+	private String m_title = "";
 	private String[] m_binderIds;
 	
 	/**
@@ -175,6 +176,15 @@ public class ActivityStreamInfo implements ClientActionParameter, IsSerializable
 		return reply.toString();
 	}
 
+	/**
+	 * Returns the title attached to this ActivityStreamInfo.
+	 * 
+	 * @return
+	 */
+	public String getTitle() {
+		return m_title;
+	}
+	
 	/**
 	 * Returns an ActivityStreamInfo object based on the String
 	 * representation returned by a call to getStringValue().
@@ -310,5 +320,14 @@ public class ActivityStreamInfo implements ClientActionParameter, IsSerializable
 	 */
 	public void setBinderIds(String[] binderIds) {
 		m_binderIds = binderIds;
+	}
+
+	/**
+	 * Stores the title for this ActivityStreamInfo object.
+	 * 
+	 * @param title
+	 */
+	public void setTitle(String title) {
+		m_title = ((null == title) ? "" : title);
 	}
 }
