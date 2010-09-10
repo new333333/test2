@@ -41,16 +41,21 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -73,8 +78,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 public class ActivityStreamCtrl extends Composite
 	implements ClickHandler, ActionHandler
 {
-	private InlineLabel m_headerTitle;
-	private InlineLabel m_headerSubtitle;
+	private InlineLabel m_sourceName;
 	private FlowPanel m_headerPanel;
 	private FlowPanel m_searchResultsPanel;
 	private FlowPanel m_footerPanel;
@@ -95,6 +99,8 @@ public class ActivityStreamCtrl extends Composite
 	private int m_width;
 	private int m_height;
 	private ActivityStreamInfo m_activityStreamInfo = null;
+	private GwtRpcServiceAsync m_rpcService = null;
+	private String m_binderPermalink = null;		// Permalink to the binder that is the source of the activity stream.
 
 	
 	/**
@@ -106,8 +112,11 @@ public class ActivityStreamCtrl extends Composite
 	{
 		FlowPanel mainPanel;
 
+		// Get the rpc service.
+		m_rpcService = GwtTeaming.getRpcService();
+		
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "ActivityStreamCtrl" );
+		mainPanel.addStyleName( "activityStreamCtrl" );
 		
 		// Remember the handler we should call when the user selects an item from the search results.
 		m_actionHandler = actionHandler;
@@ -127,7 +136,7 @@ public class ActivityStreamCtrl extends Composite
 			Image spinnerImg;
 			
 			m_searchingPanel = new FlowPanel();
-			m_searchingPanel.addStyleName( "ActivityStreamSearchingPanel" );
+			m_searchingPanel.addStyleName( "activityStreamSearchingPanel" );
 			mainPanel.add( m_searchingPanel );
 			searching = new InlineLabel( GwtTeaming.getMessages().searching() );
 			m_searchingPanel.add( searching );
@@ -285,10 +294,10 @@ public class ActivityStreamCtrl extends Composite
 		ImageResource imageResource;
 		
 		m_footerPanel = new FlowPanel();
-		m_footerPanel.addStyleName( "ActivityStreamCtrlFooter" );
+		m_footerPanel.addStyleName( "activityStreamCtrlFooter" );
 
 		table = new FlexTable();
-		table.addStyleName( "ActivityStreamFooterImages" );
+		table.addStyleName( "activityStreamFooterImages" );
 		m_footerPanel.add( table );
 		imgPanel = new FlowPanel();
 		table.setWidget( 0, 0, imgPanel );
@@ -336,24 +345,110 @@ public class ActivityStreamCtrl extends Composite
 		ImageResource imageResource;
 		Image img;
 		ClickHandler clickHandler;
+		InlineLabel whatsNewLabel;
 
 		m_headerPanel = new FlowPanel();
-		m_headerPanel.addStyleName( "ActivityStreamCtrlHeader" );
+		m_headerPanel.addStyleName( "activityStreamCtrlHeader" );
 		
-		// Create a label where the title will go.
-		m_headerTitle = new InlineLabel( " " );
-		m_headerTitle.addStyleName( "ActivityStreamCtrlHeaderTitle" );
-		m_headerPanel.add( m_headerTitle );
+		// Create a label where the name of the activity stream source will go.
+		m_sourceName = new InlineLabel( " " );
+		m_sourceName.addStyleName( "activityStreamCtrlHeaderTitle" );
+		m_headerPanel.add( m_sourceName );
 		
-		// Create a label where the subtitle will go
-		m_headerSubtitle = new InlineLabel( " " );
-		m_headerSubtitle.addStyleName( "ActivityStreamCtrlHeaderSubtitle" );
-		m_headerPanel.add( m_headerSubtitle );
+		// Add a mouse-over handler for the activity stream source name.
+		{
+			MouseOverHandler mouseOverHandler;
+			
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					// Is the activity stream source a binder?
+					if ( isActivityStreamSourceABinder() )
+					{
+						// Yes
+						m_sourceName.addStyleName( "activityStreamHover" );
+					}
+				}
+				
+			};
+			m_sourceName.addMouseOverHandler( mouseOverHandler );
+		}
+		
+		// Add a mouse-out handler for the activity stream source name
+		{
+			MouseOutHandler mouseOutHandler;
+			
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					m_sourceName.removeStyleName( "activityStreamHover" );
+				}
+				
+			};
+			m_sourceName.addMouseOutHandler( mouseOutHandler );
+		}
+		
+		// Add a click handler for the activity stream source name
+		{
+			ClickHandler ch;
+			
+			ch = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
+				{
+					// Is the activity stream source a binder?
+					if ( isActivityStreamSourceABinder() )
+					{
+						OnSelectBinderInfo binderInfo;
+						String binderId;
+						Command cmd;
+						
+						// Yes
+						// Take the user to the selected binder.
+						binderId = getActivityStreamSourceBinderId();
+						binderInfo = new OnSelectBinderInfo( binderId, m_binderPermalink, false, Instigator.OTHER );
+						m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
+
+						cmd = new Command()
+						{
+							/**
+							 * 
+							 */
+							public void execute()
+							{
+								// Exit out of "what's new" mode
+								m_actionHandler.handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+							}
+							
+						};
+						DeferredCommand.addCommand( cmd );
+					}
+				}
+				
+			};
+			m_sourceName.addClickHandler( ch );
+		}
+		
+		// Create a label for "What's New"
+		whatsNewLabel = new InlineLabel( GwtTeaming.getMessages().whatsNew() );
+		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
+		m_headerPanel.add( whatsNewLabel );
 		
 		// Add a refresh button to the header.
 		imageResource = GwtTeaming.getImageBundle().refresh();
 		img = new Image( imageResource );
-		img.addStyleName( "ActivityStreamCtrlHeaderRefresh" );
+		img.addStyleName( "activityStreamCtrlHeaderRefresh" );
 		img.setTitle( GwtTeaming.getMessages().refresh() );
 		m_headerPanel.add( img );
 		
@@ -377,7 +472,7 @@ public class ActivityStreamCtrl extends Composite
 	private void createSearchResultsPanel( FlowPanel mainPanel )
 	{
 		m_searchResultsPanel = new FlowPanel();
-		m_searchResultsPanel.addStyleName( "ActivityStreamCtrlSearchResultsPanel" );
+		m_searchResultsPanel.addStyleName( "activityStreamCtrlSearchResultsPanel" );
 		
 		mainPanel.add( m_searchResultsPanel );
 	}
@@ -418,6 +513,24 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		m_searchTimer.schedule( 500 );
+	}
+	
+	
+	/**
+	 * Return the id of the binder that is the source of the activity stream
+	 */
+	private String getActivityStreamSourceBinderId()
+	{
+		String[] binderIds;
+		String binderId = null;
+		
+		binderIds = m_activityStreamInfo.getBinderIds();
+		if ( binderIds != null && binderIds.length > 0 )
+		{
+			binderId = binderIds[0];
+		}
+		
+		return binderId;
 	}
 	
 	
@@ -467,6 +580,32 @@ public class ActivityStreamCtrl extends Composite
 	public void hideSearchingText()
 	{
 		m_searchingPanel.setVisible( false );
+	}
+	
+	
+	/**
+	 * Is the source of the activity stream a binder?
+	 */
+	private boolean isActivityStreamSourceABinder()
+	{
+		switch ( m_activityStreamInfo.getActivityStream() )
+		{
+		case FOLLOWED_PERSON:
+		case FOLLOWED_PLACE:
+		case MY_FAVORITE:
+		case MY_TEAM:
+		case CURRENT_BINDER:
+			return true;
+			
+		case FOLLOWED_PEOPLE:
+		case FOLLOWED_PLACES:
+		case MY_FAVORITES:
+		case MY_TEAMS:
+		case SITE_WIDE:
+		case UNKNOWN:
+		default:
+			return false;
+		}
 	}
 	
 	
@@ -551,6 +690,47 @@ public class ActivityStreamCtrl extends Composite
 	{
 		m_activityStreamInfo = activityStreamInfo;
 		
+		// Is the source of the activity stream a binder?
+		m_binderPermalink = null;
+		if ( isActivityStreamSourceABinder() )
+		{
+			String binderId;
+			
+			// Yes, get the id of the binder.
+			binderId = getActivityStreamSourceBinderId();
+			if ( binderId != null )
+			{
+				HttpRequestInfo ri;
+				AsyncCallback<String> callback;
+				
+				callback = new AsyncCallback<String>()
+				{
+					/**
+					 * 
+					 */
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+							getActivityStreamSourceBinderId() );
+					}
+					
+					/**
+					 * 
+					 */
+					public void onSuccess( String binderPermalink )
+					{
+						m_binderPermalink = binderPermalink;
+					}
+				};
+				
+				// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
+				ri = new HttpRequestInfo();
+				m_rpcService.getBinderPermalink( ri, binderId, callback );
+			}
+		}
+		
+		// Change our title to reflect the new activity stream source.
 		setTitle();
 	}
 	
@@ -602,48 +782,10 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void setTitle()
 	{
-		String subTitle;
-		GwtTeamingMessages messages;
-		
-		m_headerTitle.setText( m_activityStreamInfo.getStreamName() );
-		
-		messages = GwtTeaming.getMessages();
-		switch ( m_activityStreamInfo.getActivityStream() )
-		{
-		case CURRENT_BINDER:
-			subTitle = messages.whatsNewInCurrentWorkspace();
-			break;
-			
-		case FOLLOWED_PERSON:
-		case FOLLOWED_PEOPLE:
-			subTitle = messages.whatsNewInFollowedPeople();
-			break;
-			
-		case FOLLOWED_PLACE:
-		case FOLLOWED_PLACES:
-			subTitle = messages.whatsNewInFollowedPlaces();
-			break;
-		
-		case MY_FAVORITE:
-		case MY_FAVORITES:
-			subTitle = messages.whatsNewInMyFavorites();
-			break;
-			
-		case MY_TEAM:
-		case MY_TEAMS:
-			subTitle = messages.whatsNewInMyTeams();
-			break;
-		
-		case SITE_WIDE:
-			subTitle = messages.whatsNewSiteWide();
-			break;
-		
-		case UNKNOWN:
-		default:
-			subTitle = "Unknown activity stream type";
-			break;
-		}
-		m_headerSubtitle.setText( subTitle );
+		String srcName;
+
+		srcName = m_activityStreamInfo.getTitle();
+		m_sourceName.setText( srcName );
 	}
 
 
