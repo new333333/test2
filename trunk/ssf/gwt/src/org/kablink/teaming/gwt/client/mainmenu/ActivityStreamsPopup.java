@@ -49,7 +49,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * Class used for the Activity Streams menu item popup.  
+ * Class used for the activity streams menu item popup.  
  * 
  * @author drfoster@novell.com
  */
@@ -86,7 +86,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	}
 
 	/*
-	 * Adds the Followed People menu item to the Activity Streams popup
+	 * Adds the Followed People menu item to the activity streams popup
 	 * menu as needed.
 	 */
 	private void addFollowedPeopleMenuItem() {
@@ -99,7 +99,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi.setName("asFollowedPeople");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsFollowedPeople());
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.FOLLOWED_PEOPLE, m_followedPeopleIds));
+			ActivityStreamInfo asi = new ActivityStreamInfo();
+			asi.setActivityStream(ActivityStream.FOLLOWED_PEOPLE);
+			asi.setBinderIds(m_followedPeopleIds);
+			tbi.setClientActionParameter(asi);
 
 			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
@@ -107,7 +110,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Adds the Followed Places menu item to the Activity Streams popup
+	 * Adds the Followed Places menu item to the activity streams popup
 	 * menu as needed.
 	 */
 	private void addFollowedPlacesMenuItem() {
@@ -120,7 +123,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi.setName("asFollowedPlaces");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsFollowedPlaces());
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.FOLLOWED_PLACES, m_followedPlacesIds));
+			ActivityStreamInfo asi = new ActivityStreamInfo();
+			asi.setActivityStream(ActivityStream.FOLLOWED_PLACES);
+			asi.setBinderIds(m_followedPlacesIds);
+			tbi.setClientActionParameter(asi);
 
 			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
@@ -128,7 +134,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Adds the My Favorites menu item to the Activity Streams popup
+	 * Adds the My Favorites menu item to the activity streams popup
 	 * menu as needed.
 	 */
 	private void addMyFavoritesMenuItem() {
@@ -141,7 +147,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi.setName("asMyFavorites");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsMyFavorites());
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.MY_FAVORITES, m_myFavoritesIds));
+			ActivityStreamInfo asi = new ActivityStreamInfo();
+			asi.setActivityStream(ActivityStream.MY_FAVORITES);
+			asi.setBinderIds(m_myFavoritesIds);
+			tbi.setClientActionParameter(asi);
 
 			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
@@ -149,7 +158,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Adds the My Teams menu item to the Activity Streams popup menu
+	 * Adds the My Teams menu item to the activity streams popup menu
 	 * as needed.
 	 */
 	private void addMyTeamsMenuItem() {
@@ -162,7 +171,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 			tbi.setName("asMyTeams");
 			tbi.setTitle(m_messages.mainMenuActivityStreamsMyTeams());
 			tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-			tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.MY_TEAMS, m_myTeamsIds));
+			ActivityStreamInfo asi = new ActivityStreamInfo();
+			asi.setActivityStream(ActivityStream.MY_TEAMS);
+			asi.setBinderIds(m_myTeamsIds);
+			tbi.setClientActionParameter(asi);
 
 			// ...and add it to the menu.
 			addContextMenuItem(IDBASE, tbi);
@@ -170,7 +182,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	}
 	
 	/*
-	 * Adds the Site Wide menu item to the Activity Streams popup menu
+	 * Adds the Site Wide menu item to the activity streams popup menu
 	 * as needed.
 	 */
 	private void addSiteWideMenuItem() {
@@ -180,7 +192,9 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 		tbi.setName("asSiteWide");
 		tbi.setTitle(m_messages.mainMenuActivityStreamsSiteWide());
 		tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-		tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.SITE_WIDE));
+		ActivityStreamInfo asi = new ActivityStreamInfo();
+		asi.setActivityStream(ActivityStream.SITE_WIDE);
+		tbi.setClientActionParameter(asi);
 
 		// ...and add it to the menu.
 		addContextMenuItem(IDBASE, tbi);
@@ -206,7 +220,10 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 		tbi.setName("asCurrentBinder");
 		tbi.setTitle(itemName);
 		tbi.setTeamingAction(TeamingAction.ACTIVITY_STREAM);
-		tbi.setClientActionParameter(new ActivityStreamInfo(ActivityStream.CURRENT_BINDER, m_currentBinder.getBinderId()));
+		ActivityStreamInfo asi = new ActivityStreamInfo();
+		asi.setActivityStream(ActivityStream.CURRENT_BINDER);
+		asi.setBinderId(m_currentBinder.getBinderId());
+		tbi.setClientActionParameter(asi);
 		
 		// ...and add it to the menu.
 		addContextMenuItem(IDBASE, tbi);
@@ -353,7 +370,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public void setToolbarItemList(List<ToolbarItem> toolbarItemList) {
-		// ToolbarItems's are not used for the Activity Streams menu.
+		// ToolbarItems's are not used for the activity streams menu.
 	}
 	
 	/**
@@ -368,7 +385,7 @@ public class ActivityStreamsPopup extends MenuBarPopupBase {
 	 */
 	@Override
 	public boolean shouldShowMenu() {
-		// The Activity Streams menu is always shown.
+		// The activity streams menu is always shown.
 		return true;
 	}
 

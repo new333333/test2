@@ -32,30 +32,31 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * Class used to communicate information about an Activity Stream
+ * Class used to communicate information about an activity stream
  * between the MainMenuControl and its registered ActionHandler's.
  * 
  * @author drfoster@novell.com
  */
-public class ActivityStreamInfo implements ClientActionParameter {
+public class ActivityStreamInfo implements ClientActionParameter, IsSerializable {
 	/**
-	 * Enumeration describing the type of an Activity Stream.
-	 * 
-	 * @author drfoster@novell.com
+	 * Enumeration describing the type of an activity stream.
 	 */
-	public enum ActivityStream {
-		UNKNOWN(0),
-		CURRENT_BINDER(1),
+	public enum ActivityStream implements IsSerializable {
+		UNKNOWN(        0),
+		CURRENT_BINDER( 1),
 		FOLLOWED_PEOPLE(2),
-		FOLLOWED_PLACES(3),
-		MY_FAVORITES(4),
-		MY_TEAMS(5),
-		SITE_WIDE(6);
+		FOLLOWED_PERSON(3),
+		FOLLOWED_PLACES(4),
+		FOLLOWED_PLACE( 5),
+		MY_FAVORITES(   6),
+		MY_FAVORITE(    7),
+		MY_TEAMS(       8),
+		MY_TEAM(        9),
+		SITE_WIDE(     10);
 
 		private int m_asValue;
 		
@@ -71,43 +72,7 @@ public class ActivityStreamInfo implements ClientActionParameter {
 		 */
 		public String getStreamName()
 		{
-			String reply;
-			GwtTeamingMessages messages;
-			
-			messages = GwtTeaming.getMessages();
-			switch (m_asValue)
-			{
-				case 1:
-					reply = messages.mainMenuActivityStreamsCurrentBinder();
-					break;
-					
-				case 2:
-					reply = messages.mainMenuActivityStreamsFollowedPeople();
-					break;
-					
-				case 3:
-					reply = messages.mainMenuActivityStreamsFollowedPlaces();
-					break;
-					
-				case 4:
-					reply = messages.mainMenuActivityStreamsMyFavorites();
-					break;
-					
-				case 5:
-					reply = messages.mainMenuActivityStreamsMyTeams();
-					break;
-					
-				case 6:
-					reply = messages.mainMenuActivityStreamsSiteWide();
-					break;
-				
-				case 0:
-				default:
-					reply = "Unknown";
-					break;
-			}
-			
-			return reply;
+			return toString();
 		}
 		
 		
@@ -132,13 +97,17 @@ public class ActivityStreamInfo implements ClientActionParameter {
 			ActivityStream reply;
 			switch (asValue) {
 			default:
-			case 0:  reply = UNKNOWN;         break;
-			case 1:  reply = CURRENT_BINDER;  break;
-			case 2:  reply = FOLLOWED_PEOPLE; break;
-			case 3:  reply = FOLLOWED_PLACES; break;
-			case 4:  reply = MY_FAVORITES;    break;
-			case 5:  reply = MY_TEAMS;        break;
-			case 6:  reply = SITE_WIDE;       break;
+			case  0:  reply = UNKNOWN;         break;
+			case  1:  reply = CURRENT_BINDER;  break;
+			case  2:  reply = FOLLOWED_PEOPLE; break;
+			case  3:  reply = FOLLOWED_PERSON; break;
+			case  4:  reply = FOLLOWED_PLACES; break;
+			case  5:  reply = FOLLOWED_PLACE;  break;
+			case  6:  reply = MY_FAVORITES;    break;
+			case  7:  reply = MY_FAVORITE;     break;
+			case  8:  reply = MY_TEAMS;        break;
+			case  9:  reply = MY_TEAM;         break;
+			case 10:  reply = SITE_WIDE;       break;
 			}
 			return reply;
 		}
@@ -148,27 +117,14 @@ public class ActivityStreamInfo implements ClientActionParameter {
 	private String[] m_binderIds;
 	
 	/**
-	 * Constructor methods.
+	 * Constructor method.
 	 * 
-	 * @param as
-	 * @param binderIds
+	 * No parameters as per GWT serialization requirements.
 	 */
-	public ActivityStreamInfo(ActivityStream as, String[] binderIds) {
-		// Simply store the parameters.
-		m_as = as;
-		m_binderIds = binderIds;
+	public ActivityStreamInfo() {
+		// Nothing to do.
 	}
 	
-	public ActivityStreamInfo(ActivityStream as) {
-		// Always use the initial form of the constructor.
-		this(as, new String[0]);
-	}
-	
-	public ActivityStreamInfo(ActivityStream as, String binderId) {
-		// Always use the initial form of the constructor.
-		this(as, new String[]{binderId});
-	}
-
 	/**
 	 * Returns the ActivityStreamInfo object's ActivityStream
 	 * enumeration value.
@@ -208,7 +164,8 @@ public class ActivityStreamInfo implements ClientActionParameter {
 		
 		reply.append(String.valueOf(m_as.getValue()));
 		reply.append(":");
-		for (int i = 0; i < m_binderIds.length; i += 1) {
+		int count = ((null == m_binderIds) ? 0 : m_binderIds.length);
+		for (int i = 0; i < count; i += 1) {
 			if (0 < i) {
 				reply.append(",");
 			}
@@ -229,10 +186,11 @@ public class ActivityStreamInfo implements ClientActionParameter {
 	public static ActivityStreamInfo parse(String s) {
 		// Setup a default unknown ActivityStreamInfo to make it easy
 		// to bail in the event of an error.
-		ActivityStreamInfo reply = new ActivityStreamInfo(ActivityStream.UNKNOWN);
+		ActivityStreamInfo reply = new ActivityStreamInfo();
+		reply.setActivityStream(ActivityStream.UNKNOWN);
 		
 		// Do we have a string to parse?
-		if (GwtClientHelper.hasString(s)) {
+		if ((null != s) && (0 < s.length())) {
 			// Yes!  Does it have the required 2 parts, split by a ':'?
 			String[] asParts = s.split(":");
 			int parts = asParts.length;
@@ -246,19 +204,21 @@ public class ActivityStreamInfo implements ClientActionParameter {
 				// Yes!  Does it contain any binder IDs?
 				ActivityStream as = ActivityStream.valueOf(Integer.parseInt(asParts[0]));
 				String binderIds = ((1 == parts) ? null : asParts[1]);
-				if (GwtClientHelper.hasString(binderIds)) {
+				if ((null != binderIds) && (0 < binderIds.length())) {
 					// Yes!  Does it contain more than one binder ID?
 					if (0 > binderIds.indexOf(',')) {
 						// No!  Construct the appropriate
 						// ActivityStreamInfo object.
-						reply = new ActivityStreamInfo(as, binderIds);
+						reply.setActivityStream(as);
+						reply.setBinderId(binderIds);
 					}
 					
 					else {
 						// Yes, it contains more than one binder ID!
 						// Split them and construct the appropriate
 						// ActivityStreamInfo object.
-						reply = new ActivityStreamInfo(as, binderIds.split(","));
+						reply.setActivityStream(as);
+						reply.setBinderIds(binderIds.split(","));
 					}
 				}
 				
@@ -266,7 +226,7 @@ public class ActivityStreamInfo implements ClientActionParameter {
 					// No, it doesn't contain any binder IDs!
 					// Construct the appropriate ActivityStreamInfo
 					// object.
-					reply = new ActivityStreamInfo(as);
+					reply.setActivityStream(as);
 				}
 			}
 		}
@@ -274,5 +234,81 @@ public class ActivityStreamInfo implements ClientActionParameter {
 		// If we get here, reply refers to the ActivityStreamInfo
 		// object that matches the string received.  Return it. 
 		return reply;
+	}
+
+	/**
+	 * Returns true if two ActivityStreams are equals and false
+	 * otherwise.
+	 */
+	public boolean isEqual(ActivityStreamInfo asi2) {
+		// If we've got nothing to compare...
+		if (null == asi2) {
+			// ...they're not equal.
+			return false;
+		}
+
+		// If the ActivityStream enumeration values don't match...
+		if (getActivityStream() != asi2.getActivityStream()) {
+			// ...they don't match.
+			return false;
+		}
+
+		// If they don't contain the same number of binder IDs...
+		String[] bIds1 =      getBinderIds(); int c1 = ((null == bIds1) ? (-1) : bIds1.length);
+		String[] bIds2 = asi2.getBinderIds(); int c2 = ((null == bIds2) ? (-1) : bIds2.length);
+		if (c1 != c2) {
+			// ...they don't match.
+			return false;
+		}
+
+		// If both lists were null or empty...
+		if (0 >= c1) {
+			// ...they match.
+			return true;
+		}
+
+		// Scan the binder IDs...
+		for (int i = 0; i < c1; i += 1) {
+			// ...if any don't match...
+			String id1 = bIds1[i]; if (null == id1) id1 = "";
+			String id2 = bIds2[i]; if (null == id2) id2 = "";
+			if (!(id1.equals(id2))) {
+				// ...they're not equal.
+				return false;
+			}
+		}
+
+		// If we get here, the two ActivityStreamInfo's match.  Return true.
+		return true;
+	}
+
+	/**
+	 * Stores the ActivityStream enumeration associated with this
+	 * ActivityStreamInfo object.
+	 * 
+	 * @param as
+	 */
+	public void setActivityStream(ActivityStream as) {
+		m_as = as;
+	}
+
+	/**
+	 * Stores a binderId to be associated with this ActivityStreamInfo
+	 * object.
+	 * 
+	 * @param binderId
+	 */
+	public void setBinderId(String binderId) {
+		setBinderIds(new String[]{binderId});
+	}
+
+	/**
+	 * Stores the binderIds to be associated with this
+	 * ActivityStreamInfo object.
+	 * 
+	 * @param binderIds
+	 */
+	public void setBinderIds(String[] binderIds) {
+		m_binderIds = binderIds;
 	}
 }

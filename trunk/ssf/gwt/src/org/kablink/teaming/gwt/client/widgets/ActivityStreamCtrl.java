@@ -614,18 +614,22 @@ public class ActivityStreamCtrl extends Composite
 			subTitle = messages.whatsNewInCurrentWorkspace();
 			break;
 			
+		case FOLLOWED_PERSON:
 		case FOLLOWED_PEOPLE:
 			subTitle = messages.whatsNewInFollowedPeople();
 			break;
 			
+		case FOLLOWED_PLACE:
 		case FOLLOWED_PLACES:
 			subTitle = messages.whatsNewInFollowedPlaces();
 			break;
 		
+		case MY_FAVORITE:
 		case MY_FAVORITES:
 			subTitle = messages.whatsNewInMyFavorites();
 			break;
 			
+		case MY_TEAM:
 		case MY_TEAMS:
 			subTitle = messages.whatsNewInMyTeams();
 			break;
