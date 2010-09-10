@@ -652,11 +652,11 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeTemplates();
 
 	// The following strings are used in the activity stream control.
+	String followedPeople();
+	String followedPlaces();
+	String myFavorites();
+	String myTeams();
 	String refresh();
-	String whatsNewInCurrentWorkspace();
-	String whatsNewInMyTeams();
-	String whatsNewInMyFavorites();
-	String whatsNewInFollowedPeople();
-	String whatsNewInFollowedPlaces();
-	String whatsNewSiteWide();
+	String siteWide();
+	String whatsNew();
 }// end GwtTeamingMessages
