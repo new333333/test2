@@ -37,9 +37,11 @@ import java.util.Iterator;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
@@ -73,25 +75,27 @@ import com.google.gwt.user.client.ui.Widget;
  *
  */
 public class TreeDisplayVertical extends TreeDisplayBase {
-	private BusyInfo				m_busyInfo;			// Stores a BusyInfo while we're busy switching contexts.
-	private FlowPanel				m_rootPanel;		// The top level FlowPanel containing the sidebar tree's contents.
-	private HashMap<String,Integer> m_renderDepths;		// A map of the depths the Binder's are are displayed at.
-	private long 					m_selectedBinderId;	// The ID of the currently selected binder.
+	private ActivityStreamInfo		m_selectedActivityStream;	// When displaying activity streams, the ActivityStream info of the selected activity stream.  null if no activity stream is currently selected.
+	private BusyInfo				m_busyInfo;					// Stores a BusyInfo while we're busy switching contexts.
+	private FlowPanel				m_rootPanel;				// The top level FlowPanel containing the sidebar tree's contents.
+	private HashMap<String,Integer> m_renderDepths;				// A map of the depths the Binder's are are displayed at.
+	private long 					m_selectedBinderId;			// The ID of the currently selected binder.
 
 	// The follow controls the height and width of the images displayed
 	// by this object.
-	private final static int BINDER_HEIGHT_INT = 16; private final static String BINDER_HEIGHT = (BINDER_HEIGHT_INT + "px");
-	private final static int BINDER_WIDTH_INT  = 16; private final static String BINDER_WIDTH  = (BINDER_WIDTH_INT  + "px");
+	private final static int BINDER_HEIGHT_INT = 16; private final static int AS_BINDER_HEIGHT_INT = 1;
+	private final static int BINDER_WIDTH_INT  = 16; private final static int AS_BINDER_WIDTH_INT  = 1; 
 
 	// The following are used for widget IDs assigned to various
 	// objects in a running WorkspaceTreeControl.
-	private final static String EXTENSION_ID_BASE            = "workspaceTreeBinder_";
-	private final static String EXTENSION_ID_BUCKET_BASE     = (EXTENSION_ID_BASE + "Bucket_");
-	private final static String EXTENSION_ID_SELECTOR_ANCHOR = "selectorAnchor_";
-	private final static String EXTENSION_ID_SELECTOR_BASE   = (EXTENSION_ID_BASE + "Selector_");
-	private final static String EXTENSION_ID_SELECTOR_ID     = (EXTENSION_ID_BASE + "SelectorId");
-	private final static String EXTENSION_ID_TRASH_BASE      = (EXTENSION_ID_BASE + "Trash_");
-	private final static String EXTENSION_ID_TRASH_PERMALINK = (EXTENSION_ID_BASE + "TrashPermalink");
+	private final static String EXTENSION_ID_BASE					= "workspaceTreeBinder_";
+	private final static String EXTENSION_ID_ACTIVITY_STREAM_BASE	= (EXTENSION_ID_BASE + "ActivityStream_");
+	private final static String EXTENSION_ID_BUCKET_BASE			= (EXTENSION_ID_BASE + "Bucket_");
+	private final static String EXTENSION_ID_SELECTOR_ANCHOR		= "selectorAnchor_";
+	private final static String EXTENSION_ID_SELECTOR_BASE			= (EXTENSION_ID_BASE + "Selector_");
+	private final static String EXTENSION_ID_SELECTOR_ID			= (EXTENSION_ID_BASE + "SelectorId");
+	private final static String EXTENSION_ID_TRASH_BASE				= (EXTENSION_ID_BASE + "Trash_");
+	private final static String EXTENSION_ID_TRASH_PERMALINK		= (EXTENSION_ID_BASE + "TrashPermalink");
 
 	// The following controls the grid size and nested offsets for the
 	// WorkspaceTreeControl.
@@ -128,7 +132,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Collapses the current row.
 		 */
 		private void doCollapseRow() {
-			m_ti.clearChildBindersList();
+			if (!m_ti.isActivityStream()) {
+				m_ti.clearChildBindersList();
+			}
 			m_ti.setBinderExpanded(false);
 			reRenderRow(m_grid, m_gridRow, m_ti);
 			m_expanderImg.setResource(getImages().tree_opener());
@@ -156,16 +162,17 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				
 			// Are we collapsing the row?
 			if (m_ti.isBinderExpanded()) {
-				// Yes!  Are we showing an expanded bucket?
-				if (m_ti.isBucket()) {
+				// Yes!  Are we showing an expanded bucket or activity
+				// stream?
+				if (m_ti.isBucket() || m_ti.isActivityStream()) {
 					// Yes!  Collapse it.
 					doCollapseRow();
 				}
 				
 				else {
-					// No, we aren't showing an expanded bucket!  We
-					// must be showing a normal row.  Can we mark the
-					// row as being closed?
+					// No, we aren't showing an expanded bucket or
+					// activity stream!  We must be showing a normal
+					// row.  Can we mark the row as being closed?
 					rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
 						public void onFailure(Throwable t) {}
 						public void onSuccess(Boolean success) {
@@ -194,10 +201,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						}
 					});
 				}
+
+				// No, we aren't showing a collapsed bucket!  Are we
+				// showing a collapsed activity stream?
+				else if (m_ti.isActivityStream()) {
+					// Yes!  If there are any expanded rows, render
+					// them and change the row's Anchor Image to a
+					// tree_closer.
+					doExpandRow(m_ti);
+				}
+				
 				else {
-					// No, we aren't showing a collapsed bucket!  We
-					// must be showing a normal row.  Can we mark the
-					// row as being opened?
+					// No, we aren't showing a collapsed activity
+					// stream either!  We must be showing a normal row.
+					// Can we mark the row as being opened?
 					rpcService.persistNodeExpand(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
 						public void onFailure(Throwable t) {}
 						public void onSuccess(Boolean success) {
@@ -364,6 +381,77 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// process of changing contexts.
 		return (null == m_busyInfo);
 	}
+
+	/**
+	 * Called when activity stream mode is to be entered on the sidebar
+	 * tree.
+	 *
+	 * Overrides TreeDisplayBase.enterActivityStreamMode().
+	 * 
+	 * @param defaultASI
+	 */
+	@Override
+	public void enterActivityStreamMode(final ActivityStreamInfo defaultASI) {		
+		// Are we currently in activity stream mode?
+		if (isActivityStreamsActive()) {
+			// Yes!  If we we're given an activity stream to select...
+			if (null != defaultASI) {
+				// ...select it...
+				setActivityStreamImpl(defaultASI);
+			}
+
+			// ...otherwise, we don't do anything.
+		}
+		
+		else {
+			// No, we aren't in activity stream mode!  Build a TreeInfo
+			// for the activity streams...
+			final String selectedBinderId = String.valueOf(m_selectedBinderId);
+			getRpcService().getVerticalActivityStreamsTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
+				}
+
+				public void onSuccess(TreeInfo ti) {
+					// ...and put it into effect.
+					enterActivityStreamModeImpl(ti, defaultASI);
+				}
+			});
+		}
+	}
+
+	/*
+	 * Loads an activity stream based TreeInfo into the sidebar.
+	 */
+	private void enterActivityStreamModeImpl(TreeInfo asRootTI, ActivityStreamInfo defaultASI) {
+		// Put the activity streams TreeInfo into affect...
+		m_selectedActivityStream = defaultASI;
+		setRootTreeInfo(asRootTI);
+		m_rootPanel.clear();
+		render(String.valueOf(m_selectedBinderId), m_rootPanel);
+		
+		// ...and if we have a default activity stream to select...
+		if (null != defaultASI) {
+			// ...put it into affect.
+			triggerAction(TeamingAction.ACTIVITY_STREAM, defaultASI);
+		}
+	}
+	
+	/**
+	 * Called when activity stream mode is to be exited on the sidebar
+	 * tree.
+	 *
+	 * Overrides TreeDisplayBase.exitActivityStreamMode().
+	 */
+	@Override
+	public void exitActivityStreamMode() {
+		// Are we currently in activity streams mode?
+		if (isActivityStreamsActive()) { 
+			// Yes!  Reload the workspace tree control.
+			m_selectedActivityStream = null;
+			reRootTree(String.valueOf(m_selectedBinderId), m_selectedBinderId);
+		}
+	}
 	
 	/*
 	 * Removes the widgets from a Grid row.
@@ -395,6 +483,37 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_busyInfo = null;
 		}
 	}
+
+	/*
+	 * Returns various height and widths to use from binder images.
+	 */
+	private int    getBinderImgHeightInt(TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_HEIGHT_INT : BINDER_HEIGHT_INT);}
+	private String getBinderImgHeight(   TreeInfo ti) {return (getBinderImgHeightInt(ti) + "px");}
+	private int    getBinderImgWidthInt( TreeInfo ti) {return (ti.isActivityStream() ? AS_BINDER_WIDTH_INT : BINDER_WIDTH_INT);}
+	private String getBinderImgWidth(    TreeInfo ti) {return (getBinderImgWidthInt(ti) + "px");}
+	
+	/*
+	 * Returns the style to use for the mouse over cursor for a given
+	 * TreeInfo.
+	 */
+	private String getCursorStyle(TreeInfo ti) {
+		String reply;
+		
+		if (ti.isBucket()) {
+			reply = "cursorDefault";
+		}
+		else {
+			reply = "cursorPointer";
+			if (ti.isActivityStream()) {
+				TeamingAction ta = ti.getActivityStreamAction();
+				if ((null == ta) || (TeamingAction.UNDEFINED == ta)) {
+					reply = "cursorDefault";
+				}
+			}
+		}
+		
+		return reply;
+	}
 	
 	/*
 	 * Returns the depth that TreeInfo was last rendered at.
@@ -413,7 +532,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static String getSelectorId(TreeInfo ti) {
 		String idBase;
-		if (ti.isBucket())                           idBase = EXTENSION_ID_BUCKET_BASE;
+		if      (ti.isBucket())                      idBase = EXTENSION_ID_BUCKET_BASE;
+		else if (ti.isActivityStream())              idBase = EXTENSION_ID_ACTIVITY_STREAM_BASE;
 		else if (ti.getBinderInfo().isBinderTrash()) idBase = EXTENSION_ID_TRASH_BASE;
 		else                                         idBase = EXTENSION_ID_SELECTOR_BASE;
 		return (idBase + getSelectorIdAppendage(ti));
@@ -433,6 +553,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 		else {
 			reply = ti.getBinderInfo().getBinderId();
+			if (!(GwtClientHelper.hasString(reply))) {
+				if (ti.isActivityStream()) {
+					reply = ti.getBinderTitle();
+				}
+				else {
+					reply = "-unknown-";
+				}
+			}
 		}
 		return reply;
 	}
@@ -440,7 +568,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Returns the widget to use as the label of a selector in the tree.
 	 */
-	private Widget getSelectorLabel(TreeInfo ti) {
+	private Widget getSelectorLabel(TreeInfo ti, boolean boldIt) {
 		Widget reply;
 
 		// Is this item a bucket?
@@ -448,6 +576,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// Yes!  Generate the appropriate widgets. 
 			FlowPanel selectorPanel = new FlowPanel();
 			selectorPanel.addStyleName("workspaceTreeBinderAnchor gwtUI_nowrap");
+			if (boldIt) {
+				selectorPanel.addStyleName("bold");
+			}
 			selectorPanel.getElement().setId(getSelectorId(ti));
 			selectorPanel.add(buildBucketPartLabel(ti.getPreBucketTitle() + "\u00A0"));
 			selectorPanel.add(buildBucketRangeImage());
@@ -460,6 +591,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			Label selectorLabel = new Label(ti.getBinderTitle());
 			selectorLabel.setWordWrap(false);
 			selectorLabel.addStyleName("workspaceTreeBinderAnchor");
+			if (boldIt) {
+				selectorLabel.addStyleName("bold");
+			}
 			selectorLabel.getElement().setId(getSelectorId(ti));
 			if (!(ti.getBinderInfo().isBinderTrash())) {
 				selectorLabel.getElement().setAttribute(
@@ -473,21 +607,38 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// selector label.  Return it.
 		return reply;
 	}
+
+	/*
+	 * Returns true if we're displaying activity streams and false
+	 * otherwise.
+	 */
+	private boolean isActivityStreamsActive() {
+		TreeInfo rootTI = getRootTreeInfo();
+		return ((null != rootTI) && rootTI.isActivityStream());
+	}
 	
-	/**
+	/*
 	 * Returns true if the Binder corresponding to this TreeInfo object
 	 * should be selected and false otherwise.
-	 * 
-	 * @return
 	 */
 	private boolean isBinderSelected(TreeInfo ti) {
 		boolean reply;
+		
 		if (ti.isBucket()) {
 			reply = false;
 		}
+		
+		else if (ti.isActivityStream()) {
+			reply = (null != m_selectedActivityStream);
+			if (reply) {
+				reply = m_selectedActivityStream.isEqual(ti.getActivityStreamInfo());
+			}
+		}
+		
 		else {
 			reply = (Long.parseLong(ti.getBinderInfo().getBinderId()) == m_selectedBinderId);
 		}
+		
 		return reply;
 	}
 
@@ -512,23 +663,28 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_rootPanel.add(selectedId);
 		
 		// Create the WorkspaceTree control's header...
+		TreeInfo rootTI = getRootTreeInfo();
 		Grid selectorGrid = new Grid(1, 2);
-		selectorGrid.addStyleName("workspaceTreeControlHeader");
+		String styles = "workspaceTreeControlHeader workspaceTreeControlHeader_base ";
+		if (rootTI.isActivityStream())
+		     styles += "workspaceTreeControlHeader_as";
+		else styles += "workspaceTreeControlHeader_nav";
+		selectorGrid.addStyleName(styles);
 		selectorGrid.setCellSpacing(0);
 		selectorGrid.setCellPadding(0);
-		String rootTitle = getRootTreeInfo().getBinderTitle();
+		String rootTitle = rootTI.getBinderTitle();
 		if (GwtClientHelper.hasString(rootTitle)) {
 			Label selectorLabel = new Label(rootTitle);
 			selectorLabel.setWordWrap(false);
-			selectorLabel.getElement().setId(getSelectorId(getRootTreeInfo()));
-			selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, getRootTreeInfo().getBinderTrashPermalink());
+			selectorLabel.getElement().setId(getSelectorId(rootTI));
+			selectorLabel.getElement().setAttribute(EXTENSION_ID_TRASH_PERMALINK, rootTI.getBinderTrashPermalink());
 			selectorGrid.setWidget(0, 0, selectorLabel);
 			selectorGrid.setWidget(0, 1, new Label("\u00A0"));
 			selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
 			Anchor selectorA = new Anchor();
 			selectorA.getElement().appendChild(selectorGrid.getElement());
-			selectorA.addClickHandler(new BinderSelector(getRootTreeInfo()));
-			selectorA.setTitle(rootTitle);
+			selectorA.addClickHandler(new BinderSelector(rootTI));
+			selectorA.setTitle(getBinderHover(rootTI));
 			m_rootPanel.add(selectorA);
 		}
 
@@ -541,7 +697,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_rootPanel.add(grid);
 		
 		// ...and if there are any rows to display...
-		for (Iterator<TreeInfo> tii = getRootTreeInfo().getChildBindersList().iterator(); tii.hasNext(); ) {
+		for (Iterator<TreeInfo> tii = rootTI.getChildBindersList().iterator(); tii.hasNext(); ) {
 			// ...render them.
 			int row = grid.getRowCount();
 			grid.insertRow(row);
@@ -590,12 +746,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		setBinderImageResource(ti);
 		binderImg.addStyleName("workspaceTreeBinderImg");
 		selectorGrid.setWidget(0, 0, binderImg);
-		Widget selectorLabel = getSelectorLabel(ti);
+		Widget selectorLabel = getSelectorLabel(ti, (ti.isActivityStream() && (0 == renderDepth)));
 		selectorGrid.setWidget(0, 1, selectorLabel);
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
 		int width = (SELECTOR_GRID_WIDTH - (SELECTOR_GRID_DEPTH_OFFSET * renderDepth));
-		if (BINDER_WIDTH_INT > width) {
+		if (getBinderImgWidthInt(ti) > width) {
 			width = SELECTOR_GRID_WIDTH;
 		}
 		selectorGrid.setWidth(String.valueOf(width) + "px");
@@ -608,11 +764,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);
 		selectorGrid.addStyleName("workspaceTreeControlRow");
-		String cursorStyle;
-		if (ti.isBucket())
-		     cursorStyle = "cursorDefault";
-		else cursorStyle = "cursorPointer";
-		selectorGrid.addStyleName(cursorStyle);
+		selectorGrid.addStyleName(getCursorStyle(ti));
 
 		// Add the row to the Grid.
 		grid.setWidget(row, 0, expanderWidget);
@@ -671,6 +823,39 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 	
 	/**
+	 * Called to set an activity stream in the sidebar.
+	 *
+	 * Overrides TreeDisplayBase.setActivityStream().
+	 * 
+	 * @param asi
+	 */
+	@Override
+	public void setActivityStream(ActivityStreamInfo asi) {
+		// Set/load the activity stream, as appropriate. 
+		if (isActivityStreamsActive())
+			 setActivityStreamImpl(  asi);
+		else enterActivityStreamMode(asi);
+	}
+
+	/*
+	 * Called to set an activity stream in the sidebar.
+	 */
+	private void setActivityStreamImpl(ActivityStreamInfo asi) {
+		// Is this activity stream the one that's already selected?
+		if (!(asi.isEqual(m_selectedActivityStream))) {
+			// No!  Store it as being selected...
+			m_selectedActivityStream = asi;
+			
+			// ...and if we can find it in our TreeInfo objects...
+			TreeInfo ti = TreeInfo.findActivityStreamTI(getRootTreeInfo(), asi);
+			if (null != ti) {
+				// ...select it.
+				selectBinder(ti);
+			}
+		}
+	}
+	
+	/**
 	 * Does whatever is necessary UI wise to select the Binder
 	 * represented by a TreeInfo.
 	 * 
@@ -682,7 +867,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// If this a trash Binder?
 		if (!(ti.getBinderInfo().isBinderTrash())) {
 			// No!  Mark it as having been selected.
-			setSelectedBinderId(ti.getBinderInfo().getBinderId());
+			if (!(ti.isActivityStream())) {
+				setSelectedBinderId(ti.getBinderInfo().getBinderId());
+			}
 			String selectedId_New = getSelectorId(ti);
 			Element selectorLabel_New = Document.get().getElementById(selectedId_New);
 			selectorLabel_New.addClassName("workspaceTreeBinderSelected");
@@ -776,10 +963,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				else {
 					binderImg.setResource(binderImgRes);
 				}
-				binderImg.setVisibleRect(0, 0, BINDER_WIDTH_INT, BINDER_HEIGHT_INT);
+				binderImg.setVisibleRect(
+					0,
+					0,
+					getBinderImgWidthInt( ti),
+					getBinderImgHeightInt(ti));
 			}
-			binderImg.setWidth(BINDER_WIDTH);
-			binderImg.setHeight(BINDER_HEIGHT);
+			binderImg.setWidth( getBinderImgWidth( ti));
+			binderImg.setHeight(getBinderImgHeight(ti));
 		}
 	}
 		

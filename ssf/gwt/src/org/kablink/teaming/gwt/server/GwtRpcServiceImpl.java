@@ -95,12 +95,14 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
@@ -1716,6 +1718,227 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}// end getRootWorkspaceId() 
 
+	/*
+	 * Builds an ActivityStreamInfo object based on an ActivityStream
+	 * enumeration value and an String[] of Binder IDs.
+	 */
+	private static ActivityStreamInfo buildASI(ActivityStream as, String[] asIds) {
+		ActivityStreamInfo reply = new ActivityStreamInfo();
+		
+		reply.setActivityStream(as);
+		if ((null != asIds) && ((1 < asIds.length) || (null != asIds[0]))) {
+			reply.setBinderIds(asIds);
+		}
+		
+		return reply;
+	}
+	
+	private static ActivityStreamInfo buildASI(ActivityStream as, String asId) {
+		// Always use the initial form of the method.
+		return buildASI(as, new String[]{asId});
+	}
+
+	/*
+	 * Builds an TreeInfo object based on a Binder's ID, title, hover
+	 * text and an ActivityStream enumeration value.
+	 */
+	private static TreeInfo buildASTI(String id, String title, String hover, ActivityStream as) {
+		TreeInfo reply = new TreeInfo();
+		
+		reply.setActivityStream(true);
+		reply.setBinderTitle(title);
+		reply.setBinderHover(hover);
+		reply.setActivityStreamAction(
+			TeamingAction.ACTIVITY_STREAM,
+			buildASI(
+				as,
+				id));
+		
+		return reply;
+	}
+	
+	/**
+	 * Returns a TreeInfo object containing the display information for
+	 * and activity streams tree using the current Binder referred to
+	 * by binderId from the perspective of the currently logged in
+	 * user.
+	 * 
+	 * The information returned is typically used for driving a
+	 * vertical WorkspaceTreeControl widget when in activity streams
+	 * mode.
+	 * 
+	 * @param ri
+	 * @param binderIdS
+	 * 
+	 * @return
+	 */
+	public TreeInfo getVerticalActivityStreamsTree(HttpRequestInfo ri, String binderIdS) {
+		Binder binder;
+		TreeInfo reply = new TreeInfo();
+		reply.setActivityStream(true);
+		reply.setBinderTitle(NLT.get("asTreeWhatsNew"));
+		List<TreeInfo> rootASList = reply.getChildBindersList();
+		
+		// Can we access the Binder?
+		binder = GwtServerHelper.getBinderForWorkspaceTree(this, binderIdS, true);
+		if (null != binder) {
+			// Yes!  Build a TreeInfo for it.
+			rootASList.add(
+				buildASTI(
+					binderIdS,
+					binder.getTitle(),
+					binder.getPathName(),
+					ActivityStream.CURRENT_BINDER));
+		}
+
+		// Define the variables required to build the TreeInfo's for
+		// the other activity stream's.
+		int idCount;
+		int idIndex;
+		List<TreeInfo> asTIChildren;
+		String id;
+		String[] asIds;
+		TreeInfo asTI;
+		TreeInfo asTIChild;
+
+		// Does the user have any favorites defined?
+		asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeMyFavorites"));
+		List<FavoriteInfo> myFavoritesList = getFavorites();
+		idCount = ((null == myFavoritesList) ? 0 : myFavoritesList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			asTIChildren = asTI.getChildBindersList();
+			asIds = new String[idCount];
+			idIndex = 0;
+			for (FavoriteInfo myFavorite: myFavoritesList) {
+				// Can we access the next one's Binder?
+				id = myFavorite.getValue();
+				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIds[idIndex++] = id;					
+					asTIChild = buildASTI(id, myFavorite.getName(), myFavorite.getHover(), ActivityStream.MY_FAVORITE);
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// Update the parent TreeInfo.
+			asTI.updateChildBindersCount();
+			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.MY_FAVORITES, asIds));
+		}
+		
+		// Add the favorites TreeInfo to the root TreeInfo.
+		rootASList.add(asTI);
+		
+		// Is the user a member of any teams?
+		asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeMyTeams"));
+		List<TeamInfo> myTeamsList = getMyTeams(ri);
+		idCount = ((null == myTeamsList) ? 0 : myTeamsList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			asTIChildren = asTI.getChildBindersList();
+			asIds = new String[idCount];
+			idIndex = 0;
+			for (TeamInfo myTeam: myTeamsList) {
+				// Can we access the next one's Binder?
+				id = myTeam.getBinderId();
+				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIds[idIndex++] = id;					
+					asTIChild = buildASTI(id, myTeam.getTitle(), binder.getPathName(), ActivityStream.MY_TEAM);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// Update the parent TreeInfo.
+			asTI.updateChildBindersCount();
+			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.MY_TEAMS, asIds));
+		}
+		
+		// Add the teams TreeInfo to the root TreeInfo.
+		rootASList.add(asTI);
+		
+		// Is the user following any people?
+		asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeFollowedPeople"));
+		List<String> followedPeopleList = getTrackedPeople();
+		idCount = ((null == followedPeopleList) ? 0 : followedPeopleList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			asTIChildren = asTI.getChildBindersList();
+			asIds = new String[idCount];
+			idIndex = 0;
+			for (String followedPersonId: followedPeopleList) {
+				// Can we access the next one's Binder?
+				id = followedPersonId;
+				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIds[idIndex++] = id;					
+					asTIChild = buildASTI(id, binder.getTitle(), binder.getPathName(), ActivityStream.FOLLOWED_PERSON);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// Update the parent TreeInfo.
+			asTI.updateChildBindersCount();
+			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.FOLLOWED_PEOPLE, asIds));
+		}
+		
+		// Add the followed people TreeInfo to the root TreeInfo.
+		rootASList.add(asTI);
+		
+		// Is the user following any places?
+		asTI = new TreeInfo();
+		asTI.setActivityStream(true);
+		asTI.setBinderTitle(NLT.get("asTreeFollowedPlaces"));
+		List<String> followedPlacesList = getTrackedPlaces();
+		idCount = ((null == followedPlacesList) ? 0 : followedPlacesList.size());
+		if (0 < idCount) {
+			// Yes!  Scan them.
+			asTIChildren = asTI.getChildBindersList();
+			asIds = new String[idCount];
+			idIndex = 0;
+			for (String followedPlaceId: followedPlacesList) {
+				// Can we access the next one's Binder?
+				id = followedPlaceId;
+				binder = GwtServerHelper.getBinderForWorkspaceTree(this, id, false);
+				if (null != binder) {
+					// Yes!  Add an appropriate TreeInfo for it.
+					asIds[idIndex++] = id;
+					asTIChild = buildASTI(id, binder.getTitle(), binder.getPathName(), ActivityStream.FOLLOWED_PLACE);					
+					asTIChildren.add(asTIChild);
+				}
+			}
+			
+			// Update the parent TreeInfo.
+			asTI.updateChildBindersCount();
+			asTI.setActivityStreamAction(TeamingAction.ACTIVITY_STREAM, buildASI(ActivityStream.FOLLOWED_PLACES, asIds));
+		}
+		
+		// Add the followed places TreeInfo to the root TreeInfo.
+		rootASList.add(asTI);
+		
+		// We always have a Site Wide.
+		rootASList.add(
+			buildASTI(
+				null,	// null -> No ID.
+				NLT.get("asTreeSiteWide"),
+				null,	// null -> No hover text.
+				ActivityStream.SITE_WIDE));
+
+		// Finally, ensure the child binder count in the TreeInfo that
+		// we're returning is correct and return it.
+		reply.updateChildBindersCount();
+		return reply;
+	}
+	
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * the Binder referred to by binderId from the perspective of the
@@ -3108,6 +3331,5 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ex.setExceptionType( ExceptionType.UNKNOWN );
 			throw ex;
 		}
-	}
-	
+	}	
 }// end GwtRpcServiceImpl

@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
@@ -93,9 +95,20 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 				// Yes!  Simply ignore the click.  We make it an anchor
 				// so that the hover, ... works.
 			}
+
+			// No, the item is not a bucket!  Is it an activity stream?
+			else if (m_ti.isActivityStream()) {
+				// Yes!  Does it have an action defined on it?
+				TeamingAction ta = m_ti.getActivityStreamAction();
+				if ((null != ta) && (TeamingAction.UNDEFINED != ta)) {
+					// Yes!  Trigger it.
+					triggerAction(ta, m_ti.getActivityStreamInfo());
+				}
+			}
+			
 			else {
-				// No, the item is not a bucket!  Are we in a state
-				// where we can change contexts?
+				// No, the item is not an activity stream either!  Are
+				// we in a state where we can change contexts?
 				if (canChangeContext()) {
 					// Yes!  Select the Binder and tell the
 					// WorkspaceTreeControl to handle it.
@@ -195,6 +208,30 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	}
 	
 	/**
+	 * Called when activity stream mode is to be entered on the sidebar
+	 * tree.
+	 *
+	 * The vertical subclass of TreeDisplayBase overrides this to
+	 * implement entering activity stream mode.
+	 * 
+	 * @param defaultASI
+	 */
+	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
+		// By default, we ignore this.
+	}
+	
+	/**
+	 * Called when activity stream mode is to be exited on the sidebar
+	 * tree.
+	 *
+	 * The vertical subclass of TreeDisplayBase overrides this to
+	 * implement exiting activity stream mode.
+	 */
+	public void exitActivityStreamMode() {
+		// By default, we ignore this.
+	}
+	
+	/**
 	 * Returns the string to display as the hover over text for the
 	 * Anchor on a TreeItem.
 	 * 
@@ -211,7 +248,10 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 			reply = getMessages().treeBucketHover(ti.getBucketFirstTitle(), ti.getBucketLastTitle());
 		}
 		else {
-			reply = ti.getBinderTitle();
+			reply = ti.getBinderHover();
+			if (!(GwtClientHelper.hasString(reply))) {
+				reply = ti.getBinderTitle();
+			}
 		}
 		return reply;
 	}
@@ -269,6 +309,18 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	GwtRpcServiceAsync getRpcService() {
 		return GwtTeaming.getRpcService();
+	}
+		
+	/**
+	 * Called to select an activity stream in the sidebar.
+	 *
+	 * The vertical subclass of TreeDisplayBase will override this to
+	 * force the setting of the activity stream in the sidebar.
+	 * 
+	 * @param asi
+	 */
+	public void setActivityStream(ActivityStreamInfo asi) {
+		// By default, we ignore this.
 	}
 	
 	/**

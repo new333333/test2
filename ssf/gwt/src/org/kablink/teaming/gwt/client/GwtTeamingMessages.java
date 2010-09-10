@@ -205,6 +205,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CanManagePublicBinderTags();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
@@ -335,6 +336,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuBarRecentPlaces();
 	String mainMenuBarTopRanked();
 	String mainMenuBarViews();
+	String mainMenuBarWhatsNew();
 	String mainMenuBarWorkspace();
 	String mainMenuFavoritesAdd();
 	String mainMenuFavoritesDlgDelete();
@@ -649,7 +651,7 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeTasksNotDone();
 	String adminInfoDlgUpgradeTemplates();
 
-	// The following strings are used in the Activity Stream control.
+	// The following strings are used in the activity stream control.
 	String refresh();
 	String whatsNewInCurrentWorkspace();
 	String whatsNewInMyTeams();
@@ -657,5 +659,4 @@ public interface GwtTeamingMessages extends Messages
 	String whatsNewInFollowedPeople();
 	String whatsNewInFollowedPlaces();
 	String whatsNewSiteWide();
-
 }// end GwtTeamingMessages

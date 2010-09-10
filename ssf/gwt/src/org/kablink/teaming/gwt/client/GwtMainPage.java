@@ -396,6 +396,10 @@ public class GwtMainPage extends Composite
 	
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
+		if ( null != m_activityStreamCtrl ) {
+			m_activityStreamCtrl.hide();
+		}
+		
 		m_inSearch    = inSearch;
 		m_searchTabId = searchTabId;
 		
@@ -979,6 +983,14 @@ public class GwtMainPage extends Composite
 			activityStream( obj );
 			break;
 			
+		case ENTER_ACTIVITY_STREAM_MODE:
+			enterActivityStreamMode( obj );
+			break;
+			
+		case EXIT_ACTIVITY_STREAM_MODE:
+			exitActivityStreamMode();
+			break;
+			
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -1526,7 +1538,7 @@ public class GwtMainPage extends Composite
 	}//end tagSearch()
 
 	/*
-	 * This method will be called to load an Activity Stream based on
+	 * This method will be called to load an activity stream based on
 	 * the Object received as a parameter.
 	 * 
 	 * Implements the ACTIVITY_STREAM teaming action.
@@ -1536,18 +1548,53 @@ public class GwtMainPage extends Composite
 		// Do we have an ActivityStreamInfo parameter?
 		if ( obj instanceof ActivityStreamInfo )
 		{
-			// Yes!
+			// Yes!  Load the activity stream control...
 			ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
-			
-//!			...this needs to be implemented...
-			Window.alert( "activityStream( ...this needs to be implemented... ):  " + asi.getStringValue() );
-			
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();
+			
+			// ...and tell the sidebar to display the appropriate
+			// ...content and/or selection.
+			m_wsTreeCtrl.setActivityStream( asi );
 		}
 		else
 			Window.alert( "in activityStream() and obj is not an ActivityStreamInfo object" );
 	}//end activityStream()
+
+	/*
+	 * This method will be called to enter activity stream mode.
+	 * 
+	 * Implements the ENTER_ACTIVITY_STREAM_MODE teaming action.
+	 */
+	private void enterActivityStreamMode( Object obj )
+	{
+		// Do we have no parameter or an ActivityStreamInfo parameter?
+		if ( ( null == obj) || ( obj instanceof ActivityStreamInfo ))
+		{
+			// Yes!  Pass the request to the workspace tree control.
+			//
+			// Note:  If this is passed a default activity stream to
+			//    load, a separate ACTIVITY_STREAM teaming action will
+			//    be triggered by the workspace tree control AFTER it
+			//    has entered activity stream mode.
+			m_wsTreeCtrl.enterActivityStreamMode( (ActivityStreamInfo) obj );
+		}
+		else
+			Window.alert( "in enterActivityStreamMode() and obj is not null and is not an ActivityStreamInfo object" );
+	}//end enterActivityStreamMode()
+
+	/*
+	 * This method will be called to exit activity stream mode.
+	 * 
+	 * Implements the EXIT_ACTIVITY_STREAM_MODE teaming action.
+	 */
+	private void exitActivityStreamMode()
+	{
+		// Hide the activity stream control and pass the request to
+		// the workspace tree control.
+		m_activityStreamCtrl.hide();
+		m_wsTreeCtrl.exitActivityStreamMode();
+	}//end exitActivityStreamMode()
 
 	/**
 	 * Adjust the height and width of the controls on this page.  Currently the only
@@ -1584,7 +1631,7 @@ public class GwtMainPage extends Composite
 			
 			m_contentCtrl.setDimensions( width, height );
 			
-			// Set the width and height of the Activity Stream Control
+			// Set the width and height of the activity stream Control
 			m_activityStreamCtrl.setSize( width, height );
 			
 			// Do we have an Administration control?

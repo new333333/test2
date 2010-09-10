@@ -37,8 +37,10 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -52,24 +54,33 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  *
  */
-public class TreeInfo implements IsSerializable {	
-	private List<TreeInfo> m_childBindersAL = new ArrayList<TreeInfo>();
-	private BinderInfo m_binderInfo = new BinderInfo();
-	private boolean m_binderExpanded;
-	private int m_binderChildren = 0;
-	private String m_binderIconName;
-	private String m_binderTitle = "";
-	private String m_binderPermalink = "";
-	private String m_binderTrashPermalink = "";
+public class TreeInfo implements IsSerializable {
+	private List<TreeInfo>	m_childBindersAL = new ArrayList<TreeInfo>();
+	private BinderInfo		m_binderInfo     = new BinderInfo();
+	private boolean			m_binderExpanded;
+	private int				m_binderChildren;
+	private String			m_binderHover = "";
+	private String			m_binderIconName;
+	private String			m_binderTitle          = "";
+	private String			m_binderPermalink      = "";
+	private String			m_binderTrashPermalink = "";
+
+	// The following are only used for TreeInfo's associated with
+	// activity streams.
+	private ActivityStreamInfo	m_activityStreamInfo;
+	private boolean				m_activityStream;
+	private TeamingAction		m_activityStreamAction = TeamingAction.UNDEFINED;
 	
 	// The following are only used for TreeInfo's that represent a
 	// bucket of Binder's.
-	private List<Long> m_bucketList;
-	private String m_bucketFirstTitle;
-	private String m_bucketLastTitle;
+	private List<Long>	m_bucketList;
+	private String		m_bucketFirstTitle;
+	private String		m_bucketLastTitle;
 
-	// Used by the sidebar tree to cache the Image object used for the
-	// binder.
+	// Used on the client side only by the sidebar tree to cache the
+	// Image object used for the binder.  It uses this to hold a
+	// Binder's original image while it displays a spinning wheel
+	// during a context load.
 	private transient Object m_binderUIImg;
 		
 	/**
@@ -106,19 +117,61 @@ public class TreeInfo implements IsSerializable {
 		// Create the target TreeInfo...
 		TreeInfo reply = new TreeInfo();
 
-		// ...copy the information from this TreeInfo... 
-		reply.setBinderInfo(          getBinderInfo().copyBinderInfo());
-		reply.setBinderExpanded(      isBinderExpanded()              );
-		reply.setBinderIconName(      getBinderIconName()             );
-		reply.setBinderTitle(         getBinderTitle()                );
-		reply.setBinderPermalink(     getBinderPermalink()            );
-		reply.setBinderTrashPermalink(getBinderTrashPermalink()       );
+		// ...copy the information from this TreeInfo...
+		reply.setActivityStream(      isActivityStream()                                );
+		reply.setActivityStreamAction(getActivityStreamAction(), getActivityStreamInfo());
+		reply.setBinderExpanded(      isBinderExpanded()                                );
+		reply.setBinderHover(         getBinderHover()                                  );
+		reply.setBinderIconName(      getBinderIconName()                               );
+		reply.setBinderInfo(          getBinderInfo().copyBinderInfo()                  );
+		reply.setBinderPermalink(     getBinderPermalink()                              );
+		reply.setBinderTitle(         getBinderTitle()                                  );
+		reply.setBinderTrashPermalink(getBinderTrashPermalink()                         );
 		
 		// ...store an empty child Binder's List<TreeInfo>...
 		reply.setChildBindersList(new ArrayList<TreeInfo>());
 
 		// ...and return it.
 		return reply;
+	}
+
+	/**
+	 * Returns the TreeInfo from another TreeInfo that references a
+	 * specific activity stream.
+	 * 
+	 * @param ti
+	 * @param asi
+	 * 
+	 * @return
+	 */
+	public static TreeInfo findActivityStreamTI(TreeInfo ti, ActivityStreamInfo asi) {
+		// Is this an activity stream TreeInfo?
+		if (ti.isActivityStream()) {
+			// Yes!  Is it for the activity stream in question?
+			if (asi.isEqual(ti.getActivityStreamInfo())) {
+				// Yes!  Return.
+				return ti;
+			}
+			
+			// Otherwise, if the TreeInfo has child Binder's...
+			List<TreeInfo> childBindersList = ti.getChildBindersList();
+			if ((null != childBindersList) && (0 < childBindersList.size())) {
+				// ...scan them...
+				for (TreeInfo childTI: childBindersList) {
+					// ...and if one of them references the activity stream
+					// ...in question...
+					TreeInfo reply = findActivityStreamTI(childTI, asi);
+					if (null != reply) {
+						// ...return it.
+						return reply;
+					}
+				}
+			}
+		}
+
+		// If we get here, the activity stream was nowhere to be found
+		// in the TreeInfo.  Return null.
+		return null;
 	}
 	
 	/**
@@ -192,6 +245,38 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Returns the TeamingAction associated with the activity stream
+	 * associated with this TreeInfo object.
+	 *  
+	 * @return
+	 */
+	public TeamingAction getActivityStreamAction() {
+		TeamingAction reply;
+		
+		if (isActivityStream())
+			 reply = m_activityStreamAction;
+		else reply = TeamingAction.UNDEFINED;
+		
+		return reply;
+	}
+	
+	/**
+	 * Returns the ActivityStreamInfo object associated with this
+	 * TreeInfo object.
+	 *  
+	 * @return
+	 */
+	public ActivityStreamInfo getActivityStreamInfo() {
+		ActivityStreamInfo reply;
+		
+		if (isActivityStream())
+			 reply = m_activityStreamInfo;
+		else reply = null;
+		
+		return reply;
+	}
+	
+	/**
 	 * Returns the number of children in the Binder corresponding to
 	 * this TreeInfo object.
 	 * 
@@ -199,6 +284,16 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public int getBinderChildren() {
 		return m_binderChildren;
+	}
+
+	/**
+	 * Returns the hover text, if any of the Binder corresponding to
+	 * this TreeInfo object.
+	 * 
+	 * @return
+	 */
+	public String getBinderHover() {
+	     return m_binderHover;
 	}
 
 	/**
@@ -435,6 +530,16 @@ public class TreeInfo implements IsSerializable {
 	public String getPostBucketTitle() {
 		return getBucketTitlePart(getBucketLastTitle());
 	}
+
+	/**
+	 * Returns true if this TreeInfo object represents an entity in
+	 * an activity Stream and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isActivityStream() {
+		return m_activityStream;
+	}
 	
 	/**
 	 * Returns true if the Binder corresponding to this TreeInfo object
@@ -455,6 +560,40 @@ public class TreeInfo implements IsSerializable {
 	public boolean isBucket() {
 		return (null != m_bucketList);
 	}
+
+	/**
+	 * Stores whether this TreeInfo object represents an Activity
+	 * Stream or not.
+	 * 
+	 * @param activityStream
+	 */
+	public void setActivityStream(boolean activityStream) {
+		m_activityStream = activityStream;
+	}
+
+	/**
+	 * Stores a TeamingAction for an activity stream stored in the
+	 * TreeInfo object.
+	 * 
+	 * @param ta
+	 */
+	public void setActivityStreamAction(TeamingAction ta, ActivityStreamInfo asi) {
+		if (isActivityStream()) {
+			m_activityStreamAction = ta;
+			setActivityStreamInfo(asi);
+		}
+	}
+	
+	/**
+	 * Stores an ActivityStreamInfo object in the TreeInfo object.
+	 * 
+	 * @param asi
+	 */
+	public void setActivityStreamInfo(ActivityStreamInfo asi) {
+		if (isActivityStream()) {
+			m_activityStreamInfo = asi;
+		}
+	}
 	
 	/**
 	 * Store a count of the children of a Binder.
@@ -465,6 +604,15 @@ public class TreeInfo implements IsSerializable {
 		m_binderChildren = binderChildren;
 	}
 	
+	/**
+	 * Stores a Binder's hover text in this TreeInfo object.
+	 * 
+	 * @param binderHover
+	 */
+	public void setBinderHover(String binderHover) {
+		m_binderHover = binderHover;
+	}
+
 	/**
 	 * Stores the name of the icon for the Binder.
 	 * 
@@ -518,7 +666,6 @@ public class TreeInfo implements IsSerializable {
 	 * @param binderInfo
 	 */
 	public void setBinderInfo(BinderInfo binderInfo) {
-		// Simply store the parameter.
 		m_binderInfo = binderInfo;
 	}
 
@@ -566,11 +713,17 @@ public class TreeInfo implements IsSerializable {
 	/**
 	 * Stores an ArrayList<TreeInfo> of the Binder's contained in the
 	 * Binder corresponding to this TreeInfo.
-	 * 
-	 * @return
 	 */
 	public void setChildBindersList(List<TreeInfo> childBindersList) {
 		m_childBindersAL = childBindersList;
+		updateChildBindersCount();
+	}
+
+	/**
+	 * Updates the m_binderChildren data member based on what's
+	 * currently contained in the m_childBindersAL ArrayList.
+	 */
+	public void updateChildBindersCount() {
 		m_binderChildren = ((null == m_childBindersAL) ? 0 : m_childBindersAL.size());
 	}
 }

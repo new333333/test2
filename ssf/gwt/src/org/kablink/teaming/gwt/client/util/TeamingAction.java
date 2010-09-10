@@ -77,6 +77,8 @@ public enum TeamingAction implements IsSerializable
 	PRE_CONTEXT_SWITCH( "Tells the UI That a Context Switch is About to Take Place" ),
 	RELOAD_LEFT_NAVIGATION( "Tells the Left Navigation Panel To Reload Itself"),
 	ACTIVITY_STREAM( "Loads an Activity Stream" ),
+	ENTER_ACTIVITY_STREAM_MODE( "Enters Activity Streams in the Sidebar and Content Panel" ),
+	EXIT_ACTIVITY_STREAM_MODE( "Exits Activity Streams Mode" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

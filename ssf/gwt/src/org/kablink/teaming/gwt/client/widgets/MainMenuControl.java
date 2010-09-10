@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.mainmenu.ActivityStreamsPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
@@ -60,12 +59,14 @@ import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -92,10 +93,11 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private MenuBarButton m_bhButton;
 	private MenuBarButton m_soButton;
 	private FlowPanel m_contextPanel;
-	private MenuBarBox m_myWorkspaceBox;
-	private MenuBarBox m_myTeamsBox;
-	private MenuBarBox m_myFavoritesBox;
 	private MenuBarBox m_closeAdminBox;
+	private MenuBarBox m_myFavoritesBox;
+	private MenuBarBox m_myTeamsBox;
+	private MenuBarBox m_myWorkspaceBox;
+	private MenuBarBox m_whatsNewBox;
 	private MenuBarToggle m_wsTreeSlider;
 	private MenuBarToggle m_mastHeadSlider;
 	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
@@ -160,61 +162,31 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	/**
 	 * Called to add an ActionHandler to this MainMenuControl.
 	 * 
-	 * Implements the ActionRequestor.addActionHandler() interface method.
+	 * Implements the ActionRequestor.addActionHandler() interface
+	 * method.
 	 * 
 	 * @param actionHandler
 	 */
 	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add( actionHandler );
+		m_actionHandlers.add(actionHandler);
 	}
 
 	/*
-	 * Adds the Activity Streams item to the context based portion of
+	 * Adds the "Close Administration" button to the common portion of
 	 * the menu bar.
 	 */
-	private void addActivityStreamsToContext() {
-		// If we're not running in Activity Streams mode...
-		if (!m_activityStreamsUI) {
-			// ...we don't display the Activity Streams menu.
-			return;
-		}
-		
-		final ActivityStreamsPopup asp = new ActivityStreamsPopup(this);
-		asp.setCurrentBinder(m_contextBinder);
-		if (asp.shouldShowMenu()) {
-			final MenuBarBox activityStreamsBox = new MenuBarBox("ss_mainMenuActivityStreams", m_messages.mainMenuBarActivityStreams(), true);
-			activityStreamsBox.addClickHandler(
-				new ClickHandler() {
-					public void onClick(ClickEvent event) {
-						if (asp.isShowing())
-						     asp.hideMenu();
-						else asp.showMenu(activityStreamsBox);
-					}
-				});
-			m_contextPanel.add(activityStreamsBox);
-		}
-	}
-	
-	/*
-	 * Adds the "Close Administration" button to the common portion of the menu bar.
-	 * bar.
-	 */
-	private void addCloseAdministrationToCommon( FlowPanel menuPanel )
-	{
-		m_closeAdminBox = new MenuBarBox( "ss_mainMenuCloseAdmin", m_messages.close(), false );
+	private void addCloseAdministrationToCommon(FlowPanel menuPanel) {
+		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close(), false);
 		m_closeAdminBox.addClickHandler(
-			new ClickHandler()
-			{
-				public void onClick( ClickEvent event )
-				{
-					triggerAction( TeamingAction.CLOSE_ADMINISTRATION );
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					triggerAction(TeamingAction.CLOSE_ADMINISTRATION);
 				}
 			});
-		menuPanel.add( m_closeAdminBox );
-		m_closeAdminBox.setVisible( false );
-	}// end addCloseAdministrationToCommon()
+		menuPanel.add(m_closeAdminBox);
+		m_closeAdminBox.setVisible(false);
+	}
 	
-
 	/*
 	 * Adds the items to the menu bar that are always there, regardless
 	 * of context.
@@ -260,8 +232,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 
 		// ...and finally, add the common drop down items to the menu bar.
 		addMyWorkspaceToCommon(        menuPanel);
-		addMyTeamsToCommon(            menuPanel);
-		addMyFavoritesToCommon(        menuPanel);
+		addWhatsNewToCommon(           menuPanel);
+		if (m_activityStreamsUI) {
+			addMyFavoritesToCommon(    menuPanel);
+			addMyTeamsToCommon(        menuPanel);
+		}
+		else {
+			addMyTeamsToCommon(        menuPanel);
+			addMyFavoritesToCommon(    menuPanel);
+		}
 		addCloseAdministrationToCommon(menuPanel);
 	}
 	
@@ -327,12 +306,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the My Teams item to the common portion of the menu bar.
 	 */
 	private void addMyTeamsToCommon(FlowPanel menuPanel) {
-		// If we're running in Activity Streams mode...
-		if (m_activityStreamsUI) {
-			// ...we don't display the My Teams menu.
-			return;
-		}
-		
 		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), true);
 		final ActionTrigger actionTrigger = this;
 		m_myTeamsBox.addClickHandler(
@@ -491,6 +464,35 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		}
 	}
 	
+	/*
+	 * Adds the What's New item to the common portion of the menu bar.
+	 */
+	private void addWhatsNewToCommon(FlowPanel menuPanel) {
+		// If we're not running in activity streams mode...
+		if (!m_activityStreamsUI) {
+			// ...we don't display the My Teams menu.
+			return;
+		}
+		
+		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", null, m_messages.mainMenuBarWhatsNew());
+		m_whatsNewBox.addClickHandler(
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					ActivityStreamInfo asi;
+					if (null != m_contextBinder) {
+						asi = new ActivityStreamInfo();
+						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
+						asi.setBinderId(m_contextBinder.getBinderId());
+					}
+					else {
+						asi = null;
+					}
+					triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
+				}
+			});
+		menuPanel.add(m_whatsNewBox);
+	}
+
 	/**
 	 * Called to remove the context based menu items (Workspace,
 	 * Folder, ...) from the menu bar.
@@ -539,17 +541,16 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 							m_messages.rpcFailure_GetToolbarItems(),
 							binderId);
 					}
-					public void onSuccess(final List<ToolbarItem> toolbarItemList)  {
+					public void onSuccess(final List<ToolbarItem> toolbarItemList) {
 						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
 									m_messages.rpcFailure_GetTeamManagement(),
 									binderId);
 							}
-							public void onSuccess(final TeamManagementInfo tmi)  {
+							public void onSuccess(final TeamManagementInfo tmi) {
 								// Handle inSearch vs. not inSearch.
 								addManageToContext(toolbarItemList, tmi);
-								addActivityStreamsToContext();
 								addRecentPlacesToContext(toolbarItemList);
 								if (inSearch) {
 									addTopRankedToContext();
@@ -572,21 +573,20 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	public void hideAdministrationMenubar() {
 		// Show the widget that holds the expand/contract left
 		// navigation, expand/contract header, ... widgets.
-		m_bhButton.setVisible( true );
+		m_bhButton.setVisible(true);
 		
-		// Show My Workspace, My Teams and My Favorites.
+		// Show My Workspace, My Teams, My Favorites and What's New.
 		m_myWorkspaceBox.setVisible(true);
-		if ( m_myTeamsBox != null )
-			m_myTeamsBox.setVisible(true);
-		if ( m_myFavoritesBox != null )
-			m_myFavoritesBox.setVisible(true);
+		if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    true);
+		if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(true);
+		if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   true);
 		
 		// Show the panel that holds the menu items.
 		m_contextPanel.setVisible(true);
 		
 		// Show the search panel.
 		m_searchPanel.setVisible(true);
-		m_soButton.setVisible(true);
+		m_soButton.setVisible(   true);
 		
 		// Hide the Close administration menu item.
 		m_closeAdminBox.setVisible(false);
@@ -595,19 +595,17 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	/**
 	 * Set the state of the "show/hide masthead" menu item.
 	 */
-	public void setMastheadSliderMenuItemState( TeamingAction action )
-	{
-		m_mastHeadSlider.setState( action );
-	}// end setMastheadSliderMenuItemState()
+	public void setMastheadSliderMenuItemState(TeamingAction action) {
+		m_mastHeadSlider.setState(action);
+	}
 	
 	
 	/**
 	 * Set the state of the "show/hide workspace tree" menu item.
 	 */
-	public void setWorkspaceTreeSliderMenuItemState( TeamingAction action )
-	{
-		m_wsTreeSlider.setState( action );
-	}// end setWorkspaceTreeSliderMenuItemState()
+	public void setWorkspaceTreeSliderMenuItemState(TeamingAction action) {
+		m_wsTreeSlider.setState(action);
+	}
 	
 	
 	/**
@@ -619,19 +617,18 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// Hide the browse button
 		m_bhButton.setVisible(false);
 		
-		// Hide My Workspace, My Teams and My Favorites.
+		// Hide My Workspace, My Teams, My Favorites and What's New.
 		m_myWorkspaceBox.setVisible(false);
-		if ( m_myTeamsBox != null )
-			m_myTeamsBox.setVisible(false);
-		if ( m_myFavoritesBox != null )
-			m_myFavoritesBox.setVisible(false);
+		if (null != m_myTeamsBox)     m_myTeamsBox.setVisible(    false);
+		if (null != m_myFavoritesBox) m_myFavoritesBox.setVisible(false);
+		if (null != m_whatsNewBox)    m_whatsNewBox.setVisible(   false);
 		
 		// Hide the panel that holds the menu items.
 		m_contextPanel.setVisible(false);
 		
 		// Hide the search panel.
 		m_searchPanel.setVisible(false);
-		m_soButton.setVisible(false);
+		m_soButton.setVisible(   false);
 		
 		// Show the Close administration menu item.
 		m_closeAdminBox.setVisible(true);

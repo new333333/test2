@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -165,6 +166,33 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	}
 	
 	/**
+	 * Called when activity stream mode is to be entered on the sidebar
+	 * tree.
+	 *
+	 * @param defaultASI
+	 */
+	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
+		// If we're displaying a sidebar tree...
+		if (TreeMode.VERTICAL == m_tm) {
+			// ...tell it to load the activity stream navigation
+			// ...points.
+			m_treeDisplay.enterActivityStreamMode(defaultASI);
+		}
+	}
+	
+	/**
+	 * Called when activity stream mode is to be exited on the sidebar
+	 * tree
+	 */
+	public void exitActivityStreamMode() {
+		// If we're displaying a sidebar tree...
+		if (TreeMode.VERTICAL == m_tm) {
+			// ...tell it to exit activity stream mode.
+			m_treeDisplay.exitActivityStreamMode();
+		}
+	}
+	
+	/**
 	 * Returns the RequestInfo object associated with this
 	 * WorkspaceTreeControl.
 	 * 
@@ -174,6 +202,19 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		return m_requestInfo;
 	}
 
+	/**
+	 * Called to select an activity stream in the sidebar.
+	 *
+	 * @param asi
+	 */
+	public void setActivityStream(ActivityStreamInfo asi) {
+		// If we're displaying a sidebar tree...
+		if (TreeMode.VERTICAL == m_tm) {
+			// ...tell it to select this activity stream.
+			m_treeDisplay.setActivityStream(asi);
+		}
+	}
+	
 	/**
 	 * Called to change the binder being displayed by this
 	 * WorkspaceTreeControl.

@@ -2,7 +2,7 @@
 
 /* ########################################################################################################### */
 
-/* Styles used with the Activity Stream Control */
+/* Styles used with the activity stream control */
 .ActivityStreamCtrl
 {
 	background: #fff;
@@ -461,20 +461,28 @@ body, table td, select
 {
 	padding-top: 4px;
 }
-.workspaceTreeControlHeader
+.workspaceTreeControlHeader_base
 {
-	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	background-position:bottom;
 	color: #fff;
 	font-size: 0.85em;
 	font-weight: bold;
 	letter-spacing: 0.02em;
 	padding: 5px;
-	cursor: pointer;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
+}
+.workspaceTreeControlHeader_as
+{
+	background: #85BCC3 url(images/H_bg_blend_teal.png) repeat-x scroll center bottom;
+	cursor: default;
+}
+.workspaceTreeControlHeader_nav
+{
+	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
+	cursor: pointer;
 }
 .workspaceTreeControlRow
 {

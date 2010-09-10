@@ -567,7 +567,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			String param;
 
 			// Put out a true/false indicator for the RequestInfo
-			// object as to the state of the new Activity Streams based
+			// object as to the state of the new activity streams based
 			// user interface.
 			model.put(
 				WebKeys.URL_ACTIVITY_STREAMS_ENABLED,

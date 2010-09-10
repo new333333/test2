@@ -690,7 +690,7 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Returns true if Activity Streams are enabled and false otherwise.
+	 * Returns true if activity streams are enabled and false otherwise.
 	 * 
 	 * @return
 	 */
