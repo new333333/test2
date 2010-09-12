@@ -86,6 +86,8 @@ public class FileUploadItem {
 	private boolean isTempFile = false;
 	
 	private boolean synchToRepository = true; // can be false only for mirrored entries/files
+	
+	private String fileName = null;
 
 	// path info?
 	
@@ -195,7 +197,14 @@ public class FileUploadItem {
 	 * @return
 	 */
 	public String getOriginalFilename() {
-		return mf.getOriginalFilename();
+		if(fileName == null)
+			return mf.getOriginalFilename();
+		else
+			return fileName;
+	}
+	
+	public void setOriginalFilename(String fileName) {
+		this.fileName = fileName;
 	}
 	
 	/**

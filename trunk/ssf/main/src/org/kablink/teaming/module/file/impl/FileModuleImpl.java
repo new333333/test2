@@ -1510,6 +1510,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		}
 	    		else { // Existing file for the entry
 	    			sp.start("writeExistingFile");
+	    			// Bug #637636 - In order to treat the files that only differ in case as a single
+	    			// file, we normalize the file names of all versions of a single file to the file name 
+	    			// of the initial version. 
+	    			fui.setOriginalFilename(fAtt.getFileItem().getName());
 	    			if(writeExistingFile(session, binder, entry, fui) != null)
 	    				versionCreated = true;
 	    			sp.stop("writeExistingFile");
