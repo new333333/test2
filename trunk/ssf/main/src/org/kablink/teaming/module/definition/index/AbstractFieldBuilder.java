@@ -121,11 +121,14 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
 	    if (elemValues != null) {
 	    	Iterator itElemValues = elemValues.iterator();
 		    while (itElemValues.hasNext()) {
-		    	String valueName = (String)itElemValues.next();
-		    	Element nameEle = (Element)entryElement.selectSingleNode("./item/properties/property[@name='name' and @value='"+valueName+"']");
-		    	if (nameEle != null) {
-		    		Element captionEle = (Element)nameEle.getParent().selectSingleNode("./property[@name='caption']");
-			    	if (captionEle != null) result.add(captionEle.attributeValue("value", ""));
+		    	Object obj = itElemValues.next();
+		    	if(obj != null && obj instanceof String) {
+			    	String valueName = (String)obj;
+			    	Element nameEle = (Element)entryElement.selectSingleNode("./item/properties/property[@name='name' and @value='"+valueName+"']");
+			    	if (nameEle != null) {
+			    		Element captionEle = (Element)nameEle.getParent().selectSingleNode("./property[@name='caption']");
+				    	if (captionEle != null) result.add(captionEle.attributeValue("value", ""));
+			    	}
 		    	}
 		    }
 	    }

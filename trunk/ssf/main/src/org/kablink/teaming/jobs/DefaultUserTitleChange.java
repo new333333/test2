@@ -74,7 +74,7 @@ public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitl
 			} catch (Exception ex) {
 				//try again
 				logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " +
-						ex.getLocalizedMessage());
+						ex.toString());
 				retryBinderIds.add(id);
 			}
     	}
@@ -91,7 +91,7 @@ public class DefaultUserTitleChange extends SimpleTriggerJob implements UserTitl
 				//gone, skip it
 			} catch (Exception ex) {
 				logger.error(NLT.get("profile.titlechange.index.error") + " (entry " + id.toString() + ") " +
-						ex.getLocalizedMessage());
+						ex.toString());
 				//try again
 				retryEntryIds.add(id);
 			}
