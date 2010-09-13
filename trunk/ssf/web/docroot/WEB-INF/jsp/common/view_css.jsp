@@ -205,7 +205,7 @@ if (typeof ss_hideEntryDivOnLoad != "undefined") ss_hideEntryDivOnLoad();
 
 <link href="<html:rootPath/>css/forum.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
 <c:if test="${!empty ss_mashupCss}">
-  <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
+  <link href="<html:rootPath/>${ss_mashupCss}?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
 </c:if>
 <link href="<html:rootPath/>css/slider_swing.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value=""/><ssf:param 
