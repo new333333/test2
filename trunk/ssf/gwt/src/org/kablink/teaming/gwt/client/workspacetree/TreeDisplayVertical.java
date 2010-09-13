@@ -335,6 +335,30 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		m_renderDepths = new HashMap<String,Integer>();
 	}
 
+	/*
+	 * Creates an Anchor containing the close push button for the
+	 * sidebar's header when in activity streams mode.
+	 */
+	private Anchor buildCloseActivityStreamsPB() {
+		// Create the Image for the push button...
+		Image closePBImg = new Image(getImages().modal_dialog_close());
+		closePBImg.addStyleName("workspaceTreeControlHeader_closeImg");
+		closePBImg.setTitle(getMessages().treeCloseActivityStreams());
+		
+		// ...create the Anchor...
+		Anchor closePBAnchor = new Anchor();
+		closePBAnchor.addStyleName("workspaceTreeControlHeader_closeA");
+		closePBAnchor.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				triggerAction(TeamingAction.EXIT_ACTIVITY_STREAM_MODE);
+			}
+		});
+		
+		// ...and tie it all together.
+		closePBAnchor.getElement().appendChild(closePBImg.getElement());
+		return closePBAnchor;
+	}
+	
 	/**
 	 * Returns an OnSelectBinderInfo object that corresponds to a
 	 * TreeInfo object.
@@ -670,9 +694,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Create the WorkspaceTree control's header...
 		TreeInfo rootTI = getRootTreeInfo();
-		Grid selectorGrid = new Grid(1, 2);
+		boolean isAS = rootTI.isActivityStream();
+		Grid selectorGrid = new Grid(1, (isAS ? 3 : 2));
 		String styles = "workspaceTreeControlHeader workspaceTreeControlHeader_base ";
-		if (rootTI.isActivityStream())
+		if (isAS)
 		     styles += "workspaceTreeControlHeader_as";
 		else styles += "workspaceTreeControlHeader_nav";
 		selectorGrid.addStyleName(styles);
@@ -687,11 +712,19 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			selectorGrid.setWidget(0, 0, selectorLabel);
 			selectorGrid.setWidget(0, 1, new Label("\u00A0"));
 			selectorGrid.getCellFormatter().setWidth(0, 1, "100%");
-			Anchor selectorA = new Anchor();
-			selectorA.getElement().appendChild(selectorGrid.getElement());
-			selectorA.addClickHandler(new BinderSelector(rootTI));
-			selectorA.setTitle(getBinderHover(rootTI));
-			m_rootPanel.add(selectorA);
+			Widget rootWidget;
+			if (isAS) {
+				selectorGrid.setWidget(0, 2, buildCloseActivityStreamsPB());
+				rootWidget = selectorGrid;
+			}
+			else {
+				Anchor selectorA = new Anchor();
+				selectorA.getElement().appendChild(selectorGrid.getElement());
+				selectorA.addClickHandler(new BinderSelector(rootTI));
+				selectorA.setTitle(getBinderHover(rootTI));
+				rootWidget = selectorA;
+			}
+			m_rootPanel.add(rootWidget);
 		}
 
 		// ...its content panel...

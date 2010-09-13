@@ -145,6 +145,12 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public static TreeInfo findActivityStreamTI(TreeInfo ti, ActivityStreamInfo asi) {
+		// If the TreeInfo is not in activity stream mode...
+		if (!(ti.isActivityStream())) {
+			// ...we can never find the activity stream in question.
+			return null;
+		}
+		
 		// Is this an activity stream TreeInfo?
 		if (ti.isActivityStream()) {
 			// Yes!  Is it for the activity stream in question?
@@ -184,6 +190,12 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public static TreeInfo findBinderTI(TreeInfo ti, String binderId) {
+		// If the TreeInfo is in activity stream mode...
+		if (ti.isActivityStream()) {
+			// ...we can never find the binder in question.
+			return null;
+		}
+		
 		// If this TreeInfo is for the binder in question...
 		if (ti.getBinderInfo().getBinderId().equals(binderId)) {
 			// ...return it.
@@ -219,6 +231,12 @@ public class TreeInfo implements IsSerializable {
 	 * @return
 	 */
 	public static TreeInfo findBinderTrash(TreeInfo ti) {
+		// If the TreeInfo is in activity stream mode...
+		if (ti.isActivityStream()) {
+			// ...we can never find the binder trash in question.
+			return null;
+		}
+		
 		// If this TreeInfo is a trash binder...
 		if (ti.getBinderInfo().isBinderTrash()) {
 			// ...return it.

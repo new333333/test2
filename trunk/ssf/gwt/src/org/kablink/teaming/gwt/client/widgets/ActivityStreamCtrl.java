@@ -412,27 +412,12 @@ public class ActivityStreamCtrl extends Composite
 					{
 						OnSelectBinderInfo binderInfo;
 						String binderId;
-						Command cmd;
 						
 						// Yes
 						// Take the user to the selected binder.
 						binderId = getActivityStreamSourceBinderId();
 						binderInfo = new OnSelectBinderInfo( binderId, m_binderPermalink, false, Instigator.OTHER );
 						m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
-
-						cmd = new Command()
-						{
-							/**
-							 * 
-							 */
-							public void execute()
-							{
-								// Exit out of "what's new" mode
-								m_actionHandler.handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
-							}
-							
-						};
-						DeferredCommand.addCommand( cmd );
 					}
 				}
 				
