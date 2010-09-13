@@ -1797,7 +1797,9 @@ public class GwtServerHelper {
 	
 	public static BinderInfo getBinderInfo(Binder binder) {
 		BinderInfo reply = new BinderInfo();
-		reply.setBinderId(binder.getId());
+		                                    reply.setBinderId(     binder.getId()             );
+		                                    reply.setBinderPath(   binder.getPathName()       );
+		                                    reply.setBinderTitle(  binder.getTitle()          );
 		                                    reply.setEntityType(   getBinderEntityType(binder));
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));

@@ -474,15 +474,16 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			return;
 		}
 		
-		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", null, m_messages.mainMenuBarWhatsNew());
+		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
 		m_whatsNewBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
 					ActivityStreamInfo asi;
 					if (null != m_contextBinder) {
 						asi = new ActivityStreamInfo();
-						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
-						asi.setBinderId(m_contextBinder.getBinderId());
+						asi.setActivityStream(ActivityStream.CURRENT_BINDER   );
+						asi.setBinderId(      m_contextBinder.getBinderId()   );
+						asi.setTitle(         m_contextBinder.getBinderTitle());
 					}
 					else {
 						asi = null;
