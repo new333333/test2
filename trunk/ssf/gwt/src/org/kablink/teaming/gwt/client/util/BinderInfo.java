@@ -47,7 +47,6 @@ public class BinderInfo implements IsSerializable {
 	private BinderType    m_binderType  = BinderType.OTHER;					//
 	private FolderType    m_folderType  = FolderType.NOT_A_FOLDER;			//
 	private String        m_binderId    = "";								//
-	private String        m_binderPath  = "";								//
 	private String        m_binderTitle = "";								//
 	private String        m_entityType  = "";								//
 	private WorkspaceType m_wsType      = WorkspaceType.NOT_A_WORKSPACE;	//
@@ -69,7 +68,6 @@ public class BinderInfo implements IsSerializable {
 	public BinderInfo copyBinderInfo() {
 		BinderInfo reply = new BinderInfo();
 		reply.setBinderId(     m_binderId   );
-		reply.setBinderPath(   m_binderPath );
 		reply.setBinderTitle(  m_binderTitle);
 		reply.setEntityType(   m_entityType );
 		reply.setBinderType(   m_binderType );
@@ -86,7 +84,6 @@ public class BinderInfo implements IsSerializable {
 	public BinderType    getBinderType()    {return m_binderType; }
 	public FolderType    getFolderType()    {return m_folderType; }
 	public String        getBinderId()      {return m_binderId;   }
-	public String        getBinderPath()    {return m_binderPath; }
 	public String        getBinderTitle()   {return m_binderTitle;}
 	public String        getEntityType()    {return m_entityType; }
 	public WorkspaceType getWorkspaceType() {return m_wsType;     }
@@ -138,15 +135,6 @@ public class BinderInfo implements IsSerializable {
 	
 	public void setBinderId(Long binderId) {
 		setBinderId(String.valueOf(binderId));
-	}
-	
-	/**
-	 * Stores the path of a Binder.
-	 * 
-	 * @param binderPath
-	 */
-	public void setBinderPath(String binderPath) {
-		m_binderPath = binderPath;
 	}
 	
 	/**
