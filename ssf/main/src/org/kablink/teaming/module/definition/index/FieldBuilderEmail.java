@@ -32,53 +32,38 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.Map;
 
 import org.apache.lucene.document.Field;
-import org.dom4j.Element;
-import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
-/**
- *
- * @author Jong Kim
- */
-public class FieldBuilderCheck extends AbstractFieldBuilder {
 
-    public String makeFieldName(String dataElemName) {
+public class FieldBuilderEmail extends AbstractFieldBuilder {
+	
+	public String makeFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
     	return dataElemName;
-    }
-    
-    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
-        Set dataElemValue = getEntryElementValue(entity, dataElemName);
-       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
-        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
-        
-        Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
-        String caption = getEntryElementCaption(entity, dataElemName, entryElement);
-        args.put(DefinitionModule.INDEX_CAPTION, caption);
-        
-        if(dataElemValue != null)
-            return build(dataElemName, dataElemValue, args);
-        else
-            return null;
-    }
-
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-    	String caption = (String) args.get(DefinitionModule.INDEX_CAPTION);
-        Boolean val = (Boolean) getFirstElement(dataElemValue);
-        if (val == null) {
-            return new Field[0];
-        }
-        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        if (!fieldsOnly) {
-            Field allTextField = BasicIndexUtils.allTextField(caption);
-        	return new Field[] {allTextField, field};
-        } else {
-        	return new Field[] {field};
-        }
+	}
+   
+	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+	   	Object val = getFirstElement(dataElemValue);
+	   	if (val instanceof String) {
+	   		String sVal = (String)val;
+	   		sVal = sVal.trim();
+       
+	   		if (sVal.length() == 0) {
+	   			return new Field[0];
+	   		}
+	   		
+    		Field emailField =  new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.UN_TOKENIZED);
+           	if (!fieldsOnly) {
+               	Field allTextField = BasicIndexUtils.allTextField(sVal);
+               	return new Field[] {allTextField, emailField};
+           	} else {
+               	return new Field[] {emailField};
+           	}
+	   	} 
+    	return new Field[0];
     }
 
 }

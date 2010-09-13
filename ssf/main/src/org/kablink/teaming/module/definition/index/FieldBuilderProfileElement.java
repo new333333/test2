@@ -39,11 +39,6 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
 
-
-/**
- * Implement here cause not all fields are included on every form
- * @author Jong Kim
- */
 public class FieldBuilderProfileElement extends AbstractFieldBuilder {
 	
 	public String makeFieldName(String dataElemName) {
@@ -60,31 +55,15 @@ public class FieldBuilderProfileElement extends AbstractFieldBuilder {
 	   		if (sVal.length() == 0) {
 	   			return new Field[0];
 	   		}
-	   		//email and zonName are indexed by default so they can be used in folderListing
-	   		if ("firstName".equals(dataElemName))  {
-	   			Field nameField = new Field(Constants.FIRSTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};
-	   		} else if ("middleName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.MIDDLENAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else if ("lastName".equals(dataElemName)) {
-	   			Field nameField = new Field(Constants.LASTNAME_FIELD, sVal, Field.Store.YES, Field.Index.TOKENIZED);
-	   			return new Field[] {nameField};    		
-	   		} else {
-	   	        if(val == null) {
-	   	            return new Field[0];
-	   	        }
-	   	        else {
-	   	           	Field sortTextField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), sVal.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
-	   	           	Field textField = new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.TOKENIZED); 
-	   	           	if (!fieldsOnly) {
-	   	               	Field allTextField = BasicIndexUtils.allTextField(sVal);
-	   	               	return new Field[] {allTextField, textField, sortTextField};
-	   	           	} else {
-	   	               	return new Field[] {textField, sortTextField};
-	   	           	}
-	   	        }
-	        }
+	   		
+           	Field sortTextField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), sVal.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
+           	Field textField = new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.TOKENIZED); 
+           	if (!fieldsOnly) {
+               	Field allTextField = BasicIndexUtils.allTextField(sVal);
+               	return new Field[] {allTextField, textField, sortTextField};
+           	} else {
+               	return new Field[] {textField, sortTextField};
+           	}
 	   	} 
     	return new Field[0];
     }

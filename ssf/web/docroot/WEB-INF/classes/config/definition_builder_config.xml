@@ -1163,7 +1163,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserName" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderName" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderName" />
 	</item>
@@ -1195,7 +1195,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1214,7 +1214,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1232,7 +1232,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1251,7 +1251,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderOrganization" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1269,7 +1269,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1287,7 +1287,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1305,7 +1305,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1320,7 +1320,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderId" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
@@ -1348,7 +1348,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderTimeZone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1363,7 +1363,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_locale_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderLocale" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1381,7 +1381,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPhone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1399,7 +1399,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderId" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1414,7 +1414,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderId" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1429,7 +1429,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderId" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1444,7 +1444,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderId" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>		
@@ -1487,7 +1487,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1506,7 +1506,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1525,7 +1525,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1544,7 +1544,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1563,7 +1563,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1582,7 +1582,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPhone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1601,7 +1601,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPhone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1620,7 +1620,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPhone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>	
@@ -1639,7 +1639,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPhone" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>	
@@ -1658,7 +1658,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1677,7 +1677,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1696,7 +1696,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1715,7 +1715,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1734,7 +1734,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderBirthday" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1753,7 +1753,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderBirthday" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1772,7 +1772,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1791,7 +1791,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1810,7 +1810,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderProfileElement" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -2570,7 +2570,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/number_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderNumber" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 		<notify />
@@ -2593,13 +2593,13 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/url_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUrl" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderText" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderText" />
 		<notify />
 	</item>
 	
-	<item name="selectbox" caption="__selectbox" type="data" dataType="selectBox" category="commonEntryData" display="form">
+	<item name="selectbox" caption="__selectbox" type="data" dataType="selectbox" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -2625,7 +2625,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.selectbox</help>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSelect">
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSelectbox">
 		  <args>
 		    <arg name="indexCaption" type="boolean" value="true"/>
 		  </args>
@@ -2674,7 +2674,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/user_list_selectbox_form.jsp"/>
 		</jsps>
 		<index apply="true"
-			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserListSelect"/>
+			fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderUserlist"/>
 		<webService apply="true"
 			elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderUserListSelect"/>
 		<export apply="true"
@@ -2738,7 +2738,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.radio_buttons</help>		
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderSelect">
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderRadio">
 		  <args>
 		    <arg name="indexCaption" type="boolean" value="true"/>
 		  </args>
@@ -2780,7 +2780,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/null.jsp" />
 		</jsps>
 		<help>ihelp.designers.places</help>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderPlaces" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderBinderIdList" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderPlaces" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderPlaces" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderPlaces"/>
@@ -2804,7 +2804,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/checkbox_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderCheck" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderCheckbox" />
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderCheck" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderCheck" />
 		<notify notifyBuilder="org.kablink.teaming.module.definition.notify.NotifyBuilderCheck" />
@@ -2821,7 +2821,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderHidden" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	</item>
 	
 	<item name="graphic" caption="__graphic" type="data" dataType="graphic" category="commonEntryData" display="form">
@@ -2944,7 +2944,11 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDate" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDate" >
+		  <args>
+		    <arg name="resolution" type="string" value="minute"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDate" />
 		<notify velocity="date.vm"/> 
@@ -2975,7 +2979,11 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_time_form.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/date_time_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDateTime" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderDate" >
+		  <args>
+		    <arg name="resolution" type="string" value="second"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderDate" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderDate" />
 		<notify velocity="date_time.vm"/> 

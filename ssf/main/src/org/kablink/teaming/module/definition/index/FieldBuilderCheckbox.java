@@ -32,55 +32,53 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
-
+import org.dom4j.Element;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.search.BasicIndexUtils;
 /**
  *
  * @author Jong Kim
  */
-public class FieldBuilderDate extends AbstractFieldBuilder {
+public class FieldBuilderCheckbox extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
     	return dataElemName;
     }
     
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
+        Set dataElemValue = getEntryElementValue(entity, dataElemName);
+       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
+        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
+        
+        Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
+        String caption = getEntryElementCaption(entity, dataElemName, entryElement);
+        args.put(DefinitionModule.INDEX_CAPTION, caption);
+        
+        if(dataElemValue != null)
+            return build(dataElemName, dataElemValue, args);
+        else
+            return null;
+    }
+
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        Date val = (Date) getFirstElement(dataElemValue);
-        if(val == null) {
+    	String caption = (String) args.get(DefinitionModule.INDEX_CAPTION);
+        Boolean val = (Boolean) getFirstElement(dataElemValue);
+        if (val == null) {
             return new Field[0];
         }
-        else {
-            Field field = new Field(makeFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.UN_TOKENIZED);
-            return new Field[] {field};
+        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        if (!fieldsOnly) {
+            Field allTextField = BasicIndexUtils.allTextField(caption);
+        	return new Field[] {allTextField, field};
+        } else {
+        	return new Field[] {field};
         }
     }
 
-    private DateTools.Resolution getResolution(Map args) {
-    	DateTools.Resolution resolution = DateTools.Resolution.MINUTE; // our default
-        String resStr = (String) args.get("resolution");
-        if(resStr != null && !resStr.equals("")) {
-        	if(resStr.equals("minute"))
-        		resolution = DateTools.Resolution.MINUTE;
-        	else if(resStr.equals("second"))
-        		resolution = DateTools.Resolution.SECOND;
-        	else if(resStr.equals("year"))
-        		resolution = DateTools.Resolution.YEAR;
-        	else if(resStr.equals("month"))
-        		resolution = DateTools.Resolution.MONTH;
-        	else if(resStr.equals("day"))
-        		resolution = DateTools.Resolution.DAY;
-        	else if(resStr.equals("hour"))
-        		resolution = DateTools.Resolution.HOUR;
-        	else if(resStr.equals("millisecond"))
-        		resolution = DateTools.Resolution.MILLISECOND;
-        }
-        return resolution;
-    }
-    
 }
