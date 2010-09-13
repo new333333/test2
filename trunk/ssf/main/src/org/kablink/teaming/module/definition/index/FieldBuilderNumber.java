@@ -32,35 +32,6 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Map;
-import java.util.Set;
+public class FieldBuilderNumber extends FieldBuilderText {
 
-import org.apache.lucene.document.Field;
-
-/**
- *
- * @author Jong Kim
- */
-public class FieldBuilderProfileNames extends AbstractFieldBuilder {
-
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-		return new Field[0];
-    	/*
-		String val = (String) getFirstElement(dataElemValue);
-    	val = val.trim();
-        
-		if(val.length() == 0) {
-			return new Field[0];
-		}
-		else {
-		    Field allTextField = BasicIndexUtils.allTextField(val);
-		
-		    Field nameField = new Field(EntryIndexUtils.NAME_FIELD, val, true, true, true); 
-		        
-		    Field name1Field = Field.Keyword(EntryIndexUtils.NAME1_FIELD, val.substring(0, 1));
-		    
-		    return new Field[] {allTextField, nameField, name1Field};
-		}
-		*/
-    }
 }

@@ -32,18 +32,19 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.Set;
+import java.util.Map;
 
-import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
+import org.kablink.teaming.search.BasicIndexUtils;
+
 
 /**
  *
  * @author Jong Kim
  */
-public class FieldBuilderDate extends AbstractFieldBuilder {
+public class FieldBuilderBinderIdList extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
@@ -51,36 +52,20 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
     }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        Date val = (Date) getFirstElement(dataElemValue);
-        if(val == null) {
-            return new Field[0];
+        // This default radio implementation ignores args.  
+        
+        Field[] fields = new Field[dataElemValue.size()];
+        String fieldName = makeFieldName(dataElemName);
+       
+        Long val;
+        Field field;
+        int i = 0;
+        for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
+	        val = Long.valueOf((String)it.next());
+	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        fields[i] = field;
         }
-        else {
-            Field field = new Field(makeFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.UN_TOKENIZED);
-            return new Field[] {field};
-        }
+        
+        return fields;
     }
-
-    private DateTools.Resolution getResolution(Map args) {
-    	DateTools.Resolution resolution = DateTools.Resolution.MINUTE; // our default
-        String resStr = (String) args.get("resolution");
-        if(resStr != null && !resStr.equals("")) {
-        	if(resStr.equals("minute"))
-        		resolution = DateTools.Resolution.MINUTE;
-        	else if(resStr.equals("second"))
-        		resolution = DateTools.Resolution.SECOND;
-        	else if(resStr.equals("year"))
-        		resolution = DateTools.Resolution.YEAR;
-        	else if(resStr.equals("month"))
-        		resolution = DateTools.Resolution.MONTH;
-        	else if(resStr.equals("day"))
-        		resolution = DateTools.Resolution.DAY;
-        	else if(resStr.equals("hour"))
-        		resolution = DateTools.Resolution.HOUR;
-        	else if(resStr.equals("millisecond"))
-        		resolution = DateTools.Resolution.MILLISECOND;
-        }
-        return resolution;
-    }
-    
 }

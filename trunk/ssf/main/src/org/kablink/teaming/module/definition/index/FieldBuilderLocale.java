@@ -32,39 +32,6 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.util.search.Constants;
-
-/**
- *
- * @author Jong Kim
- */
-public class FieldBuilderHidden extends AbstractFieldBuilder {
-
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
-    
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default hidden implementation ignores args.  
-
-        String val = (String) getFirstElement(dataElemValue);
-        if (val == null) {
-            return new Field[0];
-        }
-        Field sortField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), val.toString().toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.TOKENIZED);
-        if (!fieldsOnly) {
-            Field allTextField = BasicIndexUtils.allTextField(val);
-        	return new Field[] {allTextField, field, sortField};
-        } else {
-        	return new Field[] {field, sortField};
-        }
-    }
+public class FieldBuilderLocale extends FieldBuilderProfileElement {
 
 }
