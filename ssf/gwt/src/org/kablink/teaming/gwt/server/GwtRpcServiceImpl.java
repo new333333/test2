@@ -1749,7 +1749,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	private TreeInfo buildASTI( String id, String title, String hover, ActivityStream as )
 	{
 		TreeInfo reply = new TreeInfo();
-		reply.setBinderInfo( GwtServerHelper.getBinderInfo( this, id ) );
+		if ( MiscUtil.hasString( id ) )
+		{
+			reply.setBinderInfo( GwtServerHelper.getBinderInfo( this, id ) );
+		}
 		
 		reply.setActivityStream( true );
 		reply.setBinderTitle( title );
