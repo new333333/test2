@@ -457,10 +457,6 @@ body, table td, select
 {
 	color: #5691a6;
 }
-.workspaceTreeControlHeader .workspaceTreeBinderSelected
-{
-	color: #fff;
-}
 .workspaceTreeControl
 {
 	background-color: #EAEBE8;
@@ -473,6 +469,15 @@ body, table td, select
 .workspaceTreeControlBody
 {
 	padding-top: 4px;
+}
+.workspaceTreeControlHeader .workspaceTreeBinderSelected
+{
+	color: #fff;
+}
+.workspaceTreeControlHeader_as
+{
+	background: #85BCC3 url(images/H_bg_blend_teal.png) repeat-x scroll center bottom;
+	cursor: default;
 }
 .workspaceTreeControlHeader_base
 {
@@ -487,10 +492,12 @@ body, table td, select
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
-.workspaceTreeControlHeader_as
+.workspaceTreeControlHeader_closeA
 {
-	background: #85BCC3 url(images/H_bg_blend_teal.png) repeat-x scroll center bottom;
-	cursor: default;
+	cursor: pointer;
+}
+.workspaceTreeControlHeader_closeImg
+{
 }
 .workspaceTreeControlHeader_nav
 {
