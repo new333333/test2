@@ -74,6 +74,10 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource menuArrow();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/MainMenu/newmenu.png")
+	public ImageResource newMenu();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/rating_star.gif")
 	public ImageResource ratingStar();
 	
