@@ -61,6 +61,10 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
@@ -204,7 +208,12 @@ public interface GwtRpcService extends RemoteService
 	// Get upgrade information
 	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException;
 	
-	//Get DiskUsageINfo
-	public  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
-	
+	// Get DiskUsageInfo.
+	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
+
+	// Activity Stream servicing APIs.
+	public ActivityStreamData   getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd);
+	public ActivityStreamData   getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi               );
+	public ActivityStreamParams getActivityStreamParams(  HttpRequestInfo ri                                                                 );
+	public Boolean              hasActivityStreamChanged( HttpRequestInfo ri,                           ActivityStreamInfo asi               );
 }// end GwtRpcService
