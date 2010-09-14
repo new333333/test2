@@ -37,6 +37,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -717,6 +718,28 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Change our title to reflect the new activity stream source.
 		setTitle();
+		
+		{
+			ActivityStreamTopEntry topEntry;
+			
+			topEntry = new ActivityStreamTopEntry( m_actionHandler );
+			topEntry.setTitle( "This is the title" );
+			topEntry.setBinderName( "Workgroup Business Unit" );
+			topEntry.setAuthor( "Dennis Foster" );
+			topEntry.setDate( "August 30, 2010" );
+			topEntry.setDesc( "Now is the time for all good men to come to the aid of their country.  The quick brown fox jumped over something.  Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
+			topEntry.setAvatarUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/media.gif" );
+			m_searchResultsPanel.add( topEntry );
+
+			topEntry = new ActivityStreamTopEntry( m_actionHandler );
+			topEntry.setTitle( "What should the title be for this" );
+			topEntry.setBinderName( "Durango Beta" );
+			topEntry.setAuthor( "Tracy Smith" );
+			topEntry.setDate( "September 3, 2010" );
+			topEntry.setDesc( "The quick brown fox jumped over something.  Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
+			topEntry.setAvatarUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/tracking20x16.png" );
+			m_searchResultsPanel.add( topEntry );
+}
 	}
 	
 	
