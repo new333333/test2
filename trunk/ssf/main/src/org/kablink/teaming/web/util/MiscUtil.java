@@ -347,7 +347,7 @@ public final class MiscUtil
 				ObjectKeys.PAGE_ENTRIES_PER_PAGE,
 				SPropsUtil.getString(
 					"folder.records.listed",
-					"10"));
+					"25"));
 	}
 	@SuppressWarnings("unchecked")
 	public static String getUserProperty(UserProperties userProperties, String property, String defValue) {
@@ -443,21 +443,21 @@ public final class MiscUtil
 		// Can we access the current zone name?
 		ZoneInfo zoneInfo = getCurrentZone();
 		String reply = zoneInfo.getZoneName();
-		if ( MiscUtil.hasString( reply ) )
+		if ( hasString( reply ) )
 		{
 			// Yes!  Check for a zone specific setting.
 			reply = SPropsUtil.getString( (SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE + "." + reply), "" ); 
 		}
 
 		// Do we have a zone specific setting?
-		if ( ! ( MiscUtil.hasString( reply ) ) )
+		if ( ! ( hasString( reply ) ) )
 		{
 			// No!  Check for a global setting.
 			reply = SPropsUtil.getString( SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE, "" );
 		}
 
 		// Do we have a global setting?
-		if ( ! ( MiscUtil.hasString( reply ) ) )
+		if ( ! ( hasString( reply ) ) )
 		{
 			// No!  Then ensure we return null.
 			reply = null;

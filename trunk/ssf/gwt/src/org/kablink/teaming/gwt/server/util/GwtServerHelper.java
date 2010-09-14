@@ -113,6 +113,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -2318,6 +2319,49 @@ public class GwtServerHelper {
 		
 		// If we get here, reply refers to the ArrayList<TeamInfo> of
 		// the teams the current user is a member of.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<String> of the workspace ID's of the people the
+	 * current user is tracking.
+	 * 
+	 * @return
+	 */
+	public static List<String> getTrackedPeople(AllModulesInjected bs) {
+		// Scan the IDs of the people the current user is tracking.
+		List<String> reply = new ArrayList<String>();
+		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+		List<String> pIds = GwtProfileHelper.getTrackedPersonsIds(bs, String.valueOf(wsId.longValue()));
+		ProfileModule pm = bs.getProfileModule();
+		for (String pId:  pIds) {
+			// Does this tracked person have a workspace ID?
+			wsId = pm.getEntry(Long.valueOf(pId)).getWorkspaceId();
+			if (null != wsId) {
+				// Yes!  Add it to the reply ArrayList.
+				reply.add(String.valueOf(wsId.longValue()));
+			}
+		}
+		
+		// If we get here, reply refers to an ArrayList<String> of the
+		// IDs of the workspaces of the people the current user is
+		// tracking.  Return it.
+		return reply;
+	}
+	
+	/**
+	 * Returns a List<String> of the binder ID's of the places the
+	 * current user is tracking.
+	 * 
+	 * @return
+	 */
+	public static List<String> getTrackedPlaces(AllModulesInjected bs) {
+		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
+		Binder ws = bs.getBinderModule().getBinder(wsId);
+		List<String> reply = SearchUtils.getTrackedPlacesIds(bs, ws);
+		if (null == reply) {
+			reply = new ArrayList<String>();
+		}
 		return reply;
 	}
 	
