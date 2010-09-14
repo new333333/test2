@@ -53,6 +53,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/trans50_black_arrowleft.png")
 	public ImageResource arrowTrans50Left();
 	
+	@Source("org/kablink/teaming/gwt/public/images/breadspace.gif")
+	public ImageResource breadSpace();
+	
 	@Source("org/kablink/teaming/gwt/public/images/browse_files.png")
 	public ImageResource browseFiles();
 
@@ -158,10 +161,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/my_workspace2.png")
 	public ImageResource myWorkspace2();
 
-	@Source("org/kablink/teaming/gwt/public/images/next_16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right.png")
 	public ImageResource next16();
 
-	@Source("org/kablink/teaming/gwt/public/images/next_disabled_16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_right_disabled.png")
 	public ImageResource nextDisabled16();
 	
 	@Source("org/kablink/teaming/gwt/public/images/personal_prefs1.png")
@@ -185,10 +188,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/presence_unknown16.png")
 	public ImageResource presenceUnknown16();
 	
-	@Source("org/kablink/teaming/gwt/public/images/previous_16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
 	public ImageResource previous16();
 
-	@Source("org/kablink/teaming/gwt/public/images/previous_disabled_16.gif")
+	@Source("org/kablink/teaming/gwt/public/images/arrow_left_disabled.png")
 	public ImageResource previousDisabled16();
 
 	@Source("org/kablink/teaming/gwt/public/images/refresh.png")
