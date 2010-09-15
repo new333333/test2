@@ -570,28 +570,41 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private static String getSelectorIdAppendage(TreeInfo ti) {
 		String reply;
+
+		// Is this TreeInfo a bucket?
 		if (ti.isBucket()) {
+			// Yes!  Generate an appendage based on the range of names
+			// the bucket spans.
 			StringBuffer sb = new StringBuffer(String.valueOf(ti.getBucketList().get(0)));
 			sb.append("_");
 			sb.append(ti.getBucketList().get(ti.getBucketList().size() - 1));
 			reply = sb.toString();
 		}
-		else {
+
+		// No, the TreeInfo isn't a bucket!  Is it an activity stream?
+		else if (ti.isActivityStream()) {
+			// Yes!  Generate an appendage that factors in the activity
+			// stream and binder ID.
+			ActivityStreamInfo asi = ti.getActivityStreamInfo();
+			ActivityStream as = ((null == asi) ? ActivityStream.UNKNOWN : asi.getActivityStream());
 			reply = ti.getBinderInfo().getBinderId();
 			if (!(GwtClientHelper.hasString(reply))) {
-				if (ti.isActivityStream()) {
-					ActivityStreamInfo asi = ti.getActivityStreamInfo();
-					ActivityStream as = ((null == asi) ? ActivityStream.UNKNOWN : asi.getActivityStream());
-					if (null == as) {
-						as = ActivityStream.UNKNOWN;
-					}
-					reply = (as.getValue() + "_" + ti.getBinderTitle());
-				}
-				else {
-					reply = "-unknown-";
-				}
+				reply = ti.getBinderTitle();
+			}
+			reply = (as.getValue() + "_" + ti.getBinderTitle());
+		}
+
+		else {	
+			// No, it isn't an activity stream either!  Generate an
+			// appendage based on the binder ID.
+			reply = ti.getBinderInfo().getBinderId();
+			if (!(GwtClientHelper.hasString(reply))) {
+				reply = "-unknown-";
 			}
 		}
+
+		// If we get here, reply refers to the appendage to use for the
+		// TreeInfo in question.  Return it.
 		return reply;
 	}
 
