@@ -32,28 +32,42 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
+import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
 
 /**
  * Helper methods for the GWT UI server code that services activity
@@ -83,6 +97,65 @@ public class GwtActivityStreamHelper {
 		// Nothing to do.
 	}
 
+	/*
+	 * Returns an activity stream entry based on the entry map from a
+	 * search.
+	 */
+	@SuppressWarnings("unchecked")
+	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, Map em) {
+		// Create the activity stream entry to return.
+		ActivityStreamEntry reply = new ActivityStreamEntry();
+
+		// First, initialize the author information.
+		// Does the entry map contain the ID of the binder that
+		// contains the entry?
+		String authorId = getSFromEM(em, Constants.MODIFICATIONID_FIELD);
+		reply.setAuthorId(authorId);
+		String authorName = getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD);
+		String authorLogin = getSFromEM(em, Constants.MODIFICATION_NAME_FIELD);
+		if (MiscUtil.hasString(authorLogin)) {
+			authorName += (" (" + authorLogin + ")");
+		}
+		reply.setAuthorName(authorName);
+		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);		
+		if (MiscUtil.hasString(binderId)) {
+			// Yes!  Can we access any avatars for the binder's author?
+			ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, Long.parseLong(binderId));
+			List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
+			if((null != paValue) && (!(paValue.isEmpty()))) {
+				// Yes!  Does the first one have a URL?
+				ProfileAttributeListElement paValueItem = paValue.get(0);
+				String url = paValueItem.getValue().toString();
+				if (MiscUtil.hasString(url)) {
+					// Yes!  Store it as the author's URL.
+					reply.setAuthorAvatarUrl(url);
+				}
+			}
+		}
+
+		// Then, the entry information.
+		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD));	
+		reply.setEntryId(              getSFromEM(em, Constants.DOCID_FIELD));
+		reply.setEntryModificationDate(getSFromEM(em, Constants.MODIFICATION_DATE_FIELD));
+		reply.setEntryTitle(           getSFromEM(em, Constants.TITLE_FIELD));
+
+		// And finally, the parent binder information.
+		reply.setParentBinderId(binderId);
+		if (MiscUtil.hasString(binderId)) {
+			Binder binder;
+			try                  {binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));}
+			catch (Exception ex) {binder = null;}
+			if (null != binder) {
+				reply.setParentBinderHover(binder.getPathName());
+				reply.setParentBinderName( binder.getTitle()   );
+			}
+		}
+
+		// If we get here, reply refers to the activity stream entry
+		// for the entry map.  Return it.
+		return reply;
+	}
+	
 	/*
 	 * Builds an ActivityStreamInfo object based on an ActivityStream
 	 * enumeration value and an String[] of Binder IDs.
@@ -140,7 +213,7 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd) {
-		// Create an ActivityStreamData to return.
+		// Create an activity stream data object to return.
 		ActivityStreamData reply = new ActivityStreamData();
 		
 		// If we weren't given a PagingData...
@@ -152,15 +225,21 @@ public class GwtActivityStreamHelper {
 		}
 		
 		else {
-			// ...otherwise, put the one we were given into affect.
+			// ...otherwise, put the one we were given into effect.
 			reply.setPagingData(pd);
 		}
 		
-//!		...this needs to be implemented...
-		
+		// Finally, read the requested activity stream data.
+		populateASD(
+			reply,
+			request,
+			bs,
+			asp,
+			newData,
+			asi);		
 		return reply;
 	}
-	
+
 	/**
 	 * Returns an ActivityStreamParams object containing information
 	 * the current activity stream setup.
@@ -189,21 +268,45 @@ public class GwtActivityStreamHelper {
 		// ActivityStreamParams to return.  Return it.
 		return reply;
 	}
-	
-	/**
-	 * Returns true if the data for an activity stream has changed (or
-	 * has never been cached) and false otherwise.
-	 * 
-	 * @param request
-	 * @param bs
-	 * @param asi
-	 * 
-	 * @return
+
+	/*
+	 * Returns a string for a value out of the entry map from a search
+	 * results.
 	 */
-	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
-//!		...this needs to be implemented...
-		return Boolean.FALSE;
-	}	
+	@SuppressWarnings("unchecked")
+	private static String getSFromEM(Map entryMap, String key) {
+		// Do we have entry data for this key?
+		String reply = "";
+		Object emData = entryMap.get(key);
+		if (null != emData) {
+			// Yes!  Is it a string?
+			if (emData instanceof String) {
+				// Yes!  Return it directly.
+				reply = ((String) emData);
+			}
+			
+			// No, it isn't a string!  Is it a date?
+			else if (emData instanceof Date) {
+				// Yes!  Format it for the current user's locale and
+				// return that.
+				User user = GwtServerHelper.getCurrentUser();
+				DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
+				reply = df.format(((Date) emData));
+			}
+			
+			else {
+				// No, it isn't a date either!  Let the object convert
+				// itself to a string and return that.
+				reply = emData.toString();
+			}
+		}
+		
+		// If we get here, reply refers to an empty string or the
+		// appropriate string value for the key from the entry map.
+		// Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * and activity streams tree using the current Binder referred to
@@ -408,5 +511,139 @@ public class GwtActivityStreamHelper {
 		// we're returning is correct and return it.
 		reply.updateChildBindersCount();
 		return reply;
-	}	
+	}
+	
+	/**
+	 * Returns true if the data for an activity stream has changed (or
+	 * has never been cached) and false otherwise.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param asi
+	 * 
+	 * @return
+	 */
+	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
+//!		...this needs to be implemented...
+		return Boolean.FALSE;
+	}
+	
+	/*
+	 * Reads the activity stream data based on an activity stream
+	 * information object and the current paging data.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void populateASD(ActivityStreamData asd, HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, boolean newData, ActivityStreamInfo asi) {		
+		// Setup some integer's for the controlling the search.
+		PagingData pd = asd.getPagingData();
+		int entriesPerPage	= pd.getEntriesPerPage();
+		int pageIndex		= pd.getPageIndex();
+		int pageStart		= (pageIndex * entriesPerPage);
+
+		// Initialize lists for the tracked places and people.
+		List<String> trackedPlacesAL = new ArrayList<String>();
+		List<String> trackedPeopleAL = new ArrayList<String>();
+
+		// What type of activity stream are we reading the data for?
+		String[] trackedPlaces = asi.getBinderIds();
+		switch (asi.getActivityStream()) {
+		case FOLLOWED_PEOPLE:
+		case FOLLOWED_PERSON:
+			// Followed people/person:
+			// 1. The tracked places is used unchanged; and
+			// 2. The tracked people are the owner IDs of the places.
+			int c = trackedPlaces.length;
+			for (int i = 0; i < c; i += 1) {
+				Binder binder = bs.getBinderModule().getBinder(Long.valueOf(trackedPlaces[i]));
+				String ownerId = String.valueOf(binder.getOwner().getId().longValue());
+				if (!(trackedPeopleAL.contains(ownerId))) {
+					trackedPeopleAL.add(ownerId);
+				}
+			}
+			break;
+			
+		case CURRENT_BINDER:
+		case FOLLOWED_PLACES:
+		case FOLLOWED_PLACE:
+		case MY_FAVORITES:
+		case MY_FAVORITE:
+		case MY_TEAMS:
+		case MY_TEAM:
+			// A place of some sort:
+			// 1. The tracked places is used unchanged; and
+			// 2. There are no tracked people.
+			break;
+
+		default:
+		case SITE_WIDE:
+			// The entire site:
+			// 1. The tracked places is the ID of the top workspace; and
+			// 2. There are no tracked people.
+			trackedPlaces = new String[]{String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId().longValue())};
+			break;
+		}
+
+		// Store the tracked places into the ArrayList for them.
+		sAToL(trackedPlaces, trackedPlacesAL);
+
+		// Perform the search and extract the results.
+		Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedPeopleAL);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, pageStart, entriesPerPage);
+		List    searchResults = ((List)    results.get(ObjectKeys.SEARCH_ENTRIES    ));
+		Integer totalRecords  = ((Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+
+		// Construct the activity stream data to return.
+    	pd.setTotalRecords(totalRecords);
+    	asd.setPagingData(pd);
+
+    	// Are there any entries in the search results?
+		Map<String, Binder> whatsNewPlaces = (newData ? new HashMap<String, Binder>() : null);
+    	if ((null != searchResults) && (!(searchResults.isEmpty()))) {
+    		// Yes!  Get the list to hold the activity stream
+    		// entries and scan the search results. 
+        	List<ActivityStreamEntry> entries = asd.getEntries();
+	    	for (Iterator it = searchResults.iterator(); it.hasNext(); ) {
+	    		// Construct and add an activity stream entry for the
+	    		// next entry map from the search results. 
+	    		ActivityStreamEntry entry = buildASEFromEM(request, bs, ((Map) it.next()));
+    			entries.add(entry);
+
+    			// Are we constructing new data for which we need to
+    			// cache the binders?
+    			if (newData) {
+	    			// Yes!  Do we have an ID for the binder that
+    				// contains this entry?
+					String parentBinderId = entry.getParentBinderId();
+					if (null != parentBinderId) {
+						// Yes!  Are we already tracking it as a what's new place?
+						if (!(whatsNewPlaces.containsKey(parentBinderId))) {
+							try {
+								// No!  Track it now.
+								Binder parentBinder = bs.getBinderModule().getBinder(new Long(parentBinderId));
+								whatsNewPlaces.put(parentBinderId, parentBinder);
+							}
+							catch(Exception e) {/* Ignore.*/}
+						}
+					}
+    			}
+	    	}
+    	}
+
+    	// Are we constructing new data for which we need to cache the
+    	// binders?
+    	if (newData) {
+    		// Yes!  What to do with:  whatsNewPlaces
+//!			...this needs to be implemented...
+    	}
+	}
+	
+	/*
+	 * Stores the strings from a String[] into a List<String>.
+	 */
+	private static void sAToL(String[] sA, List<String> sL) {
+		int c = ((null == sA) ? 0 : sA.length);
+		for (int i = 0; i < c; i += 1) {
+			sL.add(sA[i]);
+		}
+	}
 }

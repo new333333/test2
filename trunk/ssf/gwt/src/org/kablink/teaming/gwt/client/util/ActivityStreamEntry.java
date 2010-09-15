@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -42,6 +45,18 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamEntry implements IsSerializable {
+	private List<ActivityStreamEntry>	m_comments;					// Comments, up to maximum number configured.
+	private String						m_authorAvatarUrl;			//
+	private String						m_authorId;					//
+	private String						m_authorName;				//
+	private String						m_entryDescription;			//
+	private String						m_entryId;					//
+	private String						m_entryModificationDate;	//
+	private String						m_entryTitle;				//
+	private String						m_parentBinderHover;		//
+	private String						m_parentBinderId;			//
+	private String						m_parentBinderName;			//
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -50,4 +65,69 @@ public class ActivityStreamEntry implements IsSerializable {
 	public ActivityStreamEntry() {
 		// Nothing to do.
 	}
+
+	/**
+	 * Returns a count of the activity stream entries being tracked as
+	 * comments.
+	 * 
+	 * @return
+	 */
+	public int getCommentCount() {
+		return getComments().size();
+	}
+
+	/**
+	 * Returns a List<ActivityStreamEntry>'s for the comments being
+	 * tracked for this activity stream entry.
+	 * 
+	 * @return
+	 */
+	public List<ActivityStreamEntry> getComments() {
+		if (null == m_comments) {
+			m_comments = new ArrayList<ActivityStreamEntry>();
+		}
+		return m_comments;
+	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public String getAuthorAvatarUrl()       {return m_authorAvatarUrl;      }
+	public String getAuthorId()              {return m_authorId;             }
+	public String getAuthorName()            {return m_authorName;           }
+	public String getEntryDescription()      {return m_entryDescription;     }	
+	public String getEntryId()               {return m_entryId;              }	
+	public String getEntryModificationDate() {return m_entryModificationDate;}
+	public String getEntryTitle()            {return m_entryTitle;           }	
+	public String getParentBinderHover()     {return m_parentBinderHover;    }	
+	public String getParentBinderId()        {return m_parentBinderId;       }	
+	public String getParentBinderName()      {return m_parentBinderName;     }
+	
+	/**
+	 * Stores a new List<ActivityStreamEntry> as the comments on this
+	 * activity stream entry.
+	 * 
+	 * @param comments
+	 */
+	public void setComments(List<ActivityStreamEntry> comments) {
+		m_comments = ((null == comments) ? new ArrayList<ActivityStreamEntry>() : comments);
+	}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @return
+	 */
+	public void setAuthorAvatarUrl(      String authorAvatarUrl)       {m_authorAvatarUrl       = authorAvatarUrl;      }
+	public void setAuthorId(             String authorId)              {m_authorId              = authorId;             }
+	public void setAuthorName(           String authorName)            {m_authorName            = authorName;           }
+	public void setEntryDescription(     String entryDescription)      {m_entryDescription      = entryDescription;     }	
+	public void setEntryId(              String entryId)               {m_entryId               = entryId;              }
+	public void setEntryModificationDate(String entryModificationDate) {m_entryModificationDate = entryModificationDate;}
+	public void setEntryTitle(           String entryTitle)            {m_entryTitle            = entryTitle;           }
+	public void setParentBinderHover(    String parentBinderHover)     {m_parentBinderHover     = parentBinderHover;    }
+	public void setParentBinderId(       String parentBinderId)        {m_parentBinderId        = parentBinderId;       }
+	public void setParentBinderName(     String parentBinderName)      {m_parentBinderName      = parentBinderName;     }
 }
