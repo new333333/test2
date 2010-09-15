@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -44,21 +45,22 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamData implements IsSerializable {
-	private List<ActivityStreamEntry>	m_entries;		//
-	private PagingData 					m_pagingData;	//
+	private List<ActivityStreamEntry>	m_entries;		// List<ActivityStreamEntry> to display on the current page.
+	private PagingData 					m_pagingData;	// The paging data based on where we're at in paging through the activity stream.
 	
 	/*
 	 * Inner class used to manage paging through an activity
 	 * stream.
 	 */
 	public static class PagingData implements IsSerializable{
-		private int m_nextPage;		//
-		private int m_pageEnd;		//
-		private int m_pageNumber;	//
-		private int m_pageSize;		//
-		private int m_pageStart;	//
-		private int m_prevPage;		//
-		private int m_totalRecords;	//
+		private int m_entriesPerPage;		//
+		private int m_nextPageIndex;		//
+		private int m_pageEnd;				//
+		private int m_pageIndex;			//
+		private int m_pageStart;			//
+		private int m_previousPageIndex;	//
+		private int m_totalPages;			//
+		private int m_totalRecords;			//
 
 		/*
 		 * Class constructor.
@@ -72,13 +74,14 @@ public class ActivityStreamData implements IsSerializable {
 		/*
 		 * Get'er methods.
 		 */
-		public int getEntriesPerPage() {return m_pageSize;    }
-		public int getMaxHits()        {return m_pageSize;    }
-		public int getNextPage()       {return m_nextPage;    }
-		public int getOffset()         {return m_pageStart;   }
-		public int getPageNumber()     {return m_pageNumber;  }
-		public int getPrevPage()       {return m_prevPage;    }
-		public int getTotalRecords()   {return m_totalRecords;}
+		public int getEntriesPerPage()    {return m_entriesPerPage;   }
+		public int getMaxHits()           {return m_entriesPerPage;   }
+		public int getNextPageIndex()     {return m_nextPageIndex;    }
+		public int getOffset()            {return m_pageStart;        }
+		public int getPageIndex()         {return m_pageIndex;        }
+		public int getPreviousPageIndex() {return m_previousPageIndex;}
+		public int getTotalPages()        {return m_totalPages;       }
+		public int getTotalRecords()      {return m_totalRecords;     }
 
 		/**
 		 * Initializes the paging data based on the activity stream
@@ -87,16 +90,38 @@ public class ActivityStreamData implements IsSerializable {
 		 * @param asp
 		 */
 		public void initializePaging(ActivityStreamParams asp) {
-			m_pageNumber = 0;
-			m_pageSize   = asp.getEntriesPerPage();
-	      	m_pageStart  = (m_pageNumber * m_pageSize);
-	      	m_pageEnd    = (m_pageStart + m_pageSize);
-	      	
-	      	m_nextPage     =
-	      	m_prevPage     =
-	      	m_totalRecords = (-1);
+			m_entriesPerPage = asp.getEntriesPerPage();
+			setTotalRecords(-1);
 		}
 		
+		/**
+		 * If valid, stores a new, 0 relative page index.  Always
+		 * returns the page index set.
+		 * 
+		 * Note:  If the page index received is invalid, the return
+		 *    value will NOT be the page index requested but the actual
+		 *    page index being used.
+		 * 
+		 * @param pageIndex
+		 * 
+		 * @return
+		 */
+		public int setPageIndex(int pageIndex) {
+			// If the page index is not valid...
+			if ((pageIndex > (m_totalPages - 1)) || (pageIndex < 0)) {
+				// Bail.
+				return m_pageIndex;
+			}
+			
+			// Otherwise, store it and update the next/previous page
+			// indexes accordingly...
+			m_pageIndex = pageIndex;
+			updatePageNumbering();
+
+			// ...and return the page index that we're at.
+			return m_pageIndex;
+		}
+
 		/**
 		 * Stores the total number of records and updates the paging
 		 * information based on it.
@@ -104,25 +129,53 @@ public class ActivityStreamData implements IsSerializable {
 		 * @param totalRecords
 		 */
 		public void setTotalRecords(int totalRecords) {
+			m_pageIndex    = 0;
 			m_totalRecords = totalRecords;
-	      	if (m_totalRecords < m_pageStart) {
-	      		if (m_pageNumber > 0) {
-	      			m_prevPage = (m_pageNumber - 1);
-	      		}
-	      	}
-	      	
-	      	else if (m_totalRecords >= m_pageEnd) {
-	      		m_nextPage = m_pageNumber + 1;
-	      		if (m_pageNumber > 0) {
-	      			m_prevPage = (m_pageNumber - 1);
-	      		}
-	      	}
-	      	
-	      	else {
-	      		if (m_pageNumber > 0) {
-	      			m_prevPage = (m_pageNumber - 1);
-	      		}
-	      	}
+			m_totalPages   = (m_totalRecords / m_entriesPerPage);
+			if (0 < (m_totalRecords % m_entriesPerPage)) {
+				m_totalPages += 1;
+			}
+			
+			updatePageNumbering();
+		}
+		
+		/*
+		 * Updates the page start/end and next/previous page indexes.
+		 */
+		private void updatePageNumbering() {
+			// If we don't have any records...
+			if (0 >= m_totalRecords) {
+				// ...we don't have a next/previous page.
+				m_nextPageIndex     =
+				m_previousPageIndex = (-1);
+			}
+			
+			else {
+				// Otherwise, update the next/previous page indexes
+				// using the total records and page index. 
+		      	if (m_totalRecords < m_pageStart) {
+		      		if (m_pageIndex > 0) {
+		      			m_previousPageIndex = (m_pageIndex - 1);
+		      		}
+		      	}
+		      	
+		      	else if (m_totalRecords >= m_pageEnd) {
+		      		m_nextPageIndex = (m_pageIndex + 1);
+		      		if (m_pageIndex > 0) {
+		      			m_previousPageIndex = (m_pageIndex - 1);
+		      		}
+		      	}
+		      	
+		      	else {
+		      		if (m_pageIndex > 0) {
+		      			m_previousPageIndex = (m_pageIndex - 1);
+		      		}
+		      	}
+			}
+
+			// Finally, update the page start/end.
+	      	m_pageStart = (m_pageIndex * m_entriesPerPage);
+	      	m_pageEnd   = (m_pageStart + m_entriesPerPage);
 		}
 	}
 	
@@ -132,7 +185,8 @@ public class ActivityStreamData implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public ActivityStreamData() {
-		// Nothing to do.
+		m_entries    = new ArrayList<ActivityStreamEntry>();
+		m_pagingData = new PagingData();
 	}
 
 	/**
@@ -143,6 +197,16 @@ public class ActivityStreamData implements IsSerializable {
 	 */
 	public List<ActivityStreamEntry> getEntries() {
 		return m_entries;
+	}
+
+	/**
+	 * Returns the count of activity stream entries stored in this
+	 * activity stream data.
+	 * 
+	 * @return
+	 */
+	public int getEntryCount() {
+		return ((null == m_entries) ? 0 : m_entries.size());
 	}
 	
 	/**
@@ -161,7 +225,7 @@ public class ActivityStreamData implements IsSerializable {
 	 * @param entries
 	 */
 	public void setEntries(List<ActivityStreamEntry> entries) {
-		m_entries = entries;
+		m_entries = ((null == entries) ? new ArrayList<ActivityStreamEntry>() : entries);
 	}
 	
 	/**

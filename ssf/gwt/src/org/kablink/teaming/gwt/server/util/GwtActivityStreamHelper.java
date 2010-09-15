@@ -140,16 +140,21 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd) {
+		// Create an ActivityStreamData to return.
+		ActivityStreamData reply = new ActivityStreamData();
+		
 		// If we weren't given a PagingData...
 		boolean newData = (null == pd);
 		if (newData) {
-			// ...create one starting at page 0.
-			pd = new PagingData();
+			// ...create one...
+			pd = reply.getPagingData();
 			pd.initializePaging(asp);
 		}
 		
-		ActivityStreamData reply = new ActivityStreamData();
-		reply.setPagingData(pd);
+		else {
+			// ...otherwise, put the one we were given into affect.
+			reply.setPagingData(pd);
+		}
 		
 //!		...this needs to be implemented...
 		
