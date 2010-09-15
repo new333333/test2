@@ -45,6 +45,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
@@ -311,8 +312,21 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		if (binderId != null) model.put(WebKeys.BINDER_ID, binderId.toString());
-		if (entryId != null) model.put(WebKeys.ENTRY_ID, entryId.toString());
+		if (binderId != null) {
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.BINDER_ID, binderId.toString());
+			Element familyProperty = (Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
+			if (familyProperty != null) {
+				String family = familyProperty.attributeValue("value", "");
+				model.put(WebKeys.DEFINITION_FAMILY, family);
+			}
+		}
+		if (entryId != null) {
+			FolderEntry entry = bs.getFolderModule().getEntry(binderId, entryId);
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.ENTRY_ID, entryId.toString());
+		}
 		RelevanceDashboardHelper.setupMyTeamsBeans(bs, model);
 		return new ModelAndView("forum/relevance_dashboard/share_this_item", model);
 	}
