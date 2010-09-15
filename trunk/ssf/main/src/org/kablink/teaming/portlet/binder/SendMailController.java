@@ -159,12 +159,22 @@ public class SendMailController extends SAbstractController {
 		
 		List userIds = MiscUtil.splitUserIds(request, WebKeys.USER_IDS_TO_ADD, model);
 		if (errors != null) {
-			model.put(WebKeys.ERROR_LIST, errors);
-			model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));
-			model.put(WebKeys.EMAIL_QUEUED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES));
-			model.put(WebKeys.EMAIL_FAILED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES));
-			model.put(WebKeys.EMAIL_FAILED_ACCESS, request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS));
-			model.put(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
+			if (Utils.canUserOnlySeeCommonGroupMembers()) {
+				//Limited view, only report counts
+				model.put(WebKeys.ERROR_LIST, errors);
+				model.put(WebKeys.EMAIL_SENT_ADDRESSES_COUNT, String.valueOf(request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES).length));
+				model.put(WebKeys.EMAIL_QUEUED_ADDRESSES_COUNT, String.valueOf(request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES).length));
+				model.put(WebKeys.EMAIL_FAILED_ADDRESSES_COUNT, String.valueOf(request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES).length));
+				model.put(WebKeys.EMAIL_FAILED_ACCESS_COUNT, String.valueOf(request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS).length));
+				model.put(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
+			} else {
+				model.put(WebKeys.ERROR_LIST, errors);
+				model.put(WebKeys.EMAIL_SENT_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_SENT_ADDRESSES));
+				model.put(WebKeys.EMAIL_QUEUED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_QUEUED_ADDRESSES));
+				model.put(WebKeys.EMAIL_FAILED_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_FAILED_ADDRESSES));
+				model.put(WebKeys.EMAIL_FAILED_ACCESS, request.getParameterValues(WebKeys.EMAIL_FAILED_ACCESS));
+				model.put(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
+			}
 			return new ModelAndView(WebKeys.VIEW_SENDMAIL_RESULT, model);
 		}
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
