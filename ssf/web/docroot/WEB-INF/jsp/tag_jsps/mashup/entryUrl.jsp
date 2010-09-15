@@ -65,7 +65,7 @@
 						    binderId="${mashupEntry.parentBinder.id}"
 						    entryId="${mashupEntry.id}">
 						    <ssf:param name="entityType" value="folderEntry" />
-						    <ssf:param name="seen_by_gwt" value="1" />
+						    <c:if test="${empty mashup_attributes['popup']}"><ssf:param name="seen_by_gwt" value="1" /></c:if>
 							</ssf:url>">
 	  <c:if test="${empty mashup_attributes['title']}">
 	    <span>${mashupEntry.title}</span>
