@@ -38,7 +38,22 @@
 </ssf:ifadapter>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <div class="ss_style ss_portal diag_modal">
-	<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
+	<h2>
+		<c:if test="${ssBinder.entityType == 'workspace'}"> 
+			<ssf:nlt tag="relevance.shareThisWorkspace"/>
+		</c:if>
+		<c:if test="${ssBinder.entityType == 'folder' && !empty ssEntry}"> 
+			<ssf:nlt tag="relevance.shareThisEntry"/>
+		</c:if>
+		<c:if test="${ssBinder.entityType == 'folder' && empty ssEntry}">
+			<c:if test="${ssDefinitionFamily != 'calendar'}">
+				<ssf:nlt tag="relevance.shareThisFolder"/>
+			</c:if>
+			<c:if test="${ssDefinitionFamily == 'calendar'}">
+				<ssf:nlt tag="relevance.shareThisCalendar"/>
+			</c:if>
+		</c:if>
+	</h2>
 
 	<div class="margintop2 marginbottom3"><ssf:nlt tag="relevance.shareHint"/></div>
 
