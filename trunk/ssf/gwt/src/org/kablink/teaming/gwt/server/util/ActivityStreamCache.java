@@ -254,7 +254,7 @@ public class ActivityStreamCache {
     	if((null == cache) ||
     			(now.getTime() >= (cache.getLastUpdate().getTime() + mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh())))) {
     		// Yes!  Create a new one.
-    		cache = new BinderIDCache();
+    		BinderIDCache newCache = new BinderIDCache();
     		Map<Long,Date> newBinderMap = new HashMap<Long,Date>();
     		
     		// Run the search for anything that's changed.  Note that
@@ -264,7 +264,7 @@ public class ActivityStreamCache {
     		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
     		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
     		User admin = bs.getProfileModule().getUser(adminUserName);
-    		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), admin.getId());
+    		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), admin.getId(), false, true);
     		    		
     		// Did we find any changes that need to be cached?
         	List items = ((List) results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -303,18 +303,18 @@ public class ActivityStreamCache {
     					
     					// If we get here, there are new site wide
     					// entries available.
-    					cache.setHasSiteEntries(true);
+    					newCache.setHasSiteEntries(true);
     				}
     	    	}
         	}
         	
         	// Store the new binder map and the time we're updating
         	// it...
-        	cache.setBinderMap(newBinderMap);
-	        cache.setLastUpdate(now);
+        	newCache.setBinderMap(newBinderMap);
+        	newCache.setLastUpdate(now);
 	        
 	        // ...and store the binder ID cache for the zone.
-	        setBinderIDCacheForTheZone(cache);
+	        setBinderIDCacheForTheZone(newCache);
     	}
     }
 }
