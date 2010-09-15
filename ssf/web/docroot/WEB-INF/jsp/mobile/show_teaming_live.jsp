@@ -46,7 +46,7 @@ var updateTimer = null;
 var pollTimer = null;
 var newItemsCount = 0;
 var newItemsCountLast = 0;
-var pollIntervalMinutes = <%= String.valueOf(org.kablink.teaming.util.feed.TeamingFeedCache.feedClientUpdateInterval) %>
+var pollIntervalMinutes = <%= String.valueOf(org.kablink.teaming.util.feed.TeamingFeedCache.feedClientUpdateInterval) %>;
 var pollInterval = pollIntervalMinutes * 60 * 1000;
 var titleToggleCount = 0;
 var titleToggleTimer = null;

@@ -77,16 +77,16 @@ public class TeamingFeedCache {
     public static void updateMap(AllModulesInjected bs) {
     	FeedCache cache = getFeedCacheForTheZone();
     	Date now = new Date();
-    	if(cache == null || (now.getTime() >= cache.getLastUpdate().getTime() + updateInterval*60*1000)) {
+    	if (cache == null || (now.getTime() >= cache.getLastUpdate().getTime() + updateInterval*60*1000)) {
     		// Time to create a fresh new cache for the current zone.
-    		cache = new FeedCache();
+    		FeedCache newCache = new FeedCache();
     		Map<Long,Date> newBinderMap = new HashMap<Long,Date>();
     		Criteria crit = SearchUtils.entriesForTeamingFeedCache(now, searchInterval);
     		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
     		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
     		User admin = bs.getProfileModule().getUser(adminUserName);
     		//Run this as "admin" because this cache is used by everyone
-    		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, maxSearchHits, admin.getId());
+    		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, maxSearchHits, admin.getId(), false, true);
         	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
         	if (items != null) {
     	    	Iterator it = items.iterator();
@@ -108,13 +108,13 @@ public class TeamingFeedCache {
     							newBinderMap.put(Long.valueOf(id.toString()), entryModificationDate);
     						}
     					}
-    					cache.setHasSiteEntries(true);
+    					newCache.setHasSiteEntries(true);
     				}
     	    	}
         	}
-        	cache.setBinderMap(newBinderMap);
-	        cache.setLastUpdate(now);
-	        setFeedCacheForTheZone(cache);
+        	newCache.setBinderMap(newBinderMap);
+        	newCache.setLastUpdate(now);
+	        setFeedCacheForTheZone(newCache);
     	}
     }
     
