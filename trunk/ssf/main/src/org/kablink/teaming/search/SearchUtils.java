@@ -270,7 +270,8 @@ public class SearchUtils {
 		String s_toDate = DateTools.dateToString(toDate, DateTools.Resolution.SECOND);
 		String s_fromDate = DateTools.dateToString(fromDate, DateTools.Resolution.SECOND);
 		Criteria crit = new Criteria();
-		crit.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 		    .add(between(MODIFICATION_DATE_FIELD, s_fromDate, s_toDate));
 		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;

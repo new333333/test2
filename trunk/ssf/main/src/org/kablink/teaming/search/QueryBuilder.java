@@ -128,12 +128,24 @@ public class QueryBuilder {
 		return buildQuery(domQuery, false, null, true);
 	}
 
+	public SearchObject buildQueryPreDeleted(Document domQuery, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, null, true);
+	}
+
 	public SearchObject buildQuery(Document domQuery, Long asUserId) {
 		return buildQuery(domQuery, false, asUserId, false);
 	}
 
+	public SearchObject buildQuery(Document domQuery, Long asUserId, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, asUserId, false);
+	}
+
 	public SearchObject buildQueryPreDeleted(Document domQuery, Long asUserId) {
 		return buildQuery(domQuery, false, asUserId, true);
+	}
+
+	public SearchObject buildQueryPreDeleted(Document domQuery, Long asUserId, boolean ignoreAcls) {
+		return buildQuery(domQuery, ignoreAcls, asUserId, true);
 	}
 
 	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
@@ -155,7 +167,7 @@ public class QueryBuilder {
 		parseRootElement(root, so);
 		
 		//If searching as a different user, add in the acl for that user
-		if (asUserId != null) {
+		if (asUserId != null && !ignoreAcls) {
 			QueryBuilder aclQ = new QueryBuilder(asUserId);
 			String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
 			if (acls.length() != 0) {

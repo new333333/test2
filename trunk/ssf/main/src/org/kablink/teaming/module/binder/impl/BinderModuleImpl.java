@@ -1124,10 +1124,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted);
 	}
 
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, preDeleted, ignoreAcls);
+	}
+
 	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId) {
 		return executeSearchQuery(crit, offset, maxResults, asUserId, false);
 	}
+	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
+			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted, ignoreAcls);
+	}
+
 	public Map executeSearchQuery(Criteria crit, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
 		return executeSearchQuery(crit.toQuery(), offset, maxResults, asUserId, preDeleted);
@@ -1137,14 +1146,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return executeSearchQuery(query, offset, maxResults, false);
 	}
 	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted) {
+		return executeSearchQuery(query, offset, maxResults, preDeleted, false);
+	}
+	public Map executeSearchQuery(Document query, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
 		SearchObject so;
 		if (preDeleted) {
-			so = qb.buildQueryPreDeleted(query);
+			so = qb.buildQueryPreDeleted(query, ignoreAcls);
 		}
 		else {
-			so = qb.buildQuery(query);
+			so = qb.buildQuery(query, ignoreAcls);
 		}
 
 		return executeSearchQuery(so, offset, maxResults);
@@ -1156,14 +1168,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	public Map executeSearchQuery(Document query, int offset, int maxResults,
 			Long asUserId, boolean preDeleted) {
+		return executeSearchQuery(query, offset, maxResults, asUserId, preDeleted, false);
+	}
+	public Map executeSearchQuery(Document query, int offset, int maxResults,
+			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(true);
 		SearchObject so;
 		if (preDeleted) {
-			so = qb.buildQueryPreDeleted(query, asUserId);
+			so = qb.buildQueryPreDeleted(query, asUserId, ignoreAcls);
 		}
 		else {
-			so = qb.buildQuery(query, asUserId);
+			so = qb.buildQuery(query, asUserId, ignoreAcls);
 		}
 
 		return executeSearchQuery(so, offset, maxResults);

@@ -75,8 +75,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			String newDisplayStyle = PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,"");
+			//Only allow "word" characters (such as a-z_0-9 )
+			if (newDisplayStyle.equals("") || !newDisplayStyle.matches("^.*[\\W]+.*$")) {
+				updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, newDisplayStyle);
+			}
 			try {
 				getProfileModule().modifyEntry(user.getId(), new MapInputData(updates));
 			} catch(WriteEntryDataException e) {
