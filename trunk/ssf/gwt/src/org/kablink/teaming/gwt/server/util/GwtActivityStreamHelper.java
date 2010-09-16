@@ -102,13 +102,47 @@ public class GwtActivityStreamHelper {
 	 * Adds the required comments to an activity stream entry object.
 	 */
 	@SuppressWarnings("unchecked")
-	public static void addASEComments(HttpServletRequest request, AllModulesInjected bs, ActivityStreamEntry ase, int comments, Map<String, String> avatarCache, Map em) {
-		// Does the activity stream entry refer to a folder entry?
-		String feId = ase.getEntryId();
-		if (!(MiscUtil.hasString(feId))) {
-			// No!  Then we can't return it's comments.
+	private static void addASEComments(HttpServletRequest request, AllModulesInjected bs, ActivityStreamEntry ase, int comments, Map<String, String> avatarCache, Map em) {
+		// If we weren't asked for any comments...
+		if (0 >= comments) {
+			// ...bail.
 			return;
 		}
+		
+		// If the activity stream entry doesn't refer to a folder
+		// entry...
+		String feId = ase.getEntryId();
+		if (!(MiscUtil.hasString(feId))) {
+			// ...bail.
+			return;
+		}
+
+		// If we can't find any replies for this entry...
+		Criteria searchCriteria = SearchUtils.entryReplies(feId);
+		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, comments);
+		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
+			// ...bail.
+			return;
+		}
+		ase.setEntryComments(totalRecords);
+
+		// Scan the replies...
+		List<ActivityStreamEntry> commentList = ase.getComments();
+    	for (Iterator it = searchEntries.iterator(); it.hasNext(); ) {
+    		// ...and add an activity stream entry for the next entry
+    		// ...map from the search results. 
+    		ActivityStreamEntry comment = buildASEFromEM(
+    			request,
+    			bs,
+    			null,	// null -> An activity stream parameter object is not required for comments.
+    			avatarCache,
+    			((Map) it.next()),
+    			false);	// false -> This is a comment activity stream entry for an activity stream data.
+    		comment.setEntryComments(getCommentCount(bs, comment.getEntryId()));
+    		commentList.add(comment);
+    	}
 	}
 	
 	/*
@@ -116,19 +150,15 @@ public class GwtActivityStreamHelper {
 	 * search.
 	 */
 	@SuppressWarnings("unchecked")
-	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, String> avatarCache, Map em, boolean baseEntry) {
+	private static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, String> avatarCache, Map em, boolean baseEntry) {
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
 		// First, initialize the author information.
 		String authorId = getSFromEM(em, Constants.MODIFICATIONID_FIELD);
-		reply.setAuthorId(authorId);
-		String authorName = getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD);
-		String authorLogin = getSFromEM(em, Constants.MODIFICATION_NAME_FIELD);
-		if (MiscUtil.hasString(authorLogin)) {
-			authorName += (" (" + authorLogin + ")");
-		}
-		reply.setAuthorName(authorName);
+		reply.setAuthorId(   authorId                                          );
+		reply.setAuthorLogin(getSFromEM(em, Constants.MODIFICATION_NAME_FIELD ));
+		reply.setAuthorName( getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
 		String authorAvatarUrl = "";
 		if (MiscUtil.hasString(authorId)) {
 			Long authorWsId;
@@ -319,6 +349,17 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a count of the comments on an entry.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getCommentCount(AllModulesInjected bs, String feId) {
+		Criteria searchCriteria = SearchUtils.entryReplies(feId);
+		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, 1);
+		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return totalRecords;
+	}
+	
 	/*
 	 * Returns a string for a value out of the entry map from a search
 	 * results.

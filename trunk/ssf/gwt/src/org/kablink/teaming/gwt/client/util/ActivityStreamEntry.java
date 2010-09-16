@@ -48,8 +48,10 @@ public class ActivityStreamEntry implements IsSerializable {
 	private List<ActivityStreamEntry>	m_comments;					// Comments, up to maximum number configured.
 	private String						m_authorAvatarUrl;			//
 	private String						m_authorId;					//
+	private String						m_authorLogin;				//
 	private String						m_authorName;				//
 	private String						m_authorWSId;				//
+	private int                         m_entryComments;			//
 	private String						m_entryDescription;			//
 	private String						m_entryDocNum;				//
 	private String						m_entryId;					//
@@ -100,8 +102,10 @@ public class ActivityStreamEntry implements IsSerializable {
 	 */
 	public String getAuthorAvatarUrl()       {return m_authorAvatarUrl;      }
 	public String getAuthorId()              {return m_authorId;             }
+	public String getAuthorLogin()           {return m_authorLogin;          }
 	public String getAuthorName()            {return m_authorName;           }
 	public String getAuthorWorkspaceId()     {return m_authorWSId;           }
+	public int    getEntryComments()         {return m_entryComments;        }	
 	public String getEntryDescription()      {return m_entryDescription;     }	
 	public String getEntryDocNum()           {return m_entryDocNum;          }	
 	public String getEntryId()               {return m_entryId;              }	
@@ -130,8 +134,10 @@ public class ActivityStreamEntry implements IsSerializable {
 	 */
 	public void setAuthorAvatarUrl(      String authorAvatarUrl)       {m_authorAvatarUrl       = authorAvatarUrl;      }
 	public void setAuthorId(             String authorId)              {m_authorId              = authorId;             }
+	public void setAuthorLogin(          String authorLogin)           {m_authorLogin           = authorLogin;          }
 	public void setAuthorName(           String authorName)            {m_authorName            = authorName;           }
 	public void setAuthorWorkspaceId(    String authorWSId)            {m_authorWSId            = authorWSId;           }
+	public void setEntryComments(        int    entryComments)         {m_entryComments         = entryComments;        }	
 	public void setEntryDescription(     String entryDescription)      {m_entryDescription      = entryDescription;     }	
 	public void setEntryDocNum(          String entryDocNum)           {m_entryDocNum           = entryDocNum;          }	
 	public void setEntryId(              String entryId)               {m_entryId               = entryId;              }
