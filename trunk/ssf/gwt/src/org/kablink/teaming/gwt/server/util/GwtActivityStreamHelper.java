@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -102,13 +103,11 @@ public class GwtActivityStreamHelper {
 	 * search.
 	 */
 	@SuppressWarnings("unchecked")
-	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, Map em) {
+	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, Map<String, String> avatarCache, Map em) {
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
-		// First, initialize the author information.
-		// Does the entry map contain the ID of the binder that
-		// contains the entry?
+		// First, initialize the author ID and name.
 		String authorId = getSFromEM(em, Constants.MODIFICATIONID_FIELD);
 		reply.setAuthorId(authorId);
 		String authorName = getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD);
@@ -117,21 +116,43 @@ public class GwtActivityStreamHelper {
 			authorName += (" (" + authorLogin + ")");
 		}
 		reply.setAuthorName(authorName);
-		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);		
-		if (MiscUtil.hasString(binderId)) {
-			// Yes!  Can we access any avatars for the binder's author?
-			ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, Long.parseLong(binderId));
-			List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
-			if((null != paValue) && (!(paValue.isEmpty()))) {
-				// Yes!  Does the first one have a URL?
-				ProfileAttributeListElement paValueItem = paValue.get(0);
-				String url = paValueItem.getValue().toString();
-				if (MiscUtil.hasString(url)) {
-					// Yes!  Store it as the author's URL.
-					reply.setAuthorAvatarUrl(url);
+
+		// Next, the author's avatar URL.  Do we access the author's
+		// ID?
+		String authorAvatarUrl = "";
+		if (MiscUtil.hasString(authorId)) {
+			// Yes!  Do we have the author's avatar cached?
+			String urlFromCache = avatarCache.get(authorId);
+			if (null != urlFromCache) {
+				// Yes!  Use that rather than trying to re-read it.
+				authorAvatarUrl = urlFromCache;
+			}
+			
+			else {
+				// No, we don't have the author's avatar cached!  Can
+				// we access the author's workspace ID?
+				Long   authorWsId;
+				String paUrl = null;
+				try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
+				catch (Exception ex) {authorWsId = null;                                                                     }
+				if (null != authorWsId) {
+					// Yes!  Can we access any avatars for the author?
+					ProfileAttribute                  pa      = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
+					List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
+					if((null != paValue) && (!(paValue.isEmpty()))) {
+						// Yes!  We'll use the first one as the URL.
+						ProfileAttributeListElement paValueItem = paValue.get(0);
+						paUrl = paValueItem.getValue().toString();
+					}
 				}
+				
+				// Store something as the author's URL so that we don't
+				// try to look it up again.
+				authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
+				avatarCache.put(authorId, authorAvatarUrl);
 			}
 		}
+		reply.setAuthorAvatarUrl(authorAvatarUrl);
 
 		// Then, the entry information.
 		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD));	
@@ -139,7 +160,9 @@ public class GwtActivityStreamHelper {
 		reply.setEntryModificationDate(getSFromEM(em, Constants.MODIFICATION_DATE_FIELD));
 		reply.setEntryTitle(           getSFromEM(em, Constants.TITLE_FIELD));
 
-		// And finally, the parent binder information.
+		// And finally, the parent binder information.  Does the entry
+		// map contain the ID of the binder that contains the entry?
+		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);
 		reply.setParentBinderId(binderId);
 		if (MiscUtil.hasString(binderId)) {
 			Binder binder;
@@ -330,6 +353,8 @@ public class GwtActivityStreamHelper {
 		reply.setActivityStream(true);
 		reply.setBinderTitle(NLT.get("asTreeWhatsNew"));
 		List<TreeInfo> rootASList = reply.getChildBindersList();
+		ProfileModule pm = bs.getProfileModule();
+		User user;
 		
 		// Can we access the Binder?
 		binder = GwtServerHelper.getBinderSafely(bm, binderIdS);
@@ -438,13 +463,13 @@ public class GwtActivityStreamHelper {
 			asIds = new String[idCount];
 			idIndex = 0;
 			for (String followedPersonId: followedPeopleList) {
-				// Can we access the next one's Binder?
+				// Can we access the next one's User?
 				id = followedPersonId;
-				binder = GwtServerHelper.getBinderSafely(bm, id);
-				if (null != binder) {
+				user = GwtServerHelper.getUserSafely(pm, id);
+				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
-					asIds[idIndex++] = id;					
-					asTIChild = buildASTI(bs, id, binder.getTitle(), binder.getPathName(), ActivityStream.FOLLOWED_PERSON);					
+					asIds[idIndex++] = id;
+					asTIChild = buildASTI(bs, id, user.getWSTitle(), null, ActivityStream.FOLLOWED_PERSON);					
 					asTIChildren.add(asTIChild);
 				}
 			}
@@ -534,11 +559,11 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void populateASD(ActivityStreamData asd, HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, boolean newData, ActivityStreamInfo asi) {		
-		// Setup some integer's for the controlling the search.
-		PagingData pd = asd.getPagingData();
-		int entriesPerPage	= pd.getEntriesPerPage();
-		int pageIndex		= pd.getPageIndex();
-		int pageStart		= (pageIndex * entriesPerPage);
+		// Setup some int's for the controlling the search.
+		PagingData pd				= asd.getPagingData();
+		int        entriesPerPage	= pd.getEntriesPerPage();
+		int        pageIndex		= pd.getPageIndex();
+		int        pageStart		= (pageIndex * entriesPerPage);
 
 		// Initialize lists for the tracked places and people.
 		List<String> trackedPlacesAL = new ArrayList<String>();
@@ -550,16 +575,11 @@ public class GwtActivityStreamHelper {
 		case FOLLOWED_PEOPLE:
 		case FOLLOWED_PERSON:
 			// Followed people/person:
-			// 1. The tracked places is used unchanged; and
+			// 1. There are no tracked places; and
 			// 2. The tracked people are the owner IDs of the places.
-			int c = trackedPlaces.length;
-			for (int i = 0; i < c; i += 1) {
-				Binder binder = bs.getBinderModule().getBinder(Long.valueOf(trackedPlaces[i]));
-				String ownerId = String.valueOf(binder.getOwner().getId().longValue());
-				if (!(trackedPeopleAL.contains(ownerId))) {
-					trackedPeopleAL.add(ownerId);
-				}
-			}
+			sAToL(trackedPlaces, trackedPeopleAL);
+			trackedPlaces = new String[0];
+			
 			break;
 			
 		case CURRENT_BINDER:
@@ -587,25 +607,30 @@ public class GwtActivityStreamHelper {
 		sAToL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
-		Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedPeopleAL);
-		Map results = bs.getBinderModule().executeSearchQuery(crit, pageStart, entriesPerPage);
-		List    searchResults = ((List)    results.get(ObjectKeys.SEARCH_ENTRIES    ));
-		Integer totalRecords  = ((Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedPeopleAL);
+		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
+		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 
-		// Construct the activity stream data to return.
+		// Update the paging data in the activity stream data.
     	pd.setTotalRecords(totalRecords);
     	asd.setPagingData(pd);
 
     	// Are there any entries in the search results?
 		Map<String, Binder> whatsNewPlaces = (newData ? new HashMap<String, Binder>() : null);
-    	if ((null != searchResults) && (!(searchResults.isEmpty()))) {
+    	if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
     		// Yes!  Get the list to hold the activity stream
     		// entries and scan the search results. 
+    		Map<String, String> avatarCache = new HashMap<String, String>();
         	List<ActivityStreamEntry> entries = asd.getEntries();
-	    	for (Iterator it = searchResults.iterator(); it.hasNext(); ) {
+	    	for (Iterator it = searchEntries.iterator(); it.hasNext(); ) {
 	    		// Construct and add an activity stream entry for the
 	    		// next entry map from the search results. 
-	    		ActivityStreamEntry entry = buildASEFromEM(request, bs, ((Map) it.next()));
+	    		ActivityStreamEntry entry = buildASEFromEM(
+	    			request,
+	    			bs,
+	    			avatarCache,
+	    			((Map) it.next()));
     			entries.add(entry);
 
     			// Are we constructing new data for which we need to
@@ -614,7 +639,7 @@ public class GwtActivityStreamHelper {
 	    			// Yes!  Do we have an ID for the binder that
     				// contains this entry?
 					String parentBinderId = entry.getParentBinderId();
-					if (null != parentBinderId) {
+					if (MiscUtil.hasString(parentBinderId)) {
 						// Yes!  Are we already tracking it as a what's new place?
 						if (!(whatsNewPlaces.containsKey(parentBinderId))) {
 							try {

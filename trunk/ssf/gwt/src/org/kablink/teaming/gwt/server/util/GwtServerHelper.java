@@ -2329,24 +2329,9 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<String> getTrackedPeople(AllModulesInjected bs) {
-		// Scan the IDs of the people the current user is tracking.
-		List<String> reply = new ArrayList<String>();
+		// Return the IDs of the people the current user is tracking.
 		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
-		List<String> pIds = GwtProfileHelper.getTrackedPersonsIds(bs, String.valueOf(wsId.longValue()));
-		ProfileModule pm = bs.getProfileModule();
-		for (String pId:  pIds) {
-			// Does this tracked person have a workspace ID?
-			wsId = pm.getEntry(Long.valueOf(pId)).getWorkspaceId();
-			if (null != wsId) {
-				// Yes!  Add it to the reply ArrayList.
-				reply.add(String.valueOf(wsId.longValue()));
-			}
-		}
-		
-		// If we get here, reply refers to an ArrayList<String> of the
-		// IDs of the workspaces of the people the current user is
-		// tracking.  Return it.
-		return reply;
+		return GwtProfileHelper.getTrackedPersonsIds(bs, String.valueOf(wsId.longValue()));
 	}
 	
 	/**
@@ -2489,6 +2474,33 @@ public class GwtServerHelper {
 		// If we get here, triList refers to an List<TopRankedInfo> of
 		// the top ranked items.  Return it.
 		return triList;
+	}
+	
+	/**
+	 * Returns s User from it's ID guarding against any exceptions.  If
+	 * an exception is caught, null is returned.
+	 * 
+	 * @param pm
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static User getUserSafely(ProfileModule pm, String userId) {
+		return getUserSafely(pm, Long.parseLong(userId));
+	}
+	
+	public static User getUserSafely(ProfileModule pm, Long userId) {
+		User reply;
+		try
+		{
+			reply = ((User) pm.getEntry(userId));
+		}
+		catch (Exception e)
+		{
+			m_logger.debug("GwtServerHelper.getUserSafely(User could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
+		return reply;
 	}
 	
 	/**
