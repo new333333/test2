@@ -33,8 +33,6 @@
 package org.kablink.teaming.module.definition.index;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,8 +42,6 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
-
-
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
 	

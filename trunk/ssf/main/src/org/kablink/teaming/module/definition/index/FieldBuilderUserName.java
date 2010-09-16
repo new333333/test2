@@ -39,11 +39,6 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderUserName extends AbstractFieldBuilder {
 
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
@@ -56,7 +51,7 @@ public class FieldBuilderUserName extends AbstractFieldBuilder {
          else {
  	         Field nameField = new Field(Constants.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 	            
 	         Field name1Field = new Field(Constants.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
-	         if (!fieldsOnly) {
+	         if (!isFieldsOnly(args)) {
 		         Field allTextField = BasicIndexUtils.allTextField(val);
 	        	 return new Field[] {allTextField, nameField, name1Field};
 	         } else {

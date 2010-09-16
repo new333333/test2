@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
-import org.dom4j.Document;
 
 public class FieldBuilderSurvey extends AbstractFieldBuilder {
 	

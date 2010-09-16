@@ -32,6 +32,48 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-public class FieldBuilderTimeZone extends FieldBuilderProfileElement {
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+
+public class FieldBuilderTimeZone extends FieldBuilderGeneric {
+
+	protected String getStringToIndex(Set dataElemValue) {
+		Object val = getFirstElement(dataElemValue);
+		if(val instanceof TimeZone) {
+			TimeZone timeZone = (TimeZone) val;
+			return timeZone.getID();
+		}
+		else {
+			return super.getStringToIndex(dataElemValue);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldIndex()
+	 */
+	@Override
+	protected Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
+	 */
+	@Override
+	protected Store getFieldStore() {
+		return Field.Store.YES;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#isSortFieldNeeded()
+	 */
+	@Override
+	protected boolean isSortFieldNeeded() {
+		return false;
+	}
 
 }

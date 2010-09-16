@@ -37,13 +37,7 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderTeamlist extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {

@@ -39,11 +39,6 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderGuestName extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {

@@ -47,18 +47,24 @@ import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 
-
-/**
- *
- * @author Jong Kim
- */
 public abstract class AbstractFieldBuilder implements FieldBuilder {
-	protected Boolean fieldsOnly;
+	// IMPORTANT: 9/15/2010 - For efficiency reason, we want multi-threaded accesses to
+	// shared builder instances. Therefore, it is imperative that we do NOT store ANY
+	// state information in the instance variable.
     
+	protected boolean isFieldsOnly(Map args) {
+		Boolean fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
+        if (fieldsOnly == null) 
+        	fieldsOnly = Boolean.FALSE; // default
+        return fieldsOnly.booleanValue();
+	}
+	
+	protected Boolean isSortFieldNeeded(Map args) {
+		return (Boolean)args.get(DefinitionModule.SORT_FIELD_NEEDED);
+	}
+	
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
-       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
-        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
         
         if(dataElemValue != null)
             return build(dataElemName, dataElemValue, args);
@@ -168,7 +174,7 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
     
     protected abstract Field[] build(String dataElemName, Set dataElemValue, Map args);
     
-    Object getFirstElement(Set set) {
+    protected Object getFirstElement(Set set) {
         if(set.size() == 0)
             return null;
     

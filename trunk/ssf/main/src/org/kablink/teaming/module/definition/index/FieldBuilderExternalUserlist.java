@@ -37,8 +37,6 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
-
 
 /**
  *

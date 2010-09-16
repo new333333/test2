@@ -53,8 +53,6 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
     
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
-       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
-        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
         
         Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
         String caption = getEntryElementCaption(entity, dataElemName, entryElement);
@@ -73,7 +71,7 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
             return new Field[0];
         }
         Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        if (!fieldsOnly) {
+        if (!isFieldsOnly(args)) {
             Field allTextField = BasicIndexUtils.allTextField(caption);
         	return new Field[] {allTextField, field};
         } else {

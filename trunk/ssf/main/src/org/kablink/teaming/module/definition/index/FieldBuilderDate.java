@@ -39,10 +39,6 @@ import java.util.Set;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderDate extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {

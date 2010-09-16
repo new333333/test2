@@ -39,7 +39,7 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
 
-public class FieldBuilderProfileElement extends AbstractFieldBuilder {
+public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
 	public String makeFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
@@ -47,25 +47,60 @@ public class FieldBuilderProfileElement extends AbstractFieldBuilder {
 	}
    
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-	   	Object val = getFirstElement(dataElemValue);
-	   	if (val instanceof String) {
-	   		String sVal = (String)val;
-	   		sVal = sVal.trim();
-       
-	   		if (sVal.length() == 0) {
-	   			return new Field[0];
-	   		}
-	   		
-           	Field sortTextField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), sVal.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
-           	Field textField = new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.TOKENIZED); 
-           	if (!fieldsOnly) {
-               	Field allTextField = BasicIndexUtils.allTextField(sVal);
-               	return new Field[] {allTextField, textField, sortTextField};
-           	} else {
-               	return new Field[] {textField, sortTextField};
+		String strToIndex = getStringToIndex(dataElemValue);
+		if(strToIndex != null) {
+			Field sortField = null;
+			if(getSortFieldNeeded(args))
+				sortField = new Field(Constants.SORT_FIELD_PREFIX + makeFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
+           	Field field = new Field(makeFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex()); 
+           	Field allTextField = null;
+           	if (!isFieldsOnly(args))
+           		allTextField =  BasicIndexUtils.allTextField(strToIndex);
+           	if(sortField != null) {
+           		if(allTextField != null)
+           			return new Field[] {field, sortField, allTextField};
+           		else
+           			return new Field[] {field, sortField};
            	}
-	   	} 
-    	return new Field[0];
+           	else {
+           		if(allTextField != null)
+           			return new Field[] {field, allTextField};
+           		else
+           			return new Field[] {field};
+           	}
+		}
+		else {
+			return new Field[0];
+		}
     }
 
+	// Default implementation. This can be overriden by subclass.
+	protected String getStringToIndex(Set dataElemValue) {
+		String result = null;
+		Object val = getFirstElement(dataElemValue);
+		if(val instanceof String) {
+			String sVal = (String) val;
+			sVal = sVal.trim();
+			if(sVal.length() > 0)
+				result = sVal;
+		}
+		return result;
+	}
+	
+	protected abstract boolean isSortFieldNeeded();
+	
+	protected abstract Field.Store getFieldStore();
+
+	protected abstract Field.Index getFieldIndex();
+	
+	private boolean getSortFieldNeeded(Map args) {
+		boolean sortFieldNeeded = isSortFieldNeeded();
+		if(isSortFieldNeeded(args) != null) {
+			// Runtime argument takes precedence over the static attribute of the class.
+			// This flexibility allows multiple data types re-use the same class.
+			sortFieldNeeded = isSortFieldNeeded(args).booleanValue();
+		}
+		return sortFieldNeeded;
+	}
+	
 }
