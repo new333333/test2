@@ -35,15 +35,9 @@ package org.kablink.teaming.module.definition.index;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
-import org.kablink.teaming.InternalException;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.ReflectHelper;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderUtil {
     
 	public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {

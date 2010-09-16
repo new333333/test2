@@ -32,6 +32,48 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-public class FieldBuilderLocale extends FieldBuilderProfileElement {
+import java.util.Locale;
+import java.util.Set;
+
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
+
+public class FieldBuilderLocale extends FieldBuilderGeneric {
+
+	protected String getStringToIndex(Set dataElemValue) {
+		Object val = getFirstElement(dataElemValue);
+		if(val instanceof Locale) {
+			Locale locale = (Locale) val;
+			return locale.toString();
+		}
+		else {
+			return super.getStringToIndex(dataElemValue);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldIndex()
+	 */
+	@Override
+	protected Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
+	 */
+	@Override
+	protected Store getFieldStore() {
+		return Field.Store.YES;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#isSortFieldNeeded()
+	 */
+	@Override
+	protected boolean isSortFieldNeeded() {
+		return false;
+	}
 
 }

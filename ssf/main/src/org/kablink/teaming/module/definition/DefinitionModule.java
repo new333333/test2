@@ -62,12 +62,13 @@ public interface DefinitionModule {
 	 */
 	public static String ReservedItemNames = " id type name owner popularity branding deleted ";
 	
-	public static String INDEX_FIELDS_ONLY="org.kablink.teaming.module.definition.indexFieldsOnly";
+	public static String INDEX_FIELDS_ONLY="indexFieldsOnly";
 	public static String INDEX_ALL_TEXT="indexAllText";
 	public static String INDEX_CAPTION="indexCaption";
 	public static String INDEX_CAPTION_VALUES="indexCaptionValues";
 	public static String DEFINITION_ELEMENT="definitionElement";
 	public static String CAPTION_FIELD_PREFIX="_caption_";
+	public static String SORT_FIELD_NEEDED="sortFieldNeeded";
 	public enum DefinitionOperation {
 		manageDefinition,
 	}

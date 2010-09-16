@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map;
@@ -44,11 +42,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderSelect extends AbstractFieldBuilder {
 
     public String makeFieldName(String dataElemName) {
@@ -58,8 +51,6 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
     
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
-       	fieldsOnly = (Boolean)args.get(DefinitionModule.INDEX_FIELDS_ONLY);
-        if (fieldsOnly == null) fieldsOnly = Boolean.FALSE;
         
         Element entryElement = (Element)args.get(DefinitionModule.DEFINITION_ELEMENT);
         Set dataElemValueCaptions = getEntryElementValueCaptions(entity, dataElemName, entryElement);

@@ -37,11 +37,6 @@ import java.util.Map;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.DefinableEntity;
 
-
-/**
- *
- * @author Jong Kim
- */
 public interface FieldBuilder {
     
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args);

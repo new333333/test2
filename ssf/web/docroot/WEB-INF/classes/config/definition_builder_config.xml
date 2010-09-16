@@ -1626,7 +1626,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="false"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1645,7 +1649,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="false"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1664,7 +1672,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1683,7 +1695,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1759,7 +1775,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
@@ -1778,7 +1798,11 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress" />
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderAddress">
+		  <args>
+		    <arg name="sortFieldNeeded" type="boolean" value="true"/>
+		  </args>
+		</index>
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>

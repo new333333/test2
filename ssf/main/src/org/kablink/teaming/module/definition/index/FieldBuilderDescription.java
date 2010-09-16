@@ -85,13 +85,13 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
         	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
         	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.TOKENIZED); 
-         	if (fieldsOnly) {
+         	if (isFieldsOnly(args)) {
          		return new Field[] {descField, descTextField, descFormatField};
          	} else {
         		Field allTextField = BasicIndexUtils.allTextField(strippedText);
          		return new Field[] {allTextField, descField, descTextField, descFormatField};
          	}
-        } else if (!fieldsOnly){
+        } else if (!isFieldsOnly(args)){
          	Field allTextField = BasicIndexUtils.allTextField(strippedText);
          	return new Field[] {allTextField};
        } else {

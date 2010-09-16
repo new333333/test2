@@ -32,38 +32,25 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Set;
-import java.util.Map;
-
 import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
+import org.apache.lucene.document.Field.Store;
 
-public class FieldBuilderEmail extends AbstractFieldBuilder {
+public class FieldBuilderEmail extends FieldBuilderGeneric {
 	
-	public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
+	protected Field.Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED;
 	}
-   
-	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-	   	Object val = getFirstElement(dataElemValue);
-	   	if (val instanceof String) {
-	   		String sVal = (String)val;
-	   		sVal = sVal.trim();
-       
-	   		if (sVal.length() == 0) {
-	   			return new Field[0];
-	   		}
-	   		
-    		Field emailField =  new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.UN_TOKENIZED);
-           	if (!fieldsOnly) {
-               	Field allTextField = BasicIndexUtils.allTextField(sVal);
-               	return new Field[] {allTextField, emailField};
-           	} else {
-               	return new Field[] {emailField};
-           	}
-	   	} 
-    	return new Field[0];
-    }
+
+	protected boolean isSortFieldNeeded() {
+		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
+	 */
+	@Override
+	protected Store getFieldStore() {
+		return Field.Store.YES;
+	}
 
 }

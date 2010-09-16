@@ -36,29 +36,33 @@ import java.util.Set;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Index;
+import org.apache.lucene.document.Field.Store;
 
-public class FieldBuilderName extends AbstractFieldBuilder {
-	
-	public String makeFieldName(String dataElemName) {
-		// Unfortunately, our index field names begin with underscore for profile names.
-		// See Constants.FIRSTNAME_FIELD, Constants.MIDDLENAME_FIELD, and Constants.LASTNAME_FIELD.
-    	return "_" + dataElemName;
+public class FieldBuilderName extends FieldBuilderGeneric {
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldIndex()
+	 */
+	@Override
+	protected Index getFieldIndex() {
+		return Field.Index.ANALYZED;
 	}
-   
-	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-	   	Object val = getFirstElement(dataElemValue);
-	   	if (val instanceof String) {
-	   		String sVal = (String)val;
-	   		sVal = sVal.trim();
-       
-	   		if (sVal.length() == 0) {
-	   			return new Field[0];
-	   		}
 
-   			Field nameField = new Field(makeFieldName(dataElemName), sVal, Field.Store.YES, Field.Index.TOKENIZED);
-   			return new Field[] {nameField};
-	   	} 
-    	return new Field[0];
-    }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
+	 */
+	@Override
+	protected Store getFieldStore() {
+		return Field.Store.YES;
+	}
 
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#isSortFieldNeeded()
+	 */
+	@Override
+	protected boolean isSortFieldNeeded() {
+		return true;
+	}
+	
 }
