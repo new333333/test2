@@ -180,8 +180,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		commentUI.setData( activityStreamEntry );
 		
 		// Add this ui widget to our widget.
-		m_comments.add( commentUI );
-
 		mainPanel = getMainPanel();
 		mainPanel.add( commentUI );
 	}
@@ -198,6 +196,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		for (ActivityStreamComment nextComment : m_comments)
 		{
 			nextComment.clearEntrySpecificInfo();
+			
+			// Remove this comment from this entry.
+			nextComment.removeFromParent();
 		}
 		
 		m_parentBinderName.setText( "" );
