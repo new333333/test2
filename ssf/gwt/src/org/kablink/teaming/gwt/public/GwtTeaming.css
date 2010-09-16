@@ -186,7 +186,7 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 13px;
-	height: 2.5em;
+	height: 5em;
 	overflow: hidden;
 	margin-left: 40px;
 	white-space: normal;
@@ -195,7 +195,7 @@
 .activityStreamTopEntryContentPanel
 {
 	font-size: 13px;
-	height: 2.3em;
+	height: 5em;
 	overflow: hidden;
 	margin-left: 40px;
 	white-space: normal;
@@ -232,7 +232,7 @@
 
 .activityStreamTopEntryBinderName
 {
-	color: #666666;
+	color: #666666 !important;
 	font-size: 10px;
 	white-space: nowrap;
 }

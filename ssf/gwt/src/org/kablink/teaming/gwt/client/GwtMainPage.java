@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ActivityStreamCtrl;
@@ -989,6 +990,20 @@ public class GwtMainPage extends Composite
 			
 		case EXIT_ACTIVITY_STREAM_MODE:
 			exitActivityStreamMode();
+			break;
+			
+		case INVOKE_SIMPLE_PROFILE:
+			if ( obj instanceof SimpleProfileParams )
+			{
+				SimpleProfileParams params;
+				
+				params = (SimpleProfileParams) obj;
+				invokeSimpleProfile( params.getElement(), params.getBinderId(), params.getUserName() );
+			}
+			else
+			{
+				Window.alert( "In handleAction( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
+			}
 			break;
 			
 		case UNDEFINED:

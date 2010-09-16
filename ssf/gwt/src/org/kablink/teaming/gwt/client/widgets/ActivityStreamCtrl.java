@@ -336,7 +336,7 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		// Issue an ajax request to see if there is anything new.
-		//!!!m_rpcService.???( new HttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_checkForChangesCallback );
+		m_rpcService.hasActivityStreamChanged( new HttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
 	}
 	
 	
