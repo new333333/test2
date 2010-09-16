@@ -167,6 +167,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/arrow_right_disabled.png")
 	public ImageResource nextDisabled16();
 	
+	@Source("org/kablink/teaming/gwt/public/images/pause.png")
+	public ImageResource pauseActivityStream();
+	
 	@Source("org/kablink/teaming/gwt/public/images/personal_prefs1.png")
 	public ImageResource personalPrefs1();
 	
@@ -199,6 +202,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/report_16b.gif")
 	public ImageResource report16();
+	
+	@Source("org/kablink/teaming/gwt/public/images/resume.png")
+	public ImageResource resumeActivityStream();
 
 	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
 	public ImageResource spinner16();

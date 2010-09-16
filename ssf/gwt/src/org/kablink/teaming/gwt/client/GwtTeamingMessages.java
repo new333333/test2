@@ -203,8 +203,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AccessToFolderDenied();
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_CanManagePublicBinderTags();
+	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderInfo();
@@ -657,7 +659,9 @@ public interface GwtTeamingMessages extends Messages
 	String followedPlaces();
 	String myFavorites();
 	String myTeams();
+	String pauseActivityStream();
 	String refresh();
+	String resumeActivityStream();
 	String siteWide();
 	String whatsNew();
 }// end GwtTeamingMessages

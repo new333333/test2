@@ -40,7 +40,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 /**
  * 
  */
-public class ActivityStreamComment extends ActivityStreamEntry
+public class ActivityStreamComment extends ActivityStreamUIEntry
 {
 	/**
 	 * 
@@ -87,6 +87,15 @@ public class ActivityStreamComment extends ActivityStreamEntry
 	}
 
 
+	/**
+	 * Return the name of the style used with the div that holds the entry.
+	 */
+	public String getMainPanelStyleName()
+	{
+		return "activityStreamCommentMainPanel";
+	}
+	
+	
 	/**
 	 * 
 	 */

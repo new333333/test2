@@ -207,7 +207,7 @@ public class GwtMainPage extends Composite
 		m_contentPanel.add( m_contentCtrl );
 		
 		// Create an activity stream control.
-		m_activityStreamCtrl = new ActivityStreamCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+		m_activityStreamCtrl = new ActivityStreamCtrl( this );
 		m_activityStreamCtrl.hide();
 		m_contentPanel.add( m_activityStreamCtrl );
 		
