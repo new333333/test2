@@ -49,10 +49,14 @@ public class ActivityStreamEntry implements IsSerializable {
 	private String						m_authorAvatarUrl;			//
 	private String						m_authorId;					//
 	private String						m_authorName;				//
+	private String						m_authorWSId;				//
 	private String						m_entryDescription;			//
+	private String						m_entryDocNum;				//
 	private String						m_entryId;					//
 	private String						m_entryModificationDate;	//
 	private String						m_entryTitle;				//
+	private String						m_entryTopEntryId;			//
+	private String						m_entryType;				//
 	private String						m_parentBinderHover;		//
 	private String						m_parentBinderId;			//
 	private String						m_parentBinderName;			//
@@ -97,10 +101,14 @@ public class ActivityStreamEntry implements IsSerializable {
 	public String getAuthorAvatarUrl()       {return m_authorAvatarUrl;      }
 	public String getAuthorId()              {return m_authorId;             }
 	public String getAuthorName()            {return m_authorName;           }
+	public String getAuthorWorkspaceId()     {return m_authorWSId;           }
 	public String getEntryDescription()      {return m_entryDescription;     }	
+	public String getEntryDocNum()           {return m_entryDocNum;          }	
 	public String getEntryId()               {return m_entryId;              }	
 	public String getEntryModificationDate() {return m_entryModificationDate;}
 	public String getEntryTitle()            {return m_entryTitle;           }	
+	public String getEntryTopEntryId()       {return m_entryTopEntryId;      }	
+	public String getEntryType()             {return m_entryType;            }	
 	public String getParentBinderHover()     {return m_parentBinderHover;    }	
 	public String getParentBinderId()        {return m_parentBinderId;       }	
 	public String getParentBinderName()      {return m_parentBinderName;     }
@@ -123,10 +131,14 @@ public class ActivityStreamEntry implements IsSerializable {
 	public void setAuthorAvatarUrl(      String authorAvatarUrl)       {m_authorAvatarUrl       = authorAvatarUrl;      }
 	public void setAuthorId(             String authorId)              {m_authorId              = authorId;             }
 	public void setAuthorName(           String authorName)            {m_authorName            = authorName;           }
+	public void setAuthorWorkspaceId(    String authorWSId)            {m_authorWSId            = authorWSId;           }
 	public void setEntryDescription(     String entryDescription)      {m_entryDescription      = entryDescription;     }	
+	public void setEntryDocNum(          String entryDocNum)           {m_entryDocNum           = entryDocNum;          }	
 	public void setEntryId(              String entryId)               {m_entryId               = entryId;              }
 	public void setEntryModificationDate(String entryModificationDate) {m_entryModificationDate = entryModificationDate;}
 	public void setEntryTitle(           String entryTitle)            {m_entryTitle            = entryTitle;           }
+	public void setEntryTopEntryId(      String entryTopEntryId)       {m_entryTopEntryId       = entryTopEntryId;      }
+	public void setEntryType(            String entryType)             {m_entryType             = entryType;            }
 	public void setParentBinderHover(    String parentBinderHover)     {m_parentBinderHover     = parentBinderHover;    }
 	public void setParentBinderId(       String parentBinderId)        {m_parentBinderId        = parentBinderId;       }
 	public void setParentBinderName(     String parentBinderName)      {m_parentBinderName      = parentBinderName;     }

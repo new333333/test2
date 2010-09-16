@@ -99,15 +99,28 @@ public class GwtActivityStreamHelper {
 	}
 
 	/*
+	 * Adds the required comments to an activity stream entry object.
+	 */
+	@SuppressWarnings("unchecked")
+	public static void addASEComments(HttpServletRequest request, AllModulesInjected bs, ActivityStreamEntry ase, int comments, Map<String, String> avatarCache, Map em) {
+		// Does the activity stream entry refer to a folder entry?
+		String feId = ase.getEntryId();
+		if (!(MiscUtil.hasString(feId))) {
+			// No!  Then we can't return it's comments.
+			return;
+		}
+	}
+	
+	/*
 	 * Returns an activity stream entry based on the entry map from a
 	 * search.
 	 */
 	@SuppressWarnings("unchecked")
-	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, Map<String, String> avatarCache, Map em) {
+	public static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, String> avatarCache, Map em, boolean baseEntry) {
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
-		// First, initialize the author ID and name.
+		// First, initialize the author information.
 		String authorId = getSFromEM(em, Constants.MODIFICATIONID_FIELD);
 		reply.setAuthorId(authorId);
 		String authorName = getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD);
@@ -116,34 +129,33 @@ public class GwtActivityStreamHelper {
 			authorName += (" (" + authorLogin + ")");
 		}
 		reply.setAuthorName(authorName);
-
-		// Next, the author's avatar URL.  Do we access the author's
-		// ID?
 		String authorAvatarUrl = "";
 		if (MiscUtil.hasString(authorId)) {
-			// Yes!  Do we have the author's avatar cached?
+			Long authorWsId;
+			try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
+			catch (Exception ex) {authorWsId = null;                                                                     }
+			if (null != authorWsId) {
+				reply.setAuthorWorkspaceId(String.valueOf(authorWsId));
+			}
+			
+			// Do we have the author's avatar cached?
 			String urlFromCache = avatarCache.get(authorId);
 			if (null != urlFromCache) {
 				// Yes!  Use that rather than trying to re-read it.
 				authorAvatarUrl = urlFromCache;
 			}
 			
-			else {
-				// No, we don't have the author's avatar cached!  Can
-				// we access the author's workspace ID?
-				Long   authorWsId;
+			// No, we don't have the author's avatar cached!  Do we
+			// have their workspace ID?
+			else if (null != authorWsId) {
+				// Yes!  Can we access any avatars for the author?
 				String paUrl = null;
-				try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
-				catch (Exception ex) {authorWsId = null;                                                                     }
-				if (null != authorWsId) {
-					// Yes!  Can we access any avatars for the author?
-					ProfileAttribute                  pa      = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
-					List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
-					if((null != paValue) && (!(paValue.isEmpty()))) {
-						// Yes!  We'll use the first one as the URL.
-						ProfileAttributeListElement paValueItem = paValue.get(0);
-						paUrl = paValueItem.getValue().toString();
-					}
+				ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
+				List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
+				if((null != paValue) && (!(paValue.isEmpty()))) {
+					// Yes!  We'll use the first one as the URL.
+					ProfileAttributeListElement paValueItem = paValue.get(0);
+					paUrl = paValueItem.getValue().toString();
 				}
 				
 				// Store something as the author's URL so that we don't
@@ -155,10 +167,13 @@ public class GwtActivityStreamHelper {
 		reply.setAuthorAvatarUrl(authorAvatarUrl);
 
 		// Then, the entry information.
-		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD));	
-		reply.setEntryId(              getSFromEM(em, Constants.DOCID_FIELD));
-		reply.setEntryModificationDate(getSFromEM(em, Constants.MODIFICATION_DATE_FIELD));
-		reply.setEntryTitle(           getSFromEM(em, Constants.TITLE_FIELD));
+		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD              ));	
+		reply.setEntryDocNum(          getSFromEM(em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryId(              getSFromEM(em, Constants.DOCID_FIELD             ));
+		reply.setEntryModificationDate(getSFromEM(em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(           getSFromEM(em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(      getSFromEM(em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(            getSFromEM(em, Constants.ENTRY_TYPE_FIELD        ));
 
 		// And finally, the parent binder information.  Does the entry
 		// map contain the ID of the binder that contains the entry?
@@ -171,6 +186,18 @@ public class GwtActivityStreamHelper {
 			if (null != binder) {
 				reply.setParentBinderHover(binder.getPathName());
 				reply.setParentBinderName( binder.getTitle()   );
+			}
+		}
+
+		// Are we working on a base activity stream entry for an
+		// activity stream data object? 
+		if (baseEntry) {
+			// Yes!  Do we need to include comments in this activity
+			// stream entry?
+			int comments = asp.getActiveComments();
+			if (0 < comments) {
+				// Yes!  Add them.
+				addASEComments(request, bs, reply, comments, avatarCache, em);
 			}
 		}
 
@@ -629,8 +656,10 @@ public class GwtActivityStreamHelper {
 	    		ActivityStreamEntry entry = buildASEFromEM(
 	    			request,
 	    			bs,
+	    			asp,
 	    			avatarCache,
-	    			((Map) it.next()));
+	    			((Map) it.next()),
+	    			true);	// true -> This is a base activity stream entry for an activity stream data.
     			entries.add(entry);
 
     			// Are we constructing new data for which we need to
