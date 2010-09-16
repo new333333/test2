@@ -54,9 +54,10 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+
 
 /**
  * 
@@ -64,9 +65,10 @@ import com.google.gwt.user.client.ui.InlineLabel;
 public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 {
 	private ArrayList<ActivityStreamComment> m_comments;
-	private InlineLabel m_parentBinderName;	// Name of the binder this entry comes from.
-	private String m_parentBinderId	= null;	// Id of the binder this entry comes from.
-	private String m_parentBinderPermalink = null;
+	private Anchor m_parentBinderName;	// Name of the binder this entry comes from.
+	private String m_parentBinderId;		// Id of the binder this entry comes from.
+	private String m_parentBinderPermalink;
+	private Image m_breadSpaceImg;
 	
 	/**
 	 * 
@@ -74,6 +76,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	public ActivityStreamTopEntry( ActionHandler actionHandler )
 	{
 		super( actionHandler );
+		
+		m_parentBinderId = null;
+		m_parentBinderPermalink = null;
 		
 		// Create a list to hold the comments for this entry.
 		m_comments = new ArrayList<ActivityStreamComment>();
@@ -86,14 +91,14 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		ImageResource imageResource;
-		Image img;
 		
 		imageResource = GwtTeaming.getImageBundle().breadSpace();
-		img = new Image( imageResource );
-		headerPanel.add( img );
+		m_breadSpaceImg = new Image( imageResource );
+		m_breadSpaceImg.setVisible( false );
+		headerPanel.add( m_breadSpaceImg );
 		
 		// Create a label that holds the name of the binder this entry comes from.
-		m_parentBinderName = new InlineLabel();
+		m_parentBinderName = new Anchor();
 		m_parentBinderName.addStyleName( "activityStreamTopEntryBinderName" );
 		headerPanel.add( m_parentBinderName );
 		
@@ -196,8 +201,12 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		}
 		
 		m_parentBinderName.setText( "" );
+		m_parentBinderName.setTitle( "" );
 		m_parentBinderId = null;
 		m_parentBinderPermalink = null;
+		
+		// Hide the image between the title and the parent binder name.
+		m_breadSpaceImg.setVisible( false );
 	}
 	
 	
@@ -344,13 +353,27 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		List<ActivityStreamEntry> comments = null;
+		String parentBinderName;
 		int i;
 		
 		super.setData( entryItem );
 		
-		setBinderName( entryItem.getParentBinderName() );
+		parentBinderName = entryItem.getParentBinderName(); 
+		setBinderName( parentBinderName );
 		setBinderId( entryItem.getParentBinderId() );
 		m_parentBinderPermalink = null;
+		
+		m_parentBinderName.setTitle( entryItem.getParentBinderHover() );
+		
+		// Do we have a parent binder name?  If the user does not have rights to the parent
+		// binder we will not have a parent binder name.
+		if ( parentBinderName != null && parentBinderName.length() > 0 )
+		{
+			// Yes, show the image between the title and the parent binder name.
+			m_breadSpaceImg.setVisible( true );
+		}
+		else
+			m_breadSpaceImg.setVisible( false );
 
 		// Get the comments for the given item.
 		comments = entryItem.getComments();

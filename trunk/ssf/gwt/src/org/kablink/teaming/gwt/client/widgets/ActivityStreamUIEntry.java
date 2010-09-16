@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -65,6 +67,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private InlineLabel m_author;
 	private InlineLabel m_date;
 	private InlineLabel m_desc;
+	private String m_authorId;
+	private String m_authorWSId;	// Id of the author's workspace.
 	
 	
 	/**
@@ -120,10 +124,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public void clearEntrySpecificInfo()
 	{
 		m_avatarImg.setUrl( "" );
-		m_title.setText( "" );
+		m_title.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
-		m_desc.setText( "" );
+		m_desc.getElement().setInnerHTML( "" );
+		m_authorId = null;
+		m_authorWSId = null;
 	}
 
 
@@ -271,9 +277,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * This method gets invoked when the user clicks on the author.
 	 */
-	public void handleClickOnAuthor()
+	public void handleClickOnAuthor( Widget src )
 	{
-		Window.alert( "Not implemented yet - Author" );
+		SimpleProfileParams params;
+		
+		// Invoke the Simple Profile dialog.
+		params = new SimpleProfileParams( src.getElement(), m_authorWSId, m_author.getText() );
+		m_actionHandler.handleAction( TeamingAction.INVOKE_SIMPLE_PROFILE, params );
 	}
 	
 	
@@ -309,7 +319,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 					if ( src == m_title )
 						handleClickOnTitle();
 					else if ( src == m_author || src == m_avatarImg )
-						handleClickOnAuthor();
+						handleClickOnAuthor( (Widget)src );
 				}
 				
 			};
@@ -357,59 +367,17 @@ public abstract class ActivityStreamUIEntry extends Composite
 
 	
 	/**
-	 * Set the name of the author
-	 */
-	public void setAuthor( String author )
-	{
-		m_author.setText( author );
-	}
-	
-	
-	/**
-	 * Set the url of the avatar image.
-	 */
-	public void setAvatarUrl( String url )
-	{
-		m_avatarImg.setUrl( url );
-	}
-	
-
-	/**
 	 * Set the data this we should display from the given ActivityStreamEntry
 	 */
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
-		m_title.setText( entryItem.getEntryTitle() );
+		m_title.getElement().setInnerHTML( entryItem.getEntryTitle() );
 		m_author.setText( entryItem.getAuthorName() );
+		m_authorId = entryItem.getAuthorId();
+		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
-		m_desc.setText( entryItem.getEntryDescription() );
+		m_desc.getElement().setInnerHTML( entryItem.getEntryDescription() );
 	}
 	
-	
-	/**
-	 * Set the text used in the date.
-	 */
-	public void setDate( String date )
-	{
-		m_date.setText( date );
-	}
-	
-	
-	/**
-	 * Set the text used in the description.
-	 */
-	public void setDesc( String desc )
-	{
-		m_desc.setText( desc );
-	}
-	
-	
-	/**
-	 * Set the text used in the title.
-	 */
-	public void setTitle( String title )
-	{
-		m_title.setText( title );
-	}
 }
