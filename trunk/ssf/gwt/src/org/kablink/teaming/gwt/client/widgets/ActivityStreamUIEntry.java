@@ -35,6 +35,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -55,10 +56,10 @@ import com.google.gwt.user.client.ui.Widget;
 /*
  * This class is the base class for the entries that are displayed in the Activity Stream.
  */
-public abstract class ActivityStreamEntry extends Composite
+public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
-	private ActionHandler m_actionHandler;
+	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
 	private InlineLabel m_title;
 	private InlineLabel m_author;
@@ -69,7 +70,7 @@ public abstract class ActivityStreamEntry extends Composite
 	/**
 	 * 
 	 */
-	public ActivityStreamEntry(
+	public ActivityStreamUIEntry(
 		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
 	{
 		FlowPanel mainPanel;
@@ -252,10 +253,7 @@ public abstract class ActivityStreamEntry extends Composite
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
-	public String getMainPanelStyleName()
-	{
-		return "activityStreamEntryMainPanel";
-	}
+	public abstract String getMainPanelStyleName();
 	
 	
 	/**
@@ -373,6 +371,19 @@ public abstract class ActivityStreamEntry extends Composite
 	public void setAvatarUrl( String url )
 	{
 		m_avatarImg.setUrl( url );
+	}
+	
+
+	/**
+	 * Set the data this we should display from the given ActivityStreamEntry
+	 */
+	public void setData( ActivityStreamEntry entryItem )
+	{
+		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
+		m_title.setText( entryItem.getEntryTitle() );
+		m_author.setText( entryItem.getAuthorName() );
+		m_date.setText( entryItem.getEntryModificationDate() );
+		m_desc.setText( entryItem.getEntryDescription() );
 	}
 	
 	

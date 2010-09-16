@@ -36,18 +36,19 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
-import org.kablink.teaming.gwt.client.GwtSearchCriteria;
-import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -77,7 +78,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  *
  */
 public class ActivityStreamCtrl extends Composite
-	implements ClickHandler, ActionHandler
+	implements ClickHandler
 {
 	private InlineLabel m_sourceName;
 	private FlowPanel m_headerPanel;
@@ -85,31 +86,38 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_footerPanel;
 	private Object m_selectedObj = null;
 	private ActionHandler m_actionHandler;
-	private AsyncCallback<GwtSearchResults> m_searchResultsCallback;
+	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
+	private AsyncCallback<Boolean> m_checkForChangesCallback = null;
+	private AsyncCallback<ActivityStreamParams> m_getActivityStreamParamsCallback = null;
+	private PagingData m_pagingData = null;
+	private ActivityStreamParams m_activityStreamParams = null;
 	private Timer m_searchTimer = null;
-	private GwtSearchCriteria m_searchCriteria;
+	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
 	private boolean m_searchInProgress = false;
+	private Image m_pauseImg;
+	private Image m_resumeImg;
 	private Image m_prevDisabledImg;
 	private Image m_prevImg;
 	private Image m_nextDisabledImg;
 	private Image m_nextImg;
 	private InlineLabel m_nOfnLabel;
 	private FlowPanel m_searchingPanel;
-	private int m_searchCountTotal = 0;	// Total number of items found by a search.
-	private int m_displayCount = 0;		// Total number of items currently being displayed from a search.
 	private int m_width;
 	private int m_height;
 	private ActivityStreamInfo m_activityStreamInfo = null;
 	private GwtRpcServiceAsync m_rpcService = null;
 	private String m_binderPermalink = null;		// Permalink to the binder that is the source of the activity stream.
+	// This is a list of ui widgets, one for each entry returned by the search.
+	// We will reuse these ui widgets every time we get a new page of results.
+	// We will NOT create new ui widgets every time we get a new page of results.
+	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
 
 	
 	/**
 	 * 
 	 */
 	public ActivityStreamCtrl(
-		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
-		GwtSearchCriteria.SearchType searchType )
+		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
 	{
 		FlowPanel mainPanel;
 
@@ -121,6 +129,9 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Remember the handler we should call when the user selects an item from the search results.
 		m_actionHandler = actionHandler;
+		
+		// Create the list that will hold the ui widgets, one for each entry returned by the search.
+		m_searchResultsUIWidgets = new ArrayList<ActivityStreamTopEntry>();
 		
 		// Create the header
 		createHeader( mainPanel );
@@ -147,7 +158,7 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		// Create the callback that will be used when we issue an ajax call to do a search.
-		m_searchResultsCallback = new AsyncCallback<GwtSearchResults>()
+		m_searchResultsCallback = new AsyncCallback<ActivityStreamData>()
 		{
 			/**
 			 * 
@@ -165,14 +176,14 @@ public class ActivityStreamCtrl extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtSearchResults gwtSearchResults )
+			public void onSuccess( ActivityStreamData activityStreamData )
 			{
 				hideSearchingText();
 
-				if ( gwtSearchResults != null )
+				if ( activityStreamData != null )
 				{
 					// Add the search results to the search results widget.
-					addSearchResults( m_searchCriteria, gwtSearchResults );
+					addSearchResults( activityStreamData );
 				}
 				
 				m_searchInProgress = false;
@@ -180,11 +191,6 @@ public class ActivityStreamCtrl extends Composite
 		};
 		m_searchInProgress = false;
 		
-		m_searchCriteria = new GwtSearchCriteria();
-		m_searchCriteria.setSearchType( searchType );
-		m_searchCriteria.setMaxResults( 10 );
-		m_searchCriteria.setPageNumber( 0 );
-
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}
@@ -193,47 +199,65 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * Add the given search results to the list of search results.
 	 */
-	private void addSearchResults( GwtSearchCriteria searchCriteria, GwtSearchResults searchResults )
+	private void addSearchResults( ActivityStreamData activityStreamData )
 	{
-		ArrayList<GwtTeamingItem> results;
+		List<ActivityStreamEntry> entries;
 		int position;
 		int value1;
+		int searchCountTotal;
+		int displayCount;
 		String nOfn;
 
-		// Clear any results we may be currently displaying.
-		clearCurrentSearchResults();
+		m_pagingData = activityStreamData.getPagingData();
 		
-		m_displayCount = 0;
-		m_searchCountTotal = searchResults.getCountTotal();
-		results = searchResults.getResults();
-		if ( results != null )
-		{
-			//!!! Finish
-		/*
-			int i;
-			SearchResultItemWidget widget;
-			GwtTeamingItem item;
+		// Get the list of entries from the search.
+		entries = activityStreamData.getEntries();
+		
+		displayCount = 0;
+		searchCountTotal = m_pagingData.getTotalRecords();
 
-			m_displayCount = results.size();
-			for (i = 0; i < m_displayCount; ++i)
+		if ( entries != null )
+		{
+			int i;
+
+			displayCount = entries.size();
+			for (i = 0; i < displayCount; ++i)
 			{
-				item = results.get( i );
-				widget = new SearchResultItemWidget( item );
-				widget.addClickHandler( this );
+				ActivityStreamEntry item;
+				ActivityStreamTopEntry topEntry;
 				
-				m_contentPanel.add( widget );
+				// Get the next entry from the search results.
+				item = entries.get( i );
+				
+				// We recycle ActivityStreamTopEntry objects.
+				// Do we have an old one we can use?
+				topEntry = null;
+				if ( i < m_searchResultsUIWidgets.size() )
+					topEntry = m_searchResultsUIWidgets.get( i );
+				if ( topEntry == null )
+				{
+					// No, create a new one.
+					topEntry = new ActivityStreamTopEntry( m_actionHandler );
+					m_searchResultsUIWidgets.add( topEntry );
+				}
+				
+				// Set the data the ui widget will display.
+				topEntry.setData( item );
+				
+				// Add this ui widget to the search results panel.
+				m_searchResultsPanel.add( topEntry );
 			}// end for()
-		*/
 		}
 
 		// Figure out the position of the last result within the total number of results.
-		position = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + m_displayCount;
+		position = (m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + displayCount;
 		
 		// Construct the string n - n of n based on the number of items found in the search.
-		value1 = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + 1;
-		if ( m_searchCountTotal == 0 )
+		value1 = (m_pagingData.getPageIndex() * m_pagingData.getEntriesPerPage()) + 1;
+		if ( searchCountTotal == 0 )
 			value1 = 0;
-		nOfn = GwtTeaming.getMessages().nOfn( value1, position, m_searchCountTotal );
+		
+		nOfn = GwtTeaming.getMessages().nOfn( value1, position, searchCountTotal );
 		m_nOfnLabel.setText( nOfn );
 
 		// Hide the previous and next images
@@ -241,7 +265,7 @@ public class ActivityStreamCtrl extends Composite
 		m_nextImg.setVisible( false );
 		
 		// Do we need to show the "prev" image?
-		if ( position > searchCriteria.getMaxResults() )
+		if ( position > m_pagingData.getEntriesPerPage() )
 		{
 			// Yes
 			m_prevDisabledImg.setVisible( false );
@@ -255,7 +279,7 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		// Do we need to show the "next" image?
-		if ( m_searchCountTotal > position )
+		if ( searchCountTotal > position )
 		{
 			// Yes
 			m_nextDisabledImg.setVisible( false );
@@ -271,13 +295,67 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Issue an rpc request to check for anything new.  If there is something new we will issue a
+	 * new search request.
+	 */
+	public void checkForChanges()
+	{
+		if ( m_activityStreamParams == null )
+		{
+			Window.alert( "In checkForChanges(), m_activityStreamParams is null.  This should never happen." );
+			return;
+		}
+		
+		// Create the callback that will be used when we issue an ajax call to do check for updates.
+		if ( m_checkForChangesCallback == null )
+		{
+			m_checkForChangesCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_CheckForActivityStreamChanges() );
+				}// end onFailure()
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				public void onSuccess( Boolean haveChanges )
+				{
+					if ( haveChanges )
+					{
+						// Refresh the activity stream.
+						refreshActivityStream();
+					}
+				}// end onSuccess()
+			};
+		}
+		
+		// Issue an ajax request to see if there is anything new.
+		//!!!m_rpcService.???( new HttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_checkForChangesCallback );
+	}
+	
+	
+	/**
 	 * Remove any search results we may be displaying. 
 	 */
 	private void clearCurrentSearchResults()
 	{
+		// Remove all ui widgets we've added.
 		m_searchResultsPanel.clear();
-		m_searchCountTotal = 0;
-		m_displayCount = 0;
+		
+		
+		// We recycle the ActivityStreamTopEntry objects.
+		// Clear the data from the ActivityStreamTopEntry we have created objects.
+		for ( ActivityStreamTopEntry nextEntry : m_searchResultsUIWidgets)
+		{
+			nextEntry.clearEntrySpecificInfo();
+		}
+		
 		m_prevImg.setVisible( false );
 		m_nextImg.setVisible( false );
 		m_prevDisabledImg.setVisible( true );
@@ -431,6 +509,44 @@ public class ActivityStreamCtrl extends Composite
 		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
 		m_headerPanel.add( whatsNewLabel );
 		
+		// Add a pause button to the header.
+		imageResource = GwtTeaming.getImageBundle().pauseActivityStream();
+		m_pauseImg = new Image( imageResource );
+		m_pauseImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
+		m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream() );
+		m_pauseImg.setVisible( false );
+		m_headerPanel.add( m_pauseImg );
+		
+		// Add a click handler for the pause button.
+		clickHandler = new ClickHandler()
+		{
+			public void onClick( ClickEvent clickEvent )
+			{
+				// Pause the refreshing of the activity stream.
+				pauseActivityStream();
+			}
+		};
+		m_pauseImg.addClickHandler( clickHandler );
+		
+		// Add a resume button to the header.
+		imageResource = GwtTeaming.getImageBundle().resumeActivityStream();
+		m_resumeImg = new Image( imageResource );
+		m_resumeImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
+		m_resumeImg.setTitle( GwtTeaming.getMessages().resumeActivityStream() );
+		m_resumeImg.setVisible( false );
+		m_headerPanel.add( m_resumeImg );
+		
+		// Add a click handler for the resume button.
+		clickHandler = new ClickHandler()
+		{
+			public void onClick( ClickEvent clickEvent )
+			{
+				// Restart the refreshing of the activity stream.
+				resumeActivityStream();
+			}
+		};
+		m_resumeImg.addClickHandler( clickHandler );
+		
 		// Add a refresh button to the header.
 		imageResource = GwtTeaming.getImageBundle().refresh();
 		img = new Image( imageResource );
@@ -438,12 +554,13 @@ public class ActivityStreamCtrl extends Composite
 		img.setTitle( GwtTeaming.getMessages().refresh() );
 		m_headerPanel.add( img );
 		
+		// Add a click handler for the refresh button.
 		clickHandler = new ClickHandler()
 		{
 			public void onClick( ClickEvent clickEvent )
 			{
 				// Refresh the results of the search query.
-				refresh();
+				refreshActivityStream();
 			}
 		};
 		img.addClickHandler( clickHandler );
@@ -469,15 +586,18 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void executeSearch()
 	{
-		GwtRpcServiceAsync rpcService;
-
+		if ( m_activityStreamParams == null )
+		{
+			Window.alert( "In executeSearch(), m_activityStreamParams is null.  This should never happen." );
+			return;
+		}
+		
 		// Clear any results we may be currently displaying.
 		clearCurrentSearchResults();
 
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
-		rpcService = GwtTeaming.getRpcService();
-		rpcService.executeSearch( new HttpRequestInfo(), m_searchCriteria, m_searchResultsCallback );
+		m_rpcService.getActivityStreamData( new HttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_searchResultsCallback );
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?
@@ -529,28 +649,6 @@ public class ActivityStreamCtrl extends Composite
 	}
 	
 	
-	/**
-	 * This method gets called when the user clicks on an item from a search result.
-	 */
-	public void handleAction( TeamingAction ta, Object obj )
-	{
-		if ( TeamingAction.SELECTION_CHANGED == ta )
-		{
-			// Make sure we were handed a GwtTeamingItem.
-			if ( obj instanceof GwtTeamingItem )
-			{
-				GwtTeamingItem selectedItem;
-				
-				selectedItem = (GwtTeamingItem) obj;
-				
-				// If we were passed an ActionHandler, call it.
-				if ( m_actionHandler != null )
-					m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, selectedItem );
-			}
-		}
-	}
-	
-
 	/**
 	 * 
 	 */
@@ -616,18 +714,30 @@ public class ActivityStreamCtrl extends Composite
 			
 			if ( id != null )
 			{
+				int pgIndex;
+				
+				pgIndex = m_pagingData.getPageIndex();
+
 				// Did the user click on next?
 				if ( id.equalsIgnoreCase( "viewNextPageOfResults" ) )
 				{
 					// Yes, increment the page number and do another search.
-					m_searchCriteria.incrementPageNumber();
+					if ( m_pagingData != null )
+					{
+						++pgIndex;
+						m_pagingData.setPageIndex( pgIndex );
+					}
 					executeSearch();
 				}
 				// Did the user click on prev?
 				else if ( id.equalsIgnoreCase( "viewPreviousPageOfResults" ) )
 				{
 					// Yes, decrement the page number and do another search.
-					m_searchCriteria.decrementPageNumber();
+					if ( m_pagingData != null )
+					{
+						--pgIndex;
+						m_pagingData.setPageIndex( pgIndex );
+					}
 					executeSearch();
 				}
 			}
@@ -636,15 +746,32 @@ public class ActivityStreamCtrl extends Composite
 
 	
 	/**
-	 * Refresh the results of the search query. 
+	 * Pause the refreshing of the activity stream.
 	 */
-	private void refresh()
+	public void pauseActivityStream()
 	{
-		Window.alert( "Refresh is not implemented yet." );
-		return;
+		// Hide the pause button.
+		m_pauseImg.setVisible( false );
 		
-		//!!! m_searchCriteria.setPageNumber( 0 );
-		//!!! executeSearch();
+		// Show the resume button.
+		m_resumeImg.setVisible( true );
+
+		// Have we created a timer?
+		if ( m_checkForChangesTimer != null )
+		{
+			// Yes, cancel it.
+			m_checkForChangesTimer.cancel();
+		}
+	}
+	
+	
+	/**
+	 * Issue a new search. 
+	 */
+	private void refreshActivityStream()
+	{
+		m_pagingData = null;
+		executeSearch();
 	}
 	
 
@@ -670,11 +797,133 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Resume the refreshing of the activity stream.
+	 */
+	public void resumeActivityStream()
+	{
+		// Hide the resume button.
+		m_resumeImg.setVisible( false );
+		
+		// Show the pause button.
+		m_pauseImg.setVisible( true );
+
+		// Have we created a timer?
+		if ( m_checkForChangesTimer != null )
+		{
+			// Yes
+			// Do we have an activity stream parameter object?
+			if ( m_activityStreamParams != null )
+			{
+				int minutes;
+				
+				// Yes
+				minutes = m_activityStreamParams.getClientRefresh();
+				if ( minutes > 0 )
+				{
+					//!!! Should we refresh immediately?
+					m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
+				}
+			}
+		}
+	}
+	
+	
+	/**
 	 * Set the activity stream this control is dealing with.
 	 */
 	public void setActivityStream( ActivityStreamInfo activityStreamInfo )
 	{
 		m_activityStreamInfo = activityStreamInfo;
+		
+		// Change our title to reflect the new activity stream source.
+		setTitle();
+		
+		m_pagingData = null;
+		
+		// Do we have an ActivityStreamParams object?
+		if ( m_activityStreamParams == null )
+		{
+			// No, issue an rpc request to get the ActivityStreamParams.
+			HttpRequestInfo ri;
+			
+			if ( m_getActivityStreamParamsCallback == null )
+			{
+				m_getActivityStreamParamsCallback = new AsyncCallback<ActivityStreamParams>()
+				{
+					/**
+					 * 
+					 */
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure( GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
+					}
+
+					
+					/**
+					 * 
+					 */
+					public void onSuccess( ActivityStreamParams activityStreamParams )
+					{
+						Command cmd;
+						
+						m_activityStreamParams = activityStreamParams;
+						
+						cmd = new Command()
+						{
+							/**
+							 * 
+							 */
+							public void execute()
+							{
+								int minutes;
+								
+								// Now that we have the activity stream parameters, execute the search.
+								executeSearch();
+								
+								// Get the refresh interval in minutes.
+								minutes = m_activityStreamParams.getClientRefresh(); 
+								if ( minutes > 0 )
+								{
+									// Have we already created a timer that is used to check for changes?
+									if ( m_checkForChangesTimer == null )
+									{
+										// No, create one.
+										m_checkForChangesTimer = new Timer()
+										{
+											/**
+											 * 
+											 */
+											public void run()
+											{
+												// Check for changes.
+												checkForChanges();
+											}
+										};
+									}
+
+									// Show the pause button.
+									m_pauseImg.setVisible( true );
+									
+									// Start a timer.  When the timer goes off we will check for changes and
+									// update the activity stream if there is something new.
+									m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
+								}
+							}
+						};
+						DeferredCommand.addCommand( cmd );
+					}
+				};
+			}
+			
+			// Issue an ajax request to get the activity stream params.
+			ri = new HttpRequestInfo();
+			m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
+		}
+		else
+		{
+			// Yes, execute a search on the given activity stream.
+			executeSearch();
+		}
 		
 		// Is the source of the activity stream a binder?
 		m_binderPermalink = null;
@@ -715,60 +964,6 @@ public class ActivityStreamCtrl extends Composite
 				m_rpcService.getBinderPermalink( ri, binderId, callback );
 			}
 		}
-		
-		// Change our title to reflect the new activity stream source.
-		setTitle();
-		
-		{
-			ActivityStreamTopEntry topEntry;
-			
-			topEntry = new ActivityStreamTopEntry( m_actionHandler );
-			topEntry.setTitle( "This is the title" );
-			topEntry.setBinderName( "Workgroup Business Unit" );
-			topEntry.setAuthor( "Dennis Foster" );
-			topEntry.setDate( "August 30, 2010" );
-			topEntry.setDesc( "Now is the time for all good men to come to the aid of their country.  The quick brown fox jumped over something.  Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
-			topEntry.setAvatarUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/media.gif" );
-			m_searchResultsPanel.add( topEntry );
-
-			topEntry = new ActivityStreamTopEntry( m_actionHandler );
-			topEntry.setTitle( "What should the title be for this" );
-			topEntry.setBinderName( "Durango Beta" );
-			topEntry.setAuthor( "Tracy Smith" );
-			topEntry.setDate( "September 3, 2010" );
-			topEntry.setDesc( "The quick brown fox jumped over something.  Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
-			topEntry.setAvatarUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/tracking20x16.png" );
-			m_searchResultsPanel.add( topEntry );
-}
-	}
-	
-	
-	/**
-	 * Set the search criteria for whether or not we are searching only for folders.
-	 */
-	public void setSearchForFoldersOnly( boolean value )
-	{
-		m_searchCriteria.setFoldersOnly( value );
-	}
-
-	
-	/**
-	 * Sets the search type of the search being done.
-	 * 
-	 * @param searchType
-	 */
-	public void setSearchType( GwtSearchCriteria.SearchType searchType )
-	{
-		m_searchCriteria.setSearchType( searchType );
-	}
-	
-	
-	/**
-	 * Set the query we will use for the search.
-	 */
-	public void setSearchQuery( String query )
-	{
-		//!!! Finish
 	}
 	
 	

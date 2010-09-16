@@ -34,9 +34,16 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -46,6 +53,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
@@ -53,10 +61,12 @@ import com.google.gwt.user.client.ui.InlineLabel;
 /**
  * 
  */
-public class ActivityStreamTopEntry extends ActivityStreamEntry
+public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 {
 	private ArrayList<ActivityStreamComment> m_comments;
-	private InlineLabel m_binderName;	// Name of the binder this entry comes from.
+	private InlineLabel m_parentBinderName;	// Name of the binder this entry comes from.
+	private String m_parentBinderId	= null;	// Id of the binder this entry comes from.
+	private String m_parentBinderPermalink = null;
 	
 	/**
 	 * 
@@ -65,26 +75,8 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 	{
 		super( actionHandler );
 		
-		{
-			ActivityStreamComment comment1;
-			ActivityStreamComment comment2;
-			
-			comment1 = new ActivityStreamComment( actionHandler );
-			comment1.setTitle( "This is the title for comment #1" );
-			comment1.setAuthor( "Peter Hurley" );
-			comment1.setDate( "September 1, 2010" );
-			comment1.setDesc( "The quick brown fox jumped over something.  Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
-			comment1.setAvatarUrl( "http://jwootton2.provo.novell.com:8080/ssf/i/iccg/pics/group_icon.gif" );
-			addComment( comment1 );
-
-			comment2 = new ActivityStreamComment( actionHandler );
-			comment2.setTitle( "This is the title for comment #2" );
-			comment2.setAuthor( "Peter Hurley" );
-			comment2.setDate( "September 2, 2010" );
-			comment2.setDesc( "Rhoncus in neque neque tortor quia elit, amet neque quis primis sapien, mauris vestibulum adipiscing varius quis suscipit ligula. Hendrerit vitae, donec sem auctor porta habitasse commodo etiam, dolor aliquet in. Mauris ornare neque dictum erat vestibulum volutpat, mi vel nam, ultricies rhoncus, auctor sapien mauris" );
-			comment2.setAvatarUrl( "http://jwootton2.provo.novell.com:8080/ssf/i/iccg/pics/group_icon.gif" );
-			addComment( comment2 );
-		}
+		// Create a list to hold the comments for this entry.
+		m_comments = new ArrayList<ActivityStreamComment>();
 	}
 
 	
@@ -101,9 +93,9 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 		headerPanel.add( img );
 		
 		// Create a label that holds the name of the binder this entry comes from.
-		m_binderName = new InlineLabel();
-		m_binderName.addStyleName( "activityStreamTopEntryBinderName" );
-		headerPanel.add( m_binderName );
+		m_parentBinderName = new InlineLabel();
+		m_parentBinderName.addStyleName( "activityStreamTopEntryBinderName" );
+		headerPanel.add( m_parentBinderName );
 		
 		// Add mouse over handler.
 		{
@@ -116,11 +108,11 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 				 */
 				public void onMouseOver( MouseOverEvent event )
 				{
-					m_binderName.addStyleName( "activityStreamHover" );
+					m_parentBinderName.addStyleName( "activityStreamHover" );
 				}
 				
 			};
-			m_binderName.addMouseOverHandler( mouseOverHandler );
+			m_parentBinderName.addMouseOverHandler( mouseOverHandler );
 		}
 		
 		// Add mouse out handler.
@@ -134,10 +126,10 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 				 */
 				public void onMouseOut( MouseOutEvent event )
 				{
-					m_binderName.removeStyleName( "activityStreamHover" );
+					m_parentBinderName.removeStyleName( "activityStreamHover" );
 				}
 			};
-			m_binderName.addMouseOutHandler( mouseOutHandler );
+			m_parentBinderName.addMouseOutHandler( mouseOutHandler );
 		}
 		
 		// Add a click handler.
@@ -151,11 +143,11 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 				 */
 				public void onClick( ClickEvent event )
 				{
-					Window.alert( "Not implemented yet - Binder Name" );
+					handleClickOnParentBinder();
 				}
 				
 			};
-			m_binderName.addClickHandler( clickHandler );
+			m_parentBinderName.addClickHandler( clickHandler );
 		}
 	}
 
@@ -163,18 +155,30 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 	/**
 	 * 
 	 */
-	private void addComment( ActivityStreamComment comment )
+	private void addComment( ActivityStreamEntry activityStreamEntry, int commentNum )
 	{
 		FlowPanel mainPanel;
-		FlowPanel panel;
+		ActivityStreamComment commentUI;
+
+		// We recycle ActivityStreamComment objects.
+		// Do we have an old one we can use?
+		commentUI = null;
+		if ( commentNum < m_comments.size() )
+			commentUI = m_comments.get( commentNum );
+		if ( commentUI == null )
+		{
+			// No, create a new one.
+			commentUI = new ActivityStreamComment( m_actionHandler );
+			m_comments.add( commentUI );
+		}
 		
-		// Create a <div> for the comment to live in.
-		panel = new FlowPanel();
-		panel.addStyleName( "level1Comment" );
-		panel.add( comment );
+		commentUI.setData( activityStreamEntry );
 		
+		// Add this ui widget to our widget.
+		m_comments.add( commentUI );
+
 		mainPanel = getMainPanel();
-		mainPanel.add( panel );
+		mainPanel.add( commentUI );
 	}
 	
 	
@@ -183,7 +187,17 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 	 */
 	public void clearEntrySpecificInfo()
 	{
-		m_binderName.setText( "" );
+		super.clearEntrySpecificInfo();
+		
+		// Clear all data from the comments
+		for (ActivityStreamComment nextComment : m_comments)
+		{
+			nextComment.clearEntrySpecificInfo();
+		}
+		
+		m_parentBinderName.setText( "" );
+		m_parentBinderId = null;
+		m_parentBinderPermalink = null;
 	}
 	
 	
@@ -215,6 +229,15 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 
 	
 	/**
+	 * Return the name of the style used with the div that holds the entry.
+	 */
+	public String getMainPanelStyleName()
+	{
+		return "activityStreamTopEntryMainPanel";
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public String getTitlePanelStyleName()
@@ -230,13 +253,119 @@ public class ActivityStreamTopEntry extends ActivityStreamEntry
 	{
 		return "activityStreamTopEntryTitle";
 	}
+	
+	
+	/**
+	 * Take the user to the parent binder.
+	 */
+	private void gotoParentBinder()
+	{
+		OnSelectBinderInfo binderInfo;
+		
+		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
+		{
+			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.OTHER );
+			m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
+		}
+	}
+	
+	
+	/**
+	 * The user clicked on the binder name.  Take the user to that binder.
+	 */
+	public void handleClickOnParentBinder()
+	{
+		if ( m_parentBinderId == null )
+		{
+			Window.alert( "Parent binder id is null.  This should never happen" );
+			return;
+		}
+		
+		if ( m_parentBinderPermalink != null )
+		{
+			gotoParentBinder();
+		}
+		else
+		{
+			HttpRequestInfo ri;
+			AsyncCallback<String> callback;
+			
+			callback = new AsyncCallback<String>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
+						m_parentBinderId );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( String binderPermalink )
+				{
+					// Take the user to the parent binder.
+					m_parentBinderPermalink = binderPermalink;
+					gotoParentBinder();
+				}
+			};
+			
+			// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
+			ri = new HttpRequestInfo();
+			GwtTeaming.getRpcService().getBinderPermalink( ri, m_parentBinderId, callback );
+		}
+	}
 
+	
+	/**
+	 * 
+	 */
+	public void setBinderId( String binderId )
+	{
+		m_parentBinderId = binderId;
+	}
+	
 	
 	/**
 	 * 
 	 */
 	public void setBinderName( String binderName )
 	{
-		m_binderName.setText( binderName );
+		m_parentBinderName.setText( binderName );
+	}
+	
+	
+	/**
+	 * Set the data this we should display from the given ActivityStreamEntry
+	 */
+	public void setData( ActivityStreamEntry entryItem )
+	{
+		List<ActivityStreamEntry> comments = null;
+		int i;
+		
+		super.setData( entryItem );
+		
+		setBinderName( entryItem.getParentBinderName() );
+		setBinderId( entryItem.getParentBinderId() );
+		m_parentBinderPermalink = null;
+
+		// Get the comments for the given item.
+		comments = entryItem.getComments();
+		
+		if ( comments != null )
+		{
+			for (i = 0; i < comments.size(); ++i)
+			{
+				ActivityStreamEntry nextComment;
+				
+				nextComment = comments.get( i );
+				
+				// Add this comment to our entry.
+				addComment( nextComment, i );
+			}
+		}
 	}
 }
