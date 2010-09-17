@@ -427,7 +427,6 @@ public class GwtActivityStreamHelper {
 			request,
 			bs,
 			asp,
-			newData,
 			asi);		
 		return reply;
 	}
@@ -729,8 +728,15 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
-//!		...this needs to be implemented...
-		return Boolean.FALSE;
+		ActivityStreamCache.updateMaps(bs);
+		
+		List<String> trackedBinderIds = ActivityStreamCache.getTrackedBinderIds(request);
+		List<String> trackedPeopleIds = ActivityStreamCache.getTrackedPeopleIds(request);
+
+		Date updateDate = ActivityStreamCache.getUpdateDate(request); 
+		boolean changes =             ActivityStreamCache.checkBindersForNewEntries(bs, trackedBinderIds, updateDate);
+		        changes = (changes || ActivityStreamCache.checkPersonsForNewEntries(bs, trackedPeopleIds, updateDate));
+		return new Boolean(changes);
 	}
 	
 	/*
@@ -738,7 +744,7 @@ public class GwtActivityStreamHelper {
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(ActivityStreamData asd, HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, boolean newData, ActivityStreamInfo asi) {		
+	private static void populateASD(ActivityStreamData asd, HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -797,7 +803,7 @@ public class GwtActivityStreamHelper {
     	asd.setPagingData(pd);
 
     	// Are there any entries in the search results?
-		Map<String, Binder> whatsNewPlaces = (newData ? new HashMap<String, Binder>() : null);
+		Map<String, Binder> whatsNewPlaces = null; //! (newData ? new HashMap<String, Binder>() : null);
     	if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
     		// Yes!  Get the list to hold the activity stream
     		// entries and scan the search results. 
@@ -819,7 +825,7 @@ public class GwtActivityStreamHelper {
 
     			// Are we constructing new data for which we need to
     			// cache the binders?
-    			if (newData) {
+    			if (null != whatsNewPlaces) {
 	    			// Yes!  Do we have an ID for the binder that
     				// contains this entry that we have yet to track?
 					String parentBinderId = entry.getParentBinderId();
@@ -832,12 +838,13 @@ public class GwtActivityStreamHelper {
 	    	}
     	}
 
-    	// Are we constructing new data for which we need to cache the
-    	// binders?
-    	if (newData) {
-    		// Yes!  What to do with:  whatsNewPlaces
-//!			...this needs to be implemented...
-    	}
+    	// Store the places and people we're tracking in the session
+    	// cache....
+    	ActivityStreamCache.setTrackedBinderIds(request, trackedPlacesAL);
+    	ActivityStreamCache.setTrackedPeopleIds(request, trackedPeopleAL);
+    	
+    	// ...and store the date we saved the tracking data.
+    	ActivityStreamCache.setUpdateDate(request);
 	}
 	
 	/*
