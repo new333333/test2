@@ -40,26 +40,41 @@ import org.apache.lucene.document.Field;
 
 public class FieldBuilderBinderIdList extends AbstractFieldBuilder {
 
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
-    
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         // This default radio implementation ignores args.  
         
         Field[] fields = new Field[dataElemValue.size()];
-        String fieldName = makeFieldName(dataElemName);
+        String fieldName = getFieldName(dataElemName);
        
         Long val;
         Field field;
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = Long.valueOf((String)it.next());
-	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
 	        fields[i] = field;
         }
         
         return fields;
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		return dataElemName;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return true;
+	}
 }

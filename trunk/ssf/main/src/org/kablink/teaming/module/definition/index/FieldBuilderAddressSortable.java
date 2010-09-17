@@ -32,17 +32,5 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-
-public class FieldBuilderName extends FieldBuilderGeneric {
-
-	public String getFieldName(String dataElemName) {
-		// Unfortunately, our index field names begin with underscore for profile names.
-		// See Constants.FIRSTNAME_FIELD, Constants.MIDDLENAME_FIELD, and Constants.LASTNAME_FIELD.
-		// TODO This mess needs to be fixed!!
-    	return "_" + dataElemName;
-	}
-
+public class FieldBuilderAddressSortable extends FieldBuilderGeneric {
 }

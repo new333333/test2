@@ -68,7 +68,6 @@ public interface DefinitionModule {
 	public static String INDEX_CAPTION_VALUES="indexCaptionValues";
 	public static String DEFINITION_ELEMENT="definitionElement";
 	public static String CAPTION_FIELD_PREFIX="_caption_";
-	public static String SORT_FIELD_NEEDED="sortFieldNeeded";
 	public enum DefinitionOperation {
 		manageDefinition,
 	}

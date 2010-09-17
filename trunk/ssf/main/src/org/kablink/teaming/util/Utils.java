@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -272,4 +273,23 @@ public class Utils {
 			return null;
 		}
 	}
+	
+	public static void end(Log logger, long startTime, String methodName) {
+		if(logger.isDebugEnabled()) {
+			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName);
+		}
+	}
+
+	public static void end(Log logger, long startTime, String methodName, String arg) {
+		if(logger.isDebugEnabled()) {
+			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName + " [" + arg + "]");
+		}
+	}
+
+	public static void end(Log logger, long startTime, String methodName, String arg1, String arg2) {
+		if(logger.isDebugEnabled()) {
+			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName + " [" + arg1 + "," + arg2 + "]");
+		}
+	}
+
 }

@@ -42,14 +42,11 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.Html;
 import org.kablink.util.search.Constants;
 
-
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderDescription extends AbstractFieldBuilder {
     
-	boolean indexDescriptionFieldAsis;
+	// This is a global setting, so we can safely use an instance variable
+	// to store the value, without hindering multi-threaded accesses.
+	boolean indexDescriptionFieldAsis; 
 	
 	public FieldBuilderDescription() {
 		indexDescriptionFieldAsis = SPropsUtil.getBoolean("index.description.field.asis", false);
@@ -98,5 +95,29 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
     	   return new Field[0];
        }
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		// This data element maps to multiple fields.
+		return null;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		// This data element does not support sorting.
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		// This method is meaningless for this data element
+		return true;
+	}
+
+	@Override
+	public boolean isStored() {
+		// This method is meaningless for this data element
+		return true;
+	}
 
 }

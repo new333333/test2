@@ -45,7 +45,7 @@ import org.kablink.util.search.Constants;
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
 	
-	public String makeFieldName(String dataElemName, String fieldName) {
+	protected String makeFieldName(String dataElemName, String fieldName) {
 		// Just use the data name concatenated with the field name. It is
 		// guaranteed to be unique within its definition
 		return dataElemName + BasicIndexUtils.DELIMITER + fieldName;
@@ -62,18 +62,41 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 
 		List fields = new ArrayList();
 		
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		if (!event.isAllDayEvent()) {
-			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_FREE_BUSY), event.getFreeBusy().name(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_FREE_BUSY), event.getFreeBusy().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		Field[] realFields = new Field[fields.size()];
 		realFields = (Field[]) fields.toArray(realFields);
 		return realFields;
 
 	}
 
+	@Override
+	public String getFieldName(String dataElemName) {
+		// This data element maps to multiple fields.
+		return null;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		// This data element does not support sorting.
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		// This method is meaningless for this data element
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		// This method is meaningless for this data element
+		return false;
+	}
 
 }

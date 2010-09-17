@@ -39,5 +39,70 @@ import org.kablink.teaming.domain.DefinableEntity;
 
 public interface FieldBuilder {
     
+	/**
+	 * Build a Lucene field from the data element.
+	 * 
+	 * @param entity
+	 * @param dataElemName
+	 * @param args
+	 * @return
+	 */
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args);
+    
+    /**
+     * Get the name of the index field for the data element.
+     * <p>
+     * If this data element does not produce any index field, or the data is broken
+     * into multiple fields (hence requiring special treatment), this method returns 
+     * <code>null</code>. However, if the data element produces a single primary index 
+     * field and one or more peripheral/secondary fields, then this method can return 
+     * the name of the primary index field.
+     * 
+     * @param dataElemName
+     * @return
+     */
+    public String getFieldName(String dataElemName);
+    
+    /**
+     * Get the name of the sort field for the data element.
+     * <p>
+     * If no sort field exists for this data element indicating that this data element
+     * does not support sorting in the index, or if this method is not applicable for 
+     * the data element, for example, because this data element maps to multiple fields
+     * in the index and the concept of sorting doesn't apply, then this method should 
+     * return <code>null</code>.
+     * <p>
+     * When this method returns non-null value, it may or may not match the regular
+     * field name (obtained via <code>getFieldName</code> method). If they are identical,
+     * it indicates that the data element has a single index field that serves both
+     * indexing and sorting purposes. If different, the data element has a separate
+     * sort field. 
+     * 
+     * @param dataElemName
+     * @return
+     */
+    // This method is specific to each data element instance
+    public String getSortFieldName(String dataElemName);
+    
+    /**
+     * Returns whether or not the data is stored in the index field.
+     * This method is relevant only if the <code>getFieldName</code> method 
+     * returns non-null value.
+     * <p>
+     * This method is specific to data element type
+     * 
+     * @return
+     */
+    public boolean isStored();
+    
+    /**
+     * Returns whether or not the data is analyzed for the index field.
+     * This method is relevant only if the <code>getFieldName</code> method 
+     * returns non-null value.
+     * <p>
+     * This method is specific to data element type
+     * 
+     * @return
+     */
+    public boolean isAnalyzed();
 }

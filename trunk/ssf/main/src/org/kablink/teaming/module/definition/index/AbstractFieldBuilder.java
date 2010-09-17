@@ -58,11 +58,7 @@ public abstract class AbstractFieldBuilder implements FieldBuilder {
         	fieldsOnly = Boolean.FALSE; // default
         return fieldsOnly.booleanValue();
 	}
-	
-	protected Boolean isSortFieldNeeded(Map args) {
-		return (Boolean)args.get(DefinitionModule.SORT_FIELD_NEEDED);
-	}
-	
+
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
         

@@ -42,6 +42,7 @@ import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 
 /**
@@ -198,6 +199,7 @@ public class Definition extends PersistentTimestampObject  {
      * @return
      */
     public Document getDefinition() {
+		long startTime = System.currentTimeMillis();
     	if (doc != null) return doc;
     	try {
     		InputStream ois = new ByteArrayInputStream(xmlencoding);
@@ -208,9 +210,11 @@ public class Definition extends PersistentTimestampObject  {
     	} catch (Exception fe) {
     		logger.error(fe.getLocalizedMessage(), fe);
     	}
+    	Utils.end(logger, startTime, "getDefinition", getTitle());
         return doc;
     }
     public void setDefinition(Document doc) {
+		long startTime = System.currentTimeMillis();
        	try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
        		if (baos == null) return;
@@ -222,6 +226,7 @@ public class Definition extends PersistentTimestampObject  {
     		logger.error(fe.getLocalizedMessage(), fe);
     	}
     	this.doc = doc;
+    	Utils.end(logger, startTime, "setDefinition", getTitle());
     }
 
     /**

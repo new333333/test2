@@ -37,10 +37,6 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
-/**
- *
- * @author Jong Kim
- */
 public class FieldBuilderTitle extends AbstractFieldBuilder {
 
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
@@ -51,5 +47,25 @@ public class FieldBuilderTitle extends AbstractFieldBuilder {
     	return new Field[0];
         
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return false;
+	}
 
 }

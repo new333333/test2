@@ -39,7 +39,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 
-public class FieldBuilderTimeZone extends FieldBuilderGeneric {
+public class FieldBuilderTimeZone extends FieldBuilderGenericNotAnalyzed {
 
 	protected String getStringToIndex(Set dataElemValue) {
 		Object val = getFirstElement(dataElemValue);
@@ -50,30 +50,6 @@ public class FieldBuilderTimeZone extends FieldBuilderGeneric {
 		else {
 			return super.getStringToIndex(dataElemValue);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldIndex()
-	 */
-	@Override
-	protected Index getFieldIndex() {
-		return Field.Index.NOT_ANALYZED;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
-	 */
-	@Override
-	protected Store getFieldStore() {
-		return Field.Store.YES;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#isSortFieldNeeded()
-	 */
-	@Override
-	protected boolean isSortFieldNeeded() {
-		return false;
 	}
 
 }

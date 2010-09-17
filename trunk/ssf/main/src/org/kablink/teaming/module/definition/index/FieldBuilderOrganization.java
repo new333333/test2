@@ -37,29 +37,4 @@ import org.apache.lucene.document.Field.Index;
 import org.apache.lucene.document.Field.Store;
 
 public class FieldBuilderOrganization extends FieldBuilderGeneric {
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldIndex()
-	 */
-	@Override
-	protected Index getFieldIndex() {
-		return Field.Index.ANALYZED;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
-	 */
-	@Override
-	protected Store getFieldStore() {
-		return Field.Store.YES;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#isSortFieldNeeded()
-	 */
-	@Override
-	protected boolean isSortFieldNeeded() {
-		return true;
-	}
-
 }

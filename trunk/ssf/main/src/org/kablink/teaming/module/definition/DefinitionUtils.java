@@ -41,6 +41,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
@@ -53,6 +55,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.GetterUtil;
@@ -61,26 +64,40 @@ import org.kablink.util.Validator;
 
 
 public class DefinitionUtils {
+	
+	private static Log logger = LogFactory.getLog(DefinitionUtils.class);
+	
    public static String getPropertyValue(Element element, String name) {
+		long startTime = System.currentTimeMillis();
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
-		if (variableEle == null) return null;
-		return variableEle.attributeValue("value");   	
+		String value = null;
+		if (variableEle != null) 
+			value = variableEle.attributeValue("value");
+		Utils.end(logger, startTime, "getPropertyValue(Element,String)", name);
+		return value;
     }
    public static String getPropertyValue(Element element, String name, String attribute) {
+		long startTime = System.currentTimeMillis();
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
-		if (variableEle == null) return null;
-		return variableEle.attributeValue(attribute);   	
+		String value = null;
+		if (variableEle != null) 
+			value = variableEle.attributeValue(attribute);
+		Utils.end(logger, startTime, "getPropertyValue(Element,String,String)", name, attribute);
+		return value;
    }
     public static List getPropertyValueList(Element element, String name) {
+		long startTime = System.currentTimeMillis();
 		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");
     	List results = new ArrayList();
     	for (int i=0; i<resultElements.size(); ++i) {
     		Element variableEle = (Element)resultElements.get(i);
     		results.add(variableEle.attributeValue("value",  ""));
     	}
+		Utils.end(logger, startTime, "getPropertyValueList", name);
 		return results;   	
     }
     public static boolean isSourceItem(Document definitionTree, String itemSource, String itemTarget) {
+		long startTime = System.currentTimeMillis();
     	if (definitionTree == null) return false;
 		Element root = definitionTree.getRootElement();
 		
