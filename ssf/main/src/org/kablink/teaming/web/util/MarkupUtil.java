@@ -1085,9 +1085,9 @@ public class MarkupUtil {
 		final Map<String,Object> data = new HashMap<String,Object>(); // Changed data
 		CustomAttribute ca_zoneUUID = entity.getCustomAttribute("_zoneUUID");
 		String s_zoneUUID = "";
-		if (ca_zoneUUID.getValueType() == CustomAttribute.STRING) {
+		if (ca_zoneUUID != null && ca_zoneUUID.getValueType() == CustomAttribute.STRING) {
 			s_zoneUUID = (String)ca_zoneUUID.getValue();
-		} else if (ca_zoneUUID.getValueType() == CustomAttribute.SET) {
+		} else if (ca_zoneUUID != null && ca_zoneUUID.getValueType() == CustomAttribute.SET) {
 			Object[] UUIDs = ca_zoneUUID.getValueSet().toArray();
 			s_zoneUUID = UUIDs[0].toString();
 		}
