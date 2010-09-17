@@ -641,9 +641,9 @@ public class GwtActivityStreamHelper {
 			asTIChildren = asTI.getChildBindersList();
 			asIds = new String[idCount];
 			idIndex = 0;
-			for (String followedPersonId: followedPeopleList) {
+			for (String followedPeopleId: followedPeopleList) {
 				// Can we access the next one's User?
-				id = followedPersonId;
+				id = followedPeopleId;
 				user = GwtServerHelper.getUserSafely(pm, id);
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
@@ -735,7 +735,7 @@ public class GwtActivityStreamHelper {
 
 		Date updateDate = ActivityStreamCache.getUpdateDate(request); 
 		boolean changes =             ActivityStreamCache.checkBindersForNewEntries(bs, trackedBinderIds, updateDate);
-		        changes = (changes || ActivityStreamCache.checkPersonsForNewEntries(bs, trackedPeopleIds, updateDate));
+		        changes = (changes || ActivityStreamCache.checkPeopleForNewEntries( bs, trackedPeopleIds, updateDate));
 		return new Boolean(changes);
 	}
 	
@@ -760,7 +760,7 @@ public class GwtActivityStreamHelper {
 		switch (asi.getActivityStream()) {
 		case FOLLOWED_PEOPLE:
 		case FOLLOWED_PERSON:
-			// Followed people/person:
+			// Followed people:
 			// 1. There are no tracked places; and
 			// 2. The tracked people are the owner IDs of the places.
 			sAToL(trackedPlaces, trackedPeopleAL);

@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -52,6 +53,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -81,19 +83,17 @@ public class ActivityStreamCache {
     	// Note:  The following fields need to be kept together so that
     	//    they are consistent relative to each other within a
     	//    zone-specific cache.
-    	private boolean			m_hasSiteEntries;
     	private Date			m_lastUpdate;
     	private Map<Long, Date>	m_binderMap;
-    	private Map<Long, Date>	m_personMap;
+    	private Map<Long, Date>	m_peopleMap;
     	
     	/*
     	 * Constructor method.
     	 */
     	private ActivityStreamIDCache() {
-    		m_binderMap      = new HashMap<Long, Date>();
-    		m_personMap      = new HashMap<Long, Date>();
-    		m_hasSiteEntries = false;
-    		m_lastUpdate     = new Date(
+    		m_binderMap  = new HashMap<Long, Date>();
+    		m_peopleMap  = new HashMap<Long, Date>();
+    		m_lastUpdate = new Date(
     			System.currentTimeMillis() -
     			mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh()) - 1);
     	}
@@ -117,22 +117,12 @@ public class ActivityStreamCache {
 		}
 		
     	/**
-    	 * Returns the person map from the ID cache.
+    	 * Returns the people map from the ID cache.
     	 * 
     	 * @return
     	 */
-		public Map<Long, Date> getPersonMap() {
-			return m_personMap;
-		}
-		
-		/**
-		 * Returns true if there are new site wide entries available
-		 * from the ID cache.
-		 * 
-		 * @return
-		 */
-		public boolean isHasSiteEntries() {
-			return m_hasSiteEntries;
+		public Map<Long, Date> getPeopleMap() {
+			return m_peopleMap;
 		}
 		
 		/**
@@ -146,22 +136,13 @@ public class ActivityStreamCache {
 		}
 		
 		/**
-		 * Updates the has site entries flag in this ID cache.
+		 * Store a new people map in the ID cache.
 		 * 
-		 * @param hasSiteEntries
-		 */
-		public void setHasSiteEntries(boolean hasSiteEntries) {
-			m_hasSiteEntries = hasSiteEntries;
-		}
-		
-		/**
-		 * Store a new person map in the ID cache.
-		 * 
-		 * @param personMap
+		 * @param peopleMap
 		 * 
 		 */
-		public void setPersonMap(Map<Long, Date> personMap) {
-			m_personMap = personMap;
+		public void setPeopleMap(Map<Long, Date> peopleMap) {
+			m_peopleMap = peopleMap;
 		}
 		
 		/**
@@ -213,101 +194,40 @@ public class ActivityStreamCache {
     }
     
     /**
-     * Returns true if a specific binder has new entries available and
-     * false otherwise.
-     * 
-     * @param bs
-     * @param binderIdS
-     * @param date
-     * 
-     * @return
-     */
-    public static boolean checkIfBinderHasNewEntries(AllModulesInjected bs, String binderIdS, Date date) {
-    	ActivityStreamIDCache cache = getIDCacheForTheZone();
-    	if (null != cache) {
-    		Long binderId = Long.parseLong(binderIdS);
-    		Map<Long, Date> binderMap = cache.getBinderMap();
-        	if (binderMap.containsKey(binderId) && 
-        			binderMap.get(binderId).after(date)) {
-        		return true;    		
-        	}
-    	}
-    	return false;
-    }
-    
-	/**
-	 * Returns true if the person ID cache has new entries available
-	 * and false otherwise.
-	 * 
-	 * @param bs
-	 * @param date
-	 * 
-	 * @return
-	 */
-    public static boolean checkIfHasNewSiteEntries(AllModulesInjected bs, Date date) {
-    	ActivityStreamIDCache cache = getIDCacheForTheZone();
-    	boolean reply = ((null != cache) ? cache.isHasSiteEntries() : false);
-   		return reply;
-    }
-    
-    /**
-     * Returns true if any of the persons in a set have new entries
+     * Returns true if any of the people in a set have new entries
      * available and false otherwise.
      * 
      * @param bs
-     * @param personIds
+     * @param peopleIds
      * @param date
      * 
      * @return
      */
-    public static boolean checkPersonsForNewEntries(AllModulesInjected bs, List<String> personIds, Date date) {
-    	// Do we have a person ID cache available?
+    public static boolean checkPeopleForNewEntries(AllModulesInjected bs, List<String> peopleIds, Date date) {
+    	// Do we have an ID cache available?
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
     	if(null != cache) {
-    		// Yes!  Look to see if there are any person IDs in common,
+    		// Yes!  Look to see if there are any people in common,
     		// using the smallest list.
-    		Map<Long, Date> personMap = cache.getPersonMap();
-    		if (personMap.size() < personIds.size()) {
-	    		for (Long personId: personMap.keySet()) {
-		        	if (personIds.contains(personId) && personMap.get(personId).after(date)) {
+    		Map<Long, Date> peopleMap = cache.getPeopleMap();
+    		if (peopleMap.size() < peopleIds.size()) {
+	    		for (Long peopleId: peopleMap.keySet()) {
+		        	if (peopleIds.contains(peopleId) && peopleMap.get(peopleId).after(date)) {
 		        		return true;
 		        	}
 	    		}	
     		}
     		
     		else {
-        		for (String personIdS: personIds) {
-        			Long personId = Long.parseLong(personIdS);
-    	        	if (personMap.containsKey(personId) && personMap.get(personId).after(date)) {
+        		for (String peopleIdS: peopleIds) {
+        			Long peopleId = Long.parseLong(peopleIdS);
+    	        	if (peopleMap.containsKey(peopleId) && peopleMap.get(peopleId).after(date)) {
     	        		return true;
     	        	}
         		}
     		}
     	}
     	
-    	return false;
-    }
-    
-    /**
-     * Returns true if a specific person has new entries available and
-     * false otherwise.
-     * 
-     * @param bs
-     * @param personIdS
-     * @param date
-     * 
-     * @return
-     */
-    public static boolean checkIfPersonHasNewEntries(AllModulesInjected bs, String personIdS, Date date) {
-    	ActivityStreamIDCache cache = getIDCacheForTheZone();
-    	if (null != cache) {
-    		Long personId = Long.parseLong(personIdS);
-    		Map<Long, Date> personMap = cache.getPersonMap();
-        	if (personMap.containsKey(personId) && 
-        			personMap.get(personId).after(date)) {
-        		return true;    		
-        	}
-    	}
     	return false;
     }
     
@@ -420,16 +340,18 @@ public class ActivityStreamCache {
 	}
 
 	/*
-	 * Constructs a new binder map for the ID cache.
+	 * Constructs new ID maps for the ID cache.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map<Long, Date> updateBinderMap(AllModulesInjected bs, Date now, ActivityStreamIDCache idCache) {
+	private static void updateIDMaps(AllModulesInjected bs, Date now, ActivityStreamIDCache idCache) {
+		// Create new maps to store into the ID cache.
 		Map<Long, Date> newBinderMap = new HashMap<Long, Date>();
+		Map<Long, Date> newPeopleMap = new HashMap<Long, Date>();
 		
-		// Run the search for anything that's changed.  Note that
-		// we run it as admin because the cache is used by everyone
-		// in a zone.
-		Criteria crit = SearchUtils.entriesForTeamingFeedCache(now, GwtActivityStreamHelper.m_activityStreamParams.getLookback());
+		// Run a search for anything that has changed.  Note that we
+		// run it as admin because the cache is used by everyone in a
+		// zone.
+		Criteria crit = SearchUtils.entriesForActivityStreamCache(now, GwtActivityStreamHelper.m_activityStreamParams.getLookback());
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
 		User admin = bs.getProfileModule().getUser(adminUserName);
@@ -440,57 +362,53 @@ public class ActivityStreamCache {
     	if ((null != items) && (!(items.isEmpty()))) {
     		// Yes!  Scan them.
 	    	for (Iterator it = items.iterator(); it.hasNext(); ) {
-	    		// Does this entry have an associated binder ID?
+	    		// Yes!  Does this entry have a modification date?
 	    		Map entry = ((Map) it.next());
-	    		String binderId = ((String) entry.get(Constants.BINDER_ID_FIELD));
-				if (null != binderId) {
-					// Yes!  Does it also have a modification date?
-					Date entryModificationDate = ((Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
-					if (null != entryModificationDate) {
-						// Yes!  If we're not already tracking this
-						// binder or we tracking it with an older
-						// modification date...
-						if (!(newBinderMap.containsKey(Long.valueOf(binderId))) ||
-								newBinderMap.get(Long.valueOf(binderId)).before(entryModificationDate)) {
-							// ..store/update it.
-							newBinderMap.put(Long.valueOf(binderId), entryModificationDate);
+				Date entryModificationDate = ((Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
+				if (null != entryModificationDate) {				
+		    		// Yes!  Does this entry have an associated binder ID?
+		    		String binderIdS = ((String) entry.get(Constants.BINDER_ID_FIELD));
+					if (MiscUtil.hasString(binderIdS)) {
+						// Yes!  Validate that it's in the map with at
+		    			// least this recent of a date.
+						validateIDInMap(
+							newBinderMap,
+							Long.valueOf(binderIdS),
+							entryModificationDate);
+
+						// Does this entry have an ancestry?
+						SearchFieldResult ancestry = ((SearchFieldResult) entry.get(Constants.ENTRY_ANCESTRY));
+						Set ancestrySet = ((null == ancestry) ? null : ancestry.getValueSet());
+						if ((null != ancestrySet) && (!(ancestrySet.isEmpty()))) {
+							// Yes!  Scan its ancestors.
+							for (Object ancestorIdO: ancestrySet) {
+								// Validating that each is in the map
+				    			// with at least this recent of a date.
+								validateIDInMap(
+									newBinderMap,
+									Long.valueOf(ancestorIdO.toString()),
+									entryModificationDate);
+							}
 						}
 					}
-					
-					// Scan this entries ancestry.
-					SearchFieldResult ancestry = ((SearchFieldResult) entry.get(Constants.ENTRY_ANCESTRY));
-					for (Object id: ancestry.getValueSet()) {
-						// If we're not already tracking this
-						// binder or we tracking it with an older
-						// modification date...
-						if (!(newBinderMap.containsKey(Long.valueOf(id.toString()))) ||
-								newBinderMap.get(Long.valueOf(id.toString())).before(entryModificationDate)) {
-							// ..store/update it.
-							newBinderMap.put(Long.valueOf(id.toString()), entryModificationDate);
-						}
-					}
-					
-					// If we get here, there are new site wide
-					// entries available.
-					idCache.setHasSiteEntries(true);
+				
+		    		// Does this entry have an associated modifier ID?
+		    		String peopleIdS = ((String) entry.get(Constants.MODIFICATIONID_FIELD));
+		    		if (MiscUtil.hasString(peopleIdS)) {
+						// Yes!  Validate that it's in the map with at
+		    			// least this recent of a date.
+						validateIDInMap(
+							newPeopleMap,
+							Long.valueOf(peopleIdS),
+							entryModificationDate);
+		    		}
 				}
 	    	}
     	}
-    	
+
+    	// Finally, store the new ID maps in the ID cache.
     	idCache.setBinderMap(newBinderMap);
-    	return newBinderMap;
-	}
-	
-	/*
-	 * Constructs a new person map for the ID cache.
-	 */
-	private static Map<Long, Date> updatePersonMap(AllModulesInjected bs, Date now, ActivityStreamIDCache idCache) {
-		Map<Long, Date> newPersonMap = new HashMap<Long, Date>();
-		
-//!		...this needs to be implemented...
-		
-    	idCache.setPersonMap(newPersonMap);
-		return newPersonMap;
+    	idCache.setPeopleMap(newPeopleMap);
 	}
 	
 	/**
@@ -505,18 +423,27 @@ public class ActivityStreamCache {
     	Date now = new Date();
     	if((null == cache) ||
     			(now.getTime() >= (cache.getLastUpdate().getTime() + mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh())))) {
-    		// Yes!  Create a new one...
+    		// Yes!  Create a new one, store new ID maps into it, store
+    		// the time that we updated it and store that as the ID
+    		// cache for the zone.
     		ActivityStreamIDCache newCache = new ActivityStreamIDCache();
-
-    		// ...store new binder and person maps into...
-    		updateBinderMap(bs, now, newCache);
-    		updatePersonMap(bs, now, newCache);
-    		        	
-        	// ...store the time that we updated it...
-        	newCache.setLastUpdate(now);
-	        
-	        // ...and store the ID cache for the zone.
+    		updateIDMaps(bs, now, newCache);    		        	
+        	newCache.setLastUpdate(now);	        
 	        setIDCacheForTheZone(newCache);
     	}
     }
+
+	/*
+	 * Checks a map for an ID with a date newer than that supplied.  If
+	 * ID is not in the map, or is there with an older date, it is
+	 * stored/updated.
+	 */
+	private static void validateIDInMap(Map<Long, Date> map, Long id, Date date) {
+		// If we're not already tracking this ID or we're tracking it
+		// with an older date...
+		if ((!(map.containsKey(id))) || map.get(id).before(date)) {
+			// ..store/update it.
+			map.put(id, date);
+		}
+	}
 }

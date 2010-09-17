@@ -35,12 +35,10 @@ package org.kablink.teaming.search;
 import static org.kablink.util.search.Constants.*;
 import static org.kablink.util.search.Restrictions.*;
 
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
@@ -54,8 +52,8 @@ import org.kablink.util.search.Order;
 import org.kablink.util.search.Junction.Disjunction;
 
 
+@SuppressWarnings("unchecked")
 public class SearchUtils {
-
 	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds, Date from, Date to)
 	{
 		Criteria crit = new Criteria();
@@ -285,6 +283,13 @@ public class SearchUtils {
 		    .add(between(MODIFICATION_DATE_FIELD, s_fromDate, s_toDate));
 		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;
+	}
+	
+	public static Criteria entriesForActivityStreamCache(Date now, int updateInterval)
+	{
+		// Initially, activity streams use the same search as teaming
+		// feeds do.
+		return entriesForTeamingFeedCache(now, updateInterval);
 	}
 
 	public static Criteria bindersForAncestryBinders(AllModulesInjected bs, List<Long> binderIds)
