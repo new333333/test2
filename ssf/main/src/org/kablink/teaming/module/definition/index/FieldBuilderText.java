@@ -39,47 +39,6 @@ import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.util.search.Constants;
 
-public class FieldBuilderText extends AbstractFieldBuilder {
+public class FieldBuilderText extends FieldBuilderGeneric {
 
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
-    
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default text implementation ignores args.
-              
-        /*
-        boolean store = false;
-        boolean index = true;
-        boolean token = true;
-        boolean storeTermVector = false;
-        
-        Boolean bool;
-        if((bool = (Boolean) args.get("store")) != null)
-            store = bool.booleanValue();
-        if((bool = (Boolean) args.get("index")) != null)
-            index = bool.booleanValue();
-        if((bool = (Boolean) args.get("token")) != null)
-            token = bool.booleanValue();
-        if((bool = (Boolean) args.get("storeTermVector")) != null)
-            storeTermVector = bool.booleanValue();
-        */
-        
-        String val = (String) getFirstElement(dataElemValue);
-        
-        if(val == null) {
-            return new Field[0];
-        }
-        else {
-           	Field sortTextField = new Field(makeFieldName(Constants.SORT_FIELD_PREFIX + dataElemName), val.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
-           	Field textField = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.TOKENIZED); 
-           	if (!isFieldsOnly(args)) {
-               	Field allTextField = BasicIndexUtils.allTextField(val);
-               	return new Field[] {allTextField, textField, sortTextField};
-           	} else {
-               	return new Field[] {textField, sortTextField};
-           	}
-        }
-    }
 }

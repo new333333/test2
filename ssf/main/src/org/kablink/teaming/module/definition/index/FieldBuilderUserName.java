@@ -49,8 +49,8 @@ public class FieldBuilderUserName extends AbstractFieldBuilder {
             return new Field[0];
          }
          else {
- 	         Field nameField = new Field(Constants.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 	            
-	         Field name1Field = new Field(Constants.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
+ 	         Field nameField = new Field(Constants.NAME_FIELD, val, Field.Store.YES, Field.Index.ANALYZED); 	            
+	         Field name1Field = new Field(Constants.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.NOT_ANALYZED);
 	         if (!isFieldsOnly(args)) {
 		         Field allTextField = BasicIndexUtils.allTextField(val);
 	        	 return new Field[] {allTextField, nameField, name1Field};
@@ -59,5 +59,28 @@ public class FieldBuilderUserName extends AbstractFieldBuilder {
 	         }
          }
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		// Given the way this class implements build() method (which smells pretty bad),
+		// there is no meaningful field name to return (or should I return the single 
+		// hard-coded name??)
+		return null;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return true;
+	}
+
+	@Override
+	public boolean isStored() {
+		return true;
+	}
 
 }

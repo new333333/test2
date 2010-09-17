@@ -38,24 +38,29 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 
 public class FieldBuilderSurvey extends AbstractFieldBuilder {
-	
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default date implementation ignores args.  
-        
-//    	String val = (String) getFirstElement(dataElemValue);
-//        if(val == null) {
-//            return new Field[0];
-//        }
-//        else {
-//            Field field = new Field(makeFieldName(dataElemName), val, Field.Store.YES, Field.Index.UN_TOKENIZED);
-//            return new Field[] {field};
-//        }
-    	return null;
+    	return new Field[0];
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return null;
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return false;
+	}
 
 }

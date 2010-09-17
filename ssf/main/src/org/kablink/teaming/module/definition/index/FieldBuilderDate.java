@@ -40,11 +40,6 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 
 public class FieldBuilderDate extends AbstractFieldBuilder {
-
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
         Date val = (Date) getFirstElement(dataElemValue);
@@ -52,7 +47,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(makeFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.UN_TOKENIZED);
+            Field field = new Field(getFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED);
             return new Field[] {field};
         }
     }
@@ -78,5 +73,25 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
         }
         return resolution;
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		return dataElemName;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return getFieldName(dataElemName);
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return true;
+	}
     
 }

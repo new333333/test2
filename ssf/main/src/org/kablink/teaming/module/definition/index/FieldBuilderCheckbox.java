@@ -40,17 +40,9 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
-/**
- *
- * @author Jong Kim
- */
+
 public class FieldBuilderCheckbox extends AbstractFieldBuilder {
 
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
-    
     public Field[] buildField(DefinableEntity entity, String dataElemName, Map args) {
         Set dataElemValue = getEntryElementValue(entity, dataElemName);
         
@@ -70,7 +62,7 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
         if (val == null) {
             return new Field[0];
         }
-        Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        Field field = new Field(getFieldName(dataElemName), val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
         if (!isFieldsOnly(args)) {
             Field allTextField = BasicIndexUtils.allTextField(caption);
         	return new Field[] {allTextField, field};
@@ -78,5 +70,25 @@ public class FieldBuilderCheckbox extends AbstractFieldBuilder {
         	return new Field[] {field};
         }
     }
+
+	@Override
+	public String getFieldName(String dataElemName) {
+		return dataElemName;
+	}
+
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return getFieldName(dataElemName);
+	}
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return true;
+	}
 
 }

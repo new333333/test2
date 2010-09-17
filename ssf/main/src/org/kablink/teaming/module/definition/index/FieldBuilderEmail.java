@@ -35,22 +35,5 @@ package org.kablink.teaming.module.definition.index;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.Field.Store;
 
-public class FieldBuilderEmail extends FieldBuilderGeneric {
-	
-	protected Field.Index getFieldIndex() {
-		return Field.Index.NOT_ANALYZED;
-	}
-
-	protected boolean isSortFieldNeeded() {
-		return false;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.definition.index.FieldBuilderGeneric#getFieldStore()
-	 */
-	@Override
-	protected Store getFieldStore() {
-		return Field.Store.YES;
-	}
-
+public class FieldBuilderEmail extends FieldBuilderGenericNotAnalyzed {
 }

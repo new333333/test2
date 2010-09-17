@@ -34,4 +34,10 @@ package org.kablink.teaming.module.definition.index;
 
 public class FieldBuilderSelectbox extends FieldBuilderSelect {
 
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		// Because select box can allow multiple selections, it can not be used for sorting. 
+		return null;
+	}
+
 }

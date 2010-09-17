@@ -42,9 +42,9 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.search.BasicIndexUtils;
 
-public class FieldBuilderSelect extends AbstractFieldBuilder {
+public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
 
-    public String makeFieldName(String dataElemName) {
+    public String getFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
     	return dataElemName;
     }
@@ -68,7 +68,7 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
     	Set dataElemValueCaptions = (Set) args.get(DefinitionModule.INDEX_CAPTION_VALUES);
     	
     	Field[] fields = new Field[dataElemValue.size() + dataElemValueCaptions.size() + 1];
-        String fieldName = makeFieldName(dataElemName);
+        String fieldName = getFieldName(dataElemName);
        
         String val;
         String allText = "";
@@ -76,14 +76,14 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
         int i = 1;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED);
 	        fields[i] = field;
         }
         
-        fieldName = makeFieldName(DefinitionModule.CAPTION_FIELD_PREFIX + dataElemName);
+        fieldName = DefinitionModule.CAPTION_FIELD_PREFIX + fieldName;
         for(Iterator it = dataElemValueCaptions.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED);
 	        fields[i] = field;
 	        allText += " " + getNltTagInAllLanguages(val);
         }
@@ -94,5 +94,15 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
         
         return fields;
     }
+
+	@Override
+	public boolean isAnalyzed() {
+		return false;
+	}
+
+	@Override
+	public boolean isStored() {
+		return true;
+	}
 
 }

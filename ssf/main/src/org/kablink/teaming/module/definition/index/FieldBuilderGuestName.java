@@ -39,31 +39,5 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.search.BasicIndexUtils;
 
-public class FieldBuilderGuestName extends AbstractFieldBuilder {
-
-    public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-    }
-    
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default guestName implementation ignores args.
-              
-        Field[] fields = new Field[dataElemValue.size() + 1];
-        String fieldName = makeFieldName(dataElemName);
-       
-        String val;
-        String allText = "";
-        Field field;
-        int i = 1;
-        for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
-            val = (String) it.next();
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.UN_TOKENIZED);
-	        fields[i] = field;
-	        allText += " " + val;
-        }
-        fields[0] = BasicIndexUtils.allTextField(allText);
-        
-        return fields;
-    }
+public class FieldBuilderGuestName extends FieldBuilderGenericNotAnalyzed {
 }

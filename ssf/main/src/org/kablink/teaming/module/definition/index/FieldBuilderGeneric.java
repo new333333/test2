@@ -41,21 +41,22 @@ import org.kablink.util.search.Constants;
 
 public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
-	public String makeFieldName(String dataElemName) {
-        //Just use the data name. It is guaranteed to be unique within its definition
-    	return dataElemName;
-	}
-   
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 		String strToIndex = getStringToIndex(dataElemValue);
 		if(strToIndex != null) {
+			// Handle primary field
+           	Field field = new Field(getFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
+           	// Handle optional sort field
 			Field sortField = null;
-			if(getSortFieldNeeded(args))
-				sortField = new Field(Constants.SORT_FIELD_PREFIX + makeFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED); 
-           	Field field = new Field(makeFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex()); 
+			if(!getFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
+				// This data element requires a separate sort field.
+				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+			}
+			// Handle optional allText field.
            	Field allTextField = null;
            	if (!isFieldsOnly(args))
            		allTextField =  BasicIndexUtils.allTextField(strToIndex);
+           	// Put them together.
            	if(sortField != null) {
            		if(allTextField != null)
            			return new Field[] {field, sortField, allTextField};
@@ -73,8 +74,9 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 			return new Field[0];
 		}
     }
-
-	// Default implementation. This can be overriden by subclass.
+   	
+	// Default implementation. This can be overriden by subclass, for example, 
+	// to add the ability to extract string value out of a non-String object. 
 	protected String getStringToIndex(Set dataElemValue) {
 		String result = null;
 		Object val = getFirstElement(dataElemValue);
@@ -87,20 +89,44 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		return result;
 	}
 	
-	protected abstract boolean isSortFieldNeeded();
-	
-	protected abstract Field.Store getFieldStore();
+	// Default implementation.
+	protected Field.Store getFieldStore() {
+		if(isStored())
+			return Field.Store.YES;
+		else
+			return Field.Store.NO;
+	}
 
-	protected abstract Field.Index getFieldIndex();
-	
-	private boolean getSortFieldNeeded(Map args) {
-		boolean sortFieldNeeded = isSortFieldNeeded();
-		if(isSortFieldNeeded(args) != null) {
-			// Runtime argument takes precedence over the static attribute of the class.
-			// This flexibility allows multiple data types re-use the same class.
-			sortFieldNeeded = isSortFieldNeeded(args).booleanValue();
-		}
-		return sortFieldNeeded;
+	// Default implementation.
+	protected Field.Index getFieldIndex() {
+		if(isAnalyzed()) 
+			return Field.Index.ANALYZED;
+		else
+			return Field.Index.NOT_ANALYZED;
 	}
 	
+	// Default implementation.
+	@Override
+	public String getFieldName(String dataElemName) {
+		return dataElemName;
+	}
+
+	// Default implementation.
+	@Override
+	public String getSortFieldName(String dataElemName) {
+		return Constants.SORT_FIELD_PREFIX + getFieldName(dataElemName);
+	}
+
+	// Default implementation.
+	@Override
+	public boolean isAnalyzed() {
+		return true;
+	}
+
+	// Default implementation.
+	@Override
+	public boolean isStored() {
+		return true;
+	}
+
 }
