@@ -48,7 +48,7 @@
 <form name="form1" id="form1" class="ss_style ss_form" 
     method="post" 
     enctype="multipart/form-data" 
-	onSubmit="return ss_submitExportForm();"
+	onSubmit="return ss_onSubmit(this);"
 >
 
 <br/>
@@ -69,8 +69,9 @@
 </c:forEach>
 </div>
 </c:if>
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"/>
-
+<input type="submit" class="ss_submit" name="closeBtn" onClick="ss_buttonSelect('close');"
+  value="<ssf:nlt tag="button.close" text="Close"/>">
+  
 </form>
 </ssf:form>
 </div>
