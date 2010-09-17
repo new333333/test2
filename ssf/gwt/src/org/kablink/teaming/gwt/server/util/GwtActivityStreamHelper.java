@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -62,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -92,6 +92,140 @@ public class GwtActivityStreamHelper {
 	}
 
 	/*
+	 * Inner class used to track author information in a Map used to
+	 * cache it while reading activity stream data.
+	 * 
+	 * The intent is to save information about an author so that we
+	 * don't have to repeatedly read the same information.
+	 */
+	private static class AuthorInfo {
+		private String m_authorAvatarUrl;	// The author's avatar URL.
+		private String m_authorId;			// The author's ID.
+		private String m_authorWsId;		// The author's workspace ID.
+
+		/*
+		 * Class constructor.
+		 */
+		private AuthorInfo() {
+			m_authorAvatarUrl =
+			m_authorId        =
+			m_authorWsId      = "";
+		}
+
+		/*
+		 * Returns an author information object based on the author's
+		 * ID.  If an author information for this ID is in the author
+		 * cache, this is returned.  Otherwise, a new object is
+		 * constructed (using database reads, ...), added to the cache
+		 * and that is returned.
+		 */
+		@SuppressWarnings("unchecked")
+		private static AuthorInfo getAuthorInfo(HttpServletRequest request, AllModulesInjected bs, Map<String, AuthorInfo> authorCache, String authorId) {
+			// If we caching an author information object for this
+			// ID...
+			AuthorInfo reply = authorCache.get(authorId);
+			if (null != reply) {
+				// ...simply return it.
+				return reply;
+			}
+			
+			// Otherwise, construct a new author information object
+			// for it.
+			reply = new AuthorInfo();
+			reply.m_authorId        = authorId;
+			reply.m_authorAvatarUrl = "";			
+			if (MiscUtil.hasString(authorId)) {
+				Long authorWsId;
+				try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
+				catch (Exception ex) {authorWsId = null;                                                                     }
+				if (null != authorWsId) {
+					reply.m_authorWsId = String.valueOf(authorWsId);
+				}
+				
+				// Do we have their workspace ID?
+				if (null != authorWsId) {
+					// Yes!  Can we access any avatars for the author?
+					String paUrl = null;
+					ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
+					List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
+					if((null != paValue) && (!(paValue.isEmpty()))) {
+						// Yes!  We'll use the first one as the URL.
+						ProfileAttributeListElement paValueItem = paValue.get(0);
+						paUrl = paValueItem.getValue().toString();
+					}
+					
+					// Store something as the author's URL so that we don't
+					// try to look it up again.
+					reply.m_authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
+				}
+			}
+
+			// If we get here, reply refers to the AuthorInfo object
+			// constructed for the ID received.  Add it to the cache
+			// and return it.
+			authorCache.put(authorId, reply);
+			return reply;
+		}
+	}
+	
+	/*
+	 * Inner class used to track binder information in a Map used to
+	 * cache it while reading activity stream data.
+	 * 
+	 * The intent is to save information about a binder so that we
+	 * don't have to repeatedly read the same information.
+	 */
+	private static class BinderInfo {
+		private Binder m_binder;		// The binder.
+		private String m_binderHover;	// The binder's hover text.
+		private String m_binderId;		// The binder's ID.
+		private String m_binderName;	// The binder's name.
+
+		/*
+		 * Class constructor.
+		 */
+		private BinderInfo() {
+			m_binderHover =
+			m_binderId    =
+			m_binderName  = "";
+		}
+		
+		/*
+		 * Returns a binder information object based on the binder's
+		 * ID.  If a binder information for this ID is in the binder
+		 * cache, this is returned.  Otherwise, a new object is
+		 * constructed (using database reads, ...), added to the cache
+		 * and that is returned.
+		 */
+		private static BinderInfo getBinderInfo(AllModulesInjected bs, Map<String, BinderInfo> binderCache, String binderId) {
+			// If we caching a binder information object for this ID...
+			BinderInfo reply = binderCache.get(binderId);
+			if (null != reply) {
+				// ...simply return it.
+				return reply;
+			}
+			
+			// Otherwise, construct a new binder information object for
+			// it.
+			reply = new BinderInfo();
+			reply.m_binderId = binderId;			
+			if (MiscUtil.hasString(binderId)) {
+				reply.m_binder = GwtServerHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				if (null != reply.m_binder) {
+					reply.m_binderHover = reply.m_binder.getPathName();
+					reply.m_binderName  = reply.m_binder.getTitle();
+				}
+			}
+
+			// If we get here, reply refers to the BinderInfo object
+			// constructed for the ID received.  Add it to the cache
+			// and return it.
+			binderCache.put(binderId, reply);
+			return reply;
+		}
+	}
+	
+	/*
 	 * Inhibits this class from being instantiated. 
 	 */
 	private GwtActivityStreamHelper() {
@@ -102,7 +236,7 @@ public class GwtActivityStreamHelper {
 	 * Adds the required comments to an activity stream entry object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void addASEComments(HttpServletRequest request, AllModulesInjected bs, ActivityStreamEntry ase, int comments, Map<String, String> avatarCache, Map em) {
+	private static void addASEComments(HttpServletRequest request, AllModulesInjected bs, ActivityStreamEntry ase, int comments, Map<String, AuthorInfo> authorCache, Map<String, BinderInfo> binderCache, Map em) {
 		// If we weren't asked for any comments...
 		if (0 >= comments) {
 			// ...bail.
@@ -137,7 +271,8 @@ public class GwtActivityStreamHelper {
     			request,
     			bs,
     			null,	// null -> An activity stream parameter object is not required for comments.
-    			avatarCache,
+    			authorCache,
+    			binderCache,
     			((Map) it.next()),
     			false);	// false -> This is a comment activity stream entry for an activity stream data.
     		comment.setEntryComments(getCommentCount(bs, comment.getEntryId()));
@@ -150,51 +285,23 @@ public class GwtActivityStreamHelper {
 	 * search.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, String> avatarCache, Map em, boolean baseEntry) {
+	private static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, AuthorInfo> authorCache, Map<String, BinderInfo> binderCache, Map em, boolean baseEntry) {
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
-		// First, initialize the author information.
-		String authorId = getSFromEM(em, Constants.MODIFICATIONID_FIELD);
-		reply.setAuthorId(   authorId                                          );
+		// First, initialize the author information.		
+		AuthorInfo authorInfo = AuthorInfo.getAuthorInfo(
+			request,
+			bs,
+			authorCache,
+			getSFromEM(
+				em,
+				Constants.MODIFICATIONID_FIELD));
+		reply.setAuthorId(         authorInfo.m_authorId       );
+		reply.setAuthorWorkspaceId(authorInfo.m_authorWsId     );
+		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
 		reply.setAuthorLogin(getSFromEM(em, Constants.MODIFICATION_NAME_FIELD ));
 		reply.setAuthorName( getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
-		String authorAvatarUrl = "";
-		if (MiscUtil.hasString(authorId)) {
-			Long authorWsId;
-			try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
-			catch (Exception ex) {authorWsId = null;                                                                     }
-			if (null != authorWsId) {
-				reply.setAuthorWorkspaceId(String.valueOf(authorWsId));
-			}
-			
-			// Do we have the author's avatar cached?
-			String urlFromCache = avatarCache.get(authorId);
-			if (null != urlFromCache) {
-				// Yes!  Use that rather than trying to re-read it.
-				authorAvatarUrl = urlFromCache;
-			}
-			
-			// No, we don't have the author's avatar cached!  Do we
-			// have their workspace ID?
-			else if (null != authorWsId) {
-				// Yes!  Can we access any avatars for the author?
-				String paUrl = null;
-				ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
-				List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
-				if((null != paValue) && (!(paValue.isEmpty()))) {
-					// Yes!  We'll use the first one as the URL.
-					ProfileAttributeListElement paValueItem = paValue.get(0);
-					paUrl = paValueItem.getValue().toString();
-				}
-				
-				// Store something as the author's URL so that we don't
-				// try to look it up again.
-				authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
-				avatarCache.put(authorId, authorAvatarUrl);
-			}
-		}
-		reply.setAuthorAvatarUrl(authorAvatarUrl);
 
 		// Then, the entry information.
 		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD              ));	
@@ -207,17 +314,15 @@ public class GwtActivityStreamHelper {
 
 		// And finally, the parent binder information.  Does the entry
 		// map contain the ID of the binder that contains the entry?
-		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);
-		reply.setParentBinderId(binderId);
-		if (MiscUtil.hasString(binderId)) {
-			Binder binder;
-			try                  {binder = bs.getBinderModule().getBinder(Long.valueOf(binderId));}
-			catch (Exception ex) {binder = null;}
-			if (null != binder) {
-				reply.setParentBinderHover(binder.getPathName());
-				reply.setParentBinderName( binder.getTitle()   );
-			}
-		}
+		BinderInfo binderInfo = BinderInfo.getBinderInfo(
+			bs,
+			binderCache,
+			getSFromEM(
+				em,
+				Constants.BINDER_ID_FIELD));
+		reply.setParentBinderId(   binderInfo.m_binderId   );
+		reply.setParentBinderHover(binderInfo.m_binderHover);
+		reply.setParentBinderName( binderInfo.m_binderName );
 
 		// Are we working on a base activity stream entry for an
 		// activity stream data object? 
@@ -227,7 +332,14 @@ public class GwtActivityStreamHelper {
 			int comments = asp.getActiveComments();
 			if (0 < comments) {
 				// Yes!  Add them.
-				addASEComments(request, bs, reply, comments, avatarCache, em);
+				addASEComments(
+					request,
+					bs,
+					reply,
+					comments,
+					authorCache,
+					binderCache,
+					em);
 			}
 		}
 
@@ -397,7 +509,7 @@ public class GwtActivityStreamHelper {
 		// Return it.
 		return reply;
 	}
-	
+
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * and activity streams tree using the current Binder referred to
@@ -689,7 +801,8 @@ public class GwtActivityStreamHelper {
     	if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
     		// Yes!  Get the list to hold the activity stream
     		// entries and scan the search results. 
-    		Map<String, String> avatarCache = new HashMap<String, String>();
+    		Map<String, AuthorInfo> authorCache = new HashMap<String, AuthorInfo>();
+    		Map<String, BinderInfo> binderCache = new HashMap<String, BinderInfo>();
         	List<ActivityStreamEntry> entries = asd.getEntries();
 	    	for (Iterator it = searchEntries.iterator(); it.hasNext(); ) {
 	    		// Construct and add an activity stream entry for the
@@ -698,7 +811,8 @@ public class GwtActivityStreamHelper {
 	    			request,
 	    			bs,
 	    			asp,
-	    			avatarCache,
+	    			authorCache,
+	    			binderCache,
 	    			((Map) it.next()),
 	    			true);	// true -> This is a base activity stream entry for an activity stream data.
     			entries.add(entry);
@@ -707,18 +821,12 @@ public class GwtActivityStreamHelper {
     			// cache the binders?
     			if (newData) {
 	    			// Yes!  Do we have an ID for the binder that
-    				// contains this entry?
+    				// contains this entry that we have yet to track?
 					String parentBinderId = entry.getParentBinderId();
-					if (MiscUtil.hasString(parentBinderId)) {
-						// Yes!  Are we already tracking it as a what's new place?
-						if (!(whatsNewPlaces.containsKey(parentBinderId))) {
-							try {
-								// No!  Track it now.
-								Binder parentBinder = bs.getBinderModule().getBinder(new Long(parentBinderId));
-								whatsNewPlaces.put(parentBinderId, parentBinder);
-							}
-							catch(Exception e) {/* Ignore.*/}
-						}
+					if (MiscUtil.hasString(parentBinderId) && (!(whatsNewPlaces.containsKey(parentBinderId)))) {
+						// Yes!  Track it now.
+						BinderInfo binderInfo = BinderInfo.getBinderInfo(bs, binderCache, parentBinderId);
+						whatsNewPlaces.put(parentBinderId, binderInfo.m_binder);
 					}
     			}
 	    	}
