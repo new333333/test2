@@ -537,7 +537,7 @@ public class GwtActivityStreamHelper {
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIds[idIndex++] = id;
-					asTIChild = buildASTI(bs, id, user.getWSTitle(), null, ActivityStream.FOLLOWED_PERSON);					
+					asTIChild = buildASTI(bs, id, user.getTitle(), null, ActivityStream.FOLLOWED_PERSON);					
 					asTIChildren.add(asTIChild);
 				}
 			}
