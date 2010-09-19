@@ -184,13 +184,18 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			entryElem.addAttribute("lastName", ((User)entry).getLastName());
 			entryElem.addAttribute("zonName", ((User)entry).getZonName());
 			entryElem.addAttribute("status", ((User)entry).getStatus());
-			SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
-			entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
+			if(((User)entry).getStatusDate() != null) {
+				SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+				entryElem.addAttribute("statusDate", sdFormat.format(((User)entry).getStatusDate()));
+			}
 			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
 			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
-			entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
-			entryElem.addAttribute("diskQuota", Long.toString(((User)entry).getDiskQuota()));
-			entryElem.addAttribute("diskSpaceUsed", Long.toString(((User)entry).getDiskSpaceUsed()));
+			if(((User)entry).getMiniBlogId() != null)
+				entryElem.addAttribute("miniBlogId", Long.toString(((User)entry).getMiniBlogId()));
+			if(((User)entry).getDiskQuota() != null)
+				entryElem.addAttribute("diskQuota", Long.toString(((User)entry).getDiskQuota()));
+			if(((User)entry).getDiskSpaceUsed() != null)
+				entryElem.addAttribute("diskSpaceUsed", Long.toString(((User)entry).getDiskSpaceUsed()));
 		}
 		
 		return entryElem;
