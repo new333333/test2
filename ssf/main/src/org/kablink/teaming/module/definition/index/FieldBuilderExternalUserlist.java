@@ -48,7 +48,7 @@ public class FieldBuilderExternalUserlist extends AbstractFieldBuilder {
         // This default radio implementation ignores args.  
         
         Field[] fields = new Field[dataElemValue.size()];
-        String fieldName = getFieldName(dataElemName);
+        String fieldName = getSearchFieldName(dataElemName);
        
         String val;
         Field field;
@@ -63,7 +63,7 @@ public class FieldBuilderExternalUserlist extends AbstractFieldBuilder {
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return dataElemName;
 	}
 

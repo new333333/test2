@@ -32,12 +32,5 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
-
 public class FieldBuilderGuestName extends FieldBuilderGenericNotAnalyzed {
 }

@@ -44,7 +44,7 @@ public class FieldBuilderSurvey extends AbstractFieldBuilder {
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return null;
 	}
 

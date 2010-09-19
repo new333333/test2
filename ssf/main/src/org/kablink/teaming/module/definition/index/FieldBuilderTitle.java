@@ -39,17 +39,16 @@ import org.apache.lucene.document.Field;
 
 public class FieldBuilderTitle extends AbstractFieldBuilder {
 
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        // This default title implementation ignores args.  
-    	
-    	//This routine doesn't return anything because the title is indexed as part 
-    	//  of the default data items (such as creationDate, modificationDate, etc)
+    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {    	
+    	// This routine doesn't return anything because the title is indexed as part 
+    	// of the default data items (such as creationDate, modificationDate, etc).
+    	// Throughout the system, title receives some special treatment.
+    	// See {@link org.kablink.teaming.module.shared.EntityIndexUtils#addTitle}.
     	return new Field[0];
-        
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return null;
 	}
 

@@ -134,8 +134,6 @@ public class Constants {
 	public static final String NORM_TITLE_FIELD = "_normTitleField";
 	public static final String TITLE1_FIELD = "_title1";
 	public static final String EXTENDED_TITLE_FIELD = "_extendedTitle";
-	public static final String NAME_FIELD = "_name";
-	public static final String NAME1_FIELD = "_name1";
 	public static final String DESC_FIELD = "_desc"; // Lucene stored field for description element
 	public static final String DESC_TEXT_FIELD = "description"; // Lucene indexed field for description element
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
@@ -194,28 +192,14 @@ public class Constants {
 	public static final String TOTALREPLYCOUNT_FIELD = "_totalReplyCount";
 	public static final String LOGINNAME_FIELD = "_loginName";
 	public static final String GROUPNAME_FIELD = "_groupName";
-	public static final String FIRSTNAME_FIELD = "_firstName";
-	public static final String MIDDLENAME_FIELD = "_middleName";
-	public static final String LASTNAME_FIELD = "_lastName";
-	public static final String EMAIL_FIELD = "_email";
-	public static final String EMAIL_TXT_FIELD = "_emailTxt";
-	public static final String EMAIL_MOBILE_FIELD = "_emailMobile";
-	public static final String ORGANIZATION_FIELD = "_org";
-	public static final String PHONE_FIELD = "_phone";
-	public static final String STATUS_FIELD = "_status";
-	public static final String STATUS_DATE_FIELD = "_statusDate";
-	public static final String SKYPEID_FIELD = "_skypeId";
-	public static final String TWITTERID_FIELD = "_twitterId";
-	public static final String MINIBLOGID_FIELD = "_miniBlogId";
-	public static final String DISKQUOTA_FIELD = "_diskQuota";
-	public static final String DISKSPACEUSED_FIELD = "_diskSpaceUsed";
-	public static final String ZONNAME_FIELD = "_zonName";
+	public static final String APPLICATION_NAME_FIELD = "_applicationName";
+	public static final String APPLICATION_GROUPNAME_FIELD = "_applicationGroupName";
+	public static final String EMAIL_FIELD = "emailAddress";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
-	public static final String APPLICATION_NAME_FIELD = "_applicationName";
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
 	public static final String PERSONFLAG_FIELD = "_isPerson";
-	 
+
 	public Constants() {
 		super();
 	}

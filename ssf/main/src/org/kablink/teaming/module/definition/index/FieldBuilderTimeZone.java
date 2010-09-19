@@ -35,10 +35,6 @@ package org.kablink.teaming.module.definition.index;
 import java.util.Set;
 import java.util.TimeZone;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-
 public class FieldBuilderTimeZone extends FieldBuilderGenericNotAnalyzed {
 
 	protected String getStringToIndex(Set dataElemValue) {

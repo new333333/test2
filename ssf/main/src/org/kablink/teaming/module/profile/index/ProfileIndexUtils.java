@@ -40,15 +40,17 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 
 import static org.kablink.util.search.Constants.*;
 /**
- *
- * @author Janet MCcann
+ * This class contains non-standard indexing logic specific to profile elements. 
+ * In other word, only those processing behaviors beyond and above that provided
+ * by the fatory-shipped FieldBuilder* classes must be coded up here. Otherwise,
+ * NEVER add hard-coded behavior here.
+ * 
  */
 public class ProfileIndexUtils {
-	   public static void addName(Document doc, User user, boolean fieldsOnly) {
+	  public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
@@ -58,67 +60,27 @@ public class ProfileIndexUtils {
         Field docNumField = new Field(GROUPNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }      
-    public static void addZonName(Document doc, User user, boolean fieldsOnly) {
-    	if (Validator.isNotNull(user.getZonName())) {
-    		Field docNumField = new Field(ZONNAME_FIELD, user.getZonName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    		doc.add(docNumField);
-    		if (!fieldsOnly) {
-    			Field allText = new Field(Constants.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
-    			doc.add(allText);
-    		}
-    	}
+    public static void addName(Document doc, Application application, boolean fieldsOnly) {
+        Field docNumField = new Field(APPLICATION_NAME_FIELD, application.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        doc.add(docNumField);
+    }    
+    public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
+        Field docNumField = new Field(APPLICATION_GROUPNAME_FIELD, appGroup.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        doc.add(docNumField);
     }      
+
     public static void addWorkspaceId(Document doc, User user) {
     	if (user.getWorkspaceId() != null) {
     		Field workspaceIdField = new Field(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(workspaceIdField);
     	}
     }      
-    public static void addEmail(Document doc, User user, boolean fieldsOnly) {
-    	String mail = user.getEmailAddress();
-    	if (Validator.isNotNull(mail)) {
-    		Field docNumField =  new Field(EMAIL_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
-    		doc.add(docNumField);
-    		if (!fieldsOnly) {
-    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
-               	doc.add(allText);
-    		}
-    	}
-    	mail = user.getTxtEmailAddress();
-       	if (Validator.isNotNull(mail)) {
-    		Field docNumField =  new Field(EMAIL_TXT_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
-    		doc.add(docNumField);
-    		if (!fieldsOnly) {
-    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
-               	doc.add(allText);
-    		}
-    	}
-    	mail = user.getMobileEmailAddress();
-       	if (Validator.isNotNull(mail)) {
-    		Field docNumField =  new Field(EMAIL_MOBILE_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
-    		doc.add(docNumField);
-    		if (!fieldsOnly) {
-    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
-               	doc.add(allText);
-    		}
-    	}
-    } 
     public static void addReservedId(Document doc, Principal principal, boolean fieldsOnly) {
     	if (Validator.isNotNull(principal.getInternalId())) {
     		Field docNumField =  new Field(RESERVEDID_FIELD, principal.getInternalId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     	}
     } 
-    public static void addName(Document doc, Application application, boolean fieldsOnly) {
-        Field docNumField = new Field(APPLICATION_NAME_FIELD, application.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        doc.add(docNumField);
-    }    
-    public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
-    	// share the same field name with Group, no good reason to create separate name
-        Field docNumField = new Field(GROUPNAME_FIELD, appGroup.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-        doc.add(docNumField);
-    }      
-
     public static void addPersonFlag(Document doc, User user) {
         Field docNumField = new Field(PERSONFLAG_FIELD, String.valueOf(user.isPerson()), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);

@@ -44,7 +44,7 @@ import org.kablink.teaming.search.BasicIndexUtils;
 
 public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
 
-    public String getFieldName(String dataElemName) {
+    public String getSearchFieldName(String dataElemName) {
         //Just use the data name. It is guaranteed to be unique within its definition
     	return dataElemName;
     }
@@ -68,7 +68,7 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
     	Set dataElemValueCaptions = (Set) args.get(DefinitionModule.INDEX_CAPTION_VALUES);
     	
     	Field[] fields = new Field[dataElemValue.size() + dataElemValueCaptions.size() + 1];
-        String fieldName = getFieldName(dataElemName);
+        String fieldName = getSearchFieldName(dataElemName);
        
         String val;
         String allText = "";

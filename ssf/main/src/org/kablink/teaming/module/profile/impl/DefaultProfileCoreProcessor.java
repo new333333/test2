@@ -546,8 +546,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		if (entry instanceof User) {
 			User user = (User)entry;
 			ProfileIndexUtils.addName(indexDoc, user, false);
-			ProfileIndexUtils.addEmail(indexDoc, user, false);
-			ProfileIndexUtils.addZonName(indexDoc, user, false);
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
 			ProfileIndexUtils.addPersonFlag(indexDoc, user);
 		} else if(entry instanceof Group) {

@@ -78,6 +78,7 @@ import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.Workflow;
 import org.kablink.teaming.remoting.ws.model.FileVersions.FileVersion;
+import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
@@ -208,8 +209,6 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("id", (String) user.get(Constants.DOCID_FIELD));
 		entryElem.addAttribute("binderId", (String) user.get(Constants.BINDER_ID_FIELD));
 		entryElem.addAttribute("definitionId", (String) user.get(Constants.COMMAND_DEFINITION_FIELD));
-		entryElem.addAttribute("title", (String) user.get(Constants.TITLE_FIELD));
-		entryElem.addAttribute("emailAddress", (String) user.get(Constants.EMAIL_FIELD));
 		entryElem.addAttribute("type", (String) user.get(Constants.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(Constants.RESERVEDID_FIELD)!=null));
 		/*
@@ -219,21 +218,38 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		String name = getPrincipalName(user);
 		if(name != null) entryElem.addAttribute("name", name);
 		
-		if (user.containsKey(Constants.FIRSTNAME_FIELD)) entryElem.addAttribute("firstName", (String) user.get(Constants.FIRSTNAME_FIELD));
-		if (user.containsKey(Constants.MIDDLENAME_FIELD)) entryElem.addAttribute("middleName", (String) user.get(Constants.MIDDLENAME_FIELD));
-		if (user.containsKey(Constants.LASTNAME_FIELD)) entryElem.addAttribute("lastName", (String) user.get(Constants.LASTNAME_FIELD));
-		if (user.containsKey(Constants.ZONNAME_FIELD)) entryElem.addAttribute("zonName", (String) user.get(Constants.ZONNAME_FIELD));
-		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
-		if (user.containsKey(Constants.STATUS_DATE_FIELD)) entryElem.addAttribute("statusDate", (String) user.get(Constants.STATUS_DATE_FIELD));
-		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
-		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
-		if (user.containsKey(Constants.MINIBLOGID_FIELD)) entryElem.addAttribute("miniBlogId", (String) user.get(Constants.MINIBLOGID_FIELD));
-		if (user.containsKey(Constants.DISKQUOTA_FIELD)) entryElem.addAttribute("diskQuota", (String) user.get(Constants.DISKQUOTA_FIELD));
-		if (user.containsKey(Constants.DISKSPACEUSED_FIELD)) entryElem.addAttribute("diskSpaceUsed", (String) user.get(Constants.DISKSPACEUSED_FIELD));
+		// We return only statically defined data elements, and ignore all custom elements.
+		for(Object key: user.keySet()) {
+			if(key instanceof String) {
+				String ks = (String) key;
+				//if(!ks.startsWith("_")) {
+				if(isStaticallyDefinedElement(ks)) {
+					Object val = user.get(ks);
+					if(val instanceof String)
+						entryElem.addAttribute(ks, (String) val); 
+					else if(val instanceof SearchFieldResult)
+						entryElem.addAttribute(ks, ((SearchFieldResult)val).getValueString());
+				}
+			}
+		}
 
 		return entryElem;
 	}
 
+	private boolean isStaticallyDefinedElement(String key) {
+		return (key.equals("title") || 
+				key.equals("emailAddress") || 
+				key.equals("mobileEmailAddress") || 
+				key.equals("txtEmailAddress") || 
+				key.equals("firstName") || 
+				key.equals("middleName") ||
+				key.equals("lastName") ||
+				key.equals("zonName") ||
+				key.equals("skypeId") ||
+				key.equals("twitterId") ||
+				key.equals("miniBlogId"));
+	}
+	
 	String getPrincipalName(Map user) { 
 		if (Constants.ENTRY_TYPE_USER.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
 			return (String)user.get(Constants.LOGINNAME_FIELD);			

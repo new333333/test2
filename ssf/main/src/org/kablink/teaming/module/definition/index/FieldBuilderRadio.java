@@ -37,7 +37,7 @@ public class FieldBuilderRadio extends FieldBuilderSelect {
 	@Override
 	public String getSortFieldName(String dataElemName) {
 		// Because radio button forces a single selection, it can be used for sorting.
-		return getFieldName(dataElemName);
+		return getSearchFieldName(dataElemName);
 	}
 
 }

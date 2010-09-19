@@ -32,8 +32,14 @@
  */
 package org.kablink.teaming.module.definition.index;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
 
 public class FieldBuilderEmail extends FieldBuilderGenericNotAnalyzed {
+	
+	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+		return super.build(dataElemName, dataElemValue, args); // $$$$$$$$$$$$$ TODO
+	}
 }

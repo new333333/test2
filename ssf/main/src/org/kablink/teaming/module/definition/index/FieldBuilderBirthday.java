@@ -32,8 +32,5 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-
 public class FieldBuilderBirthday extends FieldBuilderGenericNotAnalyzed {
 }
