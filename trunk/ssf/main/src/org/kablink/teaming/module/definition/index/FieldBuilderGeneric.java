@@ -43,12 +43,12 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 		String strToIndex = getStringToIndex(dataElemValue);
-		if(strToIndex != null) {
+		if(strToIndex != null && !strToIndex.equals("")) {
 			// Handle primary field
-           	Field field = new Field(getFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
+           	Field field = new Field(getSearchFieldName(dataElemName), strToIndex, getFieldStore(), getFieldIndex());
            	// Handle optional sort field
 			Field sortField = null;
-			if(!getFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
+			if(!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
 				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED);
 			}
@@ -107,14 +107,14 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	
 	// Default implementation.
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return dataElemName;
 	}
 
 	// Default implementation.
 	@Override
 	public String getSortFieldName(String dataElemName) {
-		return Constants.SORT_FIELD_PREFIX + getFieldName(dataElemName);
+		return Constants.SORT_FIELD_PREFIX + getSearchFieldName(dataElemName);
 	}
 
 	// Default implementation.

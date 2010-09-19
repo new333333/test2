@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-
 public class FieldBuilderAddressUnsortable extends FieldBuilderGeneric {
 
 	@Override

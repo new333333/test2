@@ -76,7 +76,7 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 	}
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		// This data element maps to multiple fields.
 		return null;
 	}

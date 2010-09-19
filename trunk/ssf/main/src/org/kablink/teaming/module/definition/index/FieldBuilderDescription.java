@@ -79,6 +79,10 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
             
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
+        	// This is the built-in static description element.
+        	// TODO We should really make the handling of this static description element identical to that of custom description element. 
+        	// From indexing point of view, it is easy enough. But fixing application accordingly requires some work, so deferred to the
+        	// later release.
         	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.NO); 
         	Field descTextField = new Field(Constants.DESC_TEXT_FIELD, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
         	Field descFormatField = new Field(Constants.DESC_FORMAT_FIELD, String.valueOf(val.getFormat()), Field.Store.YES, Field.Index.TOKENIZED); 
@@ -88,16 +92,25 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
         		Field allTextField = BasicIndexUtils.allTextField(strippedText);
          		return new Field[] {allTextField, descField, descTextField, descFormatField};
          	}
-        } else if (!isFieldsOnly(args)){
-         	Field allTextField = BasicIndexUtils.allTextField(strippedText);
-         	return new Field[] {allTextField};
-       } else {
-    	   return new Field[0];
-       }
+        }
+        else {
+        	// This is a custom description element.
+        	// Use a single field to store the original text and also to index the stipped text.
+        	// We will not bother with the format information for now.
+        	// TODO We eventually want a single handling for both static and custom description element.
+        	Field descField = new Field(dataElemName, text, Field.Store.YES, Field.Index.NO); 
+        	Field descTextField = new Field(dataElemName, strippedText, Field.Store.NO, Field.Index.ANALYZED); 
+         	if (isFieldsOnly(args)) {
+         		return new Field[] {descField, descTextField};
+         	} else {
+        		Field allTextField = BasicIndexUtils.allTextField(strippedText);
+         		return new Field[] {allTextField, descField, descTextField};
+         	}
+        }
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		// This data element maps to multiple fields.
 		return null;
 	}

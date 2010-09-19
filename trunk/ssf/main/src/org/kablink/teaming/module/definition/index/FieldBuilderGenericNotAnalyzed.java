@@ -36,7 +36,7 @@ public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric
 	
 	@Override
 	public String getSortFieldName(String dataElemName) {
-		return getFieldName(dataElemName);
+		return getSearchFieldName(dataElemName);
 	}
 
 	@Override

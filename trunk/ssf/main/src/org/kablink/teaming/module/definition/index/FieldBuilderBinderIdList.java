@@ -44,7 +44,7 @@ public class FieldBuilderBinderIdList extends AbstractFieldBuilder {
         // This default radio implementation ignores args.  
         
         Field[] fields = new Field[dataElemValue.size()];
-        String fieldName = getFieldName(dataElemName);
+        String fieldName = getSearchFieldName(dataElemName);
        
         Long val;
         Field field;
@@ -59,7 +59,7 @@ public class FieldBuilderBinderIdList extends AbstractFieldBuilder {
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return dataElemName;
 	}
 

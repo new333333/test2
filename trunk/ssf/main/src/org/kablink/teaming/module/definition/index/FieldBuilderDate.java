@@ -47,7 +47,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(getFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED);
+            Field field = new Field(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED);
             return new Field[] {field};
         }
     }
@@ -75,13 +75,13 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
+	public String getSearchFieldName(String dataElemName) {
 		return dataElemName;
 	}
 
 	@Override
 	public String getSortFieldName(String dataElemName) {
-		return getFieldName(dataElemName);
+		return getSearchFieldName(dataElemName);
 	}
 
 	@Override

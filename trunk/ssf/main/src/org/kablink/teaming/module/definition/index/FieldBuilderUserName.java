@@ -36,35 +36,19 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
-import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.util.search.Constants;
 
 public class FieldBuilderUserName extends AbstractFieldBuilder {
 
-    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-        String val = (String) getFirstElement(dataElemValue);
-         val = val.trim();
-        
-         if(val.length() == 0) {
-            return new Field[0];
-         }
-         else {
- 	         Field nameField = new Field(Constants.NAME_FIELD, val, Field.Store.YES, Field.Index.ANALYZED); 	            
-	         Field name1Field = new Field(Constants.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.NOT_ANALYZED);
-	         if (!isFieldsOnly(args)) {
-		         Field allTextField = BasicIndexUtils.allTextField(val);
-	        	 return new Field[] {allTextField, nameField, name1Field};
-	         } else {
-	        	 return new Field[] {nameField, name1Field};	        	 
-	         }
-         }
+    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {    	
+    	// This routine doesn't return anything because user name is indexed as part 
+    	// of the default data items (such as creationDate, modificationDate, etc).
+    	// Throughout the system, user name receives some special treatment.
+    	// See {@link org.kablink.teaming.module.profile.index.ProfileIndexUtils#addName}.
+    	return new Field[0];
     }
 
 	@Override
-	public String getFieldName(String dataElemName) {
-		// Given the way this class implements build() method (which smells pretty bad),
-		// there is no meaningful field name to return (or should I return the single 
-		// hard-coded name??)
+	public String getSearchFieldName(String dataElemName) {
 		return null;
 	}
 
@@ -75,12 +59,12 @@ public class FieldBuilderUserName extends AbstractFieldBuilder {
 
 	@Override
 	public boolean isAnalyzed() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isStored() {
-		return true;
+		return false;
 	}
 
 }
