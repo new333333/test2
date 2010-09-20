@@ -765,7 +765,7 @@ public class DefinitionHelper {
        		Element itemSource = (Element) titleEle.selectSingleNode("properties/property[@name='itemSource']");
        		if (itemSource != null) {
        			String itemDataName = itemSource.attributeValue("value", "");
-       			if (!itemDataName.equals("")) {
+       			if (!itemDataName.equals("") && !"ss_none".equals(itemDataName)) {
        				//Found the data element that is the source for the title
 					model.put(WebKeys.PRIMARY_FILE_ATTRIBUTE, itemDataName);
        			}
