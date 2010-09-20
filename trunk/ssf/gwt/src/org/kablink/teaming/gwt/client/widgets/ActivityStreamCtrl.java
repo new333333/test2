@@ -295,6 +295,16 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * 
+	 */
+	private void cancelCheckForChangesTimer()
+	{
+		if ( m_checkForChangesTimer != null )
+			m_checkForChangesTimer.cancel();
+	}
+	
+	
+	/**
 	 * Issue an rpc request to check for anything new.  If there is something new we will issue a
 	 * new search request.
 	 */
@@ -654,6 +664,7 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void hide()
 	{
+		cancelCheckForChangesTimer();
 		setVisible( false );
 	}
 	
@@ -756,12 +767,7 @@ public class ActivityStreamCtrl extends Composite
 		// Show the resume button.
 		m_resumeImg.setVisible( true );
 
-		// Have we created a timer?
-		if ( m_checkForChangesTimer != null )
-		{
-			// Yes, cancel it.
-			m_checkForChangesTimer.cancel();
-		}
+		cancelCheckForChangesTimer();
 	}
 	
 	
@@ -807,24 +813,7 @@ public class ActivityStreamCtrl extends Composite
 		// Show the pause button.
 		m_pauseImg.setVisible( true );
 
-		// Have we created a timer?
-		if ( m_checkForChangesTimer != null )
-		{
-			// Yes
-			// Do we have an activity stream parameter object?
-			if ( m_activityStreamParams != null )
-			{
-				int minutes;
-				
-				// Yes
-				minutes = m_activityStreamParams.getClientRefresh();
-				if ( minutes > 0 )
-				{
-					//!!! Should we refresh immediately?
-					m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
-				}
-			}
-		}
+		startCheckForChangesTimer();
 	}
 	
 	
@@ -875,39 +864,11 @@ public class ActivityStreamCtrl extends Composite
 							 */
 							public void execute()
 							{
-								int minutes;
-								
 								// Now that we have the activity stream parameters, execute the search.
 								executeSearch();
 								
-								// Get the refresh interval in minutes.
-								minutes = m_activityStreamParams.getClientRefresh(); 
-								if ( minutes > 0 )
-								{
-									// Have we already created a timer that is used to check for changes?
-									if ( m_checkForChangesTimer == null )
-									{
-										// No, create one.
-										m_checkForChangesTimer = new Timer()
-										{
-											/**
-											 * 
-											 */
-											public void run()
-											{
-												// Check for changes.
-												checkForChanges();
-											}
-										};
-									}
-
-									// Show the pause button.
-									m_pauseImg.setVisible( true );
-									
-									// Start a timer.  When the timer goes off we will check for changes and
-									// update the activity stream if there is something new.
-									m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
-								}
+								// Start the timer that we will use to check for changes.
+								startCheckForChangesTimer();
 							}
 						};
 						DeferredCommand.addCommand( cmd );
@@ -1030,4 +991,46 @@ public class ActivityStreamCtrl extends Composite
 		m_searchingPanel.setVisible( true );
 	}
 
+	
+	/**
+	 * 
+	 */
+	private void startCheckForChangesTimer()
+	{
+		// Do we have an activity stream parameter object?
+		if ( m_activityStreamParams != null )
+		{
+			int minutes;
+			
+			// Yes, is auto-refresh turned on?
+			minutes = m_activityStreamParams.getClientRefresh();
+			if ( minutes > 0 )
+			{
+				// Yes
+				// Have we already created a timer?
+				if ( m_checkForChangesTimer == null )
+				{
+					// No, create one.
+					m_checkForChangesTimer = new Timer()
+					{
+						/**
+						 * 
+						 */
+						public void run()
+						{
+							// Check for changes.
+							checkForChanges();
+						}
+					};
+				}
+	
+				// Start a timer.  When the timer goes off we will check for changes and
+				// update the activity stream if there is something new.
+				m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
+	
+				// Show the pause button.
+				m_pauseImg.setVisible( true );
+			}
+		}
+	}
 }// end ActivityStreamCtrl

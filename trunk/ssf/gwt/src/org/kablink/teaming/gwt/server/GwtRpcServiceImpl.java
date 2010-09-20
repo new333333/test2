@@ -799,6 +799,49 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
+	 * Get a permalink that can be used to view the given entry.
+	 */
+	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID )
+	{
+		String reply = "";
+		
+		if ( entryId != null && entryId.length() > 0 )
+		{
+			FolderModule folderModule;
+			Long entryIdL;
+			ZoneInfo zoneInfo;
+			String zoneInfoId;
+			FolderEntry entry = null;
+
+			// Get the id of the zone we are running in.
+			zoneInfo = MiscUtil.getCurrentZone();
+			zoneInfoId = zoneInfo.getId();
+			if ( zoneInfoId == null )
+				zoneInfoId = "";
+			
+			folderModule = getFolderModule();
+			
+			entryIdL = new Long( entryId );
+			
+			// Are we looking for an entry that was imported from another zone?
+			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+			{
+				// Yes, get the entry id for the entry in this zone.
+				entryIdL = folderModule.getZoneEntryId( entryIdL, zoneUUID );
+			}
+
+			// Get the entry object.
+			if ( entryIdL != null )
+				entry = folderModule.getEntry( null, entryIdL );
+			
+			reply = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
+		}
+		
+		return reply;
+	}
+	
+	
+	/**
 	 * Return a list of the names of the files that are attachments for the given binder
 	 * 
 	 * @param binderId

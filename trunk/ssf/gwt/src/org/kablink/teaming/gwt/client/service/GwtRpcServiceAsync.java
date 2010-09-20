@@ -91,6 +91,9 @@ public interface GwtRpcServiceAsync
 	
 	// Return an Entry object for the given entry id.
 	public void getEntry( HttpRequestInfo ri, String zoneUUID, String entryId, AsyncCallback<GwtFolderEntry> callback );
+
+	// Return a permalink that can be used to view the given entry.
+	public void getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID, AsyncCallback<String> callback );
 	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public void getFileAttachments( String binderId, AsyncCallback<ArrayList<String>> callback );

@@ -99,6 +99,9 @@ public interface GwtRpcService extends RemoteService
 	// Return an Entry object for the given entry id.
 	public GwtFolderEntry getEntry( HttpRequestInfo ri, String zoneUUID, String entryId ) throws GwtTeamingException;
 	
+	// Return a permalink that can be used to view the given entry.
+	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID );
+	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException;
 	
