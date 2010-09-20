@@ -397,6 +397,15 @@ public class GwtMainPage extends Composite
 	
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
+		// If the context was loaded because of the initial login and
+		// we're entering activity stream mode by default...
+		if ( m_requestInfo.isShowWhatsNewOnLogin() ) {
+			// ...activity stream mode will already have been loaded.
+			// ...Clear the flag and ignore this.
+			m_requestInfo.clearShowWhatsNewOnLogin();
+			return;
+		}		
+		
 		if ( null != m_activityStreamCtrl ) {
 			m_activityStreamCtrl.hide();
 		}
@@ -1739,7 +1748,6 @@ public class GwtMainPage extends Composite
 	/*
 	 * Invoke the Simple Profile Dialog
 	 */
-	@SuppressWarnings("unused")
 	private void invokeSimpleProfile(Element element, String binderId, String userName ) {
 
 		if(!GwtClientHelper.hasString(binderId)) {

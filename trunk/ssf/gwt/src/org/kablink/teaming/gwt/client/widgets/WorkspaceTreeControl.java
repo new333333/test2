@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
@@ -126,8 +127,24 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						selectedBinderId);
 				}
 				public void onSuccess(TreeInfo ti)  {
+					// Construct the vertical tree display.
 					m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
-					m_treeDisplay.render(selectedBinderId, mainPanel);
+					
+					// Are we starting up showing what's new?
+					if (m_requestInfo.isShowWhatsNewOnLogin()) {
+						// Yes!  Then we enter activity stream mode by
+						// default.
+						ActivityStreamInfo asi = new ActivityStreamInfo();
+						asi.setActivityStream( ActivityStream.SITE_WIDE );
+						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
+						m_treeDisplay.enterActivityStreamMode(asi);
+					}
+					
+					else {
+						// No, we aren't starting in activity stream
+						// mode!  Render the tree.
+						m_treeDisplay.render(selectedBinderId, mainPanel);
+					}
 				}
 			});
 			

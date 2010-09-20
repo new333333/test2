@@ -160,7 +160,8 @@ public class ActivityStreamCache {
     		Map<Long, Date> binderMap = cache.getBinderMap();
     		if (binderMap.size() < binderIds.size()) {
 	    		for (Long binderId: binderMap.keySet()) {
-		        	if (binderIds.contains(binderId) && binderMap.get(binderId).after(date)) {
+	    			String binderIdS = String.valueOf(binderId);
+		        	if (binderIds.contains(binderIdS) && binderMap.get(binderId).after(date)) {
 		        		return true;
 		        	}
 	    		}	
@@ -198,7 +199,8 @@ public class ActivityStreamCache {
     		Map<Long, Date> userMap = cache.getUserMap();
     		if (userMap.size() < userIds.size()) {
 	    		for (Long userId: userMap.keySet()) {
-		        	if (userIds.contains(userId) && userMap.get(userId).after(date)) {
+	    			String userIdS = String.valueOf(userId);
+		        	if (userIds.contains(userIdS) && userMap.get(userId).after(date)) {
 		        		return true;
 		        	}
 	    		}	

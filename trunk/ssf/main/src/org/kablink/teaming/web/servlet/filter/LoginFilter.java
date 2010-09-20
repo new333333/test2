@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Enumeration;
-import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -49,13 +48,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.context.request.PortletSessionContext;
-import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -73,6 +68,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -157,6 +153,7 @@ public class LoginFilter  implements Filter {
 	/**
 	 * Convert the given url to a permalink.
 	 */
+	@SuppressWarnings("unchecked")
 	private String convertUrlToPermalink( HttpServletRequest req )
 	{
 		String url;
@@ -255,6 +252,7 @@ public class LoginFilter  implements Filter {
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
 				chain.doFilter(req, res);										
 			}
+/*			// Dead code.
 			else if(1 == 0 && (BrowserSniffer.is_wap_xhtml(req) || 
 					BrowserSniffer.is_blackberry(req) || 
 					BrowserSniffer.is_iphone(req))) {
@@ -262,6 +260,7 @@ public class LoginFilter  implements Filter {
 				// Guest access not allowed. Redirect the guest to the login page.
 				res.sendRedirect(getMobileLoginURL(req, currentURL));
 			}
+*/
 			else {
 				// The guest is requesting a non-mobile page that isn't the login form.
 				// We need to check whether we should allow this or not.
@@ -337,6 +336,7 @@ public class LoginFilter  implements Filter {
 						Long userHomePageId = (Long)userProperties.getProperty(ObjectKeys.USER_PROPERTY_DEFAULT_HOME_PAGE);
 						if (userHomePageId != null) {
 							//The user has defined a home page. See if it is accessible
+							@SuppressWarnings("unused")
 							Binder binder = getBinderModule().getBinder(userHomePageId);
 							return PermaLinkUtil.getPermalink(req, userHomePageId, EntityType.folder);
 						}
@@ -353,6 +353,7 @@ public class LoginFilter  implements Filter {
 						public Object doAs() {
 							//See if this binder exists and is accessible. 
 							//  If not, go to the user workspace page instead
+							@SuppressWarnings("unused")
 							Binder binder = getBinderModule().getBinder(binderId);
 							return PermaLinkUtil.getPermalink( req, binderId, EntityType.folder);
 						}
@@ -360,7 +361,9 @@ public class LoginFilter  implements Filter {
 				} catch(Exception e) {}
 			}
 		}
-		if (WebHelper.isGuestLoggedIn(req)) {
+		
+		final boolean isGuest = WebHelper.isGuestLoggedIn(req);
+		if (isGuest) {
 			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
 		} else {
 			userId = WebHelper.getRequiredUserId(req).toString();
@@ -368,7 +371,13 @@ public class LoginFilter  implements Filter {
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				return PermaLinkUtil.getUserPermalink(req, userId);
+				boolean startWithActivityStreams =
+					((!isGuest) &&
+					GwtUIHelper.isActivityStreamsEnabled() &&
+					GwtUIHelper.isActivityStreamOnLogin());
+				
+				String wsUrl = PermaLinkUtil.getUserPermalink(req, userId, startWithActivityStreams);
+				return wsUrl;
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}
@@ -409,6 +418,7 @@ public class LoginFilter  implements Filter {
 						actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
 	}
 	
+	@SuppressWarnings("unused")
 	private PortalLogin getPortalLogin() {
 		return (PortalLogin) SpringContextUtil.getBean("portalLoginBean");
 	}
@@ -421,6 +431,7 @@ public class LoginFilter  implements Filter {
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
 	}	
 
+	@SuppressWarnings("unused")
 	private AdminModule getAdminModule() {
 		return (AdminModule) SpringContextUtil.getBean("adminModule");
 	}	

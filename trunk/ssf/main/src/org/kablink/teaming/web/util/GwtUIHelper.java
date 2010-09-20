@@ -690,6 +690,16 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns true if we're supposed to start with an activity stream
+	 * on login or false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isActivityStreamOnLogin() {
+		return SPropsUtil.getBoolean("activity.stream.on.login", true);
+	}
+	
+	/**
 	 * Returns true if activity streams are enabled and false otherwise.
 	 * 
 	 * @return

@@ -49,6 +49,7 @@
 		// Through an overlay we will access m_requestInfo from java.
 		var m_requestInfo = {
 			activityStreamsEnabled : ${activityStreamsEnabled},
+			showWhatsNewOnLogin : ${showWhatsNew},
 			binderId : '${binderId}',
 			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 			adaptedUrl : '${adaptedUrl}',

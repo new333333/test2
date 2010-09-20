@@ -369,6 +369,18 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	void selectBinder(TreeInfo ti) {
 		closeTree();
 	}
+
+	/**
+	 * Sets the initial context to use for the tree.
+	 * 
+	 * Implementation of TreeDisplayBase.setRenderContext().
+	 * 
+	 * @param selectedBinderId
+	 * @param targetPanel
+	 */
+	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
+		// These values aren't used by the horizontal tree control.
+	}
 	
 	/**
 	 * Called to change the binder being displayed by the

@@ -43,12 +43,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamParams implements IsSerializable {
-	private int m_activeComments;
-	private int m_cacheRefresh;
-	private int m_clientRefresh;
-	private int m_entriesPerPage;
-	private int m_lookback;
-	private int m_maxHits;
+	private boolean m_activityStreamsOnLogin;
+	private int     m_activeComments;
+	private int     m_cacheRefresh;
+	private int     m_clientRefresh;
+	private int     m_entriesPerPage;
+	private int     m_lookback;
+	private int     m_maxHits;
 	
 	/**
 	 * Constructor method.
@@ -62,22 +63,24 @@ public class ActivityStreamParams implements IsSerializable {
 	/**
 	 * Get'er methods.
 	 */
-	public int getActiveComments() {return m_activeComments;}
-	public int getCacheRefresh()   {return m_cacheRefresh;  }
-	public int getClientRefresh()  {return m_clientRefresh; }
-	public int getEntriesPerPage() {return m_entriesPerPage;}
-	public int getLookback()       {return m_lookback;      }
-	public int getMaxHits()        {return m_maxHits;       }
+	public boolean getActivityStreamsOnLogin() {return m_activityStreamsOnLogin;}
+	public int     getActiveComments()         {return m_activeComments;        }
+	public int     getCacheRefresh()           {return m_cacheRefresh;          }
+	public int     getClientRefresh()          {return m_clientRefresh;         }
+	public int     getEntriesPerPage()         {return m_entriesPerPage;        }
+	public int     getLookback()               {return m_lookback;              }
+	public int     getMaxHits()                {return m_maxHits;               }
 	
 	/**
 	 * Set'er methods.
 	 */
-	public void setActiveComments(int activeComments) {m_activeComments = activeComments;}
-	public void setCacheRefresh(  int cacheRefresh)   {m_cacheRefresh   = cacheRefresh;  }
-	public void setClientRefresh( int clientRefresh)  {m_clientRefresh  = clientRefresh; }
-	public void setEntriesPerPage(int entriesPerPage) {m_entriesPerPage = entriesPerPage;}
-	public void setLookback(      int lookback)       {m_lookback       = lookback;      }
-	public void setMaxHits(       int maxHits)        {m_maxHits        = maxHits;       }
+	public void setActivityStreamsOnLogin(boolean activityStreamsOnLogin) {m_activityStreamsOnLogin = activityStreamsOnLogin;}
+	public void setActiveComments(        int     activeComments)         {m_activeComments         = activeComments;        }
+	public void setCacheRefresh(          int     cacheRefresh)           {m_cacheRefresh           = cacheRefresh;          }
+	public void setClientRefresh(         int     clientRefresh)          {m_clientRefresh          = clientRefresh;         }
+	public void setEntriesPerPage(        int     entriesPerPage)         {m_entriesPerPage         = entriesPerPage;        }
+	public void setLookback(              int     lookback)               {m_lookback               = lookback;              }
+	public void setMaxHits(               int     maxHits)                {m_maxHits                = maxHits;               }
 	
 	/**
 	 * Creates a copy ActivityStreamParams with the base information
@@ -88,12 +91,13 @@ public class ActivityStreamParams implements IsSerializable {
 	public ActivityStreamParams copyBaseASP() {
 		ActivityStreamParams reply = new ActivityStreamParams();
 		
-		reply.setActiveComments(getActiveComments());
-		reply.setCacheRefresh(getCacheRefresh());
-		reply.setClientRefresh(getClientRefresh());
-		reply.setEntriesPerPage(getEntriesPerPage());
-		reply.setLookback(getLookback());
-		reply.setMaxHits(getMaxHits());
+		reply.setActivityStreamsOnLogin(getActivityStreamsOnLogin());
+		reply.setActiveComments(        getActiveComments()        );
+		reply.setCacheRefresh(          getCacheRefresh()          );
+		reply.setClientRefresh(         getClientRefresh()         );
+		reply.setEntriesPerPage(        getEntriesPerPage()        );
+		reply.setLookback(              getLookback()              );
+		reply.setMaxHits(               getMaxHits()               );
 		
 		return reply;
 	}
