@@ -61,7 +61,7 @@ import org.kablink.util.search.Criteria;
 /**
  * This class manages a cache of the IDs of the binders with entries
  * that have been added or modified in the past few minutes or the IDs
- * of the people that have made modifications in the past few minutes.
+ * of the users that have made modifications in the past few minutes.
  * 
  * @author drfoster@novell.com
  */
@@ -69,7 +69,7 @@ public class ActivityStreamCache {
 	// The following are used for storing information in the session
 	// cache.
 	private static final String SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS	="activityStreamTrackedBinderIds";
-	private static final String SESSION_ACTIVITY_STREAM_TRACKED_PEOPLE_IDS	="activityStreamTrackedPeopleIds";
+	private static final String SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS	="activityStreamTrackedUserIds";
 	private static final String SESSION_ACTIVITY_STREAM_UPDATE_DATE			="activityStreamUpdateDate";
 	
     // The following stores the system wide ID caches for all the zones
@@ -85,72 +85,58 @@ public class ActivityStreamCache {
     	//    zone-specific cache.
     	private Date			m_lastUpdate;
     	private Map<Long, Date>	m_binderMap;
-    	private Map<Long, Date>	m_peopleMap;
+    	private Map<Long, Date>	m_userMap;
     	
     	/*
     	 * Constructor method.
     	 */
     	private ActivityStreamIDCache() {
     		m_binderMap  = new HashMap<Long, Date>();
-    		m_peopleMap  = new HashMap<Long, Date>();
+    		m_userMap    = new HashMap<Long, Date>();
     		m_lastUpdate = new Date(
     			System.currentTimeMillis() -
     			mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh()) - 1);
     	}
     	
-    	/**
+    	/*
     	 * Returns the binder map from the ID cache.
-    	 * 
-    	 * @return
     	 */
-		public Map<Long, Date> getBinderMap() {
+		private Map<Long, Date> getBinderMap() {
 			return m_binderMap;
 		}
 		
-		/**
+		/*
 		 * Returns the date of the last time the ID cache was updated.
-		 * 
-		 * @return
 		 */
-		public Date getLastUpdate() {
+		private Date getLastUpdate() {
 			return m_lastUpdate;
 		}
 		
-    	/**
-    	 * Returns the people map from the ID cache.
-    	 * 
-    	 * @return
+    	/*
+    	 * Returns the user map from the ID cache.
     	 */
-		public Map<Long, Date> getPeopleMap() {
-			return m_peopleMap;
+		private Map<Long, Date> getUserMap() {
+			return m_userMap;
 		}
 		
-		/**
+		/*
 		 * Store a new binder map in the ID cache.
-		 * 
-		 * @param binderMap
-		 * 
 		 */
-		public void setBinderMap(Map<Long, Date> binderMap) {
+		private void setBinderMap(Map<Long, Date> binderMap) {
 			m_binderMap = binderMap;
 		}
 		
-		/**
-		 * Store a new people map in the ID cache.
-		 * 
-		 * @param peopleMap
-		 * 
+		/*
+		 * Store a new user map in the ID cache.
 		 */
-		public void setPeopleMap(Map<Long, Date> peopleMap) {
-			m_peopleMap = peopleMap;
+		private void setUserMap(Map<Long, Date> userMap) {
+			m_userMap = userMap;
 		}
 		
-		/**
+		/*
 		 * Sets the date of the last time the ID cache was updated.
-		 * 
-		 * @param lastUpdate
 		 */
-		public void setLastUpdate(Date lastUpdate) {
+		private void setLastUpdate(Date lastUpdate) {
 			m_lastUpdate = lastUpdate;
 		}
     }
@@ -194,34 +180,34 @@ public class ActivityStreamCache {
     }
     
     /**
-     * Returns true if any of the people in a set have new entries
+     * Returns true if any of the users in a set have new entries
      * available and false otherwise.
      * 
      * @param bs
-     * @param peopleIds
+     * @param userIds
      * @param date
      * 
      * @return
      */
-    public static boolean checkPeopleForNewEntries(AllModulesInjected bs, List<String> peopleIds, Date date) {
+    public static boolean checkUsersForNewEntries(AllModulesInjected bs, List<String> userIds, Date date) {
     	// Do we have an ID cache available?
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
     	if(null != cache) {
-    		// Yes!  Look to see if there are any people in common,
+    		// Yes!  Look to see if there are any users in common,
     		// using the smallest list.
-    		Map<Long, Date> peopleMap = cache.getPeopleMap();
-    		if (peopleMap.size() < peopleIds.size()) {
-	    		for (Long peopleId: peopleMap.keySet()) {
-		        	if (peopleIds.contains(peopleId) && peopleMap.get(peopleId).after(date)) {
+    		Map<Long, Date> userMap = cache.getUserMap();
+    		if (userMap.size() < userIds.size()) {
+	    		for (Long userId: userMap.keySet()) {
+		        	if (userIds.contains(userId) && userMap.get(userId).after(date)) {
 		        		return true;
 		        	}
 	    		}	
     		}
     		
     		else {
-        		for (String peopleIdS: peopleIds) {
-        			Long peopleId = Long.parseLong(peopleIdS);
-    	        	if (peopleMap.containsKey(peopleId) && peopleMap.get(peopleId).after(date)) {
+        		for (String userIdS: userIds) {
+        			Long userId = Long.parseLong(userIdS);
+    	        	if (userMap.containsKey(userId) && userMap.get(userId).after(date)) {
     	        		return true;
     	        	}
         		}
@@ -257,16 +243,16 @@ public class ActivityStreamCache {
 	}
 	
 	/**
-	 * Returns the cached tracked people IDs list from the session cache.
+	 * Returns the cached tracked user IDs list from the session cache.
 	 * 
 	 * @param request
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> getTrackedPeopleIds(HttpServletRequest request) {
+	public static List<String> getTrackedUserIds(HttpServletRequest request) {
         HttpSession session = WebHelper.getRequiredSession(request);
-		List<String> reply = ((List<String>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_PEOPLE_IDS));
+		List<String> reply = ((List<String>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS));
 		if (null == reply) {
 			reply = new ArrayList<String>();
 		}
@@ -318,14 +304,14 @@ public class ActivityStreamCache {
 	}
 	
 	/**
-	 * Stores a tracked people IDs list in the session cache.
+	 * Stores a tracked user IDs list in the session cache.
 	 * 
 	 * @param request
-	 * @param trackedPeopleIds
+	 * @param trackedUserIds
 	 */
-	public static void setTrackedPeopleIds(HttpServletRequest request, List<String> trackedPeopleIds) {
+	public static void setTrackedUserIds(HttpServletRequest request, List<String> trackedUserIds) {
         HttpSession session = WebHelper.getRequiredSession(request);
-		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_PEOPLE_IDS, trackedPeopleIds);
+		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS, trackedUserIds);
 	}
 
 	/**
@@ -346,7 +332,7 @@ public class ActivityStreamCache {
 	private static void updateIDMaps(AllModulesInjected bs, Date now, ActivityStreamIDCache idCache) {
 		// Create new maps to store into the ID cache.
 		Map<Long, Date> newBinderMap = new HashMap<Long, Date>();
-		Map<Long, Date> newPeopleMap = new HashMap<Long, Date>();
+		Map<Long, Date> newUserMap   = new HashMap<Long, Date>();
 		
 		// Run a search for anything that has changed.  Note that we
 		// run it as admin because the cache is used by everyone in a
@@ -393,13 +379,13 @@ public class ActivityStreamCache {
 					}
 				
 		    		// Does this entry have an associated modifier ID?
-		    		String peopleIdS = ((String) entry.get(Constants.MODIFICATIONID_FIELD));
-		    		if (MiscUtil.hasString(peopleIdS)) {
+		    		String userIdS = ((String) entry.get(Constants.MODIFICATIONID_FIELD));
+		    		if (MiscUtil.hasString(userIdS)) {
 						// Yes!  Validate that it's in the map with at
 		    			// least this recent of a date.
 						validateIDInMap(
-							newPeopleMap,
-							Long.valueOf(peopleIdS),
+							newUserMap,
+							Long.valueOf(userIdS),
 							entryModificationDate);
 		    		}
 				}
@@ -408,7 +394,7 @@ public class ActivityStreamCache {
 
     	// Finally, store the new ID maps in the ID cache.
     	idCache.setBinderMap(newBinderMap);
-    	idCache.setPeopleMap(newPeopleMap);
+    	idCache.setUserMap(  newUserMap  );
 	}
 	
 	/**
