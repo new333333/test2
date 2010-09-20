@@ -1006,6 +1006,17 @@ public class GwtMainPage extends Composite
 			}
 			break;
 			
+		case VIEW_FOLDER_ENTRY:
+			if ( obj instanceof String )
+			{
+				viewFolderEntry( (String) obj );
+			}
+			else
+			{
+				Window.alert( "In handleAction( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
+			}
+			break;
+			
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -1307,6 +1318,17 @@ public class GwtMainPage extends Composite
 			}// end onSuccess()
 		});// end AsyncCallback()
 	}// end viewTeamMembers()
+	
+	
+	/**
+	 * 
+	 */
+	private native void viewFolderEntry( String url ) /*-{
+		if ( $wnd.ss_showForumEntry !== undefined )
+			$wnd.ss_showForumEntry( url, 'no' );
+		else
+			alert( 'ss_showForumEntry() is undefined' );
+	}-*/;
 
 	
 	/*

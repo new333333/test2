@@ -34,8 +34,11 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -48,6 +51,7 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -69,6 +73,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private InlineLabel m_desc;
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
+	private String m_entryId;
+	private String m_viewEntryPermalink;
 	
 	
 	/**
@@ -130,6 +136,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_desc.getElement().setInnerHTML( "" );
 		m_authorId = null;
 		m_authorWSId = null;
+		m_entryId = null;
+		m_viewEntryPermalink = null;
 	}
 
 
@@ -293,7 +301,42 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void handleClickOnTitle()
 	{
-		Window.alert( "Not implemented yet - Title" );
+		// Do we have a permalink that we can use to view the entry?
+		if ( m_viewEntryPermalink == null )
+		{
+			HttpRequestInfo ri;
+			AsyncCallback<String> callback;
+			
+			// No, issue an ajax request to get it.
+			callback = new AsyncCallback<String>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						GwtTeaming.getMessages().rpcFailure_GetEntryPermalink(),
+						m_entryId );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( String entryPermalink )
+				{
+					// Open the entry using the permalink.
+					m_viewEntryPermalink = entryPermalink;
+					viewEntry();
+				}
+			};
+			
+			// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
+			ri = new HttpRequestInfo();
+			GwtTeaming.getRpcService().getEntryPermalink( ri, m_entryId, null, callback );
+		}
+		else
+			viewEntry();
 	}
 
 	
@@ -371,13 +414,32 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void setData( ActivityStreamEntry entryItem )
 	{
+		String title;
+		
 		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
-		m_title.getElement().setInnerHTML( entryItem.getEntryTitle() );
+		title = entryItem.getEntryTitle();
+		if ( title == null || title.length() == 0 )
+			title = GwtTeaming.getMessages().noTitle();
+		m_title.getElement().setInnerHTML( title );
 		m_author.setText( entryItem.getAuthorName() );
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
 		m_desc.getElement().setInnerHTML( entryItem.getEntryDescription() );
+		m_entryId = entryItem.getEntryId();
+		
+		m_viewEntryPermalink = null;
 	}
+
 	
+	/**
+	 * Tell the action handler to open the given entry.
+	 */
+	public void viewEntry()
+	{
+		if ( m_viewEntryPermalink != null && m_viewEntryPermalink.length() > 0 )
+			m_actionHandler.handleAction( TeamingAction.VIEW_FOLDER_ENTRY, m_viewEntryPermalink );
+		else
+			Window.alert( "In viewEntry(), m_viewEntryPermalink is null" );
+	}
 }

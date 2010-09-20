@@ -80,6 +80,7 @@ public enum TeamingAction implements IsSerializable
 	ENTER_ACTIVITY_STREAM_MODE( "Enters Activity Streams in the Sidebar and Content Panel" ),
 	EXIT_ACTIVITY_STREAM_MODE( "Exits Activity Streams Mode" ),
 	INVOKE_SIMPLE_PROFILE( "Invoke the Simple Profile dialog" ),
+	VIEW_FOLDER_ENTRY( "Open an entry for viewing" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.
