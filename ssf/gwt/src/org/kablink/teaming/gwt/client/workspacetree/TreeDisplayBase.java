@@ -148,7 +148,8 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
 	abstract void selectBinder(TreeInfo ti);
-	public abstract void render(String selectedBinderId, FlowPanel targetPanel);
+	public abstract void render(          String selectedBinderId, FlowPanel targetPanel);
+	public abstract void setRenderContext(String selectedBinderId, FlowPanel targetPanel);
 	public abstract void setSelectedBinder(OnSelectBinderInfo binderInfo);
 
 	/**

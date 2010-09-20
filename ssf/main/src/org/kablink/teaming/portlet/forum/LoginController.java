@@ -155,6 +155,7 @@ public class LoginController  extends SAbstractControllerRetry {
 				WebKeys.URL_ACTIVITY_STREAMS_ENABLED,
 				String.valueOf(
 					GwtUIHelper.isActivityStreamsEnabled() ) );
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(false));
 			
 			// Add the binder id to the response.
 			model.put( WebKeys.URL_BINDER_ID, binderId );

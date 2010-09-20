@@ -185,4 +185,13 @@ public class RequestInfo extends JavaScriptObject
 	 * @return
 	 */
 	public final native boolean isActivityStreamsEnabled() /*-{ return this.activityStreamsEnabled; }-*/;
+
+	/**
+	 * Returns true if we should be showing the site wide activity stream
+	 * and false otherwise.
+	 * 
+	 * @return
+	 */
+	public final native boolean isShowWhatsNewOnLogin()    /*-{ return this.showWhatsNewOnLogin;  }-*/;
+	public final native void    clearShowWhatsNewOnLogin() /*-{ this.showWhatsNewOnLogin = false; }-*/;
 }// end RequestInfo

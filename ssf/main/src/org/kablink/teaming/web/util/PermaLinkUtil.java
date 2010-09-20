@@ -51,12 +51,19 @@ import org.kablink.util.search.Constants;
 
 public class PermaLinkUtil {
 	//userId may be placeholder
-	public static String getUserPermalink(HttpServletRequest request, String userId) {
+	public static String getUserPermalink(HttpServletRequest request, String userId, boolean startWithActivityStreams) {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true, true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.user.name());
+		if (startWithActivityStreams) {
+			adapterUrl.setParameter(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "1");
+		}
 		return adapterUrl.toString();
+	}
+	
+	public static String getUserPermalink(HttpServletRequest request, String userId) {
+		return getUserPermalink(request, userId, false);
 	}
 	
 	public static String getPermalink(HttpServletRequest request, DefinableEntity entity) {

@@ -444,7 +444,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			});
 		}
 	}
-
+	
 	/*
 	 * Loads an activity stream based TreeInfo into the sidebar.
 	 */
@@ -1027,6 +1027,21 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 	}
 		
+	/**
+	 * Sets the initial context to use for the tree.
+	 * 
+	 * Implementation of TreeDisplayBase.setRenderContext().
+	 * 
+	 * @param selectedBinderId
+	 * @param targetPanel
+	 */
+	public void setRenderContext(String selectedBinderId, FlowPanel targetPanel) {
+		// Simply store the parameter in their appropriate data
+		// members.
+		m_selectedBinderId = Long.parseLong(selectedBinderId);
+		m_rootPanel        = targetPanel;
+	}
+	
 	/**
 	 * Called to change the binder being displayed by the
 	 * WorkspaceTreeControl.

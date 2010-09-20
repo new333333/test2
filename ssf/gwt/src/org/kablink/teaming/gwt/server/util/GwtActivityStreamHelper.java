@@ -66,6 +66,7 @@ import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -83,12 +84,13 @@ public class GwtActivityStreamHelper {
 	public static ActivityStreamParams m_activityStreamParams;
 	static {
 		m_activityStreamParams = new ActivityStreamParams();
-		m_activityStreamParams.setActiveComments(SPropsUtil.getInt("activity.stream.active.comments",         2));
-		m_activityStreamParams.setLookback(      SPropsUtil.getInt("activity.stream.interval.lookback",      11));
-		m_activityStreamParams.setClientRefresh( SPropsUtil.getInt("activity.stream.interval.refresh.client", 5));
-		m_activityStreamParams.setCacheRefresh(  SPropsUtil.getInt("activity.stream.interval.refresh.cache",  1));
-		m_activityStreamParams.setEntriesPerPage(SPropsUtil.getInt("folder.records.listed",                  25));
-		m_activityStreamParams.setMaxHits(       SPropsUtil.getInt("activity.stream.maxhits",              1000));
+		m_activityStreamParams.setActivityStreamsOnLogin(GwtUIHelper.isActivityStreamOnLogin());
+		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments",         2));
+		m_activityStreamParams.setLookback(              SPropsUtil.getInt("activity.stream.interval.lookback",      11));
+		m_activityStreamParams.setClientRefresh(         SPropsUtil.getInt("activity.stream.interval.refresh.client", 5));
+		m_activityStreamParams.setCacheRefresh(          SPropsUtil.getInt("activity.stream.interval.refresh.cache",  1));
+		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",                  25));
+		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",              1000));
 	}
 
 	/*
