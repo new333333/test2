@@ -125,6 +125,8 @@ public class TeamingServiceClientWithStub {
 		
 		//getPrincipals(2, 5);
 		
+		fetchCalendarEntriesModifiedBetweenTwoDates();
+		
 /*		try {
 			getEntryFileVersions(9, "debug.doc");
 		}
@@ -215,6 +217,34 @@ public class TeamingServiceClientWithStub {
 		
 		// Existing application ID and user ID
 		callGetTeamsUsingToken(stub, 11, 8);
+	}
+	
+	public static void fetchCalendarEntriesModifiedBetweenTwoDates() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+
+		// Create search criteria
+		Criteria crit = new Criteria()
+		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
+		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
+		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20100931235959")) // modification time should fall in this range (inclusive)
+		;
+		
+		System.out.println("Here's the search string in XML");
+		System.out.println(crit.toQuery().asXML());
+		// The above search string should print like this.
+		// <QUERY><AND><FIELD fieldname="_family" exactphrase="TRUE"><TERMS>calendar</TERMS></FIELD><FIELD fieldname="_entryType" exactphrase="TRUE"><TERMS>entry</TERMS></FIELD><RANGE fieldname="_modificationDate" inclusive="TRUE"><START>20100801000000</START><FINISH>20100931235959</FINISH></RANGE></AND></QUERY>
+
+		// Execute the search against a Teaming server and print the result.
+		Document xmlResults = DocumentHelper.parseText(stub.search_search(null, crit.toQuery().asXML(), 0, 100));
+    	List<Element> entries = xmlResults.getRootElement().selectNodes("/searchResults/entry");
+    	if (entries == null || entries.isEmpty()) {
+    		System.out.println("No matching entries");
+    	}
+    	for (Element eEle:entries) {
+    		Long id = Long.valueOf(eEle.attributeValue("id"));
+    		String title = eEle.attributeValue("title");
+    		System.out.println(id + " [" + title + "]");
+    	}
 	}
 	
 	public static void calendarSync() throws Exception {
