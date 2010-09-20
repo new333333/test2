@@ -47,6 +47,7 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -121,6 +122,8 @@ public class AddAttachmentController extends SAbstractController {
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
 			} catch (WriteFilesException wf) {
 				strFilesErrors = wf.getLocalizedMessage();
+			} catch (FilterException fe) {
+				strFilesErrors = fe.getLocalizedMessage();
 			}
 			
 			if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
@@ -191,7 +194,11 @@ public class AddAttachmentController extends SAbstractController {
 		FolderEntry entry=null;
 		if (op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
 			model.put(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, closeDivFunctionName);
-			path="forum/reload_parent";
+			if (closeDivFunctionName.equals("")) {
+				path="forum/reload_parent";
+			} else {
+				path="definition_elements/close_div";
+			}
 		} else {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
