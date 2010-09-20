@@ -46,14 +46,13 @@ import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.InternalException;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.util.Validator;
 
 import org.apache.velocity.tools.view.XMLToolboxManager;
@@ -246,7 +245,7 @@ public class NotifyBuilderUtil implements InitializingBean {
    		String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
    		String template = flagElement.attributeValue("velocity");
    		if (Validator.isNotNull(fieldBuilderClassName)) {
-   			NotifyBuilder fieldBuilder = (NotifyBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
+   			NotifyBuilder fieldBuilder = (NotifyBuilder)ClassInstanceCache.getInstance(fieldBuilderClassName);
    			fieldBuilder.buildElement(visitor, template, ctx);
    		} else {
    			if (Validator.isNull(template)) template = "dataElement.vm";
