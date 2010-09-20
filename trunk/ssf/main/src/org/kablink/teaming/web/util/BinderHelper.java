@@ -1760,27 +1760,30 @@ public class BinderHelper {
 		    	User user = RequestContextHolder.getRequestContext().getUser();
 		    	long userId = user.getId();
 		    	
-		    	String strUserIdTag = userId + "TAG";
-		    	String strValueToCompare = strTag.substring(0, strUserIdTag.length());
-		    	
-		    	//We are going to get only the personal tags relating to the user
-		    	if (strValueToCompare.equals(strUserIdTag)) {
-		    		String strTagValues = strTag.substring(strUserIdTag.length());
-				    String [] strIntTagArray = strTagValues.split("\\s");
-				    for (int k = 0; k < strIntTagArray.length; k++) {
-				    	String strIntTag = strIntTagArray[k].trim();
-				    	if (strIntTag.equals("")) continue;
-				    	
-				    	Integer tagCount = (Integer) tagMap.get(strIntTag);
-				    	if (tagCount == null) {
-				    		tagMap.put(strIntTag, new Integer(1));
-				    	} else {
-				    		int intTagCount = tagCount.intValue();
-				    		tagMap.put(strIntTag, new Integer(intTagCount+1));
-				    	}
-				    }
+		    	String strUserIdTag = String.valueOf(userId) + "TAG";
+		    	if (strTag.length() >= strUserIdTag.length()) {
+			    	String strValueToCompare = strTag.substring(0, strUserIdTag.length());
+			    	
+			    	//We are going to get only the personal tags relating to the user
+			    	if (strValueToCompare.equals(strUserIdTag)) {
+			    		String strTagValues = strTag.substring(strUserIdTag.length());
+					    String [] strIntTagArray = strTagValues.split("\\s");
+					    for (int k = 0; k < strIntTagArray.length; k++) {
+					    	String strIntTag = strIntTagArray[k].trim();
+					    	if (strIntTag.equals("")) continue;
+					    	
+					    	Integer tagCount = (Integer) tagMap.get(strIntTag);
+					    	if (tagCount == null) {
+					    		tagMap.put(strIntTag, new Integer(1));
+					    	} else {
+					    		int intTagCount = tagCount.intValue();
+					    		tagMap.put(strIntTag, new Integer(intTagCount+1));
+					    	}
+					    }
+			    	} else {
+			    		continue;
+			    	}
 		    	}
-		    	else continue;
 		    }
 		}
 
