@@ -660,9 +660,6 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
 						readonly = "readonly=\"true\"";
 					}
-					if (propertyId.equalsIgnoreCase("name")){
-						//readonly = "";
-					}
 					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", ""))
 						.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 					List propertyValues = new ArrayList();
