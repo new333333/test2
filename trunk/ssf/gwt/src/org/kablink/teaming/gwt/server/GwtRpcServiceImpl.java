@@ -1321,7 +1321,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Returns a List<String> of the workspace ID's of the people the
+	 * Returns a List<String> of the user ID's of the people the
 	 * current user is tracking.
 	 * 
 	 * @return

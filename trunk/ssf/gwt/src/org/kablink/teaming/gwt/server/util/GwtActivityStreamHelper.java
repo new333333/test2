@@ -409,8 +409,7 @@ public class GwtActivityStreamHelper {
 		ActivityStreamData reply = new ActivityStreamData();
 		
 		// If we weren't given a PagingData...
-		boolean newData = (null == pd);
-		if (newData) {
+		if (null == pd) {
 			// ...create one...
 			pd = reply.getPagingData();
 			pd.initializePaging(asp);
@@ -630,20 +629,20 @@ public class GwtActivityStreamHelper {
 		// Add the teams TreeInfo to the root TreeInfo.
 		rootASList.add(asTI);
 		
-		// Is the user following any people?
+		// Is the user following any users?
 		asTI = new TreeInfo();
 		asTI.setActivityStream(true);
 		asTI.setBinderTitle(NLT.get("asTreeFollowedPeople"));
-		List<String> followedPeopleList = GwtServerHelper.getTrackedPeople(bs);
-		idCount = ((null == followedPeopleList) ? 0 : followedPeopleList.size());
+		List<String> followedUsersList = GwtServerHelper.getTrackedPeople(bs);
+		idCount = ((null == followedUsersList) ? 0 : followedUsersList.size());
 		if (0 < idCount) {
 			// Yes!  Scan them.
 			asTIChildren = asTI.getChildBindersList();
 			asIds = new String[idCount];
 			idIndex = 0;
-			for (String followedPeopleId: followedPeopleList) {
+			for (String followedUserId: followedUsersList) {
 				// Can we access the next one's User?
-				id = followedPeopleId;
+				id = followedUserId;
 				user = GwtServerHelper.getUserSafely(pm, id);
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
@@ -663,7 +662,7 @@ public class GwtActivityStreamHelper {
 					asTI.getBinderTitle()));
 		}
 		
-		// Add the followed people TreeInfo to the root TreeInfo.
+		// Add the followed users TreeInfo to the root TreeInfo.
 		rootASList.add(asTI);
 		
 		// Is the user following any places?
@@ -731,11 +730,11 @@ public class GwtActivityStreamHelper {
 		ActivityStreamCache.updateMaps(bs);
 		
 		List<String> trackedBinderIds = ActivityStreamCache.getTrackedBinderIds(request);
-		List<String> trackedPeopleIds = ActivityStreamCache.getTrackedPeopleIds(request);
+		List<String> trackedUserIds   = ActivityStreamCache.getTrackedUserIds(  request);
 
 		Date updateDate = ActivityStreamCache.getUpdateDate(request); 
 		boolean changes =             ActivityStreamCache.checkBindersForNewEntries(bs, trackedBinderIds, updateDate);
-		        changes = (changes || ActivityStreamCache.checkPeopleForNewEntries( bs, trackedPeopleIds, updateDate));
+		        changes = (changes || ActivityStreamCache.checkUsersForNewEntries(  bs, trackedUserIds, updateDate));
 		return new Boolean(changes);
 	}
 	
@@ -751,9 +750,9 @@ public class GwtActivityStreamHelper {
 		int        pageIndex		= pd.getPageIndex();
 		int        pageStart		= (pageIndex * entriesPerPage);
 
-		// Initialize lists for the tracked places and people.
+		// Initialize lists for the tracked places and users.
 		List<String> trackedPlacesAL = new ArrayList<String>();
-		List<String> trackedPeopleAL = new ArrayList<String>();
+		List<String> trackedUsersAL  = new ArrayList<String>();
 
 		// What type of activity stream are we reading the data for?
 		String[] trackedPlaces = asi.getBinderIds();
@@ -762,8 +761,8 @@ public class GwtActivityStreamHelper {
 		case FOLLOWED_PERSON:
 			// Followed people:
 			// 1. There are no tracked places; and
-			// 2. The tracked people are the owner IDs of the places.
-			sAToL(trackedPlaces, trackedPeopleAL);
+			// 2. The tracked users are the owner IDs of the places.
+			sAToL(trackedPlaces, trackedUsersAL);
 			trackedPlaces = new String[0];
 			
 			break;
@@ -777,14 +776,14 @@ public class GwtActivityStreamHelper {
 		case MY_TEAM:
 			// A place of some sort:
 			// 1. The tracked places is used unchanged; and
-			// 2. There are no tracked people.
+			// 2. There are no tracked users.
 			break;
 
 		default:
 		case SITE_WIDE:
 			// The entire site:
 			// 1. The tracked places is the ID of the top workspace; and
-			// 2. There are no tracked people.
+			// 2. There are no tracked users.
 			trackedPlaces = new String[]{String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId().longValue())};
 			break;
 		}
@@ -793,7 +792,7 @@ public class GwtActivityStreamHelper {
 		sAToL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
-		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedPeopleAL);
+		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedUsersAL);
 		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
 		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -838,10 +837,10 @@ public class GwtActivityStreamHelper {
 	    	}
     	}
 
-    	// Store the places and people we're tracking in the session
+    	// Store the places and users we're tracking in the session
     	// cache....
     	ActivityStreamCache.setTrackedBinderIds(request, trackedPlacesAL);
-    	ActivityStreamCache.setTrackedPeopleIds(request, trackedPeopleAL);
+    	ActivityStreamCache.setTrackedUserIds(  request, trackedUsersAL);
     	
     	// ...and store the date we saved the tracking data.
     	ActivityStreamCache.setUpdateDate(request);
