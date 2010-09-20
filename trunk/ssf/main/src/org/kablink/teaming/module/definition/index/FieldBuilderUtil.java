@@ -34,20 +34,14 @@ package org.kablink.teaming.module.definition.index;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.cache.ClassInstanceCache;
 
 public class FieldBuilderUtil {
     
-	private static Log logger = LogFactory.getLog(FieldBuilderUtil.class);
-	
 	public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
-		if(logger.isDebugEnabled())
-			logger.debug("Instantiating index field builder [" + fieldBuilderClassName + "]");
-		FieldBuilder fieldBuilder = (FieldBuilder)ReflectHelper.getInstance(fieldBuilderClassName);
+		FieldBuilder fieldBuilder = (FieldBuilder) ClassInstanceCache.getInstance(fieldBuilderClassName);
 		return fieldBuilder.buildField(entity, dataElemName, args);
 	}    
     
