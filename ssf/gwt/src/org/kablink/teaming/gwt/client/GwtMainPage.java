@@ -1614,6 +1614,9 @@ public class GwtMainPage extends Composite
 	 */
 	private void enterActivityStreamMode( Object obj )
 	{
+		// Hide any popup entry iframe divs.
+		hideEntryPopupDiv();
+		
 		// Do we have no parameter or an ActivityStreamInfo parameter?
 		if ( ( null == obj) || ( obj instanceof ActivityStreamInfo ))
 		{

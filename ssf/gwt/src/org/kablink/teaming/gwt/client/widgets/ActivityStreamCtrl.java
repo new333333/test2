@@ -358,7 +358,6 @@ public class ActivityStreamCtrl extends Composite
 		// Remove all ui widgets we've added.
 		m_searchResultsPanel.clear();
 		
-		
 		// We recycle the ActivityStreamTopEntry objects.
 		// Clear the data from the ActivityStreamTopEntry we have created objects.
 		for ( ActivityStreamTopEntry nextEntry : m_searchResultsUIWidgets)
@@ -366,6 +365,7 @@ public class ActivityStreamCtrl extends Composite
 			nextEntry.clearEntrySpecificInfo();
 		}
 		
+		m_nOfnLabel.setText( "" );
 		m_prevImg.setVisible( false );
 		m_nextImg.setVisible( false );
 		m_prevDisabledImg.setVisible( true );
