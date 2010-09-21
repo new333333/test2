@@ -35,6 +35,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -50,6 +51,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -68,6 +70,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
 	private InlineLabel m_title;
+	private FlowPanel m_presencePanel;
+	private ClickHandler m_presenceClickHandler;
 	private InlineLabel m_author;
 	private InlineLabel m_date;
 	private InlineLabel m_desc;
@@ -112,6 +116,34 @@ public abstract class ActivityStreamUIEntry extends Composite
 		panel = createContentPanel();
 		mainPanel.add( panel );
 		
+		// Create a click handler that will be used for the presence control.
+		m_presenceClickHandler = new ClickHandler()
+		{
+			/**
+			 * 
+			 */
+			public void onClick( ClickEvent event )
+			{
+				Command cmd;
+				final Object src;
+				
+				src = event.getSource();
+
+				cmd = new Command()
+				{
+					/**
+					 * 
+					 */
+					public void execute()
+					{
+						handleClickOnAuthor( ((Widget)src).getElement());
+					}
+					
+				};
+				DeferredCommand.addCommand( cmd );
+			}
+		};
+		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}
@@ -138,6 +170,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorWSId = null;
 		m_entryId = null;
 		m_viewEntryPermalink = null;
+		
+		// Remove the presence control from the presence panel.
+		m_presencePanel.clear();
 	}
 
 
@@ -150,6 +185,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		
 		panel = new FlowPanel();
 		panel.addStyleName( getContentPanelStyleName() );
+		
+		m_presencePanel = new FlowPanel();
+		m_presencePanel.addStyleName( getPresencePanelStyleName() );
+		panel.add( m_presencePanel );
 		
 		m_author = new InlineLabel();
 		m_author.addStyleName( getAuthorStyleName() );
@@ -271,6 +310,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the name of the style used with the panel that holds the presence control.
+	 */
+	public String getPresencePanelStyleName()
+	{
+		return "activityStreamPresencePanel";
+	}
+	
+	
+	/**
 	 * Return the name of the style used with the panel that holds the title.
 	 */
 	public abstract String getTitlePanelStyleName();
@@ -285,12 +333,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * This method gets invoked when the user clicks on the author.
 	 */
-	public void handleClickOnAuthor( Widget src )
+	public void handleClickOnAuthor( Element element )
 	{
 		SimpleProfileParams params;
 		
 		// Invoke the Simple Profile dialog.
-		params = new SimpleProfileParams( src.getElement(), m_authorWSId, m_author.getText() );
+		params = new SimpleProfileParams( element, m_authorWSId, m_author.getText() );
 		m_actionHandler.handleAction( TeamingAction.INVOKE_SIMPLE_PROFILE, params );
 	}
 	
@@ -362,7 +410,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 					if ( src == m_title )
 						handleClickOnTitle();
 					else if ( src == m_author || src == m_avatarImg )
-						handleClickOnAuthor( (Widget)src );
+						handleClickOnAuthor( ((Widget)src).getElement() );
 				}
 				
 			};
@@ -415,6 +463,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		String title;
+		PresenceControl presenceCtrl;
 		
 		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
 		title = entryItem.getEntryTitle();
@@ -427,6 +476,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_date.setText( entryItem.getEntryModificationDate() );
 		m_desc.getElement().setInnerHTML( entryItem.getEntryDescription() );
 		m_entryId = entryItem.getEntryId();
+		
+		// Create a presence control for the author.
+		presenceCtrl = new PresenceControl( m_authorWSId, true, false, false );
+		presenceCtrl.addClickHandler( m_presenceClickHandler );
+		presenceCtrl.addStyleName( "displayInline" );
+		presenceCtrl.setAnchorStyleName( "cursorPointer" );
+		m_presencePanel.add( presenceCtrl );
 		
 		m_viewEntryPermalink = null;
 	}

@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.presence;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
@@ -47,6 +48,9 @@ public class PresenceControl extends Composite {
 	private boolean m_bShowStatusText;
 	private boolean m_bClickStartsIm;
 	private boolean m_bHideIfUnknown;
+	private Anchor m_presenceA = null;
+	private String m_presenceAStyleName = null;
+	private ClickHandler m_presenceAClickHandler = null;
 	private FlowPanel panel;
 	
 	public PresenceControl(String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown) {
@@ -62,8 +66,18 @@ public class PresenceControl extends Composite {
 		initWidget(panel);
 	}
 
+	/**
+	 * Add a click handler to the presence anchor. 
+	 */
+	public void addClickHandler( ClickHandler clickHandler )
+	{
+		m_presenceAClickHandler = clickHandler;
+		if ( m_presenceA != null )
+			m_presenceA.addClickHandler( clickHandler );
+	}
+	
 	private void getPresenceInfo() {
-		final Anchor presenceA = new Anchor();
+		m_presenceA = new Anchor();
 
 		AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
 			public void onFailure(Throwable t) {
@@ -109,16 +123,23 @@ public class PresenceControl extends Composite {
 						presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
 				}
 				if (pi.getStatus() != GwtPresenceInfo.STATUS_UNKNOWN || !m_bHideIfUnknown) {
-					presenceA.addStyleName("presenceImgA");
-					presenceA.getElement().appendChild(presenceImage.getElement());
-					presenceA.setVisible(true);
+					if ( m_presenceAStyleName != null )
+						m_presenceA.addStyleName( m_presenceAStyleName );
+					else
+						m_presenceA.addStyleName("presenceImgA");
+					m_presenceA.getElement().appendChild(presenceImage.getElement());
+					m_presenceA.setVisible(true);
+					
+					if ( m_presenceAClickHandler != null )
+						m_presenceA.addClickHandler( m_presenceAClickHandler );
+					
 					if (m_bClickStartsIm) {
-						presenceA.addClickHandler(new InstantMessageClickHandler(m_binderId));
-						presenceA.setTitle(GwtTeaming.getMessages().qViewInstantMessageTitle() + " (" + statusText + ")");
+						m_presenceA.addClickHandler(new InstantMessageClickHandler(m_binderId));
+						m_presenceA.setTitle(GwtTeaming.getMessages().qViewInstantMessageTitle() + " (" + statusText + ")");
 					} else {
-						presenceA.setTitle(statusText);
+						m_presenceA.setTitle(statusText);
 					}
-					panel.add(presenceA);
+					panel.add(m_presenceA);
 					if (m_bShowStatusText && statusText != null && statusText.length() > 0) {
 						InlineLabel statusTextLabel = new InlineLabel("(" + statusText + ")");
 						panel.add(statusTextLabel);
@@ -131,5 +152,20 @@ public class PresenceControl extends Composite {
 
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
 		rpcService.getPresenceInfo(m_binderId, callback);
+	}
+	
+	
+	/**
+	 * Set the style used with the presence anchor. 
+	 */
+	public void setAnchorStyleName( String styleName )
+	{
+		m_presenceAStyleName = styleName;
+		
+		if ( m_presenceA != null )
+		{
+			m_presenceA.removeStyleName( "presenceImgA" );
+			m_presenceA.addStyleName( styleName );
+		}
 	}
 }
