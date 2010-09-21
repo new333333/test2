@@ -362,8 +362,7 @@ public class LoginFilter  implements Filter {
 			}
 		}
 		
-		final boolean isGuest = WebHelper.isGuestLoggedIn(req);
-		if (isGuest) {
+		if (WebHelper.isGuestLoggedIn(req)) {
 			userId = WebKeys.URL_USER_ID_PLACE_HOLDER;
 		} else {
 			userId = WebHelper.getRequiredUserId(req).toString();
@@ -372,9 +371,8 @@ public class LoginFilter  implements Filter {
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				boolean startWithActivityStreams =
-					((!isGuest) &&
-					GwtUIHelper.isActivityStreamsEnabled() &&
-					GwtUIHelper.isActivityStreamOnLogin());
+					(GwtUIHelper.isActivityStreamsEnabled() &&
+					 GwtUIHelper.isActivityStreamOnLogin());
 				
 				String wsUrl = PermaLinkUtil.getUserPermalink(req, userId, startWithActivityStreams);
 				return wsUrl;
