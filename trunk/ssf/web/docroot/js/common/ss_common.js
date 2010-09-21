@@ -2106,9 +2106,9 @@ function ss_setObjectWidth(obj, width) {
 }
 
 function ss_setObjectHeight(obj, height) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (obj == null) return;
-	ss_debug("   ss_setObjectHeight, "+obj.id+" height: "+height)
+	//ss_debug("   ss_setObjectHeight, "+obj.id+" height: "+height)
 	var oldHeight = obj.style.height;
     if (obj && parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
@@ -2673,7 +2673,7 @@ function ss_HideDivIfActivated(divName) {
 // Routine to make div's be hidden on next click
 function ss_HideDivOnSecondClick(divName) {
     ss_divToBeHidden[ss_divToBeHidden.length] = divName;
-    ss_debug('ss_divToBeHidden length = '+ss_divToBeHidden.length)
+    //ss_debug('ss_divToBeHidden length = '+ss_divToBeHidden.length)
 }
 
 // Routine to make div's be hidden on next click
@@ -2995,7 +2995,7 @@ function ss_showSpannedAreas() {
 
 // Routine to pop up a window with a url (used in common toolbar code)
 function ss_toolbarPopupUrl(url, windowName, width, height) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (typeof width == "undefined") {
 		width = ss_getWindowWidth();
 		if (width < 600) width=600;
@@ -3046,7 +3046,7 @@ if (ss_isIE) {
 }
 var ss_popupFrameTimer = null;
 function ss_resizePopupDiv() {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	var popupDiv = self.document.getElementById("ss_showpopupdiv");
 	var popupIframe = self.document.getElementById("ss_showpopupframe");
 	if (popupDiv != null && popupIframe != null && typeof popupDiv.style != "undefined" &&
@@ -3057,15 +3057,15 @@ function ss_resizePopupDiv() {
 			typeof window.frames['ss_showpopupframe'].document.body.scrollHeight != "undefined") {
 		var scrollHeight = parseInt(window.frames['ss_showpopupframe'].document.body.scrollHeight);
 		var scrollWidth = parseInt(ss_getBodyHeightWidth(top.window.frames['ss_showpopupframe'])[0]);
-		ss_debug("   ss_resizePopupDiv, scroll height: "+scrollHeight);
-		ss_debug("   ss_resizePopupDiv, scroll width: "+scrollWidth);
+		//ss_debug("   ss_resizePopupDiv, scroll height: "+scrollHeight);
+		//ss_debug("   ss_resizePopupDiv, scroll width: "+scrollWidth);
 		var height = parseInt(scrollHeight);
 		var width = parseInt(scrollWidth);
 		var windowHeight = parseInt(parseInt(ss_getWindowHeight()) - ss_popupFrameHeightFudge);
 		
-		ss_debug("   ss_resizePopupDiv, window height: "+windowHeight)
-		ss_debug("   ss_resizePopupDiv, parent window height: "+ss_getWindowHeight(self.parent))
-		ss_debug("   ss_resizePopupDiv, window width: "+ss_getWindowWidth())
+		//ss_debug("   ss_resizePopupDiv, window height: "+windowHeight)
+		//ss_debug("   ss_resizePopupDiv, parent window height: "+ss_getWindowHeight(self.parent))
+		//ss_debug("   ss_resizePopupDiv, window width: "+ss_getWindowWidth())
 		var windowWidth = ss_getWindowWidth();
 		if (ss_getUserDisplayStyle() == "newpage") {
 			if (parseInt(popupIframe.style.height) != windowHeight ||
@@ -3080,7 +3080,7 @@ function ss_resizePopupDiv() {
 			if (typeof ss_setEntryDivObjectHeight != "undefined") {
 				var entryDivTop = ss_getEntryDivObjectTop();
 				var entryDivMaxHeight = ss_getEntryDivMaxHeight(entryDivTop);
-				ss_debug("   ss_resizePopupDiv entryDivMaxHeight: "+entryDivMaxHeight)
+				//ss_debug("   ss_resizePopupDiv entryDivMaxHeight: "+entryDivMaxHeight)
 				if (scrollHeight > ss_getWindowHeight()) {
 					if (typeof entryDivMaxHeight != "undefined" && scrollHeight > entryDivMaxHeight) {
 						ss_setEntryDivObjectHeight(entryDivMaxHeight);
@@ -3090,11 +3090,11 @@ function ss_resizePopupDiv() {
 				}
 			}
 			if (parseInt(popupIframe.style.height) != parseInt(ss_getWindowHeight())) {
-				ss_debug("   ss_resizePopupDiv, set height to: "+ss_getWindowHeight())
+				//ss_debug("   ss_resizePopupDiv, set height to: "+ss_getWindowHeight())
 				popupIframe.style.height = parseInt(ss_getWindowHeight()) + "px"
 			}
 			if (parseInt(popupIframe.style.width) != parseInt(ss_getWindowWidth() - 22)) {
-				ss_debug("   ss_resizePopupDiv, set width to: "+parseInt(ss_getWindowWidth() - 22))
+				//ss_debug("   ss_resizePopupDiv, set width to: "+parseInt(ss_getWindowWidth() - 22))
 				popupIframe.style.width = parseInt(ss_getWindowWidth() - 22) + "px"
 			}
 		}
@@ -3734,7 +3734,7 @@ var ss_helpSystem = {
 		if (tagId == null) tagId = "";
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
+		//ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
 		if (ss_helpSystemRequestInProgress == 1) {
 			ss_helpSystemQueuedId = id;
 			ss_helpSystemQueuedPanelId = panelId;
@@ -4716,14 +4716,14 @@ function ss_pinEntry(obj, binderId, entryId) {
 
 var ss_entryInPlaceIframeOffset = 0;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	var targetDiv = document.getElementById(divId);
 	var iframeDiv = document.getElementById(iframeId);	
 	if (window.frames[iframeId] != null) {
 		//var iframeHeight = parseInt(ss_getBodyHeightWidth(window.frames[iframeId])[1]);
 		var iframeHeight = parseInt(window.frames[iframeId].document.body.scrollHeight);
 		if (iframeHeight > 0) {
-			ss_debug("   Setting "+divId+" height to: "+parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px")
+			//ss_debug("   Setting "+divId+" height to: "+parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px")
 			iframeDiv.style.height = parseInt(parseInt(iframeHeight) + ss_entryInPlaceIframeOffset) + "px"
 			iframeDiv.style.width= parseInt(parseInt(ss_getObjectWidth(targetDiv)) - 6) + "px";
 			// Signal that the layout changed
@@ -4734,7 +4734,7 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 }
 
 function ss_setCurrentIframeHeight() {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (self == self.parent) return;
 	if (ss_getUserDisplayStyle() == "newpage") return;
 	var iframeId = window.name;
@@ -4746,7 +4746,7 @@ function ss_setCurrentIframeHeight() {
 			if (parentIframeObj != null && 
 					parseInt(parentIframeObj.style.height) != parseInt(iframeHeight + ss_entryInPlaceIframeOffset)) {
 				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px";
-				ss_debug("   Setting "+iframeId+" height to: "+parentIframeObj.style.height)
+				//ss_debug("   Setting "+iframeId+" height to: "+parentIframeObj.style.height)
 				// Signal that the layout changed
 				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
 			}
@@ -4757,7 +4757,7 @@ function ss_setCurrentIframeHeight() {
 var ss_entryHistoryIframeOffset1 = 0;
 if (ss_isIE) ss_entryHistoryIframeOffset1 = 51;
 function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	var iframeDiv = document.getElementById(iframeId)
 	if (typeof loadingId != "undefined" && iframeDiv.src.indexOf("null.html") < 0) {
 		var spanObj = self.document.getElementById(loadingId);
@@ -4765,13 +4765,13 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
 	}
 	try {
 		var frameWindow = window.frames[iframeId];
-		ss_debug("   frameWindow: "+frameWindow.name)
+		//ss_debug("   frameWindow: "+frameWindow.name)
 		if (frameWindow && frameWindow.document && frameWindow.document.body) {
 			var iframeHeight = parseInt(frameWindow.document.body.scrollHeight);
-			ss_debug("   iframeHeight: "+iframeHeight)
+			//ss_debug("   iframeHeight: "+iframeHeight)
 			if (typeof iframeDiv.style.height == "undefined" || iframeDiv.style.height == "" || 
 					(parseInt(iframeDiv.style.height) != parseInt(iframeHeight) + ss_entryHistoryIframeOffset1)) {
-				ss_debug("   Setting "+iframeId+" to height: "+parseInt(iframeHeight) + ss_entryHistoryIframeOffset1 + "px")
+				//ss_debug("   Setting "+iframeId+" to height: "+parseInt(iframeHeight) + ss_entryHistoryIframeOffset1 + "px")
 				iframeDiv.style.height = parseInt(iframeHeight) + ss_entryHistoryIframeOffset1 + "px"
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 300);
@@ -5659,7 +5659,7 @@ function ss_disableDashboardDropTargets() {
 }
 
 function ss_savePenletLayout() {
-	ss_debug('Save the penlet order:')
+	//ss_debug('Save the penlet order:')
 
 	var dashboardTable = document.getElementById('ss_dashboardTable');
 	var dashboardLayoutForm = document.getElementById('ss_dashboard_layout_form');
@@ -5668,7 +5668,7 @@ function ss_savePenletLayout() {
 	for (var i = 0; i < penlets.length; i++) {
 		layout += penlets[i].id + ',' + penlets[i].parentNode.id + ';';
 	}
-	ss_debug('Dashboard layout: ' + layout)
+	//ss_debug('Dashboard layout: ' + layout)
 	dashboardLayoutForm.dashboard_layout.value = layout;
 
 	ss_setupStatusMessageDiv()
@@ -5947,12 +5947,12 @@ function ss_launchUrlInNewWindow(obj, fileName) {
 // UI support
 
 function ss_showSubmenu(obj) {
-	ss_debug('ss_showSubmenu')
+	//ss_debug('ss_showSubmenu')
 	var ulElements = obj.parentNode.getElementsByTagName('ul')
 	for (var i = 0; i < ulElements.length; i++) {
 		if (ulElements[i].parentNode == obj.parentNode && 
 		    	ulElements[i].className.indexOf('submenu') >= 0) {
-			ss_debug('  show ul '+i)
+			//ss_debug('  show ul '+i)
 			ulElements[i].style.zIndex = parseInt(ssMenuZ)
 			ulElements[i].style.display = 'block'
 		}
@@ -5961,7 +5961,7 @@ function ss_showSubmenu(obj) {
 }
 
 function ss_hideSubmenu(obj) {
-	ss_debug('ss_hideSubmenu')
+	//ss_debug('ss_hideSubmenu')
 	var ulElements = obj.getElementsByTagName('ul')
 	for (var i = 0; i < ulElements.length; i++) {
 		if (ulElements[i].parentNode == obj) {
@@ -8349,7 +8349,7 @@ function ss_createTreeCheckbox(treeName, prefix, id) {
 }
 
 function ss_positionAccessibleIframe(treeName, id) {
-	ss_debug('position: '+ parent.ss_getDivTop(treeName + "temp" + id))
+	//ss_debug('position: '+ parent.ss_getDivTop(treeName + "temp" + id))
     var iframeDivObj = self.document.getElementById("ss_treeIframeDiv");
 	ss_setObjectTop(iframeDivObj, ss_getDivTop(treeName + "temp" + id));
 	ss_setObjectLeft(iframeDivObj, ss_getDivLeft(treeName + "temp" + id));
@@ -9287,7 +9287,7 @@ function ajaxToggleGwtUI_Submit(goToUserWorkspace) {
 function resizeGwtContent(reason) {
 	if (ss_isGwtUIActive) {
 		if ("function" == typeof window.top.ss_setWorkareaIframeSize) {
-			ss_debug("resizeGwtContent( reason:  '" + reason + "' )");
+			//ss_debug("resizeGwtContent( reason:  '" + reason + "' )");
 			window.top.ss_setWorkareaIframeSize();
 		}
 		ss_showContentFrame();
