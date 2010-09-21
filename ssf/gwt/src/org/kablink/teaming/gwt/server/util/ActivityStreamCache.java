@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.ArrayList;
@@ -46,6 +47,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.ObjectKeys;
@@ -66,6 +68,8 @@ import org.kablink.util.search.Criteria;
  * @author drfoster@novell.com
  */
 public class ActivityStreamCache {
+	protected static Log m_logger = GwtActivityStreamHelper.m_logger;
+	
 	// The following are used for storing information in the session
 	// cache.
 	private static final String SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS	="activityStreamTrackedBinderIds";
@@ -104,14 +108,14 @@ public class ActivityStreamCache {
 		private Map<Long, Date> getBinderMap() {
 			return m_binderMap;
 		}
-		
+
 		/*
 		 * Returns the date of the last time the ID cache was updated.
 		 */
 		private Date getLastUpdate() {
 			return m_lastUpdate;
 		}
-		
+
     	/*
     	 * Returns the user map from the ID cache.
     	 */
@@ -153,6 +157,7 @@ public class ActivityStreamCache {
      */
     public static boolean checkBindersForNewEntries(AllModulesInjected bs, List<String> binderIds, Date date) {
     	// Do we have an ID cache available?
+    	boolean reply = false;
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
     	if(null != cache) {
     		// Yes!  Look to see if there are any binder IDs in common,
@@ -162,7 +167,8 @@ public class ActivityStreamCache {
 	    		for (Long binderId: binderMap.keySet()) {
 	    			String binderIdS = String.valueOf(binderId);
 		        	if (binderIds.contains(binderIdS) && binderMap.get(binderId).after(date)) {
-		        		return true;
+		        		reply = true;
+		        		break;
 		        	}
 	    		}	
     		}
@@ -171,13 +177,21 @@ public class ActivityStreamCache {
         		for (String binderIdS: binderIds) {
         			Long binderId = Long.parseLong(binderIdS);
     	        	if (binderMap.containsKey(binderId) && binderMap.get(binderId).after(date)) {
-    	        		return true;
+    	        		reply = true;
+    	        		break;
     	        	}
         		}
     		}
     	}
     	
-    	return false;
+    	if (m_logger.isDebugEnabled()) {
+    		m_logger.debug("ActivityStreamCache.checkBindersForNewEntries():  Reply:  " + reply +
+    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache    ) +
+    			"\n\tBinder IDs:  "            + getSFromListS(binderIds) +
+    			"\n\tDate:  "                  + getSFromDate( date    ));
+    	}
+    	
+    	return reply;
     }
     
     /**
@@ -192,6 +206,7 @@ public class ActivityStreamCache {
      */
     public static boolean checkUsersForNewEntries(AllModulesInjected bs, List<String> userIds, Date date) {
     	// Do we have an ID cache available?
+    	boolean reply = false;
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
     	if(null != cache) {
     		// Yes!  Look to see if there are any users in common,
@@ -201,7 +216,8 @@ public class ActivityStreamCache {
 	    		for (Long userId: userMap.keySet()) {
 	    			String userIdS = String.valueOf(userId);
 		        	if (userIds.contains(userIdS) && userMap.get(userId).after(date)) {
-		        		return true;
+		        		reply = true;
+		        		break;
 		        	}
 	    		}	
     		}
@@ -210,15 +226,23 @@ public class ActivityStreamCache {
         		for (String userIdS: userIds) {
         			Long userId = Long.parseLong(userIdS);
     	        	if (userMap.containsKey(userId) && userMap.get(userId).after(date)) {
-    	        		return true;
+    	        		reply = true;
+    	        		break;
     	        	}
         		}
     		}
     	}
     	
-    	return false;
+    	if (m_logger.isDebugEnabled()) {
+    		m_logger.debug("ActivityStreamCache.checkUsersForNewEntries():  Reply:  " + reply +
+    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache  ) +
+    			"\n\tUser IDs:  "              + getSFromListS(userIds) +
+    			"\n\tDate:  "                  + getSFromDate( date  ));
+    	}
+    	
+    	return reply;
     }
-    
+
 	/*
 	 * Returns the ID cache for the current zone.
 	 */
@@ -227,6 +251,58 @@ public class ActivityStreamCache {
     	return m_zonedIDCaches.get(zoneId);
 	}
 
+	/*
+	 * Returns the string representation of an ActivityStreamIDCache.
+	 */
+	private static String getSFromASIDC(ActivityStreamIDCache asidc) {
+		StringBuffer reply = new StringBuffer();
+		
+		reply.append("Last update:  " + getSFromDate(asidc.m_lastUpdate));
+		reply.append(getSFromUpdateMap(asidc.m_binderMap, "\t\tBinder"));
+		reply.append(getSFromUpdateMap(asidc.m_userMap,   "\t\tUser"  ));
+		
+		return reply.toString();
+	}
+	
+    /*
+     * Returns the string representation of a date.
+     */
+	private static String getSFromDate(Date date) {
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
+		return df.format(date);
+	}
+	
+	/*
+	 * Returns the string representation of a List<String>. 
+	 */
+	private static String getSFromListS(List<String> list) {
+		StringBuffer reply = new StringBuffer();
+		
+		reply.append("Strings:  " + list.size());
+		int i = 0;
+		for (String s:  list) {
+			reply.append("\n\t\tString (" + i++ + "):  " + s);
+		}
+		
+		return reply.toString();
+	}
+
+	/*
+	 * Returns the string representation of a Map<Long, Date>.
+	 */
+	private static String getSFromUpdateMap(Map<Long, Date> map, String base) {
+		StringBuffer reply = new StringBuffer();
+		
+		reply.append("\n" + base + "s:  " + map.size());
+		int i = 0;
+		for (Long id: map.keySet()) {
+			Date date = map.get(id);
+			reply.append("\n\t" + base + " (" + i++ + "):  " + id + " @ " + getSFromDate(date));
+		}
+		
+		return reply.toString();
+	}
+	
 	/**
 	 * Returns the cached tracked binder IDs list from the session cache.
 	 * 
@@ -241,6 +317,11 @@ public class ActivityStreamCache {
 		if (null == reply) {
 			reply = new ArrayList<String>();
 		}
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("ActivityStreamCache.getTrackedBinderIds():  " + getSFromListS(reply));
+		}
+		
 		return reply;
 	}
 	
@@ -258,6 +339,11 @@ public class ActivityStreamCache {
 		if (null == reply) {
 			reply = new ArrayList<String>();
 		}
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("ActivityStreamCache.getTrackedUserIds():  " + getSFromListS(reply));
+		}
+		
 		return reply;
 	}
 
@@ -303,6 +389,10 @@ public class ActivityStreamCache {
 	public static void setTrackedBinderIds(HttpServletRequest request, List<String> trackedBinderIds) {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS, trackedBinderIds);
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedBinderIds));
+		}		
 	}
 	
 	/**
@@ -314,6 +404,10 @@ public class ActivityStreamCache {
 	public static void setTrackedUserIds(HttpServletRequest request, List<String> trackedUserIds) {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS, trackedUserIds);
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedUserIds));
+		}		
 	}
 
 	/**
@@ -324,7 +418,12 @@ public class ActivityStreamCache {
 	 */
 	public static void setUpdateDate(HttpServletRequest request) {
         HttpSession session = WebHelper.getRequiredSession(request);
-		session.setAttribute(SESSION_ACTIVITY_STREAM_UPDATE_DATE, new Date());
+        Date now = new Date();
+		session.setAttribute(SESSION_ACTIVITY_STREAM_UPDATE_DATE, now);
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("ActivityStreamCache.setUpdateDate():  " + getSFromDate(now));
+		}		
 	}
 
 	/*
@@ -418,6 +517,14 @@ public class ActivityStreamCache {
     		updateIDMaps(bs, now, newCache);    		        	
         	newCache.setLastUpdate(now);	        
 	        setIDCacheForTheZone(newCache);
+	        
+	        if (m_logger.isDebugEnabled()) {
+	        	m_logger.debug("ActivityStreamCache.updateMaps( 'Maps updated.' ):  " + getSFromASIDC(newCache));
+	        }
+    	}
+    	
+    	else {
+    		m_logger.debug("ActivityStreamCache.updateMaps( 'Maps up to date.  No changes.' )");
     	}
     }
 

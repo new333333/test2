@@ -67,6 +67,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -305,26 +306,25 @@ public class GwtActivityStreamHelper {
 		reply.setAuthorLogin(getSFromEM(em, Constants.MODIFICATION_NAME_FIELD ));
 		reply.setAuthorName( getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
 
-		// Then, the entry information.
-		reply.setEntryDescription(     getSFromEM(em, Constants.DESC_FIELD              ));	
-		reply.setEntryDocNum(          getSFromEM(em, Constants.DOCNUMBER_FIELD         ));
-		reply.setEntryId(              getSFromEM(em, Constants.DOCID_FIELD             ));
-		reply.setEntryModificationDate(getSFromEM(em, Constants.MODIFICATION_DATE_FIELD ));		
-		reply.setEntryTitle(           getSFromEM(em, Constants.TITLE_FIELD             ));
-		reply.setEntryTopEntryId(      getSFromEM(em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
-		reply.setEntryType(            getSFromEM(em, Constants.ENTRY_TYPE_FIELD        ));
-
-		// And finally, the parent binder information.  Does the entry
-		// map contain the ID of the binder that contains the entry?
+		// Then the parent binder information.  Does the entry map
+		// contain the ID of the binder that contains the entry?
+		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);
 		BinderInfo binderInfo = BinderInfo.getBinderInfo(
 			bs,
 			binderCache,
-			getSFromEM(
-				em,
-				Constants.BINDER_ID_FIELD));
+			binderId);
 		reply.setParentBinderId(   binderInfo.m_binderId   );
 		reply.setParentBinderHover(binderInfo.m_binderHover);
 		reply.setParentBinderName( binderInfo.m_binderName );
+
+		// And finally, the entry information.
+		reply.setEntryDescription(     getDescFromEM(em, request, bs, binderId             ));	
+		reply.setEntryDocNum(          getSFromEM(   em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryId(              getSFromEM(   em, Constants.DOCID_FIELD             ));
+		reply.setEntryModificationDate(getSFromEM(   em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(           getSFromEM(   em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(      getSFromEM(   em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(            getSFromEM(   em, Constants.ENTRY_TYPE_FIELD        ));
 
 		// Are we working on a base activity stream entry for an
 		// activity stream data object? 
@@ -473,14 +473,39 @@ public class GwtActivityStreamHelper {
 	}
 	
 	/*
+	 * Extracts a description from an entry map and replaces any mark
+	 * up with the appropriate URL.  For example, replaces:
+	 *    {{atachmentUrl: somename.png}}
+	 * with a URL that looks like:
+	 *    http://somehost/ssf/s/readFile/.../somename.png
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getDescFromEM(Map em, HttpServletRequest request, AllModulesInjected bs, String binderId) {
+		// Do we have a description and binder ID?
+		String reply = getSFromEM(em, Constants.DESC_FIELD);
+		if (MiscUtil.hasString(reply) && MiscUtil.hasString(binderId)) {
+			// Yes!  Can we access the binder?
+			Binder binder = GwtServerHelper.getBinderSafely(bs.getBinderModule(), Long.parseLong(binderId));
+			if (null != binder) {
+				// Yes!  Fix the mark up.
+				reply = MarkupUtil.markupStringReplacement( null, null, request, null, binder, reply, "view" );
+			}
+		}
+		
+		// If we get here, reply refers to the description string.
+		// Return it.
+		return reply;
+	}
+	
+	/*
 	 * Returns a string for a value out of the entry map from a search
 	 * results.
 	 */
 	@SuppressWarnings("unchecked")
-	private static String getSFromEM(Map entryMap, String key) {
+	private static String getSFromEM(Map em, String key) {
 		// Do we have entry data for this key?
 		String reply = "";
-		Object emData = entryMap.get(key);
+		Object emData = em.get(key);
 		if (null != emData) {
 			// Yes!  Is it a string?
 			if (emData instanceof String) {
@@ -729,6 +754,10 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("GwtActivityStreamHelper.hasActivityStreamChanged( 'Checking activity stream for changes' ):  " + asi.getStringValue());
+		}
+		
 		ActivityStreamCache.updateMaps(bs);
 		
 		List<String> trackedBinderIds = ActivityStreamCache.getTrackedBinderIds(request);

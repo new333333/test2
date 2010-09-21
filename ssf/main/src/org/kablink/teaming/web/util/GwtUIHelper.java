@@ -705,7 +705,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isActivityStreamsEnabled() {
-		return SPropsUtil.getBoolean("enable.activity.streams", false);
+		return SPropsUtil.getBoolean("enable.activity.streams", true);
 	}
 	
 	/**
