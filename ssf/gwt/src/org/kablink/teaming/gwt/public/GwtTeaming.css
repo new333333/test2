@@ -187,7 +187,7 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 13px;
-	height: 5em;
+	height: 3em;
 	margin-left: 40px;
 	overflow: hidden;
 	white-space: normal;
@@ -196,7 +196,7 @@
 .activityStreamTopEntryContentPanel
 {
 	font-size: 13px;
-	height: 5em;
+	height: 3em;
 	margin-left: 40px;
 	overflow: hidden;
 	white-space: normal;
@@ -251,6 +251,20 @@
 .level1Comment
 {
 	margin-left: 40px;
+}
+
+/* The following two style are used to prevent an entry's description from starting */
+/* on a new line in the activity stream control. */
+.activityStreamEntryDesc p
+{
+	display: inline;
+	margin: 0px;
+}
+
+.activityStreamEntryDesc div
+{
+	display: inline;
+	margin: 0px;
 }
 
 /* ########################################################################################################### */
