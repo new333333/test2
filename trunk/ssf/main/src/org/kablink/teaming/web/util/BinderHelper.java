@@ -635,7 +635,7 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, model, String.valueOf(pageNumber), type);
+			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, String.valueOf(pageNumber), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 		}
