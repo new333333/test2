@@ -404,10 +404,13 @@ public class GwtMainPage extends Composite
 			// ...Clear the flag and ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
 			return;
-		}		
+		}
 		
-		if ( null != m_activityStreamCtrl ) {
-			m_activityStreamCtrl.hide();
+		// Is the activity stream visible?
+		if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible() )
+		{
+			// Yes, We are reading an item so ignore the context loaded.
+			return;
 		}
 		
 		m_inSearch    = inSearch;

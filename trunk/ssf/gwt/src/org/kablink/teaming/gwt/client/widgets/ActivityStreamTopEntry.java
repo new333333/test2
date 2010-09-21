@@ -274,6 +274,8 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		if ( m_parentBinderId != null && m_parentBinderPermalink != null )
 		{
+			m_actionHandler.handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			
 			binderInfo = new OnSelectBinderInfo( m_parentBinderId, m_parentBinderPermalink, false, Instigator.OTHER );
 			m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
 		}

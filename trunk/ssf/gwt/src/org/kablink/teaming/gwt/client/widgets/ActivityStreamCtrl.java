@@ -503,6 +503,8 @@ public class ActivityStreamCtrl extends Composite
 						String binderId;
 						
 						// Yes
+						m_actionHandler.handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+						
 						// Take the user to the selected binder.
 						binderId = getActivityStreamSourceBinderId();
 						binderInfo = new OnSelectBinderInfo( binderId, m_binderPermalink, false, Instigator.OTHER );
