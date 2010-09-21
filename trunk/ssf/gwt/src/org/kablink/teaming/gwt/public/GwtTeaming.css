@@ -129,6 +129,7 @@
 	font-weight: bold;
 	padding-top: 2px;
 	padding-right: 6px;
+	padding-left: 6px;
 }
 
 .activityStreamEntryDate
@@ -187,8 +188,8 @@
 {
 	font-size: 13px;
 	height: 5em;
-	overflow: hidden;
 	margin-left: 40px;
+	overflow: hidden;
 	white-space: normal;
 }
 
@@ -196,8 +197,8 @@
 {
 	font-size: 13px;
 	height: 5em;
-	overflow: hidden;
 	margin-left: 40px;
+	overflow: hidden;
 	white-space: normal;
 }
 
@@ -235,6 +236,16 @@
 	color: #666666 !important;
 	font-size: 10px;
 	white-space: nowrap;
+}
+
+.activityStreamPresencePanel
+{
+	display: inline;
+}
+
+.displayInline
+{
+	display: inline;
 }
 
 .level1Comment
