@@ -565,18 +565,19 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (durangoUI)
 		{
 			boolean isASEnabled;
+			boolean showWhatsNew;
 			String param;
 
 			// Put out a true/false indicator for the RequestInfo
 			// object as to the state of the new activity streams based
 			// user interface.
-			isASEnabled = GwtUIHelper.isActivityStreamsEnabled();
+			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
 			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
 			if (isASEnabled) {
 				String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-				boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
-				model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
+				showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
 			}
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
 			
 			// If this permalink has already been handled by the GWT page there will be
 			// a "seen_by_gwt" parameter on the url.

@@ -146,16 +146,20 @@ public class LoginController  extends SAbstractControllerRetry {
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
 		if ( durangoUI )
 		{
-		   String isNovellTeaming;
+			boolean isASEnabled;
+			boolean showWhatsNew;
+			String isNovellTeaming;
 		   
 			// Put out a true/false indicator for the RequestInfo
 			// object as to the state of the new activity streams based
 			// user interface.
-			model.put(
-				WebKeys.URL_ACTIVITY_STREAMS_ENABLED,
-				String.valueOf(
-					GwtUIHelper.isActivityStreamsEnabled() ) );
-			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(false));
+			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
+			if (isASEnabled) {
+				String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+				showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+			}
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
 			
 			// Add the binder id to the response.
 			model.put( WebKeys.URL_BINDER_ID, binderId );
