@@ -127,6 +127,7 @@ public class PresenceControl extends Composite {
 						m_presenceA.addStyleName( m_presenceAStyleName );
 					else
 						m_presenceA.addStyleName("presenceImgA");
+					presenceImage.getElement().setAttribute( "align", "absmiddle" );
 					m_presenceA.getElement().appendChild(presenceImage.getElement());
 					m_presenceA.setVisible(true);
 					
