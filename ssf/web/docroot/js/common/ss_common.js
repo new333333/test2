@@ -4572,7 +4572,7 @@ function ss_showContentFrame() {
 		self.parent.ss_showContentFrame();
 		return;
 	}
-	ss_showDiv("contentControl");
+	ss_showDiv("contentControl", "no");
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
