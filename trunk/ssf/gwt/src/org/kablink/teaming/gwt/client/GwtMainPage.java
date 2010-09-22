@@ -864,12 +864,26 @@ public class GwtMainPage extends Composite
 				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
 			}
 			
+			// If we're currently in "activity stream" mode
+			if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible())
+			{
+				// exit out of "activity stream" mode.
+				handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			}
+			
 			// Change the browser's URL.
 			preContextSwitch();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
 			break;
 			
 		case SELECTION_CHANGED:
+			// If we're currently in "activity stream" mode
+			if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible())
+			{
+				// exit out of "activity stream" mode.
+				handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			}
+			
 			preContextSwitch();
 			selectionChanged( obj );
 			break;
