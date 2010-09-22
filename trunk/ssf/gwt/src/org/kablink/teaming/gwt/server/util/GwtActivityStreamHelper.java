@@ -409,6 +409,7 @@ public class GwtActivityStreamHelper {
 	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd) {
 		// Create an activity stream data object to return.
 		ActivityStreamData reply = new ActivityStreamData();
+		reply.setDateTime(getDateTimeString(new Date()));
 		
 		// If we weren't given a PagingData...
 		if (null == pd) {
@@ -471,6 +472,23 @@ public class GwtActivityStreamHelper {
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		return totalRecords;
 	}
+
+	/**
+	 * Returns a formatted date string for the current user's locale
+	 * and time zone.
+	 * 
+	 * @param
+	 * 
+	 * @return
+	 */
+	public static String getDateTimeString(Date date) {
+		User user = GwtServerHelper.getCurrentUser();
+		
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, user.getLocale());
+		df.setTimeZone(user.getTimeZone());
+		
+		return df.format(date);
+	}
 	
 	/*
 	 * Extracts a description from an entry map and replaces any mark
@@ -515,11 +533,9 @@ public class GwtActivityStreamHelper {
 			
 			// No, it isn't a string!  Is it a date?
 			else if (emData instanceof Date) {
-				// Yes!  Format it for the current user's locale and
-				// return that.
-				User user = GwtServerHelper.getCurrentUser();
-				DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
-				reply = df.format(((Date) emData));
+				// Yes!  Format it for the current user and return
+				// that.
+				reply = getDateTimeString((Date) emData);
 			}
 			
 			else {
@@ -754,19 +770,56 @@ public class GwtActivityStreamHelper {
 	 * @return
 	 */
 	public static Boolean hasActivityStreamChanged(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtActivityStreamHelper.hasActivityStreamChanged( 'Checking activity stream for changes' ):  " + asi.getStringValue());
+		if (isDebugLoggingEnabled()) {
+			writeDebugLog("GwtActivityStreamHelper.hasActivityStreamChanged( 'Checking activity stream for changes' ):  " + asi.getStringValue());
+		}
+
+		// Update the data that's cached about what's recently changed.
+		ActivityStreamCache.updateMaps(bs);
+
+		// When was the last time we updated the data for this activity
+		// stream?
+		Date updateDate = ActivityStreamCache.getUpdateDate(request);
+		
+		// Are we watching any binders for changes?
+		List<String> trackedIds = ActivityStreamCache.getTrackedBinderIds(request);
+		boolean activityStreamChanged = ((null != trackedIds) && (!(trackedIds.isEmpty())));
+		if (activityStreamChanged) {
+			// Yes!  Has anything changed in them?
+			activityStreamChanged = ActivityStreamCache.checkBindersForNewEntries(
+				bs,
+				trackedIds,
+				updateDate);
 		}
 		
-		ActivityStreamCache.updateMaps(bs);
-		
-		List<String> trackedBinderIds = ActivityStreamCache.getTrackedBinderIds(request);
-		List<String> trackedUserIds   = ActivityStreamCache.getTrackedUserIds(  request);
+		// Did we detect changes in the binders?
+		if (!activityStreamChanged) {
+			// No!  Are we tracking any users for having changed
+			// anything?
+			trackedIds = ActivityStreamCache.getTrackedUserIds(request);
+			activityStreamChanged = ((null != trackedIds) && (!(trackedIds.isEmpty())));
+			if (activityStreamChanged) {
+				// Yes!  Have these users changed anything?
+				activityStreamChanged = ActivityStreamCache.checkUsersForNewEntries(
+					bs,
+					trackedIds,
+					updateDate);
+			}
+		}
 
-		Date updateDate = ActivityStreamCache.getUpdateDate(request); 
-		boolean changes =             ActivityStreamCache.checkBindersForNewEntries(bs, trackedBinderIds, updateDate);
-		        changes = (changes || ActivityStreamCache.checkUsersForNewEntries(  bs, trackedUserIds, updateDate));
-		return new Boolean(changes);
+		// If we get here, activityStreamChanged is true if something
+		// we care about has changed and false otherwise.  Return it.
+		return new Boolean(activityStreamChanged);
+	}
+
+	/**
+	 * Returns true if we're debug logging is enabled and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isDebugLoggingEnabled() {
+		return m_logger.isDebugEnabled();
 	}
 	
 	/*
@@ -884,6 +937,23 @@ public class GwtActivityStreamHelper {
 		int c = ((null == sA) ? 0 : sA.length);
 		for (int i = 0; i < c; i += 1) {
 			sL.add(sA[i]);
+		}
+	}
+
+	/**
+	 * Writes a string to the debug log as the current user.
+	 * 
+	 * @param s
+	 */
+	public static void writeDebugLog(String s) {
+		// If debug logging is enabled and we have a string to write...
+		if (isDebugLoggingEnabled() && MiscUtil.hasString(s)) {
+			// ...generate information about the current user...
+			User asUser = GwtServerHelper.getCurrentUser();
+			String userId = ((null == asUser) ? "" : ("U:" + asUser.getName() + ":"));
+			
+			// ...and write it to the log.
+			m_logger.debug(userId + s);
 		}
 	}
 }

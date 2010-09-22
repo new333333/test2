@@ -148,9 +148,10 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	abstract OnSelectBinderInfo buildOnSelectBinderInfo(TreeInfo ti);
 	abstract void selectBinder(TreeInfo ti);
-	public abstract void render(          String selectedBinderId, FlowPanel targetPanel);
-	public abstract void setRenderContext(String selectedBinderId, FlowPanel targetPanel);
-	public abstract void setSelectedBinder(OnSelectBinderInfo binderInfo);
+	public abstract boolean isInActivityStreamMode();
+	public abstract void    render(          String selectedBinderId, FlowPanel targetPanel);
+	public abstract void    setRenderContext(String selectedBinderId, FlowPanel targetPanel);
+	public abstract void    setSelectedBinder(OnSelectBinderInfo binderInfo);
 
 	/**
 	 * Constructs an InlineLabel for a part name of a bucket.
@@ -312,6 +313,13 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 		return GwtTeaming.getRpcService();
 	}
 		
+	/**
+	 * Called to reset the main menu context to that previously loaded.
+	 */
+	void resetMenuContext() {
+		m_wsTree.resetMenuContext();
+	}
+	
 	/**
 	 * Called to select an activity stream in the sidebar.
 	 *

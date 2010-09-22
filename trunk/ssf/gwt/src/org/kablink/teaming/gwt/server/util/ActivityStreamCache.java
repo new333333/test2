@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.gwt.server.util;
 
-import java.text.DateFormat;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.ObjectKeys;
@@ -68,8 +66,6 @@ import org.kablink.util.search.Criteria;
  * @author drfoster@novell.com
  */
 public class ActivityStreamCache {
-	protected static Log m_logger = GwtActivityStreamHelper.m_logger;
-	
 	// The following are used for storing information in the session
 	// cache.
 	private static final String SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS	="activityStreamTrackedBinderIds";
@@ -184,11 +180,11 @@ public class ActivityStreamCache {
     		}
     	}
     	
-    	if (m_logger.isDebugEnabled()) {
-    		m_logger.debug("ActivityStreamCache.checkBindersForNewEntries():  Reply:  " + reply +
-    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache    ) +
-    			"\n\tBinder IDs:  "            + getSFromListS(binderIds) +
-    			"\n\tDate:  "                  + getSFromDate( date    ));
+    	if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+    		GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.checkBindersForNewEntries():  Reply:  " + reply +
+    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache              ) +
+    			"\n\tChecking Binder IDs:  "   + getSFromListS(binderIds, "Binder") +
+    			"\n\tFor Date:  "              + getSFromDate( date              ));
     	}
     	
     	return reply;
@@ -233,11 +229,11 @@ public class ActivityStreamCache {
     		}
     	}
     	
-    	if (m_logger.isDebugEnabled()) {
-    		m_logger.debug("ActivityStreamCache.checkUsersForNewEntries():  Reply:  " + reply +
-    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache  ) +
-    			"\n\tUser IDs:  "              + getSFromListS(userIds) +
-    			"\n\tDate:  "                  + getSFromDate( date  ));
+    	if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+    		GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.checkUsersForNewEntries():  Reply:  " + reply +
+    			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache          ) +
+    			"\n\tChecking User IDs:  "     + getSFromListS(userIds, "User") +
+    			"\n\tFor Date:  "              + getSFromDate( date          ));
     	}
     	
     	return reply;
@@ -268,20 +264,19 @@ public class ActivityStreamCache {
      * Returns the string representation of a date.
      */
 	private static String getSFromDate(Date date) {
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
-		return df.format(date);
+		return GwtActivityStreamHelper.getDateTimeString(date);
 	}
 	
 	/*
 	 * Returns the string representation of a List<String>. 
 	 */
-	private static String getSFromListS(List<String> list) {
+	private static String getSFromListS(List<String> list, String base) {
 		StringBuffer reply = new StringBuffer();
 		
-		reply.append("Strings:  " + list.size());
+		reply.append(list.size());
 		int i = 0;
 		for (String s:  list) {
-			reply.append("\n\t\tString (" + i++ + "):  " + s);
+			reply.append("\n\t\t" + base + ":" + i++ + ":  " + s);
 		}
 		
 		return reply.toString();
@@ -293,11 +288,11 @@ public class ActivityStreamCache {
 	private static String getSFromUpdateMap(Map<Long, Date> map, String base) {
 		StringBuffer reply = new StringBuffer();
 		
-		reply.append("\n" + base + "s:  " + map.size());
+		reply.append("\n" + base + "s:" + map.size());
 		int i = 0;
 		for (Long id: map.keySet()) {
 			Date date = map.get(id);
-			reply.append("\n\t" + base + " (" + i++ + "):  " + id + " @ " + getSFromDate(date));
+			reply.append("\n\t" + base + ":" + i++ + ":  " + id + " @ " + getSFromDate(date));
 		}
 		
 		return reply.toString();
@@ -318,8 +313,8 @@ public class ActivityStreamCache {
 			reply = new ArrayList<String>();
 		}
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("ActivityStreamCache.getTrackedBinderIds():  " + getSFromListS(reply));
+		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedBinderIds():  " + getSFromListS(reply, "Binder"));
 		}
 		
 		return reply;
@@ -340,8 +335,8 @@ public class ActivityStreamCache {
 			reply = new ArrayList<String>();
 		}
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("ActivityStreamCache.getTrackedUserIds():  " + getSFromListS(reply));
+		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedUserIds():  " + getSFromListS(reply, "User"));
 		}
 		
 		return reply;
@@ -390,8 +385,8 @@ public class ActivityStreamCache {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS, trackedBinderIds);
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedBinderIds));
+		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedBinderIds, "Binder"));
 		}		
 	}
 	
@@ -405,8 +400,8 @@ public class ActivityStreamCache {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS, trackedUserIds);
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedUserIds));
+		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedUserIds():  " + getSFromListS(trackedUserIds, "User"));
 		}		
 	}
 
@@ -421,8 +416,8 @@ public class ActivityStreamCache {
         Date now = new Date();
 		session.setAttribute(SESSION_ACTIVITY_STREAM_UPDATE_DATE, now);
 		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("ActivityStreamCache.setUpdateDate():  " + getSFromDate(now));
+		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setUpdateDate():  " + getSFromDate(now));
 		}		
 	}
 
@@ -518,13 +513,13 @@ public class ActivityStreamCache {
         	newCache.setLastUpdate(now);	        
 	        setIDCacheForTheZone(newCache);
 	        
-	        if (m_logger.isDebugEnabled()) {
-	        	m_logger.debug("ActivityStreamCache.updateMaps( 'Maps updated.' ):  " + getSFromASIDC(newCache));
+	        if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
+	        	GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.updateMaps( 'Maps updated' ):  " + getSFromASIDC(newCache));
 	        }
     	}
     	
     	else {
-    		m_logger.debug("ActivityStreamCache.updateMaps( 'Maps up to date.  No changes.' )");
+    		GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.updateMaps( 'Maps up to date - No changes' )");
     	}
     }
 

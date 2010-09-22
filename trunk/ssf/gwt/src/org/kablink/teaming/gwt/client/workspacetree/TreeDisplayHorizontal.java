@@ -262,6 +262,20 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 	}
 
 	/**
+	 * Returns true if we're displaying activity streams and false
+	 * otherwise.
+	 * 
+	 * Implementation of TreeDisplayBase.isInActivityStreamMode().
+	 * 
+	 * @return
+	 */
+	public boolean isInActivityStreamMode() {
+		// Return false since a bread crumb tree is never in activity
+		// stream mode.
+		return false;
+	}
+	
+	/**
 	 * Called to render the information in a TreeInfo object into a
 	 * FlowPanel.
 	 * 

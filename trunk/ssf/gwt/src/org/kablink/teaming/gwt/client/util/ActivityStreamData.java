@@ -47,6 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ActivityStreamData implements IsSerializable {
 	private List<ActivityStreamEntry>	m_entries;		// List<ActivityStreamEntry> to display on the current page.
 	private PagingData 					m_pagingData;	// The paging data based on where we're at in paging through the activity stream.
+	private String						m_dateTime;		// The date/time string in the user's locale and time zone that this data was produced. 
 	
 	/*
 	 * Inner class used to manage paging through an activity
@@ -151,6 +152,16 @@ public class ActivityStreamData implements IsSerializable {
 	}
 
 	/**
+	 * Returns the date/time string in the user's locale/time zone that
+	 * this activity stream data was produced.
+	 * 
+	 * @return
+	 */
+	public String getDateTime() {
+		return m_dateTime;
+	}
+	
+	/**
 	 * Returns a list of the activity stream entries from this activity
 	 * stream data.
 	 * 
@@ -182,6 +193,18 @@ public class ActivityStreamData implements IsSerializable {
 		return m_pagingData;
 	}
 
+	/**
+	 * Sets the date/time string in the user's locale/time zone that
+	 * this activity stream data was produced.
+	 *
+	 * @param
+	 * 
+	 * @return
+	 */
+	public void setDateTime(String dateTime) {
+		m_dateTime = dateTime;
+	}
+	
 	/**
 	 * Stores a list of activity stream entries into this activity
 	 * stream data.
