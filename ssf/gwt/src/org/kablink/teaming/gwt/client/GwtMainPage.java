@@ -188,7 +188,7 @@ public class GwtMainPage extends Composite
 		}
 		
 		// Add the main menu to the page.
-		m_mainMenuCtrl = new MainMenuControl();
+		m_mainMenuCtrl = new MainMenuControl( this );
 		registerActionHandler( m_mainMenuCtrl );
 		m_teamingRootPanel.add( m_mainMenuCtrl );
 		
@@ -197,7 +197,7 @@ public class GwtMainPage extends Composite
 		m_contentPanel.addStyleName( "mainContentPanel" );
 		
 		// Create the WorkspaceTree control.
-		m_wsTreeCtrl = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.VERTICAL );
+		m_wsTreeCtrl = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.VERTICAL );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		registerActionHandler( m_wsTreeCtrl );
 		m_contentPanel.add( m_wsTreeCtrl );
@@ -259,7 +259,26 @@ public class GwtMainPage extends Composite
 
 	}// end GwtMainPage()
 
-
+	/**
+	 * Returns the main menu control.
+	 * 
+	 * @return
+	 */
+	public MainMenuControl getMainMenu()
+	{
+		return m_mainMenuCtrl;
+	}//end getMainMenu()
+	
+	/**
+	 * Returns the workspace tree control.
+	 * 
+	 * @return
+	 */
+	public WorkspaceTreeControl getWorkspaceTree()
+	{
+		return m_wsTreeCtrl;
+	}//end getWorkspaceTree()
+	
 	/*
 	 * Hide the popup entry iframe div if one exists.
 	 */
@@ -399,10 +418,13 @@ public class GwtMainPage extends Composite
 	{
 		// If the context was loaded because of the initial login and
 		// we're entering activity stream mode by default...
-		if ( m_requestInfo.isShowWhatsNewOnLogin() ) {
+		if ( m_requestInfo.isShowWhatsNewOnLogin() )
+		{
 			// ...activity stream mode will already have been loaded.
-			// ...Clear the flag and ignore this.
+			// ...Clear the flag, tell the menu about this context and
+			// ...otherwise ignore this.
 			m_requestInfo.clearShowWhatsNewOnLogin();
+			m_mainMenuCtrl.setContext( binderId, inSearch, searchTabId );			
 			return;
 		}
 		
@@ -724,7 +746,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
-	private native RequestInfo getRequestInfo() /*-{
+	public native RequestInfo getRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;
@@ -1270,7 +1292,7 @@ public class GwtMainPage extends Composite
 			
 			// A WorkspaceTreeControl in horizontal mode serves as the
 			// bread crumb browser.  Create one...
-			breadCrumbTree = new WorkspaceTreeControl( m_requestInfo, m_selectedBinderId, TreeMode.HORIZONTAL );
+			breadCrumbTree = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.HORIZONTAL );
 			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
 			registerActionHandler( breadCrumbTree );
 			m_breadCrumbBrowser = new TeamingPopupPanel(true);

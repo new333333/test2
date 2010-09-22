@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -69,7 +70,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author drfoster@novell.com
  */
 public class WorkspaceTreeControl extends Composite implements ActionRequestor, ActionTrigger {
-	private RequestInfo m_requestInfo;
+	private GwtMainPage m_mainPage;
 	private TreeDisplayBase m_treeDisplay;
 	private TreeMode m_tm;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
@@ -89,12 +90,12 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * Constructs a WorkspaceTreeControl based on the information
 	 * in the RequestInfo object.
 	 *
-	 * @param requestInfo
+	 * @param mainPage
 	 * @param tm
 	 */
-	public WorkspaceTreeControl(RequestInfo requestInfo, final String selectedBinderId, TreeMode tm) {
-		m_requestInfo = requestInfo;
-		m_tm = tm;
+	public WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
+		m_mainPage = mainPage;
+		m_tm       = tm;
 
 		final WorkspaceTreeControl wsTree = this;
 		final FlowPanel mainPanel = new FlowPanel();
@@ -131,9 +132,12 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 					m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
 					
 					// Are we starting up showing what's new?
-					if (m_requestInfo.isShowWhatsNewOnLogin()) {
+					if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
 						// Yes!  Then we enter activity stream mode by
-						// default.
+						// default.  Tell the menu about the context...
+						m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
+						
+						// ...and enter activity stream mode.
 						ActivityStreamInfo asi = new ActivityStreamInfo();
 						asi.setActivityStream( ActivityStream.SITE_WIDE );
 						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
@@ -216,9 +220,19 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @return
 	 */
 	public RequestInfo getRequestInfo() {
-		return m_requestInfo;
+		return m_mainPage.getRequestInfo();
 	}
 
+	/**
+	 * Returns true if the workspace tree control is in activity stream
+	 * mode and false otherwise.
+	 * 
+	 * @return
+	 */
+	public boolean isInActivityStreamMode() {
+		return m_treeDisplay.isInActivityStreamMode();
+	}
+	
 	/**
 	 * Called to select an activity stream in the sidebar.
 	 *
@@ -277,6 +291,13 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		style.setHeight( height, Style.Unit.PX );
 	}
 
+	/**
+	 * Called to reset the main menu context to that previously loaded.
+	 */
+	public void resetMenuContext() {
+		m_mainPage.getMainMenu().resetContext();
+	}
+	
 	/**
 	 * Called when a selection change is in progress.
 	 *

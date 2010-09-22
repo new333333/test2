@@ -87,30 +87,57 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
-	private boolean m_activityStreamsUI = GwtMainPage.m_requestInfo.isActivityStreamsEnabled();
-	private BinderInfo m_contextBinder;
-	private FlowPanel m_buttonsPanel;
-	private MenuBarButton m_bhButton;
-	private MenuBarButton m_soButton;
-	private FlowPanel m_contextPanel;
-	private MenuBarBox m_closeAdminBox;
-	private MenuBarBox m_myFavoritesBox;
-	private MenuBarBox m_myTeamsBox;
-	private MenuBarBox m_myWorkspaceBox;
-	private MenuBarBox m_whatsNewBox;
-	private MenuBarToggle m_wsTreeSlider;
-	private MenuBarToggle m_mastHeadSlider;
-	private GwtTeamingMainMenuImageBundle m_images = GwtTeaming.getMainMenuImageBundle();
-	private GwtTeamingMessages m_messages = GwtTeaming.getMessages();
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
-	private MyFavoritesMenuPopup m_myFavoritesMenuPopup;
-	private MyTeamsMenuPopup m_myTeamsMenuPopup;
-	private SearchMenuPanel m_searchPanel;
+	private boolean							m_activityStreamsUI = GwtMainPage.m_requestInfo.isActivityStreamsEnabled();
+	private BinderInfo						m_contextBinder;
+	private ContextLoadInfo					m_lastContextLoaded;
+	private FlowPanel						m_buttonsPanel;
+	private FlowPanel						m_contextPanel;
+	private GwtMainPage						m_mainPage;
+	private GwtTeamingMainMenuImageBundle	m_images         = GwtTeaming.getMainMenuImageBundle();
+	private GwtTeamingMessages 				m_messages       = GwtTeaming.getMessages();
+	private List<ActionHandler>				m_actionHandlers = new ArrayList<ActionHandler>();
+	private MenuBarBox						m_closeAdminBox;
+	private MenuBarBox						m_myFavoritesBox;
+	private MenuBarBox						m_myTeamsBox;
+	private MenuBarBox						m_myWorkspaceBox;
+	private MenuBarBox						m_whatsNewBox;
+	private MenuBarButton					m_bhButton;
+	private MenuBarButton					m_soButton;
+	private MenuBarToggle					m_wsTreeSlider;
+	private MenuBarToggle					m_mastHeadSlider;
+	private MyFavoritesMenuPopup			m_myFavoritesMenuPopup;
+	private MyTeamsMenuPopup				m_myTeamsMenuPopup;
+	private SearchMenuPanel					m_searchPanel;
+
+	/*
+	 * Inner class used to track the information used to load a
+	 * context.
+	 * 
+	 * See the parameters to contextLoaded().
+	 */
+	private static class ContextLoadInfo {
+		private boolean m_inSearch;
+		private String  m_binderId;
+		private String  m_searchTabId;
+
+		/*
+		 * Class constructor.
+		 */
+		private ContextLoadInfo(String binderId, boolean inSearch, String searchTabId) {
+			// Simply store the parameters.
+			m_binderId    = binderId;
+			m_inSearch    = inSearch;
+			m_searchTabId = searchTabId;
+		}
+	}
 	
 	/**
 	 * Constructor method.
 	 */
-	public MainMenuControl() {		
+	public MainMenuControl(GwtMainPage mainPage) {
+		// Store the parameter.
+		m_mainPage = mainPage;
+		
 		// Create the menu's main panel...
 		FlowPanel menuPanel = new FlowPanel();
 		menuPanel.addStyleName("mainMenuControl");
@@ -525,45 +552,50 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * @param searchTabId
 	 */
 	public void contextLoaded(final String binderId, final boolean inSearch, final String searchTabId) {
+		// Keep track of the context that we're loading.
+		setContext(binderId, inSearch, searchTabId);
+		
 		// Rebuild the context based panel based on the new context.
 		clearContextMenus();
-		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
-			public void onFailure(Throwable t) {
-				m_contextBinder = null;
-				GwtClientHelper.handleGwtRPCFailure(
-					m_messages.rpcFailure_GetBinderInfo(),
-					binderId);
-			}
-			public void onSuccess(BinderInfo binderInfo) {
-				m_contextBinder = binderInfo;
-				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
-					public void onFailure(Throwable t) {
-						GwtClientHelper.handleGwtRPCFailure(
-							m_messages.rpcFailure_GetToolbarItems(),
-							binderId);
-					}
-					public void onSuccess(final List<ToolbarItem> toolbarItemList) {
-						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
-							public void onFailure(Throwable t) {
-								GwtClientHelper.handleGwtRPCFailure(
-									m_messages.rpcFailure_GetTeamManagement(),
-									binderId);
-							}
-							public void onSuccess(final TeamManagementInfo tmi) {
-								// Handle inSearch vs. not inSearch.
-								addManageToContext(toolbarItemList, tmi);
-								addRecentPlacesToContext(toolbarItemList);
-								if (inSearch) {
-									addTopRankedToContext();
-									addManageSavedSearchesToContext(searchTabId);
+		if (!(m_mainPage.getWorkspaceTree().isInActivityStreamMode())) {
+			GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
+				public void onFailure(Throwable t) {
+					m_contextBinder = null;
+					GwtClientHelper.handleGwtRPCFailure(
+						m_messages.rpcFailure_GetBinderInfo(),
+						binderId);
+				}
+				public void onSuccess(BinderInfo binderInfo) {
+					m_contextBinder = binderInfo;
+					GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								m_messages.rpcFailure_GetToolbarItems(),
+								binderId);
+						}
+						public void onSuccess(final List<ToolbarItem> toolbarItemList) {
+							GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
+								public void onFailure(Throwable t) {
+									GwtClientHelper.handleGwtRPCFailure(
+										m_messages.rpcFailure_GetTeamManagement(),
+										binderId);
 								}
-								addViewsToContext(toolbarItemList);
-							}
-						});
-					}
-				});
-			}
-		});
+								public void onSuccess(final TeamManagementInfo tmi) {
+									// Handle inSearch vs. not inSearch.
+									addManageToContext(toolbarItemList, tmi);
+									addRecentPlacesToContext(toolbarItemList);
+									if (inSearch) {
+										addTopRankedToContext();
+										addManageSavedSearchesToContext(searchTabId);
+									}
+									addViewsToContext(toolbarItemList);
+								}
+							});
+						}
+					});
+				}
+			});
+		}
 	}
 
 	/**
@@ -591,6 +623,32 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Hide the Close administration menu item.
 		m_closeAdminBox.setVisible(false);
+	}
+
+	/**
+	 * Resets the current menu context to the one that was last
+	 * loaded.
+	 */
+	public void resetContext() {
+		// If we're tracking a previously loaded context...
+		if (null != m_lastContextLoaded) {
+			// ...re-load it.
+			contextLoaded(
+				m_lastContextLoaded.m_binderId,
+				m_lastContextLoaded.m_inSearch,
+				m_lastContextLoaded.m_searchTabId);
+		}
+	}
+
+	/**
+	 * Sets the parameters as the most recently loaded context.
+	 * 
+	 * @param binderId
+	 * @param inSearch
+	 * @param searchTabId
+	 */
+	public void setContext(String binderId, boolean inSearch, String searchTabId) {
+		m_lastContextLoaded = new ContextLoadInfo(binderId, inSearch, searchTabId);
 	}
 	
 	/**

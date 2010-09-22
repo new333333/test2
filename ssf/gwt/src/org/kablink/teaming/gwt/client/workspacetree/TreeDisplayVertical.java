@@ -418,7 +418,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void enterActivityStreamMode(final ActivityStreamInfo defaultASI) {		
 		// Are we currently in activity stream mode?
-		if (isActivityStreamsActive()) {
+		if (isInActivityStreamMode()) {
 			// Yes!  If we we're given an activity stream to select...
 			if (null != defaultASI) {
 				// ...select it...
@@ -460,6 +460,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// ...put it into affect.
 			triggerAction(TeamingAction.ACTIVITY_STREAM, defaultASI);
 		}
+
+		// Finally, reset the menu so that it display what's
+		// appropriate for activity stream mode.
+		resetMenuContext();
 	}
 	
 	/**
@@ -471,10 +475,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void exitActivityStreamMode() {
 		// Are we currently in activity streams mode?
-		if (isActivityStreamsActive()) { 
+		if (isInActivityStreamMode()) { 
 			// Yes!  Reload the workspace tree control.
 			m_selectedActivityStream = null;
-			reRootTree(String.valueOf(m_selectedBinderId), m_selectedBinderId);
+			reRootTree(String.valueOf(m_selectedBinderId), m_selectedBinderId, true);
 		}
 	}
 	
@@ -651,11 +655,15 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		return reply;
 	}
 
-	/*
+	/**
 	 * Returns true if we're displaying activity streams and false
 	 * otherwise.
+	 * 
+	 * Implementation of TreeDisplayBase.isInActivityStreamMode().
+	 * 
+	 * @return
 	 */
-	private boolean isActivityStreamsActive() {
+	public boolean isInActivityStreamMode() {
 		TreeInfo rootTI = getRootTreeInfo();
 		return ((null != rootTI) && rootTI.isActivityStream());
 	}
@@ -884,7 +892,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	@Override
 	public void setActivityStream(ActivityStreamInfo asi) {
 		// Set/load the activity stream, as appropriate. 
-		if (isActivityStreamsActive())
+		if (isInActivityStreamMode())
 			 setActivityStreamImpl(  asi);
 		else enterActivityStreamMode(asi);
 	}
@@ -957,14 +965,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private void reloadTree() {
 		// To reload it, simply re-root it at the same point that it's
 		// currently rooted, reselecting the previously selected binder.
-		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId(), m_selectedBinderId);
+		reRootTree(getRootTreeInfo().getBinderInfo().getBinderId(), m_selectedBinderId, false);
 	}
 	
 	/*
 	 * Re-roots the WorkspaceTreeControl to a new Binder and optionally
 	 * selects a binder.
 	 */
-	private void reRootTree(final String newRootBinderId, final Long selectedBinderId) {
+	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode) {
 		// Read the TreeInfo for the selected Binder...
 		getRpcService().getVerticalTree(new HttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
@@ -988,13 +996,21 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						selectBinder(selectedBinderTI);
 					}
 				}
+				
+				// If we re-rooted the tree to exit activity stream
+				// mode...
+				if (exitingActivityStreamMode) {
+					// ...reset the menu so that it display what's
+					// ...appropriate for navigation mode.
+					resetMenuContext();
+				}
 			}
 		});
 	}
 	
 	private void reRootTree(final String newRootBinderId) {
 		// Always use the initial form of the method.
-		reRootTree(newRootBinderId, null);
+		reRootTree(newRootBinderId, null, false);
 	}
 
 	/*
