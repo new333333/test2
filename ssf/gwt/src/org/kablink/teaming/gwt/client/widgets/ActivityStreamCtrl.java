@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +59,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -70,6 +72,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 
 
 /**
@@ -94,6 +97,7 @@ public class ActivityStreamCtrl extends Composite
 	private Timer m_searchTimer = null;
 	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
 	private boolean m_searchInProgress = false;
+	private Label m_nextRefreshLabel = null;
 	private Image m_pauseImg;
 	private Image m_resumeImg;
 	private Image m_prevDisabledImg;
@@ -300,7 +304,13 @@ public class ActivityStreamCtrl extends Composite
 	private void cancelCheckForChangesTimer()
 	{
 		if ( m_checkForChangesTimer != null )
+		{
+			// Cancel the timer.
 			m_checkForChangesTimer.cancel();
+			
+			// Indicate that the auto refresh is paused.
+			m_nextRefreshLabel.setText( GwtTeaming.getMessages().autoRefreshIsPaused() );
+		}
 	}
 	
 	
@@ -344,6 +354,9 @@ public class ActivityStreamCtrl extends Composite
 				}// end onSuccess()
 			};
 		}
+		
+		// Update the label that indicates when we will check for changes.
+		updateNextRefreshLabel();
 		
 		// Issue an ajax request to see if there is anything new.
 		m_rpcService.hasActivityStreamChanged( new HttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
@@ -521,11 +534,15 @@ public class ActivityStreamCtrl extends Composite
 		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
 		m_headerPanel.add( whatsNewLabel );
 		
+		// Add a "Next Refresh: xxx" label.
+		m_nextRefreshLabel = new Label();
+		m_nextRefreshLabel.addStyleName( "activityStreamCtrlHeaderNextRefreshLabel" );
+		m_headerPanel.add( m_nextRefreshLabel );
+		
 		// Add a pause button to the header.
 		imageResource = GwtTeaming.getImageBundle().pauseActivityStream();
 		m_pauseImg = new Image( imageResource );
 		m_pauseImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
-		m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream() );
 		m_pauseImg.setVisible( false );
 		m_headerPanel.add( m_pauseImg );
 		
@@ -778,6 +795,9 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	private void refreshActivityStream()
 	{
+		// Update the label that indicates when we will check for changes.
+		updateNextRefreshLabel();
+		
 		m_pagingData = null;
 		executeSearch();
 	}
@@ -824,6 +844,9 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void setActivityStream( ActivityStreamInfo activityStreamInfo )
 	{
+		// No, issue an rpc request to get the ActivityStreamParams.
+		HttpRequestInfo ri;
+		
 		m_activityStreamInfo = activityStreamInfo;
 		
 		// Change our title to reflect the new activity stream source.
@@ -831,62 +854,50 @@ public class ActivityStreamCtrl extends Composite
 		
 		m_pagingData = null;
 		
-		// Do we have an ActivityStreamParams object?
-		if ( m_activityStreamParams == null )
+		if ( m_getActivityStreamParamsCallback == null )
 		{
-			// No, issue an rpc request to get the ActivityStreamParams.
-			HttpRequestInfo ri;
-			
-			if ( m_getActivityStreamParamsCallback == null )
+			m_getActivityStreamParamsCallback = new AsyncCallback<ActivityStreamParams>()
 			{
-				m_getActivityStreamParamsCallback = new AsyncCallback<ActivityStreamParams>()
+				/**
+				 * 
+				 */
+				public void onFailure(Throwable t)
 				{
-					/**
-					 * 
-					 */
-					public void onFailure(Throwable t)
-					{
-						GwtClientHelper.handleGwtRPCFailure( GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
-					}
+					GwtClientHelper.handleGwtRPCFailure( GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
+				}
 
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( ActivityStreamParams activityStreamParams )
+				{
+					Command cmd;
 					
-					/**
-					 * 
-					 */
-					public void onSuccess( ActivityStreamParams activityStreamParams )
+					m_activityStreamParams = activityStreamParams;
+					
+					cmd = new Command()
 					{
-						Command cmd;
-						
-						m_activityStreamParams = activityStreamParams;
-						
-						cmd = new Command()
+						/**
+						 * 
+						 */
+						public void execute()
 						{
-							/**
-							 * 
-							 */
-							public void execute()
-							{
-								// Now that we have the activity stream parameters, execute the search.
-								executeSearch();
-								
-								// Start the timer that we will use to check for changes.
-								startCheckForChangesTimer();
-							}
-						};
-						DeferredCommand.addCommand( cmd );
-					}
-				};
-			}
-			
-			// Issue an ajax request to get the activity stream params.
-			ri = new HttpRequestInfo();
-			m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
+							// Now that we have the activity stream parameters, execute the search.
+							executeSearch();
+							
+							// Start the timer that we will use to check for changes.
+							startCheckForChangesTimer();
+						}
+					};
+					DeferredCommand.addCommand( cmd );
+				}
+			};
 		}
-		else
-		{
-			// Yes, execute a search on the given activity stream.
-			executeSearch();
-		}
+		
+		// Issue an ajax request to get the activity stream params.
+		ri = new HttpRequestInfo();
+		m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
 		
 		// Is the source of the activity stream a binder?
 		m_binderPermalink = null;
@@ -898,7 +909,6 @@ public class ActivityStreamCtrl extends Composite
 			binderId = getActivityStreamSourceBinderId();
 			if ( binderId != null )
 			{
-				HttpRequestInfo ri;
 				AsyncCallback<String> callback;
 				
 				callback = new AsyncCallback<String>()
@@ -963,6 +973,9 @@ public class ActivityStreamCtrl extends Composite
 		Command cmd;
 
 		setVisible( true );
+
+		// Restart the "check for changes" timer.
+		startCheckForChangesTimer();
 		
 		cmd = new Command()
 		{
@@ -1024,8 +1037,14 @@ public class ActivityStreamCtrl extends Composite
 							checkForChanges();
 						}
 					};
+
+					// Update the title of the pause image.
+					m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream( minutes ) );
 				}
-	
+
+				// Update the label that indicates when we will check for changes.
+				updateNextRefreshLabel();
+				
 				// Start a timer.  When the timer goes off we will check for changes and
 				// update the activity stream if there is something new.
 				m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
@@ -1034,5 +1053,33 @@ public class ActivityStreamCtrl extends Composite
 				m_pauseImg.setVisible( true );
 			}
 		}
+	}
+	
+	
+	/**
+	 * Update the text that indicates when we will refresh the list.
+	 */
+	private void updateNextRefreshLabel()
+	{
+		String text;
+		Date date;
+		DateTimeFormat dateTimeFormat;
+		long milliSeconds;
+		
+		// Get the current time.
+		date = new Date();
+		milliSeconds = date.getTime();
+
+		if ( m_activityStreamParams != null )
+		{
+			// Add the number of minutes the refresh rate is set to.
+			milliSeconds += (m_activityStreamParams.getClientRefresh() * 60 * 1000);
+			date.setTime( milliSeconds );
+		}
+		
+		dateTimeFormat = DateTimeFormat.getShortTimeFormat();
+		text = dateTimeFormat.format( date );
+		
+		m_nextRefreshLabel.setText( GwtTeaming.getMessages().nextRefresh( text ) );
 	}
 }// end ActivityStreamCtrl

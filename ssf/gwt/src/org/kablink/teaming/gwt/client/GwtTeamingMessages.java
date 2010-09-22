@@ -221,6 +221,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetGeneric();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetImUrl();
+	String rpcFailure_GetLocale();
 	String rpcFailure_GetMyTeams();
 	String rpcFailure_GetPersonalPreferences();
 	String rpcFailure_GetProfileAvatars();
@@ -656,12 +657,16 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeTemplates();
 
 	// The following strings are used in the activity stream control.
+	String autoRefreshIsPaused();
 	String followedPeople();
 	String followedPlaces();
 	String myFavorites();
 	String myTeams();
+	String multipleComments( int numComments );
+	String nextRefresh( String time );
 	String noTitle();
-	String pauseActivityStream();
+	String oneComment();
+	String pauseActivityStream( int refreshRate );
 	String refresh();
 	String resumeActivityStream();
 	String siteWide();

@@ -295,6 +295,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the title for the given entry.  For a comment the title will include the reply number.
+	 */
+	public abstract String getEntryTitle( ActivityStreamEntry entry );
+	
+	
+	/**
 	 * 
 	 */
 	public FlowPanel getMainPanel()
@@ -466,7 +472,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		PresenceControl presenceCtrl;
 		
 		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
-		title = entryItem.getEntryTitle();
+		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
 		m_title.getElement().setInnerHTML( title );
