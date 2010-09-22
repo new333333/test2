@@ -33,7 +33,9 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -87,6 +89,41 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	}
 
 
+	/**
+	 * Return the title for the given entry.  This will be the reply number + title.
+	 * For example, 1.6.3 RE: This is a reply
+	 */
+	public String getEntryTitle( ActivityStreamEntry entry )
+	{
+		String replyNum;
+		String title;
+		
+		// Does the entry have a reply number?
+		replyNum = entry.getEntryDocNum();
+		if ( replyNum != null && replyNum.length() > 0 )
+		{
+			String tmp;
+			
+			title = replyNum + " ";
+			
+			// Yes
+			// Does the entry have a title?
+			tmp = entry.getEntryTitle();
+			if ( tmp != null && tmp.length() > 0 )
+			{
+				// Yes
+				title += tmp;
+			}
+			else
+				title += GwtTeaming.getMessages().noTitle();
+		}
+		else
+			title = entry.getEntryTitle();
+		
+		return title;
+	}
+
+	
 	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */

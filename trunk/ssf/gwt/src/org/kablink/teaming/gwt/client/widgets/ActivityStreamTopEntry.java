@@ -57,6 +57,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 
 /**
@@ -65,8 +66,9 @@ import com.google.gwt.user.client.ui.Image;
 public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 {
 	private ArrayList<ActivityStreamComment> m_comments;
-	private Anchor m_parentBinderName;	// Name of the binder this entry comes from.
-	private String m_parentBinderId;		// Id of the binder this entry comes from.
+	private InlineLabel m_numCommentsLabel;		// Shows the number of comments that exist for this entry.
+	private Anchor m_parentBinderName;			// Name of the binder this entry comes from.
+	private String m_parentBinderId;			// Id of the binder this entry comes from.
 	private String m_parentBinderPermalink;
 	private Image m_breadSpaceImg;
 	
@@ -91,6 +93,11 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
 		ImageResource imageResource;
+
+		// Create a span for the number of comments text to live in.
+		m_numCommentsLabel = new InlineLabel();
+		m_numCommentsLabel.addStyleName( "activityStreamNumCommentsLabel" );
+		headerPanel.add( m_numCommentsLabel );
 		
 		imageResource = GwtTeaming.getImageBundle().breadSpace();
 		m_breadSpaceImg = new Image( imageResource );
@@ -201,6 +208,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			nextComment.removeFromParent();
 		}
 		
+		m_numCommentsLabel.setText( "" );
 		m_parentBinderName.setText( "" );
 		m_parentBinderName.setTitle( "" );
 		m_parentBinderId = null;
@@ -235,6 +243,15 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	public String getEntryHeaderStyleName()
 	{
 		return "activityStreamTopEntryHeader";
+	}
+	
+	
+	/**
+	 * Return the title for the given entry.
+	 */
+	public String getEntryTitle( ActivityStreamEntry entry )
+	{
+		return entry.getEntryTitle();
 	}
 
 	
@@ -357,9 +374,25 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	{
 		List<ActivityStreamEntry> comments = null;
 		String parentBinderName;
+		int numComments;
 		int i;
 		
 		super.setData( entryItem );
+		
+		numComments = entryItem.getCommentCount();
+		if ( numComments > 0 )
+		{
+			String text;
+			
+			if ( numComments == 1 )
+				text = GwtTeaming.getMessages().oneComment();
+			else
+				text = GwtTeaming.getMessages().multipleComments( numComments );
+			m_numCommentsLabel.setText( text );
+			m_numCommentsLabel.setVisible( true );
+		}
+		else
+			m_numCommentsLabel.setVisible( false );
 		
 		parentBinderName = entryItem.getParentBinderName(); 
 		setBinderName( parentBinderName );
