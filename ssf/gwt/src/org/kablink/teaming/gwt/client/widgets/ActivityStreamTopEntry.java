@@ -247,15 +247,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	
 	
 	/**
-	 * Return the title for the given entry.
-	 */
-	public String getEntryTitle( ActivityStreamEntry entry )
-	{
-		return entry.getEntryTitle();
-	}
-
-	
-	/**
 	 * Return the name of the style used with the div that holds the entry.
 	 */
 	public String getMainPanelStyleName()

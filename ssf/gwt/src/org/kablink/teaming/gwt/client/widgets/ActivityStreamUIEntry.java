@@ -99,6 +99,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Add a place to show the avatar
 		m_avatarImg = new Image();
 		m_avatarImg.addStyleName( getAvatarImageStyleName() );
+		m_avatarImg.setVisible( false );
 		mainPanel.add( m_avatarImg );
 		
 		// Add mouse-over and mouse-out handlers.
@@ -162,6 +163,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public void clearEntrySpecificInfo()
 	{
 		m_avatarImg.setUrl( "" );
+		m_avatarImg.setVisible( false );
 		m_title.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
@@ -295,10 +297,48 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
-	 * Return the title for the given entry.  For a comment the title will include the reply number.
+	 * Return the title for the given entry.  If the entry is a reply, the title will be the reply number + title.
+	 * For example, 1.6.3 RE: What do you think you are doing?
+	 * If the entry is not a reply, the title will just be the title from the entry.
 	 */
-	public abstract String getEntryTitle( ActivityStreamEntry entry );
-	
+	public String getEntryTitle( ActivityStreamEntry entry )
+	{
+		String replyNum;
+		String title;
+		String entryType;
+		
+		entryType = entry.getEntryType();
+		
+		if ( entryType != null && entryType.equalsIgnoreCase( "reply" ) )
+		{
+			// Does the entry have a reply number?
+			replyNum = entry.getEntryDocNum();
+			if ( replyNum != null && replyNum.length() > 0 )
+			{
+				String tmp;
+				
+				title = replyNum + " ";
+				
+				// Yes
+				// Does the entry have a title?
+				tmp = entry.getEntryTitle();
+				if ( tmp != null && tmp.length() > 0 )
+				{
+					// Yes
+					title += tmp;
+				}
+				else
+					title += GwtTeaming.getMessages().noTitle();
+			}
+			else
+				title = entry.getEntryTitle();
+		}
+		else
+			title = entry.getEntryTitle();
+		
+		return title;
+	}
+
 	
 	/**
 	 * 
@@ -469,9 +509,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public void setData( ActivityStreamEntry entryItem )
 	{
 		String title;
+		String avatarUrl;
 		PresenceControl presenceCtrl;
 		
-		m_avatarImg.setUrl( entryItem.getAuthorAvatarUrl() );
+		avatarUrl = entryItem.getAuthorAvatarUrl();
+		if ( avatarUrl != null && avatarUrl.length() > 0 )
+		{
+			m_avatarImg.setUrl( avatarUrl );
+			m_avatarImg.setVisible( true );
+		}
 		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
