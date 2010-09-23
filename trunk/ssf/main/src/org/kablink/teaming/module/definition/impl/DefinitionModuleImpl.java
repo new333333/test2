@@ -236,7 +236,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException {
 		Definition srcDef = getDefinition(id);
-		Document doc = (Document)srcDef.getDefinition().clone();
+		Document doc = (Document)srcDef.getDefinitionForModificationPurpose();
 		doc.getRootElement().addAttribute("internalId", "");
 		doc.getRootElement().addAttribute("databaseId", "");
 		String type = doc.getRootElement().attributeValue("type");
@@ -390,7 +390,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	{
     		binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
     	}
-    	Document doc = def.getDefinition();
+    	Document doc = def.getDefinitionForModificationPurpose();
     	if (doc == null) return;
     	Map<Long, Principal> principalMap = new HashMap();
     	Map<String, Definition> definitionMap = new HashMap();
@@ -648,7 +648,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		//Store the properties in the definition document
-		Document defDoc = def.getDefinition();
+		Document defDoc = def.getDefinitionForModificationPurpose();
 		if (def != null && defDoc != null) {
 			//name and caption are special cased
 			if (inputData.exists("propertyId_name")) {
@@ -679,7 +679,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	//Rouitine to make sure a definition has all of the proper attributes as defined in the config file
 	//  This is useful to propagate new attributes added to the config definition xml file
 	private void validateDefinitionAttributes(Definition def) {
-		Document defDoc = def.getDefinition();
+		Document defDoc = def.getDefinitionForModificationPurpose();
 		if (updateDefinitionAttributes(defDoc)) setDefinition(def, defDoc);
 	}
 	private boolean updateDefinitionAttributes(Document defDoc) {
@@ -717,7 +717,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
-		Document defDoc = def.getDefinition();
+		Document defDoc = def.getDefinitionForModificationPurpose();
 
 		if (inputData.exists("xmlData") && def != null) {
 			Document appletDef;
@@ -986,7 +986,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 
-		Document definitionTree = def.getDefinition();
+		Document definitionTree = def.getDefinitionForModificationPurpose();
 
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, inputData);
 		if (newItem != null) {
@@ -1275,7 +1275,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
-		Document definitionTree = def.getDefinition();
+		Document definitionTree = def.getDefinitionForModificationPurpose();
 
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
@@ -1430,7 +1430,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 
-		Document definitionTree = def.getDefinition();
+		Document definitionTree = def.getDefinitionForModificationPurpose();
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 			//Find the element to delete
@@ -1480,7 +1480,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		if (sourceItemId.equals(targetItemId)) return;
-		Document definitionTree = def.getDefinition();
+		Document definitionTree = def.getDefinitionForModificationPurpose();
 		if (definitionTree == null) return;
 		Element root = definitionTree.getRootElement();
 		//Find the element to move
@@ -1538,7 +1538,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
 		if (sourceItemId.equals(targetItemId)) return;
-		Document definitionTree = def.getDefinition();
+		Document definitionTree = def.getDefinitionForModificationPurpose();
 		if (definitionTree == null) return;
 		Element root = definitionTree.getRootElement();
 		//Find the element to move
@@ -1706,7 +1706,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	//Rouitine to make sure a definition has all of the proper options as defined in the config file
 	//  This is useful to propagate new items added to the config definition xml file
 	private void validateDefinitionTree(Definition def) {
-		Document defDoc = def.getDefinition();
+		Document defDoc = def.getDefinitionForModificationPurpose();
 		if (updateDefinitionTree(defDoc)) setDefinition(def, defDoc);
 	}
 	private boolean updateDefinitionTree(Document defDoc) {

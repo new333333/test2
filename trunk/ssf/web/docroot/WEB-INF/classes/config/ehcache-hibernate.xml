@@ -70,4 +70,15 @@
 	    timeToLiveSeconds="86400"
 	    overflowToDisk="false">
 	</cache>
+	
+    <cache
+    	name="org.kablink.teaming.domain.Definition"
+        maxElementsInMemory="3000"
+        eternal="false"
+        timeToIdleSeconds="1800"
+        timeToLiveSeconds="86400"
+        overflowToDisk="false">
+        <cacheEventListenerFactory
+			class="org.kablink.teaming.ehcache.DefinitionCacheEventListenerFactory" />
+	</cache>
 </ehcache>	
