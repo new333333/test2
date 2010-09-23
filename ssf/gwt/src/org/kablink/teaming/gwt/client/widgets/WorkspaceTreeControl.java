@@ -139,7 +139,8 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						
 						// ...and enter activity stream mode.
 						ActivityStreamInfo asi = new ActivityStreamInfo();
-						asi.setActivityStream( ActivityStream.SITE_WIDE );
+						asi.setActivityStream(ActivityStream.SITE_WIDE);
+						asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
 						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
 						m_treeDisplay.enterActivityStreamMode(asi);
 					}

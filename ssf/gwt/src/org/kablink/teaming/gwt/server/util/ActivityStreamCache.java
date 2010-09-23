@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -151,7 +150,7 @@ public class ActivityStreamCache {
      * 
      * @return
      */
-    public static boolean checkBindersForNewEntries(AllModulesInjected bs, List<String> binderIds, Date date) {
+    public static boolean checkBindersForNewEntries(AllModulesInjected bs, List<Long> binderIds, Date date) {
     	// Do we have an ID cache available?
     	boolean reply = false;
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
@@ -161,8 +160,7 @@ public class ActivityStreamCache {
     		Map<Long, Date> binderMap = cache.getBinderMap();
     		if (binderMap.size() < binderIds.size()) {
 	    		for (Long binderId: binderMap.keySet()) {
-	    			String binderIdS = String.valueOf(binderId);
-		        	if (binderIds.contains(binderIdS) && binderMap.get(binderId).after(date)) {
+		        	if (binderIds.contains(binderId) && binderMap.get(binderId).after(date)) {
 		        		reply = true;
 		        		break;
 		        	}
@@ -170,8 +168,7 @@ public class ActivityStreamCache {
     		}
     		
     		else {
-        		for (String binderIdS: binderIds) {
-        			Long binderId = Long.parseLong(binderIdS);
+        		for (Long binderId: binderIds) {
     	        	if (binderMap.containsKey(binderId) && binderMap.get(binderId).after(date)) {
     	        		reply = true;
     	        		break;
@@ -183,7 +180,7 @@ public class ActivityStreamCache {
     	if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
     		GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.checkBindersForNewEntries():  Reply:  " + reply +
     			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache              ) +
-    			"\n\tChecking Binder IDs:  "   + getSFromListS(binderIds, "Binder") +
+    			"\n\tChecking Binder IDs:  "   + getSFromListL(binderIds, "Binder") +
     			"\n\tFor Date:  "              + getSFromDate( date              ));
     	}
     	
@@ -200,7 +197,7 @@ public class ActivityStreamCache {
      * 
      * @return
      */
-    public static boolean checkUsersForNewEntries(AllModulesInjected bs, List<String> userIds, Date date) {
+    public static boolean checkUsersForNewEntries(AllModulesInjected bs, List<Long> userIds, Date date) {
     	// Do we have an ID cache available?
     	boolean reply = false;
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
@@ -210,8 +207,7 @@ public class ActivityStreamCache {
     		Map<Long, Date> userMap = cache.getUserMap();
     		if (userMap.size() < userIds.size()) {
 	    		for (Long userId: userMap.keySet()) {
-	    			String userIdS = String.valueOf(userId);
-		        	if (userIds.contains(userIdS) && userMap.get(userId).after(date)) {
+		        	if (userIds.contains(userId) && userMap.get(userId).after(date)) {
 		        		reply = true;
 		        		break;
 		        	}
@@ -219,8 +215,7 @@ public class ActivityStreamCache {
     		}
     		
     		else {
-        		for (String userIdS: userIds) {
-        			Long userId = Long.parseLong(userIdS);
+        		for (Long userId: userIds) {
     	        	if (userMap.containsKey(userId) && userMap.get(userId).after(date)) {
     	        		reply = true;
     	        		break;
@@ -232,7 +227,7 @@ public class ActivityStreamCache {
     	if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
     		GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.checkUsersForNewEntries():  Reply:  " + reply +
     			"\n\tActivityStreamIDCache:  " + getSFromASIDC(cache          ) +
-    			"\n\tChecking User IDs:  "     + getSFromListS(userIds, "User") +
+    			"\n\tChecking User IDs:  "     + getSFromListL(userIds, "User") +
     			"\n\tFor Date:  "              + getSFromDate( date          ));
     	}
     	
@@ -268,15 +263,15 @@ public class ActivityStreamCache {
 	}
 	
 	/*
-	 * Returns the string representation of a List<String>. 
+	 * Returns the string representation of a List<Long>. 
 	 */
-	private static String getSFromListS(List<String> list, String base) {
+	private static String getSFromListL(List<Long> list, String base) {
 		StringBuffer reply = new StringBuffer();
 		
 		reply.append(list.size());
 		int i = 0;
-		for (String s:  list) {
-			reply.append("\n\t\t" + base + ":" + i++ + ":  " + s);
+		for (Long l:  list) {
+			reply.append("\n\t\t" + base + ":" + i++ + ":  " + String.valueOf(l));
 		}
 		
 		return reply.toString();
@@ -306,15 +301,15 @@ public class ActivityStreamCache {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> getTrackedBinderIds(HttpServletRequest request) {
+	public static List<Long> getTrackedBinderIds(HttpServletRequest request) {
         HttpSession session = WebHelper.getRequiredSession(request);
-		List<String> reply = ((List<String>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS));
+		List<Long> reply = ((List<Long>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS));
 		if (null == reply) {
-			reply = new ArrayList<String>();
+			reply = new ArrayList<Long>();
 		}
 		
 		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
-			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedBinderIds():  " + getSFromListS(reply, "Binder"));
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedBinderIds():  " + getSFromListL(reply, "Binder"));
 		}
 		
 		return reply;
@@ -328,15 +323,15 @@ public class ActivityStreamCache {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<String> getTrackedUserIds(HttpServletRequest request) {
+	public static List<Long> getTrackedUserIds(HttpServletRequest request) {
         HttpSession session = WebHelper.getRequiredSession(request);
-		List<String> reply = ((List<String>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS));
+		List<Long> reply = ((List<Long>) session.getAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS));
 		if (null == reply) {
-			reply = new ArrayList<String>();
+			reply = new ArrayList<Long>();
 		}
 		
 		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
-			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedUserIds():  " + getSFromListS(reply, "User"));
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.getTrackedUserIds():  " + getSFromListL(reply, "User"));
 		}
 		
 		return reply;
@@ -381,12 +376,12 @@ public class ActivityStreamCache {
 	 * @param request
 	 * @param trackedBinderIds
 	 */
-	public static void setTrackedBinderIds(HttpServletRequest request, List<String> trackedBinderIds) {
+	public static void setTrackedBinderIds(HttpServletRequest request, List<Long> trackedBinderIds) {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_BINDER_IDS, trackedBinderIds);
 		
 		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
-			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListS(trackedBinderIds, "Binder"));
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedBinderIds():  " + getSFromListL(trackedBinderIds, "Binder"));
 		}		
 	}
 	
@@ -396,12 +391,12 @@ public class ActivityStreamCache {
 	 * @param request
 	 * @param trackedUserIds
 	 */
-	public static void setTrackedUserIds(HttpServletRequest request, List<String> trackedUserIds) {
+	public static void setTrackedUserIds(HttpServletRequest request, List<Long> trackedUserIds) {
         HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute(SESSION_ACTIVITY_STREAM_TRACKED_USER_IDS, trackedUserIds);
 		
 		if (GwtActivityStreamHelper.isDebugLoggingEnabled()) {
-			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedUserIds():  " + getSFromListS(trackedUserIds, "User"));
+			GwtActivityStreamHelper.writeDebugLog("ActivityStreamCache.setTrackedUserIds():  " + getSFromListL(trackedUserIds, "User"));
 		}		
 	}
 

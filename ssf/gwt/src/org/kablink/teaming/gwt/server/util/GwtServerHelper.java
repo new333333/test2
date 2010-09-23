@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -103,6 +104,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -1790,12 +1792,10 @@ public class GwtServerHelper {
 	
 	public static Binder getBinderSafely(BinderModule bm, Long binderId) {
 		Binder reply;
-		try
-		{
+		try {
 			reply = bm.getBinder(binderId);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getBinderSafely(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
 			reply = null;
 		}
@@ -1955,6 +1955,31 @@ public class GwtServerHelper {
 		// ...string.
 		String reply = ((null == def) ? "" : def.getId());
 		m_logger.debug("GwtServerHelper.getDefaultFolderDefinitionId( binderId:  '" + binderIdS + "' ):  '" + reply);
+		return reply;
+	}
+	
+	/**
+	 * Returns s FolderEntry from it's ID guarding against any
+	 * exceptions.  If an exception is caught, null is returned.
+	 * 
+	 * @param fm
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static FolderEntry getEntrySafely(FolderModule fm, String entryId) {
+		return getEntrySafely(fm, Long.parseLong(entryId));
+	}
+	
+	public static FolderEntry getEntrySafely(FolderModule fm, Long entryId) {
+		FolderEntry reply;
+		try {
+			reply = fm.getEntry(null, entryId);
+		}
+		catch (Exception e) {
+			m_logger.debug("GwtServerHelper.getEntrySafely(FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
 		return reply;
 	}
 	
@@ -2491,12 +2516,10 @@ public class GwtServerHelper {
 	
 	public static User getUserSafely(ProfileModule pm, Long userId) {
 		User reply;
-		try
-		{
+		try {
 			reply = ((User) pm.getEntry(userId));
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getUserSafely(User could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
 			reply = null;
 		}

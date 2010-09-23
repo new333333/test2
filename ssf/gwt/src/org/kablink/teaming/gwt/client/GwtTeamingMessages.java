@@ -417,6 +417,7 @@ public interface GwtTeamingMessages extends Messages
 	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseActivityStreams();
 	String treeCloseBreadCrumbs();
+	String treeSiteWide();
 	
 	// Strings used in the "Add File Attachment" dialog.
 	String addFileAttachmentDlgHeader();

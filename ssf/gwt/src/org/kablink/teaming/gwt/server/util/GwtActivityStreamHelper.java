@@ -46,6 +46,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -227,7 +228,7 @@ public class GwtActivityStreamHelper {
 			return reply;
 		}
 	}
-	
+
 	/*
 	 * Inhibits this class from being instantiated. 
 	 */
@@ -308,23 +309,25 @@ public class GwtActivityStreamHelper {
 
 		// Then the parent binder information.  Does the entry map
 		// contain the ID of the binder that contains the entry?
-		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);
 		BinderInfo binderInfo = BinderInfo.getBinderInfo(
 			bs,
 			binderCache,
-			binderId);
+			getSFromEM(
+				em,
+				Constants.BINDER_ID_FIELD));
 		reply.setParentBinderId(   binderInfo.m_binderId   );
 		reply.setParentBinderHover(binderInfo.m_binderHover);
 		reply.setParentBinderName( binderInfo.m_binderName );
 
 		// And finally, the entry information.
-		reply.setEntryDescription(     getDescFromEM(em, request, bs, binderId             ));	
-		reply.setEntryDocNum(          getSFromEM(   em, Constants.DOCNUMBER_FIELD         ));
-		reply.setEntryId(              getSFromEM(   em, Constants.DOCID_FIELD             ));
-		reply.setEntryModificationDate(getSFromEM(   em, Constants.MODIFICATION_DATE_FIELD ));		
-		reply.setEntryTitle(           getSFromEM(   em, Constants.TITLE_FIELD             ));
-		reply.setEntryTopEntryId(      getSFromEM(   em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
-		reply.setEntryType(            getSFromEM(   em, Constants.ENTRY_TYPE_FIELD        ));
+		String entryId =               getSFromEM(        em, Constants.DOCID_FIELD              );
+		reply.setEntryId(              entryId                                                   );
+		reply.setEntryDescription(     getEntryDescFromEM(em, request, bs, entryId              ));	
+		reply.setEntryDocNum(          getSFromEM(        em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryModificationDate(getSFromEM(        em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(           getSFromEM(        em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(      getSFromEM(        em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(            getSFromEM(        em, Constants.ENTRY_TYPE_FIELD        ));
 
 		// Are we working on a base activity stream entry for an
 		// activity stream data object? 
@@ -498,15 +501,22 @@ public class GwtActivityStreamHelper {
 	 *    http://somehost/ssf/s/readFile/.../somename.png
 	 */
 	@SuppressWarnings("unchecked")
-	private static String getDescFromEM(Map em, HttpServletRequest request, AllModulesInjected bs, String binderId) {
-		// Do we have a description and binder ID?
+	private static String getEntryDescFromEM(Map em, HttpServletRequest request, AllModulesInjected bs, String entryId) {
+		// Do we have a base description and an entry ID?
 		String reply = getSFromEM(em, Constants.DESC_FIELD);
-		if (MiscUtil.hasString(reply) && MiscUtil.hasString(binderId)) {
-			// Yes!  Can we access the binder?
-			Binder binder = GwtServerHelper.getBinderSafely(bs.getBinderModule(), Long.parseLong(binderId));
-			if (null != binder) {
+		if (MiscUtil.hasString(reply) && MiscUtil.hasString(entryId)) {
+			// Yes!  Can we access the entry?
+			FolderEntry fe = GwtServerHelper.getEntrySafely(bs.getFolderModule(), entryId);
+			if (null != fe) {
 				// Yes!  Fix the mark up.
-				reply = MarkupUtil.markupStringReplacement( null, null, request, null, binder, reply, "view" );
+				reply = MarkupUtil.markupStringReplacement(
+					null,
+					null,
+					request,
+					null,
+					fe,
+					reply,
+					"view");
 			}
 		}
 		
@@ -782,7 +792,7 @@ public class GwtActivityStreamHelper {
 		Date updateDate = ActivityStreamCache.getUpdateDate(request);
 		
 		// Are we watching any binders for changes?
-		List<String> trackedIds = ActivityStreamCache.getTrackedBinderIds(request);
+		List<Long> trackedIds = ActivityStreamCache.getTrackedBinderIds(request);
 		boolean activityStreamChanged = ((null != trackedIds) && (!(trackedIds.isEmpty())));
 		if (activityStreamChanged) {
 			// Yes!  Has anything changed in them?
@@ -846,7 +856,7 @@ public class GwtActivityStreamHelper {
 			// Followed people:
 			// 1. There are no tracked places; and
 			// 2. The tracked users are the owner IDs of the places.
-			sAToL(trackedPlaces, trackedUsersAL);
+			sATosL(trackedPlaces, trackedUsersAL);
 			trackedPlaces = new String[0];
 			
 			break;
@@ -873,7 +883,7 @@ public class GwtActivityStreamHelper {
 		}
 
 		// Store the tracked places into the ArrayList for them.
-		sAToL(trackedPlaces, trackedPlacesAL);
+		sATosL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
 		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedUsersAL);
@@ -923,8 +933,8 @@ public class GwtActivityStreamHelper {
 
     	// Store the places and users we're tracking in the session
     	// cache....
-    	ActivityStreamCache.setTrackedBinderIds(request, trackedPlacesAL);
-    	ActivityStreamCache.setTrackedUserIds(  request, trackedUsersAL);
+    	ActivityStreamCache.setTrackedBinderIds(request, sLTolL(trackedPlacesAL));
+    	ActivityStreamCache.setTrackedUserIds(  request, sLTolL(trackedUsersAL ));
     	
     	// ...and store the date we saved the tracking data.
     	ActivityStreamCache.setUpdateDate(request);
@@ -933,11 +943,25 @@ public class GwtActivityStreamHelper {
 	/*
 	 * Stores the strings from a String[] into a List<String>.
 	 */
-	private static void sAToL(String[] sA, List<String> sL) {
+	private static void sATosL(String[] sA, List<String> sL) {
 		int c = ((null == sA) ? 0 : sA.length);
 		for (int i = 0; i < c; i += 1) {
 			sL.add(sA[i]);
 		}
+	}
+
+	/*
+	 * Converts the strings from a List<String> into a List<Long>.
+	 */
+	private static List<Long> sLTolL(List<String> sL) {
+		List<Long> reply = new ArrayList<Long>();
+		int c = ((null == sL) ? 0 : sL.size());
+		if (0 < c) {
+			for (String s: sL) {
+				reply.add(Long.parseLong(s));
+			}
+		}
+		return reply;
 	}
 
 	/**

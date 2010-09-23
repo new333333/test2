@@ -595,7 +595,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			if (!(GwtClientHelper.hasString(reply))) {
 				reply = ti.getBinderTitle();
 			}
-			reply = (as.getValue() + "_" + ti.getBinderTitle());
+			reply += ("_" + as.getValue() + "_" + ti.getBinderTitle());
 		}
 
 		else {	
