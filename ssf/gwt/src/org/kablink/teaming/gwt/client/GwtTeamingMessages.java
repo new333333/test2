@@ -665,6 +665,7 @@ public interface GwtTeamingMessages extends Messages
 	String myTeams();
 	String multipleComments( int numComments );
 	String nextRefresh( String time );
+	String noEntriesFound();
 	String noTitle();
 	String oneComment();
 	String pauseActivityStream( int refreshRate );

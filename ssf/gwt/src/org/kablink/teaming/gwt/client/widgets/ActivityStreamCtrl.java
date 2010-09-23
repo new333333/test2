@@ -106,6 +106,7 @@ public class ActivityStreamCtrl extends Composite
 	private Image m_nextImg;
 	private InlineLabel m_nOfnLabel;
 	private FlowPanel m_searchingPanel;
+	private FlowPanel m_noEntriesFoundPanel;
 	private int m_width;
 	private int m_height;
 	private ActivityStreamInfo m_activityStreamInfo = null;
@@ -161,6 +162,18 @@ public class ActivityStreamCtrl extends Composite
 			m_searchingPanel.setVisible( false );
 		}
 		
+		// Create a panel to hold "No entries found"
+		{
+			InlineLabel text;
+			
+			m_noEntriesFoundPanel = new FlowPanel();
+			m_noEntriesFoundPanel.addStyleName( "activityStreamNoEntriesFoundPanel" );
+			mainPanel.add( m_noEntriesFoundPanel );
+			text = new InlineLabel( GwtTeaming.getMessages().noEntriesFound() );
+			m_noEntriesFoundPanel.add( text );
+			m_noEntriesFoundPanel.setVisible( false );
+		}
+		
 		// Create the callback that will be used when we issue an ajax call to do a search.
 		m_searchResultsCallback = new AsyncCallback<ActivityStreamData>()
 		{
@@ -174,6 +187,7 @@ public class ActivityStreamCtrl extends Composite
 				
 				m_searchInProgress = false;
 				hideSearchingText();
+				showNoEntriesFoundText();
 			}// end onFailure()
 	
 			/**
@@ -294,6 +308,18 @@ public class ActivityStreamCtrl extends Composite
 			// No
 			m_nextDisabledImg.setVisible( true );
 			m_nextImg.setVisible( false );
+		}
+		
+		// Do we have any results?
+		if ( displayCount == 0 )
+		{
+			// No
+			showNoEntriesFoundText();
+		}
+		else
+		{
+			// Yes
+			hideNoEntriesFoundText();
 		}
 	}
 	
@@ -689,6 +715,15 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Hide the "No entries found" text.
+	 */
+	public void hideNoEntriesFoundText()
+	{
+		m_noEntriesFoundPanel.setVisible( false );
+	}
+	
+	
+	/**
 	 * Hide the "Searching..." text.
 	 */
 	public void hideSearchingText()
@@ -987,6 +1022,25 @@ public class ActivityStreamCtrl extends Composite
 		DeferredCommand.addCommand( cmd );
 	}
 	
+	
+	/**
+	 * Show the "No entries found" text.
+	 */
+	public void showNoEntriesFoundText()
+	{
+		int width;
+		int x;
+	
+		// Center the "No entries found" text
+		width = getWidget().getOffsetWidth();
+		x = (width - m_noEntriesFoundPanel.getOffsetWidth()) / 2;
+		x -= 40;
+		DOM.setStyleAttribute( m_noEntriesFoundPanel.getElement(), "left", Integer.toString( x ) + "px" );
+	
+		// Show the "No entries found" text
+		m_noEntriesFoundPanel.setVisible( true );
+	}
+
 	
 	/**
 	 * Show the "Searching..." text.
