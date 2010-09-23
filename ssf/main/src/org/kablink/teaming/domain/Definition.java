@@ -41,8 +41,10 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
 
 /**
@@ -57,7 +59,6 @@ public class Definition extends PersistentTimestampObject  {
 	private int type=FOLDER_ENTRY;
 	private Integer visibility=VISIBILITY_PUBLIC;
     private byte[] xmlencoding;
-    private Document doc;
     private String title="";
     private String iId;
     //type values
@@ -193,28 +194,27 @@ public class Definition extends PersistentTimestampObject  {
  
         xmlencoding=definition;
     }
+    public Document getDefinition() {
+    	return DefinitionCache.getDocument(this);
+    }
+    
     /**
-     * Changes to the document object will not be reflected in the database until
-     * a setDefinition call is made.
+     * Get a document object with the intention of modifying it.
+     * Unlike <code>getDefinition</code>, this method returns a private copy
+     * of the definition that the caller can modify directly. Note that changes
+     * to the document object will not be reflected in the database until
+     * a <code>setDefinition</code> call is made.
      * @return
      */
-    public Document getDefinition() {
-		long startTime = System.currentTimeMillis();
-    	if (doc != null) return doc;
-    	try {
-    		InputStream ois = new ByteArrayInputStream(xmlencoding);
-    		if (ois == null) return null;
-    		SAXReader xIn = new SAXReader();
-    		doc = xIn.read(ois);   
-    		ois.close();
-    	} catch (Exception fe) {
-    		logger.error(fe.getLocalizedMessage(), fe);
-    	}
-    	Utils.end(logger, startTime, "getDefinition", getTitle());
-        return doc;
+    public Document getDefinitionForModificationPurpose() {
+    	logger.debug("getDefinitionForModificationPurpose");
+    	return getDocument();
     }
+    
     public void setDefinition(Document doc) {
 		long startTime = System.currentTimeMillis();
+		if(DefinitionCache.isCachedDocument(getId(), doc))
+			throw new InternalException("Bug: Application has directly modified shared cached definition document");
        	try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
        		if (baos == null) return;
@@ -225,7 +225,6 @@ public class Definition extends PersistentTimestampObject  {
     	} catch (Exception fe) {
     		logger.error(fe.getLocalizedMessage(), fe);
     	}
-    	this.doc = doc;
     	Utils.end(logger, startTime, "setDefinition", getTitle());
     }
 
@@ -236,4 +235,24 @@ public class Definition extends PersistentTimestampObject  {
     	return name;
     }
 
+    /*
+     * This method is specially designed only to be called from this class 
+     * (and its subclasses) and the DefinitionCache class.
+     * IMPORTANT: Don't ever make this method public!!!
+     */
+    protected Document getDocument() {
+		long startTime = System.currentTimeMillis();
+		Document doc = null;
+    	try {
+    		InputStream ois = new ByteArrayInputStream(xmlencoding);
+    		if (ois == null) return null;
+    		SAXReader xIn = new SAXReader();
+    		doc = xIn.read(ois);   
+    		ois.close();
+    	} catch (Exception fe) {
+    		logger.error(fe.getLocalizedMessage(), fe);
+    	}
+    	Utils.end(logger, startTime, "getDocument", getTitle());
+        return doc;
+    }
 }

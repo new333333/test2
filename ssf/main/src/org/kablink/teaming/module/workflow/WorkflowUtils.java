@@ -107,7 +107,7 @@ public class WorkflowUtils {
 		return transitionData;
     } 
 	public static void setTransition(Definition wfDef, String stateName, String toStateName, String newState) {
-		Document wfDoc = wfDef.getDefinition();
+		Document wfDoc = wfDef.getDefinitionForModificationPurpose();
 		if (newState == null) newState = "";
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
