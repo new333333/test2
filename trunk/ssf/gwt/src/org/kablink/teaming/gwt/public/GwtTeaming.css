@@ -26,6 +26,18 @@
 	z-index: 100;
 }
 
+.activityStreamNoEntriesFoundPanel
+{
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: .5em;
+	position: absolute;
+	top: 150px;
+	z-index: 100;
+}
+
 .activityStreamCtrlFooter
 {
 	background-color: #EFEEEC;
@@ -109,6 +121,7 @@
 {
 	overflow: auto;
 	padding-left: 10px;
+	position: relative;
 }
 
 .activityStreamTopEntryMainPanel
