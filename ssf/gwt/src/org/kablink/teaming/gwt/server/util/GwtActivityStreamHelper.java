@@ -896,7 +896,6 @@ public class GwtActivityStreamHelper {
     	asd.setPagingData(pd);
 
     	// Are there any entries in the search results?
-		Map<String, Binder> whatsNewPlaces = null; //! (newData ? new HashMap<String, Binder>() : null);
     	if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {
     		// Yes!  Get the list to hold the activity stream
     		// entries and scan the search results. 
@@ -915,19 +914,6 @@ public class GwtActivityStreamHelper {
 	    			((Map) it.next()),
 	    			true);	// true -> This is a base activity stream entry for an activity stream data.
     			entries.add(entry);
-
-    			// Are we constructing new data for which we need to
-    			// cache the binders?
-    			if (null != whatsNewPlaces) {
-	    			// Yes!  Do we have an ID for the binder that
-    				// contains this entry that we have yet to track?
-					String parentBinderId = entry.getParentBinderId();
-					if (MiscUtil.hasString(parentBinderId) && (!(whatsNewPlaces.containsKey(parentBinderId)))) {
-						// Yes!  Track it now.
-						BinderInfo binderInfo = BinderInfo.getBinderInfo(bs, binderCache, parentBinderId);
-						whatsNewPlaces.put(parentBinderId, binderInfo.m_binder);
-					}
-    			}
 	    	}
     	}
 
