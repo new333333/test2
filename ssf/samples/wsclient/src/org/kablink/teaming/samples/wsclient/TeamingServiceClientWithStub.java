@@ -38,6 +38,7 @@ import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.not;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
@@ -47,6 +48,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.TeamingServiceSoapBindingStub;
@@ -238,6 +241,7 @@ public class TeamingServiceClientWithStub {
  
 		// Execute the search against a Teaming server and print the result.
 		Document xmlResults = DocumentHelper.parseText(stub.search_search(null, crit.toQuery().asXML(), 0, 100));
+		prettyPrintXML(xmlResults);
     	List<Element> entries = xmlResults.getRootElement().selectNodes("/searchResults/entry");
     	if (entries == null || entries.isEmpty()) {
     		System.out.println("No matching entries");
@@ -245,6 +249,7 @@ public class TeamingServiceClientWithStub {
     	for (Element eEle:entries) {
     		Long id = Long.valueOf(eEle.attributeValue("id"));
     		String title = eEle.attributeValue("title");
+    		FolderEntry entry = stub.folder_getEntry(null, id, false, false);
     		System.out.println(id + " [" + title + "]");
     	}
 	}
@@ -929,4 +934,16 @@ public class TeamingServiceClientWithStub {
 			System.out.println("This user doesn't have any attachment");
 		}
 	}
+	
+	private static void prettyPrintXML(Document doc) {
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		try {
+			XMLWriter writer = new XMLWriter(System.out, format);
+			writer.write(doc);
+		}
+		catch(IOException e) {
+			System.out.println(e);
+		}
+	}
+
 }

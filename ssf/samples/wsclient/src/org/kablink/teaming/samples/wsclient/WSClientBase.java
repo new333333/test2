@@ -52,6 +52,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
+import org.kablink.teaming.client.ws.model.Attachment;
+import org.kablink.teaming.client.ws.model.AttachmentsField;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
 import org.kablink.teaming.client.ws.model.User;
 
@@ -390,6 +392,16 @@ public abstract class WSClientBase {
 		if(entity != null) {
 			System.out.println("Entity ID: " + entity.getId());
 			System.out.println("Entity title: " + entity.getTitle());
+			AttachmentsField aField = entity.getAttachmentsField();
+			System.out.println("Attachments name: " + aField.getName());
+			System.out.println("Attachments type: " + aField.getType());
+			System.out.println("Attachments size: " + aField.getAttachments().length);
+			Attachment[] attachments = aField.getAttachments();
+			for(int i = 0; i < attachments.length; i++) {
+				System.out.println("Attachment " + i + " file name: " + attachments[i].getFileName());
+				System.out.println("Attachment " + i + " file href: " + attachments[i].getHref());
+				System.out.println("Attachment " + i + " file id: " + attachments[i].getId());
+			}
 		}
 		else {
 			System.out.println("No entity returned");
