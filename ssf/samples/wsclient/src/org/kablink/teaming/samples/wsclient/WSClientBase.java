@@ -393,14 +393,19 @@ public abstract class WSClientBase {
 			System.out.println("Entity ID: " + entity.getId());
 			System.out.println("Entity title: " + entity.getTitle());
 			AttachmentsField aField = entity.getAttachmentsField();
-			System.out.println("Attachments name: " + aField.getName());
-			System.out.println("Attachments type: " + aField.getType());
-			System.out.println("Attachments size: " + aField.getAttachments().length);
-			Attachment[] attachments = aField.getAttachments();
-			for(int i = 0; i < attachments.length; i++) {
-				System.out.println("Attachment " + i + " file name: " + attachments[i].getFileName());
-				System.out.println("Attachment " + i + " file href: " + attachments[i].getHref());
-				System.out.println("Attachment " + i + " file id: " + attachments[i].getId());
+			if(aField != null) {
+				System.out.println("Attachments name: " + aField.getName());
+				System.out.println("Attachments type: " + aField.getType());
+				System.out.println("Attachments size: " + aField.getAttachments().length);
+				Attachment[] attachments = aField.getAttachments();
+				for(int i = 0; i < attachments.length; i++) {
+					System.out.println("Attachment " + i + " file name: " + attachments[i].getFileName());
+					System.out.println("Attachment " + i + " file href: " + attachments[i].getHref());
+					System.out.println("Attachment " + i + " file id: " + attachments[i].getId());
+				}
+			}
+			else {
+				System.out.println("No attachments field returned");
 			}
 		}
 		else {
