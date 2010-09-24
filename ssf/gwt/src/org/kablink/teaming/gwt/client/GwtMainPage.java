@@ -793,10 +793,21 @@ public class GwtMainPage extends Composite
 			if ( m_adminControl != null )
 				m_adminControl.hideControl();
 			
-			// Show everything on the menu, the workspace tree control and the content control.
-			m_mainMenuCtrl.hideAdministrationMenubar();
-			m_contentCtrl.setVisible( true );
-
+			// Should we go back into activity stream mode?
+			if ( m_wsTreeCtrl.isInActivityStreamMode() )
+			{
+				// Yes
+				if ( m_activityStreamCtrl != null )
+					m_activityStreamCtrl.show();
+			}
+			else
+			{
+				// No
+				// Show everything on the menu, the workspace tree control and the content control.
+				m_mainMenuCtrl.hideAdministrationMenubar();
+				m_contentCtrl.setVisible( true );
+			}
+			
 			// Restore the ui state to what it was before we opened the site administration.
 			cmd = new Command()
 			{
