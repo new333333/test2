@@ -208,8 +208,10 @@ public interface GwtRpcServiceAsync
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 
 	// Activity Stream servicing APIs.
-	public void getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamParams(  HttpRequestInfo ri,                                                                  AsyncCallback<ActivityStreamParams> callback );
-	public void hasActivityStreamChanged( HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );	
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                  AsyncCallback<ActivityStreamParams> callback );
+	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                          AsyncCallback<ActivityStreamInfo>   callback );
+	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );	
+	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );
 }// end GwtRpcServiceAsync

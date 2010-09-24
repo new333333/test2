@@ -173,13 +173,7 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	Image buildBucketRangeImage() {
 		Image reply = new Image(getImages().range());
-		reply.addStyleName("gwtUI_vmiddle");
-		
-//!		// If we use getImages().rangeArrows(), we must set the height
-//!		// and width.
-//!		reply.setHeight("10");
-//!		reply.setWidth("9");
-		
+		reply.addStyleName("gwtUI_vmiddle");		
 		return reply;
 	}
 

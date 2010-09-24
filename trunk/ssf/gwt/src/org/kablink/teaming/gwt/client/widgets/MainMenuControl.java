@@ -505,17 +505,40 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_whatsNewBox.addClickHandler(
 			new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					ActivityStreamInfo asi;
+					// Are we connected to a binder?
 					if (null != m_contextBinder) {
-						asi = new ActivityStreamInfo();
-						asi.setActivityStream(ActivityStream.CURRENT_BINDER   );
-						asi.setBinderId(      m_contextBinder.getBinderId()   );
-						asi.setTitle(         m_contextBinder.getBinderTitle());
+						// Yes!  Query for this user's default activity stream.
+						final String currentBinderId = m_contextBinder.getBinderId();
+						GwtTeaming.getRpcService().getDefaultActivityStream(new HttpRequestInfo(), currentBinderId, new AsyncCallback<ActivityStreamInfo>() {
+							public void onFailure(Throwable t) {
+								// If we couldn't get it, handle the
+								// failure...
+								GwtClientHelper.handleGwtRPCFailure(
+									m_messages.rpcFailure_GetDefaultActivityStream());
+								
+								// ...and just use the UI supplied default.
+								triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE);
+							}
+							
+							public void onSuccess(ActivityStreamInfo asi) {
+								// Does this user have a default saved?
+								if (null == asi) {
+									// No!  Then we're go to their default binder.
+									asi = new ActivityStreamInfo();
+									asi.setActivityStream(ActivityStream.CURRENT_BINDER   );
+									asi.setBinderId(      currentBinderId                 );
+									asi.setTitle(         m_contextBinder.getBinderTitle());
+								}
+								triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
+							}
+						});
 					}
+					
 					else {
-						asi = null;
+						// No, we're not connected to a binder!  Just
+						// use the UI supplied default activity stream.
+						triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE);
 					}
-					triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
 				}
 			});
 		menuPanel.add(m_whatsNewBox);
