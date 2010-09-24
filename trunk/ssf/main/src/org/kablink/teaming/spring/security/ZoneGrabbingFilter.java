@@ -52,9 +52,10 @@ public class ZoneGrabbingFilter extends SpringSecurityFilter {
 	protected void doFilterHttp(HttpServletRequest request,
 			HttpServletResponse response, FilterChain chain) throws IOException,
 			ServletException {
-		
 		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setServerPort(request.getServerPort());
 		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
+		ZoneContextHolder.setSecure(request.isSecure());
 		chain.doFilter(request, response);
 	}
 

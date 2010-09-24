@@ -52,7 +52,9 @@ public class ZoneContextFilter  implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
 		ZoneContextHolder.setServerName(request.getServerName());
+		ZoneContextHolder.setServerPort(request.getServerPort());
 		ZoneContextHolder.setClientAddr(request.getRemoteAddr());
+		ZoneContextHolder.setSecure(request.isSecure());
 		try {
 			chain.doFilter(request, response);
 		}
