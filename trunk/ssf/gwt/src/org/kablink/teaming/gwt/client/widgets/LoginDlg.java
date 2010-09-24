@@ -377,7 +377,6 @@ public class LoginDlg extends DlgBox
 	 */
 	public Panel createHeader( String caption )
 	{
-		ImageResource imageResource;
 		Image img;
 		FlowPanel panel;
 		
@@ -388,16 +387,15 @@ public class LoginDlg extends DlgBox
 		{
 			// Yes
 			// Create a Novell Teaming image that will be used in case there is no branding.
-			imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/novell_graphic.png" );
 		}
 		else
 		{
 			// No
 			// Create a Kablink Teaming image that will be used in case there is no branding.
-			imageResource = GwtTeaming.getImageBundle().mastHeadKablinkGraphic();
+			img = new Image( GwtMainPage.m_requestInfo.getImagesPath() + "pics/Login/kablink_graphic.png" );
 		}
 	
-		img = new Image( imageResource );
 		img.setHeight( "75" );
 
 		panel.add( img );
