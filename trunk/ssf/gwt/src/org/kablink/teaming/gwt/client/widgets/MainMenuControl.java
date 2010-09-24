@@ -557,45 +557,49 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Rebuild the context based panel based on the new context.
 		clearContextMenus();
-		if (!(m_mainPage.getWorkspaceTree().isInActivityStreamMode())) {
-			GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
-				public void onFailure(Throwable t) {
-					m_contextBinder = null;
-					GwtClientHelper.handleGwtRPCFailure(
-						m_messages.rpcFailure_GetBinderInfo(),
-						binderId);
-				}
-				public void onSuccess(BinderInfo binderInfo) {
-					m_contextBinder = binderInfo;
-					GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
-						public void onFailure(Throwable t) {
-							GwtClientHelper.handleGwtRPCFailure(
-								m_messages.rpcFailure_GetToolbarItems(),
-								binderId);
-						}
-						public void onSuccess(final List<ToolbarItem> toolbarItemList) {
-							GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
-								public void onFailure(Throwable t) {
-									GwtClientHelper.handleGwtRPCFailure(
-										m_messages.rpcFailure_GetTeamManagement(),
-										binderId);
-								}
-								public void onSuccess(final TeamManagementInfo tmi) {
-									// Handle inSearch vs. not inSearch.
+		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
+			public void onFailure(Throwable t) {
+				m_contextBinder = null;
+				GwtClientHelper.handleGwtRPCFailure(
+					m_messages.rpcFailure_GetBinderInfo(),
+					binderId);
+			}
+			public void onSuccess(BinderInfo binderInfo) {
+				m_contextBinder = binderInfo;
+				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+							m_messages.rpcFailure_GetToolbarItems(),
+							binderId);
+					}
+					public void onSuccess(final List<ToolbarItem> toolbarItemList) {
+						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
+							public void onFailure(Throwable t) {
+								GwtClientHelper.handleGwtRPCFailure(
+									m_messages.rpcFailure_GetTeamManagement(),
+									binderId);
+							}
+							public void onSuccess(final TeamManagementInfo tmi) {
+								// Handle variations based on activity
+								// stream and search mode.
+								boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
+								if (!inASMode) {
 									addManageToContext(toolbarItemList, tmi);
-									addRecentPlacesToContext(toolbarItemList);
-									if (inSearch) {
-										addTopRankedToContext();
-										addManageSavedSearchesToContext(searchTabId);
-									}
+								}
+								addRecentPlacesToContext(toolbarItemList);
+								if (inSearch && (!inASMode)) {
+									addTopRankedToContext();
+									addManageSavedSearchesToContext(searchTabId);
+								}
+								if (!inASMode) {
 									addViewsToContext(toolbarItemList);
 								}
-							});
-						}
-					});
-				}
-			});
-		}
+							}
+						});
+					}
+				});
+			}
+		});
 	}
 
 	/**
