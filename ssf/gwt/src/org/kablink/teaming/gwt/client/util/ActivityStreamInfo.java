@@ -39,6 +39,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * Class used to communicate information about an activity stream
  * between the MainMenuControl and its registered ActionHandler's.
  * 
+ * Notes:
+ * 1. The string representation of an ActivityStreamInfo object as
+ *    obtained using the getStringValue() method is stored in a user's
+ *    preferences as part of persisting their most recently visited
+ *    activity stream.
+ * 2. When read out of a user's preferences, the parse() method is used
+ *    to re-construct the ActivityStreamInfo object.
+ *    
+ * Please be aware before making any changes that may break this.
+ * 
  * @author drfoster@novell.com
  */
 public class ActivityStreamInfo implements ClientActionParameter, IsSerializable {
@@ -46,6 +56,16 @@ public class ActivityStreamInfo implements ClientActionParameter, IsSerializable
 	 * Enumeration describing the type of an activity stream.
 	 */
 	public enum ActivityStream implements IsSerializable {
+		// *** WARNING *** WARNING *** WARNING *** WARNING ***
+		// ***
+		// *** The integer representation of these enumeration values
+		// *** are stored in a user's preferences as part of persisting
+		// *** their most recently visited activity stream.
+		// ***
+		// *** Changing the integer values assigned will BREAK that.
+		// *** Please, consider any changes made CAREFULLY!!!
+		// ***
+		// *** WARNING *** WARNING *** WARNING *** WARNING ***
 		UNKNOWN(        0),
 		CURRENT_BINDER( 1),
 		FOLLOWED_PEOPLE(2),
