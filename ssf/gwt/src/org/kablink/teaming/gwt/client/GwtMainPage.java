@@ -1645,16 +1645,26 @@ public class GwtMainPage extends Composite
 		if ( obj instanceof ActivityStreamInfo )
 		{
 			// Yes!  Load the activity stream control...
-			ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
+			final ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();
 			
 			// Hide the content control.
 			m_contentCtrl.setVisible( false );
 			
-			// ...and tell the sidebar to display the appropriate
-			// ...content and/or selection.
+			// ...tell the sidebar to display the appropriate
+			// ...content and/or selection...
 			m_wsTreeCtrl.setActivityStream( asi );
+
+			// ...and persist this activity stream in the user's profile.
+			GwtTeaming.getRpcService().persistActivityStreamSelection( new HttpRequestInfo(), asi, new AsyncCallback<Boolean>()
+			{
+				// Note that we're not doing anything with the results
+				// good or bad.  If it fails, so what?  The activity
+				// stream will simply not persist for the user.
+				public void onFailure( Throwable t      ) {}
+				public void onSuccess( Boolean   result ) {}
+			});
 		}
 		else
 			Window.alert( "in activityStream() and obj is not an ActivityStreamInfo object" );

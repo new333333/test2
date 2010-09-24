@@ -543,6 +543,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getActivityStreamParams()
 	
 	/**
+	 * Returns the current user's default activity stream.  If they
+	 * don't have one set in their user profile, null is returned.
+	 * 
+	 * @param ri
+	 * @param currentBinderId
+	 * 
+	 * @return
+	 */
+	public ActivityStreamInfo getDefaultActivityStream( HttpRequestInfo ri, String currentBinderId )
+	{
+		return GwtActivityStreamHelper.getDefaultActivityStream( getRequest( ri ), this, currentBinderId );
+	}// end getDefaultActivityStream()
+	
+	/**
 	 * Returns true if the data for an activity stream has changed (or
 	 * has never been cached) and false otherwise.
 	 * 
@@ -555,6 +569,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtActivityStreamHelper.hasActivityStreamChanged( getRequest( ri ), this, asi );
 	}// end hasActivityStreamChanged()
+	
+	/**
+	 * Stores an ActivityStreamIn as the current user's default
+	 * activity stream in their user profile.
+	 * 
+	 * @param ri
+	 * @param asi
+	 * 
+	 * @return
+	 */
+	public Boolean persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi )
+	{
+		return GwtActivityStreamHelper.persistActivityStreamSelection( getRequest( ri ), this, asi );
+	}// end persistActivityStreamSelection()
 	
 	/**
 	 * Return the administration options the user has rights to run.

@@ -48,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
@@ -283,6 +284,82 @@ public class GwtActivityStreamHelper {
     		commentList.add(comment);
     	}
 	}
+
+	/*
+	 * Returns true if two activity stream information objects are
+	 * compatible (i,e., they refer to the same, valid activity stream
+	 * and they refer to compatible binder ID lists, as appropriate)
+	 * and returns false otherwise.
+	 */
+	private static boolean areASIsCompatible(ActivityStreamInfo asi1, ActivityStreamInfo asi2) {		
+		// Do the ASI's refer to the same activity list type?
+		boolean singleBinder          = false;
+		boolean singleBinderMustMatch = false;
+		ActivityStream as1 = asi1.getActivityStream();
+		boolean reply = (as1 == asi2.getActivityStream());
+		if (reply) {
+			// Yes!  Extract the binder ID lists and counts from them.
+			String[] bl1 = asi1.getBinderIds(); int bc1 = ((null == bl1) ? 0 : bl1.length);
+			String[] bl2 = asi2.getBinderIds(); int bc2 = ((null == bl2) ? 0 : bl2.length);
+			
+			// Can we handle checking their binder ID lists?
+			switch (as1) {
+			default:
+			case UNKNOWN:
+				// These can never be valid!
+				reply = false;
+				break;
+				
+			case FOLLOWED_PEOPLE:
+			case FOLLOWED_PLACES:
+			case MY_FAVORITES:
+			case MY_TEAMS:
+				// These are valid so long as they both refer to a
+				// non-empty binder ID list.
+				reply = ((0 < bc1) && (0 < bc2));
+				break;
+				
+			case CURRENT_BINDER:
+				// This is valid so long as they both refer to a single
+				// binder in their binder ID lists. 
+				singleBinder = true;
+				break;
+				
+			case FOLLOWED_PERSON:
+			case FOLLOWED_PLACE:
+			case MY_FAVORITE:
+			case MY_TEAM:
+				// These are valid so long as they both refer to the
+				// same, single binder in their binder ID list. 
+				singleBinder          =
+				singleBinderMustMatch = true;
+				break;
+				
+			case SITE_WIDE:
+				// This is valid so long as neither refer to any
+				// binders in their binder ID lists. 
+				reply = ((0 == bc1) && (0 == bc2));
+				break;				
+			}
+
+			// Must both ASI's refer to a single binder?
+			if (singleBinder) {
+				// Yes!  Do they?
+				reply = ((bc1 == bc2) && (1 == bc1));
+				if (reply) {
+					// Yes!  Must those single binder's match?
+					if (singleBinderMustMatch) {
+						// Yes!  Do they?
+						reply = bl1[0].equals(bl2[0]);
+					}
+				}
+			}
+		}
+
+		// If we get here, reply is true if the ASI's are compatible
+		// and false otherwise.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns an activity stream entry based on the entry map from a
@@ -396,6 +473,48 @@ public class GwtActivityStreamHelper {
 		
 		return reply;
 	}
+
+	/*
+	 * Searches the activity stream information objects in a tree
+	 * information object and returns the one that matches the given
+	 * activity stream information object.
+	 */
+	private static ActivityStreamInfo findASIInTIList(ActivityStreamInfo asi, List<TreeInfo> tiList) {
+		// Scan the tree information's children.
+		ActivityStreamInfo reply = null;
+		ActivityStream as = asi.getActivityStream();		
+		for (TreeInfo ti:  tiList) {
+			// Does this child contain an activity stream action?
+			if (TeamingAction.ACTIVITY_STREAM == ti.getActivityStreamAction()) {
+				// Yes!  Does that action's activity stream match that
+				// we were given?
+				ActivityStreamInfo tiASI = ti.getActivityStreamInfo();
+				if (tiASI.getActivityStream() == as) {
+					// Yes!  Are the to ASI's compatible and can the
+					// one from the tree information object be selected?
+					if (areASIsCompatible(asi, tiASI) && isASISelectable(tiASI)) {
+						// Yes!  Then we'll return it.  Stop looking.
+						reply = tiASI;
+						break;
+					}
+				}
+			}
+
+			// If we get here, the ASI we were given doesn't match the
+			// one from this tree information object!  Does it match
+			// any of its children?
+			reply = findASIInTIList(asi, ti.getChildBindersList());
+			if (null != reply) {
+				// Yes!  Then we'll return that.  Stop looking.
+				break;
+			}
+		}
+
+		// If we get here, reply is null or refers to the activity
+		// stream object from the tree information that matches the one
+		// we were given.  Return it.
+		return reply;
+	}
 	
 	/**
 	 * Returns a ActivityStreamData of corresponding to activity stream
@@ -491,6 +610,49 @@ public class GwtActivityStreamHelper {
 		df.setTimeZone(user.getTimeZone());
 		
 		return df.format(date);
+	}
+	
+	/**
+	 * Returns the current user's default activity stream.  If they
+	 * don't have one set in their user profile, null is returned.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param currentBinderId
+	 * 
+	 * @return
+	 */
+	public static ActivityStreamInfo getDefaultActivityStream(HttpServletRequest request, AllModulesInjected bs, String currentBinderId) {
+		// By default, we'll return null if the user doesn't have an
+		// activity stream that can be selected.
+		ActivityStreamInfo reply = null;
+
+		// Does the user have an activity stream information string stored
+		// in their user profile?
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+		String asiProp = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DEFAULT_ACTIVITY_STREAM));
+		if (MiscUtil.hasString(asiProp)) {
+			// Yes!  Can we parse it as a valid activity stream?
+			reply = ActivityStreamInfo.parse(asiProp);
+			if (null != reply) {
+				// Yes!  Does it refer to a known activity stream?
+				ActivityStream as = reply.getActivityStream();
+				if (ActivityStream.UNKNOWN != as) {
+					// Yes!  Build a TreeInfo for the current binder.
+					// (This will provide everything we need to match
+					// what's stored in the user's profile with what's
+					// currently available.)  Then search it for the
+					// activity stream information object to return.
+					TreeInfo ti = getVerticalActivityStreamsTree(request, bs, currentBinderId);
+					reply = findASIInTIList(reply, ti.getChildBindersList());
+				}
+			}
+		}
+		
+		// If we get here, reply is null or refers to an activity
+		// stream information object for the current user's default
+		// activity stream.  Return it.
+		return reply;
 	}
 	
 	/*
@@ -768,7 +930,49 @@ public class GwtActivityStreamHelper {
 		reply.updateChildBindersCount();
 		return reply;
 	}
-	
+
+	/*
+	 * Returns true if the activity stream information has enough
+	 * information to be selected and false otherwise.
+	 */
+	private static boolean isASISelectable(ActivityStreamInfo asi) {
+		boolean reply;
+		
+		// What type of activity stream is this?
+		switch (asi.getActivityStream()) {
+		default:
+		case UNKNOWN:
+			// We don't know:  It can't be selected.
+			reply = false;
+			break;
+			
+		case SITE_WIDE:
+			// Site Wide:  This requires no binders.
+			reply = true;
+			break;
+			
+		case CURRENT_BINDER:
+		case FOLLOWED_PEOPLE:
+		case FOLLOWED_PERSON:
+		case FOLLOWED_PLACES:
+		case FOLLOWED_PLACE:
+		case MY_FAVORITES:
+		case MY_FAVORITE:
+		case MY_TEAMS:
+		case MY_TEAM:
+			// These
+			String[] binderIds = asi.getBinderIds();
+			int binders = ((null == binderIds) ? 0 : binderIds.length);
+			reply = (0 < binders);
+			break;
+		}
+		
+		// If we get here, reply is true if we have enough information
+		// to select the activity stream and false otherwise.  Return
+		// it. 
+		return reply;
+	}
+
 	/**
 	 * Returns true if the data for an activity stream has changed (or
 	 * has never been cached) and false otherwise.
@@ -822,6 +1026,28 @@ public class GwtActivityStreamHelper {
 		return new Boolean(activityStreamChanged);
 	}
 
+	/**
+	 * Stores an ActivityStreamIn as the current user's default
+	 * activity stream in their user profile.
+	 * 
+	 * @param ri
+	 * @param asi
+	 * 
+	 * @return
+	 */
+	public static Boolean persistActivityStreamSelection(HttpServletRequest request, AllModulesInjected bs, ActivityStreamInfo asi) {
+		// Store the string representation of the activity stream
+		// in the user's properties...
+		String asiProp = ((null == asi) ? "" : asi.getStringValue());
+		bs.getProfileModule().setUserProperty(
+			null,
+			ObjectKeys.USER_PROPERTY_DEFAULT_ACTIVITY_STREAM,
+			asiProp);
+
+		// ...and return true.
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Returns true if we're debug logging is enabled and false
 	 * otherwise.

@@ -138,11 +138,32 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
 						
 						// ...and enter activity stream mode.
-						ActivityStreamInfo asi = new ActivityStreamInfo();
-						asi.setActivityStream(ActivityStream.SITE_WIDE);
-						asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
 						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-						m_treeDisplay.enterActivityStreamMode(asi);
+						GwtTeaming.getRpcService().getDefaultActivityStream(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
+							public void onFailure(Throwable t) {
+								// If we couldn't get it, handle the
+								// failure...
+								GwtClientHelper.handleGwtRPCFailure(
+									GwtTeaming.getMessages().rpcFailure_GetDefaultActivityStream());
+								
+								// ...and just go site wide.
+								ActivityStreamInfo asi = new ActivityStreamInfo();
+								asi.setActivityStream(ActivityStream.SITE_WIDE);
+								asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
+								m_treeDisplay.enterActivityStreamMode(asi);
+							}
+							
+							public void onSuccess(ActivityStreamInfo asi) {
+								// Does this user have a default saved?
+								if (null == asi) {
+									// No!  Default to site wide.
+									asi = new ActivityStreamInfo();
+									asi.setActivityStream(ActivityStream.SITE_WIDE);
+									asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
+								}
+								m_treeDisplay.enterActivityStreamMode(asi);
+							}
+						});
 					}
 					
 					else {

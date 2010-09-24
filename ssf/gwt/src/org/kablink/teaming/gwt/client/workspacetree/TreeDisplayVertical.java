@@ -852,7 +852,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				HasVerticalAlignment.ALIGN_TOP);
 
 			// Is the row expanded?
-			if (ti.isBinderExpanded()) {
+			if (shouldBinderBeExpanded(ti)) {
 				// Yes!  Then we need to render its contents.
 				VerticalPanel vp = new VerticalPanel();
 				vp.setSpacing(0);
@@ -904,7 +904,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Is this activity stream the one that's already selected?
 		if (!(asi.isEqual(m_selectedActivityStream))) {
 			// No!  Store it as being selected...
-
 			m_selectedActivityStream = asi;
 
 			// ...and if we can find it in our TreeInfo objects...
@@ -1142,6 +1141,54 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void setSelectedBinderId(String selectedBinderId) {
 		m_selectedBinderId = Long.parseLong(selectedBinderId);
+	}
+
+	/*
+	 * Returns true if this binder should be expanded and false
+	 * otherwise.
+	 */
+	private boolean shouldBinderBeExpanded(TreeInfo ti) {
+		// If we have a non-expanded activity stream with an activity
+		// stream selected, we may need to expand it to ensure that the
+		// selection is visible.  Is that the case?
+		boolean reply = ti.isBinderExpanded();
+		if ((!reply) && ti.isActivityStream() && (null != m_selectedActivityStream)) {
+			// Yes!  Is the selected activity stream one that we have
+			// to worry about it's parent being expanded to be visible?
+			ActivityStream as = m_selectedActivityStream.getActivityStream();
+			switch (as) {
+			case FOLLOWED_PERSON:
+			case FOLLOWED_PLACE:
+			case MY_FAVORITE:
+			case MY_TEAM:
+				// Yes!  Are we looking at it's parent binder?
+				ActivityStream parentAS;
+				switch (as) {
+				default:               parentAS = ActivityStream.UNKNOWN;         break;
+				case FOLLOWED_PERSON:  parentAS = ActivityStream.FOLLOWED_PEOPLE; break;
+				case FOLLOWED_PLACE:   parentAS = ActivityStream.FOLLOWED_PLACES; break;
+				case MY_FAVORITE:      parentAS = ActivityStream.MY_FAVORITES;    break;
+				case MY_TEAM:          parentAS = ActivityStream.MY_TEAMS;        break;
+				}
+
+				if (ti.getActivityStreamInfo().getActivityStream() == parentAS) {
+					// Yes!  Force it to be expanded.
+					ti.setBinderExpanded(true);
+					reply = true;
+				}
+				
+				break;
+				
+			default:
+				// All other activity stream types top level entities and
+				// require no expansion changes.
+				break;
+			}
+		}
+		
+		// If we get here, reply is true if the binder should be expanded
+		// and false otherwise.  Return it.
+		return reply;
 	}
 	
 	/**

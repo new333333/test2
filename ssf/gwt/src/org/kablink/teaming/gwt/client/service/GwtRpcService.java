@@ -215,8 +215,10 @@ public interface GwtRpcService extends RemoteService
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 
 	// Activity Stream servicing APIs.
-	public ActivityStreamData   getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd);
-	public ActivityStreamData   getActivityStreamData(    HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi               );
-	public ActivityStreamParams getActivityStreamParams(  HttpRequestInfo ri                                                                 );
-	public Boolean              hasActivityStreamChanged( HttpRequestInfo ri,                           ActivityStreamInfo asi               );
+	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd );
+	public ActivityStreamData   getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi                );
+	public ActivityStreamParams getActivityStreamParams(        HttpRequestInfo ri                                                                  );
+	public ActivityStreamInfo   getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId                                          );
+	public Boolean              hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi                );
+	public Boolean              persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi                                          );
 }// end GwtRpcService
