@@ -45,12 +45,20 @@ import org.kablink.teaming.util.SPropsUtil;
 public class DefinitionCache {
 
 	private static Log logger = LogFactory.getLog(DefinitionCache.class);
-	private static ConcurrentMap<String,Document> cache = new ConcurrentHashMap<String,Document>();
 	private static Boolean enabled;
+	private static Long resetIntervalInSecond;
+	
+	private static ConcurrentMap<String,Document> cache = new ConcurrentHashMap<String,Document>();
+	// Guarded by this class.
+	private static long lastResetTime = System.currentTimeMillis();
 
 	public static Document getDocument(Definition definition) {
 		Document doc = null;
-		if(enabled()) { // cache enabled
+		if(isEnabled()) { // cache enabled
+			if(getResetIntervalInSecond() > 0) {
+				// Periodic reset is enabled.
+				checkAndReset();
+			}
 			if(definition.getId() != null) {
 				// This cache only deals with persistent definition
 				doc = cache.get(definition.getId());
@@ -119,10 +127,36 @@ public class DefinitionCache {
 		return (Document) InvokeUtil.invokeGetter(def, "document");		
 	}
 	
-	private static boolean enabled() {
+	private static synchronized void checkAndReset() {
+		// Access to this method is guarded by this class, to guarantee
+		// check-and-act semantics in atomic manner.
+		// Also, by encapsulating synchronization within this method, we incur
+		// no overhead in normal working condition, since periodic reset is
+		// disabled by default.
+		long currentTime = System.currentTimeMillis();
+		if(currentTime - lastResetTime > getResetIntervalInSecond() * 1000) {
+			if(logger.isDebugEnabled())
+				logger.debug(String.valueOf((currentTime - lastResetTime)/1000) + " seconds passed since last reset - clear cache");  
+			clear();
+			lastResetTime = currentTime;
+		}
+	}
+	
+	private static boolean isEnabled() {
 		if(enabled == null) {
 			enabled = Boolean.valueOf(SPropsUtil.getBoolean("definition.cache.enabled", true));
+			logger.debug("definition.cache.enabled: " + enabled.toString());
 		}
 		return enabled.booleanValue();
 	}
+	
+	private static long getResetIntervalInSecond() {
+		if(resetIntervalInSecond == null) {
+			// This is a hidden config setting, not exposed in ssf.properties.
+			resetIntervalInSecond = Long.valueOf(SPropsUtil.getLong("definition.cache.reset.interval", 0));
+			logger.debug("definition.cache.reset.interval: " + resetIntervalInSecond.toString());
+		}
+		return resetIntervalInSecond.longValue();
+	}
+	
 }
