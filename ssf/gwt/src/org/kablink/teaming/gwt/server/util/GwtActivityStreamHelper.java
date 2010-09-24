@@ -71,6 +71,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
@@ -94,7 +95,7 @@ public class GwtActivityStreamHelper {
 		m_activityStreamParams.setCacheRefresh(          SPropsUtil.getInt("activity.stream.interval.refresh.cache",  1));
 		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",                  25));
 		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",              1000));
-	}
+	};
 
 	/*
 	 * Inner class used to track author information in a Map used to
@@ -117,6 +118,35 @@ public class GwtActivityStreamHelper {
 			m_authorWsId      = "";
 		}
 
+		/*
+		 * Given a an avatar URL from a user's profile, patches it so
+		 * that it renders from a thumbnail instead of the full image.
+		 */
+		private final static String[] FIXUP_AVATAR_URL_CHANGE_THESE = new String[] {
+			// The follow define URL parts used to 'fixup' an avatar URL so
+			// that we use a scaled image instead of a full image.
+			"readFile",
+			"readScaled",
+		};
+		private final static String FIXUP_AVATAR_URL_TO_THIS = "readThumbnail";	// Other option:  "readScaledFile"
+		private static String fixupAvatarUrl(String url) {
+			// Do we have a URL to fixup?
+			if (MiscUtil.hasString(url)) {
+				// Yes!  Change it so that it renders from a thumbnail
+				// instead of the full image.							
+				for (int i = 0; i < FIXUP_AVATAR_URL_CHANGE_THESE.length; i += 1) {
+					if (url.contains(FIXUP_AVATAR_URL_CHANGE_THESE[i])) {
+						url = StringUtil.replace(url, FIXUP_AVATAR_URL_CHANGE_THESE[i], FIXUP_AVATAR_URL_TO_THIS);
+						break;
+					}
+				}
+			}
+			
+			// If we get here, URL refers to the fixed up avatar URL.
+			// Return it.
+			return url;
+		}
+		
 		/*
 		 * Returns an author information object based on the author's
 		 * ID.  If an author information for this ID is in the author
@@ -155,8 +185,9 @@ public class GwtActivityStreamHelper {
 					List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
 					if((null != paValue) && (!(paValue.isEmpty()))) {
 						// Yes!  We'll use the first one as the URL.
+						// Does it have a URL?
 						ProfileAttributeListElement paValueItem = paValue.get(0);
-						paUrl = paValueItem.getValue().toString();
+						paUrl = fixupAvatarUrl(paValueItem.getValue().toString());
 					}
 					
 					// Store something as the author's URL so that we don't
