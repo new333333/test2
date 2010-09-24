@@ -107,8 +107,6 @@ public class ActivityStreamCtrl extends Composite
 	private InlineLabel m_nOfnLabel;
 	private FlowPanel m_searchingPanel;
 	private FlowPanel m_noEntriesFoundPanel;
-	private int m_width;
-	private int m_height;
 	private ActivityStreamInfo m_activityStreamInfo = null;
 	private GwtRpcServiceAsync m_rpcService = null;
 	private String m_binderPermalink = null;		// Permalink to the binder that is the source of the activity stream.
@@ -841,23 +839,54 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * 
 	 */
-	private void relayout()
+	public void relayoutPage()
 	{
+		Command cmd;
+		
+		cmd = new Command()
+		{
+			public void execute()
+			{
+				relayoutPageNow();
+			}
+		};
+		DeferredCommand.addCommand( cmd );
+	}// end relayoutPage()
+	
+	
+
+	/**
+	 * 
+	 */
+	private void relayoutPageNow()
+	{
+		int width;
+		int height;
 		int footerHeight;
 		int headerHeight;
 		int resultsHeight;
+
+		// Calculate how wide we should be.
+		width = Window.getClientWidth() - getAbsoluteLeft()- 10;
 		
-		// Figure out how tall to make the search rusults panel.
+		// Calculate how high we should be.
+		height = Window.getClientHeight() - getAbsoluteTop() - 30;
+		
+		// Set the width and height
+		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+
+		// Figure out how tall to make the search results panel.
 		headerHeight = m_headerPanel.getOffsetHeight();
 		footerHeight = m_footerPanel.getOffsetHeight();
 		
-		resultsHeight = m_height - headerHeight - footerHeight;
+		resultsHeight = height - headerHeight - footerHeight;
 		m_searchResultsPanel.setHeight( String.valueOf( resultsHeight ) + "px" );
-		m_searchResultsPanel.setWidth( String.valueOf( m_width ) + "px" );
+		m_searchResultsPanel.setWidth( String.valueOf( width ) + "px" );
 		
-		m_footerPanel.setWidth( String.valueOf( m_width ) + "px" );
-	}
-	
+		m_headerPanel.setWidth( String.valueOf( width ) + "px" );
+		m_footerPanel.setWidth( String.valueOf( width ) + "px" );
+	}// end relayoutPageNow()
+
 	
 	/**
 	 * Resume the refreshing of the activity stream.
@@ -976,19 +1005,6 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * 
-	 */
-	public void setSize( int width, int height )
-	{
-		m_width = width;
-		m_height = height - 30;	// I don't know why we need to subtract 30 but we do.
-		
-		super.setSize( String.valueOf( m_width ) + "px", String.valueOf( m_height ) + "px" );
-		relayout();
-	}
-	
-	
-	/**
 	 * Set the text in the title.
 	 */
 	public void setTitle()
@@ -1016,7 +1032,7 @@ public class ActivityStreamCtrl extends Composite
 		{
 			public void execute()
 			{
-				relayout();
+				relayoutPage();
 			}
 		};
 		DeferredCommand.addCommand( cmd );
