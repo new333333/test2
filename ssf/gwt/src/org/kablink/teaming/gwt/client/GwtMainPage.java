@@ -1725,8 +1725,9 @@ public class GwtMainPage extends Composite
 			
 			m_contentCtrl.setDimensions( width, height );
 			
-			// Set the width and height of the activity stream Control
-			m_activityStreamCtrl.setSize( width, height );
+			// Tell the activity stream control to relayout.
+			if ( m_activityStreamCtrl != null )
+				m_activityStreamCtrl.relayoutPage();
 			
 			// Do we have an Administration control?
 			if ( m_adminControl != null )
