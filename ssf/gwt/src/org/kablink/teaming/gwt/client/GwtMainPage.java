@@ -1651,9 +1651,6 @@ public class GwtMainPage extends Composite
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();
 			
-			// Hide the content control.
-			m_contentCtrl.setVisible( false );
-			
 			// ...tell the sidebar to display the appropriate
 			// ...content and/or selection...
 			m_wsTreeCtrl.setActivityStream( asi );
@@ -1708,9 +1705,6 @@ public class GwtMainPage extends Composite
 		// the workspace tree control.
 		m_activityStreamCtrl.hide();
 		m_wsTreeCtrl.exitActivityStreamMode();
-		
-		// Show the content control.
-		m_contentCtrl.setVisible( true );
 	}//end exitActivityStreamMode()
 
 	/**
@@ -1743,7 +1737,7 @@ public class GwtMainPage extends Composite
 				// Get the height of the browser window's client area.
 				clientHeight = Window.getClientHeight();
 				
-				height = clientHeight - m_contentPanel.getAbsoluteTop() - 10;
+				height = clientHeight - m_contentPanel.getAbsoluteTop() - 20;
 			}
 			
 			m_contentCtrl.setDimensions( width, height );
