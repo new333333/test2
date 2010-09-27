@@ -160,12 +160,14 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     
     public void setEntryDef(Definition entryDef) {
-    	if(entryDef != null)
-    		this.entryDefId = entryDef.getId();
-    	else
-    		this.entryDefId = null;
+    	setEntryDefId((entryDef == null)? null : entryDef.getId());
     }
     public void setEntryDefId(String definitionId) {
+    	// This association is not maintained/managed by Hibernate but by application. 
+    	// Consequently, there is no foreign key constraint defined on the table that
+    	// enforces this association at the database level. Instead, it is up to the 
+    	// application to maintain this association properly. A small price to pay
+    	// for performance gain.
     	this.entryDefId = definitionId;
     }
     public String getCreatedWithDefinitionId() {
