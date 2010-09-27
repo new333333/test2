@@ -59,7 +59,7 @@
 
 <jsp:useBean id="mashupEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 <% 
-	Element configEle = (Element)mashupEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
+	Element configEle = (Element)mashupEntry.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
 %>
 <c:set var="configEle" value="<%= configEle %>" />
 
@@ -85,7 +85,7 @@
   
 <c:if test="${!empty configEle}">
 <ssf:displayConfiguration 
-  configDefinition="${mashupEntry.entryDef.definition}" 
+  configDefinition="${mashupEntry.entryDefDoc}" 
   configElement="<%= configEle %>"
   configJspStyle="view" 
   entry="${mashupEntry}" 

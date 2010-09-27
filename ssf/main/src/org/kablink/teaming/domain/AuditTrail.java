@@ -115,8 +115,8 @@ public class AuditTrail extends ZonedObject {
 			setOwningBinderId(b.getId());
 			setOwningBinderKey(b.getBinderKey().getSortKey());
 		}
-		if(what.equals(AuditType.delete) && (entity instanceof FolderEntry) && entity.getCreatedWithDefinition() != null) {
-        	org.dom4j.Document def = entity.getCreatedWithDefinition().getDefinition();
+		if(what.equals(AuditType.delete) && (entity instanceof FolderEntry) && entity.getCreatedWithDefinitionId() != null) {
+        	org.dom4j.Document def = entity.getCreatedWithDefinitionDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
         		setDeletedFolderEntryFamily(family);

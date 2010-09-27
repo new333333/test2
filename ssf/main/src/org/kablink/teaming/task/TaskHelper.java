@@ -277,8 +277,7 @@ public class TaskHelper {
 	}
 	
 	private static boolean isTaskEntryType(FolderEntry entry) {
-		Definition entryDef = entry.getEntryDef();
-		String family = DefinitionUtils.getFamily(entryDef.getDefinition());		
+		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());		
 		return isTaskEntryType(family);
 	}
 	
@@ -288,8 +287,7 @@ public class TaskHelper {
 
 	@SuppressWarnings("unchecked")
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
-		Definition entryDef = entry.getEntryDef();
-		String family = DefinitionUtils.getFamily(entryDef.getDefinition());
+		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());
 		TaskHelper.adjustTaskAttributesDependencies(entry, family, formData, newPriority, newStatus, newCompleted);
 	}
 	

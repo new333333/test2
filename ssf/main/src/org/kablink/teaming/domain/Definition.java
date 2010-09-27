@@ -195,7 +195,7 @@ public class Definition extends PersistentTimestampObject  {
         xmlencoding=definition;
     }
     public Document getDefinition() {
-    	return DefinitionCache.getDocument(this);
+    	return DefinitionCache.getDocumentWithDefinition(this);
     }
     
     /**

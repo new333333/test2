@@ -598,13 +598,12 @@ public class ViewEntryController extends  SAbstractController {
 				isLockedByAndLoginUserSame = true;
 			}
 		}
-		Definition def = entry.getEntryDef(); //cannot be null here
 	    //The "Reply" menu
 		//strings for urls
-		String entryDefId=def.getId().toString();
+		String entryDefId=entry.getEntryDefId(); // cannot be null here
 		String entryId = entry.getId().toString();
 		String folderId = entry.getParentFolder().getId().toString();
-		Document defDoc = def.getDefinition();
+		Document defDoc = entry.getEntryDefDoc();
 		Element familyEle = (Element) defDoc.getRootElement().selectSingleNode("./properties/property[@name='family']");
 		String replyText = NLT.get("toolbar.comment");
 		if (familyEle != null && familyEle.attributeValue("value", "").equals("discussion")) {
@@ -618,7 +617,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (!isPreDeleted) {
 			if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
-				List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
 				if (!replyStyles.isEmpty()) {
 					if (replyStyles.size() == 1) {
@@ -1072,7 +1071,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='"+viewType+"']") == false) {
+		if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='"+viewType+"']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='"+viewType+"']");
 		}
 		//Figure out which is the "primary file" for this entry (if any)
@@ -1088,8 +1087,7 @@ public class ViewEntryController extends  SAbstractController {
 		}
 		BinderHelper.buildWorkflowSupportBeans(this, replies, model);
 		
-		Definition entryDefinition = entry.getEntryDef();
-		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryDefinition.getId());
+		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entry.getEntryDefId());
 		model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
 		
 		return entry;

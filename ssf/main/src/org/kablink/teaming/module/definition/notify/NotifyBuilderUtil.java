@@ -117,9 +117,8 @@ public class NotifyBuilderUtil implements InitializingBean {
 		return instance;
 	}
     public static void buildElements(DefinableEntity entity, Notify notifyDef, Writer writer, NotifyVisitor.WriterType writerType, Map params) {
-		Definition def = entity.getEntryDef();
-		if (def == null) return ;
-		Document definitionTree = def.getDefinition();
+		if (entity.getEntryDefId() == null) return ;
+		Document definitionTree = entity.getEntryDefDoc();
 		if (definitionTree != null) {
 			Element root = definitionTree.getRootElement();
 

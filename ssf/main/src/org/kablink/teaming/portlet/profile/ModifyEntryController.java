@@ -245,11 +245,10 @@ public class ModifyEntryController extends SAbstractController {
 					model.put(WebKeys.IS_BINDER_ADMIN, true);
 				}
 			} catch(AccessControlException ex) {}
-			Definition entryDef = entry.getEntryDef();
-			if (entryDef == null) {
+			if (entry.getEntryDefId() == null) {
 				DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='entryForm' or @name='profileEntryForm']");
 			} else {
-				DefinitionHelper.getDefinition(entryDef, model, "//item[@type='form']");
+				DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 			}
 			Map readOnly = new HashMap();
 			for (String name:getAuthenticationModule().getMappedAttributes(entry)) {

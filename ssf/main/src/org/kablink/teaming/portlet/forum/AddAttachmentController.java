@@ -206,7 +206,7 @@ public class AddAttachmentController extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
-			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+			DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 			path = WebKeys.VIEW_MODIFY_ENTRY;
 		}
 		

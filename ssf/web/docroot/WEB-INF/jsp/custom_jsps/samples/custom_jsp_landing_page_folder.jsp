@@ -74,7 +74,7 @@
 <jsp:useBean id="mashupEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 <% 
 	//See if this is a survey entry. If it is, just show the survey and not the replies
-	Element configEle = (Element)mashupEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
+	Element configEle = (Element)mashupEntry.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name='entryDataItem' and @formItem='survey']");
 %>
 <c:set var="configEle" value="<%= configEle %>" />
 
@@ -112,7 +112,7 @@
 			  <c:set var="property_name" value="survey" scope="request"/>
 			  <c:set var="property_caption" value="" scope="request"/>
 			  <ssf:displayConfiguration 
-			    configDefinition="${mashupEntry.entryDef.definition}" 
+			    configDefinition="${mashupEntry.entryDefDoc}" 
 			    configElement="<%= configEle %>"
 			    configJspStyle="view" 
 			    entry="${mashupEntry}" 

@@ -133,7 +133,7 @@ public class GwtProfileHelper {
 				u = (User)Utils.fixProxy(u);
 				profile.setUserId(u.getId().toString());
 				
-				Document doc = u.getEntryDef().getDefinition();
+				Document doc = u.getEntryDefDoc();
 				Element configElement = doc.getRootElement();
 				
 				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntryStandardView']");
@@ -216,7 +216,7 @@ public class GwtProfileHelper {
 			attribute.setDataName(dataName);
 			
 			//Read the custom attribute
-			Document defDoc = ((DefinableEntity)u).getEntryDef().getDefinition();
+			Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
 			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
 			
 			if(cAttr == null) {
@@ -272,7 +272,7 @@ public class GwtProfileHelper {
 					profile.setPresenceEnabled(presenceService.isEnabled());
 				}
 
-				Document doc = u.getEntryDef().getDefinition();
+				Document doc = u.getEntryDefDoc();
 				Element configElement = doc.getRootElement();
 				
 				Element item = (Element)configElement.selectSingleNode("//definition/item[@name='profileEntrySimpleView']");
@@ -426,7 +426,7 @@ public class GwtProfileHelper {
 	 */
 	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Document defDoc = ((DefinableEntity)u).getEntryDef().getDefinition();
+		Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
 		String attrType = DefinitionHelper.findAttributeType(name, defDoc);
 		boolean processed = true;
 		

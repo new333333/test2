@@ -161,9 +161,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	} else if ("userGroupNotification".equals(name)) {
 		    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
 		    	} else if ("condition".equals(name)) {
-		    		if (entity.getEntryDef() != null) {
+		    		if (entity.getEntryDefId() != null) {
 		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-		    					entity.getEntryDef().getId() + "']");
+		    					entity.getEntryDefId() + "']");
 		    			if (userLists != null && !userLists.isEmpty()) {
 		    				for (Element element:userLists) {
 		    					String userListName = element.attributeValue("elementName"); //custom attribute name
@@ -609,7 +609,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 						String defId = eCondition.attributeValue("definitionId", "");
 						if (!Validator.isNull(defId)) {
 							if (dEntry == null) currentMatch = false;
-							else if (!defId.equals(dEntry.getEntryDef().getId())) {
+							else if (!defId.equals(dEntry.getEntryDefId())) {
 								currentMatch = false;
 							}
 						}
@@ -933,10 +933,10 @@ public static void resumeTimers(WorkflowSupport entry) {
 			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
 				result.addPrincipalId(ObjectKeys.TEAM_MEMBER_ID);
 			} else if ("condition".equals(name)) {
-				if (entity.getEntryDef() != null) {
+				if (entity.getEntryDefId() != null) {
 			        User user = RequestContextHolder.getRequestContext().getUser();
 					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-							entity.getEntryDef().getId() + "']");
+							entity.getEntryDefId() + "']");
 					if (userLists != null && !userLists.isEmpty()) {
 						for (Element element:userLists) {
 							String userListName = element.attributeValue("elementName"); //custom attribute name

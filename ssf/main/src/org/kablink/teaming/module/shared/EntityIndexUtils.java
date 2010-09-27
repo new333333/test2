@@ -494,8 +494,8 @@ public class EntityIndexUtils {
 	}
         
     public static void addCommandDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-        if (entry.getEntryDef() != null) {
-        	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        if (entry.getEntryDefId() != null) {
+        	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDefId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(cdefField);
         }
     }
@@ -515,8 +515,8 @@ public class EntityIndexUtils {
     }
         
     public static void addFamily(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-        if (entry.getEntryDef() != null) {
-        	org.dom4j.Document def = entry.getEntryDef().getDefinition();
+        if (entry.getEntryDefId() != null) {
+        	org.dom4j.Document def = entry.getEntryDefDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
       			Field eField = new Field(FAMILY_FIELD, family, Field.Store.NO, Field.Index.UN_TOKENIZED);

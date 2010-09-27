@@ -2098,9 +2098,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	}
 
 	private ComponentType getComponentType(DefinableEntity entry) {
-		Definition entryDef = entry.getEntryDef();
-		
-		String family = DefinitionUtils.getFamily(entryDef.getDefinition());
+		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());
 
 		if (family != null && family.equals(ObjectKeys.FAMILY_TASK)) {
 			return ComponentType.Task;
@@ -2238,7 +2236,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		ArrayList<Long> attendeeIds = new ArrayList<Long>();
 		
 		// Scan the possible attendee list attributes,
-		Iterator<String> listAttributes = findUserListAttributes(entry.getEntryDef().getDefinition()).iterator();
+		Iterator<String> listAttributes = findUserListAttributes(entry.getEntryDefDoc()).iterator();
 		while (listAttributes.hasNext()) {
 			// Parse the attribute information...
 			String attrInfo = ((String) listAttributes.next());

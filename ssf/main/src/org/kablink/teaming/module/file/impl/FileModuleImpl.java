@@ -794,7 +794,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//binder files are not registered
 		if (binder.isLibrary() && !binder.equals(entity)) 
 			getCoreDao().updateFileName(binder, entity, fa.getFileItem().getName(), newName);
-        if ((entity.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDef().getDefinition(), fa.getName(), "title")) {
+        if ((entity.getEntryDefId() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDefDoc(), fa.getName(), "title")) {
           	//if tracking unique titles, remove old title
         	String oldTitle = entity.getNormalTitle();
             //check title
@@ -2214,13 +2214,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
     
     @SuppressWarnings("unchecked")
-	private static void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
+	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt) {
     	// Is the FileUploadItem named?
 		Set fAtts = null;
 		String fuiName = fui.getName();
 		if ((null == fuiName) || (0 == fuiName.length())) {
 			// No!  Is the entry it's being uploaded to a file entry?
-			Definition def = entry.getEntryDef();
+			Definition def = null;
+			if(entry.getEntryDefId() != null)
+				def = getCoreDao().loadDefinition(entry.getEntryDefId(), RequestContextHolder.getRequestContext().getZoneId());
 			String defId = ((null == def) ? null : def.getInternalId());
 			if ((null == defId) || (!(defId.equalsIgnoreCase(ObjectKeys.DEFAULT_LIBRARY_ENTRY_DEF)))) {
 				// No!  Then we don't store a custom attribute for it.

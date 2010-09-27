@@ -374,7 +374,7 @@ function ss_resizeIframeArea() {
 				<c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 				<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 				<% 
-					Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
+					Element configEle = (Element)changeLogEntry.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name='entryView']");
 				%>
 				<c:set var="configEle" value="<%= configEle %>" />
 				<div id="historyVersion_${status.count}" style="display:none; padding:10px; border: 1px solid #333; background-color: #fff; margin-bottom: 5px;">
@@ -385,7 +385,7 @@ function ss_resizeIframeArea() {
 					  <c:set var="ssEntry" value="${changeLogEntry}" scope="request"/>
 					  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
 					  <ssf:displayConfiguration 
-						configDefinition="${changeLogEntry.entryDef.definition}" 
+						configDefinition="${changeLogEntry.entryDefDoc}" 
 						configElement="<%= configEle %>"
 						configJspStyle="view" 
 						entry="${changeLogEntry}" 

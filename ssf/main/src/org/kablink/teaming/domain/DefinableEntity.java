@@ -43,12 +43,14 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.dom4j.Document;
 import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.WebHelper;
 
 /**
@@ -65,7 +67,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected boolean attachmentsParsed = false;
     protected Set attachments;	//initialized by hiberate access=field
     protected Map customAttributes;	//initialized by hiberate access=field
-    protected Definition entryDef; //initialized by hiberate access=field
+    protected String entryDefId; //initialized by hiberate access=field
     protected Set events;	//initialized by hiberate access=field
     protected String iconName="";
     protected Integer definitionType=null;
@@ -84,7 +86,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	title = source.title;
     	normalTitle = source.normalTitle;
     	description = new Description(source.description);
-    	entryDef = source.entryDef;
+    	entryDefId = source.entryDefId;
     	iconName = source.iconName;
     	definitionType = source.definitionType;
     	//don't copy parentBinder, 
@@ -139,22 +141,42 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public void setNormalTitle(String normalTitle) {
         this.normalTitle = normalTitle;
     }
+    
+    public Document getEntryDefDoc() {
+    	if(getEntryDefId() != null)
+    		return DefinitionCache.getDocumentWithId(getEntryDefId());
+    	else
+    		return null;
+    }
+    
     /** 
      * The definition used to create the entity.
      * @hibernate.many-to-one access="field" class="org.kablink.teaming.domain.Definition"
      * @hibernate.column name="entryDef" sql-type="char(32)"
      * @return
      */
-    public Definition getEntryDef() {
-    	return entryDef;
+    public String getEntryDefId() {
+    	return entryDefId;
     }
     
     public void setEntryDef(Definition entryDef) {
-        this.entryDef = entryDef;
+    	if(entryDef != null)
+    		this.entryDefId = entryDef.getId();
+    	else
+    		this.entryDefId = null;
     }
-    public Definition getCreatedWithDefinition() {
+    public void setEntryDefId(String definitionId) {
+    	this.entryDefId = definitionId;
+    }
+    public String getCreatedWithDefinitionId() {
     	// returns the original definition with which this entity was created. 
-    	return entryDef;
+    	return entryDefId;
+    }
+    public Document getCreatedWithDefinitionDoc() {
+    	if(getCreatedWithDefinitionId() != null)
+    		return DefinitionCache.getDocumentWithId(getCreatedWithDefinitionId());
+    	else
+    		return null;
     }
     /**
      * @hibernate.many-to-one

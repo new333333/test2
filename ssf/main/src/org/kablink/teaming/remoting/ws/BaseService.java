@@ -123,8 +123,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	{
         entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		if(entry.getEntryDef() != null) {
-			entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		if(entry.getEntryDefId() != null) {
+			entryElem.addAttribute("definitionId", entry.getEntryDefId());
 		}
 		entryElem.addAttribute("title", entry.getTitle());
 		entryElem.addAttribute("docNumber", entry.getDocNumber());
@@ -172,7 +172,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		// Handle structured fields of the entry known at compile time. 
 		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		entryElem.addAttribute("definitionId", entry.getEntryDefId());
 		entryElem.addAttribute("title", entry.getTitle());
 		entryElem.addAttribute("emailAddress", entry.getEmailAddress());
 		entryElem.addAttribute("type", entry.getEntityType().toString());
@@ -384,8 +384,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		if (entity.getParentBinder() != null) 
 			entityModel.setParentBinderId(entity.getParentBinder().getId());
 		
-		if(entity.getEntryDef() != null)
-			entityModel.setDefinitionId(entity.getEntryDef().getId());
+		if(entity.getEntryDefId() != null)
+			entityModel.setDefinitionId(entity.getEntryDefId());
 		
 		entityModel.setTitle(entity.getTitle());
 		
@@ -433,7 +433,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 		getDefinitionModule().walkDefinition(entity, visitor, null);
 		//see if attachments have been handled
-		Element root = entity.getEntryDef().getDefinition().getRootElement();
+		Element root = entity.getEntryDefDoc().getRootElement();
 		if (root == null) return;
 		Element attachments = (Element)root.selectSingleNode("//item[@name='attachFiles']");
 		if (attachments != null) return; // already processed
@@ -477,8 +477,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		FolderEntryBrief entryBrief = new FolderEntryBrief();
 		entryBrief.setId(entry.getId());
 		entryBrief.setBinderId(entry.getParentBinder().getId());
-		if(entry.getEntryDef() != null)
-			entryBrief.setDefinitionId(entry.getEntryDef().getId());
+		if(entry.getEntryDefId() != null)
+			entryBrief.setDefinitionId(entry.getEntryDefId());
 		entryBrief.setTitle(entry.getTitle());
 		entryBrief.setDocNumber(entry.getDocNumber());
 		entryBrief.setDocLevel(entry.getDocLevel());
@@ -533,7 +533,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		PrincipalBrief principalBrief = new PrincipalBrief(
 				principal.getId(),
 				principal.getParentBinder().getId(),
-				principal.getEntryDef().getId(),
+				principal.getEntryDefId(),
 				principal.getTitle(),
 				principal.getEmailAddress(),
 				principal.getEntityType().toString(),

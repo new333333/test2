@@ -397,8 +397,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         FolderCoreProcessor processor = loadProcessor(folder);
 
         if(Validator.isNull(definitionId)) {
-			Definition parentDef = entry.getEntryDef();
-			Document defDoc = parentDef.getDefinition();
+			Document defDoc = entry.getEntryDefDoc();
 			List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 			if (!replyStyles.isEmpty()) {
 				definitionId = (String)replyStyles.get(0);

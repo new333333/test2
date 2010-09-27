@@ -189,12 +189,14 @@ public class DefinitionHelper {
 	 * @return
 	 */
 	public static boolean getDefinition(Definition currentDef, Map model, String node) {
-		if (currentDef == null) {
-			model.put(WebKeys.CONFIG_ELEMENT, null);
-			model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
-			return false;
-		}
-		Document configDoc = currentDef.getDefinition();
+		Document currentDefDoc = null;
+		if(currentDef != null)
+			currentDefDoc = currentDef.getDefinition();
+		return getDefinition(currentDefDoc, model, node);
+	}
+
+	public static boolean getDefinition(Document currentDefDoc, Map model, String node) {
+		Document configDoc = currentDefDoc;
 		if (configDoc == null) { 
 			model.put(WebKeys.CONFIG_ELEMENT, null);
 			model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
@@ -215,11 +217,14 @@ public class DefinitionHelper {
 	}
 
 	public static boolean getDefinitionElement(Definition currentDef, Map model, String elementName) {
-		if (currentDef == null) {
-			model.put(WebKeys.CONFIG_ELEMENT, null);
-			return false;
-		}
-		Document configDoc = currentDef.getDefinition();
+		Document currentDefDoc = null;
+		if(currentDef != null)
+			currentDefDoc = currentDef.getDefinition();
+		return getDefinitionElement(currentDefDoc, model, elementName);
+	}
+
+	public static boolean getDefinitionElement(Document currentDefDoc, Map model, String elementName) {
+		Document configDoc = currentDefDoc;
 		if (configDoc == null) { 
 			model.put(WebKeys.CONFIG_ELEMENT, null);
 			return false;
@@ -410,12 +415,10 @@ public class DefinitionHelper {
 	}
     public static String getWebDAVURL(PortletRequest req, Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
-		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) {
+		if (entry.getEntryDefId() == null) {
 			getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
-			entryDef = entry.getEntryDef();
 		}
-		Document entryDefDocTree = entryDef.getDefinition();
+		Document entryDefDocTree = entry.getEntryDefDoc();
 		String strRepositoryName = "";
 		if (entryDefDocTree != null) {
 			//root is the root of the entry's definition
@@ -755,8 +758,7 @@ public class DefinitionHelper {
 	
 	//Routine to figure out which attached file is the primary file (if any)
 	public static void getPrimaryFile(FolderEntry entry, Map model) {
-		Definition def = entry.getEntryDef();
-		Document defDoc = def.getDefinition();
+		Document defDoc = entry.getEntryDefDoc();
 		Element root = defDoc.getRootElement();
 		
 		//See if there is a title element getting its source from some other element
@@ -1346,7 +1348,7 @@ public class DefinitionHelper {
 	public static Set<String> getTextualInputDataKeys(Long folderId, Long entryId,InputDataAccessor inputData) {
 		FolderModule fm = (FolderModule) SpringContextUtil.getBean("folderModule");
 		FolderEntry entry = fm.getEntry(folderId, entryId);
-		return getTextualInputDataKeys(entry.getEntryDef().getId(), inputData);
+		return getTextualInputDataKeys(entry.getEntryDefId(), inputData);
 	}
 	
 	public static Set<String> getTextualInputDataKeys(Long binderId,InputDataAccessor inputData) {

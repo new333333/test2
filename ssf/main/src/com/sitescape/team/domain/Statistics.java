@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.dom4j.Document;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
@@ -74,50 +75,47 @@ public class Statistics implements Serializable {
 		this.value = value;
 	}
 
-	public void addStatistics(Definition entryDefinition, Map<String, CustomAttribute> customAttributes) {
+	public void addStatistics(String entryDefinitionId, Document entryDefinitionDoc, Map<String, CustomAttribute> customAttributes) {
 		Iterator<Map.Entry<String, CustomAttribute>> it= customAttributes.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, CustomAttribute> attr = it.next();
-			addStatistic(entryDefinition, attr.getValue());
+			addStatistic(entryDefinitionId, entryDefinitionDoc, attr.getValue());
 		}
 	}
 	
-	public void updateStatistics(Definition entryDefinition, Map<String, CustomAttribute> customAttributesOld, Map<String, CustomAttribute> customAttributes) {
-		deleteStatistics(entryDefinition, customAttributesOld);
-		addStatistics(entryDefinition, customAttributes);
+	public void updateStatistics(String entryDefinitionId, Document entryDefinitionDoc, Map<String, CustomAttribute> customAttributesOld, Map<String, CustomAttribute> customAttributes) {
+		deleteStatistics(entryDefinitionId, entryDefinitionDoc, customAttributesOld);
+		addStatistics(entryDefinitionId, entryDefinitionDoc, customAttributes);
 	}
 
-	public void deleteStatistics(Definition entryDefinition, Map<String, CustomAttribute> customAttributes) {
+	public void deleteStatistics(String entryDefinitionId, Document entryDefinitionDoc, Map<String, CustomAttribute> customAttributes) {
 		Iterator<Map.Entry<String, CustomAttribute>> it= customAttributes.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, CustomAttribute> attr = it.next();
-			deleteStatistic(entryDefinition, attr.getValue());
+			deleteStatistic(entryDefinitionId, entryDefinitionDoc, attr.getValue());
 		}
 	}
 
-	private void addStatistic(Definition entryDefinition, CustomAttribute attribute) {
-		String  entryDefinitionId = entryDefinition.getId();
-	
-		
+	private void addStatistic(String entryDefinitionId, Document entryDefinitionDoc, CustomAttribute attribute) {
 		if (value.get(entryDefinitionId) == null) {
 			Map entryDefinitionIdStats = new HashMap();
 			value.put(entryDefinitionId, entryDefinitionIdStats);
 		}
 		Map entryDefinitionIdStats = (Map)value.get(entryDefinitionId);
 		
-		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinition.getDefinition());
+		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinitionDoc);
 		if (!isStatisticable(attributeType, attribute)) {
 			return;
 		}
 		
 		if (entryDefinitionIdStats.get(attribute.getName()) == null) {
 			
-			String attributeCaption = DefinitionHelper.findCaptionForAttribute(attribute.getName(), entryDefinition.getDefinition());
+			String attributeCaption = DefinitionHelper.findCaptionForAttribute(attribute.getName(), entryDefinitionDoc);
 			List attributesValueCaption = Collections.EMPTY_LIST;
 			if ("selectbox".equals(attributeType)) {
-				attributesValueCaption = DefinitionHelper.findSelectboxSelections(attribute.getName(), entryDefinition.getDefinition());
+				attributesValueCaption = DefinitionHelper.findSelectboxSelections(attribute.getName(), entryDefinitionDoc);
 			} else if ("radio".equals(attributeType)) {
-				attributesValueCaption = DefinitionHelper.findRadioSelections(attribute.getName(), entryDefinition.getDefinition());
+				attributesValueCaption = DefinitionHelper.findRadioSelections(attribute.getName(), entryDefinitionDoc);
 			}
 			
 			List attributeValues = new ArrayList();
@@ -216,13 +214,12 @@ public class Statistics implements Serializable {
 		}
 	}
 	
-	private void deleteStatistic(Definition entryDefinition, CustomAttribute attribute) {
-		String entryDefinitionId = entryDefinition.getId();
+	private void deleteStatistic(String entryDefinitionId, Document entryDefinitionDoc, CustomAttribute attribute) {
 		if (value.get(entryDefinitionId) == null) {
 			return;
 		}
 		
-		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinition.getDefinition());
+		String attributeType = DefinitionHelper.findAttributeType(attribute.getName(), entryDefinitionDoc);
 		if (!isStatisticable(attributeType, attribute)) {
 			return;
 		}
