@@ -2233,16 +2233,15 @@ public class ListFolderHelper {
 			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
 			entries.put(entry.getId().toString(), entryMap);
 			entryMap.put("entry", entry);
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), entryMap, "//item[@name='entryBlogView']") == false) {
 				//this will fill it the entryDef for the entry
 				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
-			Definition def = entry.getEntryDef();
 			if (bs.getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
-				Document defDoc = def.getDefinition();
+				Document defDoc = entry.getEntryDefDoc();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				if (!replyStyles.isEmpty()) {
 					String replyStyleId = (String)replyStyles.get(0);

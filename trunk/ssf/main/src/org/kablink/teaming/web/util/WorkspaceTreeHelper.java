@@ -296,7 +296,7 @@ public class WorkspaceTreeHelper {
 							u = (User)Utils.fixProxy(u);
 						}
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
-						Document profileDef = u.getEntryDef().getDefinition();
+						Document profileDef = u.getEntryDefDoc();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 						
 						//Get the profileEntry view type and determine which display type to choose business card or profile view

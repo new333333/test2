@@ -92,7 +92,7 @@ public class MiniBusinessCard extends BodyTagSupport {
 			} else return EVAL_PAGE; 
 
 
-			Document profileDef = user1.getEntryDef().getDefinition();
+			Document profileDef = user1.getEntryDefDoc();
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_ELEMENT, profileDef
 					.getRootElement().selectSingleNode(

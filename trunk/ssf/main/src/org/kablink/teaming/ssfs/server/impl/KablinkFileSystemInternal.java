@@ -457,7 +457,7 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 		String itemType = getItemType(uri);
 		if (itemType == null) {
 			// Get a list of relevent item types from the definition
-			Document def = entry.getEntryDef().getDefinition();
+			Document def = entry.getEntryDefDoc();
 			if (def != null) {
 				Element root = def.getRootElement();
 				if (root.selectNodes(
@@ -695,7 +695,7 @@ public class KablinkFileSystemInternal implements KablinkFileSystem {
 			if (itemType == null)
 				return true; // no more checking to do
 
-			Document def = entry.getEntryDef().getDefinition();
+			Document def = entry.getEntryDefDoc();
 			if (def == null) // No definition - Is this actually possible?
 				return false; // No item type can be recognized
 			objMap.put(DEFINITION, def);

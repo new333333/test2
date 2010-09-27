@@ -823,7 +823,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   if (defaultUserDef == null) {
 		   User temp = new User();
 		   getDefinitionModule().setDefaultEntryDefinition(temp);
-		   defaultUserDef = temp.getEntryDef();
+		   defaultUserDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 	   }
 	   List defaultUserList = new ArrayList();
 	   userLists.put(defaultUserDef, defaultUserList);
@@ -905,7 +905,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 	   Group temp = new Group();
 	   getDefinitionModule().setDefaultEntryDefinition(temp);
-	   Definition defaultGroupDef = temp.getEntryDef();
+	   Definition defaultGroupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
    	   addEntries(groupList, Group.class, binder, defaultGroupDef, options);  	   
     }
   	//no transaction

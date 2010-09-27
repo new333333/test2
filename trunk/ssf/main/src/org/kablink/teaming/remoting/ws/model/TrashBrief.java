@@ -206,8 +206,8 @@ public class TrashBrief implements Serializable {
 		FolderEntryBrief feb = new FolderEntryBrief();
 		feb.setId(fe.getId());
 		feb.setBinderId(fe.getParentBinder().getId());
-		if(null != fe.getEntryDef()) {
-			feb.setDefinitionId(fe.getEntryDef().getId());
+		if(null != fe.getEntryDefId()) {
+			feb.setDefinitionId(fe.getEntryDefId());
 		}
 		feb.setTitle(fe.getTitle());
 		feb.setDocNumber(fe.getDocNumber());

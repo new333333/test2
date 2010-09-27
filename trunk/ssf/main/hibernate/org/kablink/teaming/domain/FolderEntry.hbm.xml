@@ -82,9 +82,9 @@
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>
-    <many-to-one access="field" class="org.kablink.teaming.domain.Definition" name="entryDef">
-      <column name="entryDef" sql-type="char(32)"/>
-    </many-to-one>
+ 	<property name="entryDefId" access="field">
+ 		<column name="entryDef" sql-type="char(32)"/>
+ 	</property>
     <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="org.kablink.teaming.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">

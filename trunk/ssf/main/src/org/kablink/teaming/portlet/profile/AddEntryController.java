@@ -41,6 +41,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.dom4j.Document;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NameMissingException;
 import org.kablink.teaming.ObjectKeys;
@@ -213,7 +214,7 @@ public class AddEntryController extends SAbstractController {
 		if (folderEntryDefs.containsKey(entryType)) {
 			DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 		} else {
-			DefinitionHelper.getDefinition(null, model, "//item[@name='profileEntryForm']");
+			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='profileEntryForm']");
 		}
 		return new ModelAndView(WebKeys.VIEW_ADD_ENTRY, model);
 	}

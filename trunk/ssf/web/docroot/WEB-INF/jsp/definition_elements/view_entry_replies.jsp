@@ -48,15 +48,15 @@
 	  <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
 	  
 	  <div class="ss_entryContent ss_replies wg-comment">
-		  <c:if test="${!empty reply.entryDef}">
-			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
-				configElement='<%= (Element) reply.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name=\'entryView\' or @name=\'profileEntryView\' or @name=\'fileEntryView\']") %>' 
+		  <c:if test="${!empty reply.entryDefId}">
+			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
+				configElement='<%= (Element) reply.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name=\'entryView\' or @name=\'profileEntryView\' or @name=\'fileEntryView\']") %>' 
 				configJspStyle="${ssConfigJspStyle}" 
 				processThisItem="false" 
 				entry="<%= reply %>" />
 		  </c:if>
-		  <c:if test="${empty reply.entryDef}">
-			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDef().getDefinition() %>' 
+		  <c:if test="${empty reply.entryDefId}">
+			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
 				configElement="${ssConfigElement}" 
 				configJspStyle="${ssConfigJspStyle}" 
 				processThisItem="false" 

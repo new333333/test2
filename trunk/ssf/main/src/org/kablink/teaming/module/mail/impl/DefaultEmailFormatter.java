@@ -470,7 +470,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			buf.append(subject);
 			return buf.toString();
 		} else {
-			String family = DefinitionUtils.getFamily(entry.getEntryDef().getDefinition());
+			String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());
 			if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
 				//subscribers to calendar want the subject to look like ical subject
 				return entry.getTitle();

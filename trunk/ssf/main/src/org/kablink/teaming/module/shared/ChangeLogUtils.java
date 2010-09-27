@@ -68,9 +68,8 @@ public class ChangeLogUtils {
 		if (entry.getParentBinder() != null) {
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_PARENTBINDER, entry.getParentBinder().getId().toString());
 		}
-		Definition def = entry.getEntryDef();
-		if (def != null) {
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, def.getId());
+		if (entry.getEntryDefId() != null) {
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, entry.getEntryDefId());
 		}
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
 		//process all form items

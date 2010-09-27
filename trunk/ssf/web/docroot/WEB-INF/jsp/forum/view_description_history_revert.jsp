@@ -132,7 +132,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
     <c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry" type="org.kablink.teaming.domain.DefinableEntity" />
 	<% 
-		Element configEle = (Element)changeLogEntry.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryView']");
+		Element configEle = (Element)changeLogEntry.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name='entryView']");
 	%>
 	<c:set var="configEle" value="<%= configEle %>" />
     <div style="margin:20px; padding:10px; border: 1px black solid;">
@@ -144,7 +144,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
 		  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
 		  <c:set var="ss_pseudoEntityRevert" value="true" scope="request"/>
 		  <ssf:displayConfiguration 
-		    configDefinition="${changeLogEntry.entryDef.definition}" 
+		    configDefinition="${changeLogEntry.entryDefDoc}" 
 		    configElement="<%= configEle %>"
 		    configJspStyle="view" 
 		    entry="${changeLogEntry}" 
@@ -169,7 +169,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
     <c:set var="changeLogEntry2" value="${change.changeLogEntry}"/>
 	<jsp:useBean id="changeLogEntry2" type="org.kablink.teaming.domain.DefinableEntity" />
 <% 
-  Element configEle2 = (Element)changeLogEntry2.getEntryDef().getDefinition().getRootElement().selectSingleNode("//item[@name='entryForm']");
+  Element configEle2 = (Element)changeLogEntry2.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name='entryForm']");
 %>
    <div style="display:none;">
 	<c:if test="${!empty configEle}">
@@ -180,7 +180,7 @@ ss_createOnLoadObj("ss_history_revert_init", ss_history_revert_init);
 	  <c:set var="ss_pseudoEntity" value="true" scope="request"/>
 	  <c:set var="ss_pseudoEntityRevert" value="true" scope="request"/>
 	  <ssf:displayConfiguration 
-	    configDefinition="${changeLogEntry2.entryDef.definition}" 
+	    configDefinition="${changeLogEntry2.entryDefDoc}" 
 	    configElement="<%= configEle2 %>"
 	    configJspStyle="form" 
 	    entry="${changeLogEntry2}" 

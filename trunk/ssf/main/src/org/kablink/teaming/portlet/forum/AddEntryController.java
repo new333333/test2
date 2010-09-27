@@ -465,7 +465,7 @@ public class AddEntryController extends SAbstractController {
 						}
 					}
 				} else {
-					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
+					DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 				}
 			
 				try {
@@ -484,9 +484,8 @@ public class AddEntryController extends SAbstractController {
 					
 		    	//Get the legal reply types from the parent entry definition
 				Document entryView = null;
-				Definition entryDefinition = entry.getEntryDef();
-				if (entryDefinition != null) {
-					entryView = entryDefinition.getDefinition();
+				if (entry.getEntryDefId() != null) {
+					entryView = entry.getEntryDefDoc();
 					Element familyProperty = (Element) entryView.getRootElement().selectSingleNode("//properties/property[@name='family']");
 					if (familyProperty != null) {
 						String family = familyProperty.attributeValue("value", "");
@@ -517,7 +516,7 @@ public class AddEntryController extends SAbstractController {
 				if (replyStyleIsGood) {
 					DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 				} else {
-					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
+					DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 				}
 				try {
 					Workspace ws = getWorkspaceModule().getTopWorkspace();

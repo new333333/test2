@@ -85,7 +85,7 @@ public class TemplateServiceImpl extends BaseService implements TemplateService,
 
 		List<TemplateBrief> list = new ArrayList<TemplateBrief>();
 		for (TemplateBinder def:defs) {
-			String family = DefinitionUtils.getFamily(def.getEntryDef().getDefinition());
+			String family = DefinitionUtils.getFamily(def.getEntryDefDoc());
 		    Integer defType = def.getDefinitionType();
 		    if (defType == null) defType = 0;
 			list.add(new TemplateBrief(def.getId(), def.getInternalId(), family, defType, def.getName(), def.getTemplateTitle()));	

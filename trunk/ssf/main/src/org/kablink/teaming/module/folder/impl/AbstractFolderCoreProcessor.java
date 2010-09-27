@@ -106,7 +106,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
     	if (fEntry.isTop()) {
     		Statistics statistics = getFolderStatistics(folder);
-	    	statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+	    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    	setFolderStatistics(folder, statistics);
     	}
     }
@@ -257,7 +257,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Statistics statistics = getFolderStatistics((Folder)binder);
-    	statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    	statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
     //inside write transaction
@@ -267,7 +267,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
     	Statistics statistics = getFolderStatistics((Folder)binder);
-	    statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+	    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    setFolderStatistics((Folder)binder, statistics);
   }
     //no transaction
@@ -309,14 +309,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
         Statistics statistics = getFolderStatistics((Folder)parentBinder);        
-        statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
        	FolderEntry fEntry = (FolderEntry)entry;
      	List<FolderEntry> replies= (List)ctx.get("this.replies");
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
       		FolderEntry reply = (FolderEntry)replies.get(i);
-            statistics.deleteStatistics(reply.getEntryDef(), reply.getCustomAttributes());
+            statistics.deleteStatistics(reply.getEntryDefId(), reply.getEntryDefDoc(), reply.getCustomAttributes());
     		super.deleteEntry_preDelete(parentBinder, reply, null);
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
@@ -482,7 +482,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	if (entry.isTop()) {
     		if (entry.getParentFolder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
     		Statistics statistics = getFolderStatistics(entry.getParentFolder());
-    		statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
     		setFolderStatistics(entry.getParentFolder(), statistics);
     	}
     	processChangeLog(entry, ChangeLog.ADDENTRY);
@@ -512,10 +512,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	to.addEntry(fEntry);
    		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
         Statistics statistics = getFolderStatistics(from);        
-        statistics.deleteStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
         setFolderStatistics(from, statistics);
         statistics = getFolderStatistics((Folder)destination);
-        statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
         setFolderStatistics((Folder)destination, statistics);
 
     	User user = RequestContextHolder.getRequestContext().getUser();

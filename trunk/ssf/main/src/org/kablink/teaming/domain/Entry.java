@@ -53,9 +53,13 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     	super(entry);
     }
 
-    public Definition getEntryDef() {
-    	if (entryDef != null) return entryDef;
-    	return getParentBinder().getDefaultEntryDef();
+    public String getEntryDefId() {
+    	if (entryDefId != null) return entryDefId;
+    	Definition def = getParentBinder().getDefaultEntryDef();
+    	if(def != null)
+    		return def.getId();
+    	else
+    		return null;
     }
     public boolean isTop() {
     	return true;

@@ -38,9 +38,13 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 
 public class DefinitionCache {
 
@@ -52,7 +56,12 @@ public class DefinitionCache {
 	// Guarded by this class.
 	private static long lastResetTime = System.currentTimeMillis();
 
-	public static Document getDocument(Definition definition) {
+	public static Document getDocumentWithDefinition(Definition definition) {
+		// The fact that the caller is looking up a cache entry by definition
+		// domain object indicates that the caller has already paid the price
+		// of constructing the intermediary form of the data (= definition 
+		// domain object). The more we can switch the caller of this to using
+		// getDocumentWithId method instead, the more efficient it would be.
 		Document doc = null;
 		if(isEnabled()) { // cache enabled
 			if(getResetIntervalInSecond() > 0) {
@@ -68,31 +77,86 @@ public class DefinitionCache {
 					if(doc != null) {
 						// This cache only deals with valid definition
 						cache.put(definition.getId(), doc);
-						logger.debug("getDocument [" + definition.getId() + "] - cache miss, generated doc");
+						if(logger.isDebugEnabled())
+							logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache miss, generated doc");
 					}
 					else {
-						logger.debug("getDocument [" + definition.getId() + "] - cache miss, unable to generate doc");	
+						if(logger.isDebugEnabled())
+							logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache miss, unable to generate doc");	
 					}
 				}
 				else {
-					logger.debug("getDocument [" + definition.getId() + "] - cache hit");	
+					if(logger.isDebugEnabled())
+						logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache hit");	
 				}
 			}	
 			else {
-				logger.debug("getDocument - no id");	
+				// For transient definition, generated document isn't cached.
+				doc = generateDocument(definition);
+				logger.debug("getDocumentWithDefinition [NO ID] - generated doc");	
 			}
 		}
 		else { // cache disabled - falls back to old mechanism
 			doc = generateDocument(definition);
-			if(doc != null)
-				logger.debug("getDocument [" + definition.getId() + "] - cache disabled, generated doc");
-			else
-				logger.debug("getDocument [" + definition.getId() + "] - cache disabled, unable to generate doc");
+			if(doc != null) {
+				if(logger.isDebugEnabled())
+					logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache disabled, generated doc");
+			}
+			else {
+				if(logger.isDebugEnabled())
+					logger.debug("getDocumentWithDefinition [" + definition.getId() + "] - cache disabled, unable to generate doc");
+			}
 		}
 		// Under error condition, the return value may be null, which seems bad at first. 
 		// But I'm not changing this behavior since that's how the Definition.getDefinition() 
 		// method was originally implemented (meaning this doesn't make anything worse
 		// than before).
+		return doc;
+	}
+	
+	public static Document getDocumentWithId(String definitionId) throws NoDefinitionByTheIdException {
+		// The fact that the caller is looking up a cache entry by definition ID
+		// is a good sign that the caller has probably skipped the intermediary
+		// form of the data (= definition domain object).
+		if(definitionId == null)
+			throw new IllegalArgumentException("definition ID must be specified");
+		
+		Document doc = null;
+		if(isEnabled()) { // cache enabled
+			doc = cache.get(definitionId);
+			if(doc == null) {
+				// Not in cache
+				Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+				doc = generateDocument(definition);
+				if(doc != null) {
+					// This cache only deals with valid definition
+					cache.put(definitionId, doc);
+					if(logger.isDebugEnabled())
+						logger.debug("getDocumentWithId [" + definitionId + "] - cache miss, loaded definition, generated doc");
+				}
+				else {
+					if(logger.isDebugEnabled())
+						logger.debug("getDocumentWithId [" + definitionId + "] - cache miss, loaded definition, unable to generate doc");	
+				}					
+			}
+			else {
+				// Found in cache.
+				if(logger.isDebugEnabled())
+					logger.debug("getDocumentWithId [" + definitionId + "] - cache hit");
+			}
+		}
+		else { // cache disabled
+			Definition definition = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+			doc = generateDocument(definition);	
+			if(doc != null) {
+				if(logger.isDebugEnabled())
+					logger.debug("getDocumentWithId [" + definitionId + "] - cache disabled, loaded definition, generated doc");
+			}
+			else {
+				if(logger.isDebugEnabled())
+					logger.debug("getDocumentWithId [" + definitionId + "] - cache disabled, loaded definition, unable to generate doc");	
+			}					
+		}
 		return doc;
 	}
 		
@@ -108,7 +172,8 @@ public class DefinitionCache {
 	}
 	
 	public static void invalidate(String definitionId) {
-		logger.debug("invalidate [" + definitionId + "]");
+		if(logger.isDebugEnabled())
+			logger.debug("invalidate [" + definitionId + "]");
 		if(definitionId != null)
 			cache.remove(definitionId);
 	}
@@ -119,7 +184,8 @@ public class DefinitionCache {
 	}
 	
 	private static Document generateDocument(Definition def) {
-		logger.debug("generateDocument [" + def.getId() + "]");
+		if(logger.isDebugEnabled())
+			logger.debug("generateDocument [" + def.getId() + "]");
 		// Because getDocument() method of Definition class has protected 
 		// visibility (so as to prevent application code from calling it
 		// directly), we can't call it from here via usual means. Instead, 
@@ -145,7 +211,8 @@ public class DefinitionCache {
 	private static boolean isEnabled() {
 		if(enabled == null) {
 			enabled = Boolean.valueOf(SPropsUtil.getBoolean("definition.cache.enabled", true));
-			logger.debug("definition.cache.enabled: " + enabled.toString());
+			if(logger.isDebugEnabled())
+				logger.debug("definition.cache.enabled: " + enabled.toString());
 		}
 		return enabled.booleanValue();
 	}
@@ -154,9 +221,13 @@ public class DefinitionCache {
 		if(resetIntervalInSecond == null) {
 			// This is a hidden config setting, not exposed in ssf.properties.
 			resetIntervalInSecond = Long.valueOf(SPropsUtil.getLong("definition.cache.reset.interval", 0));
-			logger.debug("definition.cache.reset.interval: " + resetIntervalInSecond.toString());
+			if(logger.isDebugEnabled())
+				logger.debug("definition.cache.reset.interval: " + resetIntervalInSecond.toString());
 		}
 		return resetIntervalInSecond.longValue();
 	}
 	
+	private static CoreDao getCoreDao() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
 }

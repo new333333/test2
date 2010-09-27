@@ -2065,7 +2065,7 @@ public class BinderHelper {
 		entry.setId(entity.getId());
 		entry.setParentBinder(entity.getParentBinder());
 		entry.setDefinitionType(entity.getDefinitionType());
-		entry.setEntryDef(entity.getEntryDef());
+		entry.setEntryDefId(entity.getEntryDefId());
 		entry.setLogVersion(logVersion);
 		if (entity instanceof FolderEntry) {
 			entry.setParentEntry(((FolderEntry)entity).getParentEntry());
@@ -2075,7 +2075,7 @@ public class BinderHelper {
 			entry.setAverageRating(((FolderEntry)entity).getAverageRating());
 		}
 		
-		Document defDoc = entity.getEntryDef().getDefinition();
+		Document defDoc = entity.getEntryDefDoc();
 		
 		//Set the owner of the entry
 		Element hs = (Element)root.selectSingleNode("//historyStamp[@name='created']");

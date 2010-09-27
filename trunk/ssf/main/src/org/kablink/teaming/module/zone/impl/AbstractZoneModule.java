@@ -881,7 +881,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		//fill in config for profiles
     		defs = profiles.getDefinitions();
     		defs.add(profiles.getEntryDef());
-    		defs.add(user.getEntryDef());
+    		defs.add(getCoreDao().loadDefinition(user.getEntryDefId(), RequestContextHolder.getRequestContext().getZoneId()));
     		    			        		
     		//fill in timestampes
     		top.setCreation(stamp);

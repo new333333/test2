@@ -120,12 +120,11 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.ENTRY_VIEW_STYLE2, entryViewStyle2);
 		
 		//Get the definition used to view this entry
-		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) {
+		if (entry.getEntryDefId() == null) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		} else {
 			//Set up the definition used to show this profile entry
-			if (!DefinitionHelper.getDefinition(entryDef, model, "//item[@name='profileEntryView' or @name='groupEntryView']")) {
+			if (!DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='profileEntryView' or @name='groupEntryView']")) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 		}

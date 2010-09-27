@@ -1830,7 +1830,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='entryBlogView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);
@@ -2584,7 +2584,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 						new MapInputData(formData), null, null, null, null);
 				
 				model.put(WebKeys.ENTRY, entry);
-				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entry.getEntryDef().getId()));
+				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entry.getEntryDefId()));
 				model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			} catch (OperationAccessControlException e) {
 				Map statusMap = new HashMap();

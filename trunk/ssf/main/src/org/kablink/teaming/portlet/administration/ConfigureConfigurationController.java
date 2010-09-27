@@ -357,7 +357,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					if (config.getDefinitionType() != null && 
 							config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
 						//use current user as prototype
-						Document profileDef = user.getEntryDef().getDefinition();
+						Document profileDef = user.getEntryDefDoc();
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));

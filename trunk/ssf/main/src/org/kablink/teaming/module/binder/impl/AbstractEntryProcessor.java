@@ -476,9 +476,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	Map workflowAssociations = (Map) binder.getWorkflowAssociations();
     	if (workflowAssociations != null) {
     		//See if the entry definition type has an associated workflow
-    		Definition entryDef = entry.getEntryDef();
-    		if (entryDef != null) {
-    			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
+    		if (entry.getEntryDefId() != null) {
+    			Definition wfDef = (Definition)workflowAssociations.get(entry.getEntryDefId());
     			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
     		}
     	}
@@ -684,9 +683,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems, Map ctx) {
         boolean fieldsOnly = false;
         //Call the definition processor to get the entry data to be stored
-        Definition def = entry.getEntryDef();
-        if (def != null) {
-            Map entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems, fieldsOnly);
+        if (entry.getEntryDefId() != null) {
+            Map entryDataAll = getDefinitionModule().getEntryData(entry.getEntryDefDoc(), inputData, fileItems, fieldsOnly);
              return entryDataAll;
         } else {
            	Map entryDataAll = new HashMap();

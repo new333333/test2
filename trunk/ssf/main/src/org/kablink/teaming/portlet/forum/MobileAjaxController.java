@@ -1221,7 +1221,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("mobile/entry_deleted", model);
 			}
 			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='entryView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
@@ -1231,7 +1231,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.DEFINITION_ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@name='entryView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);
@@ -1248,8 +1248,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				//only mark top entries as seen
 				getProfileModule().setSeen(null, entry);
 			}
-			Definition def = entry.getEntryDef(); //cannot be null here
-			Document defDoc = def.getDefinition();
+			Document defDoc = entry.getEntryDefDoc(); //cannot be null here
 			Element familyEle = (Element) defDoc.getRootElement().selectSingleNode("./properties/property[@name='family']");
 			String replyText = NLT.get("toolbar.comment");
 			if (familyEle != null && familyEle.attributeValue("value", "").equals("discussion")) {
@@ -1259,7 +1258,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.ADD_REPLY_TITLE, replyText);
 			
 			if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
-				List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
 				List<Map> defTitleUrlList = new ArrayList();
 				model.put(WebKeys.MOBILE_BINDER_DEF_URL_LIST, defTitleUrlList);
@@ -1479,7 +1478,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (folderEntryDefs.containsKey(entryType)) {
 			DefinitionHelper.getDefinition((Definition)folderEntryDefs.get(entryType), model, "//item[@type='form']");
 		} else {
-			DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
+			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 		}
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
@@ -1501,7 +1500,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
-		DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
@@ -1525,14 +1524,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
     	//Get the legal reply types from the parent entry definition
 		Document entryView = null;
-		Definition entryDefinition = entry.getEntryDef();
-		if (entryDefinition != null) {
-			entryView = entryDefinition.getDefinition();
+		if (entry.getEntryDefId() != null) {
+			entryView = entry.getEntryDefDoc();
 		}
 		List replyStyles = null;
 		if (entryView != null) {
 			//See if there is a reply style for this entry definition
-			replyStyles = DefinitionUtils.getPropertyValueList(entryDefinition.getDefinition().getRootElement(), "replyStyle");
+			replyStyles = DefinitionUtils.getPropertyValueList(entryView.getRootElement(), "replyStyle");
 		}
    	
     	//Adding an entry; get the specific definition
@@ -1556,7 +1554,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (replyStyleIsGood) {
 			DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 		} else {
-			DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
+			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 		}
 		
 		Map formData = request.getParameterMap();

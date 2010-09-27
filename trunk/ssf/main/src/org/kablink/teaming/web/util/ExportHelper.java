@@ -689,9 +689,10 @@ public class ExportHelper {
 		Binder binder = entity.getParentBinder();
 		if (binder != null) entityElem.addAttribute("binderId", binder.getId().toString());
 
-		if (entity.getEntryDef() != null) {
-			entityElem.addAttribute("definitionId", entity.getEntryDef().getId());
-			entityElem.addAttribute("definitionName", entity.getEntryDef().getName());
+		if (entity.getEntryDefId() != null) {
+			Definition def = coreDao.loadDefinition(entity.getEntryDefId(), RequestContextHolder.getRequestContext().getZoneId());
+			entityElem.addAttribute("definitionId", def.getId());
+			entityElem.addAttribute("definitionName", def.getName());
 		}
 
 		entityElem.addAttribute("title", entity.getTitle());
@@ -802,7 +803,7 @@ public class ExportHelper {
 		definitionModule.walkDefinition(entity, visitor, null);
 
 		// see if title and attachments have been handled
-		Element root = entity.getEntryDef().getDefinition().getRootElement();
+		Element root = entity.getEntryDefDoc().getRootElement();
 		if (root != null) {
 			Element title = (Element) root.selectSingleNode("//item[@name='title']");
 			if (title == null) {
@@ -1037,7 +1038,11 @@ public class ExportHelper {
 	private static void addEntryDefinitions(ZipOutputStream zipOut, FolderEntry entry, 
 			Set defListAlreadyAdded, Map reportMap) {
 		List<Definition> defListToAdd = new ArrayList<Definition>();
-		defListToAdd.add(entry.getEntryDef());
+		Definition def = null;
+		if(entry.getEntryDefId() != null)
+			def = definitionModule.getDefinition(entry.getEntryDefId());
+		if(def != null)
+			defListToAdd.add(def);
 
 		for (WorkflowState workflow : entry.getWorkflowStates()) {
 			if (workflow != null) {

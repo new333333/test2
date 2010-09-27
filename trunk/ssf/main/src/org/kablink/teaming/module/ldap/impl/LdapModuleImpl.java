@@ -1755,7 +1755,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//get default definition to use
 			Group temp = new Group();
 			getDefinitionModule().setDefaultEntryDefinition(temp);
-			Definition groupDef = temp.getEntryDef();
+			Definition groupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 			try {
 				PartialLdapSyncResults	syncResults	= null;
 				
@@ -2453,7 +2453,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if (userDef == null) {
 			User temp = new User();
 			getDefinitionModule().setDefaultEntryDefinition(temp);
-			userDef = temp.getEntryDef();
+			userDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 		}
 		try {
 			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -2507,7 +2507,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//get default definition to use
 		Group temp = new Group();
 		getDefinitionModule().setDefaultEntryDefinition(temp);
-		Definition groupDef = temp.getEntryDef();
+		Definition groupDef = getDefinitionModule().getDefinition(temp.getEntryDefId());
 
 	    try {
 	    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
