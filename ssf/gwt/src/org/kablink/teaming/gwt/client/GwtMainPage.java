@@ -804,10 +804,12 @@ public class GwtMainPage extends Composite
 			{
 				// No
 				// Show everything on the menu, the workspace tree control and the content control.
-				m_mainMenuCtrl.hideAdministrationMenubar();
 				m_contentCtrl.setVisible( true );
 			}
-			
+
+			// Hide the administration menu bar.
+			m_mainMenuCtrl.hideAdministrationMenubar();
+
 			// Restore the ui state to what it was before we opened the site administration.
 			cmd = new Command()
 			{
