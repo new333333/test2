@@ -431,6 +431,7 @@ public class ActivityStreamCtrl extends Composite
 		// Add the previous images to the footer.
 		imageResource = GwtTeaming.getImageBundle().previousDisabled16();
 		m_prevDisabledImg = new Image(imageResource);
+		m_prevDisabledImg.addStyleName( "viewPreviousDisabledImg" );
 		imgPanel.add( m_prevDisabledImg );
 		imageResource = GwtTeaming.getImageBundle().previous16();
 		m_prevImg = new Image(imageResource);
@@ -450,6 +451,7 @@ public class ActivityStreamCtrl extends Composite
 		// Add the next images to the footer.
 		imageResource = GwtTeaming.getImageBundle().nextDisabled16();
 		m_nextDisabledImg = new Image(imageResource);
+		m_nextDisabledImg.addStyleName( "viewNextDisabledImg" );
 		imgPanel.add( m_nextDisabledImg );
 		imageResource = GwtTeaming.getImageBundle().next16();
 		m_nextImg = new Image(imageResource);
