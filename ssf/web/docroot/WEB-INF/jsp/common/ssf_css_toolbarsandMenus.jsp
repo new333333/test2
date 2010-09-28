@@ -821,9 +821,9 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}
 .wg-tab, .wg-tab-b {
 	background:none repeat scroll 0 0 #FFFFFF;
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: normal;
-	padding: 5px 10px;
+	padding: 3px 8px;
 	margin: 2px 5px 2px 0px;
 	display:inline-block;
 	cursor: pointer;
@@ -838,7 +838,7 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}	
 .wg-tab.on, .wg-tab-b.on {
 	color: #000;
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: bold;
 	background:none repeat scroll 0 0 #E6E6E4;
 	cursor: pointer;

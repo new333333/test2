@@ -684,7 +684,8 @@ div.item-sub a {
 #ss_tabsC a span {
     display:block;
     background-color: #949494; /* gray */
-    padding: 5px 10px;
+    padding: 3px 8px;
+	font-size: 11px;
     white-space:nowrap !important;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;

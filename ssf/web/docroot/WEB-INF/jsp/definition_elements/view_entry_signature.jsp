@@ -122,7 +122,7 @@
 		  </td>
 		 </tr>
 		 <tr>
-		  <td style="padding-left: 20px;">
+		  <td style="padding-left: 30px;">
 		  <c:set var="property_caption" value=""/>
 			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 		  </td>
@@ -132,12 +132,12 @@
 		   <tr>
 			<td class="ss_clipped_signature">
 				<div class="ss_entryContent margintop2">
-				  <div style="padding-right:8px; font-weight: bold;"><ssf:nlt tag="entry.modifiedBy"/></div>
+				  <div style="padding-right:8px; font-weight: bold; font-size: 11px;"><ssf:nlt tag="entry.modifiedBy"/></div>
 				  <div class="ss_entrySignatureUser">
 				    <ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</div>
-				<div class="ss_entryContent ss_entrySignature" style="padding-left: 20px;">
+				<div class="ss_entryContent ss_entrySignature" style="padding-left: 30px;">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					 value="${ssDefinitionEntry.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="medium" />

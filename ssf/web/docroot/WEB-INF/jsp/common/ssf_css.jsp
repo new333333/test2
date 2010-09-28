@@ -779,6 +779,11 @@ div.ss_add_comment {
   background-image: url(<html:imagesPath/>icons/add_comment.gif);
 }
 
+.reply_attachments_caption {
+	margin-top: 0.5em;
+	font-size: 11px;
+	font-weight: bold;
+}
 div.ss_view_something {
   background-image: url(<html:imagesPath/>icons/view_something.gif);
 }
