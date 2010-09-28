@@ -1113,7 +1113,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   		}
 	   		
 	   		// Does this Binder have a default view defined?
-	   		Definition defaultBinderView = binder.getDefaultViewDef();
+	   		Definition defaultBinderView = getDefinitionModule().getDefinition(binder.getDefaultViewDefId());
 	   		if (null != defaultBinderView) {
 	   			// Yes!  Is the default view a MiniBlog Folder?
 	   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {

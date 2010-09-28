@@ -395,7 +395,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 if (!template.isTeamMembershipInherited()) XmlUtils.getTeamMembersFromXml(template, config, this);
 		 XmlUtils.getDefinitionsFromXml(template, config, this);
 		 if (!template.isFunctionMembershipInherited()) XmlUtils.getFunctionMembershipFromXml(template, config, this);
-		 template.setEntryDef(template.getDefaultViewDef());
+		 template.setEntryDefId(template.getDefaultViewDefId());
 		 Element dashboardConfig = (Element)config.selectSingleNode(ObjectKeys.XTAG_ELEMENT_TYPE_DASHBOARD);
 		 if (dashboardConfig != null) {
 			getDashboardModule().createEntityDashboard(template.getEntityIdentifier(), dashboardConfig);
@@ -740,11 +740,11 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	protected Binder addBinderInternal(TemplateBinder cfg, Binder parentBinder, String title, String name, Map ctx) throws AccessControlException {
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 	   Binder binder;
-	   Definition def = cfg.getDefaultViewDef();
-	   if (def == null) {
+	   String defId = cfg.getDefaultViewDefId();
+	   if (defId == null) {
 		   Integer cfgType = cfg.getDefinitionType();
 		   if (cfgType == null) cfgType = 0;
-		   def = getDefinitionModule().addDefaultDefinition(cfgType);
+		   defId = getDefinitionModule().addDefaultDefinition(cfgType).getId();
 	   }
 	   Map fileItems = new HashMap();
 	   Map entryData = new HashMap();
@@ -776,7 +776,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }	    	
 	   //get binder created
 	   try {
-			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx).getId(), zoneId);
+			binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), defId, inputData, fileItems, ctx).getId(), zoneId);
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);
