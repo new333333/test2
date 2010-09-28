@@ -800,12 +800,9 @@ public class GwtMainPage extends Composite
 				if ( m_activityStreamCtrl != null )
 					m_activityStreamCtrl.show();
 			}
-			else
-			{
-				// No
-				// Show everything on the menu, the workspace tree control and the content control.
-				m_contentCtrl.setVisible( true );
-			}
+
+			// Show the content control.
+			m_contentCtrl.setVisible( true );
 
 			// Hide the administration menu bar.
 			m_mainMenuCtrl.hideAdministrationMenubar();
