@@ -216,7 +216,76 @@
 			// ...and evaluate it.
 			eval(jsString);
 		}
+
+		// -- NOTE -- The following 3 ss_logoff*() functions were moved here from view_workarea_navbar.jsp
+		
+		/**
+		 * 
+		 */
+		function ss_logoff() {
+			var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
+			if(x == null || x == "") {
+				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+				//alert(y);
+				// Are we running the new GWT ui?
+				if ( ss_isGwtUIActive )
+				{
+					// Yes, update the top window's href.
+					window.top.location.href = y;
+				}
+				else
+					self.location.href=y;
+			} else {
+				//alert (x);
+				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
+				ss_logoff_from_teaming_then_sso(y);
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		function ss_logoff_from_teaming_then_sso(logoutURL) {
+			callbackRoutine = ss_logoff_from_sso
+			var x;
+		
+			if (window.XMLHttpRequest) {
+			x = new XMLHttpRequest();
+			} else if (window.ActiveXObject) {
+			x = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+			
+			x.open("GET", logoutURL, true);
+			
+			x.onreadystatechange = function() {
+				if (x.readyState != 4) {
+					return;
+				}
+				if (x.status == 200) {
+					callbackRoutine(x.responseText)        	
+				} else {		
+					callbackRoutine(x.statusText)
+				}
+			}
+			x.send(null);
+			delete x;
+		}
+		
+		/**
+		 * 
+		 */
+		function ss_logoff_from_sso(s) {
+			// Are we running the new GWT ui?
+			if ( ss_isGwtUIActive )
+			{
+				// Yes, update the top window's href.
+				window.top.location.href = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
+			}
+			else
+				self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
+		}
 	</script>
+	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>

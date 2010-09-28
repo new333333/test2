@@ -373,8 +373,8 @@ public class GwtClientHelper {
 	 * Use Teaming's existing JavaScript to logout of Teaming.
 	 */
 	public static native void jsLogout() /*-{
-		if ( window.top.gwtContentIframe.ss_logoff != null )
-			window.top.gwtContentIframe.ss_logoff();;
+		if ( window.top.ss_logoff != null )
+			window.top.ss_logoff();
 	}-*/;
 
 	/**
