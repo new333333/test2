@@ -46,10 +46,8 @@ import java.util.TreeSet;
 import org.dom4j.Document;
 import org.kablink.teaming.comparator.FileAttachmentComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.CollectionUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.WebHelper;
 
@@ -67,7 +65,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected boolean attachmentsParsed = false;
     protected Set attachments;	//initialized by hiberate access=field
     protected Map customAttributes;	//initialized by hiberate access=field
-    protected String entryDefId; //initialized by hiberate access=field
     protected Set events;	//initialized by hiberate access=field
     protected String iconName="";
     protected Integer definitionType=null;
@@ -86,7 +83,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	title = source.title;
     	normalTitle = source.normalTitle;
     	description = new Description(source.description);
-    	entryDefId = source.entryDefId;
     	iconName = source.iconName;
     	definitionType = source.definitionType;
     	//don't copy parentBinder, 
@@ -142,38 +138,19 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         this.normalTitle = normalTitle;
     }
     
+    public abstract String getEntryDefId();
+    
     public Document getEntryDefDoc() {
     	if(getEntryDefId() != null)
     		return DefinitionCache.getDocumentWithId(getEntryDefId());
     	else
     		return null;
     }
+        
+    public abstract void setEntryDef(Definition entryDef);
     
-    /** 
-     * The definition used to create the entity.
-     * @hibernate.many-to-one access="field" class="org.kablink.teaming.domain.Definition"
-     * @hibernate.column name="entryDef" sql-type="char(32)"
-     * @return
-     */
-    public String getEntryDefId() {
-    	return entryDefId;
-    }
-    
-    public void setEntryDef(Definition entryDef) {
-    	setEntryDefId((entryDef == null)? null : entryDef.getId());
-    }
-    public void setEntryDefId(String definitionId) {
-    	// This association is not maintained/managed by Hibernate but by application. 
-    	// Consequently, there is no foreign key constraint defined on the table that
-    	// enforces this association at the database level. Instead, it is up to the 
-    	// application to maintain this association properly. A small price to pay
-    	// for performance gain.
-    	this.entryDefId = definitionId;
-    }
-    public String getCreatedWithDefinitionId() {
-    	// returns the original definition with which this entity was created. 
-    	return entryDefId;
-    }
+    public abstract String getCreatedWithDefinitionId();
+
     public Document getCreatedWithDefinitionDoc() {
     	if(getCreatedWithDefinitionId() != null)
     		return DefinitionCache.getDocumentWithId(getCreatedWithDefinitionId());
