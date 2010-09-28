@@ -316,7 +316,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			Binder binder = bs.getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.BINDER_ID, binderId.toString());
-			Element familyProperty = (Element) binder.getDefaultViewDefDoc().getRootElement().selectSingleNode("//properties/property[@name='family']");
+			Element familyProperty = (Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
 			if (familyProperty != null) {
 				String family = familyProperty.attributeValue("value", "");
 				model.put(WebKeys.DEFINITION_FAMILY, family);

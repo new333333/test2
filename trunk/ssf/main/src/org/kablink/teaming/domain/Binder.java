@@ -52,7 +52,6 @@ import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -528,7 +527,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
       * @return
       */
       public Definition getDefaultFileEntryDef() {
-		Element useFileEntry = (Element) this.getEntryDefDoc()
+     	Definition folderDef = this.getEntryDef();
+		Element useFileEntry = (Element) folderDef.getDefinition()
 			.getRootElement().selectSingleNode("//properties/property[@name='defaultToFileEntries']");
 		if (useFileEntry == null || useFileEntry.attributeValue("value", "true").equals("true")) {
 			//This binder defaults to adding file entries from "Add files to folder" operations
@@ -545,30 +545,24 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
       * Return a definition to use for viewing the binder.
       * @return
       */
-     public String getDefaultViewDefId() {
+     public Definition getDefaultViewDef() {
      	
      	List eDefinitions = getViewDefinitions();
      	if (eDefinitions.size() > 0)
-     		return ((Definition)eDefinitions.get(0)).getId();
+     		return (Definition)eDefinitions.get(0);
      	//return original so have something.
-     	return entryDefId;
+     	if(entryDefId != null)
+     		return getCoreDao().loadDefinition(entryDefId, RequestContextHolder.getRequestContext().getZoneId());
+     	else
+     		return null;
  	}
-     
-     public Document getDefaultViewDefDoc() {
-    	 String id = getDefaultViewDefId();
-    	 if(id != null)
-    		 return DefinitionCache.getDocumentWithId(id);
-    	 else
-    		 return null;
-     }
-     
      /**
       * @see #getDefaultViewDef()
       */
-     public String getEntryDefId() {
+     public Definition getEntryDef() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
-    	return getDefaultViewDefId();
+     	return getDefaultViewDef();
      }
      
      /**

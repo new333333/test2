@@ -2035,7 +2035,7 @@ public class GwtServerHelper {
 		FolderType reply;
 		if (binder instanceof Folder) {
 			reply = FolderType.OTHER;
-			Element familyProperty = ((Element) binder.getDefaultViewDefDoc().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
 			if (familyProperty != null) {
 				String dFamily = familyProperty.attributeValue("value", "");
 				if (null != dFamily) {

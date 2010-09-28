@@ -547,7 +547,7 @@ public class GwtUIHelper {
 			
 		case folder:
 			String dFamily = "";
-			Element familyProperty = ((Element) binder.getDefaultViewDefDoc().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
 			if (familyProperty != null) {
 				dFamily = familyProperty.attributeValue("value", "");
 				if (null == dFamily) {
