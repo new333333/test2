@@ -880,8 +880,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getDefinitionModule().setDefaultEntryDefinition(user);
     		//fill in config for profiles
     		defs = profiles.getDefinitions();
-    		if(profiles.getEntryDefId() != null)
-    			defs.add(getDefinitionModule().getDefinition(profiles.getEntryDefId()));
+    		defs.add(profiles.getEntryDef());
     		defs.add(getCoreDao().loadDefinition(user.getEntryDefId(), RequestContextHolder.getRequestContext().getZoneId()));
     		    			        		
     		//fill in timestampes
@@ -1109,8 +1108,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		top.addBinder(team);
 		team.setDefinitionsInherited(false);
 		defs = team.getDefinitions();
-		if(team.getEntryDefId() != null)
-			defs.add(getDefinitionModule().getDefinition(team.getEntryDefId()));
+		defs.add(team.getEntryDef());
 		//generate id for top and profiles
 		getCoreDao().save(team);
 		getCoreDao().updateFileName(top, team, null, team.getTitle());
@@ -1132,8 +1130,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		top.addBinder(global);
 		global.setDefinitionsInherited(false);
 		List defs = global.getDefinitions();
-		if(global.getEntryDefId() != null)
-			defs.add(getDefinitionModule().getDefinition(global.getEntryDefId()));
+		defs.add(global.getEntryDef());
 		
 		//generate id for top and profiles
 		getCoreDao().save(global);

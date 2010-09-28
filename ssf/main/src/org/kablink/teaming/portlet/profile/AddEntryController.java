@@ -212,7 +212,7 @@ public class AddEntryController extends SAbstractController {
 		
 		//Make sure the requested definition is legal
 		if (folderEntryDefs.containsKey(entryType)) {
-			DefinitionHelper.getDefinition(entryType, model, "//item[@type='form']");
+			DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
 		} else {
 			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='profileEntryForm']");
 		}

@@ -1008,8 +1008,7 @@ public class ExportHelper {
 	private static void addBinderDefinitions(ZipOutputStream zipOut, Binder binder, 
 			Set defListAlreadyAdded, Map reportMap) {
 		List<Definition> defListToAdd = new ArrayList<Definition>();
-		if(binder.getEntryDefId() != null)
-			defListToAdd.add(definitionModule.getDefinition(binder.getEntryDefId()));
+		defListToAdd.add(binder.getEntryDef());
 
 		//Get a list of all of the definitions in use by this binder
 		defListToAdd.addAll(binder.getViewDefinitions());

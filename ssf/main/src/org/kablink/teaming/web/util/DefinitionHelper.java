@@ -98,7 +98,6 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.util.Validator;
@@ -194,10 +193,6 @@ public class DefinitionHelper {
 		if(currentDef != null)
 			currentDefDoc = currentDef.getDefinition();
 		return getDefinition(currentDefDoc, model, node);
-	}
-
-	public static boolean getDefinition(String defId, Map model, String node) {
-		return getDefinition(DefinitionCache.getDocumentWithId(defId), model, node);
 	}
 
 	public static boolean getDefinition(Document currentDefDoc, Map model, String node) {
@@ -407,11 +402,10 @@ public class DefinitionHelper {
 	}
 
 	public static boolean checkIfBinderShowingDashboard(Binder binder) {
-		if (binder.getEntryDefId() == null) 
-			getInstance().getDefinitionModule().setDefaultBinderDefinition(binder);
+		Definition def = binder.getEntryDef();
+		if (def == null) getInstance().getDefinitionModule().setDefaultBinderDefinition(binder);
 		Document defDoc = null;
-		if (binder.getEntryDefId() != null) 
-			defDoc = binder.getEntryDefDoc();
+		if (def != null) defDoc = def.getDefinition();
 		if (defDoc != null) {
 			if (defDoc.getRootElement().selectSingleNode("//item[@name='dashboardCanvas']") != null) {
 				return true;
@@ -1360,7 +1354,7 @@ public class DefinitionHelper {
 	public static Set<String> getTextualInputDataKeys(Long binderId,InputDataAccessor inputData) {
 		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
 		Binder binder = bm.getBinder(binderId);
-		return getTextualInputDataKeys(binder.getEntryDefId(), inputData);
+		return getTextualInputDataKeys(binder.getEntryDef().getId(), inputData);
 	}
 
 }

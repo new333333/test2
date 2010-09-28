@@ -412,16 +412,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			def = getCoreDao().loadDefinition(definitionId,
 					RequestContextHolder.getRequestContext().getZoneId());
 		} else {
-			if(parentBinder.getEntryDefId() != null)
-				def = getCoreDao().loadDefinition(parentBinder.getEntryDefId(),
-						RequestContextHolder.getRequestContext().getZoneId());
+			def = parentBinder.getEntryDef();
 		}
 
 		if (options != null
 				&& (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || options
 						.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
-		if (def != null && def.getType() == Definition.FOLDER_VIEW) {
+		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			binder = loadBinderProcessor(parentBinder).addBinder(
 					parentBinder, def, Folder.class, inputData, fileItems,

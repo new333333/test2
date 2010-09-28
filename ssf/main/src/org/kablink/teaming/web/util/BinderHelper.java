@@ -116,7 +116,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
@@ -1134,20 +1133,20 @@ public class BinderHelper {
 		
 		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId()); 
 		String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		Document displayDefDoc = binder.getDefaultViewDefDoc();
+		Definition displayDef = binder.getDefaultViewDef();
 		if (Validator.isNotNull(displayDefId)) {
 			List<Definition> folderViewDefs = binder.getViewDefinitions();
 			for (Definition def: folderViewDefs) {
 				//Is this an allowed definition?
 				if (displayDefId.equals(def.getId())) {
 					//Ok, this definition is allowed
-					displayDefDoc = def.getDefinition();
+					displayDef = def;
 					break;
 				}
 			}
 		}
 		String viewType = null;
-		if (displayDefDoc != null) viewType = DefinitionUtils.getViewType(displayDefDoc);
+		if (displayDef != null) viewType = DefinitionUtils.getViewType(displayDef.getDefinition());
 		if (viewType == null) return "";
 		return viewType;
 	}
@@ -1397,7 +1396,7 @@ public class BinderHelper {
 		boolean isCalendar = (EntityIdentifier.EntityType.folder == binder.getEntityType());
 		if (isCalendar) {
 			String dFamily = "";
-			Element familyProperty = ((Element) binder.getDefaultViewDefDoc().getRootElement().selectSingleNode("//properties/property[@name='family']"));
+			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
 			if (familyProperty != null) {
 				dFamily = familyProperty.attributeValue("value", "");
 				if (null != dFamily) {
@@ -2748,7 +2747,6 @@ public class BinderHelper {
 		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 		ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
 		ReportModule reportModule = (ReportModule) SpringContextUtil.getBean("reportModule");
-		DefinitionModule definitionModule = (DefinitionModule) SpringContextUtil.getBean("definitionModule");
 		
 		// If the user is referencing a mini blog folder that we can't
 		// access or that has been deleted, we ignore it and use the
@@ -2780,7 +2778,7 @@ public class BinderHelper {
 					while (parentBinder != null) {
 						if (parentBinder.getId().longValue() == workspaceId.longValue()) {
 							// Does this Folder have a default view defined?
-					   		Definition defaultBinderView = definitionModule.getDefinition(folder.getDefaultViewDefId());
+					   		Definition defaultBinderView = folder.getDefaultViewDef();
 					   		if (null != defaultBinderView) {
 					   			// Yes!  Is the default view a MiniBlog Folder?
 					   			if (defaultBinderView.getName().equals("_miniBlogFolder")) {
@@ -3786,7 +3784,8 @@ public class BinderHelper {
 					//This is a user workspace, so also track this user
 					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());
 				}
-				Element familyProperty = (Element) binder.getDefaultViewDefDoc().getRootElement()
+				Definition binderDef = binder.getDefaultViewDef();
+				Element familyProperty = (Element) binderDef.getDefinition().getRootElement()
 						.selectSingleNode("//properties/property[@name='family']");
 				if (familyProperty != null && familyProperty.attributeValue("value", "").equals("calendar")) {
 					if (!trackedCalendars.contains(binderId)) trackedCalendars.add(binderId);
