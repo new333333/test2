@@ -245,7 +245,7 @@
 .activityStreamTopEntryTitle
 {
 	color: #135c8f;
-	font-size: 13px;
+	font-size: 12px;
 	font-weight: bold;
 	line-height: 15px;
 }
@@ -2335,3 +2335,9 @@ top:100px;
 .gwtUI_ss_dimIE       {filter: alpha(opacity=60);}
 .gwtUI_ss_very_dim    {opacity: 0.4;}
 .gwtUI_ss_very_dimIE  {filter: alpha(opacity=40);}
+
+/* Next and Previous Page buttons */
+
+#viewNextPageOfResults, #viewPreviousPageOfResults, .viewNextDisabledImg, .viewPreviousDisabledImg {
+	vertical-align: middle;
+	}
