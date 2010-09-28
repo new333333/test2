@@ -52,6 +52,7 @@ import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -544,28 +545,30 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
       * Return a definition to use for viewing the binder.
       * @return
       */
-     public Definition getDefaultViewDef() {
+     public String getDefaultViewDefId() {
      	
      	List eDefinitions = getViewDefinitions();
      	if (eDefinitions.size() > 0)
-     		return (Definition)eDefinitions.get(0);
+     		return ((Definition)eDefinitions.get(0)).getId();
      	//return original so have something.
-     	if(entryDefId != null)
-     		return getCoreDao().loadDefinition(entryDefId, RequestContextHolder.getRequestContext().getZoneId());
-     	else
-     		return null;
+     	return entryDefId;
  	}
+     
+     public Document getDefaultViewDefDoc() {
+    	 String id = getDefaultViewDefId();
+    	 if(id != null)
+    		 return DefinitionCache.getDocumentWithId(id);
+    	 else
+    		 return null;
+     }
+     
      /**
       * @see #getDefaultViewDef()
       */
      public String getEntryDefId() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
-    	Definition def = getDefaultViewDef();
-     	if(def != null)
-     		return def.getId();
-     	else
-     		return null;
+    	return getDefaultViewDefId();
      }
      
      /**

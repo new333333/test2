@@ -1411,8 +1411,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				data.remove(ChooseType);
 				Long id = null;
 				for (Binder b:binders) {
-					Definition def = b.getDefaultViewDef();
-					String type = DefinitionUtils.getViewType(def.getDefinition());
+					String type = DefinitionUtils.getViewType(b.getDefaultViewDefDoc());
 					if (viewType.equals(type)) {
 						id = b.getId();
 						break;
