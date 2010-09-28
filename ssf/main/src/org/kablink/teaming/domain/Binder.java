@@ -527,8 +527,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
       * @return
       */
       public Definition getDefaultFileEntryDef() {
-     	Definition folderDef = this.getEntryDef();
-		Element useFileEntry = (Element) folderDef.getDefinition()
+		Element useFileEntry = (Element) this.getEntryDefDoc()
 			.getRootElement().selectSingleNode("//properties/property[@name='defaultToFileEntries']");
 		if (useFileEntry == null || useFileEntry.attributeValue("value", "true").equals("true")) {
 			//This binder defaults to adding file entries from "Add files to folder" operations
@@ -559,10 +558,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      /**
       * @see #getDefaultViewDef()
       */
-     public Definition getEntryDef() {
+     public String getEntryDefId() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
-     	return getDefaultViewDef();
+    	Definition def = getDefaultViewDef();
+     	if(def != null)
+     		return def.getId();
+     	else
+     		return null;
      }
      
      /**

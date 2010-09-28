@@ -514,7 +514,7 @@ public class AddEntryController extends SAbstractController {
 		    	}
 			    	
 				if (replyStyleIsGood) {
-					DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+					DefinitionHelper.getDefinition(entryType, model, "//item[@type='form']");
 				} else {
 					DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 				}

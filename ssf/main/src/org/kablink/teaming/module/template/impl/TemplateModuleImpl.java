@@ -622,7 +622,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
 		List<Definition> defs = binder.getDefinitions();
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
-			Definition def = binder.getEntryDef();
+			Definition def = null;
+			if(binder.getEntryDefId() != null)
+				def = getDefinitionModule().getDefinition(binder.getEntryDefId());
 			if (def != null) {
 				XmlUtils.addDefinitionReference(element, def);
 			}
