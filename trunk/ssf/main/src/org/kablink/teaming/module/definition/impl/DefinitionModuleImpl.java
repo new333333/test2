@@ -109,6 +109,7 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -2599,14 +2600,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//Get a map for the results
 		//access doesn't seem needed
     	Map dataElements = new TreeMap();
-    	Definition def=null;
+    	Document definitionTree = null;
 		try {
-			def = getCoreDao().loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+			definitionTree = DefinitionCache.getDocumentWithId(id);
 		} catch (NoDefinitionByTheIdException nd) {
 			return dataElements;
 		}
 
-		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
 			Element root = definitionTree.getRootElement();

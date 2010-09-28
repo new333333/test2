@@ -37,7 +37,6 @@ import java.util.Set;
 
 import org.kablink.teaming.security.function.WorkArea;
 
-
 /**
  * This class is used to marker a class that is not a <code>Binder</code>
  */
@@ -45,22 +44,44 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
  
     protected Boolean hasEntryAcl = Boolean.FALSE;
     protected Boolean checkFolderAcl = Boolean.TRUE;
+    protected String entryDefId; //initialized by hiberate access=field
 
     public Entry() {
     }
 
     public Entry(Entry entry) {
     	super(entry);
+    	entryDefId = entry.entryDefId;
     }
 
     public String getEntryDefId() {
-    	if (entryDefId != null) return entryDefId;
+    	if (entryDefId != null) 
+    		return entryDefId;
     	Definition def = getParentBinder().getDefaultEntryDef();
     	if(def != null)
     		return def.getId();
     	else
     		return null;
     }
+    
+     public void setEntryDefId(String definitionId) {
+     	// This association is not maintained/managed by Hibernate but by application. 
+     	// Consequently, there is no foreign key constraint defined on the table that
+     	// enforces this association at the database level. Instead, it is up to the 
+     	// application to maintain the referential integrity properly. A small price 
+    	// to pay in exchange for improved efficiency.
+     	this.entryDefId = definitionId;
+     }
+     
+     public void setEntryDef(Definition entryDef) {
+      	setEntryDefId((entryDef == null)? null : entryDef.getId());
+     }
+      
+     public String getCreatedWithDefinitionId() {
+     	// returns the original definition with which this entity was created. 
+     	return entryDefId;
+     }
+
     public boolean isTop() {
     	return true;
     }
@@ -153,6 +174,5 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
      public void setTeamMemberIds(Set<Long> memberIds) {
      }
      /*****************End WorkArea interface stuff***********/
-
-
+     
 }

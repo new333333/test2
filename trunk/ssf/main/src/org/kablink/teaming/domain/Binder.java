@@ -97,6 +97,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected String brandingExt;	// Additional branding information such as background color, font color, background image.
     protected Boolean postingEnabled;
     protected String type;
+    protected Definition entryDef; // initialized by hibernate access=field
     public Binder() {
     }
     /**
@@ -564,6 +565,26 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	 //doesn't care what it was created with
      	return getDefaultViewDef();
      }
+     
+     public String getEntryDefId() {
+    	 Definition def = getEntryDef();
+    	 if(def != null)
+    		 return def.getId();
+    	 else
+    		 return null;
+     }
+
+     public void setEntryDef(Definition entryDef) {
+    	 this.entryDef = entryDef;
+     }
+     
+     public String getCreatedWithDefinitionId() {
+      	// returns the original definition with which this entity was created. 
+      	if(entryDef != null)
+      		return entryDef.getId();
+      	else
+      		return null;
+      }
      
      /**
       * Returning mapping of definition ids to workflows definitions.
