@@ -44,14 +44,11 @@ import java.util.HashSet;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
@@ -784,8 +781,5 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         setProperty(processorKey, processorClassName);
     }
     /*****************End InstanceLevelProcessorSupport interface stuff***********/	
-    
-    private CoreDao getCoreDao() {
-    	return (CoreDao) SpringContextUtil.getBean("coreDao");
-    }
+
 }
