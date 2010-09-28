@@ -55,6 +55,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
@@ -702,12 +703,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction    
    protected Map modifyBinder_toEntryData(Binder binder, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
-    	Definition def = binder.getEntryDef();
-    	if (def == null) {
+	   	Document defDoc;
+    	if (binder.getEntryDefId() == null) {
     		//There is no definition for this binder. Get the default definition.
-     		def = getDefinitionModule().setDefaultBinderDefinition(binder);
+     		defDoc = getDefinitionModule().setDefaultBinderDefinition(binder).getDefinition();
     	} 
-        return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+    	else {
+    		defDoc = binder.getEntryDefDoc();
+    	}
+        return getDefinitionModule().getEntryData(defDoc, inputData, fileItems);
     }
    //inside write transaction    
     protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {  

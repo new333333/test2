@@ -317,11 +317,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Binder binder = getBinderModule().getBinder(configId);				
 				model.put(WebKeys.BINDER, binder);
 				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
-				Definition binderDef = binder.getEntryDef();
-				if (binderDef == null) {
+				if (binder.getEntryDefId() == null) {
 					DefinitionHelper.getDefaultBinderDefinition(binder, model, "//item[@type='form']");
 				} else {
-					DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
+					DefinitionHelper.getDefinition(binder.getEntryDefDoc(), model, "//item[@type='form']");
 				}
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;	
 				model.put(WebKeys.OPERATION, operation);
@@ -375,9 +374,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, ""); //make sure not set to anyting we don't support
 
 				Binder binder = getBinderModule().getBinder(configId);				
-				Definition binderDef = binder.getEntryDef();
-				if (binderDef != null) {
-					Document configDocument = binderDef.getDefinition();
+				if (binder.getEntryDefId() != null) {
+					Document configDocument = binder.getEntryDefDoc();
 					String viewType = DefinitionUtils.getViewType(configDocument);
 					if (viewType == null) viewType = "";
 					model.put(WebKeys.VIEW_TYPE, viewType);

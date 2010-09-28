@@ -507,12 +507,12 @@ public class FolderUtils {
 	}
 	
 	private static Definition getFolderDefinition(Binder parentBinder) {
-		if(parentBinder instanceof Folder) {
+		if(parentBinder instanceof Folder && parentBinder.getEntryDefId() != null) {
 			// If the parent binder in which to create a new library folder
 			// happens to be a folder itself, simply re-use the folder
 			// definition of the parent. That is, make the sub-directory
 			// the same type as its parent.
-			return parentBinder.getEntryDef();
+			return getDefinitionModule().getDefinition(parentBinder.getEntryDefId());
 		}
 		else {
 			// The binder must be a workspace.
