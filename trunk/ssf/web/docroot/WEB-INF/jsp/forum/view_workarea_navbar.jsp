@@ -90,62 +90,6 @@
 		ss_createOnLoadObj( "notifyGwtUI_handleLandingPageOptions", handleLandingPageOptions );
 	</script>
 <% } %>
-<script type="text/javascript">
-function ss_logoff() {
-	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
-	if(x == null || x == "") {
-		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
-		//alert(y);
-		// Are we running the new GWT ui?
-		if ( ss_isGwtUIActive )
-		{
-			// Yes, update the top window's href.
-			window.top.location.href = y;
-		}
-		else
-			self.location.href=y;
-	} else {
-		//alert (x);
-		var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
-		ss_logoff_from_teaming_then_sso(y);
-	}
-}
-function ss_logoff_from_teaming_then_sso(logoutURL) {
-	callbackRoutine = ss_logoff_from_sso
-	var x;
-
-	if (window.XMLHttpRequest) {
-	x = new XMLHttpRequest();
-	} else if (window.ActiveXObject) {
-	x = new ActiveXObject("Microsoft.XMLHTTP");
-	}
-	
-	x.open("GET", logoutURL, true);
-	
-	x.onreadystatechange = function() {
-		if (x.readyState != 4) {
-			return;
-		}
-		if (x.status == 200) {
-			callbackRoutine(x.responseText)        	
-		} else {		
-			callbackRoutine(x.statusText)
-		}
-	}
-	x.send(null);
-	delete x;
-}      
-function ss_logoff_from_sso(s) {
-	// Are we running the new GWT ui?
-	if ( ss_isGwtUIActive )
-	{
-		// Yes, update the top window's href.
-		window.top.location.href = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
-	}
-	else
-		self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
-}
-</script>
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script> -->
 <script type="text/javascript">
