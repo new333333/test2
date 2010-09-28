@@ -883,7 +883,7 @@ public class ActivityStreamCtrl extends Composite
 		
 		resultsHeight = height - headerHeight - footerHeight;
 		m_searchResultsPanel.setHeight( String.valueOf( resultsHeight ) + "px" );
-		m_searchResultsPanel.setWidth( String.valueOf( width ) + "px" );
+		m_searchResultsPanel.setWidth( String.valueOf( width - 10 ) + "px" );
 		
 		m_headerPanel.setWidth( String.valueOf( width ) + "px" );
 		m_footerPanel.setWidth( String.valueOf( width ) + "px" );

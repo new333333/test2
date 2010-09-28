@@ -370,7 +370,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		
 		super.setData( entryItem );
 		
-		numComments = entryItem.getCommentCount();
+		numComments = entryItem.getEntryComments();
 		if ( numComments > 0 )
 		{
 			String text;
