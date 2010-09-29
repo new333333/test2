@@ -2469,7 +2469,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		// If we can't access the cached toolbar beans... 
 		GwtUISessionData tabsObj = ((GwtUISessionData) hSession.getAttribute(GwtUIHelper.CACHED_TOOLBARS_KEY));
-		Map<String, Map> tbMaps = ((Map<String, Map>) tabsObj.getData());
+		Map<String, Map> tbMaps = ((null == tabsObj) ? null : ((Map<String, Map>) tabsObj.getData()));
 		if (null == tbMaps) {
 			// ...we can't build any toolbar items.  Bail.
 			m_logger.debug("GwtRpcServiceImpl.getToolbarItems( 'Could not access any cached toolbars' )");

@@ -1794,6 +1794,9 @@ public class GwtServerHelper {
 		Binder reply;
 		try {
 			reply = bm.getBinder(binderId);
+			if ((null != reply) && (reply.isDeleted() || isBinderPreDeleted(reply))) {
+				reply = null;
+			}
 		}
 		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getBinderSafely(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
@@ -1975,6 +1978,9 @@ public class GwtServerHelper {
 		FolderEntry reply;
 		try {
 			reply = fm.getEntry(null, entryId);
+			if ((null != reply) && (reply.isDeleted() || reply.isPreDeleted())) {
+				reply = null;
+			}
 		}
 		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getEntrySafely(FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
@@ -2518,6 +2524,9 @@ public class GwtServerHelper {
 		User reply;
 		try {
 			reply = ((User) pm.getEntry(userId));
+			if ((null != reply) && reply.isDeleted()) {
+				reply = null;
+			}
 		}
 		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getUserSafely(User could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
