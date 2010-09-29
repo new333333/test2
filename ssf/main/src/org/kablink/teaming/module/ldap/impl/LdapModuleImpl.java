@@ -90,6 +90,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -151,8 +152,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final int PRINCIPAL_FOREIGN_NAME = 4;
 	private static final int PRINCIPAL_LDAP_GUID = 5;
 	
-	// An ldap sync should not be started while another ldap sync is running.
-	private static boolean m_syncInProgress = false;
+	// An ldap sync for a zone should not be started while another ldap sync is running.
+	private static Hashtable<Long, Boolean> m_zoneSyncInProgressMap = new Hashtable(); 
 	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
@@ -917,17 +918,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		boolean syncGuids,
 		LdapSyncResults syncResults ) throws LdapSyncException
 	{
-		// Is an ldap sync currently going on?
-		if ( m_syncInProgress )
+		Workspace zone = RequestContextHolder.getRequestContext().getZone();
+		Boolean syncInProgress;
+
+		// Is an ldap sync currently going on for the zone?
+		syncInProgress = m_zoneSyncInProgressMap.get( zone.getId() );
+		if ( syncInProgress != null && syncInProgress )
 		{
 			// Yes, don't start another sync.
 	    	logger.error( "Unable to start ldap sync because an ldap sync is currently running" );
+	    	syncResults.setStatus( SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS );
 			return;
 		}
 		
 		try
 		{
-			m_syncInProgress = true;
+			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
 			if ( syncGuids == true )
@@ -937,7 +943,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( syncUsersAndGroups == false )
 				return;
 			
-			Workspace zone = RequestContextHolder.getRequestContext().getZone();
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
 	   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
@@ -1022,7 +1027,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}// end try
 		finally
 		{
-			m_syncInProgress = false;
+			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.FALSE );
 		}
 	}
 

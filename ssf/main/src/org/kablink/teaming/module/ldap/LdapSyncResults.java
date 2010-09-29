@@ -49,7 +49,8 @@ public class LdapSyncResults
 		STATUS_COLLECT_RESULTS,
 		STATUS_COMPLETED,
 		STATUS_STOP_COLLECTING_RESULTS,
-		STATUS_ABORTED_BY_ERROR
+		STATUS_ABORTED_BY_ERROR,
+		STATUS_SYNC_ALREADY_IN_PROGRESS
 	}
 	
 	// Define the maximum number of results we can collect for each area.
@@ -212,6 +213,14 @@ public class LdapSyncResults
     	return m_status;
     }// end getStatus()
     
+    
+    /**
+     * 
+     */
+    public void setStatus( SyncStatus status )
+    {
+    	m_status = status;
+    }
 
     /**
      * Calling this method will stop all further collection of sync results.

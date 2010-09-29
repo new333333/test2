@@ -476,6 +476,7 @@ var LDAP_SYNC_STATUS_IN_PROGRESS = 0;
 var LDAP_SYNC_STATUS_COMPLETED = 1;
 var LDAP_SYNC_STATUS_STOP_COLLECTING_RESULTS = 2;
 var LDAP_SYNC_STATUS_ABORTED_BY_ERROR = 3;
+var LDAP_SYNC_STATUS_SYNC_ALREADY_IN_PROGRESS = 4;
 
 var m_ldapSyncResultsId = null;
 var m_syncAllUsersAndGroups = false;
@@ -699,6 +700,17 @@ function handleResponseToGetSyncResults( responseData )
 		status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.stoppedByError"/></ssf:escapeJavaScript>';
 		setSyncResultsStatus( status, m_syncStatusErrorImg );
 	}
+	else if ( responseData.status == LDAP_SYNC_STATUS_SYNC_ALREADY_IN_PROGRESS )
+	{
+		var msg;
+		
+		// Tell the user that a sync is already in progress.
+		msg = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.cantStartSyncSyncAlreadyInProgress"/></ssf:escapeJavaScript>';
+		alert( msg );
+
+		status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.syncAlreadyInProgress"/></ssf:escapeJavaScript>';
+		setSyncResultsStatus( status, m_syncStatusCompletedImg );
+	}
 	else if ( responseData.status == -1 )
 	{
 		// If we get here it means that the sync results have been removed from the session.  Nothing else to do.
@@ -725,9 +737,10 @@ function handleResponseToRemoveExistingLdapSyncResults( responseData )
  */
 function handleResponseToStartLdapSync( responseData )
 {
-	// Current the ajax request to start the ldap sync does not return until the ldap sync
+	// Currently the ajax request to start the ldap sync does not return until the ldap sync
 	// has completed.  When we implement the ldap sync as a thread on the server we should
 	// remove the following return statement.
+	m_ldapSyncStatus = LDAP_SYNC_STATUS_COMPLETED;
 	return;
 	
 	// Start a timer.  Whenever the timer goes off we will issue an ajax request
@@ -856,7 +869,30 @@ function startLdapSync()
 	
 	// Issue the ajax request.  The function handleResponseToStartLdapSync() will be called
 	// when we get the response to the request.
-	ss_get_url( url, handleResponseToStartLdapSync );
+	//!!!ss_get_url( url, handleResponseToStartLdapSync );
+	var bindArgs =
+	{
+	   	url: url,
+		error: function( err )
+		{
+			// We are going to ignore any errors.  The ajax request to get the
+			// status of the sync process will report the errors.
+		},
+		load: function( data )
+		{
+			if ( data.failure )
+			{
+				alert( data.failure );
+			}
+			else
+			{ 
+				handleResponseToStartLdapSync( data );
+			}
+		},
+		preventCache: true,				
+		handleAs: "json"
+	};   
+	dojo.xhrGet( bindArgs );
 
 	// Change the title to indicate the ldap sync is in progress.
 	status = '<ssf:escapeJavaScript><ssf:nlt tag="ldap.syncResults.status.inProgress"/></ssf:escapeJavaScript>';
