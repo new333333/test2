@@ -465,12 +465,12 @@ public class GwtActivityStreamHelper {
 	 * Builds an ActivityStreamInfo object based on an ActivityStream
 	 * enumeration value and an String[] of Binder IDs.
 	 */
-	private static ActivityStreamInfo buildASI(ActivityStream as, String[] asIds, String title) {
+	private static ActivityStreamInfo buildASI(ActivityStream as, List<String> asIdsList, String title) {
 		ActivityStreamInfo reply = new ActivityStreamInfo();
 
 		reply.setActivityStream(as);
-		if ((null != asIds) && ((1 < asIds.length) || (null != asIds[0]))) {
-			reply.setBinderIds(asIds);
+		if ((null != asIdsList) && ((1 < asIdsList.size()) || (null != asIdsList.get(0)))) {
+			reply.setBinderIds(asIdsList.toArray(new String[0]));
 		}
 		reply.setTitle(title);
 		
@@ -479,7 +479,9 @@ public class GwtActivityStreamHelper {
 	
 	private static ActivityStreamInfo buildASI(ActivityStream as, String asId, String title) {
 		// Always use the initial form of the method.
-		return buildASI(as, new String[]{asId}, title);
+		List<String> asIdsList = new ArrayList<String>();
+		asIdsList.add(asId);
+		return buildASI(as, asIdsList, title);
 	}
 
 	/*
@@ -796,10 +798,9 @@ public class GwtActivityStreamHelper {
 		// Define the variables required to build the TreeInfo's for
 		// the other activity stream's.
 		int idCount;
-		int idIndex;
+		List<String> asIdsList;
 		List<TreeInfo> asTIChildren;
 		String id;
-		String[] asIds;
 		TreeInfo asTI;
 		TreeInfo asTIChild;
 
@@ -812,15 +813,14 @@ public class GwtActivityStreamHelper {
 		if (0 < idCount) {
 			// Yes!  Scan them.
 			asTIChildren = asTI.getChildBindersList();
-			asIds = new String[idCount];
-			idIndex = 0;
+			asIdsList = new ArrayList<String>();
 			for (FavoriteInfo myFavorite: myFavoritesList) {
 				// Can we access the next one's Binder?
 				id = myFavorite.getValue();
 				binder = GwtServerHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
-					asIds[idIndex++] = id;					
+					asIdsList.add(id);					
 					asTIChild = buildASTI(bs, id, myFavorite.getName(), myFavorite.getHover(), ActivityStream.MY_FAVORITE);
 					asTIChildren.add(asTIChild);
 				}
@@ -832,7 +832,7 @@ public class GwtActivityStreamHelper {
 				TeamingAction.ACTIVITY_STREAM,
 				buildASI(
 					ActivityStream.MY_FAVORITES,
-					asIds,
+					asIdsList,
 					asTI.getBinderTitle()));
 		}
 		
@@ -848,15 +848,14 @@ public class GwtActivityStreamHelper {
 		if (0 < idCount) {
 			// Yes!  Scan them.
 			asTIChildren = asTI.getChildBindersList();
-			asIds = new String[idCount];
-			idIndex = 0;
+			asIdsList = new ArrayList<String>();
 			for (TeamInfo myTeam: myTeamsList) {
 				// Can we access the next one's Binder?
 				id = myTeam.getBinderId();
 				binder = GwtServerHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
-					asIds[idIndex++] = id;					
+					asIdsList.add(id);					
 					asTIChild = buildASTI(bs, id, myTeam.getTitle(), binder.getPathName(), ActivityStream.MY_TEAM);					
 					asTIChildren.add(asTIChild);
 				}
@@ -868,7 +867,7 @@ public class GwtActivityStreamHelper {
 				TeamingAction.ACTIVITY_STREAM,
 				buildASI(
 					ActivityStream.MY_TEAMS,
-					asIds,
+					asIdsList,
 					asTI.getBinderTitle()));
 		}
 		
@@ -884,15 +883,14 @@ public class GwtActivityStreamHelper {
 		if (0 < idCount) {
 			// Yes!  Scan them.
 			asTIChildren = asTI.getChildBindersList();
-			asIds = new String[idCount];
-			idIndex = 0;
+			asIdsList = new ArrayList<String>();
 			for (String followedUserId: followedUsersList) {
 				// Can we access the next one's User?
 				id = followedUserId;
 				user = GwtServerHelper.getUserSafely(pm, id);
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
-					asIds[idIndex++] = id;
+					asIdsList.add(id);					
 					asTIChild = buildASTI(bs, id, user.getTitle(), null, ActivityStream.FOLLOWED_PERSON);					
 					asTIChildren.add(asTIChild);
 				}
@@ -904,7 +902,7 @@ public class GwtActivityStreamHelper {
 				TeamingAction.ACTIVITY_STREAM,
 				buildASI(
 					ActivityStream.FOLLOWED_PEOPLE,
-					asIds,
+					asIdsList,
 					asTI.getBinderTitle()));
 		}
 		
@@ -920,15 +918,14 @@ public class GwtActivityStreamHelper {
 		if (0 < idCount) {
 			// Yes!  Scan them.
 			asTIChildren = asTI.getChildBindersList();
-			asIds = new String[idCount];
-			idIndex = 0;
+			asIdsList = new ArrayList<String>();
 			for (String followedPlaceId: followedPlacesList) {
 				// Can we access the next one's Binder?
 				id = followedPlaceId;
 				binder = GwtServerHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
-					asIds[idIndex++] = id;
+					asIdsList.add(id);					
 					asTIChild = buildASTI(bs, id, binder.getTitle(), binder.getPathName(), ActivityStream.FOLLOWED_PLACE);					
 					asTIChildren.add(asTIChild);
 				}
@@ -940,7 +937,7 @@ public class GwtActivityStreamHelper {
 				TeamingAction.ACTIVITY_STREAM,
 				buildASI(
 					ActivityStream.FOLLOWED_PLACES,
-					asIds,
+					asIdsList,
 					asTI.getBinderTitle()));
 		}
 		
