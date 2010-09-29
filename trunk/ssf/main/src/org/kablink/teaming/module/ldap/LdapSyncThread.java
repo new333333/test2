@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
+import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
 import org.kablink.teaming.web.util.WebHelper;
 
 /**
@@ -183,8 +184,13 @@ public class LdapSyncThread
 			// Perform the sync.
 			m_ldapModule.syncAll( m_syncUsersAndGroups, m_syncGuids, syncResults );
 			
-			// Signal that the sync has completed.
-			syncResults.completed();
+			// Did syncAll() return because a sync was already in progress?
+			if ( syncResults.getStatus() != SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS )
+			{
+				// No
+				// Signal that the sync has completed normally.
+				syncResults.completed();
+			}
 		}
 		catch (LdapSyncException ldapSyncEx)
 		{
