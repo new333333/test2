@@ -1736,7 +1736,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		List<TreeInfo> reply;
 		
 		// Can we access the Binder?
-		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS );
+		binder = GwtServerHelper.getBinderForWorkspaceTree( this, binderIdS, true );
 		if (null == binder) {
 			// No!  Then we can't build any TreeInfo objects for it.
 			reply = new ArrayList<TreeInfo>();
