@@ -47,7 +47,7 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -56,6 +56,8 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.PortletResponseImpl;
@@ -236,10 +238,10 @@ public class ViewPermalinkController  extends SAbstractController {
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
 		Boolean loginUrl = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_LOGIN_URL, false);
-		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.none;
+		EntityType entityType = EntityType.none;
 		DefinableEntity entity = null;
 		try {
-			entityType = EntityIdentifier.EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
+			entityType = EntityType.valueOf(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, ""));
 		} catch(Exception ignore) {
 			logger.debug("ViewPermalinkController.ProcessRequest(Exception:  '" + MiscUtil.exToString(ignore) + "'):  Ignored");
 		};
@@ -300,7 +302,7 @@ public class ViewPermalinkController  extends SAbstractController {
         }
 
 		boolean binderPreDeleted;
-		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+		if (entityType.equals(EntityType.folderEntry)) { //folderEntry
 			if (isMobile && Validator.isNotNull(entryId)) {
 				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
@@ -361,7 +363,7 @@ public class ViewPermalinkController  extends SAbstractController {
 					}
 				}
 			}
-		} else	if (entityType.isBinder() || entityType.equals(EntityIdentifier.EntityType.none)) {
+		} else	if (entityType.isBinder() || entityType.equals(EntityType.none)) {
 			Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
 			if (targetBinderId != null) {
 				binderId = String.valueOf(targetBinderId);
@@ -379,9 +381,9 @@ public class ViewPermalinkController  extends SAbstractController {
 			entityType = entity.getEntityType();
 			if (isMobile) {
 				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
-				if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
+				if (entityType.equals(EntityType.workspace)) {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
-				} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
+				} else if (entityType.equals(EntityType.profiles)) {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
 				} else {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);				
@@ -391,9 +393,9 @@ public class ViewPermalinkController  extends SAbstractController {
 					url.setParameter(WebKeys.URL_BINDER_ID, "");
 				}
 			} else {
-				if (entityType.equals(EntityIdentifier.EntityType.workspace)) {
+				if (entityType.equals(EntityType.workspace)) {
 					url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-				} else if (entityType.equals(EntityIdentifier.EntityType.profiles)) {
+				} else if (entityType.equals(EntityType.profiles)) {
 					url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
 				} else {
 					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
@@ -476,9 +478,9 @@ public class ViewPermalinkController  extends SAbstractController {
     	return url;
 	}
 	
-	protected String getFileUrlById(ActionRequest request, EntityIdentifier.EntityType entityType, String binderId, String entryId, String fileId) {
+	protected String getFileUrlById(ActionRequest request, EntityType entityType, String binderId, String entryId, String fileId) {
 		DefinableEntity entity;
-		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+		if (entityType.equals(EntityType.folderEntry)) { //folderEntry
 			//entries move so the binderId may not be valid
 			entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 		} else if (entityType.isPrincipal()) {
@@ -507,9 +509,9 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 	
 	}
-	protected String getFileUrlByName(ActionRequest request, EntityIdentifier.EntityType entityType, String binderId, String entryId, String fileName) {
+	protected String getFileUrlByName(ActionRequest request, EntityType entityType, String binderId, String entryId, String fileName) {
 		DefinableEntity entity;
-		if (entityType.equals(EntityIdentifier.EntityType.folderEntry)) { //folderEntry
+		if (entityType.equals(EntityType.folderEntry)) { //folderEntry
 			//entries move so the binderId may not be valid
 			entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
 		} else if (entityType.isPrincipal()) {
@@ -675,9 +677,13 @@ public class ViewPermalinkController  extends SAbstractController {
 						model.put( WebKeys.URL_BINDER_ID, "" );
 					}
 				}
+
+				// Validate any binder and entry IDs as necessary...
+				validateBinderId(      getBinderModule(),             binderId, model );
+				validateFolderEntryId( getFolderModule(), entityType, entryId,  model );
 				
-				//Set up the standard beans
-				BinderHelper.setupStandardBeans(this, request, response, model);
+				// ...and setup the standard beans
+				BinderHelper.setupStandardBeans( this, request, response, model );
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
 		}
@@ -717,4 +723,86 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 		
 	}
+	
+	/*
+	 * Generate an error message for the GWT UI to display if an entry
+	 * ID is invalid.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void validateBinderId(BinderModule bm, String binderId, Map model)
+	{
+		// If we don't have an ID to check or we've already got an
+		// error message pending, we don't do anything.
+		if (!(MiscUtil.hasString( binderId ))) return;		
+		if (null != model.get("errMsg"))       return;
+		
+		String errMsg = null;
+		try
+		{
+			// Can we access the binder?
+			bm.getBinder(Long.parseLong(binderId));
+		}
+		catch( Exception e )
+		{
+			// No!  We only care about invalid IDs,  Is that the
+			// exception we got?
+			if ( e instanceof NoBinderByTheIdException )
+			{
+				// Yes!  Build an appropriate error message.
+				errMsg = NLT.get( "errorcode.no.folder.by.the.id", new String[]{ binderId } );
+			}
+		}
+
+		// If we have an error message to display...
+		if (MiscUtil.hasString( errMsg ))
+		{
+			// ...put it into the model.
+			model.put( "errMsg", errMsg );
+		}
+	}//end validateBinderId()
+
+	/*
+	 * Generate an error message for the GWT UI to display if an entry
+	 * ID is invalid.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void validateFolderEntryId(FolderModule fm, String entityType, String feId, Map model) {
+		// If we don't have an ID to check or we've already got an
+		// error message pending, we don't do anything.
+		if (!(MiscUtil.hasString( feId ))) return;		
+		if (null != model.get("errMsg"))   return;
+
+		// If we're being asked to validate something other than a
+		// folder entry ID...
+		EntityType et = (MiscUtil.hasString(entityType) ? EntityType.valueOf(entityType) : EntityType.none);
+		if (EntityType.folderEntry != et)
+		{
+			// ...we can't validate it.
+			return;
+		}
+		
+		String errMsg = null;
+		try
+		{
+			// Can we access the folder entry?
+			fm.getEntry(null, Long.parseLong( feId ));
+		}
+		catch ( Exception e )
+		{
+			// No!  We only care about invalid IDs,  Is that the
+			// exception we got?
+			if ( e instanceof NoFolderEntryByTheIdException )
+			{
+				// Yes!  Build an appropriate error message.
+				errMsg = NLT.get( "errorcode.no.folder.entry.by.the.id", new String[]{ feId } );
+			}
+		}
+		
+		// If we have an error message to display...
+		if (MiscUtil.hasString( errMsg ))
+		{
+			// ...put it into the model.
+			model.put( "errMsg", errMsg );
+		}
+	}//end validateBinderId()
 }

@@ -108,7 +108,6 @@ public class GwtMainPage extends Composite
 	{
 		Element bodyElement;
 		String url;
-		String errMsg;
 
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
@@ -163,27 +162,31 @@ public class GwtMainPage extends Composite
 		m_teamingRootPanel.add( m_mastHead );
 
 		// Is there an error message to be displayed?
-		errMsg = m_requestInfo.getErrMsg();
-		if ( errMsg != null && errMsg.length() > 0 )
+		final String errMsg = m_requestInfo.getErrMsg();
+		if ( GwtClientHelper.hasString( errMsg ) )
 		{
-			// Yes, tell the user
-			Window.alert( errMsg );
+			// Yes, tell the user.  We do this as a deferred command so
+			// that the UI can continue to render while the message box
+			// is displayed.
+			DeferredCommand.addCommand( new Command()
+			{
+				public void execute() {
+					Window.alert( errMsg );
+				}
+			} );
 			
 			// Is the user logged in?
 			if ( m_requestInfo.isUserLoggedIn() )
 			{
-				Command cmd;
-				
 				// Yes
 				// Execute a deferred command to take the user to their workspace.
-				cmd = new Command()
+				DeferredCommand.addCommand( new Command()
 				{
 					public void execute()
 					{
 						handleAction( TeamingAction.MY_WORKSPACE, null );
 					}
-				};
-				DeferredCommand.addCommand( cmd );
+				} );
 			}
 		}
 		
