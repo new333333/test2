@@ -141,8 +141,8 @@
   </ssf:slidingTableColumn>
   
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
-    <c:if test="${!empty entry._email}">
-    	<ssf:mailto email="${entry._email}" noLink="<%= workspacePreDeleted %>" />
+    <c:if test="${!empty entry.emailAddress}">
+    	<ssf:mailto email="${entry.emailAddress}" noLink="<%= workspacePreDeleted %>" />
     </c:if>
   </ssf:slidingTableColumn>
 
