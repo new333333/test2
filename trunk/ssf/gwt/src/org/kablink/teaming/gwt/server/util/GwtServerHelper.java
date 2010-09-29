@@ -1716,7 +1716,7 @@ public class GwtServerHelper {
 		try {
 			reply = bs.getBinderModule().getBinder(binderId);
 		}
-		catch (AccessControlException ace) {
+		catch (Exception e) {
 			m_logger.debug("GwtServerHelper.getBinderForWorkspaceTree( Can't Access Binder (AccessControlException) ):  '" + String.valueOf(binderId) + "'");
 			reply = null;
 		}
