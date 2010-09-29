@@ -137,7 +137,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				m_ti.clearChildBindersList();
 			}
 			m_ti.setBinderExpanded(false);
-			reRenderRow(m_grid, m_gridRow, m_ti);
+			reRenderRow(m_grid, m_gridRow, m_ti, true);
 			m_expanderImg.setResource(getImages().tree_opener());
 		}
 
@@ -148,7 +148,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
-				reRenderRow(m_grid, m_gridRow, m_ti);
+				reRenderRow(m_grid, m_gridRow, m_ti, false);
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
 		}
@@ -768,7 +768,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Called to render an individual row in the WorkspaceTree control.
 	 */
-	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth) {
+	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth, boolean reRenderToCollapse) {
 		// Store the depth at which we're rendering this Binder.
 		setRenderDepth(ti, renderDepth);
 		
@@ -852,7 +852,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				HasVerticalAlignment.ALIGN_TOP);
 
 			// Is the row expanded?
-			if (shouldBinderBeExpanded(ti)) {
+			if ((!reRenderToCollapse) && shouldBinderBeExpanded(ti)) {
 				// Yes!  Then we need to render its contents.
 				VerticalPanel vp = new VerticalPanel();
 				vp.setSpacing(0);
@@ -870,16 +870,22 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					expansionGrid.insertRow(expansionRow);
 					renderRow(expansionGrid, expansionRow, tii.next(), (renderDepth + 1));
 				}
+				expanderImg.setResource(getImages().tree_closer());
 			}
 		}
+	}
+	
+	private void renderRow(Grid grid, int row, TreeInfo ti, int renderDepth) {
+		// Always use the initial form of the method.
+		renderRow(grid, row, ti, renderDepth, false);	// false -> Not in process of collapsing a row.
 	}
 
 	/*
 	 * Clears and re-renders a TreeInfo object into a Grid row.
 	 */
-	private void reRenderRow(Grid grid, int row, TreeInfo ti) {
+	private void reRenderRow(Grid grid, int row, TreeInfo ti, boolean reRenderToCollapse) {
 		clearRow(grid, row);
-		renderRow(grid, row, ti, getRenderDepth(ti));
+		renderRow(grid, row, ti, getRenderDepth(ti), reRenderToCollapse);
 	}
 	
 	/**
