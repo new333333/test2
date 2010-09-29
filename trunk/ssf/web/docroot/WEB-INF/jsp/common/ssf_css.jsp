@@ -4720,6 +4720,15 @@ span.ss_infoDivValue {
 	-webkit-border-radius: 5px;
 }
 
+.ss_muster_users {
+	color: #353838;
+	font-weight: bold;
+}
+.ss_muster_users:hover {
+	color: #135c8f;
+	font-weight: bold;
+}
+
 .ss_videoDiv {
 }
 
