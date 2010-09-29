@@ -639,7 +639,7 @@ public class GwtActivityStreamHelper {
 	public static String getDateTimeString(Date date) {
 		User user = GwtServerHelper.getCurrentUser();
 		
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, user.getLocale());
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG, user.getLocale());
 		df.setTimeZone(user.getTimeZone());
 		
 		return df.format(date);
