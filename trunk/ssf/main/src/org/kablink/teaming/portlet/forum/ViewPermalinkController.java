@@ -319,9 +319,13 @@ public class ViewPermalinkController  extends SAbstractController {
 						return null;
 					} else {
 						entryId = targetEntryId.toString();
-						entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
-						url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+						entity = GwtUIHelper.getEntrySafely(getFolderModule(), entryId);
+						String entityBinderId =
+							((null == entity)                      ?
+								GwtUIHelper.getTopWSIdSafely(this) :
+								entity.getParentBinder().getId().toString());
+						url.setParameter(WebKeys.URL_BINDER_ID, entityBinderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID,  entryId);
 					}
 				} else {
 					Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
@@ -330,7 +334,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						return null;
 					} else {
 						binderId = String.valueOf(targetBinderId);
-						entity = getBinderModule().getBinder(Long.valueOf(binderId));
+						entity = GwtUIHelper.getBinderSafely(getBinderModule(), binderId);
 						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 						url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 					}
@@ -367,7 +371,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
 			if (targetBinderId != null) {
 				binderId = String.valueOf(targetBinderId);
-				entity = getBinderModule().getBinder(Long.valueOf(binderId));
+				entity = GwtUIHelper.getBinderSafely(getBinderModule(), binderId);
 			}
 			if (null != entity) {
 				if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
@@ -378,7 +382,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 			}
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			entityType = entity.getEntityType();
+			entityType = ((null == entity) ? EntityType.none : entity.getEntityType());
 			if (isMobile) {
 				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
 				if (entityType.equals(EntityType.workspace)) {
@@ -679,8 +683,9 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 
 				// Validate any binder and entry IDs as necessary...
-				validateBinderId(      getBinderModule(),             binderId, model );
-				validateFolderEntryId( getFolderModule(), entityType, entryId,  model );
+				boolean isGuest = WebHelper.isGuestLoggedIn(request);
+				validateBinderId(      isGuest, getBinderModule(),             binderId, model );
+				validateFolderEntryId( isGuest, getFolderModule(), entityType, entryId,  model );
 				
 				// ...and setup the standard beans
 				BinderHelper.setupStandardBeans( this, request, response, model );
@@ -729,80 +734,100 @@ public class ViewPermalinkController  extends SAbstractController {
 	 * ID is invalid.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void validateBinderId(BinderModule bm, String binderId, Map model)
-	{
+	private static void validateBinderId(boolean isGuest, BinderModule bm, String binderId, Map model) {
 		// If we don't have an ID to check or we've already got an
 		// error message pending, we don't do anything.
-		if (!(MiscUtil.hasString( binderId ))) return;		
-		if (null != model.get("errMsg"))       return;
+		if (!(MiscUtil.hasString(binderId))) return;		
+		if (null != model.get("errMsg"))     return;
 		
-		String errMsg = null;
-		try
-		{
+		Binder binder = null;
+		String errMsgKey = null;
+		try {
 			// Can we access the binder?
-			bm.getBinder(Long.parseLong(binderId));
+			binder = bm.getBinder(Long.parseLong(binderId));
+			if ((null != binder) && (binder.isDeleted() || GwtUIHelper.isBinderPreDeleted(binder))) {
+				binder = null;
+			}
 		}
-		catch( Exception e )
-		{
-			// No!  We only care about invalid IDs,  Is that the
-			// exception we got?
-			if ( e instanceof NoBinderByTheIdException )
-			{
-				// Yes!  Build an appropriate error message.
-				errMsg = NLT.get( "errorcode.no.folder.by.the.id", new String[]{ binderId } );
+		catch(Exception e) {
+			// No!  For access control violations, override the default
+			// error message we generate.
+			if (e instanceof AccessControlException) {
+				// Yes!  For guest...
+				if (isGuest) {
+					// ...we ignore access control exceptions here...
+					return;
+				}
+				
+				// ...otherwise, we build an appropriate error message.
+				errMsgKey = "errorcode.no.access.to.binder.by.the.id";
 			}
 		}
 
-		// If we have an error message to display...
-		if (MiscUtil.hasString( errMsg ))
-		{
-			// ...put it into the model.
-			model.put( "errMsg", errMsg );
+		// Can we access the binder?
+		if (null == binder) {
+			// No!  Store an error message in the model.
+			if (!(MiscUtil.hasString(errMsgKey))) {
+				errMsgKey = "errorcode.no.folder.by.the.id";
+			}
+			model.put("errMsg", NLT.get(errMsgKey, new String[]{binderId}));
 		}
-	}//end validateBinderId()
+	}
 
 	/*
 	 * Generate an error message for the GWT UI to display if an entry
 	 * ID is invalid.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void validateFolderEntryId(FolderModule fm, String entityType, String feId, Map model) {
+	private static void validateFolderEntryId(boolean isGuest, FolderModule fm, String entityType, String feId, Map model) {
 		// If we don't have an ID to check or we've already got an
 		// error message pending, we don't do anything.
-		if (!(MiscUtil.hasString( feId ))) return;		
-		if (null != model.get("errMsg"))   return;
+		if (!(MiscUtil.hasString(feId))) return;		
+		if (null != model.get("errMsg")) return;
 
 		// If we're being asked to validate something other than a
 		// folder entry ID...
 		EntityType et = (MiscUtil.hasString(entityType) ? EntityType.valueOf(entityType) : EntityType.none);
-		if (EntityType.folderEntry != et)
-		{
+		if (EntityType.folderEntry != et) {
 			// ...we can't validate it.
 			return;
 		}
 		
-		String errMsg = null;
-		try
-		{
+		FolderEntry fe = null;
+		String errMsgKey = null;
+		try {
 			// Can we access the folder entry?
-			fm.getEntry(null, Long.parseLong( feId ));
+			fe = fm.getEntry(null, Long.parseLong(feId));
+			if ((null != fe) && fe.isDeleted()) {
+				// Note that we don't check for predeleted entries
+				// here.  That's because Teaming allows entries in the
+				// trash to be viewed read-only.
+				fe = null;
+			}
 		}
-		catch ( Exception e )
-		{
-			// No!  We only care about invalid IDs,  Is that the
-			// exception we got?
-			if ( e instanceof NoFolderEntryByTheIdException )
-			{
-				// Yes!  Build an appropriate error message.
-				errMsg = NLT.get( "errorcode.no.folder.entry.by.the.id", new String[]{ feId } );
+		catch (Exception e) {
+			// No!  For access control violations, override the default
+			// error message we generate.
+			fe = null;
+			if (e instanceof AccessControlException) {
+				// Yes!  For guest...
+				if (isGuest) {
+					// ...we ignore access control exceptions here...
+					return;
+				}
+				
+				// ...otherwise, we build an appropriate error message.
+				errMsgKey = "errorcode.no.access.to.entry.by.the.id";
 			}
 		}
 		
-		// If we have an error message to display...
-		if (MiscUtil.hasString( errMsg ))
-		{
-			// ...put it into the model.
-			model.put( "errMsg", errMsg );
+		// Can we access the folder entry?
+		if (null == fe) {
+			// No!  Store an error message in the model.
+			if (!(MiscUtil.hasString(errMsgKey))) {
+				errMsgKey = "errorcode.no.folder.entry.by.the.id";
+			}
+			model.put("errMsg", NLT.get(errMsgKey, new String[]{feId}));
 		}
-	}//end validateBinderId()
+	}
 }

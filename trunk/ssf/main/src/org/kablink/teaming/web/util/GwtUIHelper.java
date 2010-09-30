@@ -44,15 +44,21 @@ import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -69,6 +75,8 @@ import org.springframework.web.portlet.ModelAndView;
  * @author drfoster@novell.com
  */
 public class GwtUIHelper {
+	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
+	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
@@ -663,6 +671,62 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns s Binder from it's ID guarding against any exceptions.
+	 * If an exception is caught, null is returned.
+	 * 
+	 * @param bm
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static Binder getBinderSafely(BinderModule bm, String binderId) {
+		return getBinderSafely(bm, Long.parseLong(binderId));
+	}
+	
+	public static Binder getBinderSafely(BinderModule bm, Long binderId) {
+		Binder reply;
+		try {
+			reply = bm.getBinder(binderId);
+			if ((null != reply) && (reply.isDeleted() || isBinderPreDeleted(reply))) {
+				reply = null;
+			}
+		}
+		catch (Exception e) {
+			m_logger.debug("GwtUIHelper.getBinderSafely(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns s FolderEntry from it's ID guarding against any
+	 * exceptions.  If an exception is caught, null is returned.
+	 * 
+	 * @param fm
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static FolderEntry getEntrySafely(FolderModule fm, String entryId) {
+		return getEntrySafely(fm, Long.parseLong(entryId));
+	}
+	
+	public static FolderEntry getEntrySafely(FolderModule fm, Long entryId) {
+		FolderEntry reply;
+		try {
+			reply = fm.getEntry(null, entryId);
+			if ((null != reply) && (reply.isDeleted() || reply.isPreDeleted())) {
+				reply = null;
+			}
+		}
+		catch (Exception e) {
+			m_logger.debug("GwtUIHelper.getEntrySafely(FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns the string representation of the top most workspace ID.
 	 * If the true top workspace ID can't be accessed, the current
 	 * user's workspace ID is returned.
@@ -690,6 +754,34 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns s User from it's ID guarding against any exceptions.  If
+	 * an exception is caught, null is returned.
+	 * 
+	 * @param pm
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static User getUserSafely(ProfileModule pm, String userId) {
+		return getUserSafely(pm, Long.parseLong(userId));
+	}
+	
+	public static User getUserSafely(ProfileModule pm, Long userId) {
+		User reply;
+		try {
+			reply = ((User) pm.getEntry(userId));
+			if ((null != reply) && reply.isDeleted()) {
+				reply = null;
+			}
+		}
+		catch (Exception e) {
+			m_logger.debug("GwtUIHelper.getUserSafely(User could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+			reply = null;
+		}
+		return reply;
+	}
+	
+	/**
 	 * Returns true if we're supposed to start with an activity stream
 	 * on login or false otherwise.
 	 * 
@@ -706,6 +798,31 @@ public class GwtUIHelper {
 	 */
 	public static boolean isActivityStreamsEnabled() {
 		return SPropsUtil.getBoolean("enable.activity.streams", true);
+	}
+	
+	/**
+	 * Returns true if a Binder is preDeleted and false otherwise.
+	 * 
+	 * @param binder
+	 *  
+	 * @return
+	 */
+	public static boolean isBinderPreDeleted(Binder binder) {
+		// If we have a Binder...
+		boolean reply = false;
+		if (null != binder) {
+			// ...check it if it's a Folder or Workspace.
+			if (binder instanceof Folder) {
+				reply = ((Folder) binder).isPreDeleted();
+			}
+			else if (binder instanceof Workspace) {
+				reply = ((Workspace) binder).isPreDeleted();
+			}
+		}
+		
+		// If we get here, reply is true if the Binder is
+		// preDeleted and false otherwise.
+		return reply;
 	}
 	
 	/**

@@ -246,7 +246,7 @@ public class GwtActivityStreamHelper {
 			reply = new BinderInfo();
 			reply.m_binderId = binderId;			
 			if (MiscUtil.hasString(binderId)) {
-				reply.m_binder = GwtServerHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				reply.m_binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 				if (null != reply.m_binder) {
 					reply.m_binderHover = reply.m_binder.getPathName();
 					reply.m_binderName  = reply.m_binder.getTitle();
@@ -701,7 +701,7 @@ public class GwtActivityStreamHelper {
 		String reply = getSFromEM(em, Constants.DESC_FIELD);
 		if (MiscUtil.hasString(reply) && MiscUtil.hasString(entryId)) {
 			// Yes!  Can we access the entry?
-			FolderEntry fe = GwtServerHelper.getEntrySafely(bs.getFolderModule(), entryId);
+			FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), entryId);
 			if (null != fe) {
 				// Yes!  Fix the mark up.
 				reply = MarkupUtil.markupStringReplacement(
@@ -783,7 +783,7 @@ public class GwtActivityStreamHelper {
 		User user;
 		
 		// Can we access the Binder?
-		binder = GwtServerHelper.getBinderSafely(bm, binderIdS);
+		binder = GwtUIHelper.getBinderSafely(bm, binderIdS);
 		if (null != binder) {
 			// Yes!  Build a TreeInfo for it.
 			rootASList.add(
@@ -817,7 +817,7 @@ public class GwtActivityStreamHelper {
 			for (FavoriteInfo myFavorite: myFavoritesList) {
 				// Can we access the next one's Binder?
 				id = myFavorite.getValue();
-				binder = GwtServerHelper.getBinderSafely(bm, id);
+				binder = GwtUIHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
@@ -852,7 +852,7 @@ public class GwtActivityStreamHelper {
 			for (TeamInfo myTeam: myTeamsList) {
 				// Can we access the next one's Binder?
 				id = myTeam.getBinderId();
-				binder = GwtServerHelper.getBinderSafely(bm, id);
+				binder = GwtUIHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
@@ -887,7 +887,7 @@ public class GwtActivityStreamHelper {
 			for (String followedUserId: followedUsersList) {
 				// Can we access the next one's User?
 				id = followedUserId;
-				user = GwtServerHelper.getUserSafely(pm, id);
+				user = GwtUIHelper.getUserSafely(pm, id);
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
@@ -922,7 +922,7 @@ public class GwtActivityStreamHelper {
 			for (String followedPlaceId: followedPlacesList) {
 				// Can we access the next one's Binder?
 				id = followedPlaceId;
-				binder = GwtServerHelper.getBinderSafely(bm, id);
+				binder = GwtUIHelper.getBinderSafely(bm, id);
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					

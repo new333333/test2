@@ -55,7 +55,7 @@
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
-			errMsg : '${errMsg}',
+			errMsg : '<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 			isNovellTeaming : ${isNovellTeaming},
 			language : '${ssUser.locale.language}',
 			loginRefererUrl : '${loginRefererUrl}',
