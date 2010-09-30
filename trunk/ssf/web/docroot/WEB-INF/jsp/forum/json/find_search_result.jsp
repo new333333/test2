@@ -83,7 +83,7 @@
 		      		--%><c:if test="${!empty entry.title}"><ssf:escapeJavaScript value="${entry.title}"/></c:if><%--
 		      		--%> (<ssf:escapeJavaScript value="${entry._loginName}"/>)<%--
 		      		--%><c:if test="${!empty entry.emailAddress}">, <ssf:escapeJavaScript value="${entry.emailAddress}"/></c:if><%--
-		      		--%><c:if test="${!empty entry._phone}">, <ssf:escapeJavaScript value="${entry._phone}"/></c:if><%--
+		      		--%><c:if test="${!empty entry.phone}">, <ssf:escapeJavaScript value="${entry.phone}"/></c:if><%--
 		      		--%><c:if test="${!empty user_elements}"><%--
 		      			--%><c:forEach var="user_element" items="${user_elements}"><%--
 		      				--%><c:if test="${!empty entry[user_element]}">, <ssf:escapeJavaScript value="${entry[user_element]}"/></c:if><%--
