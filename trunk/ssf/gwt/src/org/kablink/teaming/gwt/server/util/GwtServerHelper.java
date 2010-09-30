@@ -156,6 +156,11 @@ public class GwtServerHelper {
 	private static final int     BUCKET_SIZE_DEFAULT = 25;
 	private static final String  BUCKET_SIZE_KEY     = "wsTree.maxBucketSize";
 
+	// The following controls when we're bucketing, if we only bucket
+	// super containers that exceed the threshold or any binder that
+	// does.
+	private static boolean ONLY_BUCKET_SUPER_CONTAINERS = ENABLE_BUCKETS;
+
 	// The following is used to control how workspace trees are
 	// sorted and displayed.  The value meanings are:
 	//    0 -> First Middle Last	(uses the Binder's plain  title)
@@ -486,7 +491,7 @@ public class GwtServerHelper {
 			List<Long> childBinderList = getSortedBinderChildIds(bs, binder.getId());
 			
 			// Do we need to display the list in buckets?
-			if (useBuckets(childBinderList)) {
+			if (useBucketsForBinder(binder, childBinderList)) {
 				// Yes!  Build the TreeInfo objects for putting the
 				// Binder's children into buckets.
 				buildChildBucketTIs(
@@ -645,7 +650,7 @@ public class GwtServerHelper {
 			
 			// ...and perform the expansion.
 			ArrayList<TreeInfo> childTIList = new ArrayList<TreeInfo>(); 
-			if (useBuckets(bucketList))
+			if (useBucketsForBinderList(bucketList))
 				 buildChildBucketTIs(request, bs, childTIList, bucketList, expandedBindersList, (-1));
 			else buildChildTIs(      request, bs, childTIList, bucketList, expandedBindersList, (-1));
 			reply.setChildBindersList(childTIList);
@@ -2837,18 +2842,64 @@ public class GwtServerHelper {
 	}
 	
 	/*
-	 * Returns true if the number of binder IDs in the List<Long>
+	 * Returns true if the number of binder IDs in a List<Long>
 	 * requires displaying them in buckets and false otherwise.
 	 */
-	private static boolean useBuckets(List<Long> binderList) {
-		boolean reply;
+	private static boolean useBucketsForBinderList(List<Long> binderList) {
+		// Is bucketing enabled?
+		boolean reply = false;
 		if (ENABLE_BUCKETS) {
+			// Yes!  How does the count of IDs in the list compare with
+			// the bucketing threshold?
 			int binders = ((null == binderList) ? 0 : binderList.size());
 			reply = (binders > getBucketSize());
 		}
-		else {
-			reply = false;
+
+		// If we get here, reply contains true if we should use buckets
+		// for the binder IDs and false otherwise.  Return it. 
+		return reply;
+	}
+
+	/*
+	 * Returns true if a binder and a List<Long> of binder IDs requires
+	 * displaying the list in buckets and false otherwise.
+	 */
+	private static boolean useBucketsForBinder(Binder binder, List<Long> binderList) {
+		// Is bucketing enabled?
+		boolean reply = false;
+		if (ENABLE_BUCKETS) {
+			// Yes!  Are we only bucketing super containers?
+			boolean checkCounts = false;
+			if (ONLY_BUCKET_SUPER_CONTAINERS) {
+				// Yes!  Does this binder have an internal ID that
+				// might flag it as a super container?
+				String internalId = binder.getInternalId();
+				if (MiscUtil.hasString(internalId)) {
+					// Yes!  The only super containers we worry about
+					// are the profile and team workspace containers.
+					// For those, we need to check the counts.
+					checkCounts =
+						(internalId.equals(ObjectKeys.PROFILE_ROOT_INTERNALID) ||
+						 internalId.equals(ObjectKeys.TEAM_ROOT_INTERNALID));
+				}
+			}
+			
+			else {
+				// No, we aren't just bucketing super containers!  We
+				// need to check the counts in all other cases.
+				checkCounts = true;
+			}
+
+			// If we need to check the count of IDs in the list...
+			if (checkCounts) {
+				// ...check them.
+				reply = useBucketsForBinderList(binderList);
+			}
 		}
+		
+		// If we get here, reply is true if we should use buckets for
+		// this combination of binder and binder IDs and false
+		// otherwise.  Return it.
 		return reply;
 	}
 	
