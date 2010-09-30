@@ -64,17 +64,17 @@ function ss_setEntryDivHeight() {
 	setTimeout("ss_positionEntryDiv(true);", 200);
 }
 function ss_loadUrlInEntryFrame(url) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	var frameObj = self.document.getElementById('ss_showentryframe');
 	if (ss_getUserDisplayStyle() != 'newpage') {
 		//Drop it back down to a reasonable size
-		ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
+		//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
 		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
 	}
 	frameObj.src = url;
 }
 function ss_showForumEntryInIframe(url) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	try {
 		if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
 			self.parent.ss_showForumEntryInIframe(url);
@@ -131,7 +131,7 @@ function ss_showForumEntryInIframe(url) {
     } else {
         if (ss_getUserDisplayStyle() != "newpage") {
         	//Resize the popup down to a starting size
-        	ss_debug(   wObj.id+" ss_entryStartingWindowHeight: "+ss_entryStartingWindowHeight)
+        	//ss_debug(   wObj.id+" ss_entryStartingWindowHeight: "+ss_entryStartingWindowHeight)
         	wObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
         }
     	wObj.src = url
@@ -145,7 +145,7 @@ function ss_showForumEntryInIframe(url) {
 }
 
 function ss_iframeOnloadSetHeight() {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (self.ss_setEntryDivHeight && 
 			self.document.getElementById('ss_showentrydiv') && 
 			self.document.getElementById('ss_showentrydiv').style.display != 'none') {
@@ -155,13 +155,13 @@ function ss_iframeOnloadSetHeight() {
 
 var ss_minViewableIframeDiv = 50;
 function ss_setIframeDivHeight() {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 		if (self != self.parent && typeof self.parent.ss_setEntryPopupIframeSize != "undefined") {
 			self.parent.ss_setEntryPopupIframeSize();
 		}
 	} else {
-		ss_debug("   View style: "+ss_getUserDisplayStyle())
+		//ss_debug("   View style: "+ss_getUserDisplayStyle())
 		try {
 		    var wObj3 = self.document.getElementById('ss_showentryframe');
 		    if (wObj3 != null && window.ss_showentryframe && window.ss_showentryframe.document && 
@@ -170,7 +170,7 @@ function ss_setIframeDivHeight() {
 			    if (typeof entryHeight == "undefined" || entryHeight < ss_minEntryWindowHeight) {
 			    	entryHeight = ss_minEntryWindowHeight;
 			    }
-			    ss_debug("   ss_showentryframe scroll height: "+window.frames['ss_showentryframe'].document.body.scrollHeight)
+			    //ss_debug("   ss_showentryframe scroll height: "+window.frames['ss_showentryframe'].document.body.scrollHeight)
 			    
 		    	//Set the size to fit in the window
 		    	var entryDivTop = ss_getObjectTop(wObj3);
@@ -180,7 +180,7 @@ function ss_setIframeDivHeight() {
 		    	if (entryHeight > entryDivMaxSize) {
 		    		entryHeight = entryDivMaxSize;
 		    	}
-		    	ss_debug("   entryHeight: "+entryHeight+", ss_showentryframe height: "+parseInt(ss_getObjectHeight(wObj3)))
+		    	//ss_debug("   entryHeight: "+entryHeight+", ss_showentryframe height: "+parseInt(ss_getObjectHeight(wObj3)))
 		    	if (parseInt(ss_getObjectHeight(wObj3)) != parseInt(entryHeight)) {
 		    		ss_setEntryDivObjectHeight(entryHeight);
 		    	}
@@ -204,32 +204,32 @@ function ss_setIframeDivHeight() {
 }
 
 function ss_setEntryDivObjectHeight(newHeight) {
-	ss_debug("**** "+ss_debugTrace());
-	ss_debug("   window name: "+window.name);
+	//ss_debug("**** "+ss_debugTrace());
+	//ss_debug("   window name: "+window.name);
 	var wObj3 = self.document.getElementById('ss_showentryframe');
 	if (wObj3 == null && self != self.parent && typeof self.parent.ss_setEntryDivObjectHeight != "undefined" ) {
 		self.parent.ss_setEntryDivObjectHeight(newHeight);
 		return;
 	}
 	if (wObj3 != null) {
-		ss_debug("   Setting ss_showentryframe to height: "+newHeight);
+		//ss_debug("   Setting ss_showentryframe to height: "+newHeight);
 		if (parseInt(wObj3.style.height) != parseInt(newHeight)) {
-			ss_debug("   ss_showEntryframe height: "+wObj3.style.height+", newHeight: "+parseInt(newHeight));
+			//ss_debug("   ss_showEntryframe height: "+wObj3.style.height+", newHeight: "+parseInt(newHeight));
 			wObj3.style.height = parseInt(newHeight) + "px";
 		}
 	}
 }
 
 function ss_getEntryDivObjectTop() {
-	ss_debug("**** "+ss_debugTrace());
-	ss_debug("   window name: "+window.name);
+	//ss_debug("**** "+ss_debugTrace());
+	//ss_debug("   window name: "+window.name);
 	var wObj3 = self.document.getElementById('ss_showentryframe');
 	if (wObj3 == null && self != self.parent && typeof self.parent.ss_getEntryDivObjectTop != "undefined" ) {
 		return self.parent.ss_getEntryDivObjectTop();
 	}
 	if (wObj3 != null) {
 		var top = ss_getObjectTopAbs(wObj3);
-		ss_debug("   ss_getEntryDivObjectTop top: "+top);
+		//ss_debug("   ss_getEntryDivObjectTop top: "+top);
 		return parseInt(top);
 	}
 	return null;
@@ -237,19 +237,19 @@ function ss_getEntryDivObjectTop() {
 
 var ss_entryDivFloat = 10;
 function ss_getEntryDivMaxHeight(entryDivTop) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	var wObj3 = self.document.getElementById('ss_showentryframe');
 	if (wObj3 == null && self != self.parent && typeof self.parent.ss_getEntryDivMaxHeight != "undefined") {
 		return self.parent.ss_getEntryDivMaxHeight(entryDivTop);
 	}
-	ss_debug("   ss_getEntryDivMaxHeight entryDivTop: "+entryDivTop);
+	//ss_debug("   ss_getEntryDivMaxHeight entryDivTop: "+entryDivTop);
 	var entryDivMaxSize = parseInt(parseInt(ss_getWindowHeight()) - ss_entryDivFloat);
     if (entryDivTop != null && top.window.frames['ss_showentryframe'] && top.window.frames['ss_showentryframe'].document && 
 			top.window.frames['ss_showentryframe'].document.body) {
 	    var scrollHeight = top.window.frames['ss_showentryframe'].document.body.scrollHeight;
 	    var windowHeight = ss_getWindowHeight(top.window.frames['ss_showentryframe']);
-	    ss_debug("   ss_getEntryDivMaxHeight ss_showentryframe scroll height: "+scrollHeight)
-	    ss_debug("   ss_getEntryDivMaxHeight ss_showentryframe window height: "+windowHeight)
+	    //ss_debug("   ss_getEntryDivMaxHeight ss_showentryframe scroll height: "+scrollHeight)
+	    //ss_debug("   ss_getEntryDivMaxHeight ss_showentryframe window height: "+windowHeight)
 	    
     	//Set the size to fit in the window
 	    
@@ -257,13 +257,13 @@ function ss_getEntryDivMaxHeight(entryDivTop) {
     	entryDivMaxSize = parseInt(ss_getWindowHeight()) - parseInt(entryDivTop);
     	entryDivMaxSize = parseInt(entryDivMaxSize - ss_entryDivFloat);   //Take a little off the size so it floats above the bottom of the screen a bit.
     }
-    ss_debug("   ss_getEntryDivMaxHeight max size is: "+entryDivMaxSize);
+    //ss_debug("   ss_getEntryDivMaxHeight max size is: "+entryDivMaxSize);
     if (entryDivMaxSize < ss_minEntryWindowHeight) entryDivMaxSize = ss_minEntryWindowHeight;
     return entryDivMaxSize;
 }
 
 function ss_positionEntryDiv(moveTop) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	if (typeof moveTop == 'undefined') moveTop = false;
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
@@ -324,7 +324,7 @@ function ss_positionEntryDiv(moveTop) {
 			if (window.ss_showentryframe && window.ss_showentryframe.document && 
 					window.ss_showentryframe.document.body) {
 			    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight);
-			    ss_debug("   ss_positionEntryDiv, entryHeight: "+entryHeight)
+			    //ss_debug("   ss_positionEntryDiv, entryHeight: "+entryHeight)
 			    
 			    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
 			    
@@ -460,7 +460,7 @@ function ss_divDrag(evt) {
     		dObjTop += parseInt(ss_getScrollXY()[1])
     		dObjLeft += parseInt(ss_getScrollXY()[0])
         }
-        ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
+        //ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;
         if (dObjTop <= 0) dObjTop = 1;
         if (dObjLeft + ss_divOffsetX > parseInt(ss_getWindowWidth())) {
@@ -549,7 +549,7 @@ var ss_lastEntryWidth = -1;
 var ss_lastEntryTop = -1;
 var ss_lastEntryLeft = -1;
 function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
-	ss_debug("**** "+ss_debugTrace());
+	//ss_debug("**** "+ss_debugTrace());
 	ss_saveEntryWidthTimer = null;
 	ss_setupStatusMessageDiv()
 	if (entryWidth == ss_lastEntryWidth && entryTop == ss_lastEntryTop && entryLeft == ss_lastEntryLeft) return;

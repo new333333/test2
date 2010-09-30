@@ -102,6 +102,9 @@ public class WebKeys {
     public static final String URL_AJAX_LABEL_ID = "ss_ajaxLabelId";
     public static final String URL_AJAX_MESSAGE_ID = "ss_ajaxMsgId";
     public static final String URL_ADD_DEFAULT_ENTRY = "addDefaultEntryURL";
+    public static final String URL_ADD_ENTRY = "ss_addEntryUrl";
+    public static final String URL_ADD_ENTRIES = "ss_addEntryUrls";
+    public static final String URL_ADD_FOLDER = "ss_addFolderUrl";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_ACTIVITY_STREAMS_ENABLED = "activityStreamsEnabled";
@@ -258,6 +261,7 @@ public class WebKeys {
     public static final String URL_USER_ID_PLACE_HOLDER="ss_user_id_place_holder";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
+	public static final String URL_WIKI_FOLDER_LIST = "wiki_folder_list";
 	public static final String URL_WINDOW_STATE = "windowState";
 	public static final String URL_WORKFLOW_PROCESS_ID = "workflowProcessId";
 	public static final String URL_UPLOAD_REQUEST_UID = "ss_upload_request_uid";
@@ -1266,6 +1270,7 @@ public class WebKeys {
     public static final String STAND_ALONE="ssStandAlone";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_MENU_SELECTED="selected"; 
+    public static final String TOOLBAR_FORMAT="ss_toolbar_format";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
     public static final String TOOLBAR_SHOW_HELP_BUTTON="ss_toolbar_showHelpButton";
@@ -1318,8 +1323,10 @@ public class WebKeys {
     public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
     public static final String WHATS_NEW_TOOLBAR="ss_whatsNewToolbar";
     public static final String WHATS_UNSEEN_TYPE="ss_whatsUnseenType";
+    public static final String WIKI_FOLDER_LIST="ss_wikiFolderList";
     public static final String WIKI_HOMEPAGE_ENTRY="ss_wikiHomepageEntry";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
+    public static final String WIKI_HOMEPAGE_ENTRY_MAP="ss_wikiHomepageEntryMap";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WINDOW_HEIGHT="ss_windowHeight";
     public static final String WORKAREA="ssWorkArea";

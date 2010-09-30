@@ -86,7 +86,18 @@ public class ListFolderController extends  SAbstractController {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		if (binderId == null) {
+			//Get the binder id from the entry
+			try {
+				FolderEntry entry = getFolderModule().getEntry(null, entryId);
+				binderId = entry.getParentBinder().getId();
+			} catch(Exception e) {
+				//Can't get the binderId, so just fall through to the render phase
+				return;
+			}
+		}
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		response.setRenderParameters(request.getParameterMap());
@@ -225,7 +236,6 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_GO_TO_ENTRY)) {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 			//Get the entryId from the entry number and add it to the request
-			Long entryId = null;
 			if (entryId != null) response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		} else if (op.equals(WebKeys.OPERATION_CLEAR_UNSEEN)) {
 			Set<Long> ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_IDS));
@@ -262,6 +272,11 @@ public class ListFolderController extends  SAbstractController {
 			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		} catch(Exception e) {}
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+		//Get the binder id from the entryId (if specified)
+		try {
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
+			binderId = entry.getParentBinder().getId();
+		} catch(Exception e) {}
 		//If no binder, Default to the user's workspace
 		if (binderId == null) binderId = user.getWorkspaceId();
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);

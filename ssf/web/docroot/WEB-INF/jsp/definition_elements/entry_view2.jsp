@@ -35,67 +35,58 @@
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
-<c:set var="currentBinder" value="${ssBinder}" />
-<jsp:useBean id="currentBinder" type="org.kablink.teaming.domain.Binder" />
+<c:set var="binderDefinition" value="${ssBinder.entryDef.definition}" />
+<jsp:useBean id="binderDefinition" type="org.dom4j.Document" />
 
-<%@ page import="org.kablink.teaming.module.definition.DefinitionUtils" %>
-<%
-//Get the folder type of this definition (folder, file, or event)
-String parentFolderViewStyle = DefinitionUtils.getViewType(currentBinder);
-if (parentFolderViewStyle == null || parentFolderViewStyle.equals("")) parentFolderViewStyle = "folder";
-%>
-<c:set var="ss_parentFolderViewStyle" value="<%= parentFolderViewStyle %>" scope="request" />
-
-<c:choose>
-  <c:when test="${ss_parentFolderViewStyle == 'wiki'}">
-    <div class="ss_style">
-      <jsp:include page="/WEB-INF/jsp/definition_elements/wiki/entry_view.jsp" />
-    </div>
-  </c:when>
-  <c:when test="${propertyValues_type[0] == 'file'}">
-	<jsp:include page="/WEB-INF/jsp/definition_elements/file/file_view.jsp" />
-  </c:when>
-  <c:otherwise>
-<div class="ss_style ss_portlet_style ss_portlet">
-<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
-<table cellspacing="0" cellpadding="0" width="100%" class="ss_actions_bar13_pane">
-<tr>
-<td valign="top">
-  <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
-    title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
-<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
-</td>
-<td valign="top" style="white-space: nowrap">
-  	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
-      alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
-  <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
-</td>
-</tr>
-</table>
-<table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top">
-<c:set var="ss_defFam" value="entry" scope="request"/>
-
-<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" /></td>
-</tr>
-</table>
-
-<c:if test="${empty ss_entryLinkCounter}"><c:set var="ss_entryLinkCounter" value="0" scope="request"/></c:if>
-<c:set var="ss_entryLinkCounter" value="${ss_entryLinkCounter + 1}" scope="request"/>
-<div id="ss_entryTop${ss_entryLinkCounter}" >
-<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" 
-  entry="${ssDefinitionEntry}" />
-  
-</div>
-</div>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
-  </c:otherwise>
-</c:choose>
+<c:if test="${propertyValues_type[0] != 'file'}">
+	<div class="ss_style ss_portlet_style ss_portlet">
+	<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+	<table cellspacing="0" cellpadding="0" width="100%" 
+		<c:if test="${ss_parentFolderViewStyle != 'wiki'}"> class="ss_actions_bar13_pane"> </c:if>
+	<tr><td valign="top">
+	  <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
+	    title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
+	  <c:choose>
+	    <c:when test="${ss_parentFolderViewStyle == 'wiki'}">
+			<ssf:toolbar toolbar="${ssFolderEntryToolbar}" format="wiki" style="ss_actions_bar13 ss_actions_bar" />
+	    </c:when>
+	    <c:otherwise>
+			<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
+	    </c:otherwise>
+	  </c:choose>
+	</td>
+	<c:if test="${ss_parentFolderViewStyle != 'wiki'}">
+	  <td valign="top" style="white-space: nowrap">
+	  	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
+	      alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+	      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
+	    <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
+	  </td>
+	</c:if>
+	</tr>
+	</table>
+	<table cellspacing="0" cellpadding="0" width="100%">
+	<tr>
+	<td valign="top">
+	<c:set var="ss_defFam" value="entry" scope="request"/>
+	
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view.jsp" /></td>
+	</tr>
+	</table>
+	
+	<c:if test="${empty ss_entryLinkCounter}"><c:set var="ss_entryLinkCounter" value="0" scope="request"/></c:if>
+	<c:set var="ss_entryLinkCounter" value="${ss_entryLinkCounter + 1}" scope="request"/>
+	<div id="ss_entryTop${ss_entryLinkCounter}" >
+	<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}" 
+	  entry="${ssDefinitionEntry}" />
+	  
+	</div>
+	</div>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
+</c:if>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <c:if test="${ss_accessControlMap[ssEntry.id]['modifyEntry']}">

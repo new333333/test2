@@ -32,4 +32,36 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/entry/view_iframe.jsp" %>
+<% //view the wiki tabs %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<div id="wiki-tabset" class="wiki-tabs margintop3" style="text-align: left;">
+	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
+		<tr>
+			<td>
+		      <c:if test="${!empty ss_wikiEntryBeingShown}">
+				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'page'}">on</c:if>">
+				  <a href="<ssf:url     
+			          adapter="true" 
+			          portletName="ss_forum" 
+			          folderId="${ss_wikiEntryBeingShown.parentBinder.id}" 
+			          action="view_folder_entry" 
+			          entryId='${ss_wikiEntryBeingShown.id}' 
+			          actionUrl="true"><ssf:param
+			          name="entryViewStyle" value="popup"/><ssf:param
+			          name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
+			      ><ssf:nlt tag="wiki.page"/></a>
+			    </span>
+			  </c:if>
+				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'list'}">on</c:if>">
+				  <a href="<ssf:url 
+					action="view_folder_listing" 
+					binderId="${ssBinder.id}"
+					entryId="${ss_wikiEntryBeingShown.id}"
+					><ssf:param name="wiki_folder_list" value="1"/></ssf:url>"
+				  ><ssf:nlt tag="wiki.topicsAndPages"/></a>
+				</span>
+			</td>
+		</tr>	
+	</table>	
+</div>

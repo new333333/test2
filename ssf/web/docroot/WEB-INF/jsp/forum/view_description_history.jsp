@@ -50,7 +50,7 @@ ins { font-weight: normal; text-decoration: none; color: #fff; background-color:
   var wDiffStyleInsert = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #009933;';
   ss_createOnLayoutChangeObj("ss_entryHistoryChange", function() {
 	  if (typeof self.parent.ssf_onLayoutChange != "undefined") {
-		  ss_debug("ss_entryHistoryChange  Calling parent layout change object");
+		  //ss_debug("ss_entryHistoryChange  Calling parent layout change object");
 		  setTimeout("self.parent.ssf_onLayoutChange();", 100);
 	  }
   });

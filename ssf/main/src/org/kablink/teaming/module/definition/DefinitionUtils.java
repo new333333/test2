@@ -53,10 +53,14 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
@@ -114,7 +118,16 @@ public class DefinitionUtils {
 		}
 		return false;
     }
-   public static String getViewType(Document definitionTree) {
+    public static String getViewType(Binder binder) {
+    	Map model = new HashMap();
+        User user = RequestContextHolder.getRequestContext().getUser();
+    	final ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
+		UserProperties userFolderProperties = profileModule.getUserProperties(user.getId(), binder.getId());
+    	DefinitionHelper.getDefinitions(binder, model, 
+				(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+    	return getViewType((Document)model.get(WebKeys.CONFIG_DEFINITION));
+    }
+    public static String getViewType(Document definitionTree) {
 	   	if (definitionTree == null) return null;
 		Element root = definitionTree.getRootElement();
 		if (root == null) return null;
@@ -136,6 +149,15 @@ public class DefinitionUtils {
 		}
 		return viewType;
    }
+   public static String getEntryBlogViewType(Document definitionTree) {
+	   	if (definitionTree == null) return null;
+		Element root = definitionTree.getRootElement();
+		if (root == null) return null;
+		Element viewItem = (Element)root.selectSingleNode("//item[@name='entryBlogView']");
+		if (viewItem == null) return null;
+		String viewType = DefinitionUtils.getPropertyValue(viewItem, "type");
+		return viewType;
+  }
    public static Element getItemByPropertyName(Element item, String itemType, String nameValue) {
 		//Find the item in the definition
 		Element propertyEle = (Element) item.selectSingleNode(

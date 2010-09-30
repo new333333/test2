@@ -794,7 +794,7 @@ public class ListFolderHelper {
 					folderEntries = bs.getFolderModule().getEntries(folderId, options);
 				}
 				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					buildWikiBeans(bs, response, folder, options, model, folderEntries);
+					buildWikiBeans(bs, req, response, folder, options, model, folderEntries);
 					//Get the pages bean
 					buildBlogPageBeans(bs, response, folder, model, viewType);
 	
@@ -1179,8 +1179,9 @@ public class ListFolderHelper {
 		model.put(WebKeys.BLOG_PAGES, blogPages);
 	}
 	
-	public static void buildWikiBeans(AllModulesInjected bs, RenderResponse response, Binder binder, 
+	public static void buildWikiBeans(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder binder, 
 			Map options, Map model, Map folderEntries) {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		List entryCommunityTags = new ArrayList();
 		List entryPersonalTags = new ArrayList();
@@ -1201,23 +1202,105 @@ public class ListFolderHelper {
 		
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
+		
+		Boolean isWikiFolderList = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_WIKI_FOLDER_LIST, false);
+		model.put(WebKeys.WIKI_FOLDER_LIST, isWikiFolderList);
+
 		String wikiHomePageId = (String)binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+		String entryIdToBeShown = (String)model.get(WebKeys.ENTRY_ID_TO_BE_SHOWN);
 		FolderEntry wikiHomePage = null;
-		if (Validator.isNotNull(wikiHomePageId)) {
+		if (Validator.isNotNull(entryIdToBeShown)) {
+			//We are looking to show a specific entry
+			//Check if this is a valid page
+			try {
+				wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), Long.valueOf(entryIdToBeShown));
+				if ((null != wikiHomePage) && wikiHomePage.isPreDeleted()) {
+					wikiHomePageId = null;
+					wikiHomePage = null;
+				}
+			} catch(Exception e) {
+				wikiHomePageId = null;
+				wikiHomePage = null;
+			}
+		} else if (Validator.isNotNull(wikiHomePageId)) {
 			//Check if this is a valid page
 			try {
 				wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), Long.valueOf(wikiHomePageId));
 				if ((null != wikiHomePage) && wikiHomePage.isPreDeleted()) {
 					wikiHomePageId = null;
+					wikiHomePage = null;
 				}
 			} catch(Exception e) {
 				wikiHomePageId = null;
+				wikiHomePage = null;
 			}
 		}
 		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY, wikiHomePage);
 		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, wikiHomePageId);
-		if (Validator.isNull(wikiHomePageId) && !entries.isEmpty()) {
-			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, ((Map)entries.get(0)).get("_docId"));
+		if (wikiHomePage != null && !isWikiFolderList) {
+			//Also set up the config info to show the entry
+			
+			
+			Map entryMap = new HashMap();
+			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, wikiHomePage);
+			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_MAP, entryMap);
+			entryMap.put("entry", wikiHomePage);
+			if (DefinitionHelper.getDefinition(wikiHomePage.getEntryDef(), entryMap, "//item[@name='entryView']") == false) {
+				//this will fill it the entryDef for the entry
+				DefinitionHelper.getDefaultEntryView(wikiHomePage, entryMap, "//item[@name='entryView']");				
+			}
+			//See if this entry can have replies added
+			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
+			Definition def = wikiHomePage.getEntryDef();
+			if (bs.getFolderModule().testAccess(wikiHomePage, FolderOperation.addReply)) {
+				accessControlEntryMap.put("addReply", new Boolean(true));
+				Document defDoc = def.getDefinition();
+				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
+				if (!replyStyles.isEmpty()) {
+					String replyStyleId = (String)replyStyles.get(0);
+					if (!replyStyleId.equals("")) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, wikiHomePage.getParentFolder().getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, wikiHomePage.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_BLOG_REPLY, "1");
+						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+						entryMap.put(WebKeys.REPLY_BLOG_URL, adapterUrl);
+					}
+				}
+			}
+			//See if the user can modify this entry
+			boolean reserveAccessCheck = false;
+			boolean isUserBinderAdministrator = false;
+			boolean isEntryReserved = false;
+			boolean isLockedByAndLoginUserSame = false;
+
+			if (bs.getFolderModule().testAccess(wikiHomePage, FolderOperation.reserveEntry)) {
+				reserveAccessCheck = true;
+			}
+			if (bs.getFolderModule().testAccess(wikiHomePage, FolderOperation.overrideReserveEntry)) {
+				isUserBinderAdministrator = true;
+			}
+			
+			HistoryStamp historyStamp = wikiHomePage.getReservation();
+			if (historyStamp != null) isEntryReserved = true;
+
+			if (isEntryReserved) {
+				Principal lockedByUser = historyStamp.getPrincipal();
+				if (lockedByUser.getId().equals(user.getId())) {
+					isLockedByAndLoginUserSame = true;
+				}
+			}
+			if (bs.getFolderModule().testAccess(wikiHomePage, FolderOperation.modifyEntry)) {
+				if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+				} else {
+					accessControlEntryMap.put("modifyEntry", new Boolean(true));
+				}
+			}
+
+			//entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(wikiHomePage.getId()));
+			//entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(wikiHomePage.getId()));
 		}
 	}
 	
@@ -1362,6 +1445,8 @@ public class ListFolderHelper {
 		
 		if((!(folder.isMirrored() && folder.getResourceDriverName() == null)) && !folder.isMirroredAndReadOnly()) {
 			if (defaultEntryDefs > 1) {
+				SortedMap addEntryUrls = new TreeMap();
+				model.put(WebKeys.URL_ADD_ENTRIES, addEntryUrls);
 				int count = 1;
 				int	defaultEntryDefIndex = getDefaultFolderEntryDefinitionIndex(
 					RequestContextHolder.getRequestContext().getUser().getId(),
@@ -1393,6 +1478,7 @@ public class ListFolderHelper {
 						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
 						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 					}
+					addEntryUrls.put(title, adapterUrl.toString());
 				}
 			} else if (defaultEntryDefs != 0) {
 				// Only one option
@@ -1408,6 +1494,7 @@ public class ListFolderHelper {
 				qualifiers.put("highlight", new Boolean(true));
 				entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
 				model.put(WebKeys.URL_BINDER_ENTRY_ADD, title);
+				model.put(WebKeys.URL_ADD_ENTRY, adapterUrl.toString());
 				
 				adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 				adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
@@ -1532,6 +1619,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
 			folderToolbar.addToolbarMenuItem("1_administration", "folders", 
 					NLT.get("toolbar.menu.addFolder"), url, qualifiers);
+			model.put(WebKeys.URL_ADD_FOLDER, url.toString());
 		}
 		
 		//Move binder
