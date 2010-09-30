@@ -1014,3 +1014,100 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
  	}	
+
+/* Action Menu Styles */
+.action-anchor {
+    padding: 2px 4px;
+    margin-left: 5px;
+    }   
+a.action-anchor:hover { 
+    color: #135c8f;
+    background: #81b2bd url(<html:imagesPath/>pics/blends/teal_slice.png) repeat;
+    background-position:center;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+}
+ 
+/*  Menu CSS  */
+/*-------------------------------------------*/
+
+.menudetail {
+    position: relative; 
+    background-color: #3a3e40; /* Gray Blend 2 base*/
+    text-align: left; 
+/*  border: solid 1px #000;  */
+    top: 0px;
+    width: 200px;
+    z-index: 1000;
+}
+
+.entry-menu-list {
+    position: absolute;
+    font-size: .8em;
+    }   
+.#entry-status-actions {
+    position: absolute;
+    top: 25px;
+    right: 3px;
+    }       
+    
+.menutitle {
+    color: #F6F6F6;
+    font-size: 1em;
+    font-weight: bold;
+    background: #3a3e40 url( url(../../../1Graphics/GraphicsDB/Branding/NL2010/gray_blend2_15.png)) repeat-x; 
+    background-position: bottom;
+    margin-bottom: 0.5em;
+    padding: 5px; 
+}
+   tr.rule2 div.menutitle { font-size: 1em; }
+   td div.menutitle { font-size: 1em; }
+   tr.columnhead div.menutitle { font-size: 1em; background-color: #e0e1df; }
+   span div.menutitle { font-size: 1em; }
+
+.menutitle img, .infoboxtitle img 
+    {float: right}
+
+tr.columnhead div.menudetail { background-color: #ffffff; text-align: left; position: absolute; z-index: 10; top: 0; width: 200px; border: solid 1px #000; font-weight: normal; font-size: 1em;}
+
+.menuitem1 a:link { 
+	text-decoration: none;
+	}
+
+.menuitem1 a, menuitem1 a:link, menuitem1 a:visited {
+    color: #fff !important;
+    padding: 2px 2px 2px 0;
+    text-decoration: none;
+    }
+
+.menuitem1 { 
+    margin-left: 8px;
+    padding: 4px; 
+    line-height: 1.1em; 
+}
+
+.menuitem2 {   /* disabled menu item (disabled link) */ 
+    color: gray; 
+    padding: 0.3em; 
+    margin-left: 0.5em}
+
+.menuitemspacer {    /* to add a spacer between a section or group within a menu */ 
+    border-top: 1px solid #353838;
+    border-bottom: 1px solid #505354;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    }
+
+.menusubhead  {  /* used within a menu */ 
+    color: gray;
+    font-size: 0.75em;
+    padding: 6px 4px 4px 6px;
+    background-color: #F6F6F6;
+    text-transform:uppercase;
+    letter-spacing: 0.1em;
+    vertical-align: middle;
+    white-space: normal;
+    }
+
+.menubottom  { margin-bottom: 0px; padding-bottom: 0px; padding-top: 5px; }
+/*-------------------------------------------*/

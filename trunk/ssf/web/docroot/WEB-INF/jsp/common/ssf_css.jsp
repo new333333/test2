@@ -677,6 +677,7 @@ input[type="button"].n-button {
 input[type="button"].n-button:hover {
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;
+  	padding: 2px 10px 2px 10px !important;
 	}
 
 .n-buttonright {

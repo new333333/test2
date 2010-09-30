@@ -491,6 +491,7 @@
 				<option name="blog" caption="__blog_view" />
 				<option name="guestbook" caption="__entry_guestbook" />
 				<option name="miniblog" caption="__entry_miniblog" />
+				<option name="wiki" caption="__entry_wiki" />
 				<help>ihelp.designers.view_type</help>
 			</property>
 		</properties>

@@ -70,6 +70,7 @@ import org.kablink.util.servlet.StringServletResponse;
 public class ToolbarTag extends BodyTagSupport {
 	private String _bodyContent;
 	private SortedMap toolbar = null;
+	private String format = "";
 	private String style = "";
 	private boolean item = false;
 	private boolean showHelpButton = false;
@@ -107,6 +108,7 @@ public class ToolbarTag extends BodyTagSupport {
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
+			req.setAttribute(WebKeys.TOOLBAR_FORMAT, this.format);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
 			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
@@ -124,6 +126,7 @@ public class ToolbarTag extends BodyTagSupport {
 			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/toolbar/bottom.jsp");
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute(WebKeys.TOOLBAR, this.toolbar);
+			req.setAttribute(WebKeys.TOOLBAR_FORMAT, this.format);
 			req.setAttribute(WebKeys.TOOLBAR_STYLE, this.style);
 			req.setAttribute(WebKeys.TOOLBAR_ITEM, this.item);
 			req.setAttribute(WebKeys.TOOLBAR_SHOW_HELP_BUTTON, this.showHelpButton);
@@ -140,6 +143,7 @@ public class ToolbarTag extends BodyTagSupport {
 	    }
 		finally {
 			this.toolbar = null;
+			this.format = "";
 			this.style = "";
 			this.item = false;
 			this.showHelpButton = false;
@@ -149,6 +153,10 @@ public class ToolbarTag extends BodyTagSupport {
 
 	public void setToolbar(SortedMap toolbar) {
 	    this.toolbar = toolbar;
+	}
+
+	public void setFormat(String format) {
+	    this.format = format;
 	}
 
 	public void setStyle(String style) {

@@ -123,7 +123,7 @@ if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
 }
 
 //This function just reloads the current link and overloads the ss_common definition
-function ss_showForumEntry(url, isDashboard) {
+function ss_showForumEntryOverride(url, isDashboard) {
 	self.location.href = url;
 	return;
 }

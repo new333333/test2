@@ -38,7 +38,7 @@
   <% // This is a reply in the replies list, don't show the tabs %>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_reply_attachments.jsp" />
 </c:if>
-<c:if test="${ssEntry == ssDefinitionEntry}" >
+<c:if test="${!ss_commentsAttachmentsAndHistoryTabsHaveBeenSeen && ssEntry == ssDefinitionEntry}" >
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <script type="text/javascript">
 var ss_entryHistoryLoaded${ss_divCounter} = false;
@@ -79,13 +79,16 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
   <c:set var="ss_tabDivCount" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_tabDivCount" value="${ss_tabDivCount + 1}" scope="request"/>
-<c:set var="ss_thisCurrentTab" value="viewComments${ss_tabDivCount}"/>
+<c:set var="ss_thisCurrentTab" value="viewComments"/>
 <c:if test="${!empty ss_pseudoEntity}">
-  <c:set var="ss_thisCurrentTab" value="viewAttachments${ss_tabDivCount}"/>
+  <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
+</c:if>
+<c:if test="${fn:length(ssDefinitionEntry.fileAttachments) > 0}">
+  <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
 </c:if>
 <script type="text/javascript">
 ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}", 
-		function() {ss_initTab('${ss_thisCurrentTab}', '${ss_tabDivCount}');});
+		function() {ss_initTab('${ss_thisCurrentTab}${ss_tabDivCount}', '${ss_tabDivCount}');});
 </script>
 
 <div class="ss_entryContent">
@@ -94,12 +97,12 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 	  <tr>
 	  <c:if test="${empty ss_pseudoEntity}">
 	  <td valign="middle" width="1%" nowrap>
-	  <div id="viewComments${ss_tabDivCount}Tab" class="wg-tab roundcornerSM on" 
+	  <div id="viewComments${ss_tabDivCount}Tab" class="wg-tab roundcornerSM <c:if test="${ss_thisCurrentTab == 'viewComments'}">on</c:if>" 
 		onMouseOver="ss_hoverOverTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onMouseOut="ss_hoverOverTabStopped('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onClick="ss_showTab('viewComments${ss_tabDivCount}', '${ss_tabDivCount}');">
 		<ssf:nlt tag="__entry_comments"/>
-		<c:if test="${ssDefinitionEntry.top}">
+		<c:if test="${ssEntry == ssDefinitionEntry}">
 		  <span class="ss_smallprint">(${fn:length(ssFolderEntryDescendants)})</span>
 		</c:if>
 	  </div>
@@ -107,7 +110,7 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 	  </c:if>
 	  <td valign="middle" width="1%" nowrap>
 	  <div id="viewAttachments${ss_tabDivCount}Tab" 
-		class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity}">on</c:if>" 
+		class="wg-tab roundcornerSM <c:if test="${!empty ss_pseudoEntity || ss_thisCurrentTab == 'viewAttachments'}">on</c:if>" 
 		onMouseOver="ss_hoverOverTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onMouseOut="ss_hoverOverTabStopped('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');"
 		onClick="ss_showTab('viewAttachments${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
@@ -164,8 +167,8 @@ ss_createOnLoadObj("commentsAndAttachmentsRegion${ss_divCounter}", function() {
 </c:if>
 <div id="commentsAndAttachmentsRegion${ss_divCounter}" class="wg-tab-content">
 <div id="viewAttachments${ss_tabDivCount}Div" 
-  <c:if test="${empty ss_pseudoEntity}">style="display:none;"</c:if>
-  <c:if test="${!empty ss_pseudoEntity}">style="display:block;"</c:if>
+  <c:if test="${empty ss_pseudoEntity || ss_thisCurrentTab == 'viewAttachments'}">style="display:none;"</c:if>
+  <c:if test="${!empty ss_pseudoEntity && ss_thisCurrentTab == 'viewAttachments'}">style="display:block;"</c:if>
 >
   <c:set var="property_caption" value="" scope="request"/>
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
@@ -196,7 +199,10 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 </c:if>
 
 <c:if test="${empty ss_pseudoEntity}">
-<div id="viewComments${ss_tabDivCount}Div" style="display:block;">
+<div id="viewComments${ss_tabDivCount}Div" 
+  <c:if test="${empty ss_pseudoEntity || ss_thisCurrentTab == 'viewComments'}">style="display:none;"</c:if>
+  <c:if test="${!empty ss_pseudoEntity && ss_thisCurrentTab == 'viewComments'}">style="display:block;"</c:if>
+>
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
 </div>

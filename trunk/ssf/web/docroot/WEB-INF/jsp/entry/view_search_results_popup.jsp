@@ -58,8 +58,8 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 function ss_showForumEntryInIframe(url) {
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    //ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    //ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
     if (wObj == null) {
     	wObj = document.getElementsByTagName("body").item(0);

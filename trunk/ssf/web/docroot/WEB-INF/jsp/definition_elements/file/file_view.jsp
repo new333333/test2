@@ -51,18 +51,26 @@
 <tr><td width="95%">
   <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
-<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
+  <c:choose>
+    <c:when test="${ss_parentFolderViewStyle == 'wiki'}">
+		<ssf:toolbar toolbar="${ssFolderEntryToolbar}" format="wiki" style="ss_actions_bar13 ss_actions_bar" />
+    </c:when>
+    <c:otherwise>
+		<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar13 ss_actions_bar" />
+    </c:otherwise>
+  </c:choose>
+
 </td>
 <td align="right" width="5%" style="padding-top:5px; white-space: nowrap">
-  <ssf:ifadapter>
+  <c:if test="${ss_parentFolderViewStyle != 'wiki'}">
   	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
       src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
-  </ssf:ifadapter>
     <a class="ss_actions_bar13_pane_none"
       href="javascript: ss_helpSystem.run();"><img border="0"
       <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" />
     </a>&nbsp;&nbsp;
+  </c:if>
 </td>
 </tr>
 </table>

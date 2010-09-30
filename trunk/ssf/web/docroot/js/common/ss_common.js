@@ -528,6 +528,11 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 
 // Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
+	//ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
+	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
+		self.location.href = obj.href;
+		return false;  //This is a wiki, just let the URL be executed in place
+	}
 	if (showInParent != null && showInParent) {
 		try {
 			// This is a request to just open the url in the parent (if it
@@ -4586,7 +4591,11 @@ function ss_loadEntryUrl(url, id, binderId, entityType, namespace, isDashboard) 
 	
 	ss_highlightLine(id, namespace);
 
-	ss_showForumEntry(url, isDashboard);
+	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
+		self.location.href = url;  //This is a wiki, just let the URL be executed in place
+	} else {
+		ss_showForumEntry(url, isDashboard);
+	}
 	ss_hideSunburst(id, binderId);
 	return false;
 }
@@ -4782,7 +4791,20 @@ function ss_resizeEntryHistoryIframe(iframeId, loadingId) {
 	} catch(e) {ss_debug("Error: "+e)}
 }
 
-function ss_showForumEntry(url, isDashboard) {	
+function ss_showForumEntry(url, isDashboard) {
+	//ss_debug("**** ss_showForumEntry - window name: "+window.name);
+	if (typeof ss_showForumEntryOverride != "undefined") {
+		ss_showForumEntryOverride(url, isDashboard);
+		return false;
+	}
+	if (window.name == "ss_showentryframe") {
+		self.location.href = url;
+		return false;    //This is already showing in the entry frame, just let the URL be executed in place
+	}
+	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
+		self.location.href = url;
+		return false;    //This is a wiki, just let the URL be executed in place
+	}
 	if (typeof isDashboard == 'undefined') isDashboard = "no";
 	if (window.name != "ss_showentryframe" && window.name != "gwtContentIframe") {
 		if ( url.indexOf("/action/view_permalink/") > 0 &&

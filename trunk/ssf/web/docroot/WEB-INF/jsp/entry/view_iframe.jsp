@@ -68,20 +68,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <div class="ss_actions_bar1_pane ss_sidebarImage">
 <table cellspacing="0" cellpadding="0">
 <tr>
-<ssf:ifnotaccessible>
-<c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
-<td valign="middle">
-<a href="javascript: ;" 
-  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:12px; display:${ss_sidebarVisibilityShow};"
-  id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlidesm ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding-left:12px; display:${ss_sidebarVisibilityHide};"
-  id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint ss_sidebarSlide ss_sidebarSlidetext"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
-</td>
-</c:if>
-</ssf:ifnotaccessible>
 <td valign="middle">
 <c:if test="${!ss_mashupHideToolbar}">
   <jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
@@ -91,19 +77,10 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </div>
 <% } %>
 <div width="100%">
-  <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-   <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
-   </c:if>
-  </ssf:ifnotaccessible>
-  <ssf:ifnotaccessible>
 	<td valign="top" class="ss_view_info">
-  </ssf:ifnotaccessible>
 	  <c:if test="${!ss_mashupHideToolbar}">
 	    <c:if test="${ss_folderViewStyle != 'blog'}">
 	      <jsp:include page="/WEB-INF/jsp/definition_elements/folder_entry_toolbar.jsp" />
@@ -126,10 +103,18 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 				<%@ include file="/WEB-INF/jsp/binder/view_trash.jsp" %>
 			</c:if>
 			<c:if test="${!showTrash}">
-				<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+			  <% // Dispatch based on folder view style %>
+			  <c:choose>
+				  <c:when test="${ss_folderViewStyle == 'wiki'}">
+					<%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_folder_view.jsp" %>
+				  </c:when>
+				  <c:otherwise>
+					<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 						  configElement="${ssConfigElement}" 
 						  configJspStyle="${ssConfigJspStyle}" 
 						  entry="${ssBinder}" />
+				  </c:otherwise>
+			  </c:choose>
 			</c:if>
 		  </div>
 		  <% // Footer toolbar %>
@@ -155,20 +140,11 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		  </c:if>
 		</div>
 	  </div>
-  <ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
-  </ssf:ifnotaccessible>
 </div>
-<ssf:ifaccessible>
-  <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
-  <div>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-  </div>
-  </c:if>
-</ssf:ifaccessible>
 </div>
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

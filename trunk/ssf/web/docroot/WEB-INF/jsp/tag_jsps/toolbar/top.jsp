@@ -47,22 +47,23 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
-<c:if test="${ss_toolbar_item}">
-<!-- Start of toolbar item -->
-</c:if>
-<c:if test="${!ss_toolbar_item}">
-<!-- Start of toolbar -->
-<ul class="${ss_toolbar_style}">
-</c:if>
+<c:choose>
+	<c:when test="${ss_toolbar_format == 'wiki'}">
+	    <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_toolbar_view.jsp" %>
+	</c:when>
+	
+	<c:otherwise>
+	  <c:if test="${!empty ss_toolbar}">
+		<c:if test="${ss_toolbar_item}">
+		<!-- Start of toolbar item -->
+		</c:if>
+		<c:if test="${!ss_toolbar_item}">
+		<!-- Start of toolbar -->
+		<ul class="${ss_toolbar_style}">
+		</c:if>
 
-<c:if test="${!empty ss_toolbar}">
-	<c:choose>
-		<c:when test="${ss_toolbar_is_accessible == 'true'}">
-			<!-- Accessible mode has been turned off. The regular toolbar is now fully accessible. -->
-			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-		</c:when>
-		<c:otherwise>
-			<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-		</c:otherwise>
-	</c:choose>
-</c:if>
+		<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+	  </c:if>
+	</c:otherwise>
+</c:choose>
+	

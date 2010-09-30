@@ -311,7 +311,7 @@ function ss_divDrag(evt) {
     		dObjTop += parseInt(ss_getScrollXY()[1])
     		dObjLeft += parseInt(ss_getScrollXY()[0])
         }
-        ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
+        //ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;
         if (dObjTop <= 0) dObjTop = 1;
         if (ss_divDragMoveType == 'resize') {

@@ -76,6 +76,147 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* Wiki */
 
+.wiki-topics {
+    font-size: 13px;
+    background-color: #EBF5F5;
+    padding: 10px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    }
+.wiki-topic-a {
+    padding: 2px 8px;
+    white-space: nowrap;
+    }
+.wiki-topic-selected {
+    color: #fff !important;
+    background-color: #81b2bd;
+    font-weight: bold;
+    padding: 3px 5px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    }
+.wiki-page {
+    font-size: 12px;
+    line-height: 12px;
+    margin: 2px 8px 10px 10px;
+    }
+.wiki-page-a {
+    }
+.wiki-homepage-a {
+ 	font-weight: bold;
+}
+.wiki-nohomepage {
+ 	padding: 20px 10px;
+ 	font-size: 16px;
+ 	font-weight: bold;
+}
+/* wiki tabs */
+.wiki-tabs {
+    text-align: center;
+    border-bottom: 1px solid #c4c4c4;
+    margin-bottom:10px;
+    }
+.wiki-tab {
+    font-size: 12px;
+    font-weight: normal;
+    padding: 3px 6px;
+    margin: 2px 0px;
+    background: #fff;
+    display:inline-block;
+    cursor: pointer;
+    color: #fff;
+    background: #949494;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    }   
+.wiki-tab.on {
+    color: #353838;
+    background: #e6e6e4;
+    font-weight: bold;
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 6px;
+    margin: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+    }
+.wiki-tab:hover {
+    color: #fff;
+    background: #81b2bd url(../../../1Graphics/GraphicsDB/Branding/headers/NL/slice_blend_teal_27.png) repeat-x;
+    }   
+
+.wiki-actions {
+    margin: 5px;
+    text-align: right;
+    position: relative;
+    }
+
+/* Wiki Entry styles */
+/*-------------------------------------------*/
+
+.wiki-entry-wrap {
+	padding:4px;
+	}
+.wiki-entry-title {
+    font-size: 15px;
+    line-height: 18px;
+    padding-right: 25px;
+    }
+.wiki-entry-content {
+    font-size: 13px;
+    white-space: normal;
+    overflow: auto;
+    height: auto;
+    }
+.wiki-entry-actions {
+    position: absolute;
+    top: 1px;
+    right: 5px;
+    background: #ededed;
+    padding: 3px 8px;
+    z-index: 1000;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    }   
+.wiki-entry-actions img {
+    cursor: pointer;
+    padding-right: 5px;
+    }
+.wiki-entry-author {
+    font-size: 11px;
+    font-weight: bold;
+    padding-top: 2px;
+    padding-right: 10px;
+    }
+.wiki-entry-author a, a.wiki-entry-author, span.wiki-entry-author {
+    color: #353838;
+    }
+.wiki-entry-locale a {
+    color: #666;
+    }   
+.wiki-entry-locale a:hover,
+.wiki-entry-author a:hover {
+    color: #135c8f;
+    }   
+.wiki-entry-date, .wiki-entry-locale {
+    font-size: 10px;
+    color: #666;
+    padding-right: 10px;
+    padding-right: 10px;
+    white-space: nowrap;
+    }
+
+
+.nv-footer-wiki     { border-top: 1px solid #c4c4c4;}
+.nv-footer          { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: center; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
+.nv-footer-r        { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
+.nv-footer .buttons { position: absolute; right: 10px; top: 10px; min-width: 80px; }
+#opaque-div         { position: absolute; top: 0px; left: 0px; background: url(../common/images/trans30_black.png) repeat; width: 100%; height: 100%; overflow: hidden; z-index: 999;  }
+
+.ws-nw td { white-space: nowrap; }
+  
 div.ss_wiki_content {
 	padding-bottom: 30px;
 }

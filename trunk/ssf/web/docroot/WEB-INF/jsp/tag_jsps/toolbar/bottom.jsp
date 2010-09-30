@@ -47,15 +47,22 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
-<c:if test="${ss_toolbar_item}">
-	<c:if test="${!ss_toolbar_skip_separator}">
-		<li class="ss_actions_bar_separator"></li>
-	</c:if>
-<!-- End of toolbar item -->
-
-</c:if>
-<c:if test="${!ss_toolbar_item}">
-</ul>
-<!-- End of toolbar -->
-
-</c:if>
+<c:choose>
+	<c:when test="${ss_toolbar_format == 'wiki'}">
+	</c:when>
+	
+	<c:otherwise>
+		<c:if test="${ss_toolbar_item}">
+			<c:if test="${!ss_toolbar_skip_separator}">
+				<li class="ss_actions_bar_separator"></li>
+			</c:if>
+		  <!-- End of toolbar item -->
+		
+		</c:if>
+		<c:if test="${!ss_toolbar_item}">
+		  </ul>
+		  <!-- End of toolbar -->
+		
+		</c:if>
+	</c:otherwise>
+</c:choose>

@@ -34,8 +34,19 @@
 %><%--
 --%><% //Entry signature view %><%--
 --%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:choose>
+  <c:when test="${ss_parentFolderViewStyle == 'wiki' && ssDefinitionEntry.parentEntry == null}">
+    <c:if test="${!empty ssConfigDefinition}">
+	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	    configElement="${item}" 
+	    configJspStyle="${ssConfigJspStyle}" />
+	</c:if>
+  </c:when>
+  
+  <c:otherwise>
 <div class="ss_clipped_signature">
 <c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
+  <c:if test="${!ss_hideEntrySignature}">
 	<table cellspacing="0" cellpadding="0" class="margintop1">
 		<tr>
 			<td>
@@ -50,56 +61,60 @@
 			</td>
 		</tr>
 
-  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
-    ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
-	 <tr>
-	  <td>
-		<div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
-	  </td>
-	  <td class="ss_clipped_signature">
-		<div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
-	  </td>
-	  <td>
-		<div class="ss_entryContent ss_entrySignature">
-		<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+    <c:if test="${!empty ssDefinitionEntry.modification.principal && 
+      ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+	   <tr>
+	    <td>
+		  <div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
+	    </td>
+	    <td class="ss_clipped_signature">
+		  <div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
+	    </td>
+	    <td>
+		  <div class="ss_entryContent ss_entrySignature">
+		  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
 			 timeStyle="short" dateStyle="medium" />
-		</div>
-	  </td>
-	 </tr>
+		  </div>
+	    </td>
+	   </tr>
+    </c:if>
+
+    <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+	   <tr>
+	    <td>
+		  <div class="ss_entryContent ss_entrySignature margintop3">
+		    <span style="padding-right:5px;">
+		  	  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
+		  	    src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
+		  </div>
+	    </td>
+	    <td class="ss_clipped_signature">
+		  <div class="ss_entryContent margintop3">
+		    <div class="ss_entrySignatureUser">
+		      <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
+		    </div>
+		  </div>
+	    </td>
+	    <td>
+	    </td>
+	   </tr>
+    </c:if>
+    </table>
   </c:if>
 
-  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-	 <tr>
-	  <td>
-		<div class="ss_entryContent ss_entrySignature margintop3">
-		  <span style="padding-right:5px;">
-		  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
-		  	  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
-		</div>
-	  </td>
-	  <td class="ss_clipped_signature">
-		<div class="ss_entryContent margintop3">
-		<div class="ss_entrySignatureUser">
-		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
-		</div>
-		</div>
-	  </td>
-	  <td>
-	  </td>
-	 </tr>
-  </c:if>
-  </table>
   <c:if test="${!empty ssConfigDefinition}">
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
     configElement="${item}" 
     configJspStyle="${ssConfigJspStyle}" />
   </c:if>
 </c:if>
+
 <c:if test="${propertyValues_displayType[0] == 'leftAligned'}">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top" class="ss_clipped_signature <c:if test="${!ssDefinitionEntry.top}">ss_replies_indent_picture" </c:if>" >
+<c:if test="${!ss_hideEntrySignature}">
   <div>
   <c:out value="${property_caption}" />
   <c:if test="${property_showPicture}">
@@ -164,6 +179,7 @@
 		</table>
 
   </div>
+</c:if>
 </td>
 <td style="padding-left:10px;">
 <c:if test="${!empty ssConfigDefinition}">
@@ -177,6 +193,7 @@
 </c:if>
 
 <c:if test="${propertyValues_displayType[0] == 'inlineWithRating'}">
+<c:if test="${!ss_hideEntrySignature}">
 <table cellspacing="0" cellpadding="0">
 <tr>
 	<td>
@@ -240,6 +257,7 @@
 	</td>
   </tr>
 </table>
+</c:if>
 		
 	<c:if test="${!empty ssConfigDefinition}">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -248,3 +266,5 @@
 	</c:if>
 </c:if>
 </div>
+  </c:otherwise>
+</c:choose>

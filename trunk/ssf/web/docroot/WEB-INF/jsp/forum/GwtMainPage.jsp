@@ -111,7 +111,7 @@
 
 		var ss_workareaIframeMinOffset = 12;
 		function ss_setWorkareaIframeSize() {
-			ss_debug("**** "+ss_debugTrace());
+			//ss_debug("**** "+ss_debugTrace());
 			//If possible, try to directly set the size of the iframe
 			//This may fail if the iframe is showing something in another domain
 			//If so, the alternate method (via ss_communicationFrame) is used to set the window height
@@ -124,7 +124,7 @@
 				if (window.frames['gwtContentIframe'] != null) {
 					var iframeHeight = window.gwtContentIframe.document.body.scrollHeight;
 					if (parseInt(iframeDiv.style.height) != parseInt(iframeMinimum)) {
-						ss_debug("   ss_setWorkareaIframeSize: Setting iframe height to "+parseInt(iframeMinimum) + "px")
+						//ss_debug("   ss_setWorkareaIframeSize: Setting iframe height to "+parseInt(iframeMinimum) + "px")
 						iframeDiv.style.height = parseInt(iframeMinimum) + "px";
 					}
 				}
@@ -138,7 +138,7 @@
 		//Routine to set the size and position of the entry popup frame in the "newpage" mode
 		var ss_entryPopupBottomMargin = 46;
 		function ss_setEntryPopupIframeSize() {
-			ss_debug("**** "+ss_debugTrace());
+			//ss_debug("**** "+ss_debugTrace());
 			if (ss_isGwtUIActive && ss_getUserDisplayStyle() == "newpage") {
 				try {
 					var contentIframe = document.getElementById('contentControl');
@@ -156,7 +156,7 @@
 					if (iframeMinimum < 100) iframeMinimum = 100;
 					if (window.frames['ss_showentryframe'] != null) {
 						if (parseInt(entryIframeFrame.style.height) != parseInt(iframeMinimum)) {
-							ss_debug("   ss_showentryframe height: "+entryIframeFrame.style.height + ", set to: " + iframeMinimum)
+							//ss_debug("   ss_showentryframe height: "+entryIframeFrame.style.height + ", set to: " + iframeMinimum)
 							entryIframeFrame.style.height = parseInt(iframeMinimum) + "px";
 						}
 					}

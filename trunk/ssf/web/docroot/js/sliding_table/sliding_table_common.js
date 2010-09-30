@@ -247,7 +247,7 @@ function ss_saveSlidingTableCoords() {
 	    ss_colWidthsUser[i] = percentage+"%"
     }
 
-    ss_debug('Save col widths: ' + s)
+    //ss_debug('Save col widths: ' + s)
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = ss_saveColumnPositionsUrl;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object

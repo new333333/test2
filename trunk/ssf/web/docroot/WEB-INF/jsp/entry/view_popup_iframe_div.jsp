@@ -42,7 +42,7 @@
 	var ss_popupBackgroundColor = "${ss_style_background_color}";
 
 	function ss_popupFrameLoaded() {
-		ss_debug("**** "+ss_debugTrace());
+		//ss_debug("**** "+ss_debugTrace());
 		var frameObj = self.document.getElementById("ss_showpopupframe");
 		if (frameObj != null && !(frameObj.src.indexOf("null.html") >= 0)) {
 			var entryContentDiv = self.document.getElementById("ss_entryContentDiv");

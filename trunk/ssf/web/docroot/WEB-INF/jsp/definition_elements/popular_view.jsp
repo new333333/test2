@@ -34,7 +34,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${!ss_pseudoEntity}">
-<c:if test="${empty ss_popular_view_seen}">
+<c:if test="${!ss_popular_view_seen}">
 <c:set var="ss_popular_view_seen" value="true" scope="request"/>
 <c:if test="${empty ss_ratingSupportLoaded}">
 <div id="ss_rating_info_div${renderResponse.namespace}" 

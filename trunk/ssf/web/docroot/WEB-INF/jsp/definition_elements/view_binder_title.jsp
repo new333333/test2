@@ -158,66 +158,11 @@
 	    </c:if>
     
 	<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
-	<div id="ss_profile_box_h1">
-	  <ul class="ss_horizontal ss_nobullet">
-	  <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
-	  <c:set var="action" value="view_ws_listing"/>
-	  <jsp:useBean id="parentBinder2" type="java.lang.Object" />
-	  <%
-		Stack parentTree2 = new Stack();
-		while (parentBinder2 != null) {
-			parentTree2.push(parentBinder2);
-			if (((Binder)parentBinder2).getEntityType().equals(org.kablink.teaming.domain.EntityIdentifier.EntityType.workspace)) break;
-			parentBinder2 = ((Binder)parentBinder2).getParentBinder();
-		}
-		while (!parentTree2.empty()) {
-			Binder nextBinder2 = (Binder) parentTree2.pop();
-	  %>
-	  <c:set var="nextBinder" value="<%= nextBinder2 %>"/>
-	  <li>
-  	  <c:if test="${nextBinder.entityType == 'folder' && !empty ssNavigationLinkTree[nextBinder.id]}">
-		 <table cellpadding="0" cellspacing="0">
-		 <tr>
-		   <td valign="top">
-		   <ssf:tree treeName="ss_binderTitle${nextBinder.id}${renderResponse.namespace}" 
-  			  treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
-  			  topId="${nextBinder.id}" rootOpen="false" 
-  			  showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
-  			  namespace="${renderResponse.namespace}"
-  			  highlightNode="${nextBinder.id}"
-  			  titleClass="" />
-  		   </td>
-  		   <%  if (!parentTree2.empty()) {  %>
-  		     <td valign="top"><div class="ss_profile_box_h1 ss_treeWidget">&nbsp;&gt;&gt;&nbsp;&nbsp;</div>
-  		     </td>
-  		   <%  }  %>
-  		 </tr>
-  		 </table>
-	  </c:if>
-	  <c:if test="${nextBinder.entityType != 'folder' || empty ssNavigationLinkTree[nextBinder.id]}">
-		  <div class="ss_treeWidget">
-		  <a href="<ssf:url crawlable="true"
-	           adapter="true" portletName="ss_forum"
-	           folderId="${nextBinder.id}" 
-	           action="${action}"/>">
-		    <c:if test="${empty nextBinder.title}">
-	          <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
-	        </c:if>
-          	<span>${nextBinder.title}</span>
-	      </a><%  if (!parentTree2.empty()) {  %>&nbsp;&gt;&gt;&nbsp;&nbsp;<%  }  %>
-	      </div>
-	  </c:if>
-	  </li>
-	  <c:set var="action" value="view_folder_listing"/>
-  	 <%
-	   }
-  	 %>
-	  </ul>
-    </div>
+	  <%@ include file="/WEB-INF/jsp/definition_elements/view_binder_title_folder.jsp" %>
     </c:if>
 	
 	<div class="ss_clear"></div>
-
+<c:set var="ss_binderTitleShown" value="true" scope="request"/>
 
 
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

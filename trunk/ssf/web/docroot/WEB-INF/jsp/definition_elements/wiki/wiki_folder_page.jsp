@@ -32,21 +32,26 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-      
+<c:set var="colCounter1" value="${fn:substringBefore(((fn:length(ssFolderEntries) + 2) / 3), '.')}"/>
+<c:set var="colCounter2" value="${fn:substringBefore(((fn:length(ssFolderEntries) + 1) / 3), '.')}"/>
+<c:set var="counter" value="${colCounter1}"/>
+<table width="100%">
+<tr>
+<td valign="top" width="34%">
 <c:forEach var="entry1" items="${ssFolderEntries}" varStatus="status" >
 	<jsp:useBean id="entry1" type="java.util.HashMap" />
 	<c:set var="seenStyleburst" value=""/>
 	<%
 		String folderLineId = "folderLine_" + (String) entry1.get("_docId");
-		String seenStyle = "";
-		String seenStyleFine = "ss_finePrint";
+		String seenStyle = " ";
+		String seenStyleFine = "ss_finePrint ";
 		if (!ssSeenMap.checkIfSeen(entry1)) {
-			seenStyle = "ss_unseen";
-			seenStyleFine = "ss_unseen ss_fineprint";
+			seenStyle = "ss_unseen ";
+			seenStyleFine = "ss_unseen ss_fineprint ";
 			%><c:set var="seenStyleburst" value="1"/><%
 		}
 	%>
-    <div class="margintop2 marginleft2">
+    <div class="wiki-page">
 	  <!-- Sunburst -->
 	  <c:if test="${!empty seenStyleburst}">
 	  	<a id="ss_sunburstDiv${ssBinder.id}_${entry1._docId}" href="javascript: ;" 
@@ -56,7 +61,7 @@
 	  	  align="text-bottom" border="0" <ssf:alt tag="sunburst.click"/> />&nbsp;
 	    </a>
 	  </c:if>
-      <a 
+      <a class="wiki-page-a <c:if test="${entry1._docId == ss_wikiHomepageEntryId}"> wiki-homepage-a</c:if>"
         href="<ssf:url     
           adapter="true" 
           portletName="ss_forum" 
@@ -69,15 +74,41 @@
     	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
     	</c:if>
-        onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');ss_loadEntry(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 		    	
+        onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return true;" 		    	
       ><c:if test="${empty entry1.title}"
       ><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyleFine %>"
         >--<ssf:nlt tag="entry.noTitle"/>--</span
       ></c:if><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyle %>"
         ><c:out value="${entry1.title}" escapeXml="true"/></span></a>
+        <c:if test="${entry1._docId == ss_wikiHomepageEntryId}">
+          <a href="<ssf:url     
+            adapter="true" 
+            portletName="ss_forum" 
+            folderId="${ssFolder.id}" 
+            action="view_folder_entry" 
+            entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true"><ssf:param
+            name="entryViewStyle" value="popup"/><ssf:param
+            name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
+            title="<ssf:nlt tag="wiki.homePage"/>"
+          ><img border="0" src="<html:rootPath/>images/pics/wiki/home16.png" 
+            alt="<ssf:nlt tag="wiki.homePage"/>"></a>
+        </c:if>
     </div>
+    <c:set var="counter" value="${counter - 1}"/>
+    <c:if test="${counter <= 0}">
+      <c:set var="counter" value="${colCounter2}"/>
+      </td>
+      <td valign="top" width="33%">
+    </c:if>
     
 </c:forEach>
+</td>
+</tr>
+</table>
+
+<c:if test="${empty ssFolderEntries}">
+  <div style="padding:20px;">[<ssf:nlt tag="binder.no_entries"/>]</div>
+</c:if>
 
 <c:if test="${!empty ssFolderEntries}">
 	<c:forEach var="entry2" items="${ssFolderEntries}" >
