@@ -165,29 +165,26 @@ public class GwtMainPage extends Composite
 		final String errMsg = m_requestInfo.getErrMsg();
 		if ( GwtClientHelper.hasString( errMsg ) )
 		{
-			// Yes, tell the user.  We do this as a deferred command so
-			// that the UI can continue to render while the message box
-			// is displayed.
+			// Yes
+			// Execute a deferred command the will display it.
 			DeferredCommand.addCommand( new Command()
 			{
-				public void execute() {
+				public void execute()
+				{
+					// Is the user logged in?
+					if ( m_requestInfo.isUserLoggedIn() )
+					{
+						// Yes
+						// Take the user to their workspace.
+						handleAction( TeamingAction.MY_WORKSPACE, null );
+					}
+					
+					// Tell the user.  We do this as a deferred command
+					// so that the UI can continue to render while the
+					// message box is displayed.
 					Window.alert( errMsg );
 				}
 			} );
-			
-			// Is the user logged in?
-			if ( m_requestInfo.isUserLoggedIn() )
-			{
-				// Yes
-				// Execute a deferred command to take the user to their workspace.
-				DeferredCommand.addCommand( new Command()
-				{
-					public void execute()
-					{
-						handleAction( TeamingAction.MY_WORKSPACE, null );
-					}
-				} );
-			}
 		}
 		
 		// Add the main menu to the page.

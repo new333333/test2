@@ -67,7 +67,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -104,7 +103,6 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -696,7 +694,7 @@ public class GwtServerHelper {
 				else {
 					// Yes, we can access the binder!  Is it in the
 					// trash?
-					if (isBinderPreDeleted(binder)) {
+					if (GwtUIHelper.isBinderPreDeleted(binder)) {
 						// Yes!  Ignore the favorite.
 						reply = null;
 					}
@@ -1722,7 +1720,7 @@ public class GwtServerHelper {
 		}
 
 		// Do we have a Binder that's in the trash...
-		if ((null != reply) && isBinderPreDeleted(reply)) {
+		if ((null != reply) && GwtUIHelper.isBinderPreDeleted(reply)) {
 			// ...we want to ignore it.
 			reply = null;
 		}
@@ -1755,7 +1753,7 @@ public class GwtServerHelper {
 	 */
 	public static BinderInfo getBinderInfo(AllModulesInjected bs, String binderId) {
 		BinderInfo reply;
-		Binder binder = getBinderSafely(bs.getBinderModule(), binderId);
+		Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
 		if (null == binder) {
 			reply = new BinderInfo();
 			reply.setBinderId(binderId);
@@ -1774,34 +1772,6 @@ public class GwtServerHelper {
 		                                    reply.setBinderType(   getBinderType(      binder));
 		if      (reply.isBinderFolder())    reply.setFolderType(   getFolderType(      binder));
 		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(getWorkspaceType(   binder));
-		return reply;
-	}
-	
-	/**
-	 * Returns s Binder from it's ID guarding against any exceptions.
-	 * If an exception is caught, null is returned.
-	 * 
-	 * @param bm
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	public static Binder getBinderSafely(BinderModule bm, String binderId) {
-		return getBinderSafely(bm, Long.parseLong(binderId));
-	}
-	
-	public static Binder getBinderSafely(BinderModule bm, Long binderId) {
-		Binder reply;
-		try {
-			reply = bm.getBinder(binderId);
-			if ((null != reply) && (reply.isDeleted() || isBinderPreDeleted(reply))) {
-				reply = null;
-			}
-		}
-		catch (Exception e) {
-			m_logger.debug("GwtServerHelper.getBinderSafely(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
-			reply = null;
-		}
 		return reply;
 	}
 	
@@ -1962,34 +1932,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns s FolderEntry from it's ID guarding against any
-	 * exceptions.  If an exception is caught, null is returned.
-	 * 
-	 * @param fm
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public static FolderEntry getEntrySafely(FolderModule fm, String entryId) {
-		return getEntrySafely(fm, Long.parseLong(entryId));
-	}
-	
-	public static FolderEntry getEntrySafely(FolderModule fm, Long entryId) {
-		FolderEntry reply;
-		try {
-			reply = fm.getEntry(null, entryId);
-			if ((null != reply) && (reply.isDeleted() || reply.isPreDeleted())) {
-				reply = null;
-			}
-		}
-		catch (Exception e) {
-			m_logger.debug("GwtServerHelper.getEntrySafely(FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
-			reply = null;
-		}
-		return reply;
-	}
-	
-	/**
 	 * Returns information about the current user's favorites.
 	 * 
 	 * @return
@@ -2144,8 +2086,8 @@ public class GwtServerHelper {
 			case BINDER:
 				// If the tab's binder is no longer accessible...
 				Long binderId = tab.getBinderId();
-				Binder binder = getBinderSafely(bs.getBinderModule(), binderId);
-				if ((null == binder) || isBinderPreDeleted(binder)) {
+				Binder binder = GwtUIHelper.getBinderSafely(bs.getBinderModule(), binderId);
+				if ((null == binder) || GwtUIHelper.isBinderPreDeleted(binder)) {
 					// ...skip it.
 					continue;
 				}
@@ -2508,34 +2450,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns s User from it's ID guarding against any exceptions.  If
-	 * an exception is caught, null is returned.
-	 * 
-	 * @param pm
-	 * @param userId
-	 * 
-	 * @return
-	 */
-	public static User getUserSafely(ProfileModule pm, String userId) {
-		return getUserSafely(pm, Long.parseLong(userId));
-	}
-	
-	public static User getUserSafely(ProfileModule pm, Long userId) {
-		User reply;
-		try {
-			reply = ((User) pm.getEntry(userId));
-			if ((null != reply) && reply.isDeleted()) {
-				reply = null;
-			}
-		}
-		catch (Exception e) {
-			m_logger.debug("GwtServerHelper.getUserSafely(User could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
-			reply = null;
-		}
-		return reply;
-	}
-	
-	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 
 	 * @param bs
@@ -2570,27 +2484,6 @@ public class GwtServerHelper {
 		if (WorkspaceType.OTHER == reply) {
 			m_logger.debug("GwtServerHelper.getWorkspaceType( 'Could not determine workspace type' ):  " + binder.getPathName());
 		}
-		return reply;
-	}
-	
-	/*
-	 * Returns true if a Binder is preDeleted and false otherwise. 
-	 */
-	private static boolean isBinderPreDeleted(Binder binder) {
-		// If we have a Binder...
-		boolean reply = false;
-		if (null != binder) {
-			// ...check it if it's a Folder or Workspace.
-			if (binder instanceof Folder) {
-				reply = ((Folder) binder).isPreDeleted();
-			}
-			else if (binder instanceof Workspace) {
-				reply = ((Workspace) binder).isPreDeleted();
-			}
-		}
-		
-		// If we get here, reply is true if the Binder is
-		// preDeleted and false otherwise.
 		return reply;
 	}
 	

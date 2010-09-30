@@ -1161,7 +1161,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		if ( binderId != null && binderId.length() > 0 )
 		{
-			Binder binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+			Binder binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
 			if (null != binder)
 			{
 				reply = PermaLinkUtil.getPermalink( getRequest( ri ), binder );
@@ -1338,7 +1338,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING );
 		adapterUrl.setParameter( WebKeys.URL_BINDER_ID, binderId );
 
-		if (GwtServerHelper.getWorkspaceType(GwtServerHelper.getBinderSafely(getBinderModule(), binderId)) == WorkspaceType.USER) {
+		if (GwtServerHelper.getWorkspaceType(GwtUIHelper.getBinderSafely(getBinderModule(), binderId)) == WorkspaceType.USER) {
 			// This is a User Workspace so add the owner in and don't append team members
 			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
 			if (p != null) {
@@ -1803,7 +1803,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		String reply;
 		
-		Binder binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+		Binder binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
 		if (null != binder)
 		{
 			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
@@ -2692,7 +2692,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			Binder binder;
 			
 			// No!  Is the binder other than the profiles container?
-			binder = GwtServerHelper.getBinderSafely( getBinderModule(), binderId );
+			binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
 			if ( ( null != binder ) && ( EntityIdentifier.EntityType.profiles != binder.getEntityType() ) )
 			{
 				AdaptedPortletURL adapterUrl;
