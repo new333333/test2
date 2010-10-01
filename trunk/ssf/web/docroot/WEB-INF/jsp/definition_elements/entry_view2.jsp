@@ -42,7 +42,8 @@
 	<div class="ss_style ss_portlet_style ss_portlet">
 	<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 	<table cellspacing="0" cellpadding="0" width="100%" 
-		<c:if test="${ss_parentFolderViewStyle != 'wiki'}"> class="ss_actions_bar13_pane"> </c:if>
+		<c:if test="${ss_parentFolderViewStyle != 'wiki'}"> class="ss_actions_bar13_pane" </c:if>
+	>
 	<tr><td valign="top">
 	  <ssHelpSpot helpId="workspaces_folders/entries/entry_toolbar" offsetX="0" 
 	    title="<ssf:nlt tag="helpSpot.entryToolbar"/>"></ssHelpSpot>
