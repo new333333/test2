@@ -53,17 +53,17 @@
 	</c:when>
 	
 	<c:otherwise>
-	  <c:if test="${!empty ss_toolbar}">
 		<c:if test="${ss_toolbar_item}">
-		<!-- Start of toolbar item -->
+		  <!-- Start of toolbar item -->
 		</c:if>
 		<c:if test="${!ss_toolbar_item}">
-		<!-- Start of toolbar -->
-		<ul class="${ss_toolbar_style}">
+		  <!-- Start of toolbar -->
+		  <ul class="${ss_toolbar_style}">
 		</c:if>
-
-		<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
-	  </c:if>
+	
+	    <c:if test="${!empty ss_toolbar}">
+		  <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+	    </c:if>
 	</c:otherwise>
 </c:choose>
 	
