@@ -34,14 +34,6 @@
 %>
 <% // View entry data dispatcher %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
-<c:choose>
-  <c:when test="${ss_parentFolderViewStyle == 'wiki'}">
-      <jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki_entry_data.jsp" />
-  </c:when>
-  
-  <c:otherwise>
-
 <jsp:useBean id="property_name" type="String" scope="request" />
 <jsp:useBean id="property_caption" type="String" scope="request" />
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
@@ -70,7 +62,7 @@
 		<%
 
 	} else if (itemType.equals("description")) {
-		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_description.jsp" /><%
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki_entry_description.jsp" /><%
 
 	} else if (itemType.equals("text") || itemType.equals("number") || itemType.equals("hidden")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" /><%
@@ -141,7 +133,3 @@
         <%
 	}
 %>
-
-  </c:otherwise>
-</c:choose>
-
