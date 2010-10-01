@@ -64,6 +64,8 @@
    </c:if>
    <c:set var="totalReplyCount" value="<%= ((FolderEntry)thisEntry).getTotalReplyCount() %>"/>
    <c:if test="${empty totalReplyCount}"><c:set var="totalReplyCount" value="0"/></c:if>
+   <c:set var="attachmentCount" value="<%= ((FolderEntry)thisEntry).getTotalReplyCount() %>"/>
+   <c:if test="${empty totalReplyCount}"><c:set var="totalReplyCount" value="0"/></c:if>
 
 <c:if test="${entryType == 'entry'}">
   <c:set var="ss_hideEntrySignature" value="true" scope="request"/>
@@ -85,6 +87,14 @@
   <div class="ss_clear"></div>
 </c:if>
 
+<c:set var="ss_hideCommentsAndAttachmentsSection" value="true" scope="request"/>
+<c:set var="ss_commentsAndAttachmentsReplyCount" value="${totalReplyCount}" scope="request"/>
+<c:if test="${empty ssPrimaryFileAttribute}">
+  <c:set var="ss_commentsAndAttachmentsAttachmentCount" value="${fn:length(ssDefinitionEntry.fileAttachments)}" scope="request"/>
+</c:if>
+<c:if test="${!empty ssPrimaryFileAttribute && !empty ssDefinitionEntry.fileAttachments}">
+  <c:set var="ss_commentsAndAttachmentsAttachmentCount" value="${fn:length(ssDefinitionEntry.fileAttachments) - 1}" scope="request"/>
+</c:if>
 <c:set var="ss_wikiEntryBeingShown" value="${ssDefinitionEntry}" scope="request"/>
 <c:set var="ss_wikiCurrentTab" value="page" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_tabs.jsp" %>
