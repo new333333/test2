@@ -1245,8 +1245,8 @@ public class ListFolderHelper {
 			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, wikiHomePage);
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_MAP, entryMap);
 			entryMap.put("entry", wikiHomePage);
-			if (DefinitionHelper.getDefinition(wikiHomePage.getEntryDefDoc(), entryMap, "//item[@name='entryBlogView']") == false) {
-				//this will fill it the entryDef for the entry
+			if (DefinitionHelper.getDefinition(wikiHomePage.getEntryDefDoc(), entryMap, "//item[@name='entryView']") == false) {
+				//this will fill in the entryDef for the entry
 				DefinitionHelper.getDefaultEntryView(wikiHomePage, entryMap, "//item[@name='entryView']");				
 			}
 			//See if this entry can have replies added

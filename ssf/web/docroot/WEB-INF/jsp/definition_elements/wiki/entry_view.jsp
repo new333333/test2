@@ -59,7 +59,9 @@
    <c:set var="creationPrincipal" value="<%= ((FolderEntry)thisEntry).getCreation().getPrincipal() %>"/>
    <c:set var="modificationPrincipal" value="<%= ((FolderEntry)thisEntry).getModification().getPrincipal() %>"/>
    <c:set var="modificationDate" value="<%= ((FolderEntry)thisEntry).getModification().getDate() %>"/>
-   <c:set var="reservationPrincipal" value="<%= ((FolderEntry)thisEntry).getReservation().getPrincipal() %>"/>
+   <c:if test="<%= ((FolderEntry)thisEntry).getReservation() != null %>">
+     <c:set var="reservationPrincipal" value="<%= ((FolderEntry)thisEntry).getReservation().getPrincipal() %>"/>
+   </c:if>
    <c:set var="totalReplyCount" value="<%= ((FolderEntry)thisEntry).getTotalReplyCount() %>"/>
    <c:if test="${empty totalReplyCount}"><c:set var="totalReplyCount" value="0"/></c:if>
 
@@ -124,8 +126,7 @@
 		</td>
 	  </tr>
 	  
-	  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
-	    ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
+	  <c:if test="${!empty modificationPrincipal && modificationDate > creationDate}">
 	  <tr>
 		<td>
 		  <span class="wiki-entry-date"><ssf:nlt tag="wiki.modified"/></span>
@@ -143,7 +144,7 @@
       <c:if test="${!empty reservationPrincipal}">
 	  <tr>
 		<td>
-		  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
+		  <img style="margin: 7px 3px 7px 0px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
 		  	    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 		  <span class="wiki-entry-date"><ssf:nlt tag="wiki.locked"/></span>
 		</td>
