@@ -1791,8 +1791,8 @@ div.ss_box_top_rounded {
   padding:0px;
   }
 .ss_twIcon {
-  width:19px;
-  height:20px;
+  width:16px;
+  height:16px;
   border:none;
   margin: 1px 2px 0px 0px !important;
   padding-top:10px;
