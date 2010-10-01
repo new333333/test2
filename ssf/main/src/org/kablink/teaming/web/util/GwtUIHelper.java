@@ -703,18 +703,15 @@ public class GwtUIHelper {
 	 * exceptions.  If an exception is caught, null is returned.
 	 * 
 	 * @param fm
+	 * @param binderId
 	 * @param entryId
 	 * 
 	 * @return
 	 */
-	public static FolderEntry getEntrySafely(FolderModule fm, String entryId) {
-		return getEntrySafely(fm, Long.parseLong(entryId));
-	}
-	
-	public static FolderEntry getEntrySafely(FolderModule fm, Long entryId) {
+	public static FolderEntry getEntrySafely(FolderModule fm, Long binderId, Long entryId) {
 		FolderEntry reply;
 		try {
-			reply = fm.getEntry(null, entryId);
+			reply = fm.getEntry(binderId, entryId);
 			if ((null != reply) && (reply.isDeleted() || reply.isPreDeleted())) {
 				reply = null;
 			}
@@ -726,6 +723,21 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
+	public static FolderEntry getEntrySafely(FolderModule fm, Long entryId) {
+		// Always use the initial form of the method.
+		return getEntrySafely(fm, null, entryId);
+	}
+	
+	public static FolderEntry getEntrySafely(FolderModule fm, String entryId) {
+		// Always use the initial form of the method.
+		return getEntrySafely(fm, null, Long.parseLong(entryId));
+	}
+	
+	public static FolderEntry getEntrySafely(FolderModule fm, String binderId, String entryId) {
+		// Always use the initial form of the method.
+		return getEntrySafely(fm, Long.parseLong(binderId), Long.parseLong(entryId));
+	}
+		
 	/**
 	 * Returns the string representation of the top most workspace ID.
 	 * If the true top workspace ID can't be accessed, the current
