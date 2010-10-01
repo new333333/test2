@@ -39,11 +39,12 @@
       <property name="type" value="miniblog"/> 
     </properties> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_folder_miniblog"/>  
-    <property name="name" value="_miniBlogFolder"/>  
-    <property name="family" value="miniblog"/>  
-    <property name="icon" value="/icons/folder_blue_blog.gif"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_folder_miniblog"/>
+    <property name="name" value="_miniBlogFolder"/>
+    <property name="family" value="miniblog"/>
+    <property name="defaultToFileEntries" value="true"/>
+    <property name="icon" value="/icons/folder_blue_microblog.gif"/>
+  </properties>
   <export-mappings/>
 </definition>
