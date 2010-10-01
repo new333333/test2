@@ -1245,16 +1245,15 @@ public class ListFolderHelper {
 			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, wikiHomePage);
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_MAP, entryMap);
 			entryMap.put("entry", wikiHomePage);
-			if (DefinitionHelper.getDefinition(wikiHomePage.getEntryDef(), entryMap, "//item[@name='entryView']") == false) {
+			if (DefinitionHelper.getDefinition(wikiHomePage.getEntryDefDoc(), entryMap, "//item[@name='entryBlogView']") == false) {
 				//this will fill it the entryDef for the entry
 				DefinitionHelper.getDefaultEntryView(wikiHomePage, entryMap, "//item[@name='entryView']");				
 			}
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
-			Definition def = wikiHomePage.getEntryDef();
 			if (bs.getFolderModule().testAccess(wikiHomePage, FolderOperation.addReply)) {
 				accessControlEntryMap.put("addReply", new Boolean(true));
-				Document defDoc = def.getDefinition();
+				Document defDoc = wikiHomePage.getEntryDefDoc();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				if (!replyStyles.isEmpty()) {
 					String replyStyleId = (String)replyStyles.get(0);
