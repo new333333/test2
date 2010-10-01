@@ -416,6 +416,8 @@ public class GwtMainPage extends Composite
 	
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
+		restoreUIState();
+
 		// If the context was loaded because of the initial login and
 		// we're entering activity stream mode by default...
 		if ( m_requestInfo.isShowWhatsNewOnLogin() )
