@@ -60,6 +60,17 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 	ss_resizeEntryHistoryIframe(iframeId);
 }
 
+function ss_showHideCommentsAndAttachmentsSection() {
+	var divObj = self.document.getElementById("ss_commentsAndAttachmentsSection");
+	if (divObj != null) {
+		if (divObj.style.display != "block") {
+			divObj.style.display = "block";
+		} else {
+			divObj.style.display = "none";
+		}
+	}
+}
+
 </script>
 <%
 	//Get the user's desired region view (if set)
@@ -91,7 +102,9 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 		function() {ss_initTab('${ss_thisCurrentTab}${ss_tabDivCount}', '${ss_tabDivCount}');});
 </script>
 
-<div class="ss_entryContent">
+<div id="ss_commentsAndAttachmentsSection" class="ss_entryContent"
+  <c:if test="${ss_hideCommentsAndAttachmentsSection}"> style="display:none;" </c:if>
+>
 	<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
 	  <table cellspacing="0" cellpadding="0" width="100%">
 	  <tr>
