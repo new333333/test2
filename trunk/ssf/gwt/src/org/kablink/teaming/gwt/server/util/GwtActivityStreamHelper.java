@@ -63,11 +63,14 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -108,6 +111,7 @@ public class GwtActivityStreamHelper {
 		private String m_authorAvatarUrl;	// The author's avatar URL.
 		private String m_authorId;			// The author's ID.
 		private String m_authorWsId;		// The author's workspace ID.
+		private String m_authorTitle;		// The author's title, given visibility by the current user.
 
 		/*
 		 * Class constructor.
@@ -115,7 +119,8 @@ public class GwtActivityStreamHelper {
 		private AuthorInfo() {
 			m_authorAvatarUrl =
 			m_authorId        =
-			m_authorWsId      = "";
+			m_authorWsId      =
+			m_authorTitle     = "";
 		}
 
 		/*
@@ -155,7 +160,9 @@ public class GwtActivityStreamHelper {
 		 * and that is returned.
 		 */
 		@SuppressWarnings("unchecked")
-		private static AuthorInfo getAuthorInfo(HttpServletRequest request, AllModulesInjected bs, Map<String, AuthorInfo> authorCache, String authorId) {
+		private static AuthorInfo getAuthorInfo(HttpServletRequest request, AllModulesInjected bs, Map<String, AuthorInfo> authorCache, String authorId, String authorTitle) {
+			ProfileModule pm = bs.getProfileModule();
+			
 			// If we caching an author information object for this
 			// ID...
 			AuthorInfo reply = authorCache.get(authorId);
@@ -171,8 +178,8 @@ public class GwtActivityStreamHelper {
 			reply.m_authorAvatarUrl = "";			
 			if (MiscUtil.hasString(authorId)) {
 				Long authorWsId;
-				try                  {authorWsId = bs.getProfileModule().getEntry(Long.parseLong(authorId)).getWorkspaceId();}
-				catch (Exception ex) {authorWsId = null;                                                                     }
+				try                  {authorWsId = pm.getEntry(Long.parseLong(authorId)).getWorkspaceId();}
+				catch (Exception ex) {authorWsId = null;                                                  }
 				if (null != authorWsId) {
 					reply.m_authorWsId = String.valueOf(authorWsId);
 				}
@@ -181,8 +188,10 @@ public class GwtActivityStreamHelper {
 				if (null != authorWsId) {
 					// Yes!  Can we access any avatars for the author?
 					String paUrl = null;
-					ProfileAttribute pa = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);
-					List<ProfileAttributeListElement> paValue = ((List<ProfileAttributeListElement>) pa.getValue());
+					ProfileAttribute pa;
+					try                  {pa = GwtProfileHelper.getProfileAvatars(request, bs, authorWsId);}
+					catch (Exception ex) {pa = null;                                                       }
+					List<ProfileAttributeListElement> paValue = ((null == pa) ? null : ((List<ProfileAttributeListElement>) pa.getValue()));
 					if((null != paValue) && (!(paValue.isEmpty()))) {
 						// Yes!  We'll use the first one as the URL.
 						// Does it have a URL?
@@ -195,6 +204,11 @@ public class GwtActivityStreamHelper {
 					reply.m_authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
 				}
 			}
+
+			// Store the title for the author based on the user's
+			// access to it.
+			reply.m_authorTitle = getUserTitle(pm, authorId, authorTitle);
+			
 
 			// If we get here, reply refers to the AuthorInfo object
 			// constructed for the ID received.  Add it to the cache
@@ -289,7 +303,7 @@ public class GwtActivityStreamHelper {
 
 		// If we can't find any replies for this entry...
 		Criteria searchCriteria = SearchUtils.entryReplies(feId);
-		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, comments);
+		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, Integer.MAX_VALUE);
 		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
@@ -300,6 +314,7 @@ public class GwtActivityStreamHelper {
 
 		// Scan the replies...
 		List<ActivityStreamEntry> commentList = ase.getComments();
+		int commentCount = 0;
     	for (Iterator it = searchEntries.iterator(); it.hasNext(); ) {
     		// ...and add an activity stream entry for the next entry
     		// ...map from the search results. 
@@ -311,8 +326,15 @@ public class GwtActivityStreamHelper {
     			binderCache,
     			((Map) it.next()),
     			false);	// false -> This is a comment activity stream entry for an activity stream data.
-    		comment.setEntryComments(getCommentCount(bs, comment.getEntryId()));
-    		commentList.add(comment);
+    		
+    		if (null != comment) {
+    			comment.setEntryComments(getCommentCount(bs, comment.getEntryId()));
+    			commentList.add(comment);
+    			commentCount += 1;
+    			if (commentCount == comments) {
+    				break;
+    			}
+    		}
     	}
 	}
 
@@ -398,6 +420,28 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static ActivityStreamEntry buildASEFromEM(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, Map<String, AuthorInfo> authorCache, Map<String, BinderInfo> binderCache, Map em, boolean baseEntry) {
+		// Do we have both binder and entry IDs to construct this
+		// activity stream entry with?
+		String binderId = getSFromEM(em, Constants.BINDER_ID_FIELD);
+		String entryId  = getSFromEM(em, Constants.DOCID_FIELD    );
+		FolderEntry fe = null;
+		if (MiscUtil.hasString(binderId) && MiscUtil.hasString(entryId)) {
+			// Yes!  Can we access the entry?
+			fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), binderId, entryId);
+			if (null != fe) {
+				// Yes!  Do we actually have rights to read it?
+				try {AccessUtils.readCheck(fe);}
+				catch (Exception e) {fe = null;}
+			}
+		}
+		
+		// If we don't have access to the entry...
+		if (null == fe) {
+			// ...we don't show it in an activity stream.
+			return null;
+		}
+		
+		
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
@@ -406,29 +450,25 @@ public class GwtActivityStreamHelper {
 			request,
 			bs,
 			authorCache,
+			getSFromEM(em, Constants.MODIFICATIONID_FIELD),
+			getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
+		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
+		reply.setAuthorId(         authorInfo.m_authorId       );
+		reply.setAuthorName(       authorInfo.m_authorTitle    );
+		reply.setAuthorWorkspaceId(authorInfo.m_authorWsId     );
+		reply.setAuthorLogin(
 			getSFromEM(
 				em,
-				Constants.MODIFICATIONID_FIELD));
-		reply.setAuthorId(         authorInfo.m_authorId       );
-		reply.setAuthorWorkspaceId(authorInfo.m_authorWsId     );
-		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
-		reply.setAuthorLogin(getSFromEM(em, Constants.MODIFICATION_NAME_FIELD ));
-		reply.setAuthorName( getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
+				Constants.MODIFICATION_NAME_FIELD));
 
 		// Then the parent binder information.  Does the entry map
 		// contain the ID of the binder that contains the entry?
-		BinderInfo binderInfo = BinderInfo.getBinderInfo(
-			bs,
-			binderCache,
-			getSFromEM(
-				em,
-				Constants.BINDER_ID_FIELD));
+		BinderInfo binderInfo = BinderInfo.getBinderInfo(bs, binderCache, binderId);
 		reply.setParentBinderId(   binderInfo.m_binderId   );
 		reply.setParentBinderHover(binderInfo.m_binderHover);
 		reply.setParentBinderName( binderInfo.m_binderName );
 
 		// And finally, the entry information.
-		String entryId =               getSFromEM(        em, Constants.DOCID_FIELD              );
 		reply.setEntryId(              entryId                                                   );
 		reply.setEntryDescription(     getEntryDescFromEM(em, request, bs, entryId              ));	
 		reply.setEntryDocNum(          getSFromEM(        em, Constants.DOCNUMBER_FIELD         ));
@@ -469,7 +509,7 @@ public class GwtActivityStreamHelper {
 		ActivityStreamInfo reply = new ActivityStreamInfo();
 
 		reply.setActivityStream(as);
-		if ((null != asIdsList) && ((1 < asIdsList.size()) || (null != asIdsList.get(0)))) {
+		if ((null != asIdsList) && (!(asIdsList.isEmpty()))) {
 			reply.setBinderIds(asIdsList.toArray(new String[0]));
 		}
 		reply.setTitle(title);
@@ -756,6 +796,42 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns the title for a target user, based on their ID, that we
+	 * should display to the current user based on their access to the
+	 * target user. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getUserTitle(ProfileModule pm, String targetUserId, String defaultTitle) {
+		// Can the current user only see other users that are common
+		// group members?
+		String reply = defaultTitle;
+		if (Utils.canUserOnlySeeCommonGroupMembers()) {
+			// Yes!  Can we resolve the target user's ID?  (This will
+			// take care of securing their title, if necessary.)
+			List<String> targetUserIdList = new ArrayList<String>();
+			targetUserIdList.add(targetUserId);
+			List targetUsersList = ResolveIds.getPrincipals(targetUserIdList);
+			if ((null != targetUsersList) && (!(targetUsersList.isEmpty()))) {
+				// Yes!  Return the title from the user we resolved to.
+				// This will either be the actual title, if the current
+				// user has rights to see it, or the secured title.
+				User targetUser = ((User) targetUsersList.get(0));
+				reply = targetUser.getTitle();
+			}
+			
+			else {
+				// No, we couldn't resolve the target user ID!  Display
+				// the default secured title.
+				reply = NLT.get("user.redacted.title");
+			}
+		}
+		
+		// If we get here, reply refers the title the current user
+		// should display for the target user in question.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns a TreeInfo object containing the display information for
 	 * and activity streams tree using the current Binder referred to
@@ -825,15 +901,18 @@ public class GwtActivityStreamHelper {
 					asTIChildren.add(asTIChild);
 				}
 			}
-			
-			// Update the parent TreeInfo.
-			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(
-				TeamingAction.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.MY_FAVORITES,
-					asIdsList,
-					asTI.getBinderTitle()));
+
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamAction(
+					TeamingAction.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.MY_FAVORITES,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
 		}
 		
 		// Add the favorites TreeInfo to the root TreeInfo.
@@ -861,14 +940,17 @@ public class GwtActivityStreamHelper {
 				}
 			}
 			
-			// Update the parent TreeInfo.
-			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(
-				TeamingAction.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.MY_TEAMS,
-					asIdsList,
-					asTI.getBinderTitle()));
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamAction(
+					TeamingAction.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.MY_TEAMS,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
 		}
 		
 		// Add the teams TreeInfo to the root TreeInfo.
@@ -891,19 +973,27 @@ public class GwtActivityStreamHelper {
 				if (null != user) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
-					asTIChild = buildASTI(bs, id, user.getTitle(), null, ActivityStream.FOLLOWED_PERSON);					
+					asTIChild = buildASTI(
+						bs,
+						id,
+						getUserTitle(pm, id, user.getTitle()),
+						null,
+						ActivityStream.FOLLOWED_PERSON);					
 					asTIChildren.add(asTIChild);
 				}
 			}
 			
-			// Update the parent TreeInfo.
-			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(
-				TeamingAction.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.FOLLOWED_PEOPLE,
-					asIdsList,
-					asTI.getBinderTitle()));
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamAction(
+					TeamingAction.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.FOLLOWED_PEOPLE,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
 		}
 		
 		// Add the followed users TreeInfo to the root TreeInfo.
@@ -931,14 +1021,18 @@ public class GwtActivityStreamHelper {
 				}
 			}
 			
-			// Update the parent TreeInfo.
-			asTI.updateChildBindersCount();
-			asTI.setActivityStreamAction(
-				TeamingAction.ACTIVITY_STREAM,
-				buildASI(
-					ActivityStream.FOLLOWED_PLACES,
-					asIdsList,
-					asTI.getBinderTitle()));
+			// If we processed any entries...
+			if (!(asIdsList.isEmpty())) {
+				// ...update the parent TreeInfo.
+				// Update the parent TreeInfo.
+				asTI.updateChildBindersCount();
+				asTI.setActivityStreamAction(
+					TeamingAction.ACTIVITY_STREAM,
+					buildASI(
+						ActivityStream.FOLLOWED_PLACES,
+						asIdsList,
+						asTI.getBinderTitle()));
+			}
 		}
 		
 		// Add the followed places TreeInfo to the root TreeInfo.
@@ -1167,7 +1261,10 @@ public class GwtActivityStreamHelper {
 	    			binderCache,
 	    			((Map) it.next()),
 	    			true);	// true -> This is a base activity stream entry for an activity stream data.
-    			entries.add(entry);
+	    		
+	    		if (null != entry) {
+	    			entries.add(entry);
+	    		}
 	    	}
     	}
 
