@@ -342,6 +342,28 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	
 	
 	/**
+	 * Check to see if a user or a group or an application or an application group exists with the given name.
+	 */
+	public Principal doesPrincipalExist( String name )
+	{
+		Collection<Principal> principals;
+		List<String> names = new ArrayList<String>();
+
+		// Does a principal exist with the given name?
+		names.add( name );
+		principals = getPrincipalsByName( names );
+		if ( !principals.isEmpty() )
+		{
+			// Yes
+			return principals.iterator().next();
+		}
+		
+		// If we get here a principal does not exist with the given name.
+		return null;
+	}
+	
+	
+	/**
 	 * Return the guest user object.
 	 */
 	public User getGuestUser()
@@ -1520,6 +1542,41 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_GROUP_VIEW);        		
         }
         try {
+        	String name;
+        	Principal principal;
+        	
+        	// Does a user or group or application or application group already exist with this name?
+        	name = inputData.getSingleValue( "name" );
+        	principal = doesPrincipalExist( name );
+        	if ( principal != null )
+        	{
+        		String errStringId = "errorcode.user.exists";
+        		EntityType entityType;
+        		
+        		// Yes
+        		entityType = principal.getEntityType();
+        		switch ( entityType )
+        		{
+        		case application:
+        			errStringId = "errorcode.application.exists";
+        			break;
+
+        		case applicationGroup:
+        			errStringId = "errorcode.applicationgroup.exists";
+        			break;
+        		
+        		case group:
+        			errStringId = "errorcode.group.exists";
+        			break;
+        			
+        		case user:
+        			errStringId = "errorcode.user.alreadyExists";
+        			break;
+        		}
+        		
+           		throw new ObjectExistsException( errStringId );
+        	}
+        	
         	return loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
         } catch (DataIntegrityViolationException de) {
         	if(clazz.equals(Group.class))
