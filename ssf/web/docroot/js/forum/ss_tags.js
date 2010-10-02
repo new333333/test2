@@ -30,13 +30,14 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
- function ss_tagShow(namespace, divNumber) {
+ function ss_tagShowHide(namespace, divNumber) {
 	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
-	if (ss_isAdapter == 'false') {
-		ss_moveDivToBody(divId);
-	}
 	var divObj = document.getElementById(divId);
 	if (divObj == null) return;
+	if (typeof divObj.style.display != "undefined" && divObj.style.display == "block") {
+		ss_tagHide(namespace, divNumber);
+		return;
+	}
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	divObj.style.zIndex = ssMenuZ;
@@ -58,7 +59,16 @@
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
-function ss_tagHide(namespace, divNumber) {
+ function ss_tagShow(namespace, divNumber) {
+	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
+	var divObj = document.getElementById(divId);
+	if (divObj == null) return;
+	if (typeof divObj.style.display != "undefined" && divObj.style.display != "block") {
+		ss_tagShowHide(namespace, divNumber);
+		return;
+	}
+ }
+ function ss_tagHide(namespace, divNumber) {
 	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
 	ss_hideDivNone(divId);
 	
@@ -131,6 +141,6 @@ function ss_postModifyTags(obj) {
 		alert(ss_not_logged_in);
 	}
 	ss_debug("post: "+obj.getData("divNumber"))
-	ss_tagShow(obj.getData("namespace"), obj.getData("divNumber"));
+	ss_tagShowHide(obj.getData("namespace"), obj.getData("divNumber"));
 	
 }

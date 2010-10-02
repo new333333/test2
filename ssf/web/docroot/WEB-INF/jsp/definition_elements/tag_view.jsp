@@ -43,7 +43,6 @@
   <c:if test="${empty ss_tagDivNumber}">
   	<c:set var="ss_tagDivNumber" value="0" scope="request"/>
   </c:if>
-  <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 <script type="text/javascript">
 var ss_tagConfirmBadCharacters = "<ssf:nlt tag="tags.badChars"/>";
 var ss_tagConfirmTooLong = "<ssf:nlt tag="tags.tooLong"/>";
@@ -75,12 +74,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 			</div>
 		 </td>
 		 <td width="100%">
-			<ssf:ifaccessible>
-				<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
-			</ssf:ifaccessible>
-			<ssf:ifnotaccessible>
-				<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
-			</ssf:ifnotaccessible>
+			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
 			
 			<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 		 </td>
@@ -90,12 +84,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 	 <td valign="top" style="padding-right:4px;">
 		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
-			<ssf:ifaccessible>
-		  		onClick="ss_showAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
-			</ssf:ifaccessible>
-			<ssf:ifnotaccessible>
-				onClick="ss_tagShow('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
-			</ssf:ifnotaccessible>
+			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			<ssf:title tag="title.open.tag.menu" />
 		  >
 			<!-- The help spot is positioned relative to the position of its parent. -->
@@ -114,12 +103,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 	 </td>
 	 <td width="100%">
 	   <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
-		<ssf:ifaccessible>
-			<c:set var="ssCloseScript" value="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;" scope="request"/>
-		</ssf:ifaccessible>
-		<ssf:ifnotaccessible>
-			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
-		</ssf:ifnotaccessible>
+		<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 	  </c:if>
 	 </td>
@@ -128,14 +112,8 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
   </table>
 
  <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
-	<ssf:ifaccessible>
-		style="visibility:hidden;display:none;white-space:nowrap;"  		
-	</ssf:ifaccessible>
-	<ssf:ifnotaccessible>
 		class="ss_tag_pane"
-		<ssf:ifadapter>style="position:relative;"</ssf:ifadapter>
-		<ssf:ifnotadapter>style="position:absolute;"</ssf:ifnotadapter>
-	</ssf:ifnotaccessible>
+		style="position:relative;"
 >
 
    <ssf:popupPane width="250px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
@@ -166,6 +144,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
  </ssf:popupPane>
 
 </div>
+<c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 
 </c:if>
 </c:if>

@@ -86,7 +86,7 @@
 	  
 	</div>
 	</div>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki_tabs2.jsp" />
 </c:if>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
