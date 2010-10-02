@@ -1920,6 +1920,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.DOCID_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				String nltTag = "folder.column.Number";
 				if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) || 
 						viewType.equals(Definition.VIEW_STYLE_WIKI)) {
@@ -1940,6 +1943,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.SORT_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Title"), url, qualifiers);
 			}
@@ -1955,6 +1961,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.WORKFLOW_STATE_CAPTION_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.State"), url, qualifiers);
 			}
@@ -1970,6 +1979,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.CREATOR_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Author"), url, qualifiers);
 			}
@@ -1985,6 +1997,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.LASTACTIVITY_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.LastActivity"), url, qualifiers);
 			}
@@ -2000,6 +2015,9 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.RATING_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
+				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
+				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Rating"), url, qualifiers);
 			}
