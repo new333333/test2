@@ -37,6 +37,7 @@
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:set var="ss_popular_view_seen" value="true" scope="request"/>
 <c:set var="ss_entry_view_style" value="wiki" scope="request"/>
+<c:set var="ss_delayShowingCommentsAndAttachments" value="true" scope="request"/>
 <c:set var="binderDefinition" value="${ssBinder.entryDef.definition}" />
 <jsp:useBean id="binderDefinition" type="org.dom4j.Document" />
 <%
@@ -87,7 +88,6 @@
   <div class="ss_clear"></div>
 </c:if>
 
-<c:set var="ss_hideCommentsAndAttachmentsSection" value="true" scope="request"/>
 <c:set var="ss_commentsAndAttachmentsReplyCount" value="${totalReplyCount}" scope="request"/>
 <c:if test="${empty ssPrimaryFileAttribute}">
   <c:set var="ss_commentsAndAttachmentsAttachmentCount" value="${fn:length(ssDefinitionEntry.fileAttachments)}" scope="request"/>

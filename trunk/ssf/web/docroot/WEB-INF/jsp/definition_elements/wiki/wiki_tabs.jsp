@@ -38,7 +38,7 @@
 <div id="wiki-tabset" class="wiki-tabs margintop3" style="text-align: left;">
 	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
 		<tr>
-			<td>
+			<td nowrap>
 		      <c:if test="${!empty ss_wikiEntryBeingShown}">
 				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'page'}">on</c:if>">
 				  <a href="<ssf:url     
@@ -52,15 +52,9 @@
 			          name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
 			      ><ssf:nlt tag="wiki.page"/></a>
 			    </span>
-			    <c:if test="${ss_wikiCurrentTab == 'page'}">
-			      <span class="wiki-tab" onClick="ss_showHideCommentsAndAttachmentsSection();">
-			        <ssf:nlt tag="wiki.commentsAndAttachments">
-			          <ssf:param name="value" value="${ss_commentsAndAttachmentsReplyCount}"/>
-			          <ssf:param name="value" value="${ss_commentsAndAttachmentsAttachmentCount}"/>
-			        </ssf:nlt>
-			      </span>
-			    </c:if>
 			  </c:if>
+			</td>
+			<td align="right" width="100%">
 				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'list'}">on</c:if>">
 				  <a href="<ssf:url 
 					action="view_folder_listing" 

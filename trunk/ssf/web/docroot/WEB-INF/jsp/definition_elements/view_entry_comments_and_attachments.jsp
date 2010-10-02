@@ -34,11 +34,13 @@
 %>
 <% // View entry comments and attachments in tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_commentsAndAttachmentsSectionRequested" value="true" scope="request"/>
+<c:if test="${!ss_delayShowingCommentsAndAttachments}">
 <c:if test="${ssEntry != ssDefinitionEntry}" >
   <% // This is a reply in the replies list, don't show the tabs %>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_reply_attachments.jsp" />
 </c:if>
-<c:if test="${!ss_commentsAttachmentsAndHistoryTabsHaveBeenSeen && ssEntry == ssDefinitionEntry}" >
+<c:if test="${ssEntry == ssDefinitionEntry}" >
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <script type="text/javascript">
 var ss_entryHistoryLoaded${ss_divCounter} = false;
@@ -58,17 +60,6 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 	if (self.parent.ssf_onLayoutChange) self.parent.ssf_onLayoutChange();
 	if (self.parent.parent.ssf_onLayoutChange) self.parent.parent.ssf_onLayoutChange();
 	ss_resizeEntryHistoryIframe(iframeId);
-}
-
-function ss_showHideCommentsAndAttachmentsSection() {
-	var divObj = self.document.getElementById("ss_commentsAndAttachmentsSection");
-	if (divObj != null) {
-		if (divObj.style.display != "block") {
-			divObj.style.display = "block";
-		} else {
-			divObj.style.display = "none";
-		}
-	}
 }
 
 </script>
@@ -102,11 +93,8 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 		function() {ss_initTab('${ss_thisCurrentTab}${ss_tabDivCount}', '${ss_tabDivCount}');});
 </script>
 
-<div id="ss_commentsAndAttachmentsSection" class="ss_entryContent"
-  <c:if test="${ss_hideCommentsAndAttachmentsSection}"> style="display:none;" </c:if>
->
-	<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
-	  <table cellspacing="0" cellpadding="0" width="100%">
+<div style="text-align: left; border: 0px;" class="wg-tabs margintop2">
+	<table cellspacing="0" cellpadding="0" width="100%">
 	  <tr>
 	  <c:if test="${empty ss_pseudoEntity}">
 	  <td valign="middle" width="1%" nowrap>
@@ -222,5 +210,5 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 </c:if>
 </div>
 
-</div>
+</c:if>
 </c:if>
