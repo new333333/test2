@@ -61,6 +61,7 @@
 					binderId="${ssBinder.id}"
 					entryId="${ss_wikiEntryBeingShown.id}"
 					><ssf:param name="wiki_folder_list" value="1"/></ssf:url>"
+					onclick="if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this, true);"
 				  ><ssf:nlt tag="wiki.topicsAndPages"/></a>
 				</span>
 			</td>
