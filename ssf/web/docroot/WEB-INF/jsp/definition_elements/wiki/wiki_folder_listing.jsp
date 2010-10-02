@@ -94,7 +94,8 @@
 			    binderId="${ssBinder.id}"
 			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
 			    name="ssFolderSortBy" value="_docId"/><ssf:param 
-			    name="ssFolderSortDescend" value="true"/></ssf:url>"
+			    name="ssFolderSortDescend" value="true"/><ssf:param 
+			    name="wiki_folder_list" value="1"/></ssf:url>"
 		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			  ><span><ssf:nlt tag="folder.column.CreationDate"/></span></a>
 			</div>
@@ -107,7 +108,8 @@
 			    binderId="${ssBinder.id}"
 			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
 			    name="ssFolderSortBy" value="_sortTitle"/><ssf:param 
-			    name="ssFolderSortAscend" value="true"/></ssf:url>"
+			    name="ssFolderSortAscend" value="true"/><ssf:param 
+			    name="wiki_folder_list" value="1"/></ssf:url>"
 		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			  ><span><ssf:nlt tag="folder.column.Title"/></span></a>
 			</div>
@@ -120,7 +122,8 @@
 			    binderId="${ssBinder.id}"
 			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
 			    name="ssFolderSortBy" value="_lastActivity"/><ssf:param 
-			    name="ssFolderSortDescend" value="true"/></ssf:url>"
+			    name="ssFolderSortDescend" value="true"/><ssf:param 
+			    name="wiki_folder_list" value="1"/></ssf:url>"
 		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
 			  ><span><ssf:nlt tag="folder.column.LastActivity"/></span></a>
 			</div>
