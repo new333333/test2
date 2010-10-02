@@ -60,77 +60,9 @@
 	</ssHelpSpot>
 	
 	<div class="wiki-content">
-	<div class="wiki-actions">
-	  <span class="ss_smallprint">
-	    <c:if test="${!empty ss_addEntryUrl}">
-	      <a class="action-anchor roundcornerSM" href="${ss_addEntryUrl}" ><ssf:nlt tag="toolbar.menu.add_wiki_page"/></a>
-	    </c:if>
-	    <c:if test="${!empty ss_addEntryUrls && !empty addDefaultEntryURL}">
-	      <a class="action-anchor roundcornerSM" href="${addDefaultEntryURL}" ><ssf:nlt tag="toolbar.menu.add_wiki_page"/></a>
-	    </c:if>
-	    <c:if test="${!empty ss_addFolderUrl}">
-	      <a class="action-anchor roundcornerSM" href="${ss_addEntryUrl}" ><ssf:nlt tag="toolbar.menu.add_wiki_folder"/></a>
-	      <c:if test="${!ss_diskQuotaExceeded}">
-	        <a class="action-anchor roundcornerSM" href="javascript: ;"
-	          onClick="ss_showFolderAddAttachmentDropbox('${renderResponse.namespace}', '${ssBinder.id}', '${ssBinder.mirrored}');<c:if 
-	          test="${ss_diskQuotaHighWaterMarkExceeded}">alert(ss_escapeSQ('<ssf:nlt tag="quota.nearLimit"/>');</c:if>return false;"
-		    ><ssf:nlt tag="toolbar.menu.dropBox"/></a>
-	      </c:if>
-	    </c:if>
-	    <a class="action-anchor roundcornerSM" href="javascript: ;"
-	      onClick="ss_showHideMenuDiv('ss_wikiSortByMenu');return false;"
-		><ssf:nlt tag="toolbar.folder_sortBy"/>
-		<img style="vertical-align: bottom;" src="<html:rootPath/>images/pics/menu_arrow.png"/></a>
-		
-	  </span>
-	  <span id="ss_wikiSortByMenu" style="position:absolute; display:none; right:0px; top:15px;">
-		<div class="menudetail roundcornerSM-bottom" style="display:block;">
-			<div class="menuitem1">
-		      <a href="<ssf:url
-			    adapter="true" 
-			    portletName="ss_forum" 
-			    action="view_folder_listing" 
-			    actionUrl="true" 
-			    binderId="${ssBinder.id}"
-			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
-			    name="ssFolderSortBy" value="_docId"/><ssf:param 
-			    name="ssFolderSortDescend" value="true"/><ssf:param 
-			    name="wiki_folder_list" value="1"/></ssf:url>"
-		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-			  ><span><ssf:nlt tag="folder.column.CreationDate"/></span></a>
-			</div>
-			<div class="menuitem1">
-		      <a href="<ssf:url
-			    adapter="true" 
-			    portletName="ss_forum" 
-			    action="view_folder_listing" 
-			    actionUrl="true" 
-			    binderId="${ssBinder.id}"
-			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
-			    name="ssFolderSortBy" value="_sortTitle"/><ssf:param 
-			    name="ssFolderSortAscend" value="true"/><ssf:param 
-			    name="wiki_folder_list" value="1"/></ssf:url>"
-		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-			  ><span><ssf:nlt tag="folder.column.Title"/></span></a>
-			</div>
-			<div class="menuitem1">
-		      <a href="<ssf:url
-			    adapter="true" 
-			    portletName="ss_forum" 
-			    action="view_folder_listing" 
-			    actionUrl="true" 
-			    binderId="${ssBinder.id}"
-			    ><ssf:param name="operation" value="save_folder_sort_info"/><ssf:param 
-			    name="ssFolderSortBy" value="_lastActivity"/><ssf:param 
-			    name="ssFolderSortDescend" value="true"/><ssf:param 
-			    name="wiki_folder_list" value="1"/></ssf:url>"
-		        onClick="ss_openUrlInPortlet(this.href, true, '500', '400');return false;"
-			  ><span><ssf:nlt tag="folder.column.LastActivity"/></span></a>
-			</div>
-		</div>
-	  </span>
+		<ssf:toolbar toolbar="${ssEntryToolbar}" format="wiki" style="ss_actions_bar13 ss_actions_bar" />
 	</div>
-	</div>
+	
 	<div align="right">
 		<jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
 	</div>
