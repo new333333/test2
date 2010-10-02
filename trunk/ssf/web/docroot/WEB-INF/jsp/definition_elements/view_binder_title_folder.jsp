@@ -34,6 +34,9 @@
 %>
 <% //Folder title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_breadcrumbsShowIdRoutine}">
+  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
+</c:if>
 <div id="ss_profile_box_h1">
   <ul class="ss_horizontal ss_nobullet">
   <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
