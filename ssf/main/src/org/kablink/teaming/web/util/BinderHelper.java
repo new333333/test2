@@ -635,7 +635,8 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, String.valueOf(pageNumber), type);
+			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
+					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 		}
@@ -768,7 +769,8 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, String.valueOf(pageNumber), type);
+			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, 
+					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 			for (Long bId : tbs) {
 				if (!trackedBinders.contains(bId)) {
 					trackedBinders.add(bId);
@@ -2556,14 +2558,15 @@ public class BinderHelper {
 	}
 	
 	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {	
-		setupWhatsNewBinderBeans(bs, binder, model, page, "");
+		Integer pageSize = Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		setupWhatsNewBinderBeans(bs, binder, model, page, pageSize, "");
 	}
-	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page,
+	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page, Integer pageSize,
 			String type) {
-		return setupWhatsNewBinderBeans(bs, binder, binder.getId(), model, page, type);
+		return setupWhatsNewBinderBeans(bs, binder, binder.getId(), model, page, pageSize, type);
 	}
 	public static List<Long> setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Long binderId, Map model, String page,
-			String type) {		
+			Integer pageSize, String type) {		
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's new is not available to the guest user
         if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return new ArrayList<Long>() ;
@@ -2574,18 +2577,17 @@ public class BinderHelper {
 		Integer pageNumber = Integer.valueOf(page);
 		if (pageNumber < 0) pageNumber = 0;
 		model.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		int pageStart = pageNumber * pageSize;
 		
 		//Prepare for a standard search operation
-		String entriesPerPage = SPropsUtil.getString("search.records.listed");
-		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, pageSize);
 		
 		Integer searchUserOffset = 0;
 		Integer searchLuceneOffset = 0;
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
 		
-		Integer maxHits = new Integer(entriesPerPage);
+		Integer maxHits = pageSize;
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
 		Integer summaryWords = new Integer(20);

@@ -918,9 +918,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 
 		if (type.equals(WebKeys.URL_WHATS_NEW)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber));
+			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(WebKeys.URL_WHATS_NEW_TRACKED)|| type.equals(WebKeys.URL_WHATS_NEW_TEAMS)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), type);
+			BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(WebKeys.URL_UNSEEN)) {
 			BinderHelper.setupUnseenBinderBeans(bs, binder, model, String.valueOf(pageNumber));
 		}
