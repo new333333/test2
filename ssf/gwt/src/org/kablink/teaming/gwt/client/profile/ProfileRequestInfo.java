@@ -83,6 +83,8 @@ public class ProfileRequestInfo extends JavaScriptObject
 	 */
 	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
 	
+	public final native String getUserId() /*-{ return this.userId; }-*/;
+	
 	public final native boolean isBinderAdmin() /*-{ return this.isBinderAdmin; }-*/;
 	
 	public final native boolean isQuotasEnabled() /*-{ return this.isQuotasEnabled; }-*/;

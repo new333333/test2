@@ -3148,10 +3148,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
 	 */
-	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
+	public ProfileStats getProfileStats(HttpRequestInfo ri, String userId) throws GwtTeamingException {
 		try
 		{
-			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, binderId);
+			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, userId);
 			return stats;
 		}
 		catch (AccessControlException e)

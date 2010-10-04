@@ -834,13 +834,13 @@ public class GwtProfileHelper {
 	 * @param binderId
 	 * @return
 	 */
-	public static ProfileStats getStats(HttpServletRequest request, AllModulesInjected bs, String binderId) throws Exception {
+	public static ProfileStats getStats(HttpServletRequest request, AllModulesInjected bs, String userId) throws Exception {
 		
     	//Get the tracked persons by this user
 		ProfileStats stats = new ProfileStats();
 		GwtUser user = null;
 		
-		List<String> trackedIds = getTrackedPersonsIds(bs, binderId);
+		List<String> trackedIds = getTrackedPersonsIds(bs, userId);
 		for(String trackedId: trackedIds) {
 				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
 				principal = Utils.fixProxy(principal);
@@ -872,11 +872,10 @@ public class GwtProfileHelper {
      * @param binderId
      * @return
      */
-    public static List<String> getTrackedPersonsIds(AllModulesInjected bs, String binderId) {
+    public static List<String> getTrackedPersonsIds(AllModulesInjected bs, String userId) {
 
-    	Long binderIdL = Long.parseLong(binderId);
-		Binder binder = bs.getBinderModule().getBinder(binderIdL);
-		List<String> trackedIds = SearchUtils.getTrackedPeopleIds(bs, binder);
+    	Long userIdL = Long.parseLong(userId);
+		List<String> trackedIds = SearchUtils.getTrackedPeopleIds(bs, userIdL);
 		
 		return trackedIds;
     }
