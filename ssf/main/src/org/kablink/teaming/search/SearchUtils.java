@@ -178,20 +178,95 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Binder userWorkspace)
+	/*
+	 * Returns a Criteria object that can be used to search for the
+	 * entries that users whose IDs are in the List<String> are
+	 * tracking.
+	 */
+	private static Criteria entriesForTrackedPeopleImpl(AllModulesInjected bs, List<String> trackedPeopleIds)
 	{
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
 				Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
-			.add(in(CREATORID_FIELD, getTrackedPeopleIds(bs, userWorkspace)));
+			.add(in(CREATORID_FIELD, trackedPeopleIds));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}
 
+	/**
+	 * Returns a Criteria object that can be used to search for the
+	 * entries that users being tracked by the owner of the given
+	 * binder are tracking.
+	 * 
+	 * Note:  If userWorksapce is the guest user workspace, the owner
+	 *        will be admin which may not be what's really wanted.
+	 * 
+	 * @param bs
+	 * @param userWorkspace
+	 * 
+	 * @return
+	 */
+	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Binder userWorkspace)
+	{
+		// Always use the implementation version of this method.
+		return entriesForTrackedPeopleImpl(bs, getTrackedPeopleIds(bs, userWorkspace));
+	}
+
+	/**
+	 * Returns a Criteria object that can be used to search for the
+	 * entries that users being tracked by the given user are tracking.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Long userId)
+	{
+		// Always use the implementation version of this method.
+		return entriesForTrackedPeopleImpl(bs, getTrackedPeopleIds(bs, userId));
+	}
+
+	/**
+	 * Returns a List<String> containing the IDs of the places that that
+	 * the owner of the given binder is tracking.
+	 * 
+	 * Note:  If binder is the guest user workspace, the owner will be
+	 *        admin which may not be what's really wanted.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
 	public static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder userWorkspace) {
 		List<String> sIdList = new ArrayList<String>();
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userWorkspace.getOwnerId(), userWorkspace.getId());
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap != null) {
+			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+			if (idList != null) {
+				for (Long id: idList) {
+					sIdList.add(String.valueOf(id));
+				}
+			}
+		}
+		return sIdList;
+	}
+	
+	/**
+	 * Returns a List<String> containing the IDs of the places that that
+	 * user whose ID is userId is tracking.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static List<String> getTrackedPlacesIds(AllModulesInjected bs, Long userId) {
+		List<String> sIdList = new ArrayList<String>();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userId);
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 		if (relevanceMap != null) {
 			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
@@ -219,10 +294,46 @@ public class SearchUtils {
 		return sIdList;
 	}
 
+	/**
+	 * Returns a List<String> containing the IDs of the users that that
+	 * the owner of the given binder is tracking.
+	 * 
+	 * Note:  If binder is the guest user workspace, the owner will be
+	 *        admin which may not be what's really wanted.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
 		List<String> sIdList = new ArrayList<String>();
 		if (binder == null) return sIdList;
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap != null) {
+			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			if (trackedPeople != null) {
+				for (Long id: trackedPeople) {
+					sIdList.add(String.valueOf(id));
+				}
+			}
+		}
+		return sIdList;
+	}
+	
+	/**
+	 * Returns a List<String> containing the IDs of the users that that
+	 * user whose ID is userId is tracking.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * 
+	 * @return
+	 */
+	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Long userId) {
+		List<String> sIdList = new ArrayList<String>();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userId);
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 		if (relevanceMap != null) {
 			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);

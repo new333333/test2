@@ -2301,15 +2301,15 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a List<String> of the workspace ID's of the people the
+	 * Returns a List<String> of the user ID's of the people the
 	 * current user is tracking.
 	 * 
 	 * @return
 	 */
 	public static List<String> getTrackedPeople(AllModulesInjected bs) {
 		// Return the IDs of the people the current user is tracking.
-		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
-		return GwtProfileHelper.getTrackedPersonsIds(bs, String.valueOf(wsId.longValue()));
+		Long userId = GwtServerHelper.getCurrentUser().getId();
+		return SearchUtils.getTrackedPeopleIds(bs, userId);
 	}
 	
 	/**
@@ -2319,13 +2319,8 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<String> getTrackedPlaces(AllModulesInjected bs) {
-		Long wsId = GwtServerHelper.getCurrentUser().getWorkspaceId();
-		Binder ws = bs.getBinderModule().getBinder(wsId);
-		List<String> reply = SearchUtils.getTrackedPlacesIds(bs, ws);
-		if (null == reply) {
-			reply = new ArrayList<String>();
-		}
-		return reply;
+		Long userId = GwtServerHelper.getCurrentUser().getId();
+		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
 	
 	/**
