@@ -109,10 +109,14 @@ public class FindCtrl extends Composite
 			panel.add( anchor );
 			
 			// Add any additional information about this item.
-			secondaryText = new InlineLabel( item.getSecondaryDisplayText() );
-			secondaryText.addStyleName( "fontSize75em" );
-			secondaryText.setWordWrap( false );
-			panel.add( secondaryText );
+			String secondaryDisplayText = item.getSecondaryDisplayText();
+			if (GwtClientHelper.hasString( secondaryDisplayText ))
+			{
+				secondaryText = new InlineLabel( secondaryDisplayText );
+				secondaryText.addStyleName( "fontSize75em" );
+				secondaryText.setWordWrap( false );
+				panel.add( secondaryText );
+			}
 			
 			// All composites must call initWidget() in their constructors.
 			initWidget( panel );

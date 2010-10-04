@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.client;
 
 
-import org.kablink.teaming.gwt.client.util.TagInfo;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -70,7 +68,7 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	 */
 	@Override
 	public String getSecondaryDisplayText() {
-		return getTagName();
+		return "";
 	}
 		
 	/**
