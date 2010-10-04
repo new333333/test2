@@ -433,8 +433,18 @@ public class GwtMainPage extends Composite
 		// Is the activity stream visible?
 		if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible() )
 		{
-			// Yes, We are reading an item so ignore the context loaded.
-			return;
+			// Yes!  If w're handling a search while the activity
+			// streams are up...
+			if ( !inSearch )
+			{
+				// ...we assume that we're reading an item so ignore
+				// ...the context loaded...
+				return;
+			}
+			
+			// ...otherwise, we hide the activity streams control and
+			// ...let the search display.
+			m_activityStreamCtrl.hide();
 		}
 		
 		m_inSearch    = inSearch;

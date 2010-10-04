@@ -101,7 +101,7 @@ public class GwtUser extends GwtTeamingItem implements IsSerializable {
 	 */
 	@Override
 	public String getSecondaryDisplayText() {
-		return getWorkspaceTitle();
+		return "";
 	}
 		
 	/**
