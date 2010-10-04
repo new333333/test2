@@ -103,6 +103,7 @@
   <c:when test="${propertyValues_type[0] == 'file'}">
 	<jsp:include page="/WEB-INF/jsp/definition_elements/file/file_view.jsp" />
     <jsp:include page="/WEB-INF/jsp/definition_elements/entry_view2.jsp" />
+    <jsp:include page="/WEB-INF/jsp/definition_elements/wiki/wiki_tabs2.jsp" />
   </c:when>
   <c:otherwise>
     <jsp:include page="/WEB-INF/jsp/definition_elements/entry_view2.jsp" />

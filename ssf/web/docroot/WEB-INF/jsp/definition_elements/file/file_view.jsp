@@ -208,4 +208,7 @@ function ss_focusOnEntry() {
 }
 ss_createOnLoadObj("ss_focusOnEntry", ss_focusOnEntry);
 </script>
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+<c:if test="${ss_parentFolderViewStyle != 'wiki'}">
+  <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</c:if>
+
