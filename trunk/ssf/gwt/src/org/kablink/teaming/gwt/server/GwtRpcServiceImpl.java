@@ -3172,7 +3172,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		catch ( Exception e )
 		{
 			//Log other errors
-			logger.error("Error getting stats for user with binderId "+binderId, e);
+			logger.error("Error getting stats for user with binderId "+userId, e);
 		}
 		
 		return null;
