@@ -147,6 +147,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     background: #81b2bd url(../../../1Graphics/GraphicsDB/Branding/headers/NL/slice_blend_teal_27.png) repeat-x;
     }   
 
+.wiki-tabs2 {
+	padding-top:6px;
+	}
 .wiki-actions {
     margin: 5px;
     text-align: right;

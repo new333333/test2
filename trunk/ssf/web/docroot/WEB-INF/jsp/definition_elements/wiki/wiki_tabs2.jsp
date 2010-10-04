@@ -81,7 +81,7 @@ function ss_hideTagsSection() {
 }
 
 </script>
-<div>
+<div class="wiki-tabs2">
 	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
 		<tr>
 			<td nowrap>
