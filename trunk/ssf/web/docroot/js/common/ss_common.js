@@ -2575,6 +2575,8 @@ function ss_hideDivToBeHidden(i) {
 /* IE6 workaround - divs under selectboxes */
 var ss_showBackgroundIframeDivId = null;
 function ss_showBackgroundIFrame(divId, frmId) {
+	return;  //This facility has been turned off because it doesn't work well with the GWT UI
+
 	if (!ss_isIE6) {
 		return;
 	}
