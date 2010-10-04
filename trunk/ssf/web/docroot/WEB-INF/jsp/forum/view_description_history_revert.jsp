@@ -68,8 +68,10 @@ function saveFileId(obj) {
 			hiddenObj.setAttribute("type", "hidden");
 			hiddenObj.setAttribute("name", obj.name);
 			formObj.appendChild(hiddenObj);
+			hiddenObj.value = obj.checked;      //Set the value in hiddenObj here because IE can't find objects added this way
+		} else {
+			formObj[obj.name].value = obj.checked;
 		}
-		formObj[obj.name].value = obj.checked;
 	}
 }
 
