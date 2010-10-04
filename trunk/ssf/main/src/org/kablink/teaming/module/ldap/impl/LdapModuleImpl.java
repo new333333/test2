@@ -1700,7 +1700,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
 						
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
-						userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, ssName);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
 
@@ -1734,7 +1733,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Make sure the dn stored in Teaming is updated for this user.
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
-					userMods.put(ObjectKeys.FIELD_ENTITY_TITLE, ssName);
 					row[PRINCIPAL_FOREIGN_NAME] = dn;
 
 					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_ldapSyncResults );
