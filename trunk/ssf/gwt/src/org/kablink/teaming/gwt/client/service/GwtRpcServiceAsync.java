@@ -178,7 +178,7 @@ public interface GwtRpcServiceAsync
 
 	// Return information about the User Profile
 	public void getProfileInfo(		HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
-	public void getProfileStats(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileStats> 	callback);
+	public void getProfileStats(	HttpRequestInfo ri, String userId, AsyncCallback<ProfileStats> 	callback);
 	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback);
 	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
 	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );

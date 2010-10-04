@@ -182,7 +182,7 @@ public class ProfileSidePanel extends Composite {
 
 		if(profileStats == null) {
 			GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-			gwtRpcService.getProfileStats(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+			gwtRpcService.getProfileStats(new HttpRequestInfo(), profileRequestInfo.getUserId(), callback);
 		}
 	}
 	
