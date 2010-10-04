@@ -775,11 +775,15 @@ public class RelevanceDashboardHelper {
 		else {
 			List<Tag> tagObjs = getCoreDao().loadPersonalTagsByOwner(RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
 			myTags = new ArrayList<Map>();
+			List myTagsList = new ArrayList();
 			if (tagObjs != null) {
 				for(Tag tagObj:tagObjs) {
 					HashMap tag = new HashMap();
 					tag.put(WebKeys.TAG_NAME, tagObj.getName());
-					myTags.add(tag);
+					if (!myTagsList.contains(tagObj.getName())) {
+						myTags.add(tag);
+					}
+					myTagsList.add(tagObj.getName());
 				}
 			}			
 		}
