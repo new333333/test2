@@ -86,7 +86,7 @@
     <property name="name" value="_surveyFolder"/>  
     <property name="caption" value="__definition_default_folder_survey"/>  
     <property name="family" value="survey"/> 
-    <property name="icon" value="/icons/folder_blue_guestbook.gif"/> 
+    <property name="icon" value="/icons/folder_blue_survey.png"/> 
   </properties>  
   <export-mappings/>
 </definition>
