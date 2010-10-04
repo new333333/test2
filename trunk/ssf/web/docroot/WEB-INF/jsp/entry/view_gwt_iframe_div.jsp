@@ -100,12 +100,12 @@
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
 	    <div id="ss_iframe_holder_div" >
 	      <div class="ss_newpage_box_header" >
-	        <table width="100%" cellspacing="0" cellpadding="0">
+	        <table cellspacing="0" cellpadding="0">
 	        <tr>
-	        <td valign="top">
+	        <td valign="top" nowrap>
 	          <span class="ss_newpage_box_title" id="ss_showEntryDivTitle""></span>
 	        </td>
-	        <td valign="top" align="right">
+	        <td valign="top" align="right" width="100%">
 	          <span class="ss_newpage_box_close">
 	            <a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
 					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a>
