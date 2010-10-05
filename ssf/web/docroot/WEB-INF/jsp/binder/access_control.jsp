@@ -375,6 +375,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		  </div>
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
+		<c:set var="ss_roleWasAdded" value="false"/>
 	    <c:forEach var="function" items="${ssFunctions}">
 	     <c:if test="${function.scope == ssWorkArea.workAreaType || 
 	     		(function.scope == 'binder' && ssWorkArea.workAreaType == 'workspace') || 
@@ -387,6 +388,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	        </c:if>
 	      </c:forEach>
 	      <c:if test="${includeRole == '1'}">
+	        <c:set var="ss_roleWasAdded" value="true"/>
 	        <li>
 	          <a href="javascript: ;" 
 	          onClick="${renderResponse.namespace}accessObj.addAccessControlRole('${function.id}');"
@@ -395,6 +397,9 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	      </c:if>
 	     </c:if>
 	    </c:forEach>
+	    <c:if test="${!ss_roleWasAdded}">
+	      <li><ssf:nlt tag="access.noMoreRoles"/></li>
+	    </c:if>
 		</ul>
 	</div>
   
