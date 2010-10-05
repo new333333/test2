@@ -892,7 +892,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 			String nodeString=null;
 			if (WfAcl.AccessType.read.equals(type)) {
 				nodeString = "item[@name='readAccess']";
-			} else if (WfAcl.AccessType.write.equals(type)) {  
+			} else if (WfAcl.AccessType.write.equals(type) || WfAcl.AccessType.modify.equals(type)) {  
 				nodeString = "item[@name='modifyAccess']";
 			} else if (WfAcl.AccessType.modifyField.equals(type)) {  
 				nodeString = "item[@name='modifyFieldAccess']";
