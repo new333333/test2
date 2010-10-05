@@ -56,7 +56,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.HttpSessionContext;
@@ -170,6 +169,18 @@ public class GwtServerHelper {
 	private static       int     TREE_TITLE_FORMAT         = (-1);
 	private static final int     TREE_TITLE_FORMAT_DEFAULT = 0;
 	private static final String  TREE_TITLE_FORMAT_KEY     = "wsTree.titleFormat";
+
+	// The following are used to classify various binders based on
+	// their default view definition.  See getFolderType() and
+	// getWorkspaceType().
+	private static final String VIEW_FOLDER_GUESTBOOK      = "_guestbookFolder";
+	private static final String VIEW_FOLDER_MIRRORED_FILE  = "_mirroredFileFolder";	
+	private static final String VIEW_WORKSPACE_DISCUSSIONS = "_discussions";
+	private static final String VIEW_WORKSPACE_PROJECT     = "_projectWorkspace";
+	private static final String VIEW_WORKSPACE_TEAM        = "_team_workspace";
+	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
+	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
+	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
 	
 	/**
 	 * Inner class used compare two GwtAdminAction objects.
@@ -1847,7 +1858,7 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
-	
+
 	/*
 	 * Returns the bucket size to use when displaying binders in
 	 * buckets in the workspace trees.
@@ -1985,35 +1996,63 @@ public class GwtServerHelper {
 	}
 	
 	public static FolderType getFolderType(Binder binder) {
+		// Is the binder a folder?
 		FolderType reply;
 		if (binder instanceof Folder) {
+			// Yes!  Can we find a family name in its default view?
+			String family = BinderHelper.getBinderDefaultFamilyName(binder);
 			reply = FolderType.OTHER;
-			Element familyProperty = ((Element) binder.getDefaultViewDef().getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']"));
-			if (familyProperty != null) {
-				String dFamily = familyProperty.attributeValue("value", "");
-				if (null != dFamily) {
-					dFamily = dFamily.toLowerCase();
-					if      (dFamily.equals("blog"))       reply = FolderType.BLOG;
-					else if (dFamily.equals("calendar"))   reply = FolderType.CALENDAR;
-					else if (dFamily.equals("discussion")) reply = FolderType.DISCUSSION;
-					else if (dFamily.equals("file"))       reply = FolderType.FILE;
-					else if (dFamily.equals("guestbook"))  reply = FolderType.GUESTBOOK;
-					else if (dFamily.equals("milestone"))  reply = FolderType.MILESTONE;
-					else if (dFamily.equals("miniblog"))   reply = FolderType.MINIBLOG;
-					else if (dFamily.equals("photo"))      reply = FolderType.PHOTOALBUM;
-					else if (dFamily.equals("task"))       reply = FolderType.TASK;
-					else if (dFamily.equals("survey"))     reply = FolderType.SURVEY;
-					else if (dFamily.equals("wiki"))       reply = FolderType.WIKI;
-				}
+			if (MiscUtil.hasString(family)) {
+				// Yes!  Classify the folder based on it.
+				family = family.toLowerCase();
+				if      (family.equals("blog"))       reply = FolderType.BLOG;
+				else if (family.equals("calendar"))   reply = FolderType.CALENDAR;
+				else if (family.equals("discussion")) reply = FolderType.DISCUSSION;
+				else if (family.equals("file" ))      reply = FolderType.FILE;
+				else if (family.equals("guestbook"))  reply = FolderType.GUESTBOOK;
+				else if (family.equals("milestone"))  reply = FolderType.MILESTONE;
+				else if (family.equals("miniblog"))   reply = FolderType.MINIBLOG;
+				else if (family.equals("photo"))      reply = FolderType.PHOTOALBUM;
+				else if (family.equals("task"))       reply = FolderType.TASK;
+				else if (family.equals("survey"))     reply = FolderType.SURVEY;
+				else if (family.equals("wiki"))       reply = FolderType.WIKI;
+			}
+
+			// For certain folder types, we need to special case the
+			// classification for one reason or another.  Is this one
+			// of them?
+			String view = BinderHelper.getBinderDefaultViewName(binder);
+			switch (reply) {
+			case OTHER:
+				// We need to special case guest book folders
+				// because its definition does not contain a family
+				// name.
+				if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_GUESTBOOK)) {
+					reply = FolderType.GUESTBOOK;
+				}				
+				else {
+					m_logger.debug("GwtServerHelper.getFolderType( 'Could not determine folder type' ):  " + binder.getPathName());
+				}				
+				break;
+			
+			case FILE:
+				// We need to special case files because both a
+				// normal file folder and a mirrored file
+				// folder use 'file' for their family name.
+				if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_MIRRORED_FILE)) {
+					reply = FolderType.MIRROREDFILE;
+				}				
+				break;
 			}
 		}
+		
 		else {
+			// No, the binder isn't a folder!
 			reply = FolderType.NOT_A_FOLDER;
 		}
-		
-		if (FolderType.OTHER == reply) {
-			m_logger.debug("GwtServerHelper.getFolderType( 'Could not determine folder type' ):  " + binder.getPathName());
-		}
+
+		// If we get here, reply refers to the type of folder the
+		// binder is.  Return it.
 		return reply;
 	}
 	
@@ -2462,19 +2501,42 @@ public class GwtServerHelper {
 	}
 	
 	public static WorkspaceType getWorkspaceType(Binder binder) {
+		// Is this binder a workspace?
 		WorkspaceType reply;
 		if (binder instanceof Workspace) {
+			// Yes!  Is it a reserved workspace?
 			reply = WorkspaceType.OTHER;
 			Workspace ws = ((Workspace) binder);
 			if (ws.isReserved()) {
+				// Yes!  Then we can determine its type based on its
+				// internal ID.
 				if (ws.getInternalId().equals(ObjectKeys.TOP_WORKSPACE_INTERNALID)) reply = WorkspaceType.TOP;
 				if (ws.getInternalId().equals(ObjectKeys.TEAM_ROOT_INTERNALID))     reply = WorkspaceType.TEAM_ROOT;
 				if (ws.getInternalId().equals(ObjectKeys.GLOBAL_ROOT_INTERNALID))   reply = WorkspaceType.GLOBAL_ROOT;
 				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID))  reply = WorkspaceType.PROFILE_ROOT;
 			}
 			else {
-				if      (BinderHelper.isBinderUserWorkspace(binder) ) reply = WorkspaceType.USER;
-				else if (BinderHelper.isBinderTeamWorkspace(binder) ) reply = WorkspaceType.TEAM;
+				// No, it isn't a reserved workspace!  Is it a user workspace?
+				if (BinderHelper.isBinderUserWorkspace(binder)) {
+					// Yes!  Mark it as such.
+					reply = WorkspaceType.USER;
+				}
+
+				else {
+					// No, it isn't a user workspace either!  Can we
+					// determine the name of its default view?
+					String view = BinderHelper.getBinderDefaultViewName(binder);
+					if (MiscUtil.hasString(view)) {
+						// Yes!  Check for those that we know.
+						m_logger.debug("GwtServerHelper.getWorkspaceType( " + binder.getTitle() + "'s:  'Workspace View' ):  " + view);
+						if      (view.equals(VIEW_WORKSPACE_DISCUSSIONS)) reply = WorkspaceType.DISCUSSIONS;
+						else if (view.equals(VIEW_WORKSPACE_PROJECT))     reply = WorkspaceType.PROJECT_MANAGEMENT;
+						else if (view.equals(VIEW_WORKSPACE_TEAM))        reply = WorkspaceType.TEAM;
+						else if (view.equals(VIEW_WORKSPACE_USER))        reply = WorkspaceType.USER;
+						else if (view.equals(VIEW_WORKSPACE_WELCOME))     reply = WorkspaceType.LANDING_PAGE;
+						else if (view.equals(VIEW_WORKSPACE_GENERIC))     reply = WorkspaceType.WORKSPACE;
+					}					
+				}
 			}
 		}
 		else {

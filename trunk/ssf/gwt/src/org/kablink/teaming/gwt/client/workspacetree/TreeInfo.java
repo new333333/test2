@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -60,6 +61,7 @@ public class TreeInfo implements IsSerializable {
 	private boolean			m_binderExpanded;
 	private int				m_binderChildren;
 	private String			m_binderHover = "";
+	private String			m_binderHoverImage;
 	private String			m_binderIconName;
 	private String			m_binderTitle          = "";
 	private String			m_binderPermalink      = "";
@@ -315,6 +317,74 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Returns the string to use for the hover text over the binder's
+	 * image.
+	 * 
+	 * @return
+	 */
+	public String getBinderHoverImage() {
+		// Do we have the hover text for the binder image yet?
+		if (!(GwtClientHelper.hasString(m_binderHoverImage))) {
+			// Yes!  Is this tree info for a bucket?
+			GwtTeamingMessages messages = GwtTeaming.getMessages();
+			if (isBucket()) {
+				// Yes!  Use the specific text for that.
+				m_binderHoverImage = messages.hoverBucket();
+			}
+			
+			else {
+				// No, this tree info is not for a bucket!  Use the
+				// appropriate text for the binder type.
+				switch (m_binderInfo.getBinderType()) {
+				case FOLDER:
+					switch (m_binderInfo.getFolderType()) {
+					default:
+					case OTHER:        m_binderHoverImage = messages.hoverFolder();              break;
+					case BLOG:         m_binderHoverImage = messages.hoverFolderBlog();          break;
+					case CALENDAR:     m_binderHoverImage = messages.hoverFolderCalendar();      break;
+					case DISCUSSION:   m_binderHoverImage = messages.hoverFolderDiscussion();    break;
+					case FILE:         m_binderHoverImage = messages.hoverFolderFile();          break;
+					case GUESTBOOK:    m_binderHoverImage = messages.hoverFolderGuestbook();     break;
+					case MILESTONE:    m_binderHoverImage = messages.hoverFolderMilestones();    break;
+					case MINIBLOG:     m_binderHoverImage = messages.hoverFolderMiniBlog();      break;
+					case MIRROREDFILE: m_binderHoverImage = messages.hoverFolderMirroredFiles(); break;
+					case PHOTOALBUM:   m_binderHoverImage = messages.hoverFolderPhotoAlbum();    break;
+					case SURVEY:       m_binderHoverImage = messages.hoverFolderSurvey();        break;
+					case TASK:         m_binderHoverImage = messages.hoverFolderTask();          break;
+					case TRASH:        m_binderHoverImage = messages.hoverFolderTrash();         break;
+					case WIKI:         m_binderHoverImage = messages.hoverFolderWiki();          break;
+					}
+					
+					break;
+					
+				case WORKSPACE:
+					switch (m_binderInfo.getWorkspaceType()) {
+					default:
+					case OTHER:               m_binderHoverImage = messages.hoverWorkspace();                  break;
+					case DISCUSSIONS:         m_binderHoverImage = messages.hoverWorkspaceDiscussions();       break;
+					case GLOBAL_ROOT:         m_binderHoverImage = messages.hoverWorkspaceGlobalRoot();        break;
+					case LANDING_PAGE:        m_binderHoverImage = messages.hoverWorkspaceLandingPage();       break;
+					case PROFILE_ROOT:        m_binderHoverImage = messages.hoverWorkspaceProfileRoot();       break;
+					case PROJECT_MANAGEMENT:  m_binderHoverImage = messages.hoverWorkspaceProjectManagement(); break;
+					case TEAM:                m_binderHoverImage = messages.hoverWorkspaceTeam();              break;
+					case TEAM_ROOT:           m_binderHoverImage = messages.hoverWorkspaceTeamRoot();          break;
+					case TOP:                 m_binderHoverImage = messages.hoverWorkspaceTop();               break;
+					case TRASH:               m_binderHoverImage = messages.hoverWorkspaceTrash();             break;
+					case USER:                m_binderHoverImage = messages.hoverWorkspacePersonal();          break;
+					case WORKSPACE:           m_binderHoverImage = messages.hoverWorkspace();                  break;
+					}
+					
+					break;
+				}
+			}
+		}
+
+		// If we get here, m_binderHoverImage refers to the appropriate
+		// text for this tree info's image.  Return it.
+		return m_binderHoverImage;
+	}
+
+	/**
 	 * Returns the name of the Binder icon for the Binder corresponding
 	 * to this TreeInfo object.
 	 * 
@@ -324,6 +394,80 @@ public class TreeInfo implements IsSerializable {
 		return m_binderIconName;
 	}
 
+	/**
+	 * Returns the GWT ImageResource of the image to display next to
+	 * the Binder.
+	 * 
+	 * @return
+	 */
+	public ImageResource getBinderImage() {
+		ImageResource reply = null;
+		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
+		if (isBucket()) {
+			reply = images.bucket();
+		}
+		
+		else {
+			switch (m_binderInfo.getBinderType()) {
+			case FOLDER:
+				switch (m_binderInfo.getFolderType()) {
+				case BLOG:         reply = images.folder_comment();  break;
+				case CALENDAR:     reply = images.folder_calendar(); break;
+				case DISCUSSION:   reply = images.folder_comment();  break;
+				case FILE:         reply = images.folder_file();     break;
+				case GUESTBOOK:                                      break;
+				case MILESTONE:                                      break;
+				case MINIBLOG:     reply = images.folder_comment();  break;
+				case MIRROREDFILE: reply = images.folder_file();     break;
+				case PHOTOALBUM:   reply = images.folder_photo();    break;
+				case SURVEY:                                         break;
+				case TASK:         reply = images.folder_task();     break;
+				case TRASH:        reply = images.folder_trash();    break;
+				case WIKI:                                           break;
+				case OTHER:                                          break;
+				}
+				
+				if (null == reply) {
+					reply = images.folder_generic();
+				}
+				
+				break;
+				
+			case WORKSPACE:
+				switch (m_binderInfo.getWorkspaceType()) {
+				case DISCUSSIONS:                                        break;
+				case GLOBAL_ROOT:                                        break;
+				case LANDING_PAGE:                                       break;
+				case PROFILE_ROOT:                                       break;
+				case PROJECT_MANAGEMENT:                                 break;
+				case TEAM:          reply = images.workspace_team();     break;
+				case TEAM_ROOT:                                          break;
+				case TOP:                                                break;
+				case TRASH:         reply = images.workspace_trash();    break;
+				case USER:          reply = images.workspace_personal(); break;
+				case OTHER:                                                                                                break;
+				}
+				
+				if (null == reply) {
+					reply = images.workspace_generic();
+				}
+				
+				break;
+			}
+		}
+		
+		return reply;
+	}
+	
+	/**
+	 * Returns the BinderInfo this TreeInfo object refers to.
+	 * 
+	 * @return
+	 */
+	public BinderInfo getBinderInfo() {
+		return m_binderInfo;
+	}
+	
 	/**
 	 * Returns the permalink to the Binder corresponding to this
 	 * TreeInfo object.
@@ -352,74 +496,6 @@ public class TreeInfo implements IsSerializable {
 	 */
 	public String getBinderTrashPermalink() {
 		return m_binderTrashPermalink;
-	}
-
-	/**
-	 * Returns the BinderInfo this TreeInfo object refers to.
-	 * 
-	 * @return
-	 */
-	public BinderInfo getBinderInfo() {
-		return m_binderInfo;
-	}
-	
-	/**
-	 * Returns the GWT ImageResource of the image to display next to
-	 * the Binder.
-	 * 
-	 * @return
-	 */
-	public ImageResource getBinderImage() {
-		ImageResource reply = null;
-		GwtTeamingWorkspaceTreeImageBundle images = GwtTeaming.getWorkspaceTreeImageBundle();
-		if (isBucket()) {
-			reply = images.bucket();
-		}
-		
-		else {
-			switch (m_binderInfo.getBinderType()) {
-			case FOLDER:
-				switch (m_binderInfo.getFolderType()) {
-				case BLOG:        reply = images.folder_comment();  break;
-				case CALENDAR:    reply = images.folder_calendar(); break;
-				case DISCUSSION:  reply = images.folder_comment();  break;
-				case FILE:        reply = images.folder_file();     break;
-				case MINIBLOG:    reply = images.folder_comment();  break;
-				case PHOTOALBUM:  reply = images.folder_photo();    break;
-				case TASK:        reply = images.folder_task();     break;
-				case TRASH:       reply = images.folder_trash();    break;
-				case SURVEY:                                        break;
-				case WIKI:                                          break;
-				case OTHER:                                         break;
-				}
-				
-				if (null == reply) {
-					reply = images.folder_generic();
-				}
-				
-				break;
-				
-			case WORKSPACE:
-				switch (m_binderInfo.getWorkspaceType()) {
-				case GLOBAL_ROOT:                                        break;
-				case PROFILE_ROOT:                                       break;
-				case TEAM:          reply = images.workspace_team();     break;
-				case TEAM_ROOT:                                          break;
-				case TOP:                                                break;
-				case TRASH:         reply = images.workspace_trash();    break;
-				case USER:          reply = images.workspace_personal(); break;
-				case OTHER:                                              break;
-				}
-				
-				if (null == reply) {
-					reply = images.workspace_generic();
-				}
-				
-				break;
-			}
-		}
-		
-		return reply;
 	}
 
 	/**
@@ -632,6 +708,16 @@ public class TreeInfo implements IsSerializable {
 	}
 
 	/**
+	 * Stores the string to use for the hover text for a binder's
+	 * image.
+	 * 
+	 * @param binderHoverImage
+	 */
+	public void setBinderHoverImage(String binderHoverImage) {
+		m_binderHoverImage = binderHoverImage;
+	}
+	
+	/**
 	 * Stores the name of the icon for the Binder.
 	 * 
 	 * @param binderIconName
@@ -640,7 +726,7 @@ public class TreeInfo implements IsSerializable {
 		m_binderIconName = binderIconName;
 		
 	}
-	
+
 	/**
 	 * Stores whether the Binder should be expanded.
 	 * 

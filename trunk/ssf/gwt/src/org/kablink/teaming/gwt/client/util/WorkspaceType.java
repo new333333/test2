@@ -43,13 +43,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public enum WorkspaceType implements IsSerializable {
+	DISCUSSIONS,
 	GLOBAL_ROOT,
+	LANDING_PAGE,
 	PROFILE_ROOT,
+	PROJECT_MANAGEMENT,
 	TEAM,
 	TEAM_ROOT,
 	TOP,
 	TRASH,
 	USER,
+	WORKSPACE,
 	
 	OTHER,
 	NOT_A_WORKSPACE,

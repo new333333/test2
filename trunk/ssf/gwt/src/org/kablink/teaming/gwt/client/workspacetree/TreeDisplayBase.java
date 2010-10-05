@@ -50,6 +50,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -232,7 +233,8 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 * Anchor on a TreeItem.
 	 * 
 	 * For buckets, this contains a named range of the items in the
-	 * bucket.  For non buckets, it's simply the item's title.
+	 * bucket.  For non buckets, it's simply the item's hover text,
+	 * if any.
 	 * 
 	 * @param ti
 	 * 
@@ -240,15 +242,9 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	 */
 	String getBinderHover(TreeInfo ti) {
 		String reply;
-		if (ti.isBucket()) {
-			reply = getMessages().treeBucketHover(ti.getBucketFirstTitle(), ti.getBucketLastTitle());
-		}
-		else {
-			reply = ti.getBinderHover();
-			if (!(GwtClientHelper.hasString(reply))) {
-				reply = ti.getBinderTitle();
-			}
-		}
+		if (ti.isBucket())
+			 reply = getMessages().treeBucketHover(ti.getBucketFirstTitle(), ti.getBucketLastTitle());
+		else reply = ti.getBinderHover();
 		return reply;
 	}
 	
@@ -361,6 +357,18 @@ public abstract class TreeDisplayBase implements ActionTrigger {
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
+	}
+
+	/**
+	 * Sets the hover text on a widget, guarding against exceptions.
+	 * 
+	 * @param w
+	 * @param hover
+	 */
+	void setWidgetHover(Widget w, String hover) {
+		if ((null != w) && GwtClientHelper.hasString(hover)) {
+			w.setTitle(hover);
+		}
 	}
 	
 	/**
