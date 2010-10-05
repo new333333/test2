@@ -50,10 +50,11 @@ public enum FolderType implements IsSerializable {
 	GUESTBOOK,
 	MILESTONE,
 	MINIBLOG,
+	MIRROREDFILE,
 	PHOTOALBUM,
+	SURVEY,
 	TASK,
 	TRASH,
-	SURVEY,
 	WIKI,
 	
 	OTHER,

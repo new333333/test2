@@ -343,7 +343,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// Create the Image for the push button...
 		Image closePBImg = new Image(getImages().modal_dialog_close());
 		closePBImg.addStyleName("workspaceTreeControlHeader_closeImg");
-		closePBImg.setTitle(getMessages().treeCloseActivityStreams());
+		setWidgetHover(closePBImg, getMessages().treeCloseActivityStreams());
 		
 		// ...create the Anchor...
 		Anchor closePBAnchor = new Anchor();
@@ -742,7 +742,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				Anchor selectorA = new Anchor();
 				selectorA.getElement().appendChild(selectorGrid.getElement());
 				selectorA.addClickHandler(new BinderSelector(rootTI));
-				selectorA.setTitle(getBinderHover(rootTI));
+				setWidgetHover(selectorA, getBinderHover(rootTI));
 				rootWidget = selectorA;
 			}
 			m_rootPanel.add(rootWidget);
@@ -805,8 +805,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		ti.setBinderUIImage(binderImg);
 		setBinderImageResource(ti);
 		binderImg.addStyleName("workspaceTreeBinderImg");
+		setWidgetHover(binderImg, ti.getBinderHoverImage());
 		selectorGrid.setWidget(0, 0, binderImg);
 		Widget selectorLabel = getSelectorLabel(ti, (ti.isActivityStream() && (0 == renderDepth)));
+		setWidgetHover(selectorLabel, getBinderHover(ti));
 		selectorGrid.setWidget(0, 1, selectorLabel);
 		selectorGrid.setWidget(0, 2, new Label("\u00A0"));
 		selectorGrid.getCellFormatter().setWidth(0, 2, "100%");
@@ -819,7 +821,6 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		selectorA.getElement().appendChild(selectorGrid.getElement());
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
-		selectorA.setTitle(getBinderHover(ti));
 		String selectorId = getSelectorId(ti);
 		String selectorGridId = (EXTENSION_ID_SELECTOR_ANCHOR + selectorId);
 		selectorGrid.getElement().setId(selectorGridId);

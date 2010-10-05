@@ -194,7 +194,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		// ...create the Image...
 		Image img = new Image(getImages().breadcrumb_close());
 		img.addStyleName("breadCrumb_CloseImg");
-		img.setTitle(getMessages().treeCloseBreadCrumbs());
+		setWidgetHover(img, getMessages().treeCloseBreadCrumbs());
 		
 		// ...create the Anchor...
 		Anchor a = new Anchor();
@@ -340,7 +340,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		selectorA.addClickHandler(new BinderSelector(ti));
 		selectorA.setWidth("100%");
 		if (ti.isBucket()) {
-			selectorA.setTitle(getBinderHover(ti));
+			setWidgetHover(selectorA, getBinderHover(ti));
 		}
 		
 		// Add the expander and selector to the Grid.

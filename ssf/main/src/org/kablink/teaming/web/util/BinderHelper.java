@@ -153,6 +153,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
+@SuppressWarnings("unchecked")
 public class BinderHelper {
 	protected static final Log logger = LogFactory.getLog(Binder.class);
 	
@@ -643,7 +644,6 @@ public class BinderHelper {
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
       	//Get the records returned (which may be more than the page size)
-      	List results = (List)model.get(WebKeys.WHATS_NEW_BINDER);
       	if (totalRecords.intValue() < pageStart) {
       		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
       	} else if (totalRecords.intValue() >= pageEnd) {
@@ -800,7 +800,6 @@ public class BinderHelper {
       	//Get the total records found by the search
       	Integer totalRecords = (Integer)model.get(WebKeys.SEARCH_TOTAL_HITS);
       	//Get the records returned (which may be more than the page size)
-      	List results = (List)model.get(WebKeys.WHATS_NEW_BINDER);
       	if (totalRecords.intValue() < pageStart) {
       		if (pageNumber > 0) prevPage = String.valueOf(pageNumber - 1);
       	} else if (totalRecords.intValue() >= pageEnd) {
@@ -1346,21 +1345,8 @@ public class BinderHelper {
 	 * @return true -> binder is a Team workspace.  false -> It isn't.
 	 */
 	static public boolean isBinderTeamWorkspace(Binder binder) {
-		// If binder is not a user Workspace and its team membership is
-		// not inherited...
-		boolean isTeamWs = ((!(isBinderUserWorkspace(binder))) && (!(binder.isTeamMembershipInherited())));
-		if (isTeamWs) {
-			// ...but it is a Workspace...
-			isTeamWs = ((null != binder) && (binder instanceof Workspace));
-			if (isTeamWs) {
-				// ...we consider it a Team workspace if it has any
-				// ...team members assigned to it.
-  		   		Set<Long> teamMemberIds = binder.getTeamMemberIds();
-  		   		int teamMembers = ((null == teamMemberIds) ? 0 : teamMemberIds.size());
-  		   		isTeamWs = (0 < teamMembers);
-			}
-		}
-		return isTeamWs;
+		String view = getBinderDefaultViewName(binder);
+		return (MiscUtil.hasString(view) && view.equals("_team_workspace"));
 	}
 
 	/**
@@ -2257,7 +2243,6 @@ public class BinderHelper {
 			}
 			if (fileAtt != null) {
 				//Found the attachment file, look for a version match
-				VersionAttachment fileVer = null;
 				Set<VersionAttachment> fileVersions = fileAtt.getFileVersions();
 				for (VersionAttachment fv : fileVersions) {
 					if (fv.getMajorVersion().equals(fa.getMajorVersion()) && 
@@ -4267,4 +4252,37 @@ public class BinderHelper {
 		// string.
 		return new SimpleDateFormat("dd MMM yyyy HH:mm:ss z", Locale.US);
 	}
+
+	/**
+	 * Returns the name of the family from the default view associated
+	 * with a binder.
+	 * 
+	 * @param binder
+	 * @return
+	 */
+	public static String getBinderDefaultFamilyName(Binder binder) {
+		Definition def        = ((null == binder)     ? null : binder.getDefaultViewDef());
+		Document   defDoc     = ((null == def)        ? null : def.getDefinition());
+		Element    defDocRoot = ((null == defDoc)     ? null : defDoc.getRootElement());
+		Element    family     = ((null == defDocRoot) ? null : ((Element) defDocRoot.selectSingleNode("//properties/property[@name='family']")));
+		String     reply      = ((null == family)     ? null : family.attributeValue("value", ""));
+		
+		return reply;
+	}
+		
+	/**
+	 * Returns the name of the default view associated with a binder.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static String getBinderDefaultViewName(Binder binder) {
+		Definition def        = ((null == binder)     ? null : binder.getDefaultViewDef());
+		Document   defDoc     = ((null == def)        ? null : def.getDefinition());
+		Element    defDocRoot = ((null == defDoc)     ? null : defDoc.getRootElement());
+		String     reply      = ((null == defDocRoot) ? null : defDocRoot.attributeValue("name"));
+		
+		return reply;
+	}	
 }

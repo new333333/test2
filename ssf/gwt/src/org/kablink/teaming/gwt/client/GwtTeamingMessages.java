@@ -666,4 +666,33 @@ public interface GwtTeamingMessages extends Messages
 	String resumeActivityStream();
 	String siteWide();
 	String whatsNew();
+	
+	// The following strings are used as the hover text over various
+	// binder type images in the sidebar workspace tree control.
+	String hoverBucket();
+	String hoverFolder();
+	String hoverFolderBlog();
+	String hoverFolderCalendar();
+	String hoverFolderDiscussion();
+	String hoverFolderFile();
+	String hoverFolderGuestbook();
+	String hoverFolderMilestones();
+	String hoverFolderMiniBlog();
+	String hoverFolderMirroredFiles();
+	String hoverFolderPhotoAlbum();
+	String hoverFolderSurvey();
+	String hoverFolderTask();
+	String hoverFolderTrash();
+	String hoverFolderWiki();
+	String hoverWorkspace();
+	String hoverWorkspaceDiscussions();
+	String hoverWorkspaceGlobalRoot();
+	String hoverWorkspaceLandingPage();
+	String hoverWorkspacePersonal();
+	String hoverWorkspaceProfileRoot();
+	String hoverWorkspaceProjectManagement();
+	String hoverWorkspaceTeam();
+	String hoverWorkspaceTeamRoot();
+	String hoverWorkspaceTop();
+	String hoverWorkspaceTrash();
 }// end GwtTeamingMessages
