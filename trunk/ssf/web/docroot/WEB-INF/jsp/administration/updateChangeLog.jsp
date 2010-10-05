@@ -31,20 +31,28 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%@ page contentType="text/xml; charset=UTF-8" %><?xml version="1.0" encoding="UTF-8" ?> 
-  <changes>
-<c:forEach var="change" items="${changeLogs}">
-<%
-	try {
-%>
-	<c:out value="${change.xmlNoHeader}" escapeXml="false"/>
-<%
-	}
-	catch(Exception e) {
-%>
-<bad_data>**********Error processing data, skipped**********</bad_data>
-<%
-	}
-%>
-</c:forEach>
-	</changes>
+%><%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<html>
+	<head>
+	</head>
+	<body>
+		<div>
+			<textarea id="changesTextArea" style="width: 100%;" readonly rows="19">
+				<c:forEach var="change" items="${changeLogs}">
+				<%
+					try {
+				%>
+					<c:out value="${change.xmlNoHeader}" escapeXml="false"/>
+				<%
+					}
+					catch(Exception e) {
+				%>
+				<bad_data>**********Error processing data, skipped**********</bad_data>
+				<%
+					}
+				%>
+				</c:forEach>
+			</textarea>
+		</div>
+	</body>
+</html>
