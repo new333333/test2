@@ -175,7 +175,7 @@ public class PresenceInfoTag extends BodyTagSupport {
 			}
 
 			// Pass the user status to the jsp
-			httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
+			httpReq.setAttribute(WebKeys.PRESENCE_USER, user);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
 			httpReq.setAttribute(WebKeys.PRESENCE_SHOW_HINT, this.showHint);
 			httpReq.setAttribute(WebKeys.PRESENCE_WORKSPACE_PREDELETED, this.workspacePreDeleted);
