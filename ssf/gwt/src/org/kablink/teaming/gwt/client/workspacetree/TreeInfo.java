@@ -411,20 +411,20 @@ public class TreeInfo implements IsSerializable {
 			switch (m_binderInfo.getBinderType()) {
 			case FOLDER:
 				switch (m_binderInfo.getFolderType()) {
-				case BLOG:         reply = images.folder_comment();  break;
-				case CALENDAR:     reply = images.folder_calendar(); break;
-				case DISCUSSION:   reply = images.folder_comment();  break;
-				case FILE:         reply = images.folder_file();     break;
-				case GUESTBOOK:                                      break;
-				case MILESTONE:                                      break;
-				case MINIBLOG:     reply = images.folder_comment();  break;
-				case MIRROREDFILE: reply = images.folder_file();     break;
-				case PHOTOALBUM:   reply = images.folder_photo();    break;
-				case SURVEY:                                         break;
-				case TASK:         reply = images.folder_task();     break;
-				case TRASH:        reply = images.folder_trash();    break;
-				case WIKI:                                           break;
-				case OTHER:                                          break;
+				case BLOG:         reply = images.folder_comment();   break;
+				case CALENDAR:     reply = images.folder_calendar();  break;
+				case DISCUSSION:   reply = images.folder_comment();   break;
+				case FILE:         reply = images.folder_file();      break;
+				case GUESTBOOK:    reply = images.folder_guestbook(); break;
+				case MILESTONE:    reply = images.folder_milestone(); break;
+				case MINIBLOG:     reply = images.folder_comment();   break;
+				case MIRROREDFILE: reply = images.folder_file();      break;
+				case PHOTOALBUM:   reply = images.folder_photo();     break;
+				case SURVEY:       reply = images.folder_survey();    break;
+				case TASK:         reply = images.folder_task();      break;
+				case TRASH:        reply = images.folder_trash();     break;
+				case WIKI:         reply = images.folder_wiki();      break;
+				case OTHER:                                           break;
 				}
 				
 				if (null == reply) {
@@ -435,16 +435,16 @@ public class TreeInfo implements IsSerializable {
 				
 			case WORKSPACE:
 				switch (m_binderInfo.getWorkspaceType()) {
-				case DISCUSSIONS:                                        break;
-				case GLOBAL_ROOT:                                        break;
-				case LANDING_PAGE:                                       break;
-				case PROFILE_ROOT:                                       break;
-				case PROJECT_MANAGEMENT:                                 break;
-				case TEAM:          reply = images.workspace_team();     break;
-				case TEAM_ROOT:                                          break;
-				case TOP:                                                break;
-				case TRASH:         reply = images.workspace_trash();    break;
-				case USER:          reply = images.workspace_personal(); break;
+				case DISCUSSIONS:         reply = images.workspace_discussions();        break;
+				case GLOBAL_ROOT:         reply = images.workspace_global_root();        break;
+				case LANDING_PAGE:        reply = images.workspace_landing_page();       break;
+				case PROFILE_ROOT:        reply = images.workspace_profile_root();       break;
+				case PROJECT_MANAGEMENT:  reply = images.workspace_project_management(); break;
+				case TEAM:                reply = images.workspace_team();               break;
+				case TEAM_ROOT:           reply = images.workspace_team_root();          break;
+				case TOP:                 reply = images.workspace_top();                break;
+				case TRASH:               reply = images.workspace_trash();              break;
+				case USER:                reply = images.workspace_personal();           break;
 				case OTHER:                                                                                                break;
 				}
 				
