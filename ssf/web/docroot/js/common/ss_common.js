@@ -4431,10 +4431,10 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 						namespace:namespace, ssOSInfo:OSInfo, ssEntryAttachmentURL:escapedURL};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
-	var divId = "ss_div_fileopen" + entryId + namespace;
+	var divId = "ss_div_fileopen" + namespace;
 	var divObj = document.getElementById(divId);
 	
-	var frameId = 'ss_iframe_fileopen' + entryId + namespace;
+	var frameId = 'ss_iframe_fileopen' + namespace;
 	var frameObj = document.getElementById(frameId);
 	
 	editClicked = "true";
@@ -4455,10 +4455,10 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 						namespace:namespace, ssOSInfo:OSInfo, fileId:fileId};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
     
-	var divId = "ss_div_fileopen" + entryId + namespace;
+	var divId = "ss_div_fileopen" + namespace;
 	var divObj = document.getElementById(divId);
 	
-	var frameId = 'ss_iframe_fileopen' + entryId + namespace;
+	var frameId = 'ss_iframe_fileopen' + namespace;
 	var frameObj = document.getElementById(frameId);
 	
 	editClicked = "true";
