@@ -43,7 +43,7 @@
 <c:set var="folderChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
 <c:set var="numberChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
+<c:if test="${!empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
 <c:if test="${empty folderColumns || !empty folderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
 <c:set var="commentsChecked" value=""/>
