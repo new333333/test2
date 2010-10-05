@@ -78,6 +78,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .wiki-topics {
     font-size: 13px;
+	line-height: 20px;
     background-color: #EBF5F5;
     padding: 10px;
     -moz-border-radius: 5px;
@@ -110,11 +111,24 @@ boolean isIE = BrowserSniffer.is_ie(request);
  	font-size: 16px;
  	font-weight: bold;
 }
+
+.ss_wiki_search_bar {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	white-space: nowrap;
+	}
+#ss_findWikiPageForm_ss_forum_ {display: inline;}
+
+
 /* wiki tabs */
+#wiki-tabset span.wiki-tab.on a {color:#353838;}
+#wiki-tabset span.wiki-tab a {color:#fff;}
+
 .wiki-tabs {
     text-align: center;
     border-bottom: 1px solid #c4c4c4;
-    margin-bottom:10px;
+    margin-bottom: 5px;
     }
 .wiki-tab {
     font-size: 12px;
@@ -151,11 +165,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-top:6px;
 	}
 .wiki-actions {
-    margin: 5px;
+    margin: 0px 0px 5px;
     text-align: right;
     position: relative;
     }
-
 
 .wiki-menu a {
     color: #fff;
@@ -176,8 +189,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /*-------------------------------------------*/
 
 .wiki-entry-wrap {
+	position: relative;
 	padding:4px;
 	}
+	
+.wiki-entry-wrap #ss_profile_box_h1, .ss_folder_type_wiki #ss_profile_box_h1 { margin-right: 300px;}
+.wiki-entry-wrap .ss_treeWidget, .ss_folder_type_wiki .ss_treeWidget { margin-top: 0px; margin-left: 5px;}
+	
 .wiki-entry-title {
     font-size: 15px;
     line-height: 18px;
@@ -226,9 +244,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
     padding-right: 10px;
     white-space: nowrap;
     }
+#descriptionRegion1 .ss_entryDescription {
+	background-color: #fff;
+	padding: 0px 10px 0px 0px;
+	}	
 
 
 .nv-footer-wiki     { border-top: 1px solid #c4c4c4;}
+.nv-footer-wiki .ss_muster_users { font-size: 11px;}
 .nv-footer          { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: center; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
 .nv-footer-r        { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
 .nv-footer .buttons { position: absolute; right: 10px; top: 10px; min-width: 80px; }
