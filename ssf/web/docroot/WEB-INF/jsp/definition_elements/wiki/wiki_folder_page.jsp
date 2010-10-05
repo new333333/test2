@@ -90,7 +90,7 @@
             name="entryViewStyle" value="popup"/><ssf:param
             name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
             title="<ssf:nlt tag="wiki.homePage"/>"
-          ><img border="0" src="<html:rootPath/>images/pics/wiki/home16.png" 
+          ><img border="0" align="absmiddle" width="12" height="12" src="<html:rootPath/>images/pics/wiki/home16.png" 
             alt="<ssf:nlt tag="wiki.homePage"/>"></a>
         </c:if>
     </div>

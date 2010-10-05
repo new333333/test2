@@ -53,9 +53,7 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 	
 </script>
 <% // Show the Wiki Page search widget %>
-<table class="ss_wiki_search_bar" width="100%">
-  <tr>
-    <td align="right" width="95%" valign="top">        
+<div class="ss_wiki_search_bar">
       <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" 
 	        name="ss_findWikiPageForm${renderResponse.namespace}"
@@ -76,16 +74,12 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 		    /> 
 	    </form>
 	  </c:if>
-	</td>
-	<td width="5%" valign="top" nowrap>
-	  	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
+	<span><a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
 	      alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-	      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
-	    <a class="ss_actions_bar13_pane_none"
+	      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;<a class="ss_actions_bar13_pane_none"
 	      href="javascript: ss_helpSystem.run();"><img border="0"
 	      <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" />
-	    </a>&nbsp;&nbsp;
-	</td>
-  </tr>
-</table>
+	    </a>
+	</span>	
+</div>
 </c:if>
