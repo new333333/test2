@@ -230,6 +230,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
+			} else if(args[0].equals("getCurrentServerTime")) {
+				wsClient.fetchAndPrintCalendar("TeamingServiceV1", "admin_getCurrentServerTime", new Object[] {null});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();

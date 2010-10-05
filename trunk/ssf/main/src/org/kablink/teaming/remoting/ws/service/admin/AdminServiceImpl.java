@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.remoting.ws.service.admin;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.kablink.teaming.remoting.ws.BaseService;
 
 /**
@@ -47,5 +50,12 @@ public class AdminServiceImpl extends BaseService implements AdminService {
 	
 	public void admin_destroyApplicationScopedToken(String accessToken, String token) {
 		getAdminModule().destroyApplicationScopedToken(token);
+	}
+
+	@Override
+	public Calendar admin_getCurrentServerTime(String accessToken) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());	
+		return calendar;
 	}
 }

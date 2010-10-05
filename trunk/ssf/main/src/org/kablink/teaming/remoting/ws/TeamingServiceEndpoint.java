@@ -626,6 +626,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId) {
 		return getAdminService().admin_getApplicationScopedToken(accessToken, applicationId, userId);
 	}
+	public Calendar admin_getCurrentServerTime(String accessToken) {
+		return getAdminService().admin_getCurrentServerTime(accessToken);
+	}
 
 	private String normalizeFileUploadDataItemName(String fileUploadDataItemName) {
 		if(fileUploadDataItemName.equals("ss_attachFile"))
