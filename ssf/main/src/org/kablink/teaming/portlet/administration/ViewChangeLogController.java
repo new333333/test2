@@ -67,7 +67,7 @@ public class ViewChangeLogController  extends  SAbstractController {
 			//not ajax request
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CHANGELOG, model);
 		}
-		response.setContentType("text/xml");
+//!!!		response.setContentType("text/xml");
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, null);
 		List changes = null;
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
