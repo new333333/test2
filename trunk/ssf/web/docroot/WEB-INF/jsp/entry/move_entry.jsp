@@ -39,10 +39,16 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {
 	return ss_checkTree(obj, "ss_tree_radio${wsTreeName}destination" + forum)
+}
+
+function ss_saveDestinationBinderId(id) {
+	var formObj = document.getElementById("ss_move_form");
+	formObj.idChoices.value = "destination_" + id
 }
 </script>
 
@@ -68,12 +74,25 @@ function ${wsTreeName}_showId(forum, obj, action) {
 			<span class="ss_bold">${ssEntry.title}</span>
 		</div>
 
-<form class="ss_style ss_form" method="post" 
+<form class="ss_style ss_form" method="post" id="ss_move_form" name="ss_move_form"
 	action="<ssf:url
 	action="modify_folder_entry"
 	operation="${ssOperation}"
 	folderId="${ssBinder.id}"
 	entryId="${ssEntry.id}"/>" name="${renderResponse.namespace}fm">
+<br/>
+
+<span class="ss_bold"><ssf:nlt tag="move.findDestinationFolder"/></span>
+<br/>
+<ssf:find formName="ss_move_form" 
+    formElement="binderId" 
+    type="places"
+    width="180px" 
+    singleItem="true"
+    clickRoutine="ss_saveDestinationBinderId"
+    /> 
+
+<br/>
 <br/>
 
 <c:if test="${!empty ssWsDomTree}">
