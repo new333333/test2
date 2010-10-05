@@ -37,6 +37,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.URL;
+import java.util.Calendar;
 
 import javax.xml.namespace.QName;
 
@@ -477,6 +478,12 @@ public abstract class WSClientBase {
 		String str = (String) fetch(serviceName, operation, args, filename);
 
 		System.out.println(str);
+	}
+	
+	void fetchAndPrintCalendar(String serviceName, String operation, Object[] args) throws Exception {
+		Calendar cal = (Calendar) fetch(serviceName, operation, args);
+
+		System.out.println(cal.toString());
 	}
 
 	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {

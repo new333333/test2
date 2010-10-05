@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.remoting.ws.service.admin;
 
+import java.util.Calendar;
+
 /**
  * @author Jong Kim
  *
@@ -42,4 +44,6 @@ public interface AdminService {
 	public String admin_getApplicationScopedToken(String accessToken, long applicationId, long userId);
 
 	public void admin_destroyApplicationScopedToken(String accessToken, String token);
+	
+	public Calendar admin_getCurrentServerTime(String accessToken);
 }
