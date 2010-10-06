@@ -6700,7 +6700,9 @@ function ss_checkForRequiredFields(obj) {
 					if (radioClicked) continue;
 				} else if (typeof(eleObj.tagName) != 'undefined' && eleObj.tagName.toLowerCase() == 'select') {
 					if (typeof(eleObj.selectedIndex) != 'undefined') {
-						if (eleObj.selectedIndex >= 0) {
+						//Check that something with a non-blank caption is selected
+						if (eleObj.selectedIndex >= 0 && 
+								(eleObj.multiple || eleObj.options[eleObj.selectedIndex].text != "")) {
 							// alert('selection found: '+eleObj0.value);
 							continue;
 						}
