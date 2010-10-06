@@ -24,6 +24,8 @@
 	position: absolute;
 	top: 25px;
 	z-index: 100;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .activityStreamNoEntriesFoundPanel
@@ -36,6 +38,8 @@
 	position: absolute;
 	top: 150px;
 	z-index: 100;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .activityStreamCtrlFooter
@@ -586,6 +590,8 @@ body, table td, select
 	position: absolute;
 	top: 25px;
 	z-index: 100;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 /* Styles for the "search results" in a "find" control. */
