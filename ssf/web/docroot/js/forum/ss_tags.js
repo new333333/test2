@@ -97,7 +97,7 @@ function ss_tagModify(operation2, namespace, tagId, divNumber, binderId, entityT
 		}
 		
         var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]*)";
-		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]");
+		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}_~-]");
 		if (formObj.personalTag && formObj.personalTag.value) {
 			if (pattern.test(formObj.personalTag.value) ) {
 				alert(ss_tagConfirmNoPunct)
