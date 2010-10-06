@@ -152,10 +152,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color: ${ss_form_element_text_color};
 	padding: 1px;
 	font-size: ${ss_style_font_normalprint};
-	font-family: ${ss_style_folder_view_font_family}; 	
+	font-family: ${ss_style_folder_view_font_family};
 	height: 14px;
-	width: 70px;
-	overflow: hidden;
+	width: 70px; 	
 	}
 /******** SEARCH - MASTHEAD*****/	
 .ss_combobox_search {
