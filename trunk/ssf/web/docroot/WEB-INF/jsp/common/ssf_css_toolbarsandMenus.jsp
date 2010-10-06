@@ -587,23 +587,32 @@ ul.ss_dropdownmenu li {
   	}
 table.ss_popup, div.ss_popup {
 	position: relative;
-	background-color: #ffffff;
-	border: 1px solid ${ss_toolbar1_background_color};
+	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
+	padding: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.ss_popup {
 	position: relative;
-	background-color: #ffffff;
-	border: 1px solid ${ss_toolbar1_background_color};
+	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
+	padding: 5px;
   	margin: 0px;
   	background-color:${ss_style_background_color_opaque};
   	text-align: left;
   	width: 300px;	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}	
 div.ss_popup_top {
   	position: relative;
-  	background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
+  	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.png);
+	background-position: bottom;
   	background-repeat: repeat-x;
-  	height: 14px; 
+  	height: 20px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 	}
 div.ss_popup_topLg {
   	position: relative;
@@ -620,7 +629,8 @@ div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
    font-size: ${ss_style_font_smallprint};
    font-weight: bold;
-   color: ${ss_style_header_bar_title_color};
+   color: #fff;
+   padding-top: 2px;
    position: relative;
    text-align: center;
 	}

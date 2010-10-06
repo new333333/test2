@@ -53,7 +53,7 @@
    </td>
    <td width="40"><div class="ss_popup_top" align="right">
     <a href="javascript: ;" onClick="${closeScript};return false;">
-    <img border="0" src="<html:imagesPath/>pics/popup_close_box.gif"/>
+    <img border="0" src="<html:imagesPath/>icons/close_teal16.png"/>
     </a></div>
    </td>
   </tr>

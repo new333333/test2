@@ -474,10 +474,8 @@ div.ss_entryContent a:hover {
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
 	line-height: 17px;
-  	padding: 2px 15px;
-  	background-color: #E9F1F1;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+  	padding: 5px;
+    border-top: 1px solid #C4C4C4;
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
@@ -1764,7 +1762,7 @@ div.ss_box_top_rounded {
 /* Tree widget styles */
 .ss_treeWidget {
   background: url("<html:imagesPath/>pics/1pix.gif") fixed no-repeat;
-  margin-top:8px;
+  margin-top: 2px;
   text-indent:0px;
   }
 .ss_twDiv {

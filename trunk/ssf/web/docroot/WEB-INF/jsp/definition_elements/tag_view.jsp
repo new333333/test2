@@ -64,7 +64,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
     <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
 	    <tr>
 		 <td valign="top" style="padding-right:4px;">
-			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+			<div id="tag_button" style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
 				<span>
 					<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
 			    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
@@ -82,7 +82,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
 	</c:if>
     <tr>
 	 <td valign="top" style="padding-right:4px;">
-		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+		<div id="tag_button" style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
 			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			<ssf:title tag="title.open.tag.menu" />
@@ -111,10 +111,7 @@ var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
   </tbody>
   </table>
 
- <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" 
-		class="ss_tag_pane"
-		style="position:relative;"
->
+ <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane" style="position:relative;">
 
    <ssf:popupPane width="250px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
