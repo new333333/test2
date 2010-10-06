@@ -83,9 +83,11 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 		else
 			helper.setFrom(defaultFrom);
 		
-		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
+		Collection<InternetAddress> addrsTo = (Collection)details.get(MailModule.TO);
+		Collection<InternetAddress> addrsCc = (Collection)details.get(MailModule.CC);
+		Collection<InternetAddress> addrsBcc = (Collection)details.get(MailModule.BCC);
 		Collection<InternetAddress> validAddrs;;
-		if (addrs == null || addrs.isEmpty()) {
+		if ((addrsTo == null || addrsTo.isEmpty()) && (addrsBcc == null || addrsBcc.isEmpty())) {
 			if (details.containsKey(MailModule.FROM)) 
 				helper.setTo((InternetAddress)details.get(MailModule.FROM));
 			else
@@ -93,17 +95,15 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(MailModule.SUBJECT));
 		} else {
 			//Using 1 set results in 1 TO: line in mime-header - GW like this better
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.TO, addrs);
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.TO, addrsTo);
 			helper.setTo(validAddrs.toArray(new InternetAddress[validAddrs.size()]));			
 		}
-		addrs = (Collection)details.get(MailModule.CC);
-		if (addrs != null) {
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.CC, addrs);
+		if (addrsCc != null) {
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.CC, addrsCc);
 			helper.setCc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}
-		addrs = (Collection)details.get(MailModule.BCC);
-		if (addrs != null) {
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, addrs);
+		if (addrsBcc != null) {
+			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, addrsBcc);
 			helper.setBcc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
 		}
 		// the next line creates ALTERNATIVE part, change to setText(String, boolean)

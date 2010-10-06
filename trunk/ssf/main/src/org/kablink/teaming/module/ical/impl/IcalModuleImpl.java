@@ -2275,7 +2275,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				ParameterList attendeeParams = new ParameterList();
 				attendeeParams.add(new Cn(Utils.getUserTitle(user)));
 				attendeeParams.add(Role.REQ_PARTICIPANT);
-				String uri = "MAILTO:" + user.getEmailAddress();
+				String uri = "";
+				if (user.getEmailAddress() != null && !user.getEmailAddress().equals("")) uri = "MAILTO:" + user.getEmailAddress();
 				try {
 					component.getProperties().add(new Attendee(attendeeParams, uri));
 				} catch (URISyntaxException e) {
