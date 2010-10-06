@@ -32,12 +32,19 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<c:set var="colCounter1" value="${fn:substringBefore(((fn:length(ssFolderEntries) + 2) / 3), '.')}"/>
-<c:set var="colCounter2" value="${fn:substringBefore(((fn:length(ssFolderEntries) + 1) / 3), '.')}"/>
-<c:set var="counter" value="${colCounter1}"/>
 <table width="100%">
 <tr>
-<td valign="top" width="34%">
+<td valign="top"><span class="ss_nowrap ss_bold" style="margin-left: 10px;">
+
+		 <c:forEach var="blogPage" items="${ssBlogPages}">
+		   <c:if test="${blogPage.id == ssBinder.id}">
+				<c:out value="${blogPage.title}" escapeXml="true" />
+			</c:if> 
+		 </c:forEach>
+
+
+<ssf:nlt tag="wiki.topic.pages"/></span></td>
+<td valign="top" width="100%" align="left">
 <c:forEach var="entry1" items="${ssFolderEntries}" varStatus="status" >
 	<jsp:useBean id="entry1" type="java.util.HashMap" />
 	<c:set var="seenStyleburst" value=""/>
@@ -90,17 +97,11 @@
             name="entryViewStyle" value="popup"/><ssf:param
             name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
             title="<ssf:nlt tag="wiki.homePage"/>"
-          ><img border="0" align="absmiddle" width="12" height="12" src="<html:rootPath/>images/pics/wiki/home16.png" 
+          ><img border="0" align="absbottom" width="14" height="14" src="<html:rootPath/>images/pics/wiki/home16.png" 
             alt="<ssf:nlt tag="wiki.homePage"/>"></a>
         </c:if>
     </div>
-    <c:set var="counter" value="${counter - 1}"/>
-    <c:if test="${counter <= 0}">
-      <c:set var="counter" value="${colCounter2}"/>
-      </td>
-      <td valign="top" width="33%">
-    </c:if>
-    
+
 </c:forEach>
 </td>
 </tr>
