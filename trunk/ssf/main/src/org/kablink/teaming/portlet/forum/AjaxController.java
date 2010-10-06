@@ -2363,6 +2363,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
+				Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
 				
 				
 		       	List entries;
@@ -2392,11 +2393,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 					else {
 						modeType = ModeType.PHYSICAL;
 					}
-					Document searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
+					Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
 					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 					if (virtual) {
-						searchFilter = EventHelper.buildSearchFilterDoc(request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+						searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
 						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
 						List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 						int tasks = ((null == taskEntries) ? 0 : taskEntries.size());

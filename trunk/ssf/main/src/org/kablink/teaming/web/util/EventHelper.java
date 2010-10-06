@@ -62,8 +62,8 @@ import org.kablink.util.cal.DayAndPosition;
 
 /**
  * @author billmers
- *
  */
+@SuppressWarnings("unchecked")
 public class EventHelper {
 	public static final String ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee";
 	public static final String ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee_groups";
@@ -206,21 +206,17 @@ public class EventHelper {
     }
 
 
-	@SuppressWarnings("unchecked")
-	public static Document buildSearchFilterDoc(PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
-		return buildSearchFilter(request, folderIds, assigneeType).getFilter();
+	public static Document buildSearchFilterDoc(Document baseFilter, PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(baseFilter, request, folderIds, assigneeType).getFilter();
 	}
-	@SuppressWarnings("unchecked")
-	public static SearchFilter buildSearchFilter(PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
-		return buildSearchFilter(request, ListFolderHelper.ModeType.PHYSICAL, folderIds, null, assigneeType);
+	public static SearchFilter buildSearchFilter(Document baseFilter, PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(baseFilter, request, ListFolderHelper.ModeType.PHYSICAL, folderIds, null, assigneeType);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static Document buildSearchFilterDoc(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
-		return buildSearchFilter(request, modeType, folderIds, binder, assigneeType).getFilter();
+	public static Document buildSearchFilterDoc(Document baseFilter, PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
+		return buildSearchFilter(baseFilter, request, modeType, folderIds, binder, assigneeType).getFilter();
 	}
-	@SuppressWarnings("unchecked")
-	public static SearchFilter buildSearchFilter(PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
+	public static SearchFilter buildSearchFilter(Document baseFilter, PortletRequest request, ListFolderHelper.ModeType modeType, Collection folderIds, Binder binder, SearchUtils.AssigneeType assigneeType) {
 		SearchFilter searchFilter;
 		
 		// Are we only showing events assigned to something?
@@ -261,6 +257,7 @@ public class EventHelper {
 			}
 		}
 		
+		searchFilter.appendFilter(baseFilter);
 		return searchFilter;
 	}
 
