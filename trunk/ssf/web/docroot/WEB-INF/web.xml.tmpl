@@ -74,7 +74,21 @@
   		</init-param>
 	</filter>
 
+    <filter>
+        <filter-name>defaultCharacterEncodingFilter</filter-name>
+        <filter-class>org.kablink.teaming.web.servlet.filter.DefaultCharacterEncodingFilter</filter-class>
+    </filter>
+
 @@LOGIN_FILTER@@
+	<filter-mapping>
+		<filter-name>defaultCharacterEncodingFilter</filter-name>
+		<servlet-name>dispatcher</servlet-name>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>defaultCharacterEncodingFilter</filter-name>
+		<servlet-name>portletAdapter</servlet-name>
+	</filter-mapping>
 	<filter-mapping>
 		<filter-name>CompressionFilter</filter-name>
 		<url-pattern>/s/viewCss</url-pattern>
