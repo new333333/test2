@@ -56,6 +56,7 @@ public class DefaultCharacterEncodingFilter implements Filter {
 		if(characterEncoding == null || characterEncoding.equals("")) {
 			characterEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
 			request.setCharacterEncoding(characterEncoding);
+			chain.doFilter(request, response);
 		}
 	}
 
