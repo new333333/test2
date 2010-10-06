@@ -84,6 +84,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     }
+.wiki-topic-content {
+	border-bottom: 1px solid #c4c4c4;
+	}	
 .wiki-topic-a {
     padding: 2px 8px;
     white-space: nowrap;
@@ -124,6 +127,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* wiki tabs */
 #wiki-tabset span.wiki-tab.on a {color:#353838;}
 #wiki-tabset span.wiki-tab a {color:#fff;}
+#wiki-tabset span.wiki-tab a:hover {background: transparent;}
 
 .wiki-tabs {
     text-align: center;
@@ -193,8 +197,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding:4px;
 	}
 	
-.wiki-entry-wrap #ss_profile_box_h1, .ss_folder_type_wiki #ss_profile_box_h1 { margin-right: 300px;}
+.wiki-entry-wrap #ss_profile_box_h1, #ss_folder_type_wiki #ss_profile_box_h1 { margin-right: 300px;}
 .wiki-entry-wrap .ss_treeWidget, .ss_folder_type_wiki .ss_treeWidget { margin-top: 0px; margin-left: 5px;}
+.wiki-entry-wrap .ss_entryDescription {border-top: 0px;}	
+#ss_folder_type_wiki .ss_treeWidget { margin-top: 0px;}
+.wiki-entry-wrap #tag_button {display: none;}
 	
 .wiki-entry-title {
     font-size: 15px;
