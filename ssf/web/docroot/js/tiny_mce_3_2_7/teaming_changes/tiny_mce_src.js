@@ -8838,6 +8838,7 @@ var tinyMCE = window.tinyMCE = tinymce.EditorManager;
 				custom_undo_redo : 1,
 				doctype : '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">',
 				visual_table_class : 'mceItemTable',
+				visual_table_class_border : 'mceItemTableBorder',
 				visual : 1,
 				inline_styles : true,
 				convert_fonts_to_spans : true,
@@ -9995,10 +9996,14 @@ var tinyMCE = window.tinyMCE = tinymce.EditorManager;
 						v = t.dom.getAttrib(e, 'border');
 
 						if (!v || v == '0') {
-							if (t.hasVisual)
+							if (t.hasVisual) {
 								t.dom.addClass(e, s.visual_table_class);
-							else
+							} else {
 								t.dom.removeClass(e, s.visual_table_class);
+								t.dom.addClass(e, s.visual_table_class_border);
+							}
+						} else {
+							t.dom.addClass(e, s.visual_table_class_border);
 						}
 
 						return;
