@@ -688,4 +688,38 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
+	@Override
+	public byte[] folder_getFileVersionAsByteArray(String accessToken,
+			long entryId, String attachmentId, String fileVersionId) {
+		/*FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment attachment = getFileAttachment(entry, attachmentId);
+	*/
+		return null;
+	}
+
+	@Override
+	public FileVersions folder_getFileVersionsFromAttachment(
+			String accessToken, long entryId, String attachmentId) {
+		return null;
+	}
+
+	@Override
+	public void folder_removeAttachment(String accessToken, long entryId,
+			String attachmentId) {
+
+	}
+
+	@Override
+	public void folder_removeFileVersion(String accessToken, long entryId,
+			String attachmentId, String fileVersionId) {
+
+	}
+
+	@Override
+	public void folder_uploadAttachmentAsByteArray(String accessToken,
+			long entryId, String fileUploadDataItemName, String attachmentId,
+			byte[] fileContent) {
+
+	}
+
 }
