@@ -841,17 +841,22 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
+		//Add in the BCC addresses since we now send everything via BCC
+		if ((Collection)message.get(MailModule.BCC) != null) addrs.addAll((Collection)message.get(MailModule.BCC));
 		if ((addrs == null) || addrs.isEmpty()) {
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
 
 		MailStatus status = new MailStatus(message);
 		Map currentMessage = new HashMap(message); //make changeable copy
+ 		currentMessage.remove(MailModule.BCC);  //These are already added to addrs
+ 		currentMessage.remove(MailModule.TO);  //These will be put in the BCC field
 		//handle large recipient list by breaking into pieces 
 		ArrayList rcpts = new ArrayList(addrs);
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			currentMessage.put(MailModule.TO, subList);
+			//Always use BCC to hide mail addresses from other recipients
+			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		try {
 	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
@@ -882,7 +887,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	       		} catch (MessagingException ignore) {}
 	 		} 
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
-	 		currentMessage.remove(MailModule.BCC);
 		}
 		
 		return status;
@@ -891,6 +895,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
   		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
+		if ((Collection)message.get(MailModule.BCC) != null) {
+			//Add in the BCC users. Send all mail as BCC
+			addrs.addAll((Collection)message.get(MailModule.BCC));
+		}
 		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 
 		MailStatus status = new MailStatus(message);
@@ -899,9 +907,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		ArrayList rcpts = new ArrayList(addrs);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map currentMessage = new HashMap(message);
+ 		currentMessage.remove(MailModule.BCC);  //These are already added to addrs
+ 		currentMessage.remove(MailModule.TO);   //These get sent as BCC
+		
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			currentMessage.put(MailModule.TO, subList);
+			currentMessage.put(MailModule.BCC, subList);
 			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(mailSender.getDefaultFrom());		
 	 		helper.setTimeZone(user.getTimeZone().getID());
@@ -935,7 +946,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	       		} catch (MessagingException ignore) {}
 	 		}
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
-	 		currentMessage.remove(MailModule.BCC);
 		}
 		return status;
 
@@ -945,20 +955,25 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
   		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
  		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
+ 		if ((Collection)message.get(MailModule.BCC) != null) {
+ 			//We now send all mail using BCC, so combine the two lists
+ 			addrs.addAll((Collection)message.get(MailModule.BCC));
+ 		}
  		if ((addrs == null) || addrs.isEmpty()) return;
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
 		Map currentMessage = new HashMap(message);
+ 		currentMessage.remove(MailModule.BCC);  //These are added to addrs
+ 		currentMessage.remove(MailModule.TO);   //These get sent as BCC now
 		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-			currentMessage.put(MailModule.TO, subList);
+			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(mailSender.getDefaultFrom());
 	 		MimeMessage msg = mailSender.createMimeMessage();
 			helper.prepare(msg);
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
-	 		currentMessage.remove(MailModule.BCC);
 		}
 	}
     class MailStatus implements MailSentStatus {
