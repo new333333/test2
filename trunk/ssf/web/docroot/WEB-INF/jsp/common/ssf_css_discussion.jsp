@@ -75,6 +75,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_doublecolumn{
 	text-align:left;
+	padding:2px 0px 8px 0px;
 	}
 #ss_column_L{
 	/* holder for left column */
@@ -84,7 +85,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/* holder for left column */
 	height:100%;
 	vertical-align:top;
-	width: 48%;
 	}	
 .ss_dblcolleft{		
 /* right column width */
@@ -96,11 +96,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#fff;			
 /* left column background color */
 	float:left;
-	margin-right:4px;
+	margin:0px 4px 0px 0px;
 	overflow: hidden;
 	}	
 .ss_dblcol2{
-	width:100%;						/* right column content width (column width minus left and right padding) */
 	left:48%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
 	}	
