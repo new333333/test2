@@ -3891,7 +3891,7 @@ div.ss_entry_folderListView {
 	width: 600px;	
 }
 .ss_entryTitleSearchResults {
-   font-size: 14px;
+   font-size: 13px;
    font-weight: bold;
    padding: 4px;
 }
