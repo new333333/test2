@@ -310,6 +310,15 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Hides the popup entry iframe div if one exists.
+	 */
+	public static native void jsHideEntryPopupDiv() /*-{
+		if ($wnd.ss_hideEntryDivOnLoad !== undefined) {
+			$wnd.ss_hideEntryDivOnLoad();
+		}
+	}-*/;
+
+	/**
 	 * Called to hide any open entry view DIV that's in new page mode.
 	 */
 	public static native void jsHideNewPageEntryViewDIV() /*-{
