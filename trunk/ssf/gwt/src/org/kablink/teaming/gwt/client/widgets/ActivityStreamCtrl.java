@@ -872,7 +872,7 @@ public class ActivityStreamCtrl extends Composite
 		width = Window.getClientWidth() - getAbsoluteLeft()- 10;
 		
 		// Calculate how high we should be.
-		height = Window.getClientHeight() - getAbsoluteTop() - 30;
+		height = Window.getClientHeight() - getAbsoluteTop() - 32;
 		
 		// Set the width and height
 		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );

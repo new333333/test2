@@ -40,8 +40,12 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -49,7 +53,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
@@ -69,7 +73,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
 
 
@@ -79,10 +82,13 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
  *
  */
 public class LoginDlg extends DlgBox
-	implements KeyUpHandler
+	implements BlurHandler, FocusHandler, KeyUpHandler
 {
 	private FormPanel m_formPanel = null;
 	private TextBox m_userIdTxtBox = null;
+	private PasswordTextBox m_pwdTxtBox = null;
+	private HandlerRegistration m_userIdKeyUpHandlerReg = null;
+	private HandlerRegistration m_pwdKeyUpHandlerReg = null;
 	private Button m_okBtn = null;
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
@@ -119,7 +125,7 @@ public class LoginDlg extends DlgBox
 		else
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
-		// Create the callback that will be used when we issue an ajax call to get upgrade information
+		// Create the callback that will be used when we issue an ajax call to get self-registration information
 		m_rpcGetSelfRegInfoCallback = new AsyncCallback<GwtSelfRegistrationInfo>()
 		{
 			/**
@@ -201,7 +207,8 @@ public class LoginDlg extends DlgBox
 			
 			m_userIdTxtBox = new TextBox();
 			m_userIdTxtBox.setName( "j_username" );
-			m_userIdTxtBox.addKeyUpHandler( this );
+			m_userIdTxtBox.addFocusHandler( this );
+			m_userIdTxtBox.addBlurHandler( this );
 			m_userIdTxtBox.setVisibleLength( 20 );
 			table.setWidget( row, 1, m_userIdTxtBox );
 			
@@ -210,15 +217,14 @@ public class LoginDlg extends DlgBox
 		
 		// Add a row for the "password" controls.
 		{
-			PasswordTextBox pwdTxtBox;
-			
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgPassword() );
 			
-			pwdTxtBox = new PasswordTextBox();
-			pwdTxtBox.setName( "j_password" );
-			pwdTxtBox.addKeyUpHandler( this );
-			pwdTxtBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, pwdTxtBox );
+			m_pwdTxtBox = new PasswordTextBox();
+			m_pwdTxtBox.setName( "j_password" );
+			m_pwdTxtBox.addFocusHandler( this );
+			m_pwdTxtBox.addBlurHandler( this );
+			m_pwdTxtBox.setVisibleLength( 20 );
+			table.setWidget( row, 1, m_pwdTxtBox );
 			
 			++row;
 		}
@@ -462,6 +468,37 @@ public class LoginDlg extends DlgBox
 	}// end init()
 
 	
+	/**
+	 * This method gets called when the user id field or the password field loses the focus.
+	 * For some browsers if the user types in the browser's address bar and presses enter we
+	 * still see the key up.
+	 */
+	public void onBlur( BlurEvent blurEvent )
+	{
+		Object src;
+		
+		src = blurEvent.getSource();
+		if ( src == m_userIdTxtBox )
+		{
+			// Remove the key up handler from the user id field.
+			if ( m_userIdKeyUpHandlerReg != null )
+			{
+				m_userIdKeyUpHandlerReg.removeHandler();
+				m_userIdKeyUpHandlerReg = null;
+			}
+		}
+		else if ( src == m_pwdTxtBox )
+		{
+			// Remove the key up handler from the password field.
+			if ( m_pwdKeyUpHandlerReg != null )
+			{
+				m_pwdKeyUpHandlerReg.removeHandler();
+				m_pwdKeyUpHandlerReg = null;
+			}
+		}
+	}
+	
+	
 	/*
 	 * This method gets called when the user clicks on a button in the footer.
 	 */
@@ -486,6 +523,27 @@ public class LoginDlg extends DlgBox
 			return;
 		}
 	}// end onClick()
+	
+
+	/**
+	 * This method gets called when the user id field or the password field get the focus.
+	 */
+	public void onFocus( FocusEvent focusEvent )
+	{
+		Object src;
+		
+		src = focusEvent.getSource();
+		if ( src == m_userIdTxtBox )
+		{
+			// Add the key up handler to the user id field.
+			m_userIdKeyUpHandlerReg = m_userIdTxtBox.addKeyUpHandler( this );
+		}
+		else if ( src == m_pwdTxtBox )
+		{
+			// Add the key up handler to the password field.
+			m_pwdKeyUpHandlerReg = m_pwdTxtBox.addKeyUpHandler( this );
+		}
+	}
 	
 	
 	/**
