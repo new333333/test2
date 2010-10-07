@@ -280,16 +280,6 @@ public class GwtMainPage extends Composite
 	}//end getWorkspaceTree()
 	
 	/*
-	 * Hide the popup entry iframe div if one exists.
-	 */
-	private native void hideEntryPopupDiv() /*-{
-		if ( $wnd.ss_hideEntryDivOnLoad !== undefined )
-		{
-			$wnd.ss_hideEntryDivOnLoad();
-		}
-	}-*/;
-
-	/*
 	 * Called to create a JavaScript method that will be invoked from
 	 * an administration page when the user presses close or cancel in the administration page.
 	 */
@@ -777,7 +767,7 @@ public class GwtMainPage extends Composite
 			saveUIState();
 			
 			// Hide any popup entry iframe divs.
-			hideEntryPopupDiv();
+			GwtClientHelper.jsHideEntryPopupDiv();
 			
 			// Hide everything on the menu, the workspace tree control and the content control.
 			m_mainMenuCtrl.showAdministrationMenubar();
@@ -1686,7 +1676,7 @@ public class GwtMainPage extends Composite
 	private void enterActivityStreamMode( Object obj )
 	{
 		// Hide any popup entry iframe divs.
-		hideEntryPopupDiv();
+		GwtClientHelper.jsHideEntryPopupDiv();
 		
 		// Do we have no parameter or an ActivityStreamInfo parameter?
 		if ( ( null == obj) || ( obj instanceof ActivityStreamInfo ))

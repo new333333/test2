@@ -908,6 +908,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Called to set an activity stream in the sidebar.
 	 */
 	private void setActivityStreamImpl(ActivityStreamInfo asi) {
+		// Hide any popup entry IFRAME DIV's.
+		GwtClientHelper.jsHideEntryPopupDiv();
+		
 		// Is this activity stream the one that's already selected?
 		if (!(asi.isEqual(m_selectedActivityStream))) {
 			// No!  Store it as being selected...
