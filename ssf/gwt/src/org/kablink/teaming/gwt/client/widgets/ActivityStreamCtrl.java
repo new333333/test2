@@ -1087,11 +1087,11 @@ public class ActivityStreamCtrl extends Composite
 		// Do we have an activity stream parameter object?
 		if ( m_activityStreamParams != null )
 		{
-			int minutes;
+			int seconds;
 			
 			// Yes, is auto-refresh turned on?
-			minutes = m_activityStreamParams.getClientRefresh();
-			if ( minutes > 0 )
+			seconds = m_activityStreamParams.getClientRefresh();
+			if ( seconds > 0 )
 			{
 				// Yes
 				// Have we already created a timer?
@@ -1111,7 +1111,7 @@ public class ActivityStreamCtrl extends Composite
 					};
 
 					// Update the title of the pause image.
-					m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream( minutes ) );
+					m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream( seconds ) );
 				}
 
 				// Update the label that indicates when we will check for changes.
@@ -1119,7 +1119,7 @@ public class ActivityStreamCtrl extends Composite
 				
 				// Start a timer.  When the timer goes off we will check for changes and
 				// update the activity stream if there is something new.
-				m_checkForChangesTimer.scheduleRepeating( (minutes * 60 * 1000) );
+				m_checkForChangesTimer.scheduleRepeating( (seconds * 1000) );
 	
 				// Show the pause button.
 				m_pauseImg.setVisible( true );
@@ -1145,7 +1145,7 @@ public class ActivityStreamCtrl extends Composite
 		if ( m_activityStreamParams != null )
 		{
 			// Add the number of minutes the refresh rate is set to.
-			milliSeconds += (m_activityStreamParams.getClientRefresh() * 60 * 1000);
+			milliSeconds += (m_activityStreamParams.getClientRefresh() * 1000);
 			date.setTime( milliSeconds );
 		}
 		
