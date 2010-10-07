@@ -40,7 +40,7 @@
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
 <taconite-replace contextNodeID="ss_indexing_done_div" parseInBrowser="true">
-	<div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;">
+	<div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;padding: 12px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">
 		<span class="ss_bold"><ssf:nlt tag="index.finished"/></span>
 		<br/>
 		<span><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></span>
