@@ -109,10 +109,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-homepage-a {
  	font-weight: bold;
 }
-.wiki-nohomepage {
- 	padding: 20px 10px;
- 	font-size: 16px;
- 	font-weight: bold;
+
+.wiki-noentries-panel, .wiki-nohomepage-panel {
+	color: #000;
+ 	font-size: 14px;
+	background-color: #EBECA5;
+	border: 1px solid #BABDB6;
+	padding: 5px 10px;
+	z-index: 100;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .ss_wiki_search_bar {
@@ -184,6 +190,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     }
+.wiki-menu a:hover {
+    color: #fff;
+    background: #81b2bd url(../../../1Graphics/GraphicsDB/Branding/headers/NL/slice_blend_teal_27.png) repeat-x;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    }   
+
 .wiki-menu {
     padding: 5px;
     }
