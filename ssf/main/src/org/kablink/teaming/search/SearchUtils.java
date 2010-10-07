@@ -262,8 +262,8 @@ public class SearchUtils {
 	 */
 	public static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder userWorkspace) {
 		List<String> sIdList = new ArrayList<String>();
-		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userWorkspace.getOwnerId(), userWorkspace.getId());
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		UserProperties userProperties = getUserProperties(bs, userWorkspace.getOwnerId(), userWorkspace.getId());
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
 		if (relevanceMap != null) {
 			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
 			if (idList != null) {
@@ -286,8 +286,8 @@ public class SearchUtils {
 	 */
 	public static List<String> getTrackedPlacesIds(AllModulesInjected bs, Long userId) {
 		List<String> sIdList = new ArrayList<String>();
-		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userId);
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		UserProperties userProperties = getUserProperties(bs, userId);
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
 		if (relevanceMap != null) {
 			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
 			if (idList != null) {
@@ -301,8 +301,8 @@ public class SearchUtils {
 
 	public static List<String> getTrackedCalendarIds(AllModulesInjected bs, Binder userWorkspace) {
 		List<String> sIdList = new ArrayList<String>();
-		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userWorkspace.getOwnerId(), userWorkspace.getId());
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		UserProperties userProperties = getUserProperties(bs, userWorkspace.getOwnerId(), userWorkspace.getId());
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
 		if (relevanceMap != null) {
 			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
 			if (idList != null) {
@@ -329,8 +329,8 @@ public class SearchUtils {
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
 		List<String> sIdList = new ArrayList<String>();
 		if (binder == null) return sIdList;
-		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		UserProperties userProperties = getUserProperties(bs, binder.getOwnerId(), binder.getId());
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
 		if (relevanceMap != null) {
 			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 			if (trackedPeople != null) {
@@ -353,8 +353,8 @@ public class SearchUtils {
 	 */
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Long userId) {
 		List<String> sIdList = new ArrayList<String>();
-		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userId);
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		UserProperties userProperties = getUserProperties(bs, userId);
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
 		if (relevanceMap != null) {
 			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 			if (trackedPeople != null) {
@@ -437,4 +437,30 @@ public class SearchUtils {
 		return crit;
 	}
 
+	/*
+	 * Returns the UserProperties based on a user and workspace ID.  If
+	 * no workspace ID is provided, an attempt to locate it based on
+	 * user's profile.
+	 */
+	private static UserProperties getUserProperties(AllModulesInjected bs, Long userId, Long wsId) {
+		// If we weren't given a workspace ID...
+		if (null == wsId) {
+			// ...try to locate it based on the user's profile.
+			try                 {wsId = bs.getProfileModule().getEntryWorkspaceId(userId);}
+			catch (Exception e) {wsId = null;}
+		}
+
+		// Access and return the user's properties, using their
+		// workspace ID if available.
+		UserProperties reply;
+		if (null == wsId)
+		     reply = bs.getProfileModule().getUserProperties(userId);
+		else reply = bs.getProfileModule().getUserProperties(userId, wsId);
+		return reply;
+	}
+	
+	private static UserProperties getUserProperties(AllModulesInjected bs, Long userId) {
+		// Always use the initial form of the method.
+		return getUserProperties(bs, userId, null);
+	}
 }
