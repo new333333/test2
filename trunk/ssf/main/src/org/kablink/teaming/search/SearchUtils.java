@@ -89,14 +89,24 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entryReplies(String entryId)
+	public static Criteria entryReplies(String entryId, boolean topEntryReplies)
 	{
+		String entryReplyType;
+		if (topEntryReplies)
+			 entryReplyType = ENTRY_TOP_ENTRY_ID_FIELD;
+		else entryReplyType = ENTRY_PARENT_ID_FIELD;
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
-			.add(in(ENTRY_PARENT_ID_FIELD,new String[] {entryId}));
+			.add(in(entryReplyType,new String[] {entryId}));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
+	}
+	
+	public static Criteria entryReplies(String entryId)
+	{
+		// Always use the initial form of the method.
+		return entryReplies(entryId, false);
 	}
 	
 	public static Criteria entries(List<Long> entryIds)
@@ -123,11 +133,15 @@ public class SearchUtils {
 	}
 	
 	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
-			List<String> trackedPeopleIds)
+			List<String> trackedPeopleIds, boolean entriesOnly)
 	{
+		String[] entryTypes;
+		if (entriesOnly)
+			 entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY                            };
+		else entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY};
+		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
-				Constants.ENTRY_TYPE_REPLY}))
+		crit.add(in(ENTRY_TYPE_FIELD,entryTypes))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		
@@ -138,6 +152,12 @@ public class SearchUtils {
 		crit.add(disjunction);
 
 		return crit;
+	}
+	
+	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
+			List<String> trackedPeopleIds) {
+		// Always use the initial form of the method.
+		return entriesForTrackedPlacesAndPeople(bs, userWorkspaces, trackedPeopleIds, false);
 	}
 	
 	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces, String start, String end)
