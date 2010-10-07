@@ -302,7 +302,7 @@ public class GwtActivityStreamHelper {
 		}
 
 		// If we can't find any replies for this entry...
-		Criteria searchCriteria = SearchUtils.entryReplies(feId);
+		Criteria searchCriteria = SearchUtils.entryReplies(feId, GwtUIHelper.isModifyTopEntryOnReply());
 		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, Integer.MAX_VALUE);
 		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -1234,10 +1234,14 @@ public class GwtActivityStreamHelper {
 		sATosL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
-		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlacesAL, trackedUsersAL);
-		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
-		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(
+			bs,
+			trackedPlacesAL,
+			trackedUsersAL,
+			GwtUIHelper.isModifyTopEntryOnReply());
+		Map  searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
+		List searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int  totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 
 		// Update the paging data in the activity stream data.
     	pd.setTotalRecords(totalRecords);

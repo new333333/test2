@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -106,7 +105,6 @@ import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -138,6 +136,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
 implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
@@ -289,6 +288,13 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				break;
 			case report:
 				AccessUtils.operationCheck(entry, WorkAreaOperation.GENERATE_REPORTS);
+				break;
+			case updateModificationStamp:
+				// Initially, the timestamp on an entry can be updated
+				// by anybody at any time.  This allows the activity
+				// streams to work correctly when a user posts a reply
+				// so that the top entry gets it's timestamp modified
+				// without regard to access rights on that top entry. 
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -701,11 +707,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	restoreEntry(parentFolderId, entryId, renameData, true, null, reindex);
     }
     //inside write transaction    
-    @SuppressWarnings("unchecked")
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options) throws WriteEntryDataException, WriteFilesException {
     	restoreEntry(folderId, entryId, renameData,deleteMirroredSource, options, true);
     }
-    @SuppressWarnings("unchecked")
 	public void restoreEntry(Long folderId, Long entryId, Object renameData, boolean deleteMirroredSource, Map options, boolean reindex) throws WriteEntryDataException, WriteFilesException {
     	deCount.incrementAndGet();
     	
@@ -753,11 +757,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	preDeleteEntry(parentFolderId, entryId, userId, true, null, reindex);
     }
     //inside write transaction    
-    @SuppressWarnings("unchecked")
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options) {
     	preDeleteEntry(folderId, entryId, userId, deleteMirroredSource, options, true);
     }
-    @SuppressWarnings("unchecked")
 	public void preDeleteEntry(Long folderId, Long entryId, Long userId, boolean deleteMirroredSource, Map options, boolean reindex) {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);
@@ -775,6 +777,27 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.PREDELETEENTRY);
         	TrashHelper.unRegisterEntryNames(getCoreDao(), folder, entry);
+        	if (reindex) {
+        		processor.indexEntry(entry);
+        	}
+        }
+    }
+    
+    //inside write transaction    
+    public void updateModificationStamp(Long parentFolderId, Long entryId) {
+    	updateModificationStamp(parentFolderId, entryId, true);
+    }
+	public void updateModificationStamp(Long folderId, Long entryId, boolean reindex) {
+    	deCount.incrementAndGet();
+        FolderEntry entry = loadEntry(folderId, entryId);
+        Folder folder = loadFolder(folderId);
+        if ((null != entry) && (null != folder)) {
+        	checkAccess(entry, FolderOperation.updateModificationStamp);
+        	
+        	entry.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+        	
+			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+			processor.processChangeLog(entry, ChangeLog.UPDATEMODIFICATIONSTAMP);
         	if (reindex) {
         		processor.indexEntry(entry);
         	}

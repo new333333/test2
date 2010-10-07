@@ -77,6 +77,12 @@ import org.springframework.web.portlet.ModelAndView;
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
 	
+	// ssf*.properties settings that affect various aspects of the GWT
+	// based UI.
+	private final static boolean IS_ACTIVITY_STREAMS_ENABLED  = SPropsUtil.getBoolean("enable.activity.streams",   true);
+	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
+	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = SPropsUtil.getBoolean("modify.top.entry.on.reply", true);
+	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
 	private final static String AMPERSAND_FORMAT_MARKER = "a/do?";
@@ -800,7 +806,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isActivityStreamOnLogin() {
-		return SPropsUtil.getBoolean("activity.stream.on.login", true);
+		return IS_ACTIVITY_STREAMS_ON_LOGIN;
 	}
 	
 	/**
@@ -809,7 +815,7 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isActivityStreamsEnabled() {
-		return SPropsUtil.getBoolean("enable.activity.streams", true);
+		return IS_ACTIVITY_STREAMS_ENABLED;
 	}
 	
 	/**
@@ -920,6 +926,17 @@ public class GwtUIHelper {
 
 	}
 
+	/**
+	 * Returns true if we're supposed to change the top entry's
+	 * modification time when a reply is posted or modified and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isModifyTopEntryOnReply() {
+		return IS_MODIFY_TOP_ENTRY_ON_REPLY;
+	}
+	
 	/*
 	 * Takes a Binder permalink and does what's necessary to bring up
 	 * the trash on that Binder.

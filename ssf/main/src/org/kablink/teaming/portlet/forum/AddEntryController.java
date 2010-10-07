@@ -77,6 +77,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -86,8 +87,8 @@ import org.kablink.util.cal.Duration;
  * @author Peter Hurley
  *
  */
+@SuppressWarnings("unchecked")
 public class AddEntryController extends SAbstractController {
-	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -146,9 +147,11 @@ public class AddEntryController extends SAbstractController {
 				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
-				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+				FolderEntry entry;
 				try {
-					entryId = addReply(request, response, folderId, id, entryType, inputData, fileMap, null).getId();
+					entry = addReply(request, response, folderId, id, entryType, inputData, fileMap, null);
+					entryId = entry.getId();
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
@@ -156,10 +159,18 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
+
+				// Are we supposed to update the timestamp on top level
+				// entries when a reply is posted?
+		    	if (GwtUIHelper.isModifyTopEntryOnReply()) {
+					// Yes!  Update the top entry's timestamp.
+		    		getFolderModule().updateModificationStamp(folderId, entry.getTopEntry().getId());
+		    	}
+		    	
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
 				if (!blogReply.equals("")) {
-			    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+					entry = getFolderModule().getEntry(folderId, entryId);
 					response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
@@ -386,6 +397,7 @@ public class AddEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "");	
 	}
+	@SuppressWarnings("unused")
 	private void setupReloadEntry(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -590,5 +602,4 @@ public class AddEntryController extends SAbstractController {
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	return getFolderModule().addReply(folderId, parentId, definitionId, inputData, fileItems, options);
     }
-
 }
