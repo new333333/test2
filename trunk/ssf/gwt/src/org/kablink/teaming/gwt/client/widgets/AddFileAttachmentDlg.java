@@ -43,14 +43,12 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.FrameElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -60,9 +58,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 
 
 /**
@@ -79,8 +78,6 @@ public class AddFileAttachmentDlg extends DlgBox
 	private String m_binderId = null;
 	private int m_uniqueId = 1;
 	private AsyncCallback<String> m_rpcCallback = null;
-	private NamedFrame m_iframe = null;
-	private int m_checkCount = 0;
 	
 	/**
 	 * 
@@ -196,58 +193,6 @@ public class AddFileAttachmentDlg extends DlgBox
 	
 
 	/**
-	 * See if we have received a response to our request.  The onload event handler on the iframe
-	 * does not work on IE.  That is why we have to use a timer and check the html of the iframe.
-	 */
-	private void checkForResponse()
-	{
-		Element element;
-		
-		element = m_iframe.getElement();
-		if ( element instanceof FrameElement )
-		{
-			FrameElement frameElement;
-			String html;
-			
-			frameElement = (FrameElement) element;
-			html = frameElement.getContentDocument().getBody().getInnerHTML();
-			
-			// Have we received the response yet?
-			if ( (html != null && html.indexOf( "!!!success!!!" ) != -1) || m_checkCount > 10 )
-			{
-				// Yes
-				// Do we have an editSuccessfulHandler?
-				if ( m_editSuccessfulHandler != null )
-				{
-					// Yes, call it.
-					m_editSuccessfulHandler.editSuccessful( null );
-				}
-			}
-			else
-			{
-				Timer timer;
-				
-				// No, set a timer to check again in 1 second.
-				timer = new Timer()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void run()
-					{
-						++m_checkCount;
-						checkForResponse();
-					}// end run()
-				};
-				
-				timer.schedule( 1000 );
-			}
-		}
-	}
-	
-	
-	/**
 	 * Clear all the content from the dialog and start fresh.
 	 */
 	public void clearContent()
@@ -267,7 +212,6 @@ public class AddFileAttachmentDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
-		Element formElement;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -276,20 +220,58 @@ public class AddFileAttachmentDlg extends DlgBox
 		m_formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
 		m_formPanel.setMethod( FormPanel.METHOD_POST );
 	
-		// Create a hidden iframe that will receive the response when we submit the form.
+		// Add a handler that will get called when we get the results from the request to
+		// add an attachment to the binder.
+		m_formPanel.addSubmitCompleteHandler( new SubmitCompleteHandler()
 		{
-			String name;
-			
-			name = "hidden_iframe_for_add_file_attachement_dlg_response";
-			m_iframe = new NamedFrame( name );
-			m_iframe.setVisible( false );
-			mainPanel.add( m_iframe );
+			/**
+			 * 
+			 */
+			public void onSubmitComplete( SubmitCompleteEvent event )
+			{
+				// When the form submission is successfully completed, this event is
+		        // fired. Assuming the service returned a response of type text/html,
+		        // we can get the result text here (see the FormPanel documentation for
+		        // further explanation).
+				if ( event != null )
+				{
+					String result;
+					
+					result = event.getResults();
+					if( GwtClientHelper.hasString( result ) )
+					{
+						if ( result.contains( "ss_error_msg" ) )
+						{
+							int beginIndex;
+							int endIndex;
+							String part1;
+							String part2;
+							String msg;
+						
+							beginIndex = result.indexOf( "ss_error_msg" );
+							endIndex = result.indexOf( "ss_error_code" );
+							part1 = result.substring( beginIndex, endIndex );
+							beginIndex = part1.indexOf( '\'' );
+							part2 = part1.substring( beginIndex+1 );
+							endIndex = part2.indexOf( '\'' );
+							msg = part2.substring( 0, endIndex );
+							Window.alert (msg );
+						}
+						else
+						{
+							// Do we have an editSuccessfulHandler?
+							if ( m_editSuccessfulHandler != null )
+							{
+								// Yes, call it.
+								m_editSuccessfulHandler.editSuccessful( null );
+							}
+						}
+					}
+				}
 
-			// When we submit the form we want the response to go to the hidden iframe.
-			formElement = m_formPanel.getElement();
-			formElement.setAttribute( "target", name );
-		}
-		
+			}
+	    }); 
+
 		// Remember the id of the binder we are working with.
 		m_binderId = (String) props;
 		
@@ -422,27 +404,8 @@ public class AddFileAttachmentDlg extends DlgBox
 		if ( action != null && action.length() > 0 )
 		{
 			// Yes
-			// Empty the content of the iframe that will receive the response.
-			{
-				Element element;
-				element = m_iframe.getElement();
-				if ( element instanceof FrameElement )
-				{
-					FrameElement frameElement;
-					String html;
-					
-					html = "<div>test</div>";
-					frameElement = (FrameElement) element;
-					frameElement.getContentDocument().getBody().setInnerHTML( html );
-				}
-			}
-			
 			// Submit the form that will upload the files and add them as attachments to the given binder.
-			m_checkCount = 0;
 			m_formPanel.submit();
-			
-			// Check to see if we have the response to our request.
-			checkForResponse();
 		}
 		
 		// Returning false will prevent the DlgBox class from closing this dialog.
