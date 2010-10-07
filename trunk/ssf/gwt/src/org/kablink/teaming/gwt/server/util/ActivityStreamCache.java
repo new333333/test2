@@ -94,7 +94,7 @@ public class ActivityStreamCache {
     		m_userMap    = new HashMap<Long, Date>();
     		m_lastUpdate = new Date(
     			System.currentTimeMillis() -
-    			mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh()) - 1);
+    			sToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh()) - 1);
     	}
     	
     	/*
@@ -350,18 +350,11 @@ public class ActivityStreamCache {
 		Date reply = ((Date) session.getAttribute(SESSION_ACTIVITY_STREAM_UPDATE_DATE));
 		if (null == reply) {
         	reply = new Date();
-        	reply.setTime(reply.getTime() - GwtActivityStreamHelper.m_activityStreamParams.getClientRefresh() - 1);
+        	reply.setTime(reply.getTime() - (sToMS(GwtActivityStreamHelper.m_activityStreamParams.getClientRefresh()) + 1));
 		}
 		return reply;
 	}
 	
-    /*
-     * Returns the millisecond equivalent of an interval in minutes.
-     */
-    private static int mToMS(int minutes) {
-    	return (minutes * 60 * 1000);
-    }
-    
 	/*
 	 * Stores a new ID cache for the current zone.
 	 */
@@ -416,6 +409,13 @@ public class ActivityStreamCache {
 		}		
 	}
 
+    /*
+     * Returns the millisecond equivalent of an interval in seconds.
+     */
+    private static int sToMS(int seconds) {
+    	return (seconds * 1000);
+    }
+    
 	/*
 	 * Constructs new ID maps for the ID cache.
 	 */
@@ -499,7 +499,7 @@ public class ActivityStreamCache {
     	ActivityStreamIDCache cache = getIDCacheForTheZone();
     	Date now = new Date();
     	if((null == cache) ||
-    			(now.getTime() >= (cache.getLastUpdate().getTime() + mToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh())))) {
+    			(now.getTime() >= (cache.getLastUpdate().getTime() + sToMS(GwtActivityStreamHelper.m_activityStreamParams.getCacheRefresh())))) {
     		// Yes!  Create a new one, store new ID maps into it, store
     		// the time that we updated it and store that as the ID
     		// cache for the zone.

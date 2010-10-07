@@ -400,12 +400,12 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForTeamingFeedCache(Date now, int updateInterval)
+	private static Criteria entrysByTimeInterval(Date now, long updateIntervalInMS)
 	{
 		Date toDate = new Date();
-		toDate.setTime(now.getTime() + 60*1000); //Go a little into the future to cover anything really new
+		toDate.setTime(now.getTime() + 60L * 1000L); // Go a little into the future to cover anything really new.
 		Date fromDate = new Date();
-		fromDate.setTime(now.getTime() - updateInterval*60*1000 - 1);
+		fromDate.setTime(now.getTime() - updateIntervalInMS - 1L);
 		String s_toDate = DateTools.dateToString(toDate, DateTools.Resolution.SECOND);
 		String s_fromDate = DateTools.dateToString(fromDate, DateTools.Resolution.SECOND);
 		Criteria crit = new Criteria();
@@ -416,11 +416,14 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForActivityStreamCache(Date now, int updateInterval)
+	public static Criteria entriesForTeamingFeedCache(Date now, int updateIntervalInMinutes)
 	{
-		// Initially, activity streams use the same search as teaming
-		// feeds do.
-		return entriesForTeamingFeedCache(now, updateInterval);
+		return entrysByTimeInterval(now, ((long) updateIntervalInMinutes) * 60L * 1000L);
+	}
+	
+	public static Criteria entriesForActivityStreamCache(Date now, int updateIntervalInSeconds)
+	{
+		return entrysByTimeInterval(now, ((long) updateIntervalInSeconds) * 1000L);
 	}
 
 	public static Criteria bindersForAncestryBinders(AllModulesInjected bs, List<Long> binderIds)
