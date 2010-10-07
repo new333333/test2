@@ -519,8 +519,14 @@ public class GwtActivityStreamHelper {
 	
 	private static ActivityStreamInfo buildASI(ActivityStream as, String asId, String title) {
 		// Always use the initial form of the method.
-		List<String> asIdsList = new ArrayList<String>();
-		asIdsList.add(asId);
+		List<String> asIdsList;
+		if (MiscUtil.hasString(asId)) {
+			asIdsList = new ArrayList<String>();
+			asIdsList.add(asId);
+		}
+		else {
+			asIdsList = null;
+		}
 		return buildASI(as, asIdsList, title);
 	}
 
