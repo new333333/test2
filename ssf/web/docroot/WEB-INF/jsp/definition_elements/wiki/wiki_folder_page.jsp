@@ -108,7 +108,7 @@
 </table>
 
 <c:if test="${empty ssFolderEntries}">
-  <div style="padding:20px;">[<ssf:nlt tag="wiki.no_entries"/>]</div>
+  <div style="margin:20px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="wiki.no_entries"/></span></div>
 </c:if>
 
 <c:if test="${!empty ssFolderEntries}">

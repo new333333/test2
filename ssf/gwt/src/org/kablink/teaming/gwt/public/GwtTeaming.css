@@ -16,11 +16,12 @@
 
 .activityStreamSearchingPanel
 {
+	font-size: 14px;
 	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
-	padding: .5em;
+	padding: 5px 10px;
 	position: absolute;
 	top: 25px;
 	z-index: 100;
@@ -30,11 +31,12 @@
 
 .activityStreamNoEntriesFoundPanel
 {
+	font-size: 14px;
 	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
-	padding: .5em;
+	padding: 5px 10px;
 	position: absolute;
 	top: 150px;
 	z-index: 100;

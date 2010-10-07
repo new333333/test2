@@ -65,7 +65,7 @@
 
 <c:if test="${ss_wikiFolderList || empty ss_wikiHomepageEntry}">
   <c:if test="${empty ss_wikiHomepageEntry}">
-    <div class="wiki-nohomepage"><ssf:nlt tag="entry.noWikiHomepageSet"/></div>
+    <div style="text-align:center"><span class="wiki-nohomepage-panel"><ssf:nlt tag="entry.noWikiHomepageSet"/></span></div>
     <c:set var="ss_wikiFolderList" value="true" scope="request"/>
     <c:set var="ss_wikiCurrentTab" value="list" scope="request"/>
   </c:if>
