@@ -90,14 +90,27 @@ public class GwtActivityStreamHelper {
 	// Various control values pulled from the ssf*.properties.
 	public static ActivityStreamParams m_activityStreamParams;
 	static {
+		// Calculate various refresh intervals.  (Note:  The
+		// proportions used are based off the original Teaming Feed
+		// values of:  Client refresh=5 minutes, look back=11 minutes
+		// and cache refresh=1 minute.)
+		int clientRefresh = SPropsUtil.getInt("activity.stream.interval.refresh.client", 60);
+		int cacheLookback = ((int) Math.ceil(((double) clientRefresh) * 2.2));
+		int cacheRefresh  = (clientRefresh / 5);
+		if (0 != (clientRefresh % 5)) {
+			cacheRefresh += 1;
+		}
+
+		// Create an activity stream parameter object with the
+		// appropriate defaults.
 		m_activityStreamParams = new ActivityStreamParams();
 		m_activityStreamParams.setActivityStreamsOnLogin(GwtUIHelper.isActivityStreamOnLogin());
-		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments",         2));
-		m_activityStreamParams.setLookback(              SPropsUtil.getInt("activity.stream.interval.lookback",      11));
-		m_activityStreamParams.setClientRefresh(         SPropsUtil.getInt("activity.stream.interval.refresh.client", 5));
-		m_activityStreamParams.setCacheRefresh(          SPropsUtil.getInt("activity.stream.interval.refresh.cache",  1));
-		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",                  25));
-		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",              1000));
+		m_activityStreamParams.setLookback(              cacheLookback);
+		m_activityStreamParams.setClientRefresh(         clientRefresh);
+		m_activityStreamParams.setCacheRefresh(          cacheRefresh);
+		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments", 2));
+		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",          25));
+		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",      1000));
 	};
 
 	/*
