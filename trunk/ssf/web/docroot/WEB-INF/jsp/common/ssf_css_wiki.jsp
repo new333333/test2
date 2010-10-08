@@ -168,7 +168,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     }
 .wiki-tab:hover {
     color: #fff;
-    background: #81b2bd url(../../../1Graphics/GraphicsDB/Branding/headers/NL/slice_blend_teal_27.png) repeat-x;
+    background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
     }   
 
 .wiki-tabs2 {
@@ -192,7 +192,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     }
 .wiki-menu a:hover {
     color: #fff;
-    background: #81b2bd url(../../../1Graphics/GraphicsDB/Branding/headers/NL/slice_blend_teal_27.png) repeat-x;
+    background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     }   
