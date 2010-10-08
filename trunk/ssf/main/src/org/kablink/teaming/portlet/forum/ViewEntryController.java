@@ -617,7 +617,9 @@ public class ViewEntryController extends  SAbstractController {
 		Toolbar toolbar = new Toolbar();
 		boolean isPreDeleted = entry.isPreDeleted();
 		if (!isPreDeleted) {
-			if((!(folder.isMirrored() && folder.getResourceDriverName() == null)) && !folder.isMirroredAndReadOnly()) {
+			if (viewType.equals(Definition.VIEW_STYLE_WIKI) && 
+					(!(folder.isMirrored() && folder.getResourceDriverName() == null)) && 
+					!folder.isMirroredAndReadOnly()) {
 				List defaultEntryDefinitions = folder.getEntryDefinitions();
 				int defaultEntryDefs = ((null == defaultEntryDefinitions) ? 0 : defaultEntryDefinitions.size());
 				model.put(WebKeys.URL_BINDER_ENTRY_DEFS, String.valueOf( defaultEntryDefs ));
