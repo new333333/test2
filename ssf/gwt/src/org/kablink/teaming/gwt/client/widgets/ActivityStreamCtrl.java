@@ -83,6 +83,8 @@ import com.google.gwt.user.client.ui.Label;
 public class ActivityStreamCtrl extends Composite
 	implements ClickHandler
 {
+	private int m_width;
+	private int m_height;
 	private InlineLabel m_sourceName;
 	private FlowPanel m_headerPanel;
 	private FlowPanel m_searchResultsPanel;
@@ -862,31 +864,22 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	private void relayoutPageNow()
 	{
-		int width;
-		int height;
 		int footerHeight;
 		int headerHeight;
 		int resultsHeight;
-
-		// Calculate how wide we should be.
-		width = Window.getClientWidth() - getAbsoluteLeft()- 10;
-		
-		// Calculate how high we should be.
-		height = Window.getClientHeight() - getAbsoluteTop() - 32;
-		
-		// Set the width and height
-		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
 
 		// Figure out how tall to make the search results panel.
 		headerHeight = m_headerPanel.getOffsetHeight();
 		footerHeight = m_footerPanel.getOffsetHeight();
 		
-		resultsHeight = height - headerHeight - footerHeight;
+		// Set the width and height of the panel that holds the results.  We subtract 10 from
+		// the width to leave space for a vertical scrollbar.
+		resultsHeight = m_height - headerHeight - footerHeight;
 		m_searchResultsPanel.setHeight( String.valueOf( resultsHeight ) + "px" );
-		m_searchResultsPanel.setWidth( String.valueOf( width - 10 ) + "px" );
+		m_searchResultsPanel.setWidth( String.valueOf( m_width - 10 ) + "px" );
 		
-		m_headerPanel.setWidth( String.valueOf( width ) + "px" );
-		m_footerPanel.setWidth( String.valueOf( width ) + "px" );
+		m_headerPanel.setWidth( String.valueOf( m_width ) + "px" );
+		m_footerPanel.setWidth( String.valueOf( m_width-6 ) + "px" );
 	}// end relayoutPageNow()
 
 	
@@ -1003,6 +996,20 @@ public class ActivityStreamCtrl extends Composite
 				m_rpcService.getBinderPermalink( ri, binderId, callback );
 			}
 		}
+	}
+	
+	
+	/**
+	 * Set the size of this control.
+	 */
+	public void setSize( int width, int height )
+	{
+		// Set the width and height
+		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+		m_width = width;
+		m_height = height;
+		
+		relayoutPage();
 	}
 	
 	
