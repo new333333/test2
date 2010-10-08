@@ -312,10 +312,10 @@
 
 /* general styles to override the GWT standard.css file */
 
-a, a:visited, a:hover {
+a:visited, a:hover {
 	color: #135c8f !important;
 	}
-
+	
 /* Style used for the AdminActionControl. */
 .adminActionControl
 {
