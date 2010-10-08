@@ -116,6 +116,9 @@ public class ContentControl extends Composite
 	 */
 	public void setDimensions( int width, int height )
 	{
+		// Set the width and height
+		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
+
 		m_frame.setPixelSize( width, height );
 	}// end setDimensions()
 	
