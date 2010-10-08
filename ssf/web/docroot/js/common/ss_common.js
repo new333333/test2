@@ -204,7 +204,8 @@ function ss_getUserDisplayStyle() {
 	}
 	if (ss_lastUserDisplayStyle != null && ss_userDisplayStyle != ss_lastUserDisplayStyle) {
 		try {
-			self.location.reload();	  	
+			if ( ss_isGwtUIActive == false )
+				self.location.reload();	  	
 		} catch (e) {alert(e);}
 	}
 	ss_lastUserDisplayStyle = ss_userDisplayStyle;
