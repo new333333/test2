@@ -36,10 +36,10 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet" style="padding: 10px;">
-<span class="ss_bold">
+<span>
 	<c:if test="${empty ssEmptyTrash}">
 		<c:if test="${ssBinderReadEntries}">
-		  <ssf:nlt tag="binder.no_entries"/>
+		  <span class="wiki-noentries-panel"><ssf:nlt tag="binder.no_entries"/></span>
 		  <%
 			String	binderEntryDefsS = ((String) renderRequest.getAttribute("ssBinderEntryDefs"));
 			if ((null != binderEntryDefsS) && (0 < binderEntryDefsS.length())) {
@@ -54,7 +54,7 @@
 			<% } %>
 		</c:if>
 		<c:if test="${!ssBinderReadEntries && ssBinderViewBinderTitle}">
-			<ssf:nlt tag="binder.viewBinderTitleOnly1"/><br/><br/>
+			<div class="wiki-noentries-panel"><ssf:nlt tag="binder.viewBinderTitleOnly1"/></div>
 			<ssf:nlt tag="binder.viewBinderTitleOnly2">
 			  <ssf:param name="value" useBody="true">
 			    <ssf:showUser user="${ssBinder.owner}"/>
@@ -63,7 +63,7 @@
 		</c:if>
 	</c:if>
 	<c:if test="${!empty ssEmptyTrash}">
-		<ssf:nlt tag="binder.no_trash"/>
+		<span class="wiki-noentries-panel"><ssf:nlt tag="binder.no_trash"/></span>
 	</c:if>
 </span>
 </div>
