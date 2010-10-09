@@ -92,9 +92,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_dblcol1{
 	width:48%;						
-/* left column content width (column width minus left and right padding) */
-	background-color:#fff;			
-/* left column background color */
 	float:left;
 	margin:0px 4px 0px 0px;
 	overflow: hidden;
