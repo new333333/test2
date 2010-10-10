@@ -35,6 +35,7 @@
 <% //view a wiki folder or a wiki entry %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${!ss_wikiFolderList && (!empty ss_wikiHomepageEntry)}">
+  <c:set var="ss_showHelpIcon" value="true" scope="request"/>
   <script type="text/javascript">
   var url = "<ssf:url     
       adapter="true" 

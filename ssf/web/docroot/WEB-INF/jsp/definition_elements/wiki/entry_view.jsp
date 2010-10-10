@@ -77,6 +77,7 @@
 
 <% // Show the wiki tabs %>
 <% // Show the Wiki Page search widget %>
+<c:set var="ss_showHelpIcon" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/wiki/wiki_find_page.jsp" %>
 
 <% // Show the folder title links %>
