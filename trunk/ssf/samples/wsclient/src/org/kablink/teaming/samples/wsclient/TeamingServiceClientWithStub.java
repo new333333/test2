@@ -32,10 +32,8 @@
  */
 package org.kablink.teaming.samples.wsclient;
 
-import static org.kablink.util.search.Restrictions.between;
-import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.not;
+import static org.kablink.util.search.Junction.Disjunction;
+import static org.kablink.util.search.Restrictions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -129,7 +127,9 @@ public class TeamingServiceClientWithStub {
 		
 		//getPrincipals(2, 5);
 		
-		fetchTaskEntriesModifiedBetweenTwoDates();
+		//fetchTaskEntriesModifiedBetweenTwoDates();
+		
+		fetchCalendarEntriesModifiedBetweenTwoDates();
 		
 /*		try {
 			getEntryFileVersions(9, "debug.doc");
@@ -251,6 +251,32 @@ public class TeamingServiceClientWithStub {
     		String title = eEle.attributeValue("title");
     		FolderEntry entry = stub.folder_getEntry(null, id, false, false);
     		System.out.println(id + " [" + title + "]");
+    	}
+	}
+
+	public static void fetchCalendarEntriesModifiedBetweenTwoDates() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+
+		// Create search criteria
+		Criteria crit = new Criteria()
+		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
+		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
+		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20101031235959")) // modification time should fall in this range (inclusive)
+		.add(in(Constants.BINDER_ID_FIELD, new String[] {"43", "148"}));
+		
+		System.out.println("Here's the search string in XML");
+		System.out.println(crit.toQuery().asXML());
+		// The above search string should print like this.
+		// <QUERY><AND><FIELD fieldname="_family" exactphrase="TRUE"><TERMS>calendar</TERMS></FIELD><FIELD fieldname="_entryType" exactphrase="TRUE"><TERMS>entry</TERMS></FIELD><RANGE fieldname="_modificationDate" inclusive="TRUE"><START>20100801000000</START><FINISH>20101031235959</FINISH></RANGE><OR><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>43</TERMS></FIELD><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>148</TERMS></FIELD></OR></AND></QUERY>
+ 
+		// Execute the search against a Teaming server and print the result.
+		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, 100);
+		
+    	FolderEntryBrief[] entries = coll.getEntries();
+    	System.out.println("Result size: " + entries.length);
+    	for(int i = 0; i < entries.length; i++) {
+    		FolderEntryBrief entry = entries[i];
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + ", title=" + entry.getTitle());
     	}
 	}
 	
