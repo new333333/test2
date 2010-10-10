@@ -209,11 +209,10 @@ function ss_getUserDisplayStyle() {
 		} catch (e) {alert(e);}
 	}
 	ss_lastUserDisplayStyle = ss_userDisplayStyle;
-	if (typeof ss_userDisplayStyle != "undefined") {
-		return ss_userDisplayStyle;
-	} else {
-		return "";
+	if (typeof ss_userDisplayStyle == "undefined" || ss_userDisplayStyle == "") {
+		ss_userDisplayStyle = "newpage";
 	}
+	return ss_userDisplayStyle;
 }
 
 // Routines to support Ajax
