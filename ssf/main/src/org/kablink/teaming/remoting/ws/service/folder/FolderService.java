@@ -53,7 +53,6 @@ public interface FolderService {
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response); 
 	public void folder_removeFile(String accessToken, long entryId, String fileName);
 	public void folder_removeAttachment(String accessToken, long entryId, String attachmentId);
-	public void folder_removeFileVersion(String accessToken, long entryId, String attachmentId, String fileVersionId);
 	/**
 	 * Returns information about the versions of the file. 
 	 * Throws exception if the entry or the file does not exist.

@@ -56,6 +56,8 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 import org.kablink.teaming.client.ws.model.Attachment;
 import org.kablink.teaming.client.ws.model.AttachmentsField;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
+import org.kablink.teaming.client.ws.model.FileVersion;
+import org.kablink.teaming.client.ws.model.FileVersions;
 import org.kablink.teaming.client.ws.model.User;
 
 public abstract class WSClientBase {
@@ -105,6 +107,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.UserCollection.class,
 			org.kablink.teaming.client.ws.model.Workflow.class,
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
+			org.kablink.teaming.client.ws.model.FileVersions.class,
+			org.kablink.teaming.client.ws.model.FileVersion.class
 	};
 
 	protected String host; // optional - default to localhost
@@ -362,6 +366,17 @@ public abstract class WSClientBase {
 		printXML(wsTreeAsXML);
 	}
 
+	void fetchAndPrintByteArray(String serviceName, String operation, Object[] args) throws Exception {
+		byte[] bytes = (byte[]) fetch(serviceName, operation, args);
+
+		System.out.println("Successfully executed " + operation + " on " + serviceName + " returning byte array of size " + bytes.length);
+	}
+
+	void fetchAndPrintFileVersions(String serviceName, String operation, Object[] args) throws Exception {
+		FileVersions fileVersions = (FileVersions) fetch(serviceName, operation, args);
+		printFileVersions(fileVersions);
+	}
+
 	void fetchAndPrintDE(String serviceName, String operation, Object[] args) throws Exception {
 		DefinableEntity entity = (DefinableEntity) fetch(serviceName, operation, args);
 
@@ -411,6 +426,18 @@ public abstract class WSClientBase {
 		}
 		else {
 			System.out.println("No entity returned");
+		}
+	}
+	
+	void printFileVersions(FileVersions fileVersions) {
+		System.out.println("File name: " + fileVersions.getFileName());
+		FileVersion[] versions = fileVersions.getVersions();
+		System.out.println("File versions size: " + versions.length);
+		for(int i = 0; i < versions.length; i++) {
+			System.out.println("File version " + i + " id: " + versions[i].getId());
+			System.out.println("File version " + i + " length: " + versions[i].getLength());
+			System.out.println("File version " + i + " number: " + versions[i].getVersionNumber());
+			System.out.println("File version " + i + " href: " + versions[i].getHref());
 		}
 	}
 	
@@ -483,7 +510,7 @@ public abstract class WSClientBase {
 	void fetchAndPrintCalendar(String serviceName, String operation, Object[] args) throws Exception {
 		Calendar cal = (Calendar) fetch(serviceName, operation, args);
 
-		System.out.println(cal.toString());
+		System.out.println(cal.getTime());
 	}
 
 	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {

@@ -581,13 +581,35 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return fileItems;
 	}
 	protected byte[] getFileAttachmentAsByteArray(Binder binder, DefinableEntity entity, String attachmentId) {
-		Attachment att = entity.getAttachment(attachmentId);
-		if(att == null || !(att instanceof FileAttachment))
-			throw new IllegalArgumentException("No such file attachment");
-		FileAttachment fatt = (FileAttachment) att;
+		FileAttachment fatt = getFileAttachment(entity, attachmentId);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		getFileModule().readFile(binder, entity, fatt, baos);
 		return baos.toByteArray();
+	}
+	
+	protected FileAttachment getFileAttachment(DefinableEntity entity, String attachmentId) {
+		Attachment att = entity.getAttachment(attachmentId);
+		if(att == null || !(att instanceof FileAttachment))
+			throw new IllegalArgumentException("No such file attachment [" + attachmentId + "]");
+		return (FileAttachment) att;
+	}
+	
+	protected byte[] getFileVersionAsByteArray(Binder binder, DefinableEntity entity, String attachmentId, String fileVersionId) {
+		VersionAttachment va = getVersionAttachment(entity, attachmentId, fileVersionId);
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		getFileModule().readFile(binder, entity, va, baos);
+		return baos.toByteArray();
+	}
+	
+	protected VersionAttachment getVersionAttachment(DefinableEntity entity, String attachmentId, String fileVersionId) {
+		Attachment att = entity.getAttachment(attachmentId);
+		if(att == null || !(att instanceof FileAttachment))
+			throw new IllegalArgumentException("No such file attachment [" + attachmentId + "]");
+		FileAttachment fatt = (FileAttachment) att;
+		VersionAttachment va = fatt.findFileVersionById(fileVersionId);
+		if(va == null)
+			throw new IllegalArgumentException("No such file version [" + fileVersionId + "]");
+		return va;
 	}
 	
 	protected void getTimestamps(Map options, org.kablink.teaming.remoting.ws.model.DefinableEntity entry)
