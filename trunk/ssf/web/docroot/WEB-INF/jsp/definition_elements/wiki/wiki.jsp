@@ -44,12 +44,9 @@
   <c:set var="ssConfigJspStyle" value="view" scope="request"/>
   <c:set var="ssDefinitionEntry" value="${ss_wikiHomepageEntry}" scope="request"/>
   <c:set var="ssEntry" value="${ss_wikiHomepageEntry}" scope="request"/>
+  <c:set var="ss_showHelpIcon" value="true" scope="request"/> 
   
-  <c:if test="${1 == 0}">
-  <jsp:include page="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
-  </c:if>
-  
-  <script type="text/javascript">
+ <script type="text/javascript">
   var url = "<ssf:url     
       adapter="true" 
           portletName="ss_forum" 
