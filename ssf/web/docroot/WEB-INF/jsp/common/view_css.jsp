@@ -120,7 +120,7 @@ var ss_baseRootPathUrl = '<html:rootPath/>';
 
 var ss_userDisplayStyle = "${ssUser.displayStyle}";
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-  ss_userDisplayStyle = "iframe";	
+  ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";	
 </c:if>
 <c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'accessible'}">
 <% if (!accessible_simple_ui) { %>
@@ -128,7 +128,7 @@ var ss_userDisplayStyle = "${ssUser.displayStyle}";
 <% } %>
 </c:if>
 <c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'popup'}">
-	ss_userDisplayStyle = "iframe";
+	ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";
 </c:if>
 var ss_entryViewStyle = "${ss_entryViewStyle}";
 
