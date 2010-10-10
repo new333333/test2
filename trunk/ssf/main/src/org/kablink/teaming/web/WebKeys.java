@@ -494,6 +494,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String OPERATION_SET_LAST_VIEWED_BINDER = "set_last_viewed_binder";
 	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
+	public static final String OPERATION_CLEAR_WIKI_HOMEPAGE = "clear_wiki_homepage";
 	public static final String OPERATION_SHARE_THIS_BINDER = "share_this_binder";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_SHOW_MY_TEAMS = "show_my_teams";
