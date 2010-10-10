@@ -160,6 +160,15 @@ public class ViewEntryController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
+			} else if (op.equals(WebKeys.OPERATION_CLEAR_WIKI_HOMEPAGE)) {
+				Binder binder = getBinderModule().getBinder(folderId);
+				//Check the access rights of the user
+				if (getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
+					getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, "");
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
+					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+				}
 			} else if (op.equals(WebKeys.OPERATION_FORCE_UNLOCK_FILE)) {
 				Binder binder = getBinderModule().getBinder(folderId);
 				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
@@ -826,17 +835,31 @@ public class ViewEntryController extends  SAbstractController {
 			
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				if (getBinderModule().testAccess(entry.getParentBinder(), BinderOperation.setProperty)) {
-					Map qualifiers = new HashMap();
-					qualifiers.put("nosort", true);
-					qualifiers.put("onClick", "return ss_confirmPost(ss_setWikiHomePageConfirmation, '', this.href)");
-					qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
-					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-					url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-					url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-					toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+					String wikiHomePageId = (String)entry.getParentBinder().getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+					if (Validator.isNotNull(wikiHomePageId) && wikiHomePageId.equals(String.valueOf(entry.getId()))) {
+						Map qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
+						qualifiers.put("onClick", "return ss_confirmPost(ss_clearWikiHomePageConfirmation, '', this.href)");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CLEAR_WIKI_HOMEPAGE);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.clearWikiHomepage"), url, qualifiers);
+					} else {
+						Map qualifiers = new HashMap();
+						qualifiers.put("nosort", true);
+						qualifiers.put("onClick", "return ss_confirmPost(ss_setWikiHomePageConfirmation, '', this.href)");
+						qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.setWikiHomepage");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+						toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+					}
 				}
 			}	
 			

@@ -168,6 +168,7 @@ var ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 var ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 var ss_clickOkToSubmit = "<ssf:nlt quoteDoubleQuote="true" tag="form.clickOkToSubmit"/>";
 var ss_setWikiHomePageConfirmation = "<ssf:nlt tag="wiki.confirmSetHomepage"/>";
+var ss_clearWikiHomePageConfirmation = "<ssf:nlt tag="wiki.confirmUnSetHomepage"/>";
 
 if (self != self.parent) {
 	//Check if this is a permalink being shown in the content frame
