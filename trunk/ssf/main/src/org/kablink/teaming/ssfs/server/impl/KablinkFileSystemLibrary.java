@@ -980,36 +980,12 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
-		Binder parentBinder = getParentBinder(objMap);
 		FolderEntry entry = getFolderEntry(objMap);
 		
 		FileAttachment fa = getFileAttachment(objMap);
 
 		try {
-			if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
-				// The file being deleted is a mirrored file.
-				// In this case, we delete the entire entry regardless of what else the
-				// entry might contain, since we don't want to leave an entry that no 
-				// longer mirrors any source file 
-				FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
-			}
-			else {
-				if(entry.getFileAttachments().size() > 1) {
-					// This file being deleted isn't the only file associated with the entry.
-					// Just delete the file only, and leave the entry.
-					// This will honor the Bug #632304.
-					List faId = new ArrayList();
-					faId.add(fa.getId());
-					
-					bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null, null);
-				}
-				else {
-					// This file being deleted is the only file associated with the entry.
-					// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
-					// This will honor the Bug #554284.
-					bs.getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
-				}
-			}
+			FolderUtils.deleteFileInFolderEntry(entry, fa);
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			

@@ -105,6 +105,18 @@ public class TeamingServiceClientWithCall extends WSClientBase
 					attachFile = args[3];
 				}
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "ical_uploadCalendarEntriesWithXML", new Object[] {null, Long.parseLong(args[1]), s}, attachFile);
+			} else if(args[0].equals("getAttachmentAsByteArray")) {
+				wsClient.fetchAndPrintByteArray("TeamingServiceV1", "folder_getAttachmentAsByteArray", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("getFileVersionAsByteArray")) {
+				wsClient.fetchAndPrintByteArray("TeamingServiceV1", "folder_getFileVersionAsByteArray", new Object[] {null, Long.parseLong(args[1]), args[2], args[3]});
+			} else if(args[0].equals("getFileVersions")) {
+				wsClient.fetchAndPrintFileVersions("TeamingServiceV1", "folder_getFileVersions", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("getFileVersionsFromAttachment")) {
+				wsClient.fetchAndPrintFileVersions("TeamingServiceV1", "folder_getFileVersionsFromAttachment", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("removeFile")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_removeFile", new Object[] {null, Long.parseLong(args[1]), args[2]});
+			} else if(args[0].equals("removeAttachment")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_removeAttachment", new Object[] {null, Long.parseLong(args[1]), args[2]});
 			} else if(args[0].equals("search")) {
 				String s = readText(args[1]);
 				System.out.println("XML: " + s);
@@ -300,6 +312,13 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("preDeleteEntry <entry id>");
 		System.out.println("restoreEntry <entry id>");
 		System.out.println("testAccess <work area operation name> <binder id1, binder id2,....>");
+		System.out.println("getAttachmentAsByteArray <entry id> <attachment id>");
+		System.out.println("getFileVersionAsByteArray <entry id> <attachment id> <file version id>");
+		System.out.println("getFileVersions <entry id> <file name>");
+		System.out.println("getFileVersionsFromAttachment <entry id> <attachment id>");
+		System.out.println("removeFile <entry id> <file name>");
+		System.out.println("removeAttachment <entry id> <attachment id>");
+		System.out.println("getCurrentServerTime");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com

@@ -656,12 +656,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 
 	@Override
-	public void folder_removeFileVersion(String accessToken, long entryId,
-			String attachmentId, String fileVersionId) {
-		getFolderService().folder_removeFileVersion(accessToken, entryId, attachmentId, fileVersionId);
-	}
-
-	@Override
 	public void folder_uploadAttachmentAsByteArray(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {

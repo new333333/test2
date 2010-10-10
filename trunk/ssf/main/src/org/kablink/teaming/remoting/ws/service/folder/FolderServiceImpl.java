@@ -61,10 +61,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -78,6 +78,7 @@ import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.shared.EmptyInputData;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
@@ -112,11 +113,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		try {
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
 			FileAttachment att = entry.getFileAttachment(fileName);
-			if (att == null) return;
-			List deletes = new ArrayList();
-			deletes.add(att.getId());
-			getFolderModule().modifyEntry(null, entryId, new EmptyInputData(), null, deletes, null, null);
-			
+			FolderUtils.deleteFileInFolderEntry(entry, att);
 		}	catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}	catch(WriteEntryDataException e) {
@@ -611,7 +608,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		if(att != null)
 			return toFileVersions(att);
 		else
-			throw new NoFileByTheNameException(fileName);
+			throw new IllegalArgumentException("No such file [" + fileName + "]");
 	}
 
 	public Long folder_addMicroBlog(String accessToken, String text) {
@@ -691,35 +688,52 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	@Override
 	public byte[] folder_getFileVersionAsByteArray(String accessToken,
 			long entryId, String attachmentId, String fileVersionId) {
-		/*FolderEntry entry = getFolderModule().getEntry(null, entryId);
-		FileAttachment attachment = getFileAttachment(entry, attachmentId);
-	*/
-		return null;
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		return getFileVersionAsByteArray(entry.getParentBinder(), entry, attachmentId, fileVersionId);
 	}
 
 	@Override
 	public FileVersions folder_getFileVersionsFromAttachment(
 			String accessToken, long entryId, String attachmentId) {
-		return null;
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment fa = getFileAttachment(entry, attachmentId);
+		return toFileVersions(fa);
 	}
 
 	@Override
 	public void folder_removeAttachment(String accessToken, long entryId,
 			String attachmentId) {
-
-	}
-
-	@Override
-	public void folder_removeFileVersion(String accessToken, long entryId,
-			String attachmentId, String fileVersionId) {
-
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		Attachment att = entry.getAttachment(attachmentId);
+		if(att == null || !(att instanceof FileAttachment))
+			return;		
+		try {
+			FolderUtils.deleteFileInFolderEntry(entry, (FileAttachment)att);
+		}	catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}	catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}			
 	}
 
 	@Override
 	public void folder_uploadAttachmentAsByteArray(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {
-
+		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		FileAttachment fa = getFileAttachment(entry, attachmentId);
+	
+		try {
+			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null);
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+		catch(WriteEntryDataException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 }

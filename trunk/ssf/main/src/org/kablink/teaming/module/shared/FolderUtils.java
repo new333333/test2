@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.shared;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,9 +46,10 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -529,6 +531,35 @@ public class FolderUtils {
 			if (!Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) return def;
 		}
 		return null;
+	}
+	
+	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
+		Binder parentBinder = entry.getParentBinder();
+		if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
+			// The file being deleted is a mirrored file.
+			// In this case, we delete the entire entry regardless of what else the
+			// entry might contain, since we don't want to leave an entry that no 
+			// longer mirrors any source file 
+			FolderUtils.deleteMirroredEntry((Folder)parentBinder, entry, true);
+		}
+		else {
+			if(entry.getFileAttachments().size() > 1) {
+				// This file being deleted isn't the only file associated with the entry.
+				// Just delete the file only, and leave the entry.
+				// This will honor the Bug #632304.
+				List faId = new ArrayList();
+				faId.add(fa.getId());
+				
+				getFolderModule().modifyEntry(parentBinder.getId(), entry.getId(), new EmptyInputData(), null, faId, null, null);
+			}
+			else {
+				// This file being deleted is the only file associated with the entry.
+				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
+				// This will honor the Bug #554284.
+				getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
+			}
+		}
+
 	}
 
 	private static FolderModule getFolderModule() {
