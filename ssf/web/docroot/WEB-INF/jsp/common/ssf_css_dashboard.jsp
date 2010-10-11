@@ -615,6 +615,10 @@ div.item-sub a {
 	color:#5691A6 !important;
 	font-size:18px;
 	}
+.wg-comment .ss_entryContent .ss_link_7 span {
+	color:#135c8f !important;
+	font-size:15px !important;	
+	}	
 .ss_link_7 a:hover {
 	text-decoration: none;
 	color:#135c8f !important;
