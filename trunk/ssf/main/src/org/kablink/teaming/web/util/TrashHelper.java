@@ -195,12 +195,12 @@ public class TrashHelper {
 		 */
 		@SuppressWarnings("unchecked")
 		public TrashEntry(Map searchResultsMap) {
-			m_docId   = Long.valueOf((String) searchResultsMap.get("_docId"));
-			m_docType =             ((String) searchResultsMap.get("_docType"));
+			m_docId     = Long.valueOf((String) searchResultsMap.get(Constants.DOCID_FIELD   ));
+			m_docType   =             ((String) searchResultsMap.get(Constants.DOC_TYPE_FIELD));
 			
 			String binderId;
-			if      (isEntry())  binderId = ((String) searchResultsMap.get("_binderId"));
-			else if (isBinder()) binderId = ((String) searchResultsMap.get("_binderParentId"));
+			if      (isEntry())  binderId = ((String) searchResultsMap.get(Constants.BINDER_ID_FIELD        ));
+			else if (isBinder()) binderId = ((String) searchResultsMap.get(Constants.BINDERS_PARENT_ID_FIELD));
 			else                 binderId = null;
 			if (null != binderId) m_locationBinderId = Long.valueOf(binderId);
 			else                  m_locationBinderId = null;
@@ -1557,7 +1557,9 @@ public class TrashHelper {
      * @param entry
      */
     public static void registerEntryNames(CoreDao cd, Folder folder, FolderEntry entry, Object rd) throws WriteEntryDataException, WriteFilesException {
-    	registerTitle(          cd, folder, entry,                         ((TrashRenameData) rd));
+    	if (entry.isTop()) {
+    		registerTitle(      cd, folder, entry,                         ((TrashRenameData) rd));
+    	}
 	    registerAttachmentNames(cd, folder, entry, entry.getAttachments(), ((TrashRenameData) rd));
     }
     
@@ -1993,7 +1995,9 @@ public class TrashHelper {
      * @param entry
      */
     public static void unRegisterEntryNames(CoreDao cd, Folder folder, FolderEntry entry) {
-    	unRegisterTitle(          cd, folder, entry);
+    	if (entry.isTop()) {
+    		unRegisterTitle(      cd, folder, entry);
+    	}
 	    unRegisterAttachmentNames(cd, folder, entry.getAttachments());
     }
     
