@@ -623,12 +623,20 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	
 	public void folder_uploadFileAsByteArray(String accessToken, long entryId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
 		File originalFile = new File(fileName);
 		fileName = originalFile.getName();
-
+		
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		try {
-			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
+			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
+				// This will attach the file to appropriate definition element of file type (which is by default "upload").
+				FolderUtils.modifyLibraryEntry(entry, fileName, new ByteArrayInputStream(fileContent), null, true);
+			}
+			else {
+				if (Validator.isNull(fileUploadDataItemName)) 
+					fileUploadDataItemName="ss_attachFile1";
+				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fileName, new ByteArrayInputStream(fileContent), null);
+			}
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -726,7 +734,15 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
 	
 		try {
-			getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null);
+			if (Validator.isNull(fileUploadDataItemName) && entry.getParentFolder().isLibrary()) {
+				// This will attach the file to appropriate definition element of file type (which is by default "upload").
+				FolderUtils.modifyLibraryEntry(entry, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null, true);
+			}
+			else {
+				if (Validator.isNull(fileUploadDataItemName)) 
+					fileUploadDataItemName="ss_attachFile1";
+				getFolderModule().modifyEntry(null, entryId, fileUploadDataItemName, fa.getFileItem().getName(), new ByteArrayInputStream(fileContent), null);
+			}
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

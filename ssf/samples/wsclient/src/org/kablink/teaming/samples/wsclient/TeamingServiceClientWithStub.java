@@ -129,7 +129,9 @@ public class TeamingServiceClientWithStub {
 		
 		//fetchTaskEntriesModifiedBetweenTwoDates();
 		
-		fetchCalendarEntriesModifiedBetweenTwoDates();
+		//fetchCalendarEntriesModifiedBetweenTwoDates();
+		
+		addFileEntry();
 		
 /*		try {
 			getEntryFileVersions(9, "debug.doc");
@@ -487,6 +489,20 @@ public class TeamingServiceClientWithStub {
 		}
 		
 	}
+	
+	public static void addFileEntry() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		FolderEntry testEntry = new FolderEntry();
+		testEntry.setDescription(new Description(1,"Creating a file entry through web services"));
+		testEntry.setParentBinderId(new Long(149));
+		// Do not add title!!!
+		long testEntryId = stub.folder_addEntry(null, testEntry, "debug1.txt");
+		System.out.println("Successfully created an empty file entry with ID = " + testEntryId);
+		String fileText = "Wow, this works!!";
+		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "what-the.txt", fileText.getBytes());
+		System.out.println("Successfully uploaded primary file");
+	}
+	
 	public static void checkEntry()  throws Exception {
 		TeamingServiceSoapBindingStub stub = getStub();
 
