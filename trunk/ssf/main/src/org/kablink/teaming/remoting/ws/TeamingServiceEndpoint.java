@@ -631,7 +631,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 
 	private String normalizeFileUploadDataItemName(String fileUploadDataItemName) {
-		if(fileUploadDataItemName.equals("ss_attachFile"))
+		if("ss_attachFile".equals(fileUploadDataItemName))
 			return "ss_attachFile1";
 		else
 			return fileUploadDataItemName;
