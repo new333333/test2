@@ -39,21 +39,18 @@
         <property name="name" value="iconName"/> 
       </properties> 
     </item>  
-    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="13">
-      <properties>
-        <property name="caption" value="__attach_files"/>
-        <property name="name" value="ss_attachFile"/>
-        <property name="width" value="60"/>
-        <property name="number" value=""/>
-        <property name="storage" value="simpleFileRepository"/>
-        <property name="hide" value="true"/>
-      </properties>
-    </item>
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="13"> 
+      <properties> 
+        <property name="caption" value="__attach_files"/>  
+        <property name="name" value="ss_attachFile"/>  
+        <property name="width" value="60"/>  
+        <property name="number" value=""/>  
+        <property name="storage" value="simpleFileRepository"/>  
+        <property name="hide" value="true"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="forumView" caption="__folder_view" id="6"> 
-    <properties> 
-      <property name="type" value="folder"/> 
-    </properties>  
     <item name="folderTitleView" caption="__title" category="folderViewData" display="view" id="11"> 
       <properties> 
         <property name="caption" value="__title"/> 
@@ -78,7 +75,10 @@
     </item>  
     <item name="folderList" caption="__folder_listing" id="9"> 
       <properties/> 
-    </item> 
+    </item>  
+    <properties>
+      <property name="type" value="file"/>
+    </properties>
   </item>  
   <properties> 
     <property name="caption" value="__definition_default_folder_mirrored_file"/>  

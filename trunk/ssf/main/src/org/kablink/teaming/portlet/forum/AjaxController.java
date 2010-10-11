@@ -381,7 +381,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("forum/save_column_positions_return");
 			
 		} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
-			return ajaxConfigureFolderColumns(request, response);
+			return ajaxConfigureFolderColumns(this, request, response);
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			return ajaxSubscribe(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
@@ -1146,13 +1146,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/ajax_return");
 	}
 		
-	private ModelAndView ajaxConfigureFolderColumns(RenderRequest request, 
+	private ModelAndView ajaxConfigureFolderColumns(AllModulesInjected bs, RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		} catch(PortletRequestBindingException ex) {}
+		
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 		
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		Map binderAccessMap = new HashMap();
@@ -1192,6 +1194,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		model.put(WebKeys.FOLDER_TYPE, op2);
+		
+		String viewType = BinderHelper.getViewType(bs, binder);
+		model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
 
 		return new ModelAndView("forum/configure_folder_columns_return", model);
 	}

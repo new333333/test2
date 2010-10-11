@@ -32,25 +32,54 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Folder page %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="org.kablink.util.BrowserSniffer" %>
-<%@ page import="org.kablink.teaming.ssfs.util.SsfsUtil" %>
-<%
-boolean isIECheck = BrowserSniffer.is_ie(request);
-String strBrowserType = "";
-if (isIECheck) strBrowserType = "ie";
-%>
-<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
-<c:set var="ss_folderViewColumnsType" value="folder" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
-<c:set var="slidingTableStyle" value="sliding"/>
-<c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
-  <c:set var="slidingTableStyle" value="fixed"/>
-</c:if>
+  <%
+	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
+  %>
+<c:choose>
+<c:when test="${ss_folderViewColumnsType == 'file'}">
+  <%
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+		ssFolderColumns.put("title", "title");
+		ssFolderColumns.put("comments", "comments");
+		ssFolderColumns.put("size", "size");
+		ssFolderColumns.put("download", "download");
+		ssFolderColumns.put("html", "html");
+		ssFolderColumns.put("state", "state");
+		ssFolderColumns.put("author", "author");
+		ssFolderColumns.put("date", "date");
+	}
+  %>
+</c:when>
 
-<div <c:if test="${slidingTableStyle == 'fixed'}">id="ss_folder_view_common${renderResponse.namespace}"</c:if>>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" %>
-</div>
+<c:when test="${ss_folderViewColumnsType == 'folder'}">
+  <%
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+		ssFolderColumns.put("number", "number");
+		ssFolderColumns.put("title", "title");
+		ssFolderColumns.put("comments", "comments");
+		ssFolderColumns.put("state", "state");
+		ssFolderColumns.put("author", "author");
+		ssFolderColumns.put("date", "date");
+		ssFolderColumns.put("rating", "rating");
+	}
+  %>
+  <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
+</c:when>
+
+<c:otherwise>
+  <%
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+	}
+  %>
+</c:otherwise>
+
+</c:choose>
+
+<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>

@@ -36,20 +36,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
-<%
-	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
-	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-	if (ssFolderColumns == null) {
-		ssFolderColumns = new java.util.HashMap();
-		ssFolderColumns.put("title", "title");
-		ssFolderColumns.put("comments", "comments");
-		ssFolderColumns.put("size", "size");
-		ssFolderColumns.put("download", "download");
-		ssFolderColumns.put("html", "html");
-		ssFolderColumns.put("state", "state");
-		ssFolderColumns.put("author", "author");
-		ssFolderColumns.put("date", "date");
-	}
-%>
-<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
+<c:set var="ss_folderViewColumnsType" value="file" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common.jsp" %>
