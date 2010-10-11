@@ -101,7 +101,10 @@
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
 	    <div id="ss_iframe_holder_div" >
 	      <div class="ss_newpage_box_header" >
-	        <table cellspacing="0" cellpadding="0" <% if (!BrowserSniffer.is_ie_6(request)) { %> width="100%" <% } %>>
+	        <table cellspacing="0" cellpadding="0" 
+	          <% if (!BrowserSniffer.is_ie(request)) { %> width="100%" <% } %>
+	          <% if (BrowserSniffer.is_ie(request) && !BrowserSniffer.is_ie_6(request)) { %> width="98%" <% } %>
+	        >
 	        <tr>
 	        <td valign="top" nowrap>
 	          <span class="ss_newpage_box_title" id="ss_showEntryDivTitle""></span>
