@@ -236,10 +236,11 @@ table.ss_actions_bar4_pane {
 .ss_actions_bar5 {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	font-weight: bold;
 	margin:5px 0 0 0;
 	padding:5px 0 5px 5px;
 	}
+.ss_actions_bar5 li a {color: #fff !important;}
+	
 .ss_actions_bar6 {
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
