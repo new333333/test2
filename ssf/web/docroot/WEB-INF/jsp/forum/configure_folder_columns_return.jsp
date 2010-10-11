@@ -33,6 +33,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
+<jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 
 <c:choose>
 <c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
@@ -40,28 +42,31 @@
 </c:when>
 <c:otherwise>
 
+<c:set var="ss_folderViewColumnsType" value="${ssFolderViewType}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+
 <c:set var="folderChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
 <c:set var="numberChecked" value=""/>
-<c:if test="${!empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
+<c:if test="${!empty ssFolderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
 <c:set var="commentsChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.comments}"><c:set var="commentsChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.comments}"><c:set var="commentsChecked" value="checked"/></c:if>
 <c:set var="sizeChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.size}"><c:set var="sizeChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.size}"><c:set var="sizeChecked" value="checked"/></c:if>
 <c:set var="downloadChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.download}"><c:set var="downloadChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.download}"><c:set var="downloadChecked" value="checked"/></c:if>
 <c:set var="htmlChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.html}"><c:set var="htmlChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.html}"><c:set var="htmlChecked" value="checked"/></c:if>
 <c:set var="stateChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.state}"><c:set var="stateChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.state}"><c:set var="stateChecked" value="checked"/></c:if>
 <c:set var="authorChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
 <c:set var="dateChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
 <c:set var="ratingChecked" value=""/>
-<c:if test="${empty folderColumns || !empty folderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
 
 
 <table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width}; height:420px; overflow:scroll;">
@@ -102,7 +107,7 @@
        				 element.value.type == 'userListSelectbox'}">
 		<c:set var="checked" value=""/>
 		<c:set var="colName" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
-		<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+		<c:if test="${!empty ssFolderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
          <input type="checkbox" name="customCol_${colName}" ${checked}> 
          <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
          <ssf:nlt tag="${element.value.caption}" checkIfTag="true"/><br/>
@@ -111,7 +116,7 @@
          <c:forEach var="attributeSetName" items="${ssBinder.customAttributes[element.key].valueSet}">
 			<c:set var="checked" value=""/>
 			<c:set var="colName" value="${def.key},${element.value.type},${element.key}__set__${attributeSetName},${attributeSetName}"/>
-			<c:if test="${!empty folderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+			<c:if test="${!empty ssFolderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
 	         <input type="checkbox" name="customCol_${colName}" ${checked}> 
 	         <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
 	         <ssf:nlt tag="${element.value.caption}: ${attributeSetName}" checkIfTag="true"/><br/>

@@ -37,14 +37,9 @@
 <%@ page import="java.util.Map" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
-<%
-	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
-	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-	if (ssFolderColumns == null) {
-		ssFolderColumns = new java.util.HashMap();
-	}
-%>
-<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
+<c:set var="ss_folderViewColumnsType" value="empty" scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
+
   <c:if test="${!empty ssFolders}">
   <div class="folders">
     <div class="folder-head">
