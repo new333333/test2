@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@
 <% //Title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="org.kablink.teaming.domain.FolderEntry" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
@@ -44,13 +45,16 @@
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 	}
+	
+	boolean entryInTrash = (ssDefinitionEntry instanceof FolderEntry && ((FolderEntry)ssDefinitionEntry).isPreDeleted());
+	boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 
 <c:set var="ss_title_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_title_namespace" value="${ss_namespace}"/></c:if>
 
-<div class="ss_entryContent">
+<div class="ss_entryContent" <% if (isIE && entryInTrash) { %>style="padding-top: 10px;"<% } %>>
 
 <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
@@ -109,8 +113,8 @@ ${nextEntry.docNumber}.
 			</ssf:param>
 			<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
 		</ssf:titleLink>
-		<% if (ssDefinitionEntry instanceof FolderEntry && ((FolderEntry)ssDefinitionEntry).isPreDeleted()) { %>
-		  <span class="ss_smallprint">(<ssf:nlt tag="trash.column.LastActivity"/>)</span>
+		<% if (entryInTrash) { %>
+		  <div style="display: inline; margin:0px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="entry.inTheTrash"/></span></div>
 		<% } %>
 </span>
 
