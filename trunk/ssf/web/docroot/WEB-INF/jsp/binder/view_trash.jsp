@@ -40,6 +40,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssBinder"               type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map"                     scope="request" />
+<c:if test="${empty ss_breadcrumbsShowIdRoutine}">
+  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
+</c:if>
 <%
 	List folderEntriesSeen = new ArrayList();
 	Map ssFolderColumns = ((Map) ssUserFolderProperties.get("userFolderColumns"));
