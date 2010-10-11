@@ -822,6 +822,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}	
 .wg-comment .ss_entryTitle {
 	margin-left: 0px;
+	font-size: 14px;
+	color: #135c8f !important;
 	}
 
 /* Teaming - Tabs */

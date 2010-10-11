@@ -212,9 +212,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 .wiki-entry-wrap #ss_profile_box_h1, #ss_folder_type_wiki #ss_profile_box_h1 { margin-right: 300px;}
 .wiki-entry-wrap .ss_treeWidget, .ss_folder_type_wiki .ss_treeWidget { margin-top: 0px; margin-left: 5px;}
-.wiki-entry-wrap .ss_entryDescription {border-top: 0px;}	
 #ss_folder_type_wiki .ss_treeWidget { margin-top: 0px;}
 .wiki-entry-wrap #tag_button {display: none;}
+.wiki-entry-wrap .ss_entryDescription {border-top: 0px;}	
+.wiki-entry-wrap .wg-comment .ss_entryDescription {border-top: 1px solid #c4c4c4;}	
 	
 .wiki-entry-title {
     font-size: 15px;

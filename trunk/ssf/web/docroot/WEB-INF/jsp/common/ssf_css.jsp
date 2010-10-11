@@ -476,6 +476,10 @@ div.ss_entryContent a:hover {
 	line-height: 17px;
   	padding: 5px;
     border-top: 1px solid #C4C4C4;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
