@@ -561,11 +561,8 @@
 													actionUrl="true"> 
 												<ssf:param name="entryViewStyle"  value="${ss_entryViewStyle}"  />
 												<ssf:param name="entryViewStyle2" value="${ss_entryViewStyle2}" />
-											</ssf:url>" 
-	    
-											<c:if test="${ssUser.displayStyle != 'iframe'}">
-												onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
-											</c:if>
+											</ssf:url>"	    
+											onClick="ss_loadEntry(this,'${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 										>
 											<span><c:out value="${entry1_title}"/></span>
 										</a>
