@@ -1680,6 +1680,20 @@ div.ss_box_top_rounded {
 	margin: 0px;
 }
 
+.ss_box_next {
+	padding-left:6px;
+}
+.ss_box_next img {
+	position:relative;
+	top:4px;
+	border:none;
+}
+.ss_box_prev img {
+	position:relative;
+	top:4px;
+	border:none;
+}
+
 .ss_box_small_icon_bar {
 	background-color: ${ss_box_color};
 	height: 1em;
@@ -1717,6 +1731,10 @@ div.ss_box_top_rounded {
 	}
 .ss_newpage_box_title {
 	padding-left: 5px;
+	}
+.ss_newpage_box_next_prev {
+	position:relative;
+	top:-6px;
 	}
 
 /* popup box styles */
