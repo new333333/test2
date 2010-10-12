@@ -1018,6 +1018,7 @@ public class WebKeys {
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
     public static final String NEXT_PAGE="ss_nextPage";
+    public static final String NEXT_PREV_URL="ss_nextPrevUrl";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
     public static final String OPERATION_MAP="ssOperationMap";

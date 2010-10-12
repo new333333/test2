@@ -37,6 +37,9 @@
 <%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<script type="text/javascript">
+var ss_showingFolder = true;
+</script>
 <c:if test="${empty ss_entryViewStyle}">
   <c:set var="ss_entryViewStyle" value="" scope="request"/>
   <c:if test="${ssUser.displayStyle == 'newpage' && slidingTableStyle != 'fixed'}">

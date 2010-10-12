@@ -106,10 +106,13 @@
 	          <% if (BrowserSniffer.is_ie(request) && !BrowserSniffer.is_ie_6(request)) { %> width="98%" <% } %>
 	        >
 	        <tr>
-	        <td valign="top" nowrap>
-	          <span class="ss_newpage_box_title" id="ss_showEntryDivTitle""></span>
+	        <td valign="top" nowrap width="90%">
+	          <span class="ss_newpage_box_title" id="ss_showEntryDivTitle"></span>
 	        </td>
-	        <td valign="top" align="right" <% if (BrowserSniffer.is_ie_6(request)) { %> width="100%" <% } %> >
+	        <td valign="top" align="right" nowrap width="6%">
+	          <span class="ss_newpage_box_next_prev" id="ss_showEntryDivNextPrev"></span>
+	        </td>
+	        <td valign="top" align="right" nowrap width="4%" >
 	          <span class="ss_newpage_box_close">
 	            <a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
 					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a>

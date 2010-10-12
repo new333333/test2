@@ -36,19 +36,16 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value="<%= NLT.get(\"binder.no_more_entries\") %>" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
 <body class="tundra">
-</ssf:ifadapter>
 
 <div class="ss_style ss_portlet">
-<ssf:form title="<%= NLT.get(\"binder.no_more_entries\") %>">
+<br/>
+<span class="ss_bold ss_largestprint"><ssf:nlt tag="binder.no_more_entries"/></span>
+<br/>
 <br/>
 <input type="button" value="<ssf:nlt tag="button.goBack"/>"
   onClick="self.history.go(-1);return false;" />
-</ssf:form>
 </div>
 
-<ssf:ifadapter>
 </body>
 </html>
-</ssf:ifadapter>

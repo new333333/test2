@@ -74,13 +74,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 <c:set var="ss_boxTitleId" value="<%= boxTitleId %>"/>
 <c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
-    <c:set var="colWidth" value="${colWidth - 90}"/>
+    <c:set var="colWidth" value="${colWidth - 88}"/>
 </c:if>
 <c:if test="<%= showCloseIcon %>">
     <c:set var="colWidth" value="${colWidth - 6}"/>
 </c:if>
 
-<c:set var="ss_boxColCount" value="2" scope="request"/>
+<c:set var="ss_boxColCount" value="3" scope="request"/>
 <div class="<%= boxClass %>" id="<%= divId %>" 
   style="width: <%= width %>; <%= boxStyle %>">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
@@ -98,9 +98,10 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="${colWidth}%"/>
 	  </c:if>
 	  <c:if test="<%= showMoveIcon %>">
-	    <col width="90%"/>
+	    <col width="88%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
+	  <col width="2%"/>
 	  <c:if test="<%= showCloseIcon %>">
 	    <col width="6%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
@@ -136,6 +137,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
+	  <td class="ss_title_bar" nowrap><span id="ss_showEntryDivNextPrev"></span></td>
 	  <c:if test="<%= showCloseIcon %>">
 		<td class="ss_title_bar" align="right"><span class="ss_box_small_icon"><a 
 			 href="javascript: ;" onClick="<%= showCloseRoutine %>;return false;"><img border="0" <ssf:alt/>

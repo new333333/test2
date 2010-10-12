@@ -58,13 +58,75 @@ function ss_setEntryDivHeight() {
 	var boxTitleArea = self.document.getElementById("ss_showEntryDivTitle");
 	if (boxTitleArea != null && boxTitle != "") {
 		try {
+			boxTitleArea.innerHTML = "";
 			boxTitleArea.innerHTML = "<a class='ss_box_title' href='"+window.ss_showentryframe.location.href+"' onclick='ss_loadUrlInEntryFrame(this.href);return false;'>"+boxTitle+"</a>";
 		} catch(e) {}
 	}
+	try {
+		var boxNextPrevArea = self.document.getElementById("ss_showEntryDivNextPrev");
+		if (typeof window.top.gwtContentIframe.ss_showingFolder != "undefined" && 
+				window.top.gwtContentIframe.ss_showingFolder == true && 
+				typeof window.ss_showentryframe.ss_nextPrevUrl != "undefined" && 
+				window.ss_showentryframe.ss_nextPrevUrl != "" && 
+				boxNextPrevArea != null) {
+			boxNextPrevArea.innerHTML = "";
+			var prevBtn = "<a class='ss_box_prev' href='"+window.ss_showentryframe.ss_nextPrevUrl+"'";
+			prevBtn += " onclick='ss_loadUrlInEntryFramePrev(this.href);return false;'>";
+			prevBtn += "<img src='"+ss_rootPath+"images/pics/nl_left_noborder_16.png' ";
+			prevBtn += "title='"+window.ss_showentryframe.ss_prevEntryAlt+"'></a>";
+			var nextBtn = "<a class='ss_box_next' href='"+window.ss_showentryframe.ss_nextPrevUrl+"'";
+			nextBtn += " onclick='ss_loadUrlInEntryFrameNext(this.href);return false;'>";
+			nextBtn += "<img src='"+ss_rootPath+"images/pics/nl_right_noborder_16.png' ";
+			nextBtn += "title='"+window.ss_showentryframe.ss_prevEntryAlt+"'></a>";
+			boxNextPrevArea.innerHTML = prevBtn + nextBtn;
+		}
+	} catch(e) {
+		ss_debug("ss_setEntryDivHeight: "+e)
+	}
+
 	setTimeout("ss_positionEntryDiv(true);", 200);
 }
+function ss_clearEntryHeaderBar() {
+	var boxTitleArea = self.document.getElementById("ss_showEntryDivTitle");
+	if (boxTitleArea != null) {
+		try {
+			boxTitleArea.innerHTML = "";
+		} catch(e) {}
+	}
+	try {
+		var boxNextPrevArea = self.document.getElementById("ss_showEntryDivNextPrev");
+		if (boxNextPrevArea != null) {
+			boxNextPrevArea.innerHTML = "";
+		}
+	} catch(e) {}
+}
+
 function ss_loadUrlInEntryFrame(url) {
 	//ss_debug("**** "+ss_debugTrace());
+	var frameObj = self.document.getElementById('ss_showentryframe');
+	if (ss_getUserDisplayStyle() != 'newpage') {
+		//Drop it back down to a reasonable size
+		//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
+		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+	}
+	frameObj.src = url;
+}
+function ss_loadUrlInEntryFramePrev(url) {
+	//ss_debug("**** "+ss_debugTrace());
+	url = ss_replaceSubStr(url, "&action=view_folder_entry", "&operation2=view_previous&action=view_folder_entry");
+	url = ss_replaceSubStr(url, "/action/view_folder_entry", "/operation2/view_previous/action/view_folder_entry");
+	var frameObj = self.document.getElementById('ss_showentryframe');
+	if (ss_getUserDisplayStyle() != 'newpage') {
+		//Drop it back down to a reasonable size
+		//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
+		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+	}
+	frameObj.src = url;
+}
+function ss_loadUrlInEntryFrameNext(url) {
+	//ss_debug("**** "+ss_debugTrace());
+	url = ss_replaceSubStr(url, "&action=view_folder_entry", "&operation2=view_next&action=view_folder_entry");
+	url = ss_replaceSubStr(url, "/action/view_folder_entry", "/operation2/view_next/action/view_folder_entry");
 	var frameObj = self.document.getElementById('ss_showentryframe');
 	if (ss_getUserDisplayStyle() != 'newpage') {
 		//Drop it back down to a reasonable size
@@ -316,7 +378,9 @@ function ss_positionEntryDiv(moveTop) {
     //causes JS to fail on IE so we are setting the background to a empty value, for the 
     //parent property to be inherited by the child.
     //wObj1.style.background = ss_entryBackgroundColor;
-    wObj1.style.background = "";
+    if (typeof wObj1.style.background == "undefined" || wObj1.style.background == null) {
+    	wObj1.style.background = "";
+    }
     
     //Allow the entry section to grow to as large as needed to show the entry
 	if (!ss_isGwtUIActive || ss_getUserDisplayStyle() != "newpage") {
