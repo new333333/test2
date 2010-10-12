@@ -58,6 +58,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -72,8 +73,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private InlineLabel m_title;
 	private FlowPanel m_presencePanel;
 	private ClickHandler m_presenceClickHandler;
-	private InlineLabel m_author;
-	private InlineLabel m_date;
+	private Label m_author;
+	private Label m_date;
 	private InlineLabel m_desc;
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
@@ -192,7 +193,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_presencePanel.addStyleName( getPresencePanelStyleName() );
 		panel.add( m_presencePanel );
 		
-		m_author = new InlineLabel();
+		m_author = new Label();
 		m_author.addStyleName( getAuthorStyleName() );
 		panel.add( m_author );
 		
@@ -203,7 +204,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Add a click handler for the author.
 		m_author.addClickHandler( this );
 		
-		m_date = new InlineLabel();
+		m_date = new Label();
 		m_date.addStyleName( getDateStyleName() );
 		panel.add( m_date );
 		
@@ -531,8 +532,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		
 		// Create a presence control for the author.
 		presenceCtrl = new PresenceControl( m_authorWSId, false, false, false );
+		presenceCtrl.setImageAlignment( "top" );
 		presenceCtrl.addClickHandler( m_presenceClickHandler );
 		presenceCtrl.addStyleName( "displayInline" );
+		presenceCtrl.addStyleName( "verticalAlignTop" );
 		presenceCtrl.setAnchorStyleName( "cursorPointer" );
 		m_presencePanel.add( presenceCtrl );
 		

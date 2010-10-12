@@ -49,6 +49,8 @@ public class PresenceControl extends Composite {
 	private boolean m_bClickStartsIm;
 	private boolean m_bHideIfUnknown;
 	private Anchor m_presenceA = null;
+	private Image m_presenceImage = null;
+	private String m_presenceImgAlignment = "absMiddle";
 	private String m_presenceAStyleName = null;
 	private ClickHandler m_presenceAClickHandler = null;
 	private FlowPanel panel;
@@ -85,50 +87,49 @@ public class PresenceControl extends Composite {
 			}
 
 			public void onSuccess(GwtPresenceInfo pi) {
-				Image presenceImage;
 				String statusText = pi.getStatusText();
 				switch (pi.getStatus()) {
 					case GwtPresenceInfo.STATUS_AVAILABLE:
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16());
 						if (statusText == null) {
 							statusText = GwtTeaming.getMessages().presenceAvailable();
 						}
 						break;
 					case GwtPresenceInfo.STATUS_IDLE:
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
 						if (statusText == null) {
 							statusText = GwtTeaming.getMessages().presenceIdle();
 						}
 						break;
 					case GwtPresenceInfo.STATUS_AWAY:
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
 						if (statusText == null) {
 							statusText = GwtTeaming.getMessages().presenceAway();
 						}
 						break;
 					case GwtPresenceInfo.STATUS_BUSY:
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16());
 						if (statusText == null) {
 							statusText = GwtTeaming.getMessages().presenceBusy();
 						}
 						break;
 					case GwtPresenceInfo.STATUS_OFFLINE:
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16());
 						if (statusText == null) {
 							statusText = GwtTeaming.getMessages().presenceOffline();
 						}
 						break;
 					default:
 						statusText = "";
-						presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
+						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
 				}
 				if (pi.getStatus() != GwtPresenceInfo.STATUS_UNKNOWN || !m_bHideIfUnknown) {
 					if ( m_presenceAStyleName != null )
 						m_presenceA.addStyleName( m_presenceAStyleName );
 					else
 						m_presenceA.addStyleName("presenceImgA");
-					presenceImage.getElement().setAttribute( "align", "absmiddle" );
-					m_presenceA.getElement().appendChild(presenceImage.getElement());
+					m_presenceImage.getElement().setAttribute( "align", m_presenceImgAlignment );
+					m_presenceA.getElement().appendChild(m_presenceImage.getElement());
 					m_presenceA.setVisible(true);
 					
 					if ( m_presenceAClickHandler != null )
@@ -168,5 +169,14 @@ public class PresenceControl extends Composite {
 			m_presenceA.removeStyleName( "presenceImgA" );
 			m_presenceA.addStyleName( styleName );
 		}
+	}
+	
+	
+	/**
+	 * Set the alignment of the presence image.
+	 */
+	public void setImageAlignment( String alignment )
+	{
+		m_presenceImgAlignment = alignment;
 	}
 }
