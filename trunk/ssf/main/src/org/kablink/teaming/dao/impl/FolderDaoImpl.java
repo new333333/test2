@@ -742,10 +742,20 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 					logger.debug("...cleaning token:  '" + ((null == t) ? "<null>" : t.toString()) + "'");
 				}
 			}
+			
+			//Update the rows of JBPM_LOG table where the token id is in the list and set the parent field to null
+			//This will remove the foreign key constraint
+			logger.debug("Updating the parent field to null in the org.jbpm.logging.log.ProcessLog...");
+			session.createQuery("Update org.jbpm.logging.log.ProcessLog set parent=null where token.id in (:pList)")
+	  			.setParameterList("pList", tokenIds)
+	 			.executeUpdate();
+			
+			//Then remove the rows from the table that have the tokens in the lists 
 			logger.debug("Cleaning tokens from org.jbpm.logging.log.ProcessLog...");
 			session.createQuery("Delete org.jbpm.logging.log.ProcessLog where token.id in (:pList)")
 	  			.setParameterList("pList", tokenIds)
 	 			.executeUpdate();
+			
 			//delete comments
 			logger.debug("Cleaning tokens from org.jbpm.graph.exe.Comment...");
 			session.createQuery("Delete org.jbpm.graph.exe.Comment where token.id in (:pList)")
