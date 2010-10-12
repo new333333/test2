@@ -124,4 +124,34 @@ public interface FolderService {
 	 */
 	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime);
 
+	/**
+	 * Test if the calling user has the right to execute the specified operation on each of the folders specified.
+	 * 
+	 * <p>If an folder does not exist, the result will be set to <code>false</code> for that specific folder.
+	 * If the operation name is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for all entries.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param folderOperationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * instance. See the Java source file for the names.
+	 * @param folderIds The ID of the entries against which to test the access.
+	 */
+	public boolean[] folder_testFolderOperation(String accessToken, String folderOperationName, long[] folderIds);
+
+	/**
+	 * Test if the calling user has the right to execute the specified operation on each of the entries specified.
+	 * 
+	 * <p>If an entry does not exist, the result will be set to <code>false</code> for that specific entry.
+	 * If the operation name is an unknown value in Teaming, the result will be set to <code>false</code>
+	 * for all entries.
+	 * 
+	 * @param accessToken Either the security token passed to your application by Teaming as part of
+	 * implementing a remote application, or the null value.
+	 * @param folderOperationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * instance. See the Java source file for the names.
+	 * @param entryIds The ID of the entries against which to test the access.
+	 */
+	public boolean[] folder_testEntryOperation(String accessToken, String folderOperationName, long[] entryIds);
+
 }

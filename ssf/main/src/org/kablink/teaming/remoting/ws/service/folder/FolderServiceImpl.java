@@ -62,17 +62,23 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.mail.EmailFormatter;
 import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
@@ -87,6 +93,7 @@ import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.util.DomInputData;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.DatedMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -750,6 +757,52 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
+	}
+
+	@Override
+	public boolean[] folder_testFolderOperation(String accessToken,
+			String folderOperationName, long[] folderIds) {
+		FolderOperation folderOperation = FolderOperation.valueOf(folderOperationName);
+		boolean[] result = new boolean[folderIds.length];
+		for(int i = 0; i < folderIds.length; i++) {
+			try {
+				// Do not use FolderModule.getFolder() method to load the folder, since it will 
+				// fail if the caller doesn't already have the appropriate right to load it.
+				Folder folder = getFolderModule().getFolderWithoutAccessCheck(folderIds[i]);
+				result[i] = getFolderModule().testAccess(folder, folderOperation);
+			}
+			catch(NoFolderByTheIdException e) {
+				// The specified folder does not exist. Instead of throwing an exception (and
+				// aborting this operation all together), simply set the result to false for
+				// this folder, and move on to the next folder.
+				result[i] = false;
+				continue;
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public boolean[] folder_testEntryOperation(String accessToken,
+			String folderOperationName, long[] entryIds) {
+		FolderOperation folderOperation = FolderOperation.valueOf(folderOperationName);
+		boolean[] result = new boolean[entryIds.length];
+		for(int i = 0; i < entryIds.length; i++) {
+			try {
+				// Do not use FolderModule.getEntry() method to load the entry, since it will 
+				// fail if the caller doesn't already have the appropriate right to load it.
+				FolderEntry entry = getFolderModule().getEntryWithoutAccessCheck(null, entryIds[i]);
+				result[i] = getFolderModule().testAccess(entry, folderOperation);
+			}
+			catch(NoFolderEntryByTheIdException e) {
+				// The specified entry does not exist. Instead of throwing an exception (and
+				// aborting this operation all together), simply set the result to false for
+				// this entry, and move on to the next entry.
+				result[i] = false;
+				continue;
+			}
+		}
+		return result;
 	}
 
 }

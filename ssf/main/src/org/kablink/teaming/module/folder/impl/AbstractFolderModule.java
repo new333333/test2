@@ -221,6 +221,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			return true;
 		} catch (AccessControlException ac) {
 			return false;
+		} catch(NotSupportedException e) {
+			return false;
 		}
 	}
 	public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException {
@@ -253,6 +255,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			checkAccess(entry, operation);
 			return true;
 		} catch (AccessControlException ac) {
+			return false;
+		} catch(NotSupportedException e) {
 			return false;
 		}
 	}
@@ -345,6 +349,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		return folder;        
 	}
 	
+    public Folder getFolderWithoutAccessCheck(Long folderId) throws NoFolderByTheIdException {
+    	return loadFolder(folderId);
+    }
+
 	public SortedSet<Folder> getFolders(Collection<Long> folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
@@ -665,6 +673,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     public FolderEntry getEntry(Long folderId, Long entryId) {
         FolderEntry entry = loadEntry(folderId, entryId);
         AccessUtils.readCheck(entry);
+        return entry;
+    }
+    public FolderEntry getEntryWithoutAccessCheck(Long folderId, Long entryId) {
+        FolderEntry entry = loadEntry(folderId, entryId);
         return entry;
     }
     public FolderEntry getEntry(Long folderId, String entryNumber) {
