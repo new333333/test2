@@ -1745,6 +1745,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				}
 				event.setTimeZone(tz);
 			}
+			else {
+				// Event requires a time zone, otherwise it will be
+				// treated as an all-day event.
+				event.setTimeZone(TimeZoneRegistryFactory.getInstance().createRegistry().getTimeZone("GMT"));
+			}
 		}
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
