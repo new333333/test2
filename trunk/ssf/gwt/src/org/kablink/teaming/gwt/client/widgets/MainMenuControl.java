@@ -605,11 +605,11 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 							public void onSuccess(final TeamManagementInfo tmi) {
 								// Handle variations based on activity
 								// stream and search mode.
+								addRecentPlacesToContext(toolbarItemList);
 								boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
 								if (!inASMode) {
 									addManageToContext(toolbarItemList, tmi);
 								}
-								addRecentPlacesToContext(toolbarItemList);
 								if (inSearch && (!inASMode)) {
 									addTopRankedToContext();
 									addManageSavedSearchesToContext(searchTabId);
