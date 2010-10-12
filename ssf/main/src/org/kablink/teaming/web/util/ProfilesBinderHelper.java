@@ -392,6 +392,9 @@ public class ProfilesBinderHelper {
 		model.put(WebKeys.PERMALINK, permaLink);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));		
 
+		//  Build the simple URL beans
+		BinderHelper.buildSimpleUrlBeans(bs,  request, binder, model);
+
 		//Trash
 		TrashHelper.buildTrashToolbar(user, binder, model, qualifiers, trashToolbar);
 
