@@ -154,11 +154,13 @@
 .activityStreamEntryAuthor
 {
 	color: #353838;
+	display: inline;
 	font-size: 11px;
 	font-weight: bold;
 	padding-top: 2px;
 	padding-right: 6px;
 	padding-left: 6px;
+	vertical-align: top;
 }
 .activityStreamEntryAuthor:hover
 {
@@ -169,8 +171,10 @@
 {
 	font-size: 10px;
 	color: #666666;
+	display: inline;
 	padding-right: 10px;
 	white-space: nowrap;
+	vertical-align: top;
 }
 
 .activityStreamEntryDesc
@@ -274,6 +278,7 @@
 .activityStreamPresencePanel
 {
 	display: inline;
+	vertical-align: top;
 }
 
 .activityStreamNumCommentsLabel
@@ -292,6 +297,11 @@
 .level1Comment
 {
 	margin-left: 40px;
+}
+
+.verticalAlignTop
+{
+	vertical-align: top;
 }
 
 /* The following two style are used to prevent an entry's description from starting */
