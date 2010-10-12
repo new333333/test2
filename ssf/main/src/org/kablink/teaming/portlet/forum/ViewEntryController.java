@@ -503,6 +503,13 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
+		PortletURL nextPrevUrl = response.createRenderURL();
+		nextPrevUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		nextPrevUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		nextPrevUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		nextPrevUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+		model.put(WebKeys.NEXT_PREV_URL, nextPrevUrl.toString());
+		
 		if(fe == null) {
 			Document config = getDefinitionModule().getDefinitionConfig();
 			model.put(WebKeys.CONFIG_DEFINITION, config);

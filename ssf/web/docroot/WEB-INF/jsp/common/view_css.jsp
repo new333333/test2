@@ -57,6 +57,11 @@ var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
 var ss_isAdapter="true";
 var ss_namespace = "${renderResponse.namespace}";
+<c:if test="${!empty ss_nextPrevUrl}">
+  var ss_nextPrevUrl = "${ss_nextPrevUrl}";
+  var ss_nextEntryAlt = "<ssf:nlt tag="nav.nextEntry"/>";
+  var ss_prevEntryAlt = "<ssf:nlt tag="nav.prevEntry"/>";
+</c:if>
 var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
     action="advanced_search" actionUrl="true"><ssf:param 
 	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 

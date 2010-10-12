@@ -243,17 +243,19 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		that._listContainer.appendChild(that._listContainerInnerDiv);
 		document.getElementsByTagName( "body" ).item(0).appendChild(that._listContainer);
 			
-		that._hiddenInputSelectedId = document.createElement("input");
-		that._hiddenInputSelectedId.type = "hidden";
-		that._hiddenInputSelectedId.id = that._inputObj.id + "_selected";
-		that._hiddenInputSelectedId.name = that._inputObj.name + "_selected";
-		that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedId, that._inputObj.nextSibling); 
-		
-		that._hiddenInputSelectedType = document.createElement("input");
-		that._hiddenInputSelectedType.type = "hidden";
-		that._hiddenInputSelectedType.id = that._inputObj.id + "_type";
-		that._hiddenInputSelectedType.name = that._inputObj.name + "_type";
-		that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedType, that._inputObj.nextSibling); 
+		if (that._inputObj && that._inputObj.id + "_selected" && that._inputObj.name + "_selected") {
+			that._hiddenInputSelectedId = document.createElement("input");
+			that._hiddenInputSelectedId.type = "hidden";
+			that._hiddenInputSelectedId.id = that._inputObj.id + "_selected";
+			that._hiddenInputSelectedId.name = that._inputObj.name + "_selected";
+			that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedId, that._inputObj.nextSibling); 
+			
+			that._hiddenInputSelectedType = document.createElement("input");
+			that._hiddenInputSelectedType.type = "hidden";
+			that._hiddenInputSelectedType.id = that._inputObj.id + "_type";
+			that._hiddenInputSelectedType.name = that._inputObj.name + "_type";
+			that._inputObj.parentNode.insertBefore(that._hiddenInputSelectedType, that._inputObj.nextSibling); 
+		}
 		
 		
 		

@@ -4498,6 +4498,9 @@ function ss_highlightLine(id, namespace) {
 	}
 }
 function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashboard, isFile) {
+	if (typeof window.top.ss_clearEntryHeaderBar != "undefined") {
+		window.top.ss_clearEntryHeaderBar();
+	}
 	ss_highlightLine(id, namespace);
 	if (isFile == "yes") {
 		self.window.open(obj.href, '_blank');
