@@ -45,6 +45,8 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -304,6 +306,10 @@ public interface FolderModule {
 	 */
     public FolderEntry getEntry(Long parentFolderId, Long entryId) 
     	throws AccessControlException;
+    
+    public FolderEntry getEntryWithoutAccessCheck(Long parentFolderId, Long entryId) 
+    	throws NoFolderEntryByTheIdException;
+    
     /**
      * Get the <code>FolderEntry</code> with the specified entryNumber and parent
      * @param parentFolderId
@@ -346,6 +352,9 @@ public interface FolderModule {
      */
     public Folder getFolder(Long folderId) 
     	throws AccessControlException;
+    
+    public Folder getFolderWithoutAccessCheck(Long folderId) throws NoFolderByTheIdException;
+    
     /**
      * Get set of folders sorted by title
      * @param folderIds

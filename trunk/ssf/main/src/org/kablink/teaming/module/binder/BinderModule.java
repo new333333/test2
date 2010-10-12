@@ -290,6 +290,9 @@ public interface BinderModule {
      */
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
+    
+    public Binder getBinderWithoutAccessCheck(Long binderId) throws NoBinderByTheIdException;
+    
     /**
      * Load binders.
      * @param binderIds

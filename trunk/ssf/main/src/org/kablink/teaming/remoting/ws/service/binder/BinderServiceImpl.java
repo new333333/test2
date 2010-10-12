@@ -50,6 +50,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FileAttachment;
@@ -61,6 +62,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.rss.util.UrlUtil;
@@ -569,8 +571,33 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		boolean[] result = new boolean[binderIds.length];
 		for(int i = 0; i < binderIds.length; i++) {
 			try {
-				Binder binder = getBinderModule().getBinder(binderIds[i]);
+				// Do not use BinderModule.getBinder() method to load the binder, since it will 
+				// fail if the caller doesn't already have the appropriate right to load it. 
+				Binder binder = getBinderModule().getBinderWithoutAccessCheck(binderIds[i]);
 				result[i] = getAccessControlManager().testOperation(binder, workAreaOperation);
+			}
+			catch(NoBinderByTheIdException e) {
+				// The specified binder does not exist. Instead of throwing an exception (and
+				// aborting this operation all together), simply set the result to false for
+				// this binder, and move on to the next binder.
+				result[i] = false;
+				continue;
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public boolean[] binder_testOperation(String accessToken,
+			String binderOperationName, long[] binderIds) {
+		BinderOperation binderOperation = BinderOperation.valueOf(binderOperationName);
+		boolean[] result = new boolean[binderIds.length];
+		for(int i = 0; i < binderIds.length; i++) {
+			try {
+				// Do not use BinderModule.getBinder() method to load the binder, since it will 
+				// fail if the caller doesn't already have the appropriate right to load it. 
+				Binder binder = getBinderModule().getBinderWithoutAccessCheck(binderIds[i]);
+				result[i] = getBinderModule().testAccess(binder, binderOperation);
 			}
 			catch(NoBinderByTheIdException e) {
 				// The specified binder does not exist. Instead of throwing an exception (and

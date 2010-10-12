@@ -232,18 +232,36 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
-			} else if(args[0].equals("testAccess")) {
+			} else if(args[0].equals("testBinderAccess")) {
 				String[] sIds = args[2].split(",");
 				long[] ids = new long[sIds.length];
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "binder_testAccess", new Object[] {null, args[1], ids});
+			} else if(args[0].equals("testBinderOperation")) {
+				String[] sIds = args[2].split(",");
+				long[] ids = new long[sIds.length];
+				for(int i = 0; i < sIds.length; i++)
+					ids[i] = Long.parseLong(sIds[i]);
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "binder_testOperation", new Object[] {null, args[1], ids});
 			} else if(args[0].equals("getDeletedEntries")) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
 			} else if(args[0].equals("getCurrentServerTime")) {
 				wsClient.fetchAndPrintCalendar("TeamingServiceV1", "admin_getCurrentServerTime", new Object[] {null});
+			} else if(args[0].equals("testFolderOperation")) {
+				String[] sIds = args[2].split(",");
+				long[] ids = new long[sIds.length];
+				for(int i = 0; i < sIds.length; i++)
+					ids[i] = Long.parseLong(sIds[i]);
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testFolderOperation", new Object[] {null, args[1], ids});
+			} else if(args[0].equals("testFolderEntryOperation")) {
+				String[] sIds = args[2].split(",");
+				long[] ids = new long[sIds.length];
+				for(int i = 0; i < sIds.length; i++)
+					ids[i] = Long.parseLong(sIds[i]);
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testEntryOperation", new Object[] {null, args[1], ids});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -311,7 +329,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
 		System.out.println("restoreEntry <entry id>");
-		System.out.println("testAccess <work area operation name> <binder id1, binder id2,....>");
+		System.out.println("testBinderAccess <work area operation name> <binder id1, binder id2,....>");
+		System.out.println("testBinderOperation <binder operation name> <binder id1, binder id2,....>");
 		System.out.println("getAttachmentAsByteArray <entry id> <attachment id>");
 		System.out.println("getFileVersionAsByteArray <entry id> <attachment id> <file version id>");
 		System.out.println("getFileVersions <entry id> <file name>");
@@ -319,6 +338,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("removeFile <entry id> <file name>");
 		System.out.println("removeAttachment <entry id> <attachment id>");
 		System.out.println("getCurrentServerTime");
+		System.out.println("testFolderOperation <folder operation name> <folder id1, folder id2,....>");
+		System.out.println("testFolderEntryOperation <folder entry operation name> <entry id1, entry id2,....>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com

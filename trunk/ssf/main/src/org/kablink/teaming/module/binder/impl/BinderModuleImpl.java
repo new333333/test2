@@ -352,6 +352,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return binder;
 	}
 
+	@Override
+	public Binder getBinderWithoutAccessCheck(Long binderId) throws NoBinderByTheIdException {
+		return loadBinder(binderId);
+	}
+
 	public boolean checkAccess(Long binderId, User user) {
 		boolean value = false;
 		Binder binder = null;
@@ -2273,4 +2278,5 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			});
 		}
 	}
+
 }
