@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
@@ -82,6 +83,7 @@ import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -333,6 +335,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setPhone(user.getPhone());
 		userModel.setZonName(user.getZonName());
 		userModel.setWorkspaceId(user.getWorkspaceId());
+		
+		String permaLink = PermaLinkUtil.getPermalink(userModel.getId(), EntityIdentifier.EntityType.user, Boolean.FALSE);
+		userModel.setPermaLink(permaLink);
+
 		Locale locale = user.getLocale();
 		if(locale != null) {
 			userModel.setLocaleLanguage(locale.getLanguage());
