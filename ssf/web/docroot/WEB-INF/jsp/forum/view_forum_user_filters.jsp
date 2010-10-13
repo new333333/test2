@@ -101,7 +101,7 @@
 				
 	 </div>
 	</td>
-	<td align="left" width="5%">
+	<td align="left" width="5%" nowrap>
 		<div class="ss_normal ss_actions_bar">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 
