@@ -89,9 +89,8 @@ function ss_checkForm(obj) {
   method="post" onSubmit="return ss_checkForm(this);">
   
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="general.title" /></legend>
 	<span class="ss_labelLeft" id="title_label"><label for="title">
-	  <ssf:nlt tag="folder.title"/>
+	  <ssf:nlt tag="general.title"/>
 	</label></span>
     <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
