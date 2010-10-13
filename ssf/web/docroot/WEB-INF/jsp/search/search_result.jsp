@@ -98,14 +98,7 @@ var ss_entryCount = 0;
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-<% if (GwtUIHelper.isGwtUIActive(request)) { %>
 	<td>&nbsp;</td>
-<% } else { %>
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-		<c:set var="ss_searchResultsPage" value="true" scope="request" />
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
-<% } %>
 	<td class="ss_view_info" valign="top">
 
 	<div id="ss_whatsNewDiv${ss_namespace}">

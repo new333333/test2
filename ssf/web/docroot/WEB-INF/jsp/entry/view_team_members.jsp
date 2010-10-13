@@ -116,9 +116,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
 	<td valign="top" class="ss_view_info">
 	</ssf:ifnotaccessible>
 	    <div class="ss_style_color" >
@@ -156,11 +153,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</tbody>
 	</table>
 	</ssf:ifnotaccessible>
-<ssf:ifaccessible>
-  <div>
-	<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-  </div>
-</ssf:ifaccessible>
 </div>
 
 <script type="text/javascript">

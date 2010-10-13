@@ -80,9 +80,6 @@
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
 	    <tr>
-	    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-			<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-		</td>
 		<td valign="top" class="ss_view_info">
 		    <div class="ss_style_color" >
 				<p style="text-align:center; padding-top:30px;">

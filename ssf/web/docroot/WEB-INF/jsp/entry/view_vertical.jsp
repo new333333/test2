@@ -73,9 +73,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_sidebar">
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	</td>
 	<td valign="top" class="ss_view_info">
 
 		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />

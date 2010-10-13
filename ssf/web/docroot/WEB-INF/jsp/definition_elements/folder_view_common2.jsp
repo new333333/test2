@@ -578,7 +578,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
     	</c:if>
 	</c:if>
-    >
+    >xxxxxx${entry1._desc}xxxxxx
     
     <c:if test="${!empty seenStyleburst}">
   			<span id="folderLineSeen_${entry1._docId}" <%= seenStyle %> ><c:if test="${empty entry1.title}" 
