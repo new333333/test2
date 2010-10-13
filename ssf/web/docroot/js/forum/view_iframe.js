@@ -64,12 +64,12 @@ function ss_setEntryDivHeight() {
 	}
 	try {
 		var boxNextPrevArea = self.document.getElementById("ss_showEntryDivNextPrev");
+		if (boxNextPrevArea != null) boxNextPrevArea.innerHTML = "";
 		if (typeof window.top.gwtContentIframe.ss_showingFolder != "undefined" && 
 				window.top.gwtContentIframe.ss_showingFolder == true && 
 				typeof window.ss_showentryframe.ss_nextPrevUrl != "undefined" && 
 				window.ss_showentryframe.ss_nextPrevUrl != "" && 
 				boxNextPrevArea != null) {
-			boxNextPrevArea.innerHTML = "";
 			var prevBtn = "<a class='ss_box_prev' href='"+window.ss_showentryframe.ss_nextPrevUrl+"'";
 			prevBtn += " onclick='ss_loadUrlInEntryFramePrev(this.href);return false;'>";
 			prevBtn += "<img src='"+ss_rootPath+"images/pics/nl_left_noborder_16.png' ";
