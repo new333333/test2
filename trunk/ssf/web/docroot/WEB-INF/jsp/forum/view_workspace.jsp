@@ -177,11 +177,6 @@ if (typeof ss_workarea_showId == "undefined")
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <c:if test="${!ss_mashupHideSidebar && (empty ss_captive || !ss_captive)}">
-      <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/sidebars/sidebar.jsp" />
-	  </td>
-	</c:if>
 	<td valign="top" class="ss_view_info">
 		<c:if test="${!showTrash}">
 			<!-- Include "Video Tutorials" ui. -->
