@@ -843,19 +843,21 @@ public class GwtProfileHelper {
 		List<String> trackedIds = getTrackedPersonsIds(bs, userId);
 		for(String trackedId: trackedIds) {
 				Principal principal = bs.getProfileModule().getEntry(Long.parseLong(trackedId));
-				principal = Utils.fixProxy(principal);
-				Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
-				
-				// Yes!  Construct a GwtUser object for it.
-				user = new GwtUser();
-				user.setUserId( principal.getId() );
-				user.setWorkspaceId( binder.getId() );
-				user.setName( principal.getName() );
-				user.setTitle( Utils.getUserTitle(principal) );
-				user.setWorkspaceTitle( binder.getTitle() );
-				user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
-				
-				stats.addTrackedUser(user);
+				if ((null != principal) && (!(principal.isDeleted()))) {
+					principal = Utils.fixProxy(principal);
+					Binder binder = bs.getBinderModule().getBinder( principal.getWorkspaceId() );
+					
+					// Yes!  Construct a GwtUser object for it.
+					user = new GwtUser();
+					user.setUserId( principal.getId() );
+					user.setWorkspaceId( binder.getId() );
+					user.setName( principal.getName() );
+					user.setTitle( Utils.getUserTitle(principal) );
+					user.setWorkspaceTitle( binder.getTitle() );
+					user.setViewWorkspaceUrl( PermaLinkUtil.getPermalink( request, binder ) );
+					
+					stats.addTrackedUser(user);
+				}
 		}
 
 		//Get the number of recent entries

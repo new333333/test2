@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
@@ -111,7 +112,7 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_noEntriesFoundPanel;
 	private ActivityStreamInfo m_activityStreamInfo = null;
 	private GwtRpcServiceAsync m_rpcService = null;
-	private String m_binderPermalink = null;		// Permalink to the binder that is the source of the activity stream.
+	private String m_asSourcePermalink = null;		// Permalink to the binder or user that is the source of the activity stream.
 	// This is a list of ui widgets, one for each entry returned by the search.
 	// We will reuse these ui widgets every time we get a new page of results.
 	// We will NOT create new ui widgets every time we get a new page of results.
@@ -496,8 +497,8 @@ public class ActivityStreamCtrl extends Composite
 				 */
 				public void onMouseOver( MouseOverEvent event )
 				{
-					// Is the activity stream source a binder?
-					if ( isActivityStreamSourceABinder() )
+					// Is the activity stream source a binder or person?
+					if ( isActivityStreamSourceABinder() || isActivityStreamSourceAPerson() )
 					{
 						// Yes
 						m_sourceName.addStyleName( "activityStreamHover" );
@@ -537,18 +538,16 @@ public class ActivityStreamCtrl extends Composite
 				 */
 				public void onClick( ClickEvent event )
 				{
-					// Is the activity stream source a binder?
-					if ( isActivityStreamSourceABinder() )
+					// Is the activity stream source a binder or person?
+					if ( isActivityStreamSourceABinder() || isActivityStreamSourceAPerson() )
 					{
 						OnSelectBinderInfo binderInfo;
-						String binderId;
+						String asSourceId;
 						
 						// Yes
-						m_actionHandler.handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
-						
-						// Take the user to the selected binder.
-						binderId = getActivityStreamSourceBinderId();
-						binderInfo = new OnSelectBinderInfo( binderId, m_binderPermalink, false, Instigator.OTHER );
+						// Take the user to the source of the selected activity stream.
+						asSourceId = getActivityStreamSourceBinderId();
+						binderInfo = new OnSelectBinderInfo( asSourceId, m_asSourcePermalink, false, Instigator.OTHER );
 						m_actionHandler.handleAction( TeamingAction.SELECTION_CHANGED, binderInfo );
 					}
 				}
@@ -741,13 +740,13 @@ public class ActivityStreamCtrl extends Composite
 	{
 		switch ( m_activityStreamInfo.getActivityStream() )
 		{
-		case FOLLOWED_PERSON:
 		case FOLLOWED_PLACE:
 		case MY_FAVORITE:
 		case MY_TEAM:
 		case CURRENT_BINDER:
 			return true;
 			
+		case FOLLOWED_PERSON:
 		case FOLLOWED_PEOPLE:
 		case FOLLOWED_PLACES:
 		case MY_FAVORITES:
@@ -757,6 +756,15 @@ public class ActivityStreamCtrl extends Composite
 		default:
 			return false;
 		}
+	}
+
+	
+	/**
+	 * Is the source of the activity stream a person?
+	 */
+	private boolean isActivityStreamSourceAPerson()
+	{
+		return ActivityStream.FOLLOWED_PERSON == m_activityStreamInfo.getActivityStream();
 	}
 	
 	
@@ -958,15 +966,15 @@ public class ActivityStreamCtrl extends Composite
 		ri = new HttpRequestInfo();
 		m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
 		
-		// Is the source of the activity stream a binder?
-		m_binderPermalink = null;
-		if ( isActivityStreamSourceABinder() )
+		// Is the source of the activity stream a binder or person?
+		m_asSourcePermalink = null;
+		if ( isActivityStreamSourceABinder() || isActivityStreamSourceAPerson() )
 		{
-			String binderId;
+			final String asSourceId;
 			
-			// Yes, get the id of the binder.
-			binderId = getActivityStreamSourceBinderId();
-			if ( binderId != null )
+			// Yes, get the id of the activity stream's source.
+			asSourceId = getActivityStreamSourceBinderId();
+			if ( asSourceId != null )
 			{
 				AsyncCallback<String> callback;
 				
@@ -977,23 +985,29 @@ public class ActivityStreamCtrl extends Composite
 					 */
 					public void onFailure(Throwable t)
 					{
-						GwtClientHelper.handleGwtRPCFailure(
-							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
-							getActivityStreamSourceBinderId() );
+						String msg;
+						
+						if ( isActivityStreamSourceAPerson() )
+						     msg = GwtTeaming.getMessages().rpcFailure_GetUserPermalink();
+						else msg = GwtTeaming.getMessages().rpcFailure_GetBinderPermalink();
+						
+						GwtClientHelper.handleGwtRPCFailure( msg, asSourceId );
 					}
 					
 					/**
 					 * 
 					 */
-					public void onSuccess( String binderPermalink )
+					public void onSuccess( String permalink )
 					{
-						m_binderPermalink = binderPermalink;
+						m_asSourcePermalink = permalink;
 					}
 				};
 				
-				// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
+				// Issue an ajax request to get the permalink of the source of the activity stream.
 				ri = new HttpRequestInfo();
-				m_rpcService.getBinderPermalink( ri, binderId, callback );
+				if ( isActivityStreamSourceAPerson() )
+				     m_rpcService.getUserPermalink(   ri, asSourceId, callback );
+				else m_rpcService.getBinderPermalink( ri, asSourceId, callback );
 			}
 		}
 	}
