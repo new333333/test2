@@ -204,7 +204,9 @@ function ss_getUserDisplayStyle() {
 	}
 	if (ss_lastUserDisplayStyle != null && ss_userDisplayStyle != ss_lastUserDisplayStyle) {
 		try {
-			if ( ss_isGwtUIActive == false )
+			// When we have figured out how to dynamically update everything needed to view
+			// an entry with a new entry display style, uncomment the if ( ss_isGwtUIActive == false ) statement.
+			//!!!if ( ss_isGwtUIActive == false )
 				self.location.reload();	  	
 		} catch (e) {alert(e);}
 	}
