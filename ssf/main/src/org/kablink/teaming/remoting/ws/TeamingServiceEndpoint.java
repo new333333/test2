@@ -391,12 +391,12 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getDeletedEntries(accessToken, family, startTime, endTime);
 	}	
 
-	public boolean[] folder_testFolderOperation(String accessToken, String folderOperationName, long[] folderIds) {
-		return getFolderService().folder_testFolderOperation(accessToken, folderOperationName, folderIds);
+	public boolean[] folder_testFolderOperation(String accessToken, String operationName, long[] folderIds) {
+		return getFolderService().folder_testFolderOperation(accessToken, operationName, folderIds);
 	}
 
-	public boolean[] folder_testEntryOperation(String accessToken, String folderOperationName, long[] entryIds) {
-		return getFolderService().folder_testEntryOperation(accessToken, folderOperationName, entryIds);
+	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds) {
+		return getFolderService().folder_testEntryOperation(accessToken, operationName, entryIds);
 	}
 
 	/// Ical Service
