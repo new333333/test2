@@ -147,6 +147,13 @@ public class RequestInfo extends JavaScriptObject
 
 
 	/**
+	 * Return the name (Novell vs. Kablink) of the version of Teaming
+	 * that's running.
+	 */
+	public final native String getProductName() /*-{ return this.productName; }-*/;
+
+
+	/**
 	 * Return the flag that tells us if the user is logged in.
 	 */
 	public final native boolean isUserLoggedIn() /*-{ return this.isUserLoggedIn; }-*/;

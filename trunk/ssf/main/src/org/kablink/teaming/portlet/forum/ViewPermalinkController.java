@@ -595,6 +595,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				String urlStr;
 			   	String userName;
 			   	String isNovellTeaming;
+			   	String productName;
 			   	String accessException;
 			   	User user;
 			   
@@ -624,6 +625,11 @@ public class ViewPermalinkController  extends SAbstractController {
 				isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
 				model.put( "isNovellTeaming", isNovellTeaming );
 				
+				// Store the name of the product (Novell or Kablink
+				// Teaming) that's running.
+				productName = ReleaseInfo.getName();
+				model.put( "productName", productName );
+					
 				// Get the flag that tells us if the user has rights to this permalink.
 				accessException = PortletRequestUtils.getStringParameter( request, "accessException" );
 

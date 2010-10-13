@@ -149,6 +149,7 @@ public class LoginController  extends SAbstractControllerRetry {
 			boolean isASEnabled;
 			boolean showWhatsNew;
 			String isNovellTeaming;
+			String productName;
 		   
 			// Put out a true/false indicator for the RequestInfo
 			// object as to the state of the new activity streams based
@@ -188,6 +189,11 @@ public class LoginController  extends SAbstractControllerRetry {
 			// Add a flag that tells us if we are running Novell or Kablink Teaming.
 			isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
 			model.put( "isNovellTeaming", isNovellTeaming );
+				
+			// Store the name of the product (Novell or Kablink
+			// Teaming) that's running.
+			productName = ReleaseInfo.getName();
+			model.put( "productName", productName );
 				
 			return new ModelAndView( "forum/GwtMainPage", model );
 		}
