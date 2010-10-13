@@ -2399,8 +2399,14 @@ public class ExportHelper {
 				}
 			}
 
+			try {
 			binderModule.setDefinitions(entity.getId(), newDefinitionList,
 					workflowAssociations);
+			} catch(Exception e) {
+				String[] args = new String[] {entity.getTitle(), e.getMessage()};
+				throw new ExportException(
+						new Exception(NLT.get("export.error.settingWorkflows", args)));
+			}
 		}
 	}
 
