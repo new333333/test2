@@ -547,9 +547,9 @@ public class GwtActivityStreamHelper {
 	 * Builds an TreeInfo object based on a Binder's ID, title, hover
 	 * text and an ActivityStream enumeration value.
 	 */
-	private static TreeInfo buildASTI(AllModulesInjected bs, String id, String title, String hover, ActivityStream as) {
+	private static TreeInfo buildASTI(AllModulesInjected bs, boolean isBinder, String id, String title, String hover, ActivityStream as) {
 		TreeInfo reply = new TreeInfo();
-		if (MiscUtil.hasString(id)) {
+		if (isBinder && MiscUtil.hasString(id)) {
 			reply.setBinderInfo(GwtServerHelper.getBinderInfo(bs, id));
 		}
 		
@@ -884,6 +884,7 @@ public class GwtActivityStreamHelper {
 			rootASList.add(
 				buildASTI(
 					bs,
+					true,
 					binderIdS,
 					binder.getTitle(),
 					binder.getPathName(),
@@ -916,7 +917,13 @@ public class GwtActivityStreamHelper {
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
-					asTIChild = buildASTI(bs, id, myFavorite.getName(), myFavorite.getHover(), ActivityStream.MY_FAVORITE);
+					asTIChild = buildASTI(
+						bs,
+						true,
+						id,
+						myFavorite.getName(),
+						myFavorite.getHover(),
+						ActivityStream.MY_FAVORITE);
 					asTIChildren.add(asTIChild);
 				}
 			}
@@ -954,7 +961,13 @@ public class GwtActivityStreamHelper {
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
-					asTIChild = buildASTI(bs, id, myTeam.getTitle(), binder.getPathName(), ActivityStream.MY_TEAM);					
+					asTIChild = buildASTI(
+						bs,
+						true,
+						id,
+						myTeam.getTitle(),
+						binder.getPathName(),
+						ActivityStream.MY_TEAM);					
 					asTIChildren.add(asTIChild);
 				}
 			}
@@ -994,6 +1007,7 @@ public class GwtActivityStreamHelper {
 					asIdsList.add(id);					
 					asTIChild = buildASTI(
 						bs,
+						false,
 						id,
 						getUserTitle(pm, id, user.getTitle()),
 						null,
@@ -1035,7 +1049,13 @@ public class GwtActivityStreamHelper {
 				if (null != binder) {
 					// Yes!  Add an appropriate TreeInfo for it.
 					asIdsList.add(id);					
-					asTIChild = buildASTI(bs, id, binder.getTitle(), binder.getPathName(), ActivityStream.FOLLOWED_PLACE);					
+					asTIChild = buildASTI(
+						bs,
+						true,
+						id,
+						binder.getTitle(),
+						binder.getPathName(),
+						ActivityStream.FOLLOWED_PLACE);					
 					asTIChildren.add(asTIChild);
 				}
 			}
@@ -1061,6 +1081,7 @@ public class GwtActivityStreamHelper {
 		rootASList.add(
 			buildASTI(
 				bs,
+				true,
 				null,	// null -> No ID.
 				NLT.get("asTreeSiteWide"),
 				null,	// null -> No hover text.

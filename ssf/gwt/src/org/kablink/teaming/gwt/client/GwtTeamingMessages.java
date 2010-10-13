@@ -241,6 +241,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTrackedPlaces();
 	String rpcFailure_GetTree();
 	String rpcFailure_GetUpgradeInfo();
+	String rpcFailure_GetUserPermalink();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
