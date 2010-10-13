@@ -406,6 +406,7 @@ public abstract class WSClientBase {
 	
 	void printDefinableEntity(DefinableEntity entity) {
 		if(entity != null) {
+			System.out.println("Entity class: " + entity.getClass().getName());
 			System.out.println("Entity ID: " + entity.getId());
 			System.out.println("Entity title: " + entity.getTitle());
 			AttachmentsField aField = entity.getAttachmentsField();
@@ -422,6 +423,9 @@ public abstract class WSClientBase {
 			}
 			else {
 				System.out.println("No attachments field returned");
+			}
+			if(entity instanceof User) {
+				//System.out.println("User permaLink: " + ((User)entity).get)
 			}
 		}
 		else {
