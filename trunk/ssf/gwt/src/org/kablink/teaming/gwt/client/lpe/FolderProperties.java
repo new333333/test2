@@ -190,7 +190,7 @@ public class FolderProperties
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( new HttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
+			rpcService.getFolder( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
 		}
 	}// end getDataFromServer()
 	

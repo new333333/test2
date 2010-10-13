@@ -98,10 +98,11 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			hide();
 
 			// ...and trigger a selection changed event.
-			m_rpcService.getBinderPermalink(new HttpRequestInfo(), m_favorite.getValue(), new AsyncCallback<String>()
+			m_rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), m_favorite.getValue(), new AsyncCallback<String>()
 			{
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 						m_favorite.getValue());
 				}
@@ -265,6 +266,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		m_rpcService.getFavorites(new AsyncCallback<List<FavoriteInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_GetFavorites());
 			}
 			

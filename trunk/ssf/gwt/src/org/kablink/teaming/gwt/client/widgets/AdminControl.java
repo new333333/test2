@@ -598,6 +598,7 @@ public class AdminControl extends Composite
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetAdminActions(),
 						GwtMainPage.m_requestInfo.getBinderId() );
 				}// end onFailure()
@@ -625,6 +626,7 @@ public class AdminControl extends Composite
 				public void onFailure( Throwable t )
 				{
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
 				}// end onFailure()
 		
@@ -690,7 +692,7 @@ public class AdminControl extends Composite
 			
 			// Issue an ajax request to get the administration actions the user has rights to perform.
 			binderId = GwtMainPage.m_requestInfo.getBinderId();
-			rpcService.getAdminActions( new HttpRequestInfo(), binderId, m_rpcGetAdminActionsCallback );
+			rpcService.getAdminActions( HttpRequestInfo.createHttpRequestInfo(), binderId, m_rpcGetAdminActionsCallback );
 		}// end getAdminActionsFromServer()
 	}// end AdminActionsTreeControl
 
@@ -723,6 +725,7 @@ public class AdminControl extends Composite
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
 			}// end onFailure()
 	

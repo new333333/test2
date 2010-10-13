@@ -174,6 +174,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetProfileInfo(),
 					profileRequestInfo.getBinderId());
 			}
@@ -197,7 +198,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		};
 
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getProfileInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+		gwtRpcService.getProfileInfo( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 
 	}
 

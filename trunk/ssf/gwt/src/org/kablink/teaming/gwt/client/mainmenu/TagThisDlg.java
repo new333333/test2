@@ -331,6 +331,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 					GwtTeaming.getRpcService().addBinderTag(m_currentBinder.getBinderId(), addTag, new AsyncCallback<TagInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
+								t,
 								m_messages.rpcFailure_AddBinderTag(),
 								new String[] {
 									m_currentBinder.getBinderId(),
@@ -385,6 +386,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 					GwtTeaming.getRpcService().removeBinderTag(m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
+								t,
 								m_messages.rpcFailure_RemoveBinderTag(),
 								new String[] {
 									m_currentBinder.getBinderId(),

@@ -455,11 +455,12 @@ public class GwtMainPage extends Composite
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
 		else                                              contextBinderId = m_selectedBinderId;
 		
-		GwtTeaming.getRpcService().getBinderPermalink( new HttpRequestInfo(), binderId, new AsyncCallback<String>()
+		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 					contextBinderId );
 			}//end onFailure()
@@ -638,6 +639,7 @@ public class GwtMainPage extends Composite
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
 			}// end onFailure()
 	
@@ -679,6 +681,7 @@ public class GwtMainPage extends Composite
 									public void onFailure( Throwable t )
 									{
 										GwtClientHelper.handleGwtRPCFailure(
+											t,
 											GwtTeaming.getMessages().rpcFailure_SavePersonalPreferences() );
 									}// end onFailure()
 							
@@ -740,7 +743,7 @@ public class GwtMainPage extends Composite
 			rpcService = GwtTeaming.getRpcService();
 			
 			// Issue an ajax request to get the personal preferences from the db.
-			rpcService.getPersonalPreferences( rpcReadCallback );
+			rpcService.getPersonalPreferences( HttpRequestInfo.createHttpRequestInfo(), rpcReadCallback );
 		}
 	}// end editPersonalPreferences()
 
@@ -1133,6 +1136,17 @@ public class GwtMainPage extends Composite
 		}
 	}// end handlePageWithGWT()
 	
+	
+	/**
+	 * This method gets called whenever we determine the session has expired.  We will invoke
+	 * the login dialog.
+	 */
+	public void handleSessionExpired()
+	{
+		// Invoke the login dialog.
+		invokeLoginDlg( false );
+	}
+	
 	/**
 	 * Invoke the "login" dialog.
 	 */
@@ -1270,7 +1284,7 @@ public class GwtMainPage extends Composite
 	private void toggleGwtUI()
 	{
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getUserWorkspacePermalink( new HttpRequestInfo(), new AsyncCallback<String>()
+		rpcService.getUserWorkspacePermalink( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t ) {}
 			public void onSuccess( String userWorkspaceURL )
@@ -1360,10 +1374,11 @@ public class GwtMainPage extends Composite
 	private void viewTeamMembers()
 	{
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-		rpcService.getBinderPermalink( new HttpRequestInfo(), m_selectedBinderId, new AsyncCallback<String>()
+		rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 					m_selectedBinderId );
 			}//end onFailure()
@@ -1430,6 +1445,7 @@ public class GwtMainPage extends Composite
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
 					m_selectedBinderId );
 			}//end onFailure()
@@ -1457,6 +1473,7 @@ public class GwtMainPage extends Composite
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_UntrackingBinder(),
 					m_selectedBinderId );
 			}//end onFailure()
@@ -1484,6 +1501,7 @@ public class GwtMainPage extends Composite
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_TrackingPerson(),
 					m_selectedBinderId );
 			}//end onFailure()
@@ -1655,7 +1673,7 @@ public class GwtMainPage extends Composite
 			m_wsTreeCtrl.setActivityStream( asi );
 
 			// ...and persist this activity stream in the user's profile.
-			GwtTeaming.getRpcService().persistActivityStreamSelection( new HttpRequestInfo(), asi, new AsyncCallback<Boolean>()
+			GwtTeaming.getRpcService().persistActivityStreamSelection( HttpRequestInfo.createHttpRequestInfo(), asi, new AsyncCallback<Boolean>()
 			{
 				// Note that we're not doing anything with the results
 				// good or bad.  If it fails, so what?  The activity

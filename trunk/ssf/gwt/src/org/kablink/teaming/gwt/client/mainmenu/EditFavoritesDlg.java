@@ -289,6 +289,7 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler, E
 		GwtTeaming.getRpcService().updateFavorites(favoritesList, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_UpdateFavorites());
 			}
 			

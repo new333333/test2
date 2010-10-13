@@ -336,9 +336,10 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	 * Loads a binder into the context pane.
 	 */
 	private void loadBinder(final String binderId) {
-		GwtTeaming.getRpcService().getBinderPermalink(new HttpRequestInfo(), binderId, new AsyncCallback<String>() {
+		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 					binderId);
 			}
@@ -364,6 +365,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_GetSavedSearches());
 			}
 			public void onSuccess(List<SavedSearchInfo> ssiList)  {

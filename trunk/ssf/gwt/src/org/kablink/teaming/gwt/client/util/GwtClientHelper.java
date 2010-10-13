@@ -156,6 +156,11 @@ public class GwtClientHelper {
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);
 					break;
 					
+				case USER_NOT_LOGGED_IN:
+					cause = null;
+					GwtTeaming.getMainPage().handleSessionExpired();
+					break;
+					
 				default:
 					cause = patchMessage(messages.rpcFailure_UnknownException(), patches);
 					break;
@@ -181,11 +186,6 @@ public class GwtClientHelper {
 		}
 	}
 	
-	public static void handleGwtRPCFailure(String errorMessage, String[] patches) {
-		// Always use the initial form of the method.
-		handleGwtRPCFailure(null, errorMessage, patches);
-	}
-	
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage, String patch) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, errorMessage, new String[]{patch});
@@ -194,16 +194,6 @@ public class GwtClientHelper {
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, errorMessage, ((String[]) null));
-	}
-	
-	public static void handleGwtRPCFailure(String errorMessage, String patch) {
-		// Always use the initial form of the method.
-		handleGwtRPCFailure(null, errorMessage, new String[]{patch});
-	}
-	
-	public static void handleGwtRPCFailure(String errorMessage) {
-		// Always use the initial form of the method.
-		handleGwtRPCFailure(null, errorMessage, ((String[]) null));
 	}
 	
 	/**

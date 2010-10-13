@@ -191,7 +191,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					rpcService.expandVerticalBucket(new HttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {}
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Update the TreeInfo, and if
@@ -221,7 +221,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						public void onSuccess(Boolean success) {
 							// Yes!  Can we get a TreeInfo for the
 							// expansion?
-							rpcService.getVerticalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+							rpcService.getVerticalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 								public void onFailure(Throwable t) {}
 								public void onSuccess(TreeInfo expandedTI) {
 									// Yes!  Update the TreeInfo, and if
@@ -432,9 +432,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, we aren't in activity stream mode!  Build a TreeInfo
 			// for the activity streams...
 			final String selectedBinderId = String.valueOf(m_selectedBinderId);
-			getRpcService().getVerticalActivityStreamsTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+			getRpcService().getVerticalActivityStreamsTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
 				public void onFailure(Throwable t) {
-					GwtClientHelper.handleGwtRPCFailure(GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
+					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamsTree(), selectedBinderId);
 				}
 
 				public void onSuccess(TreeInfo ti) {
@@ -983,9 +983,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 */
 	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode) {
 		// Read the TreeInfo for the selected Binder...
-		getRpcService().getVerticalTree(new HttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
+		getRpcService().getVerticalTree( HttpRequestInfo.createHttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetTree(),
 					newRootBinderId);
 			}
@@ -1107,6 +1108,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							GwtTeaming.getMessages().rpcFailure_GetRootWorkspaceId(),
 							binderId);
 						selectBinder(targetTI);

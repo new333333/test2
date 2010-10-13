@@ -410,6 +410,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
+								t,
 								m_messages.rpcFailure_GetSavedSearches());
 						}
 						
@@ -446,9 +447,10 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
 					
 					// ...and run the top ranked dialog.
-					GwtTeaming.getRpcService().getTopRanked(new HttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
+					GwtTeaming.getRpcService().getTopRanked( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
+								t,
 								m_messages.rpcFailure_GetTopRanked());
 						}
 						
@@ -509,11 +511,12 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					if (null != m_contextBinder) {
 						// Yes!  Query for this user's default activity stream.
 						final String currentBinderId = m_contextBinder.getBinderId();
-						GwtTeaming.getRpcService().getDefaultActivityStream(new HttpRequestInfo(), currentBinderId, new AsyncCallback<ActivityStreamInfo>() {
+						GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), currentBinderId, new AsyncCallback<ActivityStreamInfo>() {
 							public void onFailure(Throwable t) {
 								// If we couldn't get it, handle the
 								// failure...
 								GwtClientHelper.handleGwtRPCFailure(
+									t,
 									m_messages.rpcFailure_GetDefaultActivityStream());
 								
 								// ...and just use the UI supplied default.
@@ -584,6 +587,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_GetBinderInfo(),
 					binderId);
 			}
@@ -592,13 +596,15 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							m_messages.rpcFailure_GetToolbarItems(),
 							binderId);
 					}
 					public void onSuccess(final List<ToolbarItem> toolbarItemList) {
-						GwtTeaming.getRpcService().getTeamManagementInfo(new HttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
+						GwtTeaming.getRpcService().getTeamManagementInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
+									t,
 									m_messages.rpcFailure_GetTeamManagement(),
 									binderId);
 							}

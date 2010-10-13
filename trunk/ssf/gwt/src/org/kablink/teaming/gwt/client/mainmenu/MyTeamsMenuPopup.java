@@ -166,9 +166,10 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users teams.
-		m_rpcService.getMyTeams(new HttpRequestInfo(), new AsyncCallback<List<TeamInfo>>() {
+		m_rpcService.getMyTeams( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TeamInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_GetMyTeams());
 			}
 			

@@ -265,6 +265,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							GwtTeaming.getMessages().rpcFailure_TrackingBinder(),
 							binderId);
 					}//end onFailure()
@@ -282,6 +283,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							GwtTeaming.getMessages().rpcFailure_UntrackingPerson(),
 							binderId);
 					}//end onFailure()
@@ -480,7 +482,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		};
 
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getQuickViewInfo(new HttpRequestInfo(), binderId, callback);
+		gwtRpcService.getQuickViewInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, callback);
 	}
 
 	
@@ -499,10 +501,11 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		
 		public void onClick(ClickEvent event) {
 			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
-			rpcService.getBinderPermalink( new HttpRequestInfo(), binderId, new AsyncCallback<String>()
+			rpcService.getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>()
 			{
 				public void onFailure( Throwable t ) {
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 						binderId);
 				}//end onFailure()
@@ -608,7 +611,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.getMicrBlogUrl(new HttpRequestInfo(), mbBinderId, rpcCallback );
+			rpcService.getMicrBlogUrl( HttpRequestInfo.createHttpRequestInfo(), mbBinderId, rpcCallback );
 		}
 
 		
@@ -633,7 +636,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private class ConferencingClickHandler implements ClickHandler {
 		public void onClick(ClickEvent event) {
 			// Get the URL to the meeting start/schedule dialog and launch it in a new window
-			GwtTeaming.getRpcService().getAddMeetingUrl(new HttpRequestInfo(), binderId,
+			GwtTeaming.getRpcService().getAddMeetingUrl( HttpRequestInfo.createHttpRequestInfo(), binderId,
 					new AsyncCallback<String>() {
 						public void onSuccess(String url) {
 							if (GwtClientHelper.hasString(url)) {

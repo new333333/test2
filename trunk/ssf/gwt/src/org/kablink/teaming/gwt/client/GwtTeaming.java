@@ -55,6 +55,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle = GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle = GWT.create( GwtTeamingMainMenuImageBundle.class );
 	private static final GwtRpcServiceAsync					m_gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
+	private static GwtMainPage m_mainPage = null;
 	
 	private static TextBox m_txtBox;
 	private static Frame m_frame = null;
@@ -82,6 +83,15 @@ public class GwtTeaming implements EntryPoint
 	 */
 	public static GwtTeamingMainMenuImageBundle getMainMenuImageBundle() {
 		return m_mainMenuImageBundle;
+	}
+	
+	
+	/**
+	 * Return the GwtMainPage object.
+	 */
+	public static GwtMainPage getMainPage()
+	{
+		return m_mainPage;
 	}
 	
 	
@@ -142,11 +152,9 @@ public class GwtTeaming implements EntryPoint
 		rootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( rootPanel != null )
 		{
-			GwtMainPage mainPage;
-			
 			// Create the Teaming main page.
-			mainPage = new GwtMainPage();
-			rootPanel.add( mainPage );
+			m_mainPage = new GwtMainPage();
+			rootPanel.add( m_mainPage );
 			
 			return;
 		}

@@ -336,7 +336,7 @@ public class MastHead extends Composite
 			if ( m_mastheadBinderId != null && m_mastheadBinderId.length() > 0 )
 			{
 				//!!!Window.alert( "about to call getSiteAdministrationUrl(), binderId: '" + m_mastheadBinderId + "'" );
-				GwtTeaming.getRpcService().getSiteAdministrationUrl( new HttpRequestInfo(), m_mastheadBinderId, rpcCallback );
+				GwtTeaming.getRpcService().getSiteAdministrationUrl( HttpRequestInfo.createHttpRequestInfo(), m_mastheadBinderId, rpcCallback );
 			}
 			
 		}
@@ -586,7 +586,7 @@ public class MastHead extends Composite
 		{
 			//!!!Window.alert( "about to call getBinderBrandingData(), binderId: '" + m_mastheadBinderId + "'" );
 			// Yes, Issue an ajax request to get the branding data for the given binder.
-			rpcService.getBinderBrandingData( new HttpRequestInfo(), m_mastheadBinderId, m_rpcGetBinderBrandingCallback );
+			rpcService.getBinderBrandingData( HttpRequestInfo.createHttpRequestInfo(), m_mastheadBinderId, m_rpcGetBinderBrandingCallback );
 		}
 	}// end getBinderBrandingDataFromServer()
 
@@ -629,7 +629,7 @@ public class MastHead extends Composite
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the site branding data.
-		rpcService.getSiteBrandingData( new HttpRequestInfo(), m_rpcGetSiteBrandingCallback );
+		rpcService.getSiteBrandingData( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetSiteBrandingCallback );
 	}// end getSiteBrandingDataFromServer()
 	
 

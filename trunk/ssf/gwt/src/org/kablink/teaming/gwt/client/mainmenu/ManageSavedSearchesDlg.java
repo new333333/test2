@@ -315,6 +315,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 				GwtTeaming.getRpcService().saveSearch(m_searchTabId, ssi, new AsyncCallback<SavedSearchInfo>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							m_messages.rpcFailure_SaveSearch(),
 							searchName);
 					}
@@ -361,6 +362,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 				GwtTeaming.getRpcService().removeSavedSearch(ssi, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							m_messages.rpcFailure_RemoveSavedSearch(),
 							ssi.getName());
 					}

@@ -504,6 +504,7 @@ public class FindCtrl extends Composite
 			public void onFailure(Throwable t)
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_Search() );
 				
 				m_searchInProgress = false;
@@ -552,7 +553,7 @@ public class FindCtrl extends Composite
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
 		rpcService = GwtTeaming.getRpcService();
-		rpcService.executeSearch( new HttpRequestInfo(), m_searchCriteria, m_searchResultsCallback );
+		rpcService.executeSearch( HttpRequestInfo.createHttpRequestInfo(), m_searchCriteria, m_searchResultsCallback );
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?

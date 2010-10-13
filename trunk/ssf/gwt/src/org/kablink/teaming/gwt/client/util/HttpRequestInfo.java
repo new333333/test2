@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -44,6 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class HttpRequestInfo implements IsSerializable {
 	private transient Object m_requestObj;
+	private String m_userId;	// The id of the user the client thinks we are dealing with.
 	
 	/**
 	 * Constructor method.
@@ -52,6 +55,20 @@ public class HttpRequestInfo implements IsSerializable {
 	 */
 	public HttpRequestInfo() {
 	}
+	
+	/**
+	 * This method should be used by the client to construct an HttpRequestInfo 
+	 */
+	public static HttpRequestInfo createHttpRequestInfo()
+	{
+		HttpRequestInfo ri;
+		
+		ri = new HttpRequestInfo();
+		ri.setUserId( GwtMainPage.m_requestInfo.getUserId() );
+		
+		return ri;
+	}
+	
 
 	/**
 	 * Get'er/Set'er methods.
@@ -60,4 +77,21 @@ public class HttpRequestInfo implements IsSerializable {
 	 */
 	public Object getRequestObj()                  {return m_requestObj;      }
 	public void   setRequestObj(Object requestObj) {m_requestObj = requestObj;}
+	
+	/**
+	 * 
+	 */
+	public String getUserId()
+	{
+		return m_userId;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setUserId( String userId )
+	{
+		m_userId = userId;
+	}
+	
 }

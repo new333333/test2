@@ -150,6 +150,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(m_binderId, new AsyncCallback<String>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						m_messages.rpcFailure_GetFolderDefinitionId());
 				}
 				public void onSuccess(String folderDefId) {
