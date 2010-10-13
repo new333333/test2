@@ -761,11 +761,11 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	@Override
 	public boolean[] folder_testFolderOperation(String accessToken,
-			String folderOperationName, long[] folderIds) {
+			String operationName, long[] folderIds) {
 		boolean[] result = new boolean[folderIds.length];
 		FolderOperation folderOperation = null;
 		try {
-			folderOperation = FolderOperation.valueOf(folderOperationName);
+			folderOperation = FolderOperation.valueOf(operationName);
 		}
 		catch(IllegalArgumentException e) {
 			for(int i = 0; i < folderIds.length; i++)
@@ -792,11 +792,11 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	@Override
 	public boolean[] folder_testEntryOperation(String accessToken,
-			String folderOperationName, long[] entryIds) {
+			String operationName, long[] entryIds) {
 		boolean[] result = new boolean[entryIds.length];
 		FolderOperation folderOperation = null;
 		try {
-			folderOperation = FolderOperation.valueOf(folderOperationName);
+			folderOperation = FolderOperation.valueOf(operationName);
 		}
 		catch(IllegalArgumentException e) {
 			for(int i = 0; i < entryIds.length; i++)

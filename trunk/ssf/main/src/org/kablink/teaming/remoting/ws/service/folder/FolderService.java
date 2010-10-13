@@ -133,11 +133,11 @@ public interface FolderService {
 	 * 
 	 * @param accessToken Either the security token passed to your application by Teaming as part of
 	 * implementing a remote application, or the null value.
-	 * @param folderOperationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * @param operationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
 	 * instance. See the Java source file for the names.
 	 * @param folderIds The ID of the entries against which to test the access.
 	 */
-	public boolean[] folder_testFolderOperation(String accessToken, String folderOperationName, long[] folderIds);
+	public boolean[] folder_testFolderOperation(String accessToken, String operationName, long[] folderIds);
 
 	/**
 	 * Test if the calling user has the right to execute the specified operation on each of the entries specified.
@@ -148,10 +148,10 @@ public interface FolderService {
 	 * 
 	 * @param accessToken Either the security token passed to your application by Teaming as part of
 	 * implementing a remote application, or the null value.
-	 * @param folderOperationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
+	 * @param operationName The string name of a {@link org.kablink.teaming.module.folder.FolderModule.FolderOperation FolderOperation}
 	 * instance. See the Java source file for the names.
 	 * @param entryIds The ID of the entries against which to test the access.
 	 */
-	public boolean[] folder_testEntryOperation(String accessToken, String folderOperationName, long[] entryIds);
+	public boolean[] folder_testEntryOperation(String accessToken, String operationName, long[] entryIds);
 
 }
