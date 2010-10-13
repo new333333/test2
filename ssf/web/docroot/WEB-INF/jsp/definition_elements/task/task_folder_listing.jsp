@@ -39,6 +39,7 @@
 <script type="text/javascript">
 	var myTasks_${renderResponse.namespace} = new ss_tasks ('ss_tasks_list_${renderResponse.namespace}', '${ssBinder.id}', '${renderResponse.namespace}');
 	ss_tasks.overdueLabel = "<ssf:nlt tag="milestone.overdue"/>";
+	var ss_showingFolder = true;
 </script>
 <table class="ss_tasks_list" id="ss_tasks_list_${renderResponse.namespace}">
 	<thead>

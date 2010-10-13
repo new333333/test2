@@ -941,8 +941,7 @@ public class ViewEntryController extends  SAbstractController {
 				}
 				
 				for (Definition workflowDef:configWorkflows) {
-					if (!runningWorkflowDefs.containsKey(workflowDef.getId()) &&
-							!workflowAssociations.containsValue(workflowDef)) {
+					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
 						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();

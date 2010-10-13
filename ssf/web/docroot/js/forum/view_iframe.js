@@ -77,7 +77,7 @@ function ss_setEntryDivHeight() {
 			var nextBtn = "<a class='ss_box_next' href='"+window.ss_showentryframe.ss_nextPrevUrl+"'";
 			nextBtn += " onclick='ss_loadUrlInEntryFrameNext(this.href);return false;'>";
 			nextBtn += "<img src='"+ss_rootPath+"images/pics/nl_right_noborder_16.png' ";
-			nextBtn += "title='"+window.ss_showentryframe.ss_prevEntryAlt+"'></a>";
+			nextBtn += "title='"+window.ss_showentryframe.ss_nextEntryAlt+"'></a>";
 			boxNextPrevArea.innerHTML = prevBtn + nextBtn;
 		}
 	} catch(e) {

@@ -35,6 +35,9 @@
 <% //View the listing part of a guestbook folder %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
+<script type="text/javascript">
+var ss_showingFolder = true;
+</script>
 
 	<c:if test="${empty ssFolderEntries}">
 		<jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" />
