@@ -36,6 +36,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${ssConfigJspStyle != 'template'}">
+<script type="text/javascript">
+var ss_showingFolder = true;
+</script>
 <table>
 <tr>
 	<c:if test="${empty ssFolderEntries}">

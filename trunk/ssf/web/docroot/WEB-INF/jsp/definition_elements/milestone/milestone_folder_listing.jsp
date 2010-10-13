@@ -34,6 +34,9 @@
 %>
 <% //View the listing part of a milestone folder %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript">
+var ss_showingFolder = true;
+</script>
 
 <table class="ss_milestones_list">
 	<tr class="ss_tableheader_style">

@@ -40,6 +40,9 @@
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<script type="text/javascript">
+var ss_showingFolder = false;
+</script>
 
 
 <%

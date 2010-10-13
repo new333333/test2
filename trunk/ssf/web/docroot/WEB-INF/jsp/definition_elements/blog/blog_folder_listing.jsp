@@ -36,6 +36,9 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
+<script type="text/javascript">
+var ss_showingFolder = true;
+</script>
 <% //View the listing part of a blog folder %>
 
 	<c:if test="${empty ssFolderEntries}">
