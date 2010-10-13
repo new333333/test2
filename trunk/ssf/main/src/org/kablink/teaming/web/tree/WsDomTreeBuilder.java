@@ -215,6 +215,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
 				element.addAttribute("permaLink", PermaLinkUtil.getPermalink(f));
+				element.addAttribute("library", String.valueOf(f.isLibrary()));
 			} else return null;
 		}
 		//add any extra attributes
