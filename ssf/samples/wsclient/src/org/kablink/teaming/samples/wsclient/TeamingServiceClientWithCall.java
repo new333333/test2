@@ -329,8 +329,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
 		System.out.println("restoreEntry <entry id>");
-		System.out.println("testBinderAccess <work area operation name> <binder id1, binder id2,....>");
-		System.out.println("testBinderOperation <binder operation name> <binder id1, binder id2,....>");
+		System.out.println("testBinderAccess <work area operation name> \"binder id1, binder id2,....\"");
+		System.out.println("testBinderOperation <binder operation name> \"binder id1, binder id2,....\"");
 		System.out.println("getAttachmentAsByteArray <entry id> <attachment id>");
 		System.out.println("getFileVersionAsByteArray <entry id> <attachment id> <file version id>");
 		System.out.println("getFileVersions <entry id> <file name>");
@@ -338,8 +338,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("removeFile <entry id> <file name>");
 		System.out.println("removeAttachment <entry id> <attachment id>");
 		System.out.println("getCurrentServerTime");
-		System.out.println("testFolderOperation <folder operation name> <folder id1, folder id2,....>");
-		System.out.println("testFolderEntryOperation <folder entry operation name> <entry id1, entry id2,....>");
+		System.out.println("testFolderOperation <folder operation name> \"folder id1, folder id2,....\"");
+		System.out.println("testFolderEntryOperation <folder entry operation name> \"entry id1, entry id2,....\"");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
