@@ -590,8 +590,16 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	@Override
 	public boolean[] binder_testOperation(String accessToken,
 			String binderOperationName, long[] binderIds) {
-		BinderOperation binderOperation = BinderOperation.valueOf(binderOperationName);
 		boolean[] result = new boolean[binderIds.length];
+		BinderOperation binderOperation = null;
+		try {
+			binderOperation = BinderOperation.valueOf(binderOperationName);
+		}
+		catch(IllegalArgumentException e) {
+			for(int i = 0; i < binderIds.length; i++)
+				result[i] = false;
+			return result;
+		}
 		for(int i = 0; i < binderIds.length; i++) {
 			try {
 				// Do not use BinderModule.getBinder() method to load the binder, since it will 

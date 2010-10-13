@@ -425,7 +425,7 @@ public abstract class WSClientBase {
 				System.out.println("No attachments field returned");
 			}
 			if(entity instanceof User) {
-				//System.out.println("User permaLink: " + ((User)entity).get)
+				System.out.println("User permaLink: " + ((User)entity).getPermaLink());
 			}
 		}
 		else {
