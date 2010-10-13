@@ -2510,7 +2510,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				entryDataErrors.addProblem(new Problem(Problem.INVALID_HTML, null));
 				description.setText("");
 			} else {
-				description.setText(sw.toString());
+				if (!text.equals("")) {
+					//If the original value was not empty, then store the corrected html
+					description.setText(sw.toString().trim());
+				}
 			}
 		} else {
 			//HTML validation is turned off, just use whatever the user passed in
