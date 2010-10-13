@@ -178,9 +178,10 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 		}
 		
 		// Otherwise, read the users recent places.
-		m_rpcService.getRecentPlaces(new HttpRequestInfo(), new AsyncCallback<List<RecentPlaceInfo>>() {
+		m_rpcService.getRecentPlaces( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<RecentPlaceInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					m_messages.rpcFailure_GetRecentPlaces());
 			}
 			

@@ -318,6 +318,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 						m_parentBinderId );
 				}
@@ -334,7 +335,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			};
 			
 			// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
-			ri = new HttpRequestInfo();
+			ri = HttpRequestInfo.createHttpRequestInfo();
 			GwtTeaming.getRpcService().getBinderPermalink( ri, m_parentBinderId, callback );
 		}
 	}

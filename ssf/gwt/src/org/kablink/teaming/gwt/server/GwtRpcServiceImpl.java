@@ -1208,7 +1208,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.
 	 */
-	public GwtPersonalPreferences getPersonalPreferences()
+	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri )
 	{
 		GwtPersonalPreferences personalPrefs;
 		

@@ -117,7 +117,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				// expanding it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					getRpcService().expandHorizontalBucket(new HttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {}
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Mark the node as being opened, save its
@@ -131,7 +131,7 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// No, we aren't showing a collapsed bucket!  We
 					// must be showing a normal node.  Can we get a
 					// TreeInfo for the expansion?
-					getRpcService().getHorizontalNode(new HttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
+					getRpcService().getHorizontalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {}
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Mark the node as being opened, save its

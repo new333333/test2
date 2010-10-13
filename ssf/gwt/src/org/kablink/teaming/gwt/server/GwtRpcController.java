@@ -38,7 +38,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -98,8 +101,41 @@ public class GwtRpcController extends RemoteServiceServlet
             Object[] parameters = rpcRequest.getParameters();
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
+            	HttpServletRequest req;
+            	HttpRequestInfo ri;
+            	
+            	// Get the HttpServletRequest we are working with.
+            	req = getThreadLocalRequest();
+            	
+            	// Get the HttpRequestInfo object that is the first parameter.
+            	ri = (HttpRequestInfo) parameters[0];
+                
             	// ...drop in the current HttpServletRequest.
-            	((HttpRequestInfo) parameters[0]).setRequestObj( getThreadLocalRequest() );
+            	ri.setRequestObj( req );
+            	
+            	// Is the user logged in?
+            	if ( WebHelper.isGuestLoggedIn( req ) )
+            	{
+            		String guestId;
+                	String clientUserId = null;
+                	
+            		// No
+            		// Get the id of the user the client thinks it is dealing with.
+            		clientUserId = ri.getUserId();
+                	
+            		// Does the client think they are working with the guest user?
+            		guestId = SZoneConfig.getGuestUserName( WebHelper.getZoneNameByVirtualHost( req) );
+            		if ( clientUserId != null && clientUserId.equalsIgnoreCase( guestId ) == false )
+            		{
+                		GwtTeamingException ex;
+                		
+            			// No, pass back a "not logged in" exception
+                		ex = new GwtTeamingException();
+                		ex.setExceptionType( GwtTeamingException.ExceptionType.USER_NOT_LOGGED_IN );
+
+                        return RPC.encodeResponseForFailure( null, ex );
+            		}
+            	}
             }
             
             // Delegate work to the spring injected service.

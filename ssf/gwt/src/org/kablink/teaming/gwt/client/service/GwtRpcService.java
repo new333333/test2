@@ -113,7 +113,7 @@ public interface GwtRpcService extends RemoteService
 	public String getModifyBinderUrl( HttpRequestInfo ri, String binderId );
 	
 	// The following deal with personal preferences.
-	public GwtPersonalPreferences getPersonalPreferences();
+	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri );
 	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the global workspace.

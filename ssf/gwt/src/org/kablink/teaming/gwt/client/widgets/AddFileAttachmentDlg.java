@@ -454,7 +454,7 @@ public class AddFileAttachmentDlg extends DlgBox
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the "modify binder" url.
-		rpcService.getModifyBinderUrl( new HttpRequestInfo(), m_binderId, m_rpcCallback );
+		rpcService.getModifyBinderUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
 	}// end getModifyBinderUrl()
 
 	

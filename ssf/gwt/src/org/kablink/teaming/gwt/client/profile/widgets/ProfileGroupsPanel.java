@@ -68,9 +68,10 @@ public class ProfileGroupsPanel extends ProfileSectionPanel  {
 	
 	private void getGroups() {
 		
-		rpcService.getGroups(new HttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<List<GroupInfo>>() {
+		rpcService.getGroups( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), new AsyncCallback<List<GroupInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GwtGroups(),
 					profileRequestInfo.getBinderId());
 			}

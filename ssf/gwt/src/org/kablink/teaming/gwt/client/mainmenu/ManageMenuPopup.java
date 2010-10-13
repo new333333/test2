@@ -543,6 +543,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				GwtTeaming.getRpcService().getBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							m_messages.rpcFailure_GetBinderTags(),
 							m_currentBinder.getBinderId());
 					}
@@ -550,6 +551,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 						GwtTeaming.getRpcService().canManagePublicBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
+									t,
 									m_messages.rpcFailure_CanManagePublicBinderTags(),
 									m_currentBinder.getBinderId());
 							}

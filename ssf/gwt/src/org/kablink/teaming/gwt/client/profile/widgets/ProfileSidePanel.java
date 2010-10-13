@@ -163,6 +163,7 @@ public class ProfileSidePanel extends Composite {
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetProfileStats(),
 					profileRequestInfo.getBinderId());
 			}
@@ -182,7 +183,7 @@ public class ProfileSidePanel extends Composite {
 
 		if(profileStats == null) {
 			GwtRpcServiceAsync gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-			gwtRpcService.getProfileStats(new HttpRequestInfo(), profileRequestInfo.getUserId(), callback);
+			gwtRpcService.getProfileStats( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getUserId(), callback);
 		}
 	}
 	

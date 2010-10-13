@@ -184,6 +184,7 @@ public class ActivityStreamCtrl extends Composite
 			public void onFailure(Throwable t)
 			{
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_Search() );
 				
 				m_searchInProgress = false;
@@ -364,6 +365,7 @@ public class ActivityStreamCtrl extends Composite
 				public void onFailure(Throwable t)
 				{
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_CheckForActivityStreamChanges() );
 				}// end onFailure()
 		
@@ -386,7 +388,7 @@ public class ActivityStreamCtrl extends Composite
 		updateNextRefreshLabel();
 		
 		// Issue an ajax request to see if there is anything new.
-		m_rpcService.hasActivityStreamChanged( new HttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
+		m_rpcService.hasActivityStreamChanged( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
 	}
 	
 	
@@ -653,7 +655,7 @@ public class ActivityStreamCtrl extends Composite
 
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
-		m_rpcService.getActivityStreamData( new HttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_searchResultsCallback );
+		m_rpcService.getActivityStreamData( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_searchResultsCallback );
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?
@@ -930,7 +932,7 @@ public class ActivityStreamCtrl extends Composite
 				 */
 				public void onFailure(Throwable t)
 				{
-					GwtClientHelper.handleGwtRPCFailure( GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
+					GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_GetActivityStreamParams() );
 				}
 
 				
@@ -963,7 +965,7 @@ public class ActivityStreamCtrl extends Composite
 		}
 		
 		// Issue an ajax request to get the activity stream params.
-		ri = new HttpRequestInfo();
+		ri = HttpRequestInfo.createHttpRequestInfo();
 		m_rpcService.getActivityStreamParams( ri, m_getActivityStreamParamsCallback );
 		
 		// Is the source of the activity stream a binder or person?
@@ -991,7 +993,7 @@ public class ActivityStreamCtrl extends Composite
 						     msg = GwtTeaming.getMessages().rpcFailure_GetUserPermalink();
 						else msg = GwtTeaming.getMessages().rpcFailure_GetBinderPermalink();
 						
-						GwtClientHelper.handleGwtRPCFailure( msg, asSourceId );
+						GwtClientHelper.handleGwtRPCFailure( t, msg, asSourceId );
 					}
 					
 					/**
@@ -1004,7 +1006,7 @@ public class ActivityStreamCtrl extends Composite
 				};
 				
 				// Issue an ajax request to get the permalink of the source of the activity stream.
-				ri = new HttpRequestInfo();
+				ri = HttpRequestInfo.createHttpRequestInfo();
 				if ( isActivityStreamSourceAPerson() )
 				     m_rpcService.getUserPermalink(   ri, asSourceId, callback );
 				else m_rpcService.getBinderPermalink( ri, asSourceId, callback );

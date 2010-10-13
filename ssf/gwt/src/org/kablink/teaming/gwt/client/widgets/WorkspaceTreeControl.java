@@ -103,9 +103,10 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		switch (m_tm) {
 		case HORIZONTAL:
 			mainPanel.addStyleName( "breadCrumb_Browser" );
-			rpcService.getHorizontalTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
+			rpcService.getHorizontalTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetTree(),
 						selectedBinderId);
 				}
@@ -120,9 +121,10 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			
 		case VERTICAL:
 			mainPanel.addStyleName( "workspaceTreeControl" );
-			rpcService.getVerticalTree(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+			rpcService.getVerticalTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
+						t,
 						GwtTeaming.getMessages().rpcFailure_GetTree(),
 						selectedBinderId);
 				}
@@ -138,11 +140,12 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						
 						// ...and enter activity stream mode.
 						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-						GwtTeaming.getRpcService().getDefaultActivityStream(new HttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
+						GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
 							public void onFailure(Throwable t) {
 								// If we couldn't get it, handle the
 								// failure...
 								GwtClientHelper.handleGwtRPCFailure(
+									t,
 									GwtTeaming.getMessages().rpcFailure_GetDefaultActivityStream());
 								
 								// ...and just go site wide.

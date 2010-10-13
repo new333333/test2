@@ -133,8 +133,7 @@ public class LoginDlg extends DlgBox
 			 */
 			public void onFailure( Throwable t )
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo() );
+				// Nothing to do.
 			}// end onFailure()
 	
 			/**
@@ -439,7 +438,7 @@ public class LoginDlg extends DlgBox
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get self registration information
-		rpcService.getSelfRegistrationInfo( new HttpRequestInfo(), m_rpcGetSelfRegInfoCallback );
+		rpcService.getSelfRegistrationInfo( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetSelfRegInfoCallback );
 	}// end getAdminActionsFromServer()
 	/**
 	 * 

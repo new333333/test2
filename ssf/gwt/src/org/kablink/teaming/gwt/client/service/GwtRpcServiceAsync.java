@@ -108,7 +108,7 @@ public interface GwtRpcServiceAsync
     public void getTutorialPanelState( AsyncCallback<String> callback );
 
 	// The following deal with personal preferences.
-	public void getPersonalPreferences( AsyncCallback<GwtPersonalPreferences> callback );
+	public void getPersonalPreferences( HttpRequestInfo ri, AsyncCallback<GwtPersonalPreferences> callback );
 	public void savePersonalPreferences( GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
 	
     // Return a GwtBrandingData object for the global workspace.

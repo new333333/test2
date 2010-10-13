@@ -54,6 +54,7 @@ public class GwtTeamingException extends SerializationException
 		ACCESS_CONTROL_EXCEPTION,
 		NO_BINDER_BY_THE_ID_EXCEPTION,
 		NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION,
+		USER_NOT_LOGGED_IN,
 		UNKNOWN;
 	}// end ExceptionType
 	

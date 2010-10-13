@@ -52,6 +52,7 @@
 			showWhatsNewOnLogin : ${showWhatsNew},
 			binderId : '${binderId}',
 			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
+			userId : '${ssUser.name}',
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',

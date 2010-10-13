@@ -78,6 +78,7 @@ public class ProfileSearchesSectionPanel extends ProfileSectionPanel {
 		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetSavedSearches());
 			}
 			

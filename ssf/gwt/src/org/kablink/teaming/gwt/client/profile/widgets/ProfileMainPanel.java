@@ -531,6 +531,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					public void onFailure( Throwable t )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
+							t,
 							GwtTeaming.getMessages().rpcFailure_IsPersonTracked(),
 							profileRequestInfo.getBinderId());
 					}//end onFailure()
@@ -729,6 +730,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						public void onFailure(Throwable t) {
 							// display error
 							GwtClientHelper.handleGwtRPCFailure(
+								t,
 								GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
 								profileRequestInfo.getBinderId());
 						}
@@ -778,7 +780,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					};
 
 					gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-					gwtRpcService.getProfileAvatars(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+					gwtRpcService.getProfileAvatars( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 					
 					return true;
 				}
@@ -796,6 +798,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			public void onFailure(Throwable t) {
 				// display error
 				GwtClientHelper.handleGwtRPCFailure(
+					t,
 					GwtTeaming.getMessages().rpcFailure_GetProfileAvatars(),
 					profileRequestInfo.getBinderId());
 			}
@@ -815,7 +818,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		};
 		
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create(GwtRpcService.class);
-		gwtRpcService.getDiskUsageInfo(new HttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
+		gwtRpcService.getDiskUsageInfo( HttpRequestInfo.createHttpRequestInfo(), profileRequestInfo.getBinderId(), callback);
 	}
 	
 	public final native boolean isFileError() /*-{  if( wnd.profileEmptyFrame.ss_error_code != null ) {

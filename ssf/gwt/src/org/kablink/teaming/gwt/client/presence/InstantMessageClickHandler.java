@@ -58,6 +58,7 @@ public class InstantMessageClickHandler implements ClickHandler {
 								new AsyncCallback<String>() {
 									public void onFailure(Throwable t) {
 										GwtClientHelper.handleGwtRPCFailure(
+											t,
 											GwtTeaming.getMessages().rpcFailure_GetImUrl(),
 											m_binderId);
 									}

@@ -223,7 +223,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the base url for the binder.
-		rpcService.getDocumentBaseUrl( new HttpRequestInfo(), m_binderId, m_rpcCallback );
+		rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
 	}// end getDocumentBaseUrlFromServer()
 	
 	

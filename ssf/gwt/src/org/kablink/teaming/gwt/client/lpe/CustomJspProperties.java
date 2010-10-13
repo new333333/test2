@@ -249,7 +249,7 @@ public class CustomJspProperties
 			// Yes, Issue an ajax request to get the GwtFolder object for the given folder id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getFolder( new HttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
+			rpcService.getFolder( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_folderId, m_folderCallback );
 		}
 		// Do we have an entry id?
 		else if ( m_entryId != null )
@@ -257,7 +257,7 @@ public class CustomJspProperties
 			// Yes, Issue an ajax request to get the GwtFolderEntry object for the given entry id.
 			m_rpcInProgress = true;
 			rpcService = GwtTeaming.getRpcService();
-			rpcService.getEntry( new HttpRequestInfo(), m_zoneUUID, m_entryId, m_folderEntryCallback );
+			rpcService.getEntry( HttpRequestInfo.createHttpRequestInfo(), m_zoneUUID, m_entryId, m_folderEntryCallback );
 		}
 	}// end getDataFromServer()
 	
