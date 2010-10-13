@@ -143,7 +143,7 @@ public class MastHead extends Composite
 		// Create a place for the beta text to go.
 		if ( beta )
 		{
-			m_betaLabel = new Label( GwtTeaming.getMessages().beta() );
+			m_betaLabel = new Label( GwtTeaming.getMessages().beta( m_requestInfo.getProductName() ) );
 			m_betaLabel.addStyleName( "mastheadBeta" );
 			m_mainMastheadPanel.add( m_betaLabel );
 		}

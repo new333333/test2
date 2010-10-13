@@ -57,6 +57,7 @@
 			myWSUrl : '${myWorkspaceUrl}',
 			errMsg : '<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 			isNovellTeaming : ${isNovellTeaming},
+			productName : '${productName}',
 			language : '${ssUser.locale.language}',
 			loginRefererUrl : '${loginRefererUrl}',
 			loginPostUrl : '<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
