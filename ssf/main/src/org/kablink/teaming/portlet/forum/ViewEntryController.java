@@ -910,51 +910,58 @@ public class ViewEntryController extends  SAbstractController {
 			}
 
 				
-			Map<String,Definition> workflowAssociations = entry.getParentBinder().getWorkflowAssociations();
-			List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
-			Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
-			if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty()) {
-				Map qualifiers = new HashMap();
-				
-				//The "Workflow" menu
-				//See if there are workflows running
-				Map runningWorkflowDefs = new HashMap();
-				for (WorkflowState state:runningWorkflows) {
-					Definition workflowDef = state.getDefinition();
-					if (!runningWorkflowDefs.containsKey(workflowDef.getId()) &&
-							(configWorkflows.contains(workflowDef) || !workflowAssociations.containsValue(workflowDef))) {
-						String wfTitle = NLT.getDef(workflowDef.getTitle());
-						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
-						qualifiers = new HashMap();
-						qualifiers.put("nosort", true);
-						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"', this.href)");
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
-						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-						toolbar.addToolbarMenuItem("4_actions", "workflow", 
-								NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
-						runningWorkflowDefs.put(workflowDef.getId(), "1");
+			if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+				Map<String,Definition> workflowAssociations = entry.getParentBinder().getWorkflowAssociations();
+				List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
+				Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
+				if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty() || !workflowAssociations.isEmpty()) {
+					Map qualifiers = new HashMap();
+					
+					//The "Workflow" menu
+					//See if there are workflows running
+					Map runningWorkflowDefs = new HashMap();
+					for (WorkflowState state:runningWorkflows) {
+						Definition workflowDef = state.getDefinition();
+						if (!runningWorkflowDefs.containsKey(workflowDef.getId()) &&
+								(configWorkflows.contains(workflowDef) || !workflowAssociations.containsValue(workflowDef))) {
+							String wfTitle = NLT.getDef(workflowDef.getTitle());
+							String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
+							qualifiers = new HashMap();
+							qualifiers.put("nosort", true);
+							qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"', this.href)");
+							url = response.createActionURL();
+							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_STOP_WORKFLOW);
+							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_STOP_WORKFLOW);
+							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+							toolbar.addToolbarMenuItem("4_actions", "workflow", 
+									NLT.get("toolbar.menu.stopWorkflow", new String[] {wfTitle}), url, qualifiers);
+							runningWorkflowDefs.put(workflowDef.getId(), "1");
+						}
 					}
-				}
-				
-				for (Definition workflowDef:configWorkflows) {
-					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
-						String wfTitle = NLT.getDef(workflowDef.getTitle());
-						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
-						qualifiers = new HashMap();
-						qualifiers.put("nosort", true);
-						qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"', this.href)");
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
-						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
-						url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
-						toolbar.addToolbarMenuItem("4_actions", "workflow", 
-								NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
+					
+					//Add the associated workflows to configWorkflows
+					for (Definition associatedDef : workflowAssociations.values()) {
+						//This makes it possible to start any associated workflow if it isn't running
+						if (!configWorkflows.contains(associatedDef)) configWorkflows.add(associatedDef);
+					}
+					for (Definition workflowDef:configWorkflows) {
+						if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
+							String wfTitle = NLT.getDef(workflowDef.getTitle());
+							String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
+							qualifiers = new HashMap();
+							qualifiers.put("nosort", true);
+							qualifiers.put("onClick", "return ss_confirmPost('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"', this.href)");
+							url = response.createActionURL();
+							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_WORKFLOW);
+							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+							url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+							url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_START_WORKFLOW);
+							url.setParameter(WebKeys.URL_WORKFLOW_TYPE, workflowDef.getId());
+							toolbar.addToolbarMenuItem("4_actions", "workflow", 
+									NLT.get("toolbar.menu.startWorkflow", new String[] {wfTitle}), url, qualifiers);
+						}
 					}
 				}
 			}
