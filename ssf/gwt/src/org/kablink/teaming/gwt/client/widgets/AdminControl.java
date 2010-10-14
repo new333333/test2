@@ -830,7 +830,7 @@ public class AdminControl extends Composite
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the upgrade information
-		rpcService.getUpgradeInfo(  callback );
+		rpcService.getUpgradeInfo(  HttpRequestInfo.createHttpRequestInfo(), callback );
 	}// end getUpgradeInfoFromServer()
 
 	

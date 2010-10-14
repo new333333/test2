@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -328,7 +329,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 					addTag.setTagType(tagType);
 					
 					// Can we and add it to the binder?
-					GwtTeaming.getRpcService().addBinderTag(m_currentBinder.getBinderId(), addTag, new AsyncCallback<TagInfo>() {
+					GwtTeaming.getRpcService().addBinderTag(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), addTag, new AsyncCallback<TagInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -383,7 +384,7 @@ public class TagThisDlg extends DlgBox implements EditSuccessfulHandler, EditCan
 			deleteAnchor.getElement().appendChild(deleteImg.getElement());
 			deleteAnchor.addClickHandler(new ClickHandler() {
 				public void onClick(ClickEvent event) {
-					GwtTeaming.getRpcService().removeBinderTag(m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
+					GwtTeaming.getRpcService().removeBinderTag(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), ti, new AsyncCallback<Boolean>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,

@@ -96,7 +96,7 @@ public interface GwtRpcServiceAsync
 	public void getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID, AsyncCallback<String> callback );
 	
 	// Return a list of the names of the files that are attachments of the given binder.
-	public void getFileAttachments( String binderId, AsyncCallback<ArrayList<String>> callback );
+	public void getFileAttachments( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<String>> callback );
 
 	// Return a Folder object for the given folder id.
 	public void getFolder( HttpRequestInfo ri, String zoneUUID, String folderId, AsyncCallback<GwtFolder> callback );
@@ -105,18 +105,18 @@ public interface GwtRpcServiceAsync
 	public void getBinderPermalink( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	public void getModifyBinderUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 	
-    public void getTutorialPanelState( AsyncCallback<String> callback );
+    public void getTutorialPanelState( HttpRequestInfo ri, AsyncCallback<String> callback );
 
 	// The following deal with personal preferences.
 	public void getPersonalPreferences( HttpRequestInfo ri, AsyncCallback<GwtPersonalPreferences> callback );
-	public void savePersonalPreferences( GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
+	public void savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs, AsyncCallback<Boolean> callback );
 	
     // Return a GwtBrandingData object for the global workspace.
 	public void getSiteBrandingData( HttpRequestInfo ri, AsyncCallback<GwtBrandingData> callback );
 	
-	public void getExtensionInfo( AsyncCallback<ExtensionInfoClient[]> callback );
-	public void removeExtension(String id, AsyncCallback<ExtensionInfoClient[]> callback);
-	public void getExtensionFiles(String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
+	public void getExtensionInfo( HttpRequestInfo ri, AsyncCallback<ExtensionInfoClient[]> callback );
+	public void removeExtension(HttpRequestInfo ri, String id, AsyncCallback<ExtensionInfoClient[]> callback);
+	public void getExtensionFiles(HttpRequestInfo ri, String id, String zoneName, AsyncCallback<ExtensionFiles> callback);
 	
 	// Returns a permalink for the given userId
 	public void getUserPermalink(HttpRequestInfo ri, String userId, AsyncCallback<String> callback);
@@ -125,9 +125,9 @@ public interface GwtRpcServiceAsync
 	public void getUserWorkspacePermalink( HttpRequestInfo ri, AsyncCallback<String> callback );
 	
 	// The following are used to interact with the GWT UI defaults.
-	public void getGwtUIDefault(   AsyncCallback<Boolean> callback );
-	public void getGwtUIEnabled(   AsyncCallback<Boolean> callback );
-	public void getGwtUIExclusive( AsyncCallback<Boolean> callback );
+	public void getGwtUIDefault(   HttpRequestInfo ri, AsyncCallback<Boolean> callback );
+	public void getGwtUIEnabled(   HttpRequestInfo ri, AsyncCallback<Boolean> callback );
+	public void getGwtUIExclusive( HttpRequestInfo ri, AsyncCallback<Boolean> callback );
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
@@ -135,65 +135,65 @@ public interface GwtRpcServiceAsync
 	public void expandVerticalBucket(           HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
 	public void getHorizontalTree(              HttpRequestInfo ri, String     binderId,   AsyncCallback<List<TreeInfo>> callback );
 	public void getHorizontalNode(              HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
-	public void getRootWorkspaceId(                                 String     binderId,   AsyncCallback<String>         callback );
+	public void getRootWorkspaceId(             HttpRequestInfo ri, String     binderId,   AsyncCallback<String>         callback );
 	public void getVerticalActivityStreamsTree( HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
 	public void getVerticalTree(                HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
 	public void getVerticalNode(                HttpRequestInfo ri, String     binderId,   AsyncCallback<TreeInfo>       callback );
-	public void persistNodeCollapse(                                String     binderId,   AsyncCallback<Boolean>        callback );
-	public void persistNodeExpand(                                  String     binderId,   AsyncCallback<Boolean>        callback );
+	public void persistNodeCollapse(            HttpRequestInfo ri, String     binderId,   AsyncCallback<Boolean>        callback );
+	public void persistNodeExpand(              HttpRequestInfo ri, String     binderId,   AsyncCallback<Boolean>        callback );
 
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public void addFavorite(                  String             binderId,                                   AsyncCallback<Boolean>               callback );
-	public void removeFavorite(               String             favoriteId,                                 AsyncCallback<Boolean>               callback );
-	public void updateFavorites(                                           List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void getBinderTags(                String             binderId,                                   AsyncCallback<List<TagInfo>>         callback );
-	public void canManagePublicBinderTags(    String             binderId,                                   AsyncCallback<Boolean>               callback );
-	public void addBinderTag(                 String             binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
-	public void removeBinderTag(              String             binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
-	public void updateBinderTags(             String             binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
-	public void getBinderInfo(                String             binderId,                                   AsyncCallback<BinderInfo>            callback );
-	public void getDefaultFolderDefinitionId( String             binderId,                                   AsyncCallback<String>                callback );
-	public void getFavorites(                                                                                AsyncCallback<List<FavoriteInfo>>    callback );
-	public void getMyTeams(                   HttpRequestInfo    ri,                                         AsyncCallback<List<TeamInfo>>        callback );
-	public void getMyGroups(                  HttpRequestInfo    ri,                                         AsyncCallback<List<GroupInfo>>        callback );
-	public void getRecentPlaces(              HttpRequestInfo    ri,                                         AsyncCallback<List<RecentPlaceInfo>> callback );
-	public void getSavedSearches(                                                                            AsyncCallback<List<SavedSearchInfo>> callback );
-	public void getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId,      AsyncCallback<TeamManagementInfo>    callback );
-	public void getToolbarItems(              String             binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
-	public void getTopRanked(                 HttpRequestInfo    ri,                                         AsyncCallback<List<TopRankedInfo>>   callback );
-	public void removeSavedSearch(                                            SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
-	public void saveSearch(                   String             searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
+	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
+	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
+	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
+	public void getBinderTags(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<List<TagInfo>>         callback );
+	public void canManagePublicBinderTags(    HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
+	public void addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
+	public void removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
+	public void updateBinderTags(             HttpRequestInfo ri, String binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
+	public void getBinderInfo(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<BinderInfo>            callback );
+	public void getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId,                                   AsyncCallback<String>                callback );
+	public void getFavorites(                 HttpRequestInfo ri,                                                    AsyncCallback<List<FavoriteInfo>>    callback );
+	public void getMyTeams(                   HttpRequestInfo ri,                                                    AsyncCallback<List<TeamInfo>>        callback );
+	public void getMyGroups(                  HttpRequestInfo ri,                                                    AsyncCallback<List<GroupInfo>>        callback );
+	public void getRecentPlaces(              HttpRequestInfo ri,                                                    AsyncCallback<List<RecentPlaceInfo>> callback );
+	public void getSavedSearches(             HttpRequestInfo ri,                                                    AsyncCallback<List<SavedSearchInfo>> callback );
+	public void getTeamManagementInfo(        HttpRequestInfo ri, String binderId,                                   AsyncCallback<TeamManagementInfo>    callback );
+	public void getToolbarItems(              HttpRequestInfo ri, String binderId,                                   AsyncCallback<List<ToolbarItem>>     callback );
+	public void getTopRanked(                 HttpRequestInfo ri,                                                    AsyncCallback<List<TopRankedInfo>>   callback );
+	public void removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
+	public void saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
 
 	// The following are used to manage the tracking of information.
-	public void getTrackedPeople(                 AsyncCallback<List<String>> callback );
-	public void getTrackedPlaces(                 AsyncCallback<List<String>> callback );
-	public void isPersonTracked( String binderId, AsyncCallback<Boolean>      callback );
-	public void trackBinder(     String binderId, AsyncCallback<Boolean>      callback );
-	public void untrackBinder(   String binderId, AsyncCallback<Boolean>      callback );
-	public void untrackPerson(   String binderId, AsyncCallback<Boolean>      callback );
+	public void getTrackedPeople( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );
+	public void getTrackedPlaces( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );
+	public void isPersonTracked(  HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
+	public void trackBinder(      HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
+	public void untrackBinder(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
+	public void untrackPerson(    HttpRequestInfo ri, String binderId, AsyncCallback<Boolean>      callback );
 	
 	// Save the branding data to the given binder.
-	public void saveBrandingData( String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
+	public void saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
 	// Return information about the User Profile
-	public void getProfileInfo(		HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
-	public void getProfileStats(	HttpRequestInfo ri, String userId, AsyncCallback<ProfileStats> 	callback);
-	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback);
-	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback);
+	public void getProfileInfo(		HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback );
+	public void getProfileStats(	HttpRequestInfo ri, String userId,   AsyncCallback<ProfileStats> 	callback );
+	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback );
+	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback );
 	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );
 	public void getGroups(			HttpRequestInfo ri, String binderId, AsyncCallback<List<GroupInfo>> callback );
-	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback);
-	public void isPresenceEnabled(                   AsyncCallback<Boolean>			callback);
-	public void getImUrl(			String binderId, AsyncCallback<String> 			callback);
-	public void getPresenceInfo(    String binderId, AsyncCallback<GwtPresenceInfo> callback);
+	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback );
+	public void isPresenceEnabled(  HttpRequestInfo ri,                  AsyncCallback<Boolean>			callback );
+	public void getImUrl(			HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback );
+	public void getPresenceInfo(    HttpRequestInfo ri, String binderId, AsyncCallback<GwtPresenceInfo> callback );
 
 	// Return the URL for the start/schedule meeting page
 	public void getAddMeetingUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback);
 
 	// The following are used for the UserStatus control
-	public void saveUserStatus(String status, 	AsyncCallback<Boolean> 		callback);
-	public void getUserStatus( String binderId,	AsyncCallback<UserStatus> 	callback); 
+	public void saveUserStatus( HttpRequestInfo ri, String status, 	 AsyncCallback<Boolean>    callback );
+	public void getUserStatus(  HttpRequestInfo ri, String binderId, AsyncCallback<UserStatus> callback ); 
 	
 	// Return information about self registration.
 	public void getSelfRegistrationInfo( HttpRequestInfo ri, AsyncCallback<GwtSelfRegistrationInfo> callback );
@@ -202,7 +202,7 @@ public interface GwtRpcServiceAsync
 	public void getSiteAdministrationUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );
 
 	// Return upgrade information.
-	public void getUpgradeInfo( AsyncCallback<GwtUpgradeInfo> callback );
+	public void getUpgradeInfo( HttpRequestInfo ri, AsyncCallback<GwtUpgradeInfo> callback );
 	
 	// Get DiskUsage Info.
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );

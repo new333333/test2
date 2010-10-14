@@ -362,7 +362,7 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		ssList.setEnabled(false);
 		
 		// Does the user have any saved searches defined?
-		GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
+		GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,

@@ -174,8 +174,14 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// No, we aren't showing an expanded bucket or
 					// activity stream!  We must be showing a normal
 					// row.  Can we mark the row as being closed?
-					rpcService.persistNodeCollapse(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
-						public void onFailure(Throwable t) {}
+					rpcService.persistNodeCollapse(HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_PersistExpansionState(),
+								m_ti.getBinderInfo().getBinderId());
+						}
+						
 						public void onSuccess(Boolean success) {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
@@ -192,7 +198,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
 					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
-						public void onFailure(Throwable t) {}
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
+						}
+						
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Update the TreeInfo, and if
 							// there are any expanded rows, render
@@ -216,13 +227,25 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// No, we aren't showing a collapsed activity
 					// stream either!  We must be showing a normal row.
 					// Can we mark the row as being opened?
-					rpcService.persistNodeExpand(m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
-						public void onFailure(Throwable t) {}
+					rpcService.persistNodeExpand(HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<Boolean>() {
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_PersistExpansionState(),
+								m_ti.getBinderInfo().getBinderId());
+						}
+						
 						public void onSuccess(Boolean success) {
 							// Yes!  Can we get a TreeInfo for the
 							// expansion?
 							rpcService.getVerticalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
-								public void onFailure(Throwable t) {}
+								public void onFailure(Throwable t) {
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										GwtTeaming.getMessages().rpcFailure_GetTree(),
+										m_ti.getBinderInfo().getBinderId());
+								}
+								
 								public void onSuccess(TreeInfo expandedTI) {
 									// Yes!  Update the TreeInfo, and if
 									// there are any expanded rows, render
@@ -1105,7 +1128,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// re-rooted!  (It may be coming from the bread crumbs
 				// or some other unknown source.)  What's the ID if the
 				// selected Binder's root workspace?
-				getRpcService().getRootWorkspaceId(binderId, new AsyncCallback<String>() {
+				getRpcService().getRootWorkspaceId(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,

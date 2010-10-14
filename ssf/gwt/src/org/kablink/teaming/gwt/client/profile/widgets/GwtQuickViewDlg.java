@@ -65,7 +65,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -103,6 +102,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private Image avatar;
 	private Anchor miniBlogA;
 	private ProfileActionWidget instantMessageBtn;
+	@SuppressWarnings("unused")
 	private Element clientElement;
 	private FlowPanel pictureDiv;
 	
@@ -260,7 +260,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 			}// end onClick()
 
 			private void followAction() {
-				GwtTeaming.getRpcService().trackBinder( binderId, new AsyncCallback<Boolean>()
+				GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -278,7 +278,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 			}
 
 			private void unFollowAction() {
-				GwtTeaming.getRpcService().untrackPerson( binderId, new AsyncCallback<Boolean>()
+				GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
 				{
 					public void onFailure( Throwable t )
 					{
@@ -539,11 +539,14 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	 */
 	private void updateFollowingStatus() {
 		
-		GwtTeaming.getRpcService().isPersonTracked( binderId, new AsyncCallback<Boolean>()
+		GwtTeaming.getRpcService().isPersonTracked( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<Boolean>()
 				{
 					public void onFailure( Throwable t )
 					{
-						Window.alert( t.toString() );
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_IsPersonTracked(),
+							binderId);
 					}//end onFailure()
 					
 					public void onSuccess( Boolean success )
@@ -594,7 +597,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 			
 		// Issue an ajax request to save the user status to the db.  rpcCallback will
 		// be called when we get the response back.
-		rpcService.getUserStatus(binderId, rpcCallback );
+		rpcService.getUserStatus(HttpRequestInfo.createHttpRequestInfo(), binderId, rpcCallback );
 	}
 	
 	private class MicroBlogClickHandler implements ClickHandler {
@@ -645,6 +648,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 							}
 						}
 						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetAddMeetingUrl(),
+								binderId );
 						}
 					});
 		}

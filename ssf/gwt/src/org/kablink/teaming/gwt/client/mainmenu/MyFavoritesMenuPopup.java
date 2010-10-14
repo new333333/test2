@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -158,9 +157,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 			switch (m_operation) {
 			case ADD:
 				// Adding the current binder to the favorites!
-				m_rpcService.addFavorite(m_id, new AsyncCallback<Boolean>() {
+				m_rpcService.addFavorite(HttpRequestInfo.createHttpRequestInfo(), m_id, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_AddFavorite(),
+							m_id);
 					}
 					public void onSuccess(Boolean result)  {}
 				});
@@ -168,9 +170,12 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				
 			case REMOVE:
 				// Removing the current binder from the favorites!
-				m_rpcService.removeFavorite(m_id, new AsyncCallback<Boolean>() {
+				m_rpcService.removeFavorite(HttpRequestInfo.createHttpRequestInfo(), m_id, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {
-						Window.alert(t.toString());
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_RemoveFavorite(),
+							m_id);
 					}
 					public void onSuccess(Boolean result)  {}
 				});
@@ -263,7 +268,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		}
 
 		// Otherwise, read the users favorites.
-		m_rpcService.getFavorites(new AsyncCallback<List<FavoriteInfo>>() {
+		m_rpcService.getFavorites(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<FavoriteInfo>>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,

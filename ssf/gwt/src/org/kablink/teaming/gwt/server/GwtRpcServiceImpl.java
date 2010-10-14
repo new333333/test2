@@ -828,6 +828,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Get a permalink that can be used to view the given entry.
+	 * 
+	 * @param ri
+	 * @param entryId
+	 * @param zoneUUID
+	 * 
+	 * @return
 	 */
 	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID )
 	{
@@ -872,13 +878,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a list of the names of the files that are attachments for the given binder
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException
+	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		ArrayList<String> fileNames;
 		
@@ -1207,6 +1214,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return a GwtPersonalPreferences object that holds the personal preferences for the logged in user.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
 	 */
 	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri )
 	{
@@ -1235,7 +1246,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					String tutorialPanelState;
 
-					tutorialPanelState = getTutorialPanelState();
+					tutorialPanelState = getTutorialPanelState( ri );
 
 					// Is the tutorial panel open?
 					if ( tutorialPanelState != null && tutorialPanelState.equalsIgnoreCase( "1" ) )
@@ -1328,6 +1339,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Return the URL needed to invoke the start/schedule meeting dialog.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
@@ -1395,9 +1413,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns a List<String> of the user ID's of the people the
 	 * current user is tracking.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public List<String> getTrackedPeople()
+	public List<String> getTrackedPeople( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getTrackedPeople( this );
 	}// end getTrackedPeople()
@@ -1406,16 +1426,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns a List<String> of the binder ID's of the places the
 	 * current user is tracking.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public List<String> getTrackedPlaces()
+	public List<String> getTrackedPlaces( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getTrackedPlaces( this );
 	}// end getTrackedPlaces()
 	
     /**
+     * 
+	 * @param ri
+	 * 
+	 * @return
      */
-    public String getTutorialPanelState()
+    public String getTutorialPanelState( HttpRequestInfo ri )
     {
     	UserProperties	userProperties;
     	ProfileModule	profileModule;
@@ -1440,11 +1466,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return a GwtUpgradeInfo object.
 	 *
+	 * @param ri
+	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException
+	public GwtUpgradeInfo getUpgradeInfo( HttpRequestInfo ri ) throws GwtTeamingException
 	{
 		GwtUpgradeInfo upgradeInfo;
 		User user;
@@ -1556,7 +1584,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteBrandingData()
 	
 	
-    public ExtensionInfoClient[] getExtensionInfo()
+	/**
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 */
+    public ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri )
     {
     	List<ExtensionInfo> extList =  new ArrayList<ExtensionInfo>(); 
     	AdminModule adminModule;
@@ -1601,7 +1635,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     	
     }
 
-    public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException
+    /**
+     * 
+	 * @param ri
+	 * @param id
+	 * 
+	 * @return
+	 * 
+	 * @throws ExtensionDefinitionInUseException
+     */
+    public ExtensionInfoClient[] removeExtension(HttpRequestInfo ri, String id) throws ExtensionDefinitionInUseException
     {
     	AdminModule adminModule;
     	adminModule = getAdminModule();
@@ -1612,11 +1655,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
     	}
     	adminModule.getExtensionManager().removeExtensions(id);
 
-    	return getExtensionInfo();
+    	return getExtensionInfo(ri);
     }
 
 
-	public ExtensionFiles getExtensionFiles(String id, String zoneName) {
+    /**
+     * 
+	 * @param ri
+	 * @param id
+	 * @param zoneName
+	 * 
+	 * @return
+     */
+	public ExtensionFiles getExtensionFiles(HttpRequestInfo ri, String id, String zoneName) {
     	ExtensionFiles extFiles = new ExtensionFiles();
     	try 
     	{
@@ -1651,9 +1702,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns true if the GWT UI is the default UI at login and false
 	 * otherwise.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public Boolean getGwtUIDefault()
+	public Boolean getGwtUIDefault( HttpRequestInfo ri )
 	{
 		return new Boolean( GwtUIHelper.isGwtUIDefault() );
 	}// end getGwtUI()
@@ -1661,9 +1714,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns true if the GWT UI is the enabled and false otherwise.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public Boolean getGwtUIEnabled()
+	public Boolean getGwtUIEnabled( HttpRequestInfo ri )
 	{
 		return new Boolean( GwtUIHelper.isGwtUIEnabled() );
 	}// end getGwtUI()
@@ -1672,9 +1727,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns true if there should be no UI exposed to exit the GWT UI
 	 * and false otherwise.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public Boolean getGwtUIExclusive()
+	public Boolean getGwtUIExclusive( HttpRequestInfo ri )
 	{
 		return new Boolean( GwtUIHelper.isGwtUIExclusive() );
 	}// end getGwtUI()
@@ -1797,9 +1854,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns the ID of the nearest containing workspace of a given
 	 * Binder.
 	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
 	 * @return
 	 */
-	public String getRootWorkspaceId( String binderId )
+	public String getRootWorkspaceId( HttpRequestInfo ri, String binderId )
 	{
 		String reply;
 		
@@ -1953,11 +2013,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Saves the fact that the Binder for the given ID should be
 	 * collapsed for the current User.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeCollapse( String binderId )
+	public Boolean persistNodeCollapse( HttpRequestInfo ri, String binderId )
 	{
 		GwtServerHelper.persistNodeCollapse( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;
@@ -1967,11 +2028,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Saves the fact that the Binder for the given ID should be
 	 * expanded for the current User.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public Boolean persistNodeExpand( String binderId )
+	public Boolean persistNodeExpand( HttpRequestInfo ri, String binderId )
 	{
 		GwtServerHelper.persistNodeExpand( this, Long.parseLong( binderId ) );
 		return Boolean.TRUE;
@@ -1981,11 +2043,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Adds binderId to the user's list of favorites.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public Boolean addFavorite( String binderId )
+	public Boolean addFavorite( HttpRequestInfo ri, String binderId )
 	{
 		Binder binder;
 		Favorites f;
@@ -2016,11 +2079,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Removes favoriteId from the user's list of favorites.
 	 * 
+	 * @param ri
 	 * @param favoriteId
 	 * 
 	 * @return
 	 */
-	public Boolean removeFavorite( String favoriteId )
+	public Boolean removeFavorite( HttpRequestInfo ri, String favoriteId )
 	{
 		Favorites f;
 		UserProperties userProperties;
@@ -2035,11 +2099,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Sets the user's list of favorites to favoritesList.
 	 * 
+	 * @param ri
 	 * @param favoritesList
 	 * 
 	 * @return
 	 */
-	public Boolean updateFavorites( List<FavoriteInfo> favoritesList )
+	public Boolean updateFavorites( HttpRequestInfo ri, List<FavoriteInfo> favoritesList )
 	{
 		Favorites f;
 		Iterator<FavoriteInfo> fiIT;
@@ -2060,11 +2125,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns a List<TagInfo> of the tags defined on a binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public List<TagInfo> getBinderTags( String binderId )
+	public List<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderTags( this, binderId );
 	}//end getBinderTags()
@@ -2073,11 +2139,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns true if the user can manage public tags on the binder
 	 * and false otherwise.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public Boolean canManagePublicBinderTags( String binderId )
+	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
 		return new Boolean(getBinderModule().testAccess(binder, BinderOperation.manageTag));
@@ -2086,12 +2153,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Adds a tag to those defined on a binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * @param binderTag
 	 * 
 	 * @return
 	 */
-	public TagInfo addBinderTag( String binderId, TagInfo binderTag )
+	public TagInfo addBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
 	{
 		return GwtServerHelper.addBinderTag( this, binderId, binderTag );
 	}//end addBinderTag()
@@ -2099,12 +2167,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Removes a tag from those defined on a binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * @param binderTag
 	 * 
 	 * @return
 	 */
-	public Boolean removeBinderTag( String binderId, TagInfo binderTag )
+	public Boolean removeBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
 	{
 		return GwtServerHelper.removeBinderTag( this, binderId, binderTag );
 	}//end removeBinderTag()
@@ -2112,12 +2181,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Updates the list of tags defined on a binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * @param binderTags
 	 * 
 	 * @return
 	 */
-	public Boolean updateBinderTags( String binderId, List<TagInfo> binderTags )
+	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, List<TagInfo> binderTags )
 	{
 		return GwtServerHelper.updateBinderTags( this, binderId, binderTags );
 	}//end updateBinderTags()
@@ -2125,11 +2195,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns a BinderInfo describing a binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public BinderInfo getBinderInfo( String binderId )
+	public BinderInfo getBinderInfo( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderInfo( this, binderId );
 	}//end getBinderInfo()
@@ -2137,18 +2208,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Returns the ID of the default view definition of a folder.
 	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
 	 * @return
 	 */
-	public String getDefaultFolderDefinitionId( String binderId ) {
+	public String getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId ) {
 		return GwtServerHelper.getDefaultFolderDefinitionId( this, binderId );
 	}
 
 	/**
 	 * Returns information about the current user's favorites.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public List<FavoriteInfo> getFavorites()
+	public List<FavoriteInfo> getFavorites( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getFavorites( this );
 	}// end getFavorites()
@@ -2232,8 +2308,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the URL needed to start an Instant Message with the user.
 	 * 
+	 * @param ri
+	 * 
+	 * @return
  	 */
-	public Boolean isPresenceEnabled( )
+	public Boolean isPresenceEnabled( HttpRequestInfo ri )
 	{
 		PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
 		if (presenceService != null)
@@ -2249,13 +2328,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the URL needed to start an Instant Message with the user.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
  	 */
-	public String getImUrl( String binderId ) throws GwtTeamingException
+	public String getImUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			Principal p = GwtProfileHelper.getPrincipalByBinderId(this, binderId);
@@ -2310,7 +2390,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		} 
 	}// end getImUrl
 
-	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException
+	/**
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public GwtPresenceInfo getPresenceInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try {
 			User userAsking = GwtServerHelper.getCurrentUser();
@@ -2423,9 +2512,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns information about the saved search the current user has
 	 * defined.
 	 * 
+	 * @param ri
+	 * 
 	 * @return
 	 */
-	public List<SavedSearchInfo> getSavedSearches()
+	public List<SavedSearchInfo> getSavedSearches( HttpRequestInfo ri )
 	{
 		return GwtServerHelper.getSavedSearches( this );
 	}// end getSavedSearches()
@@ -2447,12 +2538,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Returns a List<ToolbarItem> of the ToolbarItem's
 	 * applicable for the given context.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<ToolbarItem> getToolbarItems( String binderId )
+	public List<ToolbarItem> getToolbarItems( HttpRequestInfo ri, String binderId )
 	{
 		// Construct an ArrayList<ToolbarItem> to hold the toolbar
 		// items.
@@ -2507,23 +2599,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Removes a search based on its SavedSearchInfo.
 	 * 
+	 * @param ri
 	 * @param ssi
 	 * 
 	 * @return
 	 */
-	public Boolean removeSavedSearch( SavedSearchInfo ssi ) {
+	public Boolean removeSavedSearch( HttpRequestInfo ri, SavedSearchInfo ssi ) {
 		return GwtServerHelper.removeSavedSearch( this, ssi );
 	}// end removeSavedSearch()
 	
 	/**
 	 * Saves a search based on its tab ID and SavedSearchInfo.
 	 * 
+	 * @param ri
 	 * @param searchTabId
 	 * @param ssi
 	 * 
 	 * @return
 	 */
-	public SavedSearchInfo saveSearch( String searchTabId, SavedSearchInfo ssi ) {
+	public SavedSearchInfo saveSearch( HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi ) {
 		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
 	}// end saveSearch()
 	
@@ -2531,9 +2625,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Called to mark that the current user is tracking the specified
 	 * binder.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean trackBinder( String binderId )
+	public Boolean trackBinder( HttpRequestInfo ri, String binderId )
 	{
 		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "add" );
 		return Boolean.TRUE;
@@ -2543,9 +2638,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Called to mark that the current user is no longer tracking the
 	 * specified binder.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean untrackBinder( String binderId )
+	public Boolean untrackBinder( HttpRequestInfo ri, String binderId )
 	{
 		BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
 		return Boolean.TRUE;
@@ -2555,9 +2651,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Called to mark that the current user is no longer tracking the
 	 * person whose workspace is the specified binder.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean untrackPerson( String binderId )
+	public Boolean untrackPerson( HttpRequestInfo ri, String binderId )
 	{
 		Binder binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
 		BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
@@ -2568,9 +2665,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Called to check if the current user is tracking the
 	 * person whose workspace is the specified binder.
 	 * 
+	 * @param ri
 	 * @param binderId
 	 */
-	public Boolean isPersonTracked( String binderId )
+	public Boolean isPersonTracked( HttpRequestInfo ri, String binderId )
 	{
 		return BinderHelper.isPersonTracked( this, Long.parseLong( binderId ) );
 	}//end isPersonTracked()
@@ -2748,6 +2846,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Save the given branding data to the given binder.
 	 *
+	 * @param ri
 	 * @param binderId
 	 * @param brandingData
 	 * 
@@ -2755,7 +2854,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
+	public Boolean saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Long binderIdL;
@@ -2826,13 +2925,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Save the given personal preferences for the logged in user.
 	 *
+	 * @param ri
 	 * @param personalPrefs
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
+	public Boolean savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs ) throws GwtTeamingException
 	{
 		try
 		{
@@ -2926,6 +3026,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param binderId
 	 * 
 	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	public ProfileInfo getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		try
@@ -3080,13 +3182,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Save the User Status
 	 * 
+	 * @param ri
 	 * @param status The text to store in the Micro-Blog
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public Boolean saveUserStatus( String status ) throws GwtTeamingException
+	public Boolean saveUserStatus( HttpRequestInfo ri, String status ) throws GwtTeamingException
 	{
 		try
 		{
@@ -3128,13 +3231,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Get the User Status from their Micro Blog
 	 * 
+	 * @param ri
 	 * @param binderId This is the binderId of the workspace we are loading
 	 * 
 	 * @return UserStatus This object contains information about the user status.
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public UserStatus getUserStatus(String sbinderId)
+	public UserStatus getUserStatus(HttpRequestInfo ri, String sbinderId)
 			throws GwtTeamingException {
 	
 		return GwtProfileHelper.getUserStatus(this, sbinderId);
@@ -3147,6 +3251,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param binderId This is the binderId of the person you want to get stats on.
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	public ProfileStats getProfileStats(HttpRequestInfo ri, String userId) throws GwtTeamingException {
 		try
@@ -3194,6 +3300,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Get disk usage information per user
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
 	public  DiskUsageInfo getDiskUsageInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException {
 		

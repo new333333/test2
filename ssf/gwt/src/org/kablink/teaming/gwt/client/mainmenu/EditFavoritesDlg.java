@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Document;
@@ -286,7 +287,7 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler, E
 	public boolean editSuccessful(Object callbackData) {
 		// Update the favorites.
 		List<FavoriteInfo> favoritesList = ((List<FavoriteInfo>) callbackData);
-		GwtTeaming.getRpcService().updateFavorites(favoritesList, new AsyncCallback<Boolean>() {
+		GwtTeaming.getRpcService().updateFavorites(HttpRequestInfo.createHttpRequestInfo(), favoritesList, new AsyncCallback<Boolean>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,

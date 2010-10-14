@@ -129,8 +129,11 @@ public class GwtClientHelper {
 	/**
 	 * Handles Throwable's received by GWT RPC onFailure() methods.
 	 * 
-	 * Note:
-	 *    On 20100803 I (Dennis) discussed this with Jay and we agreed
+	 * Notes:
+	 * 1) Passing no error message string here allows for the proper
+	 *    exception handling to occur but will NOT display an error to
+	 *    the user.
+	 * 2) On 20100803 I (Dennis) discussed this with Jay and we agreed
 	 *    that in the Durango release, we'll only display errors here
 	 *    for those exceptions that we really know something about.
 	 *    The others will be ignored.
@@ -180,8 +183,8 @@ public class GwtClientHelper {
 			patches = new String[]{cause};
 		}
 		
-		errorMessage = patchMessage(errorMessage, patches);
-		if (displayAlert) {
+		if (hasString(errorMessage) && displayAlert) {
+			errorMessage = patchMessage(errorMessage, patches);
 			Window.alert(errorMessage);
 		}
 	}
@@ -194,6 +197,11 @@ public class GwtClientHelper {
 	public static void handleGwtRPCFailure(Throwable t, String errorMessage) {
 		// Always use the initial form of the method.
 		handleGwtRPCFailure(t, errorMessage, ((String[]) null));
+	}
+	
+	public static void handleGwtRPCFailure(Throwable t) {
+		// Always use the initial form of the method.
+		handleGwtRPCFailure(t, null, ((String[]) null));
 	}
 	
 	/**

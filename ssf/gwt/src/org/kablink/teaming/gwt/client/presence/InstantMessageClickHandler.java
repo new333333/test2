@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.presence;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -54,7 +55,8 @@ public class InstantMessageClickHandler implements ClickHandler {
 			openUrl();
 		} else {
 			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
-			rpcService.getImUrl(m_binderId, 
+			rpcService.getImUrl(HttpRequestInfo.createHttpRequestInfo(),
+								m_binderId, 
 								new AsyncCallback<String>() {
 									public void onFailure(Throwable t) {
 										GwtClientHelper.handleGwtRPCFailure(

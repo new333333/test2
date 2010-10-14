@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Element;
@@ -866,7 +867,7 @@ public class EditBrandingDlg extends DlgBox
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
-		rpcService.getFileAttachments( m_origBrandingData.getBinderId(), m_rpcReadCallback );
+		rpcService.getFileAttachments( HttpRequestInfo.createHttpRequestInfo(), m_origBrandingData.getBinderId(), m_rpcReadCallback );
 	}// end getListOfFileAttachmentsFromServer()
 	
 	

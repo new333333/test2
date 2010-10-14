@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -312,7 +313,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 				ssi.setName(searchName);
 				
 				// Can we save it?
-				GwtTeaming.getRpcService().saveSearch(m_searchTabId, ssi, new AsyncCallback<SavedSearchInfo>() {
+				GwtTeaming.getRpcService().saveSearch(HttpRequestInfo.createHttpRequestInfo(), m_searchTabId, ssi, new AsyncCallback<SavedSearchInfo>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -359,7 +360,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		deleteAnchor.getElement().appendChild(deleteImg.getElement());
 		deleteAnchor.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				GwtTeaming.getRpcService().removeSavedSearch(ssi, new AsyncCallback<Boolean>() {
+				GwtTeaming.getRpcService().removeSavedSearch(HttpRequestInfo.createHttpRequestInfo(), ssi, new AsyncCallback<Boolean>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,

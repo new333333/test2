@@ -242,8 +242,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 
 		// ...if the user is allowed to exit GWT UI mode...
 		final ActionTrigger actionTrigger = this;
-		GwtTeaming.getRpcService().getGwtUIExclusive(new AsyncCallback<Boolean>() {
-			public void onFailure(Throwable t) {}
+		GwtTeaming.getRpcService().getGwtUIExclusive(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<Boolean>() {
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetGwtUIInfo());
+			}
+			
 			public void onSuccess(Boolean isGwtUIExclusive) {
 				if (!isGwtUIExclusive) {
 					// ...add the GWT UI button...
@@ -407,7 +412,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
 					
 					// ...and run the manage saved searches dialog.
-					GwtTeaming.getRpcService().getSavedSearches(new AsyncCallback<List<SavedSearchInfo>>() {
+					GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -583,7 +588,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Rebuild the context based panel based on the new context.
 		clearContextMenus();
-		GwtTeaming.getRpcService().getBinderInfo(binderId, new AsyncCallback<BinderInfo>() {
+		GwtTeaming.getRpcService().getBinderInfo(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
 				GwtClientHelper.handleGwtRPCFailure(
@@ -593,7 +598,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 			}
 			public void onSuccess(BinderInfo binderInfo) {
 				m_contextBinder = binderInfo;
-				GwtTeaming.getRpcService().getToolbarItems(binderId, new AsyncCallback<List<ToolbarItem>>() {
+				GwtTeaming.getRpcService().getToolbarItems(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<List<ToolbarItem>>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,

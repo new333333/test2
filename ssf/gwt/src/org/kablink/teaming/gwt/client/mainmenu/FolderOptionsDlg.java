@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.dom.client.Document;
@@ -147,7 +148,7 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		if (0 < m_folderViewsListCount) {
 			// Yes!  Does the folder we're working on have a default
 			// view defined?
-			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(m_binderId, new AsyncCallback<String>() {
+			GwtTeaming.getRpcService().getDefaultFolderDefinitionId(HttpRequestInfo.createHttpRequestInfo(), m_binderId, new AsyncCallback<String>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
