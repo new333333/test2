@@ -80,16 +80,13 @@ div.ss_photo_content {
 	padding-bottom: 30px;
 }
 div.ss_photo_sidebar {
-    border:1px #cecece solid; 
-    background-color: #cecece; 
-    padding: 10px 5px 10px 5px; 
+    background-color: #ebf5f5; 
+    padding: 10px 5px 10px 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px; 
 }
 .ss_photo_sidebar_subhead {
-	font-weight: bold;
-	font-style: italic;
 	font-size: ${ss_style_font_largeprint} !important;
-	color: #0066CC !important; /* ${ss_style_muted_label_color}; */
-	border-bottom: 1px solid #0066CC;
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
@@ -101,17 +98,13 @@ div.ss_photo_sidebar {
 .ss_photo_archive_subhead {
 	margin-left: 18px;
 	font-weight: bold;
-	font-style: italic;
 	font-size: ${ss_style_font_largeprint} !important;
-	color: #0066CC !important; /* ${ss_style_muted_label_color}; */
 	padding-top: 5px;
 	padding-bottom: 5px;
 }
 .ss_photo_title  {
 	font-weight: bold;
-	font-style: italic;
 	font-size: ${ss_style_font_largeprint} !important;
-	color: #0066CC !important;
-	padding-top: 2px;
 	padding-bottom: 2px;
+
 }

@@ -38,22 +38,6 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <div class="ss_photo_sidebar">
-	<div class="ss_photo_sidebar_subhead"><ssf:nlt tag="photo.findPage"/>
-      <form method="post" name="ss_findWikiPageForm${renderResponse.namespace}"
-    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssBinder.id}"/></ssf:url>">
-	   <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
-	    formElement="searchTitle" 
-	    type="entries"
-	    width="160px" 
-	    binderId="${ssBlogSetBinder.id}"
-	    searchSubFolders="true"
-		showFolderTitles="true"
-	    singleItem="true"
-	    clickRoutine="ss_loadPhotoEntryId${renderResponse.namespace}"/> 
-       <input type="hidden" name="searchTitle"/>
-      </form>
-	</div>
 	<div class="ss_photo_sidebar_subhead">
 	  <ssf:expandableArea title='<%= NLT.get("photo.albums") %>' titleClass="ss_photo_title" 
 	  	action="wipe" initOpen="true">
@@ -61,7 +45,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
         <table cellspacing="0" cellpadding="0">
 	     <c:forEach var="blogPage" items="${ssBlogPages}">
  		   <tr><td>
- 		     <div style="padding:0px 4px 4px 14px;">
+ 		     <div style="padding:0px 4px 4px 15px;">
 	           <a class="<c:if test="${blogPage.id == ssBinder.id}"> ss_navbar_current</c:if>
 					   <c:if test="${blogPage.id != ssBinder.id}"></c:if>" 
 				href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"/>"
@@ -75,7 +59,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<div class="ss_photo_sidebar_subhead">	
 	  <ssf:expandableArea title='<%= NLT.get("blog.archives") %>' titleClass="ss_photo_title" 
 	    action="wipe" initOpen="true">
-	      <div class="ss_blog_sidebar_box">		
+	      <div class="ss_blog_sidebar_box marginleft2">		
 			<table>
 			  <tr>
 			   <td colspan="2">
@@ -84,17 +68,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				    <ssf:param name="binderId" value="${ssBinder.id}"/>
 				    </ssf:url>"
 				    <c:if test="${empty ss_yearMonth}">
-				      class="ss_bold" style="background-color:#e5e5e5;" 
+				      class="ss_navbar_current" 
 				    </c:if>
 			      ><ssf:nlt tag="photo.showCurrentAlbum"/></a>
 			   </td>
 			  </tr>
 			  <c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  	  <tr>
-		  	   <td>
+		  	   <td style="padding-top: 5px;">
 		  	    <a href="${ssBlogMonthUrls[monthYear.key]}" 
 		  		  <c:if test="${monthYear.key == ss_yearMonth}">
-	        		class="ss_bold" style="background-color:#e5e5e5;" 
+	        		class="ss_navbar_current" 
 	      		  </c:if>
 	      		>
 		  		<c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a>
@@ -107,9 +91,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		        <c:set var="monthFolder" value="${monthYear.key}/${blogPage.id}"/>
 		        <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
 		         <tr>
-		          <td style="padding-left:10px;">
-		           <a style="background-color:#e5e5e5;"
-		             href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+		          <td style="padding-left:10px; padding-top: 3px;">
+		           <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
 		             name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
 		           >${blogPage.title}</a>
 		          </td>

@@ -160,7 +160,7 @@
 --%><c:set var="ss_gallery_background_color" value="#ECECEC" scope="request"/><%--
 --%><c:set var="ss_gallery_image_background_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_gallery_anchor_color" value="#333333" scope="request"/><%--
---%><c:set var="ss_gallery_anchor_hover_color" value="#0000FC" scope="request"/><%--
+--%><c:set var="ss_gallery_anchor_hover_color" value="#D47F0A" scope="request"/><%--
 --%><%--
   --
   -- GUESTBOOK
@@ -209,7 +209,7 @@
   --
 --%><c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_muted_label_color" value="#666666" scope="request"/><%--
---%><c:set var="ss_style_muted_tag_color" value="#0000FC" scope="request"/><%--
+--%><c:set var="ss_style_muted_tag_color" value="#135c8f" scope="request"/><%--
 --%><%--
   --
   -- PORTLET COLORS
@@ -235,7 +235,7 @@
   --
   -- TAG
   --
---%><c:set var="ss_tag_color" value="#0000FC" scope="request"/><%--
+--%><c:set var="ss_tag_color" value="#135c8f" scope="request"/><%--
 --%><c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/><%--
 --%><%--
   --

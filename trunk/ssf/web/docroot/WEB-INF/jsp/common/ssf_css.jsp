@@ -811,7 +811,7 @@ div.ss_send_friend {
   border:1px solid #d6dede;
   margin:2px;
   padding: 10px;
-  background-color: ${ss_replies_background_color};
+  background-color: #EBECA5;
   width: 300px;
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
@@ -2485,6 +2485,10 @@ div.ss_thumbnail_gallery div {
     font-family: ${ss_style_font_family};
     overflow: hidden;
     background-color: ${ss_gallery_background_color};
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 	}  
 .noImg {
 	color: ${ss_style_metadata_color};   
@@ -2532,11 +2536,7 @@ div.ss_faded_pop a:hover img {
 
 
 div.ss_thumbnail_gallery a:hover img {
-    border-color: ${ss_gallery_anchor_hover_color};
-}
-div.ss_thumbnail_gallery a:hover {
-    text-decoration: underline;
-    color: ${ss_gallery_anchor_hover_color};
+    border: 1px solid ${ss_gallery_anchor_hover_color};
 }
 div.ss_end_thumbnail_gallery {
     clear: both;

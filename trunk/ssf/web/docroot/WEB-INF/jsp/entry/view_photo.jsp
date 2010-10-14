@@ -111,7 +111,7 @@ function ss_setImgSize(obj) {
 				    name="operation2" value="view_previous"/></ssf:url>" 
 			  title="<ssf:nlt tag="general.previousPicture"/>">
             <img border="0" alt="<ssf:nlt tag="general.previousPicture"/>"
-              src="<html:rootPath/>images/pics/sym_arrow_left_.gif"/>
+              src="<html:rootPath/>images/pics/sym_arrow_left_.png"/>
           </a>
         </td>
         <td style="padding-left:20px;">
@@ -126,7 +126,7 @@ function ss_setImgSize(obj) {
 				    name="operation2" value="view_next"/></ssf:url>" 
 			  title="<ssf:nlt tag="general.nextPicture"/>">
             <img border="0" alt="<ssf:nlt tag="general.nextPicture"/>"
-              src="<html:rootPath/>images/pics/sym_arrow_right_.gif"/>
+              src="<html:rootPath/>images/pics/sym_arrow_right_.png"/>
           </a>
         </td>
       </tr>
@@ -140,7 +140,7 @@ function ss_setImgSize(obj) {
 				    entryId="${ssEntry.id}" 
 				    actionUrl="true"><ssf:param 
 				    name="entryViewStyle" value="full"/></ssf:url>">
-      <span style="font-size:24px; font-weight:400;" >${ssEntry.title}</span>
+      <span style="font-size:20px; font-weight:400; padding-bottom: 5px;" >${ssEntry.title}</span>
     </a>
   </div>
 
