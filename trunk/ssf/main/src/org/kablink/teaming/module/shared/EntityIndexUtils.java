@@ -72,6 +72,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
@@ -609,7 +610,12 @@ public class EntityIndexUtils {
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
 	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
 	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), entry.getOwnerId().toString());
-	        if (entry.isIncludeFolderAcl()) ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
+	       	
+	       	if (entry.isIncludeFolderAcl()) {
+	       		if (!(entry instanceof WorkflowSupport) || ((WorkflowControlledEntry)entry).isWorkAreaAccess(WfAcl.AccessType.read)) {
+	       			ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
+	       		}
+	        }
 	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
 	       	if (entryIds.contains(allUsersId)) {
 	       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
