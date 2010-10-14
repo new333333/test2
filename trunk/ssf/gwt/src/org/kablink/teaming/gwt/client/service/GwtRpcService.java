@@ -103,7 +103,7 @@ public interface GwtRpcService extends RemoteService
 	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID );
 	
 	// Return a list of the names of the files that are attachments of the given binder.
-	public ArrayList<String> getFileAttachments( String binderId ) throws GwtTeamingException;
+	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Return a Folder object for the given folder id.
 	public GwtFolder getFolder( HttpRequestInfo ri, String zoneUUID, String folderId ) throws GwtTeamingException;
@@ -114,25 +114,25 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following deal with personal preferences.
 	public GwtPersonalPreferences getPersonalPreferences( HttpRequestInfo ri );
-	public Boolean savePersonalPreferences( GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
+	public Boolean savePersonalPreferences( HttpRequestInfo ri, GwtPersonalPreferences personalPrefs ) throws GwtTeamingException;
 	
 	// Return a GwtBrandingData object for the global workspace.
 	public GwtBrandingData getSiteBrandingData( HttpRequestInfo ri ) throws GwtTeamingException;
 	
-	public String getTutorialPanelState();
-	public ExtensionInfoClient[] getExtensionInfo();
-	public ExtensionInfoClient[] removeExtension(String id) throws ExtensionDefinitionInUseException;
-	public ExtensionFiles getExtensionFiles(String id, String zoneName);
+	public String getTutorialPanelState( HttpRequestInfo ri );
+	public ExtensionInfoClient[] getExtensionInfo( HttpRequestInfo ri );
+	public ExtensionInfoClient[] removeExtension( HttpRequestInfo ri, String id ) throws ExtensionDefinitionInUseException;
+	public ExtensionFiles getExtensionFiles( HttpRequestInfo ri, String id, String zoneName );
 	
 	// Returns a permalink for the given userId
-	public String getUserPermalink(HttpRequestInfo ri, String userId);
+	public String getUserPermalink( HttpRequestInfo ri, String userId );
 	// Returns a permalink to the currently logged in user's workspace.
 	public String getUserWorkspacePermalink( HttpRequestInfo ri );
 	
 	// The following are used to interact with the GWT UI defaults.
-	public Boolean getGwtUIDefault();
-	public Boolean getGwtUIEnabled();
-	public Boolean getGwtUIExclusive();
+	public Boolean getGwtUIDefault(   HttpRequestInfo ri );
+	public Boolean getGwtUIEnabled(   HttpRequestInfo ri );
+	public Boolean getGwtUIExclusive( HttpRequestInfo ri );
 	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
@@ -140,46 +140,46 @@ public interface GwtRpcService extends RemoteService
 	public TreeInfo       expandVerticalBucket(           HttpRequestInfo ri, List<Long> bucketList );
 	public List<TreeInfo> getHorizontalTree(              HttpRequestInfo ri, String     binderId );
 	public TreeInfo       getHorizontalNode(              HttpRequestInfo ri, String     binderId );
-	public String         getRootWorkspaceId(                                 String     binderId );
+	public String         getRootWorkspaceId(             HttpRequestInfo ri, String     binderId );
 	public TreeInfo       getVerticalActivityStreamsTree( HttpRequestInfo ri, String     binderId );
 	public TreeInfo       getVerticalTree(                HttpRequestInfo ri, String     binderId );
 	public TreeInfo       getVerticalNode(                HttpRequestInfo ri, String     binderId );
-	public Boolean        persistNodeCollapse(                                String     binderId );
-	public Boolean        persistNodeExpand(                                  String     binderId );
+	public Boolean        persistNodeCollapse(            HttpRequestInfo ri, String     binderId );
+	public Boolean        persistNodeExpand(              HttpRequestInfo ri, String     binderId );
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public Boolean               addFavorite(                  String             binderId                                   );
-	public Boolean               removeFavorite(               String             favoriteId                                 );
-	public Boolean               updateFavorites(                                           List<FavoriteInfo> favoritesList );
-	public List<TagInfo>         getBinderTags(                String             binderId                                   );
-	public Boolean               canManagePublicBinderTags(    String             binderId                                   );
-	public TagInfo               addBinderTag(                 String             binderId, TagInfo            binderTag     );
-	public Boolean               removeBinderTag(              String             binderId, TagInfo            binderTag     );
-	public Boolean               updateBinderTags(             String             binderId, List<TagInfo>      binderTags    );
-	public BinderInfo            getBinderInfo(                String             binderId                                   );
-	public String                getDefaultFolderDefinitionId( String binderId );
-	public List<FavoriteInfo>    getFavorites();
-	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo    ri                                         );
-	public List<GroupInfo>       getMyGroups(                  HttpRequestInfo    ri                                         );
-	public List<RecentPlaceInfo> getRecentPlaces(              HttpRequestInfo    ri                                         );
-	public List<SavedSearchInfo> getSavedSearches();
-	public TeamManagementInfo    getTeamManagementInfo(        HttpRequestInfo    ri,          String          binderId      );
-	public List<ToolbarItem>     getToolbarItems(              String             binderId                                   );
-	public List<TopRankedInfo>   getTopRanked(                 HttpRequestInfo    ri                                         );
-	public Boolean               removeSavedSearch(                                            SavedSearchInfo ssi           );
-	public SavedSearchInfo       saveSearch(                   String             searchTabId, SavedSearchInfo ssi           );
+	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   );
+	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
+	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
+	public List<TagInfo>         getBinderTags(                HttpRequestInfo ri, String binderId                                   );
+	public Boolean               canManagePublicBinderTags(    HttpRequestInfo ri, String binderId                                   );
+	public TagInfo               addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
+	public Boolean               removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
+	public Boolean               updateBinderTags(             HttpRequestInfo ri, String binderId, List<TagInfo>      binderTags    );
+	public BinderInfo            getBinderInfo(                HttpRequestInfo ri, String binderId                                   );
+	public String                getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId                                   );
+	public List<FavoriteInfo>    getFavorites(                 HttpRequestInfo ri                                                    );
+	public List<TeamInfo>        getMyTeams(                   HttpRequestInfo ri                                                    );
+	public List<GroupInfo>       getMyGroups(                  HttpRequestInfo ri                                                    );
+	public List<RecentPlaceInfo> getRecentPlaces(              HttpRequestInfo ri                                                    );
+	public List<SavedSearchInfo> getSavedSearches(             HttpRequestInfo ri                                                    );
+	public TeamManagementInfo    getTeamManagementInfo(        HttpRequestInfo ri, String binderId                                   );
+	public List<ToolbarItem>     getToolbarItems(              HttpRequestInfo ri, String binderId                                   );
+	public List<TopRankedInfo>   getTopRanked(                 HttpRequestInfo ri                                                    );
+	public Boolean               removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi           );
+	public SavedSearchInfo       saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi           );
 	
 	// The following are used to manage the tracking of information.
-	public List<String> getTrackedPeople();
-	public List<String> getTrackedPlaces();
-	public Boolean      isPersonTracked( String binderId );
-	public Boolean      trackBinder(     String binderId );
-	public Boolean      untrackBinder(   String binderId );
-	public Boolean      untrackPerson(   String binderId );
+	public List<String> getTrackedPeople( HttpRequestInfo ri                  );
+	public List<String> getTrackedPlaces( HttpRequestInfo ri                  );
+	public Boolean      isPersonTracked(  HttpRequestInfo ri, String binderId );
+	public Boolean      trackBinder(      HttpRequestInfo ri, String binderId );
+	public Boolean      untrackBinder(    HttpRequestInfo ri, String binderId );
+	public Boolean      untrackPerson(    HttpRequestInfo ri, String binderId );
 	
 	// Save the branding data to the given binder.
-	public Boolean saveBrandingData( String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
+	public Boolean saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData ) throws GwtTeamingException;
 	
 	// The following are used in the implementation of the
 	// User Profiles
@@ -190,17 +190,17 @@ public interface GwtRpcService extends RemoteService
 	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public List<GroupInfo> 	getGroups(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
 	public String 			getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	public Boolean 			isPresenceEnabled();
-	public String 			getImUrl( String binderId ) throws GwtTeamingException;
-	public GwtPresenceInfo getPresenceInfo( String binderId ) throws GwtTeamingException;
+	public Boolean 			isPresenceEnabled(HttpRequestInfo ri);
+	public String 			getImUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
+	public GwtPresenceInfo getPresenceInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 
 	// Return the URL for the start/schedule meeting page
 	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 
 	// The following are used in the implementation of the
 	// UserStatusControl.
-	public Boolean saveUserStatus(String status) throws GwtTeamingException;
-	public UserStatus getUserStatus(String binderId) throws GwtTeamingException; 
+	public Boolean saveUserStatus(HttpRequestInfo ri, String status) throws GwtTeamingException;
+	public UserStatus getUserStatus(HttpRequestInfo ri, String binderId) throws GwtTeamingException; 
 	
 	// Return information about self registration.
 	public GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpRequestInfo ri ) throws GwtTeamingException;
@@ -209,7 +209,7 @@ public interface GwtRpcService extends RemoteService
 	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
 	// Get upgrade information
-	public GwtUpgradeInfo getUpgradeInfo() throws GwtTeamingException;
+	public GwtUpgradeInfo getUpgradeInfo(HttpRequestInfo ri) throws GwtTeamingException;
 	
 	// Get DiskUsageInfo.
 	public  DiskUsageInfo getDiskUsageInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;

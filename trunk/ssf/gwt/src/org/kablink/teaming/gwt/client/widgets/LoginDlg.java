@@ -133,7 +133,9 @@ public class LoginDlg extends DlgBox
 			 */
 			public void onFailure( Throwable t )
 			{
-				// Nothing to do.
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 			}// end onFailure()
 	
 			/**

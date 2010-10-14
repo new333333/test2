@@ -586,7 +586,7 @@ public class GwtMainPage extends Composite
 						// Issue an ajax request to save the branding data to the db.  rpcSaveCallback will
 						// be called when we get the response back.
 						savedBrandingData = (GwtBrandingData) obj;
-						rpcService.saveBrandingData( savedBrandingData.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
+						rpcService.saveBrandingData( HttpRequestInfo.createHttpRequestInfo(), savedBrandingData.getBinderId(), (GwtBrandingData)obj, rpcSaveCallback );
 					}
 
 					return true;
@@ -713,7 +713,7 @@ public class GwtMainPage extends Composite
 								
 								// Issue an ajax request to save the personal preferences to the db.  rpcSaveCallback will
 								// be called when we get the response back.
-								rpcService.savePersonalPreferences( personalPrefs, rpcSaveCallback );
+								rpcService.savePersonalPreferences( HttpRequestInfo.createHttpRequestInfo(), personalPrefs, rpcSaveCallback );
 							}
 							
 							return true;
@@ -1286,7 +1286,12 @@ public class GwtMainPage extends Composite
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 		rpcService.getUserWorkspacePermalink( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<String>()
 		{
-			public void onFailure( Throwable t ) {}
+			public void onFailure( Throwable t ) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetUserWorkspaceUrl());
+			}
+			
 			public void onSuccess( String userWorkspaceURL )
 			{
 				jsToggleGwtUI();
@@ -1440,7 +1445,7 @@ public class GwtMainPage extends Composite
 	 * Implements the TRACK_BINDER teaming action.
 	 */
 	private void trackCurrentBinder() {
-		GwtTeaming.getRpcService().trackBinder( m_selectedBinderId, new AsyncCallback<Boolean>()
+		GwtTeaming.getRpcService().trackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1468,7 +1473,7 @@ public class GwtMainPage extends Composite
 	 * Implements the UNTRACK_BINDER teaming action.
 	 */
 	private void untrackCurrentBinder() {
-		GwtTeaming.getRpcService().untrackBinder( m_selectedBinderId, new AsyncCallback<Boolean>()
+		GwtTeaming.getRpcService().untrackBinder( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1496,7 +1501,7 @@ public class GwtMainPage extends Composite
 	 * Implements the UNTRACK_PERSON teaming action.
 	 */
 	private void untrackCurrentPerson() {
-		GwtTeaming.getRpcService().untrackPerson( m_selectedBinderId, new AsyncCallback<Boolean>()
+		GwtTeaming.getRpcService().untrackPerson( HttpRequestInfo.createHttpRequestInfo(), m_selectedBinderId, new AsyncCallback<Boolean>()
 		{
 			public void onFailure( Throwable t )
 			{
@@ -1675,11 +1680,19 @@ public class GwtMainPage extends Composite
 			// ...and persist this activity stream in the user's profile.
 			GwtTeaming.getRpcService().persistActivityStreamSelection( HttpRequestInfo.createHttpRequestInfo(), asi, new AsyncCallback<Boolean>()
 			{
-				// Note that we're not doing anything with the results
-				// good or bad.  If it fails, so what?  The activity
-				// stream will simply not persist for the user.
-				public void onFailure( Throwable t      ) {}
-				public void onSuccess( Boolean   result ) {}
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_PersistActivityStreamSelection() );
+				}// end onFailure()
+				
+				public void onSuccess( Boolean   result )
+				{
+					// Note that we're not doing anything with the results
+					// good or bad.  If it fails, so what?  The activity
+					// stream will simply not persist for the user.
+				}// end onSuccess()
 			});
 		}
 		else

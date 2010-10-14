@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -116,6 +118,7 @@ public class ExtensionsConfig  extends Composite {
 		initWidget( fPanel );
 	}
 	
+	@SuppressWarnings("unused")
 	private FormPanel addFileUpload()
 	{
 		// Create a FormPanel and point it at a service.
@@ -195,6 +198,8 @@ public class ExtensionsConfig  extends Composite {
 			public void onFailure(Throwable t)
 			{
 				// display error text if we can't get the tutorial panel state:
+				String msg = GwtTeaming.getMessages().extensionsRPCError();
+				GwtClientHelper.handleGwtRPCFailure( t, msg );
 				extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsRPCError() );
 			}
 	
@@ -207,7 +212,7 @@ public class ExtensionsConfig  extends Composite {
 	
 		extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 		gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-		gwtRpcService.getExtensionInfo(callback);
+		gwtRpcService.getExtensionInfo(HttpRequestInfo.createHttpRequestInfo(), callback);
 	}
 	
 	private void updateTable(ExtensionInfoClient[] extensions){
@@ -275,6 +280,9 @@ public class ExtensionsConfig  extends Composite {
 				 */
 				public void onFailure(Throwable t)
 				{
+					String msg = GwtTeaming.getMessages().extensionsRPCError();
+					GwtClientHelper.handleGwtRPCFailure( t, msg );
+					
 					try {
 						throw t;
 					} catch (ExtensionDefinitionInUseException exEx) {
@@ -282,7 +290,7 @@ public class ExtensionsConfig  extends Composite {
 						//extensionPanelStateText.setText( exEx.getMessage() );
 					} catch (Throwable e) {
 						// display error text if we can't get the tutorial panel state:
-						extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsRPCError() );
+						extensionPanelStateText.setText( msg );
 					}
 				}
 		
@@ -297,6 +305,6 @@ public class ExtensionsConfig  extends Composite {
 		
 			extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-			gwtRpcService.removeExtension(extInfo.getId(), callback);
+			gwtRpcService.removeExtension(HttpRequestInfo.createHttpRequestInfo(), extInfo.getId(), callback);
 		}
 	}

@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.NativeEvent;
@@ -284,7 +285,7 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.saveUserStatus(status, rpcCallback );
+			rpcService.saveUserStatus( HttpRequestInfo.createHttpRequestInfo(), status, rpcCallback );
 		}
 	}
 	
@@ -328,7 +329,7 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 			
 			// Issue an ajax request to save the user status to the db.  rpcCallback will
 			// be called when we get the response back.
-			rpcService.getUserStatus(getBinderId(), rpcCallback );
+			rpcService.getUserStatus(HttpRequestInfo.createHttpRequestInfo(), getBinderId(), rpcCallback );
 		}
 
 		

@@ -46,7 +46,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class HttpRequestInfo implements IsSerializable {
 	private transient Object m_requestObj;
-	private String m_userId;	// The id of the user the client thinks we are dealing with.
+	private           String m_userId;		// The id of the user the client thinks we are dealing with.
 	
 	/**
 	 * Constructor method.
@@ -54,10 +54,12 @@ public class HttpRequestInfo implements IsSerializable {
 	 * No parameters as per GWT serialization requirements.
 	 */
 	public HttpRequestInfo() {
+		// Nothing to do.
 	}
 	
 	/**
-	 * This method should be used by the client to construct an HttpRequestInfo 
+	 * This method should be used by the client to construct an
+	 * HttpRequestInfo. 
 	 */
 	public static HttpRequestInfo createHttpRequestInfo()
 	{
@@ -69,29 +71,11 @@ public class HttpRequestInfo implements IsSerializable {
 		return ri;
 	}
 	
-
 	/**
 	 * Get'er/Set'er methods.
-	 * 
-	 * @return
 	 */
 	public Object getRequestObj()                  {return m_requestObj;      }
+	public String getUserId()                      {return m_userId;          }
 	public void   setRequestObj(Object requestObj) {m_requestObj = requestObj;}
-	
-	/**
-	 * 
-	 */
-	public String getUserId()
-	{
-		return m_userId;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setUserId( String userId )
-	{
-		m_userId = userId;
-	}
-	
+	public void   setUserId(    String userId    ) {m_userId     = userId;    }	
 }

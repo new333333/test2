@@ -313,6 +313,14 @@ public class MastHead extends Composite
 				 */
 				public void onFailure( Throwable t )
 				{
+					// Note:  We don't pass a string here such as
+					//   rpcFailure_GetSiteAdminUrl() because it would
+					//   get displayed for guest, and all other
+					//   non-admin users.  Not passing a string here
+					//   allows the proper exception handling to occur
+					//   but will NOT display an error to the user.
+					GwtClientHelper.handleGwtRPCFailure( t );
+					
 					// The user does not have the rights to run the "site administration" page.
 					m_adminLink.setVisible( false );
 				}// end onFailure()

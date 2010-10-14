@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.presence;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -83,6 +85,11 @@ public class PresenceControl extends Composite {
 
 		AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
 			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
+					m_binderId);
+				
 				panel.setVisible(false);
 			}
 
@@ -153,7 +160,7 @@ public class PresenceControl extends Composite {
 		};
 
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
-		rpcService.getPresenceInfo(m_binderId, callback);
+		rpcService.getPresenceInfo(HttpRequestInfo.createHttpRequestInfo(), m_binderId, callback);
 	}
 	
 	

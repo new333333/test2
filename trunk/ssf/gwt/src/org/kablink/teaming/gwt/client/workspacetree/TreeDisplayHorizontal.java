@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.workspacetree;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -118,7 +120,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
 					getRpcService().expandHorizontalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
-						public void onFailure(Throwable t) {}
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_ExpandBucket());
+						}
+						
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Mark the node as being opened, save its
 							// new child Binder's list and re-render it.
@@ -132,7 +139,13 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 					// must be showing a normal node.  Can we get a
 					// TreeInfo for the expansion?
 					getRpcService().getHorizontalNode( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBinderInfo().getBinderId(), new AsyncCallback<TreeInfo>() {
-						public void onFailure(Throwable t) {}
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetTree(),
+								m_ti.getBinderInfo().getBinderId());
+						}
+						
 						public void onSuccess(TreeInfo expandedTI) {
 							// Yes!  Mark the node as being opened, save its
 							// new child Binder's list and re-render it.

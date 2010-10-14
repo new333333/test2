@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -540,7 +541,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				hide();
 
 				// ...and run the tag this dialog.
-				GwtTeaming.getRpcService().getBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
+				GwtTeaming.getRpcService().getBinderTags(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
@@ -548,7 +549,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 							m_currentBinder.getBinderId());
 					}
 					public void onSuccess(final List<TagInfo> binderTags) {
-						GwtTeaming.getRpcService().canManagePublicBinderTags(m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
+						GwtTeaming.getRpcService().canManagePublicBinderTags(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
 							public void onFailure(Throwable t) {
 								GwtClientHelper.handleGwtRPCFailure(
 									t,
