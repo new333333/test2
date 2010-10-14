@@ -38,7 +38,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
@@ -52,7 +51,6 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -62,9 +60,13 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
 public class GwtProfilePage extends Composite implements ActionRequestor, ActionTrigger {
-
+	// profileRequestInfo is now public static to match the definition
+	// of the m_requestInfo in GwtMainPage.  This was necessary for the
+	// proper operation of HttpRequestInfo.createHttpRequestInfo() from
+	// both the main page and the profile page.
+	public static ProfileRequestInfo profileRequestInfo = null;
+	
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
-	private ProfileRequestInfo profileRequestInfo = null;
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;

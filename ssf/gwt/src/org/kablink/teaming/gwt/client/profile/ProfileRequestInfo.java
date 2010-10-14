@@ -85,6 +85,8 @@ public class ProfileRequestInfo extends JavaScriptObject
 	
 	public final native String getUserId() /*-{ return this.userId; }-*/;
 	
+	public final native String getUserLoginId() /*-{ return this.userLoginId; }-*/;
+	
 	public final native boolean isBinderAdmin() /*-{ return this.isBinderAdmin; }-*/;
 	
 	public final native boolean isQuotasEnabled() /*-{ return this.isQuotasEnabled; }-*/;
