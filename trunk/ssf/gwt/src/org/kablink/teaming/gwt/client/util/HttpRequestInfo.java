@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -46,7 +47,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class HttpRequestInfo implements IsSerializable {
 	private transient Object m_requestObj;
-	private           String m_userId;		// The id of the user the client thinks we are dealing with.
+	private           String m_userLoginId;	// The login ID of the user the client thinks we are dealing with.
 	
 	/**
 	 * Constructor method.
@@ -63,19 +64,35 @@ public class HttpRequestInfo implements IsSerializable {
 	 */
 	public static HttpRequestInfo createHttpRequestInfo()
 	{
-		HttpRequestInfo ri;
-		
-		ri = new HttpRequestInfo();
-		ri.setUserId( GwtMainPage.m_requestInfo.getUserId() );
-		
-		return ri;
+		String userLoginId;
+		try {
+			// Can we access the user's login ID from GwtMainPage?
+			userLoginId = GwtMainPage.m_requestInfo.getUserLoginId();
+		}
+		catch (Exception eMain) {
+			try {
+				// No!  Can we access it from GwtProfilePage?
+				userLoginId = GwtProfilePage.profileRequestInfo.getUserLoginId();
+			}
+			catch (Exception eProfile) {
+				// No!  Then we don't know where to get it.
+				userLoginId = null;
+			}
+		}
+
+		// Construct, initialize and return an HttpRequestInfo object
+		HttpRequestInfo reply = new HttpRequestInfo();
+		if (GwtClientHelper.hasString(userLoginId)) {
+			reply.setUserLoginId(userLoginId);
+		}		
+		return reply;
 	}
 	
 	/**
 	 * Get'er/Set'er methods.
 	 */
-	public Object getRequestObj()                  {return m_requestObj;      }
-	public String getUserId()                      {return m_userId;          }
-	public void   setRequestObj(Object requestObj) {m_requestObj = requestObj;}
-	public void   setUserId(    String userId    ) {m_userId     = userId;    }	
+	public Object getRequestObj()                    {return m_requestObj;        }
+	public String getUserLoginId()                   {return m_userLoginId;       }
+	public void   setRequestObj( Object requestObj ) {m_requestObj  = requestObj; }
+	public void   setUserLoginId(String userLoginId) {m_userLoginId = userLoginId;}	
 }

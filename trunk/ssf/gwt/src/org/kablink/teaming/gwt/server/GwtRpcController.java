@@ -121,7 +121,7 @@ public class GwtRpcController extends RemoteServiceServlet
                 	
             		// No
             		// Get the id of the user the client thinks it is dealing with.
-            		clientUserId = ri.getUserId();
+            		clientUserId = ri.getUserLoginId();
                 	
             		// Does the client think they are working with the guest user?
             		guestId = SZoneConfig.getGuestUserName( WebHelper.getZoneNameByVirtualHost( req) );

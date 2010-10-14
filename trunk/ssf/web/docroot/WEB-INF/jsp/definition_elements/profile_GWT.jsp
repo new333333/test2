@@ -65,6 +65,7 @@
 	 var profileRequestInfo = { binderId:'${ssBinder.id}',
 			 	currentUserWorkspaceId : '${ssUser.workspaceId}',
 			 	userId : '${ssUser.id}',
+				userLoginId : '${ssUser.name}',
 				profileUserName : '<ssf:escapeJavaScript><ssf:userTitle user="${ssProfileConfigEntry}"/></ssf:escapeJavaScript>',
 				adaptedUrl : '<ssf:url crawlable="true"
 					adapter="true" portletName="ss_forum"
