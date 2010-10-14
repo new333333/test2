@@ -80,7 +80,6 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 
 #ss_sideNav_wrap{
 	background: #FFF !important;
-	border-color: #CCCCCC;
 	border-style: solid;
 	border-width: 0;
 	width: 198px;
@@ -91,7 +90,6 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 #ss_sideNav_wrap, #ss_sideNav_wrap *{	
 	font-family: Arial;
 	font-size:${ss_style_font_smallprint};
-	color: #333333
 	}	
 .ss_sidebarTree {
 	overflow-x:auto;
