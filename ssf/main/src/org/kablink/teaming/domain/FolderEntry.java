@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -249,6 +250,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         child.setParentFolder(getParentFolder());
         child.setOwningBinderKey(owningBinderKey);
         ++replyCount;
+        //if (!child.isPreDeleted()) addAncestor(child);  //Add the check for predeleted if you want to keep the counts accurate
         addAncestor(child);
     }
     public void addReply(FolderEntry child, int docNumber) {
@@ -265,11 +267,70 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         child.setHKey(null);
         getReplies().remove(child);
         --replyCount;
+        //if (!child.isPreDeleted()) removeAncestor(child);  //Add the check for predeleted if you want to keep the counts accurate
         removeAncestor(child);
         getParentFolder().removeEntry(child);
     }
 
-  
+    public void preDeleteReply(FolderEntry child) {
+    	if (1 == 0) {   //This is turned off until we can determine the performance implications (see bug #641442)
+	        if (!child.getParentEntry().getId().equals(this.getId())) {
+	            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
+	        }
+	        removeAncestor(child);
+    	}
+    }
+
+    public void restorePreDeletedReply(FolderEntry child) {
+    	if (1 == 0) {   //This is turned off until we can determine the performance implications (see bug #641442)
+	        if (!child.getParentEntry().getId().equals(this.getId())) {
+	            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
+	        }
+	        addAncestor(child);
+    	}
+    }
+    
+    //Currently, this is not called from anywhere.
+    //The issue is where to add this such that it doesn't cause a large performance issue.
+    //See bug report #641442
+    public List recalculateTotalReplyCount() {
+    	List<FolderEntry> changedReplies = new ArrayList<FolderEntry>();
+    	Map<FolderEntry,Integer> allReplies = new HashMap<FolderEntry,Integer>();
+		//Build a list of all replies
+		buildTotalReplyList(allReplies, this);
+		//Calculate all of the counts
+		for (FolderEntry fe : allReplies.keySet()) {
+			if (!fe.isPreDeleted() && !fe.isTop()) fe.getParentEntry().addAncestor(allReplies);
+		}
+		//Now see if any counts were wrong; if so, update them
+		for (FolderEntry fe : allReplies.keySet()) {
+			if (fe.getTotalReplyCount() != allReplies.get(fe)) {
+				//The count didn't match, reset it
+				fe.setTotalReplyCount(allReplies.get(fe));
+				changedReplies.add(fe);
+			}
+		}
+    	return changedReplies;
+    }
+    
+    protected void buildTotalReplyList(Map<FolderEntry,Integer> allReplies, FolderEntry reply) {
+		if (!allReplies.containsKey(reply)) allReplies.put(reply, 0);
+    	List<FolderEntry> replies = reply.getReplies();
+    	for (FolderEntry child : replies) {
+    		buildTotalReplyList(allReplies, child);
+    	}
+    }
+    protected void addAncestor(Map<FolderEntry,Integer> allReplies) {
+    	Integer count = allReplies.get(this);
+    	if (!isPreDeleted()) {
+    		allReplies.put(this, ++count);
+	    	FolderEntry parent = getParentEntry();
+	    	if (parent != null) {
+	    		parent.addAncestor(allReplies);
+	    	}
+    	}
+    }
+
     /* 
      * A reply was added somewhere in the tree.
      * Update cummulative replyCount
@@ -287,7 +348,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
      */
     protected void removeAncestor(FolderEntry reply) {
     	FolderEntry parent = getParentEntry();
-        totalReplyCount = totalReplyCount - reply.getTotalReplyCount() -1;
+    	totalReplyCount = totalReplyCount - reply.getTotalReplyCount() -1;
+    	if (totalReplyCount < 0) totalReplyCount = 0;
         if (parent != null) {
             parent.removeAncestor(reply);
         }

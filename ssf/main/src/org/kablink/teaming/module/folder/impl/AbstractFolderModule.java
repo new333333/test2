@@ -738,7 +738,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	entry.setPreDeleted(null);
         	entry.setPreDeletedWhen(null);
         	entry.setPreDeletedBy(null);
-        	
+
+        	if (!entry.isTop()) {
+        		//Increment all of the reply counts in parent entries. Must be done after clearing preDeleted
+        		entry.getParentEntry().restorePreDeletedReply(entry);
+        	}
+
 	        // ...log the restoration...
 			FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 			TrashHelper.changeEntry_Log(processor, entry, ChangeLog.RESTOREENTRY);
@@ -779,6 +784,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         if ((null != entry) && (null != folder) && (!(folder.isMirrored()))) {
         	checkAccess(entry, FolderOperation.preDeleteEntry);
         	
+        	if (!entry.isTop()) {
+        		//Decrement all of the reply counts in parent entries. Must be done before setting preDeleted
+        		entry.getParentEntry().preDeleteReply(entry);
+        	}
         	entry.setPreDeleted(Boolean.TRUE);
         	entry.setPreDeletedWhen(System.currentTimeMillis());
         	entry.setPreDeletedBy(userId);
