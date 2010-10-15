@@ -123,7 +123,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_wiki_search_bar {
 	position: absolute;
-	top: 0px;
+	top: 5px;
 	right: 5px;
 	white-space: nowrap;
 	}
