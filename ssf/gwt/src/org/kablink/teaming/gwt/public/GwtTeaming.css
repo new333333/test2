@@ -349,7 +349,8 @@ a, a:visited, a:hover {
 	background-color: #EAEBE8;
 	padding: 0 0 8px;
 	position: absolute;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	top: 8px;
 	z-index: 100;
 	-moz-border-radius: 5px;
@@ -1851,6 +1852,12 @@ body, table td, select
 .margin-right-5
 {
 	margin-right: 5px;
+}
+
+/* Style used to create a right margin of 22 px. */
+.margin-right-22
+{
+	margin-right: 22px;
 }
 
 /* Style used to create a top margin of 5 px. */

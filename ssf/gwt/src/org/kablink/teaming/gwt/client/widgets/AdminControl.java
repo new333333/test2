@@ -570,7 +570,10 @@ public class AdminControl extends Composite
 					imgResource = GwtTeaming.getImageBundle().info2();
 					img = new Image( imgResource );
 					img.addStyleName( "cursorPointer" );
-					img.addStyleName( "margin-right-5" );
+					if ( GwtClientHelper.jsIsIE() )
+						img.addStyleName( "margin-right-22" );
+					else
+						img.addStyleName( "margin-right-5" );
 					img.addClickHandler( new ClickHandler()
 					{
 						public void onClick( ClickEvent event  )
