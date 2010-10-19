@@ -90,6 +90,7 @@
 	font-size: .75em;
 	margin-left: 1em;
 	padding: 5px;
+	white-space: nowrap;
 }
 
 .activityStreamCtrlHeaderRefresh
