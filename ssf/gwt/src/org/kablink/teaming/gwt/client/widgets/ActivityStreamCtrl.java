@@ -479,14 +479,19 @@ public class ActivityStreamCtrl extends Composite
 		Image img;
 		ClickHandler clickHandler;
 		InlineLabel whatsNewLabel;
+		FlowPanel header2;
 
 		m_headerPanel = new FlowPanel();
 		m_headerPanel.addStyleName( "activityStreamCtrlHeader" );
 		
+		header2 = new FlowPanel();
+		header2.addStyleName( "activityStreamCtrlHeader2" );
+		m_headerPanel.add( header2 );
+		
 		// Create a label where the name of the activity stream source will go.
 		m_sourceName = new InlineLabel( " " );
 		m_sourceName.addStyleName( "activityStreamCtrlHeaderTitle" );
-		m_headerPanel.add( m_sourceName );
+		header2.add( m_sourceName );
 		
 		// Add a mouse-over handler for the activity stream source name.
 		{
@@ -561,7 +566,7 @@ public class ActivityStreamCtrl extends Composite
 		// Create a label for "What's New"
 		whatsNewLabel = new InlineLabel( GwtTeaming.getMessages().whatsNew() );
 		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
-		m_headerPanel.add( whatsNewLabel );
+		header2.add( whatsNewLabel );
 		
 		// Add a "Next Refresh: xxx" label.
 		m_nextRefreshLabel = new Label();
