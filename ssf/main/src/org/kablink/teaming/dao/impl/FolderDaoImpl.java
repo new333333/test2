@@ -108,9 +108,9 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                         Criteria crit = session.createCriteria(FolderEntry.class)
 	                         	.add(Expression.eq("HKey.sortKey", sortKey))  
-	                         	.setFetchMode("entryDef", FetchMode.SELECT)	
+	                         	//.setFetchMode("entryDef", FetchMode.SELECT)	
 	                         	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
-	                         	.setFetchMode("topFolder", FetchMode.SELECT);	
+	                         	.setFetchMode("topEntry", FetchMode.SELECT);	
 	                         List objs = crit.list();
 	                         if (objs.isEmpty()) throw new NoFolderEntryByTheIdException(sortKey);
 	                         return (FolderEntry)objs.get(0);
@@ -232,9 +232,9 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                                			.add(Expression.lt("HKey.sortKey", next.getSortKey()))
 	                                	)
 	                            	 )
-	                            	.setFetchMode("entryDef", FetchMode.SELECT)	
+	                            	//.setFetchMode("entryDef", FetchMode.SELECT)	
 	                            	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
-	                            	.setFetchMode("topFolder", FetchMode.SELECT)	
+	                            	.setFetchMode("topEntry", FetchMode.SELECT)	
 	                            	.addOrder(Order.asc("HKey.sortKey"))
 	                            	.list();
 	                        }
@@ -260,9 +260,9 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                     String[] keys = entry.getHKey().getAncestorKeys();  
 	                     return  session.createCriteria(entry.getClass())
 	                     	.add(Expression.in("HKey.sortKey", keys))
-	                       	.setFetchMode("entryDef", FetchMode.SELECT)	
+	                       	//.setFetchMode("entryDef", FetchMode.SELECT)	
 	                       	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
-	                       	.setFetchMode("topFolder", FetchMode.SELECT)	
+	                       	.setFetchMode("topEntry", FetchMode.SELECT)	
 	                     	.addOrder(Order.asc("HKey.sortKey"))
 	                     	.list();
 	                 }
@@ -297,9 +297,9 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	                		 crit = session.createCriteria(FolderEntry.class)
 	                		 	.add(Expression.eq("topEntry", entry));                 		 
 	                	 };
-	                     crit.setFetchMode("entryDef", FetchMode.SELECT);	
+	                     //crit.setFetchMode("entryDef", FetchMode.SELECT);	
 	                     crit.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT);	
-	                     crit.setFetchMode("topFolder", FetchMode.SELECT);	
+	                     crit.setFetchMode("topEntry", FetchMode.SELECT);	
 	                     crit.addOrder(Order.asc("HKey.sortKey"));
 	                     return crit.list();
 	                 }
