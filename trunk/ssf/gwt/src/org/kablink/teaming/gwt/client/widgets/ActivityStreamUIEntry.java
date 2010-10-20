@@ -531,14 +531,19 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_desc.getElement().setInnerHTML( entryItem.getEntryDescription() );
 		m_entryId = entryItem.getEntryId();
 		
-		// Create a presence control for the author.
-		presenceCtrl = new PresenceControl( m_authorWSId, false, false, false );
-		presenceCtrl.setImageAlignment( "top" );
-		presenceCtrl.addClickHandler( m_presenceClickHandler );
-		presenceCtrl.addStyleName( "displayInline" );
-		presenceCtrl.addStyleName( "verticalAlignTop" );
-		presenceCtrl.setAnchorStyleName( "cursorPointer" );
-		m_presencePanel.add( presenceCtrl );
+		// Has the author's workspace been deleted?
+		if ( m_authorWSId != null && m_authorWSId.length() > 0 )
+		{
+			// No
+			// Create a presence control for the author.
+			presenceCtrl = new PresenceControl( m_authorWSId, false, false, false );
+			presenceCtrl.setImageAlignment( "top" );
+			presenceCtrl.addClickHandler( m_presenceClickHandler );
+			presenceCtrl.addStyleName( "displayInline" );
+			presenceCtrl.addStyleName( "verticalAlignTop" );
+			presenceCtrl.setAnchorStyleName( "cursorPointer" );
+			m_presencePanel.add( presenceCtrl );
+		}
 		
 		m_viewEntryPermalink = null;
 	}
