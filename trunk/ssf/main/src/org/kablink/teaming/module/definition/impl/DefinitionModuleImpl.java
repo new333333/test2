@@ -380,6 +380,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     		//Use the definition id as the workflow process name
     		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
     	}
+    	DefinitionCache.invalidate(def.getId());
     }
     //should be called after all imports are done, to handle definition cross references
     public void updateDefinitionReferences(String defId) {
