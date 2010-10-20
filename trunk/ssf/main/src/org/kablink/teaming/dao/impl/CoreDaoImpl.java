@@ -1454,9 +1454,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		            	//see if in use
 		            	List results;
 		               	if (def.getType() != Definition.WORKFLOW) {
-		               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDef", def), def.getZoneId());
+		               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
 		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
-		               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDef", def), def.getZoneId());
+		               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
 		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 		               		count = countObjects(org.kablink.teaming.domain.Binder.class, new FilterControls("entryDef", def), def.getZoneId());
 		               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
@@ -1515,9 +1515,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			            public Object doInHibernate(Session session) throws HibernateException {
 			            	//see if in use
 			               	if (def.getType() != Definition.WORKFLOW) {
-			               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDef", def), def.getZoneId());
+			               		long count = countObjects(org.kablink.teaming.domain.FolderEntry.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
 			               		if (count > 0) return new Boolean(true);
-			               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDef", def), def.getZoneId());
+			               		count = countObjects(org.kablink.teaming.domain.Principal.class, new FilterControls("entryDefId", def.getId()), def.getZoneId());
 			               		if (count > 0) return new Boolean(true);;
 			               		count = countObjects(org.kablink.teaming.domain.Binder.class, new FilterControls("entryDef", def), def.getZoneId());
 			               		if (count > 0) return new Boolean(true);;
