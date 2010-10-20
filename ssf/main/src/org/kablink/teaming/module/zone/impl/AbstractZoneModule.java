@@ -93,6 +93,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
@@ -222,6 +223,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
  		RequestContextHolder.clear();
  		
+ 		DefinitionCache.clear();
  	}
  	
 	public Long getZoneIdByZoneName(String zoneName) {
