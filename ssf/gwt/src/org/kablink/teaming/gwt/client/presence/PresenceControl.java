@@ -85,10 +85,12 @@ public class PresenceControl extends Composite {
 
 		AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
 			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
-					m_binderId);
+				// Just ignore any errors.  All we need to do is hide the presence control
+				// See bug 648358.
+				//GwtClientHelper.handleGwtRPCFailure(
+				//	t,
+				//	GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
+				//	m_binderId);
 				
 				panel.setVisible(false);
 			}
