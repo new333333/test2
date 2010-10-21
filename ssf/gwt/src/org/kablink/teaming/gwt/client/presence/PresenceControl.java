@@ -77,7 +77,14 @@ public class PresenceControl extends Composite {
 	{
 		m_presenceAClickHandler = clickHandler;
 		if ( m_presenceA != null )
+		{
 			m_presenceA.addClickHandler( clickHandler );
+			
+			// Set m_presenceAClickHandler to null otherwise onSuccess() in getPresenceInfo()
+			// will call m_presenceA.addClickHandler( m_presenceAClickHandler ) which will
+			// add the click handler twice.
+			m_presenceAClickHandler = null;
+		}
 	}
 	
 	private void getPresenceInfo() {
