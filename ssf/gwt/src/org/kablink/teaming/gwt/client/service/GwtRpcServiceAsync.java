@@ -38,10 +38,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -177,16 +177,16 @@ public interface GwtRpcServiceAsync
 	public void saveBrandingData( HttpRequestInfo ri, String binderId, GwtBrandingData brandingData, AsyncCallback<Boolean> callback );
 
 	// Return information about the User Profile
-	public void getProfileInfo(		HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback );
-	public void getProfileStats(	HttpRequestInfo ri, String userId,   AsyncCallback<ProfileStats> 	callback );
-	public void getProfileAvatars(	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileAttribute>callback );
-	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId, AsyncCallback<ProfileInfo> 	callback );
-	public void getTeams(			HttpRequestInfo ri, String binderId, AsyncCallback<List<TeamInfo>>  callback );
-	public void getGroups(			HttpRequestInfo ri, String binderId, AsyncCallback<List<GroupInfo>> callback );
-	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback );
-	public void isPresenceEnabled(  HttpRequestInfo ri,                  AsyncCallback<Boolean>			callback );
-	public void getImUrl(			HttpRequestInfo ri, String binderId, AsyncCallback<String> 			callback );
-	public void getPresenceInfo(    HttpRequestInfo ri, String binderId, AsyncCallback<GwtPresenceInfo> callback );
+	public void getProfileInfo(		HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
+	public void getProfileStats(	HttpRequestInfo ri, String binderId, String userId, AsyncCallback<ProfileStats> 	callback );
+	public void getProfileAvatars(	HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileAttribute> callback );
+	public void getQuickViewInfo( 	HttpRequestInfo ri, String binderId,                AsyncCallback<ProfileInfo> 	    callback );
+	public void getTeams(			HttpRequestInfo ri, String binderId,                AsyncCallback<List<TeamInfo>>   callback );
+	public void getGroups(			HttpRequestInfo ri, String binderId,                AsyncCallback<List<GroupInfo>>  callback );
+	public void getMicrBlogUrl( 	HttpRequestInfo ri, String binderId,                AsyncCallback<String> 			callback );
+	public void isPresenceEnabled(  HttpRequestInfo ri,                                 AsyncCallback<Boolean>			callback );
+	public void getImUrl(			HttpRequestInfo ri, String binderId,                AsyncCallback<String> 			callback );
+	public void getPresenceInfo(    HttpRequestInfo ri, String binderId,                AsyncCallback<GwtPresenceInfo>  callback );
 
 	// Return the URL for the start/schedule meeting page
 	public void getAddMeetingUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback);
@@ -195,8 +195,8 @@ public interface GwtRpcServiceAsync
 	public void saveUserStatus( HttpRequestInfo ri, String status, 	 AsyncCallback<Boolean>    callback );
 	public void getUserStatus(  HttpRequestInfo ri, String binderId, AsyncCallback<UserStatus> callback ); 
 	
-	// Return information about self registration.
-	public void getSelfRegistrationInfo( HttpRequestInfo ri, AsyncCallback<GwtSelfRegistrationInfo> callback );
+	// Return login information such as self registration and auto complete.
+	public void getLoginInfo( HttpRequestInfo ri, AsyncCallback<GwtLoginInfo> callback );
 	
 	// Return the url needed to invoke the "site administration" page.
 	public void getSiteAdministrationUrl( HttpRequestInfo ri, String binderId, AsyncCallback<String> callback );

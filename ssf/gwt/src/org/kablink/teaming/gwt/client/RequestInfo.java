@@ -103,6 +103,10 @@ public class RequestInfo extends JavaScriptObject
 	 */
 	public final native String getImagesPath() /*-{ return this.imagesPath; }-*/;
 
+	/**
+	 * Return the path to Teaming's JavaScript.  This class is an overlay on the JavaScript object called profileRequestInfo.
+	 */
+	public final native String getJSPath() /*-{ return this.jsPath; }-*/;
 	
 	/**
 	 * Return the user's language.  This class is an overlay on the JavaScript object called m_requestInfo.

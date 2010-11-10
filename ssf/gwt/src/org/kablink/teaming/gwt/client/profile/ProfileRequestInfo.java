@@ -74,6 +74,12 @@ public class ProfileRequestInfo extends JavaScriptObject
 
 	
 	/**
+	 * Return the path to Teaming's JavaScript.  This class is an overlay on the JavaScript object called profileRequestInfo.
+	 */
+	public final native String getJSPath() /*-{ return this.jsPath; }-*/;
+
+	
+	/**
 	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called profileRequestInfo.
 	 */
 	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;

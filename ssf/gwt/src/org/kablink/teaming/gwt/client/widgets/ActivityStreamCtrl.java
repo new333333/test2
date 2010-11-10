@@ -109,7 +109,8 @@ public class ActivityStreamCtrl extends Composite
 	private Image m_nextImg;
 	private InlineLabel m_nOfnLabel;
 	private FlowPanel m_searchingPanel;
-	private FlowPanel m_noEntriesFoundPanel;
+	private FlowPanel m_msgPanel;
+	private InlineLabel m_msgText;
 	private ActivityStreamInfo m_activityStreamInfo = null;
 	private GwtRpcServiceAsync m_rpcService = null;
 	private String m_asSourcePermalink = null;		// Permalink to the binder or user that is the source of the activity stream.
@@ -165,14 +166,12 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Create a panel to hold "No entries found"
 		{
-			InlineLabel text;
-			
-			m_noEntriesFoundPanel = new FlowPanel();
-			m_noEntriesFoundPanel.addStyleName( "activityStreamNoEntriesFoundPanel" );
-			mainPanel.add( m_noEntriesFoundPanel );
-			text = new InlineLabel( GwtTeaming.getMessages().noEntriesFound() );
-			m_noEntriesFoundPanel.add( text );
-			m_noEntriesFoundPanel.setVisible( false );
+			m_msgPanel = new FlowPanel();
+			m_msgPanel.addStyleName( "activityStreamNoEntriesFoundPanel" );
+			mainPanel.add( m_msgPanel );
+			m_msgText = new InlineLabel( "" );
+			m_msgPanel.add( m_msgText );
+			m_msgPanel.setVisible( false );
 		}
 		
 		// Create the callback that will be used when we issue an ajax call to do a search.
@@ -189,7 +188,7 @@ public class ActivityStreamCtrl extends Composite
 				
 				m_searchInProgress = false;
 				hideSearchingText();
-				showNoEntriesFoundText();
+				showMessage( GwtTeaming.getMessages().noEntriesFound() );
 			}// end onFailure()
 	
 			/**
@@ -316,12 +315,12 @@ public class ActivityStreamCtrl extends Composite
 		if ( displayCount == 0 )
 		{
 			// No
-			showNoEntriesFoundText();
+			showMessage( GwtTeaming.getMessages().noEntriesFound() );
 		}
 		else
 		{
 			// Yes
-			hideNoEntriesFoundText();
+			hideMessage();
 		}
 	}
 	
@@ -364,6 +363,9 @@ public class ActivityStreamCtrl extends Composite
 				 */
 				public void onFailure(Throwable t)
 				{
+					// We don't want to keep checking for changes.
+					cancelCheckForChangesTimer();
+					
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
 						GwtTeaming.getMessages().rpcFailure_CheckForActivityStreamChanges() );
@@ -723,11 +725,11 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * Hide the "No entries found" text.
+	 * Hide the panel that displays the message.
 	 */
-	public void hideNoEntriesFoundText()
+	public void hideMessage()
 	{
-		m_noEntriesFoundPanel.setVisible( false );
+		m_msgPanel.setVisible( false );
 	}
 	
 	
@@ -918,6 +920,8 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void setActivityStream( ActivityStreamInfo activityStreamInfo )
 	{
+		ActivityStream src;
+		
 		// No, issue an rpc request to get the ActivityStreamParams.
 		HttpRequestInfo ri;
 		
@@ -926,6 +930,56 @@ public class ActivityStreamCtrl extends Composite
 		// Change our title to reflect the new activity stream source.
 		setTitle();
 		
+		// Hide any message we may be displaying
+		hideMessage();
+		
+		src = m_activityStreamInfo.getActivityStream();
+		switch ( src )
+		{
+		case MY_FAVORITES:
+		case MY_TEAMS:
+		case FOLLOWED_PEOPLE:
+		case FOLLOWED_PLACES:
+			String[] binderIds;
+			
+			// For the selected activity stream, do we have any binders?  For example, is the
+			// user a member of any teams?
+			binderIds = m_activityStreamInfo.getBinderIds(); 
+			if ( binderIds == null || binderIds.length == 0 )
+			{
+				String msg;
+				
+				// We don't have any binder ids.
+				// Get the appropriate message to display to the user.
+				msg = "Unknown";
+				if ( src == ActivityStream.MY_FAVORITES )
+				{
+					msg = GwtTeaming.getMessages().noFavorites();
+				}
+				else if ( src == ActivityStream.MY_TEAMS )
+				{
+					msg = GwtTeaming.getMessages().noTeams();
+				}
+				else if ( src == ActivityStream.FOLLOWED_PEOPLE )
+				{
+					msg = GwtTeaming.getMessages().noPeopleFollowed();
+				}
+				else if ( src == ActivityStream.FOLLOWED_PLACES )
+				{
+					msg = GwtTeaming.getMessages().noPlacesFollowed();
+				}
+
+				// Clear any results we may be currently displaying.
+				clearCurrentSearchResults();
+
+				// Display the appropriate message.  ie, "you are not a member of any teams"
+				showMessage( msg );
+				
+				return;
+			}
+			break;
+		}
+
 		m_pagingData = null;
 		
 		if ( m_getActivityStreamParamsCallback == null )
@@ -1070,21 +1124,32 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * Show the "No entries found" text.
+	 * Show the given message, ie "No entries found"
 	 */
-	public void showNoEntriesFoundText()
+	public void showMessage( String msg )
 	{
-		int width;
-		int x;
-	
-		// Center the "No entries found" text
-		width = getWidget().getOffsetWidth();
-		x = (width - m_noEntriesFoundPanel.getOffsetWidth()) / 2;
-		x -= 40;
-		DOM.setStyleAttribute( m_noEntriesFoundPanel.getElement(), "left", Integer.toString( x ) + "px" );
-	
-		// Show the "No entries found" text
-		m_noEntriesFoundPanel.setVisible( true );
+		Command cmd;
+		
+		m_msgText.setText( msg );
+		
+		cmd = new Command()
+		{
+			public void execute()
+			{
+				int width;
+				int x;
+
+				// Center the message
+				width = getWidget().getOffsetWidth();
+				x = (width - m_msgPanel.getOffsetWidth()) / 2;
+				x -= 40;
+				DOM.setStyleAttribute( m_msgPanel.getElement(), "left", Integer.toString( x ) + "px" );
+			
+				// Show the message
+				m_msgPanel.setVisible( true );
+			}
+		};
+		DeferredCommand.addCommand( cmd );
 	}
 
 	

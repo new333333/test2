@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.mainmenu;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
@@ -113,11 +112,10 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_searchTabId = searchTabId;
 		m_ssList = new ArrayList<SavedSearchInfo>();
-		for (Iterator<SavedSearchInfo> ssiIT = ssList.iterator(); ssiIT.hasNext(); ) {
-			SavedSearchInfo ti = ssiIT.next();
-			m_ssList.add(ti);
+		for (SavedSearchInfo ssi:  ssList) {
+			m_ssList.add(ssi);
 		}
-		m_ssListCount  = m_ssList.size();
+		m_ssListCount = m_ssList.size();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -142,6 +140,24 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 		e.addClassName("manageSavedSearchesDlg_SectionHeaderCell");
 		grid.setWidget(row, 0, header);
 		GwtClientHelper.setGridColSpan(grid, row, 0, 2);
+	}
+
+	/*
+	 * Adds a SavedSearchInfo object to a List<SavedSearchInfo>
+	 * accounting for sorting.
+	 */
+	private static void addSSIToList(List<SavedSearchInfo> ssiList, SavedSearchInfo ssi) {
+		String s2 = ssi.getName();
+		int ssiCount = ssiList.size();
+		for (int i = 0; i < ssiCount; i += 1) {
+			String s1 = ssiList.get(i).getName();
+			int cmp = GwtClientHelper.safeSColatedCompare(s1, s2);
+			if (0 < cmp) {
+				ssiList.add(i, ssi);
+				return;
+			}
+		}
+		ssiList.add(ssi);
 	}
 
 	/*
@@ -324,8 +340,8 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 						// Perhaps.  Did it really get saved?
 						if (null != savedSSI) {
 							// Yes!  Add it to the appropriate list...
-							m_ssList.add(savedSSI);
-							m_ssListCount  += 1;
+							addSSIToList(m_ssList, savedSSI);
+							m_ssListCount = m_ssList.size();
 							
 							// ...and regenerate the dialog's contents.
 							reRenderDlg();
@@ -402,8 +418,8 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 			grid.getRowFormatter().getElement(row).setId(rowId);
 			searchLinksPanel = new FlowPanel();
 			searchLinksPanel.addStyleName("manageSavedSearchesDlg_SearchAnchorPanel");
-			for (Iterator<SavedSearchInfo> ssiIT = m_ssList.iterator(); ssiIT.hasNext(); ) {
-				renderSearchLink(searchLinksPanel, ssiIT.next());
+			for (SavedSearchInfo ssi:  m_ssList) {
+				renderSearchLink(searchLinksPanel, ssi);
 			}
 			grid.setWidget(row, 1, searchLinksPanel);
 		}

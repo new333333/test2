@@ -38,10 +38,10 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
@@ -183,16 +183,16 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// User Profiles
-	public ProfileInfo 		getProfileInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
-	public ProfileStats     getProfileStats(HttpRequestInfo ri, String userId) throws GwtTeamingException;
-	public ProfileAttribute getProfileAvatars(HttpRequestInfo ri, String binderId);
-	public ProfileInfo 		getQuickViewInfo(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
-	public List<TeamInfo> 	getTeams(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
-	public List<GroupInfo> 	getGroups(HttpRequestInfo ri, String binderId) throws GwtTeamingException;
-	public String 			getMicrBlogUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	public Boolean 			isPresenceEnabled(HttpRequestInfo ri);
-	public String 			getImUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
-	public GwtPresenceInfo getPresenceInfo( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
+	public ProfileInfo 		getProfileInfo(    HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public ProfileStats     getProfileStats(   HttpRequestInfo ri, String binderId, String userId) throws GwtTeamingException;
+	public ProfileAttribute getProfileAvatars( HttpRequestInfo ri, String binderId );
+	public ProfileInfo 		getQuickViewInfo(  HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public List<TeamInfo> 	getTeams(          HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public List<GroupInfo> 	getGroups(         HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public String 			getMicrBlogUrl(    HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public Boolean 			isPresenceEnabled( HttpRequestInfo ri);
+	public String 			getImUrl(          HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
+	public GwtPresenceInfo  getPresenceInfo(   HttpRequestInfo ri, String binderId )               throws GwtTeamingException;
 
 	// Return the URL for the start/schedule meeting page
 	public String getAddMeetingUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
@@ -202,8 +202,8 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveUserStatus(HttpRequestInfo ri, String status) throws GwtTeamingException;
 	public UserStatus getUserStatus(HttpRequestInfo ri, String binderId) throws GwtTeamingException; 
 	
-	// Return information about self registration.
-	public GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpRequestInfo ri ) throws GwtTeamingException;
+	// Return login information such as self registration and auto complete.
+	public GwtLoginInfo getLoginInfo( HttpRequestInfo ri ) throws GwtTeamingException;
 	
 	// Return the url needed to invoke the "site administration" page.
 	public String getSiteAdministrationUrl( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;

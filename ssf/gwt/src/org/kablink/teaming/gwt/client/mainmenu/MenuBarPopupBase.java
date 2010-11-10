@@ -266,23 +266,34 @@ public abstract class MenuBarPopupBase extends TeamingPopupPanel {
 	public abstract boolean shouldShowMenu();
 
 	/**
-	 * Called to show the menu associated with the given menu bar box.
+	 * Shows the popup menu.
 	 * 
-	 * @param menuBarBox
+	 * Overrides PopupPanel.show().
 	 */
-	final public void showMenu(MenuBarBox menuBarBox) {
-		// Show the menu...
-		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
+	@Override
+	public void show() {
+		// Tell the super class to show the menu...
+		super.show();
 		
-		// ...tell its box that its got an open popup menu
+		// ...tell the menu's box that its got an open popup menu
 		// ...associated with it...
-		m_menuBarBox = menuBarBox;
 		addAutoHidePartner(m_menuBarBox.getElement());
 		m_menuBarBox.popupMenuOpened();
 		
 		// ...and add vertical scrolling to the main frame for the
 		// ...duration of the popup.
 		GwtClientHelper.scrollUIForPopup(this);
+	}
+	
+	/**
+	 * Called to show the menu associated with the given menu bar box.
+	 * 
+	 * @param menuBarBox
+	 */
+	final public void showMenu(MenuBarBox menuBarBox) {
+		// Tell the menu to show its popup.
+		m_menuBarBox = menuBarBox;
+		showPopup(menuBarBox.getBoxLeft(), menuBarBox.getBoxBottom());
 	}
 	
 	/**
