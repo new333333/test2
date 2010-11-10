@@ -77,6 +77,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Label m_author;
 	private Label m_date;
 	private InlineLabel m_desc;
+	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
@@ -561,9 +562,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void viewEntry()
 	{
-		if ( m_viewEntryPermalink != null && m_viewEntryPermalink.length() > 0 )
+		if ( GwtClientHelper.hasString( m_viewEntryPermalink ) )
 			m_actionHandler.handleAction( TeamingAction.VIEW_FOLDER_ENTRY, m_viewEntryPermalink );
 		else
-			Window.alert( "In viewEntry(), m_viewEntryPermalink is null" );
+			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
 	}
 }
