@@ -445,6 +445,7 @@ padding-right: 15px;
 	padding: 2px;
 }
 .modifyAvatarDlgPhoto{
+	overflow: auto;
 	padding: 5px;
 }
 .modifyAvatarDlgActions{
