@@ -629,6 +629,7 @@ public interface GwtTeamingMessages extends Messages
 	String qViewErrorWorkspaceDoesNotExist();
 
 	//Profile
+	String profileCallMe();
 	String profileEdit();
 	String profileDelete();
 	String profileEditTitle();
@@ -670,6 +671,10 @@ public interface GwtTeamingMessages extends Messages
 	String multipleComments( int numComments );
 	String nextRefresh( String time );
 	String noEntriesFound();
+	String noFavorites();
+	String noPeopleFollowed();
+	String noPlacesFollowed();
+	String noTeams();
 	String noTitle();
 	String oneComment();
 	String pauseActivityStream( int refreshRate );

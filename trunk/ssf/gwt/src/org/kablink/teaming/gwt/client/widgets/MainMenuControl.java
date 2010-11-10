@@ -60,13 +60,13 @@ import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -514,32 +514,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 				public void onClick(ClickEvent event) {
 					// Are we connected to a binder?
 					if (null != m_contextBinder) {
-						// Yes!  Query for this user's default activity stream.
-						final String currentBinderId = m_contextBinder.getBinderId();
-						GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), currentBinderId, new AsyncCallback<ActivityStreamInfo>() {
-							public void onFailure(Throwable t) {
-								// If we couldn't get it, handle the
-								// failure...
-								GwtClientHelper.handleGwtRPCFailure(
-									t,
-									m_messages.rpcFailure_GetDefaultActivityStream());
-								
-								// ...and just use the UI supplied default.
-								triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE);
-							}
-							
-							public void onSuccess(ActivityStreamInfo asi) {
-								// Does this user have a default saved?
-								if (null == asi) {
-									// No!  Then we're go to their default binder.
-									asi = new ActivityStreamInfo();
-									asi.setActivityStream(ActivityStream.CURRENT_BINDER   );
-									asi.setBinderId(      currentBinderId                 );
-									asi.setTitle(         m_contextBinder.getBinderTitle());
-								}
-								triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
-							}
-						});
+						// Yes!  Use it as the current binder for the
+						// activity stream.
+						ActivityStreamInfo asi = new ActivityStreamInfo();
+						asi.setActivityStream(ActivityStream.CURRENT_BINDER);
+						asi.setBinderId(m_contextBinder.getBinderId());
+						asi.setTitle(   m_contextBinder.getBinderTitle());
+						triggerAction(TeamingAction.ENTER_ACTIVITY_STREAM_MODE, asi);
 					}
 					
 					else {

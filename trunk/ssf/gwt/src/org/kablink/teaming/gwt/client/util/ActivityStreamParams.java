@@ -47,6 +47,7 @@ public class ActivityStreamParams implements IsSerializable {
 	private int     m_activeComments;
 	private int     m_cacheRefresh;
 	private int     m_clientRefresh;
+	private int		m_displayWords;
 	private int     m_entriesPerPage;
 	private int     m_lookback;
 	private int     m_maxHits;
@@ -67,6 +68,7 @@ public class ActivityStreamParams implements IsSerializable {
 	public int     getActiveComments()         {return m_activeComments;        }
 	public int     getCacheRefresh()           {return m_cacheRefresh;          }
 	public int     getClientRefresh()          {return m_clientRefresh;         }
+	public int     getDisplayWords()           {return m_displayWords;          }
 	public int     getEntriesPerPage()         {return m_entriesPerPage;        }
 	public int     getLookback()               {return m_lookback;              }
 	public int     getMaxHits()                {return m_maxHits;               }
@@ -78,6 +80,7 @@ public class ActivityStreamParams implements IsSerializable {
 	public void setActiveComments(        int     activeComments)         {m_activeComments         = activeComments;        }
 	public void setCacheRefresh(          int     cacheRefresh)           {m_cacheRefresh           = cacheRefresh;          }
 	public void setClientRefresh(         int     clientRefresh)          {m_clientRefresh          = clientRefresh;         }
+	public void setDisplayWords(          int     displayWords)           {m_displayWords           = displayWords;          }
 	public void setEntriesPerPage(        int     entriesPerPage)         {m_entriesPerPage         = entriesPerPage;        }
 	public void setLookback(              int     lookback)               {m_lookback               = lookback;              }
 	public void setMaxHits(               int     maxHits)                {m_maxHits                = maxHits;               }
@@ -95,6 +98,7 @@ public class ActivityStreamParams implements IsSerializable {
 		reply.setActiveComments(        getActiveComments()        );
 		reply.setCacheRefresh(          getCacheRefresh()          );
 		reply.setClientRefresh(         getClientRefresh()         );
+		reply.setDisplayWords(          getDisplayWords()          );
 		reply.setEntriesPerPage(        getEntriesPerPage()        );
 		reply.setLookback(              getLookback()              );
 		reply.setMaxHits(               getMaxHits()               );

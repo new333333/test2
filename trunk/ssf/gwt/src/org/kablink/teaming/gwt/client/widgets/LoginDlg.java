@@ -32,14 +32,15 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,6 +58,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -97,7 +99,7 @@ public class LoginDlg extends DlgBox
 	private String m_springSecurityRedirect = null;	// This values tells Teaming what url to go to after the user authenticates.
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
-	private AsyncCallback<GwtSelfRegistrationInfo> m_rpcGetSelfRegInfoCallback = null;
+	private AsyncCallback<GwtLoginInfo> m_rpcGetLoginInfoCallback = null;
 	private int m_submitCount;
 
 	/**
@@ -125,29 +127,38 @@ public class LoginDlg extends DlgBox
 		else
 			headerText = GwtTeaming.getMessages().loginDlgKablinkHeader();
 		
-		// Create the callback that will be used when we issue an ajax call to get self-registration information
-		m_rpcGetSelfRegInfoCallback = new AsyncCallback<GwtSelfRegistrationInfo>()
+		// Create the callback that will be used when we issue an ajax call to get login information
+		m_rpcGetLoginInfoCallback = new AsyncCallback<GwtLoginInfo>()
 		{
 			/**
 			 * 
 			 */
 			public void onFailure( Throwable t )
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
+				// Don't call GwtClientHelper.handleGwtRPCFailure() like we would normally do.  If the
+				// session has expired, handleGwtRPCFailure() will invoke this login dialog again
+				// and we will be in an infinite loop.
+				// GwtClientHelper.handleGwtRPCFailure(
+				//	t,
+				//	GwtTeaming.getMessages().rpcFailure_GetSelfRegInfo());
 			}// end onFailure()
 	
 			/**
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtSelfRegistrationInfo selfRegInfo )
+			public void onSuccess( GwtLoginInfo loginInfo )
 			{
-				m_selfRegInfo = selfRegInfo;
+				m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
 				
 				// Hide or show the self registration controls.
-				updateSelfRegistrationControls( selfRegInfo );
+				updateSelfRegistrationControls( m_selfRegInfo );
+
+				// Turn auto complete on/off.
+				if ( loginInfo.getAllowAutoComplete() == true )
+					DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "" );
+				else
+					DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
 			}// end onSuccess()
 		};
 
@@ -172,14 +183,17 @@ public class LoginDlg extends DlgBox
 		FlexTable table;
 		FlexTable.FlexCellFormatter cellFormatter;
 		int row = 0;
+		Element formElement;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
 		m_formPanel = new FormPanel( "" );
+		formElement = m_formPanel.getElement();
+		if ( formElement != null )
+			formElement.setAttribute( "name","loginFormName" );
 		m_formPanel.setAction( m_loginUrl );
 		m_formPanel.setMethod( FormPanel.METHOD_POST );
-		DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
 		
 		// Chrome will submit the form when the user presses enter.  Our key-up handler will also
 		// submit the form when we see the enter key.  Add an addSubmitHandler() to prevent
@@ -206,7 +220,7 @@ public class LoginDlg extends DlgBox
 		{
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgUserId() );
 			
-			m_userIdTxtBox = new TextBox();
+			m_userIdTxtBox = TextBox.wrap( Document.get().getElementById( "j_username" ) );
 			m_userIdTxtBox.setName( "j_username" );
 			m_userIdTxtBox.addFocusHandler( this );
 			m_userIdTxtBox.addBlurHandler( this );
@@ -220,7 +234,7 @@ public class LoginDlg extends DlgBox
 		{
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgPassword() );
 			
-			m_pwdTxtBox = new PasswordTextBox();
+			m_pwdTxtBox = PasswordTextBox.wrap( Document.get().getElementById( "j_password" ) );
 			m_pwdTxtBox.setName( "j_password" );
 			m_pwdTxtBox.addFocusHandler( this );
 			m_pwdTxtBox.addBlurHandler( this );
@@ -431,17 +445,18 @@ public class LoginDlg extends DlgBox
 	
 	
 	/**
-	 * Issue an ajax request to get self registration info from the server.
+	 * Issue an ajax request to get login info from the server.
 	 */
-	private void getSelfRegistrationInfoFromServer()
+	private void getLoginInfoFromServer()
 	{
 		GwtRpcServiceAsync rpcService;
 		
 		rpcService = GwtTeaming.getRpcService();
 		
-		// Issue an ajax request to get self registration information
-		rpcService.getSelfRegistrationInfo( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetSelfRegInfoCallback );
-	}// end getAdminActionsFromServer()
+		// Issue an ajax request to get login information
+		rpcService.getLoginInfo( HttpRequestInfo.createHttpRequestInfo(), m_rpcGetLoginInfoCallback );
+	}
+	
 	/**
 	 * 
 	 */
@@ -588,7 +603,7 @@ public class LoginDlg extends DlgBox
 			public void execute()
 			{
 				// Issue an ajax request to get self registration info
-				getSelfRegistrationInfoFromServer();
+				getLoginInfoFromServer();
 			}
 		};
 		DeferredCommand.addCommand( cmd );

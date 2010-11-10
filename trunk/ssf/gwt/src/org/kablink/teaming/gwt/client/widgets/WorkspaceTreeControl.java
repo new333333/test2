@@ -156,9 +156,11 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 							}
 							
 							public void onSuccess(ActivityStreamInfo asi) {
-								// Does this user have a default saved?
-								if (null == asi) {
-									// No!  Default to site wide.
+								// If the user doesn't have a default
+								// saved or the default saved is
+								// current binder...
+								if ((null == asi) || (ActivityStream.CURRENT_BINDER == asi.getActivityStream())) {
+									// ...default to site wide.
 									asi = new ActivityStreamInfo();
 									asi.setActivityStream(ActivityStream.SITE_WIDE);
 									asi.setTitle(GwtTeaming.getMessages().treeSiteWide());

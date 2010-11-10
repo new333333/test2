@@ -35,11 +35,12 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -113,8 +114,26 @@ public class ProfileAttributeWidget  {
 				if(attr.getValue() != null) {
 					label = attr.getValue().toString();
 					if(GwtClientHelper.hasString(label)){
-						String html ="<script type=\"text/javascript\" src=\"http://download.skype.com/share/skypebuttons/js/skypeCheck.js\"></script>" +
-						"<a href=\"skype:"+label+"?call\"><img src=\"http://download.skype.com/share/skypebuttons/buttons/call_blue_transparent_70x23.png\" style=\"border: none;\" width=\"70\" height=\"23\" alt=\"Call Me!\" /></a>";
+						String skypeAlt   = GwtTeaming.getMessages().profileCallMe();
+						
+						String pathToJs = "";
+						String pathToImage = "";
+						
+						if(GwtProfilePage.profileRequestInfo != null) {
+							pathToJs = GwtProfilePage.profileRequestInfo.getJSPath();
+							pathToImage = GwtProfilePage.profileRequestInfo.getImagesPath();
+						} else if (GwtMainPage.m_requestInfo != null) {
+							pathToJs = GwtMainPage.m_requestInfo.getJSPath();
+							pathToImage = GwtMainPage.m_requestInfo.getImagesPath();
+						}
+						
+						String skypeCheck = (pathToJs  + "skype/skypeCheck.js"); 
+						String skypeImage = (pathToImage + "pics/skypeCallMe.png");
+						
+						String html =
+							"<script type=\"text/javascript\" src=\""+ skypeCheck + "\"></script>" +
+							"<a href=\"skype:" + label + "?call\"><img src=\"" + skypeImage + "\" style=\"border: none;\" width=\"70\" height=\"23\" alt=\"" + skypeAlt + "\" title=\"" + skypeAlt + "\" /></a>";
+						
 						widget = new HTML(html);
 					}
 				} 

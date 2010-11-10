@@ -34,6 +34,7 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -518,8 +519,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( avatarUrl != null && avatarUrl.length() > 0 )
 		{
 			m_avatarImg.setUrl( avatarUrl );
-			m_avatarImg.setVisible( true );
 		}
+		else
+		{
+			// Default to the "no avatar" image.
+			m_avatarImg.setUrl( GwtMainPage.m_requestInfo.getImagesPath() + "pics/UserPhoto.png" );
+		}
+		m_avatarImg.setVisible( true );
+		
 		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();

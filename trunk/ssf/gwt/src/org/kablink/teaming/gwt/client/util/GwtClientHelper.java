@@ -419,6 +419,23 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Compares two strings by collation.
+	 * 
+	 * Returns:
+	 *    -1 if s1 <  s2;
+	 *     0 if s1 == s2; and
+	 *     1 if s1 >  s2.
+	 *     
+	 * @param s1
+	 * @param s2
+	 * 
+	 * @return
+	 */
+	public static native int jsStringCompare(String s1, String s2) /*-{
+		return s1.localeCompare(s2);
+	}-*/;
+
+	/**
 	 * Sets a TeamingPopupPanel to use roll-down animation to open.
 	 * 
 	 * @param popup
@@ -426,6 +443,27 @@ public class GwtClientHelper {
 	public static void rollDownPopup(TeamingPopupPanel popup) {
 		popup.setAnimationEnabled(true);
 		popup.setAnimationTypeToRollDown();
+	}
+	
+	/**
+	 * Performs a collated compare on two strings without generating any
+	 * exceptions.
+	 * 
+	 * Returns:
+	 *    -1 if s1 <  s2;
+	 *     0 if s1 == s2; and
+	 *     1 if s1 >  s2.
+	 *     
+	 * @param s1
+	 * @param s2
+	 * 
+	 * @return
+	 */
+	public static int safeSColatedCompare(String s1, String s2) {
+		return
+			jsStringCompare(
+				((null == s1) ? "" : s1),
+				((null == s2) ? "" : s2) );
 	}
 	
 	/**
