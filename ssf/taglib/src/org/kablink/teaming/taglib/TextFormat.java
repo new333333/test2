@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.taglib;
 
-import java.util.ArrayList;
-
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
@@ -43,6 +41,7 @@ import org.kablink.teaming.util.TextToHtml;
 import org.kablink.util.Html;
 
 
+@SuppressWarnings("serial")
 public class TextFormat extends BodyTagSupport {
 	private String _bodyContent;
 	private String formatAction;
@@ -67,9 +66,6 @@ public class TextFormat extends BodyTagSupport {
 		//formatAction will not be mandatory
 		//If the formatAction is not specified or happens to be other than
 		//the one specified, then we will return the textContent as it is
-		
-		String[] startMUArray = { "[[", "<", "{{" };
-		String[] endMUArray = { "]]", ">", "}}" };
 		
 		String textContent= _bodyContent;
 		if (textContent == null) textContent = "";
@@ -100,68 +96,7 @@ public class TextFormat extends BodyTagSupport {
 					throw new JspException("TextFormat: Text Max Words not a numeric value");
 				}
 				
-				textContent = textContent.trim();
-				
-				String strStrippedHTMLContent = Html.restrictiveStripHtml(textContent);
-				
-				String summary = "";
-				String [] words = strStrippedHTMLContent.split(" ");
-				
-				ArrayList muArrList = new ArrayList();
-				
-				//Looping through the word list
-				//We are excepting the tags and HTML code if any to be well formed.
-				for (int i = 0; i < words.length; i++) {
-					String strWord = words[i];
-					if (strWord.equals("")) continue;
-					
-					summary = summary + " " + strWord;
-					String strLCWord = strWord.toLowerCase();
-	
-					//Hemanth:
-					//we are trying to make sure the words do not get truncated half way between tags like
-					//[[ ]] - Title Hyper Link Tag and <img /> - Image Tag
-					//For this, we add the tags that we encounter in a array list and
-					//when we encounter an end tag for that, we remove the tag from the arraylist
-					//So when we reach the max words limit, we check to see if the arraylist size is zero,
-					//if so, we assume, there is no open tag and display the summary information
-					//if not, we assume, we keep going until the array list size becomes zero.
-					//when the array list size is zero, we assume that there is no more open tags
-					
-					//Code for adding information about the open tags in the array list
-					for (int j = 0; j < startMUArray.length; j++) {
-						String strStartTag = startMUArray[j];
-						int intStartIdx = strLCWord.indexOf(strStartTag);
-						if (intStartIdx != -1) {
-							muArrList.add(strStartTag);
-						}
-					}
-	
-					//Code for removing tags from the arraylist, when the closing tag is encountered
-					for (int j = 0; j < endMUArray.length; j++) {
-						String strEndTag = endMUArray[j];
-						int intEndIdx = strLCWord.indexOf(strEndTag);
-						if (intEndIdx != -1) {
-							String strStartTag = startMUArray[j];
-							for (int k = 0; k < muArrList.size(); k++) {
-								String strEntry = (String) muArrList.get(k);
-								if (strStartTag.equalsIgnoreCase(strEntry)) {
-									muArrList.remove(k);
-									break;
-								}
-							}
-						}
-					}
-	
-					//Limit the summary to intMaxAllowedWords words
-					//we are checking to see if the arraylist size is zero, to ensure that there are no open tags
-					if (i >= (intMaxAllowedWords - 1) && (muArrList.size() == 0) ) {
-						//If the actual text length is greater than the specified textMaxWords allowed then we
-						//will append the "..." to the summary displayed. If not we will not append the "...".
-						if (i < words.length - 1) summary = summary + "...";
-						break;
-					}
-				}
+				String summary = Html.wordStripHTML(textContent, intMaxAllowedWords);
 				
 				JspWriter jspOut = pageContext.getOut();
 				jspOut.print(summary.trim());

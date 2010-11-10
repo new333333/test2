@@ -58,7 +58,10 @@ import org.kablink.teaming.client.ws.model.AttachmentsField;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
 import org.kablink.teaming.client.ws.model.FileVersion;
 import org.kablink.teaming.client.ws.model.FileVersions;
+import org.kablink.teaming.client.ws.model.FolderBrief;
+import org.kablink.teaming.client.ws.model.FolderCollection;
 import org.kablink.teaming.client.ws.model.User;
+import org.kablink.teaming.client.ws.model.ReleaseInfo;
 
 public abstract class WSClientBase {
 
@@ -108,7 +111,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.Workflow.class,
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
 			org.kablink.teaming.client.ws.model.FileVersions.class,
-			org.kablink.teaming.client.ws.model.FileVersion.class
+			org.kablink.teaming.client.ws.model.FileVersion.class,
+			org.kablink.teaming.client.ws.model.ReleaseInfo.class
 	};
 
 	protected String host; // optional - default to localhost
@@ -399,9 +403,25 @@ public abstract class WSClientBase {
 		fetchAndPrintACK(serviceName, operation, args, null);
 	}
 	
+	void fetchAndPrintFC(String serviceName, String operation, Object[] args) throws Exception {
+		FolderCollection fc = (FolderCollection) fetch(serviceName, operation, args);
+		printFolderCollection(fc);
+	}
+	
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
 		Object object = fetch(serviceName, operation, args, filename);
 		System.out.println("Successfully executed " + operation + " on " + serviceName);
+	}
+	
+	void fetchAndPrintReleaseInfo(String serviceName, String operation, Object[] args) throws Exception {
+		ReleaseInfo ri = (ReleaseInfo) fetch(serviceName, operation, args);
+		System.out.println("Product name: " + ri.getProductName());
+		System.out.println("Product version: " + ri.getProductVersion());
+		System.out.println("Build number: " + ri.getBuildNumber());
+		System.out.println("Build date: " + ((ri.getBuildDate() == null)? "null" : ri.getBuildDate().getTime().toString()));
+		System.out.println("Server start time: " + ((ri.getServerStartTime() == null)? "null" : ri.getServerStartTime().getTime().toString()));
+		System.out.println("License required edition: " + ri.isLicenseRequiredEdition());
+		System.out.println("Content version: " + ri.getContentVersion());
 	}
 	
 	void printDefinableEntity(DefinableEntity entity) {
@@ -442,6 +462,21 @@ public abstract class WSClientBase {
 			System.out.println("File version " + i + " length: " + versions[i].getLength());
 			System.out.println("File version " + i + " number: " + versions[i].getVersionNumber());
 			System.out.println("File version " + i + " href: " + versions[i].getHref());
+		}
+	}
+	
+	void printFolderCollection(FolderCollection fc) {
+		System.out.println("First: " + fc.getFirst());
+		System.out.println("Total: " + fc.getTotal());
+		FolderBrief[] fb = fc.getFolders();
+		System.out.println("Number of folders: " + fb.length);
+		for(int i = 0; i < fb.length; i++) {
+			System.out.println();
+			System.out.println("Folder " + i + " id: " + fb[i].getId());
+			System.out.println("Folder " + i + " title: " + fb[i].getTitle());
+			System.out.println("Folder " + i + " family: " + fb[i].getFamily());
+			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
+			System.out.println("Folder " + i + " path: " + fb[i].getPath());
 		}
 	}
 	

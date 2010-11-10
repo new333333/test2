@@ -349,7 +349,6 @@ color: #5691a6;
 background: #cce9ee;
 -moz-border-radius: 3px;
 -webkit-border-radius: 3px;
-padding: 3px;
 }
 .profile-edit-button:hover, .profile-save-button:hover, .profile-cancel-button:hover {
 background:none repeat scroll 0 0 white;

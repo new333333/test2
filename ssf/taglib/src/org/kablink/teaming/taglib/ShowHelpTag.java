@@ -101,17 +101,17 @@ public class ShowHelpTag extends BodyTagSupport
 				if ( this.guideName.equalsIgnoreCase( "user" ) )
 				{
 					// Get the url to the user guide.
-					url = SPropsUtil.getString( "help.userGuide", "http://www.novell.com/documentation/teaming3/team3_user/data/" );
+					url = SPropsUtil.getString( "help.userGuide", "http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_user/data/" );
 				}
 				else if ( this.guideName.equalsIgnoreCase( "adv_user" ) )
 				{
 					// Get the url to the advanced user guide.
-					url = SPropsUtil.getString( "help.advancedUserGuide", "http://www.novell.com/documentation/teaming3/team3_useradv/data/" );
+					url = SPropsUtil.getString( "help.advancedUserGuide", "http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_useradv/data/" );
 				}
 				else if ( this.guideName.equalsIgnoreCase( "admin" ) )
 				{
 					// Get the url to the administration guide.
-					url = SPropsUtil.getString( "help.adminGuide", "http://www.novell.com/documentation/teaming3/team3_admin/data/" );
+					url = SPropsUtil.getString( "help.adminGuide", "http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_admin/data/" );
 				}
 				else
 					url = null;
@@ -141,7 +141,7 @@ public class ShowHelpTag extends BodyTagSupport
 				{
 					// If we get here we didn't recognize the name of the guide.  Take the user
 					// to the main Teaming documentation site.
-					url = "http://www.novell.com/documentation/teaming3";
+					url = "http://www.novell.com/documentation/vibe3_on_premise";
 				}
 				
 				jsp = "/WEB-INF/jsp/tag_jsps/inline_help/show_help.jsp";				
