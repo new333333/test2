@@ -319,12 +319,5 @@
 	<form name="logoutForm" id="logoutForm" method="post" action="" >
 	</form> 
     
-	<!--  For auto complete to work in IE the form element must be present in the original html -->
-	<!--  and not dynamically added.  The following form is used with the login dialog. -->
-	<form name="loginFormName" target="" action="" method="post" autocomplete="">
-		<input type="text" tabindex="0" class="gwt-TextBox" name="j_username" id="j_username" size="20"/>
-		<input type="password" tabindex="0" class="gwt-PasswordTextBox" name="j_password" id="j_password" size="20"/>
-	</form>
-
   </body>
 </html>

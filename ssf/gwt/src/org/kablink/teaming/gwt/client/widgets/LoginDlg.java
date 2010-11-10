@@ -156,7 +156,7 @@ public class LoginDlg extends DlgBox
 
 				// Turn auto complete on/off.
 				if ( loginInfo.getAllowAutoComplete() == true )
-					DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "" );
+					DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
 				else
 					DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
 			}// end onSuccess()
@@ -191,7 +191,10 @@ public class LoginDlg extends DlgBox
 		m_formPanel = new FormPanel( "" );
 		formElement = m_formPanel.getElement();
 		if ( formElement != null )
+		{
 			formElement.setAttribute( "name","loginFormName" );
+			DOM.setElementAttribute( formElement, "autocomplete", "off" );
+		}
 		m_formPanel.setAction( m_loginUrl );
 		m_formPanel.setMethod( FormPanel.METHOD_POST );
 		
@@ -220,7 +223,7 @@ public class LoginDlg extends DlgBox
 		{
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgUserId() );
 			
-			m_userIdTxtBox = TextBox.wrap( Document.get().getElementById( "j_username" ) );
+			m_userIdTxtBox = new TextBox();
 			m_userIdTxtBox.setName( "j_username" );
 			m_userIdTxtBox.addFocusHandler( this );
 			m_userIdTxtBox.addBlurHandler( this );
@@ -234,7 +237,7 @@ public class LoginDlg extends DlgBox
 		{
 			table.setText( row, 0, GwtTeaming.getMessages().loginDlgPassword() );
 			
-			m_pwdTxtBox = PasswordTextBox.wrap( Document.get().getElementById( "j_password" ) );
+			m_pwdTxtBox = new PasswordTextBox();
 			m_pwdTxtBox.setName( "j_password" );
 			m_pwdTxtBox.addFocusHandler( this );
 			m_pwdTxtBox.addBlurHandler( this );
