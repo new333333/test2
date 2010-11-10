@@ -41,6 +41,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -339,23 +340,24 @@ public abstract class DlgBox extends PopupPanel
 		// Get the widget that should be given the focus when this dialog is displayed.
 		m_focusWidget = getFocusWidget();
 		
-		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
+		// Do we have a widget to give the initial focus to?
 		if ( m_focusWidget != null )
 		{
-			Command cmd;
+			Timer timer;
 			
-			cmd = new Command()
+			// Yes
+			// For some unknown reason if we give the focus to the a field
+			// right now the cursor doesn't show up.  We need to set a timer and
+			// wait for the dialog to be displayed.
+			timer = new Timer()
 			{
-			     	/**
-			     	 * 
-			     	 */
-			      public void execute()
-			      {
-						if ( m_focusWidget != null )
-							m_focusWidget.setFocus( true );
-			      }
+				public void run()
+				{
+					// Give the focus to the appropriate field.
+					m_focusWidget.setFocus( true );
+				}
 			};
-			DeferredCommand.addCommand( cmd );
+			timer.schedule( 500 );
 		}
 	}// end show()
 }// end DlgBox
