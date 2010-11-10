@@ -147,6 +147,8 @@ public interface GwtTeamingMessages extends Messages
 	String _10();
 	String betaWithProduct( String productName );
 	String cancel();
+	String cantAccessEntry();
+	String cantAccessFolder();
 	String ok();
 	String oneMomentPlease();
 	String percent();

@@ -857,18 +857,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			entryIdL = new Long( entryId );
 			
-			// Are we looking for an entry that was imported from another zone?
-			if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
-			{
-				// Yes, get the entry id for the entry in this zone.
-				entryIdL = folderModule.getZoneEntryId( entryIdL, zoneUUID );
+			try {
+				// Are we looking for an entry that was imported from another zone?
+				if ( zoneUUID != null && zoneUUID.length() > 0 && !zoneInfoId.equals( zoneUUID ) )
+				{
+					// Yes, get the entry id for the entry in this zone.
+					entryIdL = folderModule.getZoneEntryId( entryIdL, zoneUUID );
+				}
+	
+				// Get the entry object.
+				if ( entryIdL != null )
+					entry = folderModule.getEntry( null, entryIdL );
+				
+				reply = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
 			}
-
-			// Get the entry object.
-			if ( entryIdL != null )
-				entry = folderModule.getEntry( null, entryIdL );
-			
-			reply = PermaLinkUtil.getPermalink( getRequest( ri ), entry );
+			catch (Exception e) {
+				m_logger.debug( "GwtRpcServiceImpl.getEntryPermalink( FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + " )" );
+				reply = "";
+			}
 		}
 		
 		return reply;

@@ -473,10 +473,13 @@ public class GwtMainPage extends Composite
 					binderPermalink,
 					false,	// false -> Not trash.
 					instigator );
-				if (forceSidebarReload) {
-					osbInfo.setForceSidebarReload(forceSidebarReload);
+				if (validateOSBI(osbInfo))
+				{
+					if (forceSidebarReload) {
+						osbInfo.setForceSidebarReload(forceSidebarReload);
+					}
+					selectionChangedImpl(osbInfo);
 				}
-				selectionChanged(osbInfo);
 			}// end onSuccess()
 		});
 	}// end contextLoaded()
@@ -898,8 +901,6 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case SELECTION_CHANGED:
-			exitActivityStreamIfActive();
-			preContextSwitch();
 			selectionChanged( obj );
 			break;
 		
@@ -1215,48 +1216,56 @@ public class GwtMainPage extends Composite
 	 * 
 	 * Implements the SELECTION_CHANGED teaming action.
 	 */
-	private void selectionChanged( Object obj )
-	{
+	private void selectionChanged( Object obj ) {
 		if ( obj instanceof OnSelectBinderInfo )
 		{
-			Instigator instigator;
-			OnSelectBinderInfo binderInfo;
-
-			// Tell the masthead to update the branding for the newly selected binder.
-			binderInfo = (OnSelectBinderInfo) obj;
-			m_selectedBinderId = binderInfo.getBinderId().toString();
-			m_mastHead.setBinderId( m_selectedBinderId );
-			
-			// If we're not coming from a WorkspaceTreeControl context
-			// change...
-			instigator = binderInfo.getInstigator();
-			if (( Instigator.SIDEBAR_TREE   != instigator ) ||
-			    ( Instigator.SIDEBAR_RELOAD == instigator ) ||
-			      binderInfo.getForceSidebarReload() )
+			OnSelectBinderInfo osbInfo = ((OnSelectBinderInfo) obj);
+			if (validateOSBI( osbInfo ))
 			{
-				// Tell the WorkspaceTreeControl to change contexts.
-				m_wsTreeCtrl.setSelectedBinder( binderInfo );
-			}
-
-			// Are we handling a context change in the content panel?
-			if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
-			{
-				// Yes!  Update the menu bar accordingly.
-				m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
-				m_wsTreeCtrl.contextLoaded( m_selectedBinderId );
-			}
-			else if ( Instigator.SIDEBAR_RELOAD != instigator )
-			{
-				// No, we aren't handling a context change in the
-				// content panel! Tell the content panel to view the
-				// selected binder.
-				m_wsTreeCtrl.showBinderBusy( binderInfo );
-				m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
+				exitActivityStreamIfActive();
+				preContextSwitch();
+				selectionChangedImpl( osbInfo );
 			}
 		}
 		else
 			Window.alert( "in selectionChanged() and obj is not an OnSelectBinderInfo object" );
-	}// end selectionChanged()
+	}
+	
+	private void selectionChangedImpl( OnSelectBinderInfo binderInfo )
+	{
+		Instigator instigator;
+
+		// Tell the masthead to update the branding for the newly selected binder.
+		m_selectedBinderId = binderInfo.getBinderId().toString();
+		m_mastHead.setBinderId( m_selectedBinderId );
+		
+		// If we're not coming from a WorkspaceTreeControl context
+		// change...
+		instigator = binderInfo.getInstigator();
+		if (( Instigator.SIDEBAR_TREE   != instigator ) ||
+		    ( Instigator.SIDEBAR_RELOAD == instigator ) ||
+		      binderInfo.getForceSidebarReload() )
+		{
+			// Tell the WorkspaceTreeControl to change contexts.
+			m_wsTreeCtrl.setSelectedBinder( binderInfo );
+		}
+
+		// Are we handling a context change in the content panel?
+		if ( Instigator.CONTENT_CONTEXT_CHANGE == instigator )
+		{
+			// Yes!  Update the menu bar accordingly.
+			m_mainMenuCtrl.contextLoaded( m_selectedBinderId, m_inSearch, m_searchTabId );
+			m_wsTreeCtrl.contextLoaded( m_selectedBinderId );
+		}
+		else if ( Instigator.SIDEBAR_RELOAD != instigator )
+		{
+			// No, we aren't handling a context change in the
+			// content panel! Tell the content panel to view the
+			// selected binder.
+			m_wsTreeCtrl.showBinderBusy( binderInfo );
+			m_contentCtrl.setUrl( binderInfo.getBinderUrl() );
+		}
+	}// end selectionChangedImpl()
 
 	
 	/**
@@ -1397,7 +1406,10 @@ public class GwtMainPage extends Composite
 				
 				binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" );
 				osbInfo = new OnSelectBinderInfo( m_selectedBinderId, binderUrl, false, Instigator.OTHER );
-				selectionChanged( osbInfo );
+				if (validateOSBI( osbInfo ))
+				{
+					selectionChangedImpl( osbInfo );
+				}
 			}// end onSuccess()
 		});// end AsyncCallback()
 	}// end viewTeamMembers()
@@ -1878,4 +1890,24 @@ public class GwtMainPage extends Composite
 		};
 		dlg.setPopupPositionAndShow( posCallback );
 	}
+
+	/*
+	 * Validates we have a URL in an OnSelectBinderInfo object.
+	 * Displays an error if there isn't and returns false.  Otherwise,
+	 * returns true.
+	 */
+	private static boolean validateOSBI( OnSelectBinderInfo osbi )
+	{
+		// If we the OnSelectBinderInfo doesn't have a permalink to the
+		// binder...
+		if (!(GwtClientHelper.hasString(osbi.getBinderUrl()))) {
+			// ...tell the user and return false.
+			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().cantAccessFolder() );
+			return false;
+		}
+		
+		// If we get here, the OnSelectBinderInfo has a permalink to
+		// the binder.  Return true.
+		return true;
+	}// end validateOSBI()
 }// end GwtMainPage

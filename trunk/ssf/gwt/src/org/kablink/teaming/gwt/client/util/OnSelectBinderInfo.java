@@ -182,7 +182,9 @@ public class OnSelectBinderInfo {
 	 */
 	public void setBinderUrl(String binderUrl) {
 		m_binderUrl = binderUrl;
-		fixupUrl();
+		if (GwtClientHelper.hasString(m_binderUrl)) {
+			fixupUrl();
+		}
 	}
 
 	/**
