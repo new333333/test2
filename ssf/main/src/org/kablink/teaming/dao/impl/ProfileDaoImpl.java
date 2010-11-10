@@ -513,7 +513,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    }
 	                }
 	             );		
-	        if (filterInaccessiblePrincipal(user) == null) 
+	        user = (User) filterInaccessiblePrincipal(user);
+	        if (user == null) 
 	        	throw new NoUserByTheNameException(userName); 
 	        return user;
 	   	}
@@ -554,7 +555,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                 }
              );		
 
-	       if (filterInaccessiblePrincipal(user) == null) 
+	       user = (User) filterInaccessiblePrincipal(user);
+	       if (user == null) 
 	    	   throw new NoUserByTheNameException( ldapGuid ); 
 
 	       return user;
@@ -593,7 +595,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		                    }
 		                }
 		             );
-		        if (filterInaccessiblePrincipal(principal) == null) 
+		        principal = filterInaccessiblePrincipal(principal);
+		        if (principal == null) 
 		        	throw new NoPrincipalByTheNameException(name); 
 		        return principal;
 	    	}
@@ -657,7 +660,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	        );
 	       
-	        principal = (User)filterInaccessiblePrincipal(principal);
+	        principal = (UserPrincipal)filterInaccessiblePrincipal(principal);
 	        if (principal == null) throw new NoPrincipalByTheIdException(prinId); 
 	        return principal;
     	}
@@ -869,7 +872,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		if (!user.getZoneId().equals(zoneId) || !user.isActive()) {
     			throw new NoUserByTheIdException(userId);
     		}
-            if (filterInaccessiblePrincipal(user) == null) 
+    		user = (User) filterInaccessiblePrincipal(user);
+            if (user == null) 
             	throw new NoUserByTheIdException(userId); 
     		return user;
     	} catch (ClassCastException ce) {
@@ -1541,7 +1545,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                }
 	        );
 	       
-	        if (filterInaccessiblePrincipal(principal) == null) 
+	        principal = filterInaccessiblePrincipal(principal);
+	        if (principal == null) 
 	        	throw new NoPrincipalByTheIdException(prinId); 
 	        return principal;
     	}
