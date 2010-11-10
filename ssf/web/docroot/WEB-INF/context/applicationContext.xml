@@ -473,7 +473,7 @@
         <property name="port"><value>8100</value></property>
     </bean>
 
-	<bean id="openOfficeHelper" class = "org.kablink.teaming.docconverter.util.OpenOfficeHelper" depends-on="sPropsUtil" />
+	<bean id="openOfficeHelper" class = "org.kablink.teaming.docconverter.util.OpenOfficeHelper" depends-on="sPropsUtil,zoneModule" />
 	
     <!-- ============================== RSS Generator ============================ -->
 	
