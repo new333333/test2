@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -147,6 +148,8 @@ public class TrashBrief implements Serializable {
 			return null;
 		}
 		String title = binder.getTitle();
+		String path = binder.getPathName();
+		boolean library = binder.isLibrary();
 		Long preDeletedWhen;
 		Long preDeletedBy;
 		if (binder instanceof Workspace) {
@@ -183,7 +186,10 @@ public class TrashBrief implements Serializable {
 			new BinderBrief(id,
 				title,
 				entityType,
+				null,
+				library,
 				definitionType,
+				path,
 				creation,
 				modification,
 				permaLink);
@@ -226,6 +232,6 @@ public class TrashBrief implements Serializable {
 	 * Constructs a Timestamp from a HistoryStamp.
 	 */
 	private static Timestamp getTimestampFromHistory(HistoryStamp hs) {
-		return new Timestamp(hs.getPrincipal().getName(), hs.getDate());
+		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate());
 	}
 }

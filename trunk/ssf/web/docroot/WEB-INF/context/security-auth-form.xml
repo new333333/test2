@@ -24,6 +24,17 @@
     	<property name="loginFormUrl" value="/a/do?p_name=ss_forum&amp;p_action=1&amp;action=__login"/>    	
     </bean>
 	
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<s:custom-filter position="LOGOUT_FILTER"/>
+		<constructor-arg value="/redirect/teaming?user.logout=true"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+	
     <s:http session-fixation-protection="newSession" entry-point-ref="authenticationProcessingFilterEntryPoint">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
@@ -41,7 +52,6 @@
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
 
         <s:anonymous granted-authority="ROLE_ANONYMOUS" username="guest"  />
-        <s:logout logout-url="/s/portalLogout" logout-success-url="/redirect/teaming?user.logout=true" />
 
     </s:http>
     

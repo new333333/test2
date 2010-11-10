@@ -55,26 +55,20 @@
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
-				name="select_filter" value=""/></ssf:url>">
-				<span 
+				name="select_filter" value=""/></ssf:url>"><span 
 					<c:if test="${empty currentFilter}"> class="ss_navbar_current"</c:if>
-					<c:if test="${!empty currentFilter}"> class="ss_normal"</c:if>
-					>
-						<ssf:nlt tag="None"/></span>
-				</a>
+					<c:if test="${!empty currentFilter}"> class="ss_navbar_not_current"</c:if>
+					><ssf:nlt tag="None"/></span></a>
 			</li>				
 			<c:forEach var="filter" items="${ssUserFolderProperties.searchFilterMap}">
 			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="operation2" value="personal"/><ssf:param 
-				name="select_filter" value="${filter.key}"/></ssf:url>">
-					<span 
+				name="select_filter" value="${filter.key}"/></ssf:url>"><span 
 					<c:if test="${filter.key == currentFilter && currentFilterScope != 'global'}"> class="ss_navbar_current"</c:if>
-					<c:if test="${filter.key != currentFilter || currentFilterScope == 'global'}"> class="ss_normal"</c:if>
-					>				
-					<c:out value="${filter.key}"/></span>
-				</a>
+					<c:if test="${filter.key != currentFilter || currentFilterScope == 'global'}"> class="ss_navbar_not_current"</c:if>
+					><c:out value="${filter.key}"/></span></a>
 			 </li>
 			</c:forEach>
 			<c:forEach var="filter" items="${ssBinder.properties.binderFilters}">
@@ -82,13 +76,10 @@
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="operation2" value="global"/><ssf:param 
-				name="select_filter" value="${filter.key}"/></ssf:url>">
-					<span 
+				name="select_filter" value="${filter.key}"/></ssf:url>"><span 
 					<c:if test="${filter.key == currentFilter && currentFilterScope == 'global'}"> class="ss_navbar_current"</c:if>
-					<c:if test="${filter.key != currentFilter || currentFilterScope != 'global'}"> class="ss_normal"</c:if>
-					>				
-					<c:out value="${filter.key}"/></span>
-				</a>
+					<c:if test="${filter.key != currentFilter || currentFilterScope != 'global'}"> class="ss_navbar_not_current"</c:if>
+					><c:out value="${filter.key}"/></span></a>
 			 </li>
 			</c:forEach>
 			</c:if>

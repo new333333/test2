@@ -39,87 +39,38 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
-import org.springframework.security.providers.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.security.ui.SpringSecurityFilter;
-import org.springframework.security.ui.FilterChainOrder;
+import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.security.ui.logout.LogoutHandler;
-import org.springframework.security.util.RedirectUtils;
-import org.springframework.security.util.UrlUtils;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 public class LogoutFilter extends org.springframework.security.ui.logout.LogoutFilter {
 
-	private String preAuthenticationLogoutSuccessUrl = "/bitbucket";
-    private LogoutHandler[] handlers;
+	private boolean allowLogoutViaGet;
 	
 	public LogoutFilter(String logoutSuccessUrl, LogoutHandler[] handlers) {
 		super(logoutSuccessUrl, handlers);
-		this.handlers = handlers;
+		allowLogoutViaGet = SPropsUtil.getBoolean("allow.logout.via.get", false);
 	}
 
-	public String getPreAuthenticationLogoutSuccessUrl() {
-		return preAuthenticationLogoutSuccessUrl;
-	}
-
-	public void setPreAuthenticationLogoutSuccessUrl(
-			String preAuthenticationLogoutSuccessUrl) {
-		this.preAuthenticationLogoutSuccessUrl = preAuthenticationLogoutSuccessUrl;
-	}
-
-    public void doFilterHttp(HttpServletRequest request,
-			HttpServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-
-		if (requiresLogout(request, response)) {
-			Authentication auth = SecurityContextHolder.getContext()
-					.getAuthentication();
-
-			if (logger.isDebugEnabled()) {
-				logger.debug("Logging out user '" + auth
-						+ "' and redirecting to logout page");
-			}
-
-			for (int i = 0; i < handlers.length; i++) {
-				handlers[i].logout(request, response, auth);
-			} 
-
-			String targetUrl;
-			
-			if(auth instanceof PreAuthenticatedAuthenticationToken) {
-				targetUrl = determinePreAuthenticationTargetUrl(request, response);
-			}
-			else {
-				targetUrl = determineTargetUrl(request, response);
-			}
-
-			sendRedirect(request, response, targetUrl);
-
-			return;
-		}
-
-		chain.doFilter(request, response);
-	}
-	
-    protected String determinePreAuthenticationTargetUrl(HttpServletRequest request, HttpServletResponse response) {
-        String targetUrl = request.getParameter("logoutSuccessUrl");
-
-        if(!StringUtils.hasLength(targetUrl)) {
-            targetUrl = getPreAuthenticationLogoutSuccessUrl();
+    public void doFilterHttp(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException,
+    ServletException {
+        if (requiresLogout(request, response)) {
+        	// We've got logout request.
+        	if("GET".equalsIgnoreCase(request.getMethod())) { // GET method
+        		if(allowLogoutViaGet) {
+        			// Allow logout via GET.
+        			super.doFilterHttp(request, response, chain);
+        		}
+        		else {
+        			// Don't allow logout via GET. Simply return without rendering anything new.
+        			return;
+        		}
+        	}
+        	else { // non-GET, probably POST
+        		super.doFilterHttp(request, response, chain);
+        	}
         }
-
-        if (!StringUtils.hasLength(targetUrl)) {
-            targetUrl = request.getHeader("Referer");
-        }        
-
-        if (!StringUtils.hasLength(targetUrl)) {
-            targetUrl = "/";
+        else { // It's not logout request.
+        	chain.doFilter(request, response);
         }
-
-        return targetUrl;
     }
-
 }

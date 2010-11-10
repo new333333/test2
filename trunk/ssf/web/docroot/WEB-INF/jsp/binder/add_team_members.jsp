@@ -41,7 +41,7 @@
 <form class="ss_style ss_form" 
   id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_onSubmit(this);">
-<span class="ss_titlebold"><ssf:nlt tag="toolbar.teams.addMember"/></span></br></br>
+<span class="ss_titlebold"><ssf:nlt tag="toolbar.teams.addMember"/></span><br><br>
 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
 <c:if test="${ssBinder.teamMembershipInherited}">

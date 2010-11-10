@@ -53,6 +53,7 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 	
 </script>
 <% // Show the Wiki Page search widget %>
+<c:if test="${empty ss_pseudoEntity}">
 <div class="ss_wiki_search_bar">
       <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" 
@@ -73,9 +74,23 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 		    accessibilityText="wiki.findPage"
 		    /> 
 		 <c:if test="${ss_showHelpIcon}">
+		   <a class="ss_box_prev" href="${ss_nextPrevUrl}" 
+		     onclick="ss_loadUrlInEntryFramePrev(this.href);return false;"
+			 style="margin-left:10px;"
+		   ><img src="<html:rootPath/>images/pics/nl_left_noborder_16.png"
+			 title="<ssf:nlt tag="nav.prevEntry"/>"></a>
+		   <a class="ss_box_next" href="${ss_nextPrevUrl}" 
+		     onclick="ss_loadUrlInEntryFrameNext(this.href);return false;"
+			 style="margin-right:10px;"
+		   ><img src="<html:rootPath/>images/pics/nl_right_noborder_16.png"
+			 title="<ssf:nlt tag="nav.nextEntry"/>"></a>
+	  	   <a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
+	         alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+	         src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21"/></a>&nbsp;&nbsp;
 	       <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
 	     </c:if>
 	    </form>
 	  </c:if>
 </div>
+</c:if>
 </c:if>

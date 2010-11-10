@@ -42,5 +42,8 @@
 <c:if test="${empty ss_formTagBottomApplied}">
 </div>
 </td></tr></table>
+<div style="display:none;">
+<img src="<html:rootPath/>images/pics/spinner.gif">
+</div>
 </c:if>
 <c:set var="ss_formTagBottomApplied" value="1"/>

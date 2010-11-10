@@ -45,7 +45,7 @@
 <ssf:form titleTag="toolbar.menu.configure_folder_email">
 <br/>
 	<c:if test="${!empty ssException}">
-		<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+		<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span><br>
 	</c:if>
 	<br/>
 	<br/>

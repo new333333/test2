@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -253,6 +254,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setType(type);
 		newDefinition.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		if (binder != null) newDefinition.setBinderId(binder.getId());
+    	newDefinition.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		getCoreDao().save(newDefinition);
 		Document doc = getInitialDefinition(name, title, type, inputData);
 		setDefinition(newDefinition, doc);
@@ -350,6 +352,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		def.setInternalId(internalId);
 		if (binder != null) def.setBinderId(binder.getId());
 		else def.setBinderId(ObjectKeys.RESERVED_BINDER_ID);
+    	def.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		if (Validator.isNull(id))
 			getCoreDao().save(def);
 		else {
@@ -374,13 +377,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     	//Write out the new definition file
     	def.setDefinition(doc);
-
-    	//If this is a workflow definition, build the corresponding JBPM workflow definition
+    	def.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+    	
+    	//the document in the cache is no longer valid, it needs to be reloaded
+       	DefinitionCache.invalidate(def.getId());
+       	
+		//If this is a workflow definition, build the corresponding JBPM workflow definition
     	if (def.getType() == Definition.WORKFLOW) {
+    		
+    		//the definition object needs to be reloaded in order for the workflow process definition to update properly
+    		Definition definition = getCoreDao().loadDefinition(def.getId(), RequestContextHolder.getRequestContext().getZoneId());
+
     		//Use the definition id as the workflow process name
-    		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
+    		getWorkflowModule().modifyProcessDefinition(definition.getId(), definition);
     	}
-    	DefinitionCache.invalidate(def.getId());
     }
     //should be called after all imports are done, to handle definition cross references
     public void updateDefinitionReferences(String defId) {
@@ -2333,7 +2343,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (itemName.equals("attachFiles")) {
 		    if (fileItems != null) {
 		    	boolean blnCheckForFileUntilTrue = true;
-		    	int intFileCount = 1;
+		    	int intFileCount = 0;
 		    	while (blnCheckForFileUntilTrue) {
 					String fileEleName = nameValue + Integer.toString(intFileCount);
 					if (fileItems.containsKey(fileEleName)) {
@@ -2364,7 +2374,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				    	}
 				    	intFileCount++;
 					} else {
-						blnCheckForFileUntilTrue = false;
+						intFileCount++;
+						if (intFileCount > 5) blnCheckForFileUntilTrue = false;
 					}
 		    	}
 		    }

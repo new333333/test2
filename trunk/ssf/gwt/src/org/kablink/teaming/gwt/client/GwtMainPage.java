@@ -747,7 +747,19 @@ public class GwtMainPage extends Composite
 		}
 	}// end editPersonalPreferences()
 
-	
+	/*
+	 * Exists What's New mode if it's currently active.
+	 */
+	private void exitActivityStreamIfActive()
+	{
+		// If we're currently in "activity stream" mode...
+		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
+		{
+			// ...exit out it.
+			handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+		}
+	}// end exitActivityStreamIfActive()	
+
 	/**
 	 * Use JSNI to grab the JavaScript object that holds the information about the request dealing with.
 	 */
@@ -855,7 +867,7 @@ public class GwtMainPage extends Composite
 		case HELP:
 			String url;
 			
-			url = "http://www.novell.com/documentation/teaming3/team3_user/data/bookinfo.html";
+			url = "http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_user/data/bookinfo.html";
 			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
@@ -879,26 +891,14 @@ public class GwtMainPage extends Composite
 				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
 			}
 			
-			// If we're currently in "activity stream" mode
-			if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible())
-			{
-				// exit out of "activity stream" mode.
-				handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
-			}
-			
 			// Change the browser's URL.
+			exitActivityStreamIfActive();
 			preContextSwitch();
 			gotoUrl( m_requestInfo.getMyWorkspaceUrl() );
 			break;
 			
 		case SELECTION_CHANGED:
-			// If we're currently in "activity stream" mode
-			if ( m_activityStreamCtrl != null && m_activityStreamCtrl.isVisible())
-			{
-				// exit out of "activity stream" mode.
-				handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
-			}
-			
+			exitActivityStreamIfActive();
 			preContextSwitch();
 			selectionChanged( obj );
 			break;
@@ -946,16 +946,19 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case SIMPLE_SEARCH:
+			exitActivityStreamIfActive();
 			preContextSwitch();
 			simpleSearch( obj );
 			break;
 			
 		case ADVANCED_SEARCH:
+			exitActivityStreamIfActive();
 			preContextSwitch();
 			advancedSearch();
 			break;
 			
 		case SAVED_SEARCH:
+			exitActivityStreamIfActive();
 			preContextSwitch();
 			savedSearch( obj );
 			break;
@@ -1668,7 +1671,10 @@ public class GwtMainPage extends Composite
 		// Do we have an ActivityStreamInfo parameter?
 		if ( obj instanceof ActivityStreamInfo )
 		{
-			// Yes!  Load the activity stream control...
+			// Yes!  Restore the UI state (i.e., sidebar, ...)
+			restoreUIState();
+
+			// Load the activity stream control...
 			final ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();

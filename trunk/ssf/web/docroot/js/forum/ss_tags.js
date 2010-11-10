@@ -97,14 +97,30 @@ function ss_tagModify(operation2, namespace, tagId, divNumber, binderId, entityT
 		}
 		
         var punct = "([!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]*)";
-		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}_~-]");
+		var pattern = new RegExp("[!\"#$%&'()*+,./:;<=>?@[\\\\\\]^`{|}~-]");
 		if (formObj.personalTag && formObj.personalTag.value) {
+			// Does the tag have an underscore in it?
+			if ( formObj.personalTag.value.indexOf( "_" ) >= 0 )
+			{
+				// Yes, tell the user about the problem and bail.
+				alert( ss_tagConfirmNoUnderscore );
+				return;
+			}
+			
 			if (pattern.test(formObj.personalTag.value) ) {
 				alert(ss_tagConfirmNoPunct)
 				return
 			}
 		}
 		if (formObj.communityTag && formObj.communityTag.value) {
+			// Does the tag have an underscore in it?
+			if ( formObj.communityTag.value.indexOf( "_" ) >= 0 )
+			{
+				// Yes, tell the user about the problem and bail.
+				alert( ss_tagConfirmNoUnderscore );
+				return;
+			}
+			
 			if (pattern.test(formObj.communityTag.value) ) {
 				alert(ss_tagConfirmNoPunct)
 				return

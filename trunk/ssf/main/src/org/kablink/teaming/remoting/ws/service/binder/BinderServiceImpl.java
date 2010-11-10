@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.remoting.ws.service.binder;
 
+import static org.kablink.util.search.Restrictions.eq;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -87,11 +90,16 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction.Disjunction;
+
+import static org.kablink.util.search.Restrictions.disjunction;
 
 public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
 	private CoreDao coreDao;
@@ -400,14 +408,47 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	}
 	
 	@SuppressWarnings("unchecked")
-	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
+	public FolderCollection binder_getFolders(String accessToken, final long binderId, final int firstRecord, final int maxRecords) {
         // Probably sorting by title isn't as important in web services as in browser UI, 
         // but it wouldn't hurt either.
-		Binder binder = getBinderModule().getBinder(binderId);		
-    	Map options = new HashMap();
-    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
-    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
-		Map searchResults = getBinderModule().getBinders(binder, options);
+
+		FolderSearcher folderSearcher = new FolderSearcher() {
+			public Map searchFolders() {
+				Binder binder = getBinderModule().getBinder(binderId);		
+		    	Map options = new HashMap();
+		    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+		    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
+				return getBinderModule().getBinders(binder, options);
+			}
+		};
+
+		return getFolders(folderSearcher, firstRecord);
+	}
+	
+	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long startingBinderId, final String[] families, final int firstRecord, final int maxRecords) {
+		FolderSearcher folderSearcher = new FolderSearcher() {
+			public Map searchFolders() {	
+		    	Criteria crit = new Criteria()
+				.add(eq(Constants.ENTRY_ANCESTRY, String.valueOf(startingBinderId)))
+				.add(eq(Constants.ENTITY_FIELD, "folder"));
+
+		    	if(families != null && families.length > 0) {
+		    		Disjunction disj = disjunction();
+		    		for(String family:families)
+		    			disj.add(eq(Constants.FAMILY_FIELD, family));
+		    		crit.add(disj);
+		    	}
+		    	
+				return getBinderModule().executeSearchQuery(crit, firstRecord, maxRecords);
+			}
+		};
+
+		return getFolders(folderSearcher, firstRecord);
+	}
+	
+	private FolderCollection getFolders(FolderSearcher folderSearcher, int firstRecord) {
+		Map searchResults = folderSearcher.searchFolders();
+		
 		List searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 
 		List<FolderBrief> folderList = new ArrayList<FolderBrief>();
@@ -423,44 +464,37 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		String rssUrl;
 		String atomUrl;
 		String icalUrl;
-		//String family;
+		String family;
 		Integer definitionType;
-		Folder folder;
+		String path;
 		for (int i=0; i<searchBinders.size(); ++i) {
 			Map search = (Map)searchBinders.get(i);
 			String entityType = (String)search.get(Constants.ENTITY_FIELD);
 			if (!EntityType.folder.name().equals(entityType))
 				continue;
 			id = Long.valueOf((String)search.get(Constants.DOCID_FIELD));
-			// Unfortunately, the search index does not contain path information for each
-			// binder/folder. Consequently, we need to retrieve each folder from the
-			// database in order to get that information, which is needed when constructing
-			// webdav url. Otherwise, this operation could have been highly efficient...
-			folder = null;
-			try {
-				folder = (Folder) getCoreDao().load(Folder.class, id);
-			}
-			catch(Exception e) {
-				logger.warn(e.toString());
-				continue;
-			}
-			if(folder == null) 
-				continue;
 			title = (String) search.get(Constants.TITLE_FIELD);
-			creation = new Timestamp((String) search.get(Constants.MODIFICATION_NAME_FIELD), (Date) search.get(Constants.MODIFICATION_DATE_FIELD));
-			modification = new Timestamp((String) search.get(Constants.CREATOR_NAME_FIELD), (Date) search.get(Constants.CREATION_DATE_FIELD));
-			createdWithDefinitionId = folder.getCreatedWithDefinitionId(); 
+			
+			UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) search.get(Constants.CREATORID_FIELD)));
+			UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) search.get(Constants.MODIFICATIONID_FIELD)));
+			
+			creation = new Timestamp(((creator != null)? creator.getName() : (String) search.get(Constants.CREATOR_NAME_FIELD)),(Date) search.get(Constants.CREATION_DATE_FIELD));
+			modification = new Timestamp(((modifier != null)? modifier.getName() : (String) search.get(Constants.MODIFICATION_NAME_FIELD)),(Date) search.get(Constants.MODIFICATION_DATE_FIELD));
+			createdWithDefinitionId = (String) search.get(Constants.CREATED_WITH_DEFINITION_FIELD);
 			defaultViewDefinitionId = (String) search.get(Constants.COMMAND_DEFINITION_FIELD);
-			// family field is searchable but not stored, so we can't use it this way
-			//family = (String) search.get(Constants.FAMILY_FIELD);
+			family = (String) search.get(Constants.FAMILY_FIELD);
 			definitionType = Integer.valueOf((String)search.get(Constants.DEFINITION_TYPE_FIELD));
+			path = (String) search.get(Constants.ENTITY_PATH);
 			permaLink = PermaLinkUtil.getPermalink(search);
 			// Construct webdav url only for library folder
-			// Unfortunately, this check doesn't save us the cost of fetching each folder in the first place,
-			// since the information about whether a folder is a library binder or not is not stored in the
-			// search index. So we have to fetch it in order to check it. Too bad...
-			if(folder.isLibrary())
-				webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+			Boolean library = null;
+			String libraryStr = (String)search.get(Constants.IS_LIBRARY_FIELD);
+			if(Constants.TRUE.equals(libraryStr))
+				library = Boolean.TRUE;
+			else if(Constants.FALSE.equals(libraryStr))
+				library = Boolean.FALSE;
+			if(Boolean.TRUE.equals(library) && path != null)
+				webdavUrl = SsfsUtil.getLibraryBinderUrl(path);
 			else
 				webdavUrl = null;
 			rssUrl = UrlUtil.getFeedURL(null, id.toString()); // folder only
@@ -469,8 +503,10 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			folderList.add(new FolderBrief(id,
 					title,
 					entityType,
-					//family,
+					family,
+					library,
 					definitionType,
+					path,
 					creation,
 					modification,
 					permaLink,
@@ -486,6 +522,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				((Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT)).intValue(),
 				folderList.toArray(array));
 	}
+	
 	@SuppressWarnings("unchecked")
 	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		// Read the requested trash entries...
@@ -616,5 +653,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			}
 		}
 		return result;
+	}
+	
+	interface FolderSearcher {
+		Map searchFolders();
 	}
 }

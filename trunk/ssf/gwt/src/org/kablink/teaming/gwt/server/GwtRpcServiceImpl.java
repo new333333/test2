@@ -67,10 +67,10 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -2523,16 +2523,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
-	 * Return information about self registration.
+	 * Return login information such as self registration and auto complete.
 	 * 
 	 * @param ri
 	 * 
 	 * @return
 	 */
-	public GwtSelfRegistrationInfo getSelfRegistrationInfo( HttpRequestInfo ri )
+	public GwtLoginInfo getLoginInfo( HttpRequestInfo ri )
 	{
-		return GwtServerHelper.getSelfRegistrationInfo( getRequest( ri ), this );
+		return GwtServerHelper.getLoginInfo( getRequest( ri ), this );
 	}// end getSelfRegistrationInfo()
+	
 	
 	/**
 	 * Returns a List<ToolbarItem> of the ToolbarItem's
@@ -3248,16 +3249,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Get the stats for the user
 	 * 
 	 * @param ri
-	 * @param binderId This is the binderId of the person you want to get stats on.
+	 * @param binderId This is the binderId of the workspace you want to get stats on.
+	 * @param userId   This is the userId   of the currently logged in user.
 	 * 
 	 * @return ProfileStats This object contains the stat info to display
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public ProfileStats getProfileStats(HttpRequestInfo ri, String userId) throws GwtTeamingException {
+	public ProfileStats getProfileStats(HttpRequestInfo ri, String binderId, String userId) throws GwtTeamingException {
 		try
 		{
-			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, userId);
+			User binderCreator = GwtServerHelper.getBinderCreator(this, binderId);
+			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, String.valueOf(binderCreator.getId()));
 			return stats;
 		}
 		catch (AccessControlException e)

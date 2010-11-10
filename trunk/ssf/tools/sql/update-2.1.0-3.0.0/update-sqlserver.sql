@@ -186,4 +186,4 @@ alter table SS_ZoneConfig add defaultGuestHomePageId numeric(19,0);
 
 alter table SS_LicenseStats add activeUserCount numeric(19,0);
 
-INSERT INTO SS_SchemaInfo values (12);
+INSERT INTO SS_SchemaInfo values (13);

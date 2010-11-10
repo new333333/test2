@@ -483,7 +483,8 @@ function ss_calendarEngine(
    			ss_cal_Grid.setFirstDayToShow(date);
     		ss_cal_Grid.activateGrid(grid);
     		ss_cal_Grid.highlightDaySelectorMenuIcon();
-    		ss_cal_Events.redrawAll();
+    		var doResize = ((grid != "month") || (!ss_isIE));
+    		ss_cal_Events.redrawAll(doResize);
     			   
     		var stickyCalendarParams = {};
     		if (grid) {
@@ -1732,13 +1733,15 @@ function ss_calendarEngine(
 			}		
 	    },
 	
-	    redrawAll: function() {
+	    redrawAll: function(doResize) {
 	        if (ss_cal_Grid.currentType == "day") {
 	            this.redrawDay();
 	        } else if (ss_cal_Grid.currentType == "month") {
 	            this.redrawMonth();
 	        }
-	        resizeGwtContent("calendar::redrawAll()");
+	        if ((typeof doResize == "undefined") || doResize) {
+	        	resizeGwtContent("calendar::redrawAll()");
+	        }
 	    },
 	
 	    overEventId: "",

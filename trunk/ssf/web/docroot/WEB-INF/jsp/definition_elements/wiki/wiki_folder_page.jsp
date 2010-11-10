@@ -32,33 +32,179 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<table width="100%">
-<tr>
-<td valign="top"><span class="ss_nowrap ss_bold" style="margin-left: 10px;">
+<c:set var="slidingTableTableStyle" value=""/>
+<c:set var="slidingTableRowStyle" value="ss_table_oddRow"/>
+<c:set var="slidingTableRowOddStyle" value="ss_table_oddRow"/>
+<c:set var="slidingTableRowEvenStyle" value="ss_table_evenRow"/>
+<c:set var="slidingTableColStyle" value=""/>
 
-		 <c:forEach var="blogPage" items="${ssBlogPages}">
-		   <c:if test="${blogPage.id == ssBinder.id}">
-				<c:out value="${blogPage.title}" escapeXml="true" />
-			</c:if> 
-		 </c:forEach>
+<div id="ss_folder_table_parent" class="ss_folder">
+<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="sliding" 
+	  height="400" folderId="${ssBinder.id}" tableStyle="${slidingTableTableStyle}">
+<ssf:slidingTableRow style="${slidingTableRowStyle}" headerRow="true">
+  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="40%">
+	    <a href="<ssf:url binderId="${ssBinder.id}" action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
+	    	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
+	    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param
+	    	name="wiki_folder_list" value="1"/></ssf:url>"
+		
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+		  	<ssf:title tag="title.sort.by.column.desc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
+		  	</ssf:title>
+		  </c:when>
+		  <c:otherwise>
+		  	<ssf:title tag="title.sort.by.column.asc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
+		  	</ssf:title>
+		  </c:otherwise>
+		</c:choose>	
+		 ><ssf:nlt tag="folder.column.Title"/>
+	    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			</c:if>
+			<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			</c:if>
+	    </a>
+    </ssf:slidingTableColumn>
+    
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
+	    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
+	    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    	name="ssFolderSortBy" value="_creatorTitle"/><c:choose><c:when 
+	    	test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param
+	    	name="wiki_folder_list" value="1"/></ssf:url>"
+		
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+		  	<ssf:title tag="title.sort.by.column.desc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
+		  	</ssf:title>
+		  </c:when>
+		  <c:otherwise>
+		  	<ssf:title tag="title.sort.by.column.asc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
+		  	</ssf:title>
+		  </c:otherwise>
+		</c:choose>
+		>
+			<ssf:nlt tag="folder.column.Author"/>
+		    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
+				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			</c:if>
+			<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			</c:if>
+	    </a>
+    </ssf:slidingTableColumn>
+    
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="10%">
+        <ssf:nlt tag="folder.column.Comments"/>
+    </ssf:slidingTableColumn>
+    
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="17%">
+	    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
+	    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    	name="ssFolderSortBy" value="_lastActivity"/><c:choose><c:when 
+	    	test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose><ssf:param
+	    	name="wiki_folder_list" value="1"/></ssf:url>"
+		
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+		  	<ssf:title tag="title.sort.by.column.asc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+		  	</ssf:title>
+		  </c:when>
+		  <c:otherwise>
+		  	<ssf:title tag="title.sort.by.column.desc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
+		  	</ssf:title>
+		  </c:otherwise>
+		</c:choose>
+		>
+			<ssf:nlt tag="folder.column.LastActivity"/>
+		    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
+				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			</c:if>
+			<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
+				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			</c:if>
+	    </a>
+    </ssf:slidingTableColumn>
+    
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="13%">
+	    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
+	    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    	name="ssFolderSortBy" value="_rating"/><c:choose><c:when 
+	    	test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose><ssf:param
+	    	name="wiki_folder_list" value="1"/></ssf:url>"
+		
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
+		  	<ssf:title tag="title.sort.by.column.desc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
+		  	</ssf:title>
+		  </c:when>
+		  <c:otherwise>
+		  	<ssf:title tag="title.sort.by.column.asc">
+		  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
+		  	</ssf:title>
+		  </c:otherwise>
+		</c:choose>
+		><ssf:nlt tag="folder.column.Rating"/>
+		    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}">
+				<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			</c:if>
+			<c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
+				<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+				value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			</c:if>
+	    </a>
+    </ssf:slidingTableColumn>
+  </ssf:slidingTableRow>
 
-
-<ssf:nlt tag="wiki.topic.pages"/></span></td>
-<td valign="top" width="100%" align="left">
 <c:forEach var="entry1" items="${ssFolderEntries}" varStatus="status" >
-	<jsp:useBean id="entry1" type="java.util.HashMap" />
+  <jsp:useBean id="entry1" type="java.util.HashMap" />
+  <jsp:useBean id="status" type="javax.servlet.jsp.jstl.core.LoopTagStatus" />
+
+<ssf:slidingTableRow style="${slidingTableRowStyle}" 
+  oddStyle="${slidingTableRowOddStyle}" evenStyle="${slidingTableRowEvenStyle}" id="${folderLineId}" >
+
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
 	<c:set var="seenStyleburst" value=""/>
 	<%
 		String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 		String seenStyle = " ";
 		String seenStyleFine = "ss_finePrint ";
+		String seenStyleAuthor = " ";
 		if (!ssSeenMap.checkIfSeen(entry1)) {
 			seenStyle = "ss_unseen ";
 			seenStyleFine = "ss_unseen ss_fineprint ";
+			seenStyleAuthor="ss_unseen";
 			%><c:set var="seenStyleburst" value="1"/><%
 		}
 	%>
-    <div class="wiki-page">
 	  <!-- Sunburst -->
 	  <c:if test="${!empty seenStyleburst}">
 	  	<a id="ss_sunburstDiv${ssBinder.id}_${entry1._docId}" href="javascript: ;" 
@@ -78,7 +224,7 @@
           name="entryViewStyle" value="popup"/><ssf:param
           name="namespace" value="${renderResponse.namespace}"/></ssf:url>" 
     	<c:if test="${!empty entry1._desc}">
-    	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
+    	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 4);"
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
     	</c:if>
         onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return true;" 		    	
@@ -86,26 +232,57 @@
       ><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyleFine %>"
         >--<ssf:nlt tag="entry.noTitle"/>--</span
       ></c:if><span id="folderLineSeen_${entry1._docId}" class="<%= seenStyle %>"
-        ><c:out value="${entry1.title}" escapeXml="true"/></span></a>
+        ><ssf:textFormat formatAction="limitedCharacters" 
+    		textMaxChars="folder.title.charCount"><c:out value="${entry1.title}"/></ssf:textFormat>
         <c:if test="${entry1._docId == ss_wikiHomepageEntryId}">
-          <a href="<ssf:url     
-            adapter="true" 
-            portletName="ss_forum" 
-            folderId="${ssFolder.id}" 
-            action="view_folder_entry" 
-            entryId='<%= entry1.get("_docId").toString() %>' actionUrl="true"><ssf:param
-            name="entryViewStyle" value="popup"/><ssf:param
-            name="namespace" value="${renderResponse.namespace}"/></ssf:url>"
-            title="<ssf:nlt tag="wiki.homePage"/>"
-          ><img border="0" align="absbottom" width="14" height="14" src="<html:rootPath/>images/pics/wiki/home16.png" 
-            alt="<ssf:nlt tag="wiki.homePage"/>"></a>
+          <img border="0" align="absmiddle" width="14" height="14" src="<html:rootPath/>images/pics/wiki/home16.png" 
+            alt="<ssf:nlt tag="wiki.homePage"/>" style="padding-bottom:4px;">
         </c:if>
-    </div>
-
+      </span></a>
+  </ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
+    <ssf:showUser user='<%=(User)entry1.get("_principal")%>' /> 
+  </ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
+      <span >${entry1._totalReplyCount}</span>
+  </ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
+    <span ><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+     value="${entry1._lastActivity}" type="both" 
+	 timeStyle="short" dateStyle="short" /></span>
+  </ssf:slidingTableColumn>
+  <ssf:slidingTableColumn style="${slidingTableColStyle}">
+     <c:if test="${!empty entry1._rating}">
+		<span class="ss_nowrap">
+			<%
+				String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry1.get("_rating").toString())));
+			%>
+			<c:set var="sRating" value="<%= iRating %>"/>
+			<c:if test="${sRating > 0}">
+				<c:forEach var="i" begin="0" end="${sRating - 1}" step="1">
+			
+				  <img border="0" 
+				    <ssf:alt tag="alt.goldStar"/>
+				    src="<html:imagesPath/>pics/star_gold.png"/>
+				 
+			
+				</c:forEach>
+			</c:if>
+			
+			<c:if test="${sRating < 5}">
+				<c:forEach var="i" begin="${sRating}" end="4" step="1">
+				  <img <ssf:alt tag="alt.grayStar"/> border="0" 
+					    src="<html:imagesPath/>pics/star_gray.png" />
+				  
+				</c:forEach>
+			</c:if>
+		</span>
+     </c:if>&nbsp;
+  </ssf:slidingTableColumn>
+</ssf:slidingTableRow>
 </c:forEach>
-</td>
-</tr>
-</table>
+</ssf:slidingTable>
+</div>
 
 <c:if test="${empty ssFolderEntries}">
   <div style="margin:20px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="wiki.no_entries"/></span></div>

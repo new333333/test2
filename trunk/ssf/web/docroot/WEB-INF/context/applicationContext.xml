@@ -955,6 +955,8 @@ text/calendar											  ics
 	  ]]></value></property>
 	</bean>
 		
+	<bean id="newableFileSupport" class="org.kablink.teaming.module.file.impl.NewableFileSupportImpl"/>
+		
 	<!-- =========================Portlet support =========================================================== -->	
 
 	<!-- ========================= Data Access (DAO) Components ====================== -->

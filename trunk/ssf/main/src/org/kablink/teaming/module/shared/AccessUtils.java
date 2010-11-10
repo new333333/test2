@@ -47,6 +47,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
@@ -271,11 +272,20 @@ public class AccessUtils  {
 	}
 	public static void readCheck(User user, Entry entry) throws AccessControlException {
         if (user.isSuper()) return;
-    	if (entry instanceof WorkflowSupport)
+    	if (entry instanceof WorkflowSupport) {
     		readCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
-    	else 
+    	} else {
     		readCheck(user, entry.getParentBinder(), (Entry)entry);
-    		
+    	}
+    	//If this is a reply, also check the readability of the top entry
+    	if (entry instanceof FolderEntry && !entry.isTop()) {
+    		FolderEntry topEntry = ((FolderEntry)entry).getTopEntry();
+        	if (topEntry instanceof WorkflowSupport) {
+        		readCheck(user, topEntry.getParentBinder(), (WorkflowSupport)topEntry);
+        	} else {
+        		readCheck(user, topEntry.getParentBinder(), (Entry)topEntry);
+        	}
+    	}
 	}
 	private static void readCheck(User user, Binder binder, Entry entry) {
 		operationCheck(user, binder, entry, WorkAreaOperation.READ_ENTRIES);

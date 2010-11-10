@@ -57,7 +57,7 @@ function ss_logoff_from_teaming_then_sso(logoutURL) {
 	x = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 	
-	x.open("GET", logoutURL, true);
+	x.open("POST", logoutURL, true);
 	
 	x.onreadystatechange = function() {
 		if (x.readyState != 4) {

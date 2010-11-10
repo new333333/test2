@@ -47,4 +47,5 @@ ALTER TABLE SS_Attachments add column fileStatus integer;
 ALTER TABLE SS_ZoneConfig add column defaultHomePageId bigint;
 ALTER TABLE SS_ZoneConfig add column defaultGuestHomePageId bigint;
 ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
-INSERT INTO SS_SchemaInfo values (12);
+ALTER TABLE SS_ChangeLogs MODIFY xmlString LONGTEXT;
+INSERT INTO SS_SchemaInfo values (13);

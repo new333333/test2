@@ -1687,11 +1687,19 @@ div.ss_box_top_rounded {
 	position:relative;
 	top:4px;
 	border:none;
+	background:none;
 }
 .ss_box_prev img {
 	position:relative;
 	top:4px;
 	border:none;
+	background:none;
+}
+a:hover.ss_box_next {
+	background:none;
+}
+a:hover.ss_box_prev {
+	background:none;
 }
 
 .ss_box_small_icon_bar {
@@ -2092,14 +2100,12 @@ span.ss_tabs_title {
 
 /* breadcrumbs */
 .ss_breadcrumb {
-	margin-top:0px;
-	margin-left:-10px;
+	margin:0px;
 	padding:0px 5px 0px 0px;
 	font-size: ${ss_style_font_smallprint};
 }
 .ss_breadcrumb ul {
-	margin-left:-15px;
-	margin-top:-12px;
+	margin:0px 0px 0px -15px;
 }
 .ss_breadcrumb li{
 	float:left;
@@ -4320,13 +4326,12 @@ table.ss_tasks_list th {
 	padding: 3px 0px 3px 5px;
 	white-space: nowrap;
 	overflow: visible;
+	color: ${ss_style_text_color} !important;
 }
 table.ss_tasks_list td {
 	padding: 3px 0px 3px 6px;
 	font-size: 10px !important;
 	border-bottom: 1px solid #afc8e3;
-	
-	
 }
 
 table.ss_tasks_accessory td {
@@ -4741,13 +4746,14 @@ span.ss_infoDivValue {
 	-webkit-border-radius: 5px;
 }
 
-.ss_muster_users {
+/* Note: The "ss_muster_users" style is used to find all user names on a page. 
+   It should not be used to style user names. Specifically, do not "bold" this. It will break folder listings.
+*/
+.ss_muster_users {  
 	color: #353838;
-	font-weight: bold;
 }
 .ss_muster_users:hover {
 	color: #135c8f;
-	font-weight: bold;
 }
 
 .ss_videoDiv {

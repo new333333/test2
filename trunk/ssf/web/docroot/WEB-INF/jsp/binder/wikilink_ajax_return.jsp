@@ -67,14 +67,14 @@ var ss_wikiLinkUrl = "<ssf:url
 <form method="post" name="ss_findLinkForm"
 	action="">
 <ssf:showHelp guideName="user" pageId="entry_linking" sectionId="entry_linking_otherfolder" /> 
-<ssf:nlt tag="wiki.link.tofolder"/>: <b><span id="linkToFolderName">(${ssBinder.title})</span></b>
+<ssf:nlt tag="wiki.link.tofolder"/> <b><span id="linkToFolderName">(${ssBinder.title})</span></b>
 <input type="hidden" name="binderId" id="binderId" size="5" value="${ssBinder.id}"/>
 <a href="javascript:;" onclick="ss_popup_folder();">[<ssf:nlt tag="button.change"/>]</a>
 <div id="folder_popup" style="display: none; background: #CCCCCC; top: 30px; padding: 10px;  border: 1px solid #333333;">
 <div align="right"><a href="javascript:;" onclick="ss_close_popup_folder();">
   <img border="0" src="<html:imagesPath/>pics/popup_close_box.gif" alt="x" title=""/></a>
 </div>
-<ssf:nlt tag="wiki.link.differentfolder"/>:
+<ssf:nlt tag="wiki.link.differentfolder"/>
 <br/>
  <ssf:find formName="ss_findLinkForm" 
     formElement="searchTitleFolder" 
@@ -90,7 +90,7 @@ var ss_wikiLinkUrl = "<ssf:url
 <input type="hidden" name="searchTitleFolder" id="searchTitleFolder" value="${ssBinder.title}"/>
 </div>
 <p>
-<b><ssf:nlt tag="wiki.link.topage"/>:</b> <input name="pageName" id="pageName" size="30"/>
+<b><ssf:nlt tag="wiki.link.topage"/></b> <input name="pageName" id="pageName" size="30"/>
 <a href="javascript:;" onclick="ss_popup_page();">[<ssf:nlt tag="button.find"/>]</a>
 </p>
 

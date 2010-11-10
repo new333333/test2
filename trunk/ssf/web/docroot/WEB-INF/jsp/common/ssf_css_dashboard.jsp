@@ -691,8 +691,8 @@ div.item-sub a {
     padding: 3px 8px;
 	font-size: 11px;
     white-space:nowrap !important;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
       }
 
 	 /* Commented Backslash Hack hides rule from IE5-Mac \ */ 

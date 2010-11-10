@@ -56,6 +56,7 @@ import org.kablink.teaming.remoting.ws.model.TemplateCollection;
 import org.kablink.teaming.remoting.ws.model.TrashCollection;
 import org.kablink.teaming.remoting.ws.model.User;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
+import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
 import org.kablink.teaming.remoting.ws.service.admin.AdminService;
 import org.kablink.teaming.remoting.ws.service.binder.BinderService;
 import org.kablink.teaming.remoting.ws.service.definition.DefinitionService;
@@ -230,6 +231,11 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public FolderCollection binder_getFolders(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		return getBinderService().binder_getFolders(accessToken, binderId, firstRecord, maxRecords);
 	}
+	
+	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, long startingBinderId, String[] families, int firstRecord, int maxRecords) {
+		return getBinderService().binder_getAllFoldersOfMatchingFamily(accessToken, startingBinderId, families, firstRecord, maxRecords);
+	}
+	
 	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		return getBinderService().binder_getTrashEntries(accessToken, binderId, firstRecord, maxRecords);
 	}
@@ -629,6 +635,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getAdminService().admin_getCurrentServerTime(accessToken);
 	}
 
+	public ReleaseInfo admin_getReleaseInfo(String accessToken) {
+		return getAdminService().admin_getReleaseInfo(accessToken);
+	}
+	
 	private String normalizeFileUploadDataItemName(String fileUploadDataItemName) {
 		if("ss_attachFile".equals(fileUploadDataItemName))
 			return "ss_attachFile1";

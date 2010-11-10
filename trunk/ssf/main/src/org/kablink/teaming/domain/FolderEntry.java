@@ -408,8 +408,12 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         return this.getTopEntry();
     }
     public Set getChildWorkAreas() {
-    	//We don't allow access controls to be set for replies
-    	return new HashSet();
+    	Set<Entry> result = new HashSet<Entry>();
+		List<Entry> replies = this.getReplies();
+		for (Entry reply : replies) {
+			result.add(reply);
+    	}
+    	return result;
     }
 	/**
 	 * @hibernate.property not-null="true"

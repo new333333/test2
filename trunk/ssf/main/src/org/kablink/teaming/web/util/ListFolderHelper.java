@@ -1894,7 +1894,7 @@ public class ListFolderHelper {
 	
 		
 		//See if a "sort by" menu is needed
-		if (viewType.equals(Definition.VIEW_STYLE_WIKI)|| viewType.equals(Definition.VIEW_STYLE_BLOG)|| 
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)|| 
 				viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 			//Add a way to set the sorting
 			UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES_OBJ);
@@ -1902,8 +1902,7 @@ public class ListFolderHelper {
 			if (searchSortBy == null) searchSortBy = "";
 			entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_sortBy"));
 			String[] sortOptions = new String[] {"number", "title", "state", "author", "activity"};
-			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) || 
-					viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+			if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 				sortOptions = new String[] {"number", "title",  "activity"};
 			}
 			Set so = new HashSet();
@@ -1920,12 +1919,8 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.DOCID_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				String nltTag = "folder.column.Number";
-				if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM) || 
-						viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+				if (viewType.equals(Definition.VIEW_STYLE_PHOTO_ALBUM)) {
 					nltTag = "folder.column.CreationDate";
 				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
@@ -1943,9 +1938,6 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.SORT_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Title"), url, qualifiers);
 			}
@@ -1961,9 +1953,6 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.WORKFLOW_STATE_CAPTION_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.State"), url, qualifiers);
 			}
@@ -1979,9 +1968,6 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.CREATOR_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Author"), url, qualifiers);
 			}
@@ -1997,9 +1983,6 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.LASTACTIVITY_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.LastActivity"), url, qualifiers);
 			}
@@ -2015,9 +1998,6 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.RATING_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
-				if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-					url.setParameter(WebKeys.URL_WIKI_FOLDER_LIST, "1");
-				}
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Rating"), url, qualifiers);
 			}

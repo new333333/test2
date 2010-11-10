@@ -35,6 +35,7 @@
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<jsp:useBean id="ssWorkArea" type="org.kablink.teaming.security.function.WorkArea" scope="request" />
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("access.configure") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -162,9 +163,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+<% if (ssWorkArea instanceof org.kablink.teaming.domain.TemplateBinder) { %>
+  <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<% } else { %>
   <input type="submit" class="ss_submit" name="closeBtn"
   	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
+<% } %>
 </form>
 </td>
 </tr>
@@ -370,10 +375,10 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar5 ss_actions_bar_submenu" >
 		  <div align="right">
 		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
-		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+		      <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
 		    </a>
 		  </div>
-		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
+		<span class="ss_bold" style="color:#fff;"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 		<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 		<c:set var="ss_roleWasAdded" value="false"/>
 	    <c:forEach var="function" items="${ssFunctions}">
@@ -447,9 +452,13 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 	name="actionUrl" value="true"/><ssf:param 
 	name="workAreaId" value="${ssWorkArea.workAreaId}"/><ssf:param 
 	name="workAreaType" value="${ssWorkArea.workAreaType}"/></ssf:url>">
+<% if (ssWorkArea instanceof org.kablink.teaming.domain.TemplateBinder) { %>
+  <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<% } else { %>
   <input type="submit" class="ss_submit" name="closeBtn"
   	onClick="return handleCloseBtn();" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
+<% } %>
 </form>
 </div>
 </div>

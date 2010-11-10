@@ -39,18 +39,24 @@ public class BinderBrief implements Serializable {
 	private Long id;
 	private String title;
 	private String entityType;
+	private String family;
+	private Boolean library;
+	private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
+	private String path;
 	private Timestamp creation;
 	private Timestamp modification;
 	private String permaLink;
-	private Integer definitionType; // Shows what kind binder this is, that is, whether workspace or folder. Corresponds to the constants in Definition.java
 
 	public BinderBrief() {}
 
-	public BinderBrief(Long id, String title, String entityType, Integer definitionType, Timestamp creation, Timestamp modification, String permaLink) {
+	public BinderBrief(Long id, String title, String entityType, String family, Boolean library, Integer definitionType, String path, Timestamp creation, Timestamp modification, String permaLink) {
 		this.id = id;
 		this.title = title;
 		this.entityType = entityType;
+		this.family = family;
+		this.library = library;
 		this.definitionType = definitionType;
+		this.path = path;
 		this.creation = creation;
 		this.modification = modification;
 		this.permaLink = permaLink;
@@ -98,6 +104,30 @@ public class BinderBrief implements Serializable {
 	}
 	public void setEntityType(String entityType) {
 		this.entityType = entityType;
+	}
+
+	public String getFamily() {
+		return family;
+	}
+
+	public void setFamily(String family) {
+		this.family = family;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public Boolean getLibrary() {
+		return library;
+	}
+
+	public void setLibrary(Boolean library) {
+		this.library = library;
 	}
 
 }

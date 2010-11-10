@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -77,6 +78,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -222,6 +224,37 @@ public class GwtServerHelper {
 			return 	m_collator.compare( s1, s2 );
 		}// end compare()
 	}// end GwtAdminActionComparator	   
+	   
+	/**
+	 * Inner class used compare two SavedSearchInfo objects.
+	 */
+	private static class SavedSearchInfoComparator implements Comparator<SavedSearchInfo> {
+		/**
+		 * Class constructor.
+		 */
+		public SavedSearchInfoComparator() {
+			// Nothing to do.
+		}
+
+	      
+		/**
+		 * Implements the Comparator.compare() method on two
+		 * SavedSearchInfo's.
+		 *
+		 * Returns:
+		 *    -1 if ssi1 <  ssi2;
+		 *     0 if ssi1 == ssi2; and
+		 *     1 if ssi1 >  ssi2.
+		 *     
+		 * @param ssi1
+		 * @param ssi2
+		 * 
+		 * @return
+		 */
+		public int compare(SavedSearchInfo ssi1, SavedSearchInfo ssi2) {
+			return MiscUtil.safeSColatedCompare(ssi1.getName(), ssi2.getName());
+		}
+	}	   
 	   
 	/**
 	 * Inner class used compare two TeamInfo objects.
@@ -1455,11 +1488,15 @@ public class GwtServerHelper {
 				// Does the user have rights to the binder where the branding is coming from?
 				if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
 				{
-					// No, return an empty branding.
-					return brandingData;
+					// No, don't use inherited branding.
+					brandingSourceBinderId = binderId;
+					brandingSourceBinder = binder;
+				}
+				else
+				{
+					brandingSourceBinderId = brandingSourceBinder.getId().toString();
 				}
 				
-				brandingSourceBinderId = brandingSourceBinder.getId().toString();
 				brandingData.setBinderId( brandingSourceBinderId );
 
 				// Get the branding that should be applied for this binder.
@@ -1676,6 +1713,42 @@ public class GwtServerHelper {
 		return brandingData;
 	}// end getBinderBrandingData()
 
+	/**
+	 * Returns the User object that's the creator of a Binder.
+	 * 
+	 * Note that the creator is not always the owner (i.e.,
+	 * binder.getOwner() may return something different.)  This will
+	 * happen, for instance, with the guest user workspace.  For that
+	 * binder, binder.getOwner() returns the admin user where this
+	 * method will return the guest user.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static User getBinderCreator(AllModulesInjected bs, Binder binder) {
+		User         reply         = null;
+		HistoryStamp creationStamp = ((null == binder)        ? null : binder.getCreation());
+		Principal    owner         = ((null == creationStamp) ? null : creationStamp.getPrincipal());
+		if (null != owner) {
+			owner = Utils.fixProxy(owner);
+			if (owner instanceof User) {
+				reply = ((User) owner);
+			}
+		}
+		return reply;
+	}
+	
+	public static User getBinderCreator(AllModulesInjected bs, String binderId) {
+		return getBinderCreator(bs, Long.parseLong(binderId));
+	}
+	
+	public static User getBinderCreator(AllModulesInjected bs, Long binderId) {
+		// Always use the initial form of the method.
+		return getBinderCreator(bs, bs.getBinderModule().getBinder(binderId));
+	}
+	
 	/**
 	 * Returns the entity type of a binder.
 	 * 
@@ -2057,6 +2130,30 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return login information such as self registration and auto complete.
+	 */
+	@SuppressWarnings("unchecked")
+	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
+	{
+		GwtLoginInfo loginInfo;
+		GwtSelfRegistrationInfo selfRegInfo;
+		boolean allowAutoComplete;
+		
+		loginInfo = new GwtLoginInfo();
+		
+		// Get self-registration info.
+		selfRegInfo = getSelfRegistrationInfo( request, ami );
+		loginInfo.setSelfRegistrationInfo( selfRegInfo );
+		
+		// Read the value of the enable.login.autocomplete key from ssf.properties
+		allowAutoComplete = SPropsUtil.getBoolean( "enable.login.autocomplete", false );
+		loginInfo.setAllowAutoComplete( allowAutoComplete );
+		
+		return loginInfo;
+	}
+	
+	
+	/**
 	 * Returns information about the groups the current user is a member of.
 	 * 
 	 * @return
@@ -2194,6 +2291,12 @@ public class GwtServerHelper {
 			}
 		}
 
+		// If there are any saved searches being returned...
+		if (!(ssList.isEmpty())) {
+			// ...sort them.
+			Collections.sort(ssList, new SavedSearchInfoComparator());
+		}
+		
 		// If we get here, ssList refers to a List<SavedSearchInfo> of
 		// the user's saved searches.  Return it.
 		return ssList;
@@ -2292,8 +2395,8 @@ public class GwtServerHelper {
 			}
 		}
 		
-		// If there's more than one team being returned...
-		if (1 < reply.size()) {
+		// If there any groups being returned...
+		if (!(reply.isEmpty())) {
 			// ...sort them.
 			Collections.sort(reply, new GroupInfoComparator());
 		}
@@ -2328,8 +2431,8 @@ public class GwtServerHelper {
 			reply.add(ti);
 		}
 		
-		// If there's more than one team being returned...
-		if (1 < reply.size()) {
+		// If there any teams being returned...
+		if (!(reply.isEmpty())) {
 			// ...sort them.
 			Collections.sort(reply, new TeamInfoComparator());
 		}

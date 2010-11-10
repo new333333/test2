@@ -39,12 +39,14 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -56,6 +58,7 @@ import org.apache.taglibs.standard.tag.el.fmt.FormatNumberTag;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Attachment;
@@ -786,9 +789,12 @@ public class GwtProfileHelper {
 		userIds.add(p.getId());
 
 		//Get the User object for this principle
-		SortedSet<User> users = bs.getProfileModule().getUsers(userIds);
+		SortedSet<User> users = null;
+		try{
+			users = bs.getProfileModule().getUsers(userIds);
+		} catch(AccessControlException ace) {}
 		User u = null;
-		if (!users.isEmpty()) {
+		if (users != null && !users.isEmpty()) {
 			u = users.iterator().next();
 			u = (User)Utils.fixProxy(u);
 		}

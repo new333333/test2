@@ -74,6 +74,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -109,10 +110,11 @@ public class GwtActivityStreamHelper {
 		m_activityStreamParams.setClientRefresh(         clientRefresh);
 		m_activityStreamParams.setCacheRefresh(          cacheRefresh);
 		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments", 2));
+		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words", (-1)));
 		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",          25));
 		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",      1000));
 	};
-
+	
 	/*
 	 * Inner class used to track author information in a Map used to
 	 * cache it while reading activity stream data.
@@ -458,13 +460,13 @@ public class GwtActivityStreamHelper {
 		// Create the activity stream entry to return.
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
-		// First, initialize the author information.		
+		// First, initialize the author information.
 		AuthorInfo authorInfo = AuthorInfo.getAuthorInfo(
 			request,
 			bs,
 			authorCache,
-			getSFromEM(em, Constants.MODIFICATIONID_FIELD),
-			getSFromEM(em, Constants.MODIFICATION_TITLE_FIELD));
+			getSFromEM(em, (baseEntry ? Constants.CREATORID_FIELD     : Constants.MODIFICATIONID_FIELD)),
+			getSFromEM(em, (baseEntry ? Constants.CREATOR_TITLE_FIELD : Constants.MODIFICATION_TITLE_FIELD)));
 		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
 		reply.setAuthorId(         authorInfo.m_authorId       );
 		reply.setAuthorName(       authorInfo.m_authorTitle    );
@@ -472,7 +474,9 @@ public class GwtActivityStreamHelper {
 		reply.setAuthorLogin(
 			getSFromEM(
 				em,
-				Constants.MODIFICATION_NAME_FIELD));
+				(baseEntry                       ?
+					Constants.CREATOR_NAME_FIELD :
+					Constants.MODIFICATION_NAME_FIELD)));
 
 		// Then the parent binder information.  Does the entry map
 		// contain the ID of the binder that contains the entry?
@@ -605,6 +609,45 @@ public class GwtActivityStreamHelper {
 		// If we get here, reply is null or refers to the activity
 		// stream object from the tree information that matches the one
 		// we were given.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Performs whatever fixups are necessary on an entry's description
+	 * and returns it.
+	 */
+	private static String fixupDescription(HttpServletRequest request, FolderEntry fe, String desc) {
+		// Were we given a description?
+		String reply = desc;
+		if (MiscUtil.hasString(desc)) {
+			// Yes!  Is there anything left after fixing its markup?
+			reply = MarkupUtil.markupStringReplacement(
+				null,
+				null,
+				request,
+				null,
+				fe,
+				desc,
+				"view");
+			
+			if (MiscUtil.hasString(reply)) {
+				// Yes!  Do we need to further truncate what gets
+				// displayed?
+				int displayWords = m_activityStreamParams.getDisplayWords();
+				if (displayWords != (-1)) {
+					// Yes!  Strip it down it its bare necessities.
+					reply = MarkupUtil.markupSectionsReplacement(reply);
+					if (MiscUtil.hasString(reply)) {
+						reply = Html.wordStripHTML(
+							reply,
+							m_activityStreamParams.getDisplayWords());
+					}
+				}
+			}
+		}
+
+		// If we get here, reply refers to the fixed up description.
+		// Return it.
 		return reply;
 	}
 	
@@ -763,14 +806,7 @@ public class GwtActivityStreamHelper {
 			FolderEntry fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), entryId);
 			if (null != fe) {
 				// Yes!  Fix the mark up.
-				reply = MarkupUtil.markupStringReplacement(
-					null,
-					null,
-					request,
-					null,
-					fe,
-					reply,
-					"view");
+				reply = fixupDescription(request, fe, reply);
 			}
 		}
 		
@@ -940,6 +976,18 @@ public class GwtActivityStreamHelper {
 						asTI.getBinderTitle()));
 			}
 		}
+
+		// If we didn't add any favorites...
+		if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
+			// ...we need a base action so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_FAVORITES,
+					((ArrayList<String>) null),
+					asTI.getBinderTitle()));
+		}
 		
 		// Add the favorites TreeInfo to the root TreeInfo.
 		rootASList.add(asTI);
@@ -983,6 +1031,18 @@ public class GwtActivityStreamHelper {
 						asIdsList,
 						asTI.getBinderTitle()));
 			}
+		}
+		
+		// If we didn't add any teams...
+		if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
+			// ...we need a base action so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.MY_TEAMS,
+					((ArrayList<String>) null),
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the teams TreeInfo to the root TreeInfo.
@@ -1029,6 +1089,18 @@ public class GwtActivityStreamHelper {
 			}
 		}
 		
+		// If we didn't add any people...
+		if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
+			// ...we need a base action so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PEOPLE,
+					((ArrayList<String>) null),
+					asTI.getBinderTitle()));
+		}
+		
 		// Add the followed users TreeInfo to the root TreeInfo.
 		rootASList.add(asTI);
 		
@@ -1063,7 +1135,6 @@ public class GwtActivityStreamHelper {
 			// If we processed any entries...
 			if (!(asIdsList.isEmpty())) {
 				// ...update the parent TreeInfo.
-				// Update the parent TreeInfo.
 				asTI.updateChildBindersCount();
 				asTI.setActivityStreamAction(
 					TeamingAction.ACTIVITY_STREAM,
@@ -1072,6 +1143,18 @@ public class GwtActivityStreamHelper {
 						asIdsList,
 						asTI.getBinderTitle()));
 			}
+		}
+		
+		// If we didn't add any places...
+		if (TeamingAction.UNDEFINED == asTI.getActivityStreamAction()) {
+			// ...we need a base action so that we can display no
+			// ...selections in the control.
+			asTI.setActivityStreamAction(
+				TeamingAction.ACTIVITY_STREAM,
+				buildASI(
+					ActivityStream.FOLLOWED_PLACES,
+					((ArrayList<String>) null),
+					asTI.getBinderTitle()));
 		}
 		
 		// Add the followed places TreeInfo to the root TreeInfo.
@@ -1266,7 +1349,7 @@ public class GwtActivityStreamHelper {
 			// The entire site:
 			// 1. The tracked places is the ID of the top workspace; and
 			// 2. There are no tracked users.
-			trackedPlaces = new String[]{String.valueOf(bs.getWorkspaceModule().getTopWorkspace().getId().longValue())};
+			trackedPlaces = new String[]{GwtUIHelper.getTopWSIdSafely(bs)};
 			break;
 		}
 

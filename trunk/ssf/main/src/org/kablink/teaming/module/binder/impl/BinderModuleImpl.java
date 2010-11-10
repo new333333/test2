@@ -1240,6 +1240,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		retMap.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits
 				.length()));
 
+		retMap.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+		
 		return retMap;
 	}
 

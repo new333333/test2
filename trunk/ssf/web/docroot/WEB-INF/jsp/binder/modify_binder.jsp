@@ -49,7 +49,7 @@
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <c:set var="ssBinderMarker" value="true" scope="request"/>
 <c:if test="${!empty ssException}">
-<span class="ss_formError"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+<span class="ss_formError"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span><br>
 </c:if>
 
 <div class="ss_portlet"> 

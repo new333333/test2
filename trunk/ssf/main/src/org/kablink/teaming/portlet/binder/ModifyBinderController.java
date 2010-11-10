@@ -110,6 +110,10 @@ public class ModifyBinderController extends AbstractBinderController {
 				} else {
 					fileMap = new HashMap();
 				}
+
+				//Look for requests to create files
+				BinderHelper.processCreateFileRequests(this, request, fileMap);
+				
 				Set deleteAtts = new HashSet();
 				for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
 					Map.Entry e = (Map.Entry)iter.next();

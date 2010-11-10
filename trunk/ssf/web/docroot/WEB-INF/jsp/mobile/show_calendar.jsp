@@ -268,6 +268,7 @@ Date nextDate = calendarNextDate.getTime();
 	<%
 		if (entry2.containsKey("_event0")) {
 			String eventName = (String)entry2.get("_event0");
+			boolean allDayEvent = false;
 			java.util.Date startDate = null;
 			if (entry2.containsKey(eventName + "#StartDate")) 
 				startDate = (java.util.Date)entry2.get(eventName + "#StartDate");
@@ -277,21 +278,41 @@ Date nextDate = calendarNextDate.getTime();
 			if (startDate == null) startDate = endDate;
 			String eventTimeZoneId = null;
 			if (entry2.containsKey(eventName + "#TimeZoneID")) eventTimeZoneId = (String)entry2.get(eventName + "#TimeZoneID");
+			if (startDate != null && endDate != null) {
+				if (startDate.getHours() == 0 && startDate.getMinutes() == 0 && 
+						endDate.getHours() == 23 && endDate.getMinutes() == 59) {
+					allDayEvent = true;
+				}
+			}
 			if (startDate != null) {
 	%>
-	<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+    <%  if (allDayEvent) {  %>
+		<c:set var="calMonthDate"><fmt:formatDate timeZone="GMT"
       		value="<%= startDate %>" pattern="MMM" /></c:set>
+	<%  } else { %>
+		<c:set var="calMonthDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      		value="<%= startDate %>" pattern="MMM" /></c:set>
+	<%  } %>
 <c:if test="${currMonthDate == calMonthDate}">
     <c:set var="entriesSeen" value="${entriesSeen + 1}"/>
-	<c:set var="calDayDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+    <%  if (allDayEvent) {  %>
+	    <c:set var="calDayDate"><fmt:formatDate timeZone="GMT"
       		value="<%= startDate %>" type="date" dateStyle="short" /></c:set>
-
+	<%  } else { %>
+	    <c:set var="calDayDate"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      		value="<%= startDate %>" type="date" dateStyle="short" /></c:set>
+	<%  } %>
     <c:if test="${calDayDate != lastCalDayDate}">
     <tr>
 		<td colspan="2">
 		<div class="ss_mobile_calendar_entries_header">
-			<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
-			<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
+		    <%  if (allDayEvent) {  %>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="GMT" /></span>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="GMT" /></span>
+			<%  } else { %>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="EEE" timeZone="${ssUser.timeZone.ID}" /></span>
+				<span><fmt:formatDate value="<%= startDate %>" pattern="d MMM" timeZone="${ssUser.timeZone.ID}" /></span>
+			<%  } %>
 		</div>
 		</td>
     </tr>

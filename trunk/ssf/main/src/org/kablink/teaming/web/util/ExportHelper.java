@@ -532,21 +532,25 @@ public class ExportHelper {
 			Integer count = (Integer)reportMap.get(files);
 			reportMap.put(files, ++count);
 		} catch (Exception e) {
-			logger.error(e);
-			String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-					", entryId=" + entity.getId().toString() + ", " + fileName;
-			logger.error(eMsg);
-			if (fileStream != null) fileStream.close();
-			Integer c = (Integer)reportMap.get(errors);
-			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(eMsg);
-
-			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-			zipOut.putNextEntry(new ZipEntry(pathName + "/"
-					+ fileName + ".error_message.txt"));
-			zipOut.write(NLT.get("export.error.attachment",
-					"Error processing this attachment").getBytes());
-			zipOut.closeEntry();
+			if (fileStream == null) {
+				//The file must not exist, so just skip it. This really isn't an error condition.
+			} else {
+				logger.error(e);
+				String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+						", entryId=" + entity.getId().toString() + ", " + fileName;
+				logger.error(eMsg);
+				if (fileStream != null) fileStream.close();
+				Integer c = (Integer)reportMap.get(errors);
+				reportMap.put(errors, ++c);
+				((List)reportMap.get(errorList)).add(eMsg);
+	
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				zipOut.putNextEntry(new ZipEntry(pathName + "/"
+						+ fileName + ".error_message.txt"));
+				zipOut.write(NLT.get("export.error.attachment",
+						"Error processing this attachment").getBytes());
+				zipOut.closeEntry();
+			}
 		}
 
 		// older versions, from highest to lowest
@@ -572,22 +576,26 @@ public class ExportHelper {
 				Integer count = (Integer)reportMap.get(files);
 				reportMap.put(files, ++count);
 			} catch (Exception e) {
-				logger.error(e);
-				String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-						", entryId=" + entity.getId().toString() + ", " + fileName;
-				logger.error(eMsg);
-				if (fileStream != null) fileStream.close();
-				Integer c = (Integer)reportMap.get(errors);
-				reportMap.put(errors, ++c);
-				((List)reportMap.get(errorList)).add(eMsg);
-
-				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-				zipOut.putNextEntry(new ZipEntry(pathName + "/"
-						+ fileName + ".versions" + "/" + versionNum
-						+ "." + fileExt + ".error_message.txt"));
-				zipOut.write(NLT.get("export.error.attachment",
-						"Error processing this attachment").getBytes());
-				zipOut.closeEntry();
+				if (fileStream == null) {
+					//The file must not exist, so just skip it. This really isn't an error condition.
+				} else {
+					logger.error(e);
+					String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+							", entryId=" + entity.getId().toString() + ", " + fileName;
+					logger.error(eMsg);
+					if (fileStream != null) fileStream.close();
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(eMsg);
+	
+					// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+					zipOut.putNextEntry(new ZipEntry(pathName + "/"
+							+ fileName + ".versions" + "/" + versionNum
+							+ "." + fileExt + ".error_message.txt"));
+					zipOut.write(NLT.get("export.error.attachment",
+							"Error processing this attachment").getBytes());
+					zipOut.closeEntry();
+				}
 			}
 		}
 
@@ -1878,7 +1886,6 @@ public class ExportHelper {
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
 					((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
-					return;
 				}
 			}
 		}

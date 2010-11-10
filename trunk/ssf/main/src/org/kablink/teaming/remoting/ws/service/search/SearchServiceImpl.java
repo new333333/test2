@@ -52,6 +52,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -62,6 +63,7 @@ import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.model.TeamBrief;
 import org.kablink.teaming.remoting.ws.model.TeamCollection;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.tree.WebSvcTreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
@@ -252,14 +254,25 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		for(Map binder : myTeams) {
 			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
 			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+			Boolean library = null;
+			String libraryStr = (String) binder.get(Constants.IS_LIBRARY_FIELD);
+			if(Constants.TRUE.equals(libraryStr))
+				library = Boolean.TRUE;
+			else if(Constants.FALSE.equals(libraryStr))
+				library = Boolean.FALSE;
+
+			UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
+			UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
+			
 			teamList.add(new TeamBrief(binderId, 
 					(String) binder.get(Constants.TITLE_FIELD),
 					(String) binder.get(Constants.ENTITY_FIELD),
-					// family field is searchable but not stored
-					//(String) binder.get(Constants.FAMILY_FIELD),
+					(String) binder.get(Constants.FAMILY_FIELD),
+					library,
 					Integer.valueOf((String)binder.get(Constants.DEFINITION_TYPE_FIELD)),
-					new Timestamp((String) binder.get(Constants.CREATOR_NAME_FIELD),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
-					new Timestamp((String) binder.get(Constants.MODIFICATION_NAME_FIELD), (Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
+					(String) binder.get(Constants.ENTITY_PATH),
+					new Timestamp(((creator != null)? creator.getName() : (String) binder.get(Constants.CREATOR_NAME_FIELD)),(Date) binder.get(Constants.CREATION_DATE_FIELD)),
+					new Timestamp(((modifier != null)? modifier.getName() : (String) binder.get(Constants.MODIFICATION_NAME_FIELD)),(Date) binder.get(Constants.MODIFICATION_DATE_FIELD)),
 					PermaLinkUtil.getPermalink(binder)
 					)
 			);

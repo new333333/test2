@@ -34,6 +34,7 @@
 %>
 <% //View an entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:set var="ss_popular_view_seen" value="true" scope="request"/>
 <c:set var="ss_entry_view_style" value="wiki" scope="request"/>
@@ -89,6 +90,7 @@
   <div class="ss_clear"></div>
 </c:if>
 
+<c:set var="ss_savedEntryDefinition" value="${ssDefinitionEntry}"/>
 <c:set var="ss_commentsAndAttachmentsReplyCount" value="${totalReplyCount}" scope="request"/>
 <c:if test="${empty ssPrimaryFileAttribute}">
   <c:set var="ss_commentsAndAttachmentsAttachmentCount" value="${fn:length(ssDefinitionEntry.fileAttachments)}" scope="request"/>
@@ -110,7 +112,7 @@
     <jsp:include page="/WEB-INF/jsp/definition_elements/entry_view2.jsp" />
   </c:otherwise>
 </c:choose>
-
+<c:set var="ssDefinitionEntry" value="${ss_savedEntryDefinition}" scope="request"/>
 
 <c:if test="${entryType == 'entry'}">
 <c:set var="ss_popular_view_seen" value="false" scope="request"/>

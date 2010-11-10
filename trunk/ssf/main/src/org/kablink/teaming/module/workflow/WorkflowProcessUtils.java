@@ -465,6 +465,8 @@ public static void resumeTimers(WorkflowSupport entry) {
 				}
 			}
         	
+	    } catch (Exception e) {
+	    	logger.error("Error processing manual transition: "+ e.getMessage());
 	    } finally {
 	    	context.close();
 	    }

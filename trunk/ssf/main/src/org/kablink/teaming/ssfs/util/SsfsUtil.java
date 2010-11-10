@@ -142,6 +142,13 @@ public class SsfsUtil {
 		append(binder.getPathName()).toString();
 	}
 	
+	public static String getLibraryBinderUrl(HttpServletRequest req, String binderPath) {
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
+		
+		return sb.append("files/library"). // follow Slide's convention
+		append(binderPath).toString();
+	}
+	
 	public static String getLibraryBinderUrl(PortletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
@@ -151,6 +158,10 @@ public class SsfsUtil {
 	
 	public static String getLibraryBinderUrl(Binder binder) {
 		return getLibraryBinderUrl((HttpServletRequest)null, binder);
+	}
+	
+	public static String getLibraryBinderUrl(String binderPath) {
+		return getLibraryBinderUrl((HttpServletRequest)null, binderPath);
 	}
 	
 	private static StringBuffer getInternalCommonPart(HttpServletRequest req, Binder binder, 

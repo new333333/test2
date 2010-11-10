@@ -343,12 +343,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				String displayStyle = user.getDisplayStyle();
-				if (ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE.equals(displayStyle) || 
-						(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) && accessible_simple_ui)) {
-					url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
-				} else {
-					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
-				}
+				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 				url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
 			}
 			

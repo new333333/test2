@@ -98,7 +98,13 @@
 		</div>
       </c:if>
 	 </li>
-	 <li style="padding-top:11px;">//</li>
+	 <li>
+	   <div style="display:inline">
+	     <div class="ss_treeWidget" style="padding-top:3px;">
+	       <span>//</span>
+	     </div>
+	   </div>
+	 </li>
   	 <%
 	   }
   	 %>
@@ -132,7 +138,13 @@
   		</a><br/>
 	  </div>
 	 </li>
-	 <li style="padding-top:11px;">//</li>
+	 <li>
+	   <div style="display:inline">
+	     <div class="ss_treeWidget" style="padding-top:3px;">
+	       <span>//</span>
+	     </div>
+	   </div>
+	 </li>
 	  <%
 		}
 	  %>
