@@ -72,6 +72,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 	private ProfileAttributeAttachment attach;
 	private EditSuccessfulHandler editSuccessfulHandler;
 	private ProfileRequestInfo profileRequestInfo;
+	private FlowPanel photoPanel;
 	
 	public ModifyAvatarDlg(boolean autoHide, boolean modal, int pos, int pos2, ProfileAttributeListElement attrItem, ProfileRequestInfo requestInfo, EditSuccessfulHandler editSuccessfulHandler) {
 		super(autoHide, modal, pos, pos2);
@@ -178,7 +179,7 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		FlowPanel panel = new FlowPanel();
 		panel.addStyleName("modifyAvatarDlgContent");
 		
-		FlowPanel photoPanel = new FlowPanel();
+		photoPanel = new FlowPanel();
 		panel.add(photoPanel);
 		photoPanel.addStyleName("modifyAvatarDlgPhoto");
 		
@@ -253,6 +254,10 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		}
 		
 		return panel;
+	}
+	
+	public void setPhotoPanelSize(int x, int y) {
+		photoPanel.setSize(x+"px", y+"px");
 	}
 	
 	//The modify controller expects the picture ids in an order list in which the pictures need to be displayed

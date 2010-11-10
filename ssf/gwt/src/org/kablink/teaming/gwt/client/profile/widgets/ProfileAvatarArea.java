@@ -159,13 +159,39 @@ public class ProfileAvatarArea extends FlowPanel  {
 			
 			if(item != null && anchor != null) {
 				final ModifyAvatarDlg dlg = new ModifyAvatarDlg(false, false, 0, 0, item, profileRequestInfo, editSuccessfulHandler);
+				
 				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
 				{
 					public void setPosition(int offsetWidth, int offsetHeight)
-					{
+					{		
+						boolean resize = false;
+						
+						int xOff = dlg.getOffsetWidth();
+						int yOff = dlg.getOffsetHeight();
+						
+						if(xOff >  500) {
+							xOff = 500;
+							resize = true;
+						}
+						
+						if(yOff > 600) {
+							yOff = 600;
+							resize = true;
+						}
+						
+						if(resize) {
+							dlg.setSize(xOff+"px", yOff+"px");
+							dlg.setPhotoPanelSize(xOff-30,yOff-120 );
+						}
+						
+						
 						x = anchor.getAbsoluteLeft() + 60;
 						y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
 
+						if(x > 300 && xOff > 499) {
+							x = 150;
+						}
+						
 						dlg.setPopupPosition( x, y );
 					}
 				};
