@@ -148,17 +148,17 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getTemplates")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "template_getTemplates", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
-				String names[] = args[2].split(",");
+				String names[] = split(args[2]);
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
 			} else if(args[0].equals("setDefinitions")) {
-				String ids[] = args[2].split(",");
+				String ids[] = split(args[2]);
 				List idsList = new ArrayList();
 				for (int i=0; i<ids.length; ++i) {
 					idsList.add(ids[i]);
 				}
 				List wfs = new ArrayList();
 				if (args.length > 3) {
-					ids = args[3].split(","); //entryDef,workflowDef
+					ids = split(args[3]); //entryDef,workflowDef
 					for (int i=0; i+1<ids.length; i+=2) {
 						wfs.add(ids[i] + "," + ids[i+1]);
 					}
@@ -217,7 +217,9 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				c1.setTime(df.parse((String)args[7]));
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "migration_uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("getFolders")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getFolders", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("getAllFoldersOfMatchingFamily")) {
+				wsClient.fetchAndPrintFC("TeamingServiceV1", "binder_getAllFoldersOfMatchingFamily", new Object[] {null, Long.parseLong(args[1]), split(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
 			} else if(args[0].equals("getTrashEntries")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTrashEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("preDeleteBinder")) {
@@ -233,13 +235,13 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getCreatedOrUpdatedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
 			} else if(args[0].equals("testBinderAccess")) {
-				String[] sIds = args[2].split(",");
+				String[] sIds = split(args[2]);
 				long[] ids = new long[sIds.length];
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "binder_testAccess", new Object[] {null, args[1], ids});
 			} else if(args[0].equals("testBinderOperation")) {
-				String[] sIds = args[2].split(",");
+				String[] sIds = split(args[2]);
 				long[] ids = new long[sIds.length];
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
@@ -251,17 +253,19 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getCurrentServerTime")) {
 				wsClient.fetchAndPrintCalendar("TeamingServiceV1", "admin_getCurrentServerTime", new Object[] {null});
 			} else if(args[0].equals("testFolderOperation")) {
-				String[] sIds = args[2].split(",");
+				String[] sIds = split(args[2]);
 				long[] ids = new long[sIds.length];
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testFolderOperation", new Object[] {null, args[1], ids});
 			} else if(args[0].equals("testFolderEntryOperation")) {
-				String[] sIds = args[2].split(",");
+				String[] sIds = split(args[2]);
 				long[] ids = new long[sIds.length];
 				for(int i = 0; i < sIds.length; i++)
 					ids[i] = Long.parseLong(sIds[i]);
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_testEntryOperation", new Object[] {null, args[1], ids});
+			} else if(args[0].equals("getReleaseInfo")) {
+				wsClient.fetchAndPrintReleaseInfo("TeamingServiceV1", "admin_getReleaseInfo", new Object[] {null});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -325,6 +329,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("synchronize <mirrored folder id>");
 		System.out.println("getFolders <binder id> <first> <max>");
+		System.out.println("getAllFoldersOfMatchingFamily <starting binder id> \"family1, family2,....\" <first> <max>");
 		System.out.println("preDeleteBinder <binder id>");
 		System.out.println("restoreBinder <binder id>");
 		System.out.println("preDeleteEntry <entry id>");
@@ -340,6 +345,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getCurrentServerTime");
 		System.out.println("testFolderOperation <folder operation name> \"folder id1, folder id2,....\"");
 		System.out.println("testFolderEntryOperation <folder entry operation name> \"entry id1, entry id2,....\"");
+		System.out.println("getReleaseInfo");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
@@ -351,5 +357,12 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		
 		// an example of deleteZoneUnderPortal invocation - 
 		// deleteZoneUnderPortal fake-bestbuy
+	}
+	
+	private static String[] split(String s) {
+		String[] ss = s.split(",");
+		if(ss.length == 1 && ss[0].length() == 0)
+			ss = new String[0];
+		return ss;
 	}
 }

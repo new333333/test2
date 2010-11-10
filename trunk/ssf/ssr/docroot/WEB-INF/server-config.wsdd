@@ -90,5 +90,6 @@
 		<beanMapping qname="ns:UserCollection" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.UserCollection"/>
 		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.Workflow"/>
 		<beanMapping qname="ns:WorkflowResponse" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.WorkflowResponse"/>
+		<beanMapping qname="ns:ReleaseInfo" xmlns:ns="http://model.ws.remoting.teaming.kablink.org/v1" languageSpecificType="java:org.kablink.teaming.remoting.ws.model.ReleaseInfo"/>
 	</service>
 </deployment>

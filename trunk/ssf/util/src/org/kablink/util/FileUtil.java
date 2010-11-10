@@ -167,8 +167,18 @@ public class FileUtil {
 			return null;
 		}
 
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		FileInputStream in = new FileInputStream(file);
+		
+		try {
+			return getBytes(in);
+		}
+		finally {
+			in.close();
+		}
+	}
+	
+	public static byte[] getBytes(InputStream in) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		int c = in.read();
 
@@ -176,8 +186,7 @@ public class FileUtil {
 			out.write(c);
 			c = in.read();
 		}
-
-		in.close();
+		
 		out.close();
 
 		return out.toByteArray();
