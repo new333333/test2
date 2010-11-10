@@ -113,6 +113,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	private CoreDao coreDao;
 	Map reservedIds = new HashMap();
 	
+	private static final String FAKE_NAME_PREFIX = "__unavailable_";
+	
 	public void setCoreDao(CoreDao coreDao) {
 		   this.coreDao = coreDao;
 		}
@@ -565,32 +567,40 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
  	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
-		long begin = System.currentTimeMillis();
-		try {
-	        Principal principal = (Principal)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                 	   //only returns active users
-	                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
-	                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
-	                             		.setLong(ParameterNames.ZONE_ID, zoneId)
-	                             		.setCacheable(true)
-	                             		.uniqueResult();
-	                        //query ensures user is not deleted and not disabled
-	                 	   if (p == null) {
-	                            throw new NoPrincipalByTheNameException(name); 
-	                 	   }
-	                 	   return resolveProxy(session, p);
-	                    }
-	                }
-	             );
-	        if (filterInaccessiblePrincipal(principal) == null) 
-	        	throw new NoPrincipalByTheNameException(name); 
-	        return principal;
-    	}
-    	finally {
-    		end(begin, "findPrincipalByName(String,Long)");
-    	}	        
+ 		if(name.startsWith(FAKE_NAME_PREFIX)) {
+ 			Long id = Long.valueOf(name.substring(FAKE_NAME_PREFIX.length()));
+ 			if(logger.isDebugEnabled())
+ 				logger.debug("Turning findPrincipalByName with '" + name + "' into loadPrincipal with '" + id + "'");
+ 			return loadPrincipal(id, zoneId, false);
+ 		}
+ 		else {
+			long begin = System.currentTimeMillis();
+			try {
+		        Principal principal = (Principal)getHibernateTemplate().execute(
+		                new HibernateCallback() {
+		                    public Object doInHibernate(Session session) throws HibernateException {
+		                 	   //only returns active users
+		                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
+		                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
+		                             		.setLong(ParameterNames.ZONE_ID, zoneId)
+		                             		.setCacheable(true)
+		                             		.uniqueResult();
+		                        //query ensures user is not deleted and not disabled
+		                 	   if (p == null) {
+		                            throw new NoPrincipalByTheNameException(name); 
+		                 	   }
+		                 	   return resolveProxy(session, p);
+		                    }
+		                }
+		             );
+		        if (filterInaccessiblePrincipal(principal) == null) 
+		        	throw new NoPrincipalByTheNameException(name); 
+		        return principal;
+	    	}
+	    	finally {
+	    		end(begin, "findPrincipalByName(String,Long)");
+	    	}	
+ 		}
  	}
  	private Principal resolveProxy(Session session, Principal proxy) {
         Principal p = null;
@@ -1891,7 +1901,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		u.setId(p.getId());
 		u.setZoneId(p.getZoneId());
 		u.setParentBinder(p.getParentBinder());
-		u.setName("__unavailable_" + p.getId().toString());
+		u.setName(FAKE_NAME_PREFIX + p.getId().toString());
 		String title = NLT.get("user.redacted.title");
 		u.setLastName(title);
 		u.setEntryDefId(p.getEntryDefId());

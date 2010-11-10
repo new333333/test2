@@ -32,7 +32,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<c:set var="ss_fieldModifyDisabled" value=""/>
+
+<%@page import="org.kablink.teaming.util.SPropsUtil"%><c:set var="ss_fieldModifyDisabled" value=""/>
+<%
+	String[] createFileTypes = org.kablink.teaming.util.SPropsUtil.getStringArray("file.createFileTypes", ",");
+%>
 <c:set var="ss_fieldModifyStyle" value=""/>
 <c:if test="${ss_accessControlMap['ss_modifyEntryRightsSet']}">
   <c:if test="${(!ss_accessControlMap['ss_modifyEntryFieldsAllowed'] && !ss_accessControlMap['ss_modifyEntryAllowed']) || 
@@ -55,6 +59,28 @@
 function ss_showMoreFiles${property_name}() {
 	document.getElementById('ss_extraFiles_${property_name}').style.display='block';
 	document.getElementById('ss_extraFilesClick_${property_name}').style.display='none';
+}
+function ss_showCreateFile${property_name}() {
+	document.getElementById('ss_createFileDiv_${property_name}').style.display='block';
+	document.getElementById('ss_createFileClick_${property_name}').style.display='none';
+}
+function ss_hideCreateFileLink${property_name}() {
+	<c:if test="${property_name != 'ss_attachFile'}">
+	  var createFileDivObj = document.getElementById('ss_createFileDiv_${property_name}');
+	  if (createFileDivObj != null) createFileDivObj.style.visibility='hidden';
+	  var createFileClickObj = document.getElementById('ss_createFileClick_${property_name}');
+	  if (createFileClickObj != null) createFileClickObj.style.visibility='hidden';
+	</c:if>
+}
+function ss_hideUploadFileDiv${property_name}() {
+	<c:if test="${property_name != 'ss_attachFile'}">
+	  var createFileNameObj = document.getElementById('ss_createFileNameElement_${property_name}');
+	  if (createFileNameObj != null && createFileNameObj.value != '') {
+		  document.getElementById('ss_fileBroseButtonDiv_${property_name}').style.visibility='hidden';
+	  } else {
+	  	  document.getElementById('ss_fileBroseButtonDiv_${property_name}').style.visibility='visible';
+	  }
+	</c:if>
 }
 </script>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
@@ -101,13 +127,13 @@ var ss_findEntryForFileUrl = "<ssf:url
 	<ssf:param name="entryId" value="${entryId}" />
 	</ssf:url>";
   <c:forEach var="i" begin="1" end="${countFb}">
-   <c:if test='${! empty property_number}'>
+   <c:if test='${!empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
    </c:if>
 ss_addValidator("ss_duplicateFileCheck_${eName}", ss_ajax_result_validator);
 var ${eName}_ok = 1;
   </c:forEach>
- </script>
+  </script>
 </c:if>
 
 <label for="${eName}">
@@ -117,6 +143,7 @@ var ${eName}_ok = 1;
 <table cellspacing="0" cellpadding="0">
 <tr>
 <td>
+<div id="ss_fileBroseButtonDiv_${property_name}" style="display:block;">
 <c:forEach var="i" begin="1" end="${countFb2}">
  <c:if test='${! empty property_number}'>
 	<c:set var="eName" value="${elementName}${i}"/>
@@ -127,7 +154,7 @@ var ${eName}_ok = 1;
     name="${eName}" id="${eName}" ${width} 
 	<c:if test="${!ss_diskQuotaExceeded || ss_isBinderMirroredFolder}">
       onkeyup="if(window.event && window.event.keyCode!=9 && window.event.keyCode!=16)this.click();return false;"
-      onchange="ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
+      onchange="ss_hideCreateFileLink${property_name}();ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
 	</c:if>
 	<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 	  onClick='alert("${ss_quotaMessage}");return false;'
@@ -140,7 +167,6 @@ var ${eName}_ok = 1;
     <ssf:htmleditor name="${eName}.description" height="100" toolbar="minimal"/>
   </div>
   <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
-  <br/>
   <input type="hidden" name="ss_upload_request_uid" />
  </c:if>
  <c:if test='${empty ssFolder}'>
@@ -158,7 +184,6 @@ var ${eName}_ok = 1;
     <ssf:htmleditor name="${eName}.description" height="100" toolbar="minimal"/>
   </div>
   <div align="left"><span class="ss_smallprint" style="color:red;">${ss_quotaMessage}</span></div>
-  <br/>
  </c:if>
 	<script type="text/javascript">	
 		function ${eName}_onAtatchmentFormSubmit(formObj) {
@@ -202,6 +227,7 @@ var ${eName}_ok = 1;
 </c:if>
 </c:forEach>
 </div>
+</div>
 </td>
 </tr>
 <c:if test="${countFb == '1' && ss_fileBrowseOfferMoreFiles == 'true'}">
@@ -213,6 +239,64 @@ onClick="ss_showMoreFiles${property_name}();return false;"
 ><span class="smallprint"><ssf:nlt tag="entry.attachMore"/></span></a>
 </div>
 </td>
+</tr>
+</c:if>
+
+<c:if test="<%= createFileTypes.length > 0 %>">
+  <c:if test="${property_name != 'ss_attachFile'}">
+    <c:set var="ss_createFileNameName" value="createFileName_${property_name}" />
+    <c:set var="ss_createFileTypeName" value="createFileType_${property_name}" />
+  </c:if>
+  <c:if test="${property_name == 'ss_attachFile'}">
+    <c:set var="ss_createFileNameName" value="createFileName_ss_attachFile0" />
+    <c:set var="ss_createFileTypeName" value="createFileType_ss_attachFile0" />
+  </c:if>
+<tr>
+  <td>
+    <div style="padding:10px 0px;">
+	<div id="ss_createFileClick_${property_name}" class="${ss_fieldModifyStyle}">
+	  <a href="javascript: ;" 
+	    onClick="ss_showCreateFile${property_name}();return false;"
+	    title="<ssf:escapeJavaScript><ssf:nlt tag="entry.createFileHint"/></ssf:escapeJavaScript>"
+	  ><span class="smallprint"><ssf:nlt tag="entry.createFile"/></span>
+	  </a>
+	</div>
+	<div id="ss_createFileDiv_${property_name}" style="display:none;">
+		<table>
+		  <tr>
+		    <td>
+		      <ssf:nlt tag="file.name"/>
+		    </td>
+		    <td>
+		      <input type="text" style="width: 200px;" 
+		          name="${ss_createFileNameName}" 
+		          id="ss_createFileNameElement_${property_name}" 
+		          onChange="ss_hideUploadFileDiv${property_name}();"
+		      />
+		    </td>
+		  </tr>
+		  <tr>
+		    <td>
+		      <ssf:nlt tag="file.type"/>
+		    </td>
+		    <td>
+		      <select name="${ss_createFileTypeName}">
+		        <% 
+		          for (int i = 0; i < createFileTypes.length; i++) {
+		        	  %>
+		        	    <option value="<%= createFileTypes[i] %>" 
+		        	      <c:if test='<%= createFileTypes[i].equals(".docx") %>'> selected </c:if>
+		        	    ><%= createFileTypes[i] %></option>
+		        	  <%
+		          }
+		        %>
+		      </select>
+		    </td>
+		  </tr>
+		</table>
+	</div>
+	</div>
+  </td>
 </tr>
 </c:if>
 </table>

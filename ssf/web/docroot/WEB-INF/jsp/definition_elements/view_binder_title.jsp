@@ -113,19 +113,21 @@
         </c:if>
         <span><c:out value="${ssDefinitionEntry.title}" escapeXml="true"/></span>
       </a> 
-	  <a href="<ssf:url crawlable="true"
+      <c:if test="${ssConfigJspStyle != 'template'}">
+	    <a href="<ssf:url crawlable="true"
         	adapter="true" portletName="ss_forum"
            	folderId="${ssDefinitionEntry.id}" 
            	action="view_ws_listing" ><ssf:param 
 		   	name="profile" value="1" /></ssf:url>">
 			<span class="ss_profile"><ssf:nlt tag="relevance.tab.profile"/></span></a>
+      </c:if>
       </div>
       </div>  
 
-	<% // Status %>
-	<jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
+	  <% // Status %>
+	  <jsp:include page="/WEB-INF/jsp/profile/user_status.jsp" />
 	</div>
-  <div class="ss_clear"></div>
+    <div class="ss_clear"></div>
 </td>
 </tr>
 </tbody>

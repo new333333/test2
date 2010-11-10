@@ -3,7 +3,7 @@
 */
 
 body { 
-	background:url(images/mobile/stripes.png) repeat; 
+	background-color: #b8b8b8; 
 	margin: 0; 
 	}
 
@@ -197,7 +197,7 @@ span.pad-left20 {
 .category-off {
 	font-size: 14px;
 	font-weight: bold;
-	background:url(images/mobile/stripes.png) repeat;
+	background-color: #b8b8b8;
 	}
 	
 .content {

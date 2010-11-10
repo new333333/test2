@@ -121,6 +121,19 @@ if (self != self.parent) {
 	try {
 		if ( window.name == 'gwtContentIframe' || window.name == 'ss_showentryframe')
 		{
+			//Check all the way up to the top to see if there are more than one frame with these names
+			var windowObj = self;
+			var counter = 20;
+			while (counter > 0 && windowObj != null && windowObj != windowObj.parent) {
+				if (windowObj.parent.window.name == 'gwtContentIframe' || windowObj.parent.window.name == 'ss_showentryframe') {
+					if (typeof self.parent.ss_urlBase != "undefined") {
+						windowObj.parent.location.href = self.location.href;
+						break;
+					}
+				}
+				counter = counter - 1;
+				windowObj = self.parent;
+			}
 			// Nothing to do.  We are running inside the GWT frame and that is ok.
 		}
 		else if (typeof window.name == "undefined" || window.name.indexOf("ss_iframeAccessory") != 0) {

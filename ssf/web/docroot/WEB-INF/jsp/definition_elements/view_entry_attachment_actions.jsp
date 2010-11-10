@@ -112,7 +112,7 @@
 		<%  }  %>
 	  </div>
 
-      <c:if test="${!ss_attachedFileIsVersion}">
+      <c:if test="${!ss_attachedFileIsVersion && !ss_pseudoEntity && !ss_isBinderMirroredFolder}">
 	  <ssf:ifSupportsViewAsHtml relativeFilePath="${ss_attachedFile.fileItem.name}" browserType="<%=strBrowserType%>">
 		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" href="<ssf:url 

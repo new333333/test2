@@ -39,7 +39,7 @@
 	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
 		<tr>
 			<td width="100%"></td>
-			<td align="right" style="padding-right: 7px;">
+			<td align="right" style="padding-right: 7px;" nowrap>
 		      <c:if test="${!empty ss_wikiEntryBeingShown}">
 				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'page'}">on</c:if>">
 				  <a href="<ssf:url     
@@ -55,7 +55,7 @@
 			    </span>
 			  </c:if>
 			</td>
-			<td align="right">
+			<td align="right" nowrap>
 				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'list'}">on</c:if>">
 				  <a href="<ssf:url 
 					action="view_folder_listing" 

@@ -71,6 +71,7 @@ import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.UserBrief;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
 import org.kablink.teaming.remoting.ws.util.ModelInputData;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 
@@ -444,9 +445,9 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 				if(binder != null){
 					HistoryStamp hs = null;
 					hs = binder.getCreation();
-					brief.setCreation(new Timestamp(hs.getPrincipal().getName(), hs.getDate()));
+					brief.setCreation(new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate()));
 					hs = binder.getModification();
-					brief.setModification(new Timestamp(hs.getPrincipal().getName(), hs.getDate()));
+					brief.setModification(new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate()));
 					brief.setPermaLink(PermaLinkUtil.getPermalink(binder));
 					brief.setEntityType(binder.getEntityType().toString());
 					brief.setDefinitionType(binder.getDefinitionType());

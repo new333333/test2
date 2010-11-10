@@ -43,10 +43,6 @@ public class Timestamp implements Serializable {
 	
 	public Timestamp() {
 	}
-	public Timestamp(String principal, Calendar date) {
-		setPrincipal(principal);
-		setDate(date);
-	}
 	
 	public Timestamp(String principal, Date date) {
 		Calendar cal = Calendar.getInstance();

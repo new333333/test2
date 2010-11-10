@@ -70,8 +70,9 @@ public class BaseZoneModule extends AbstractZoneModule {
 	public String getVirtualHost(String zoneName) {
 		return SPropsUtil.getDefaultHost();
 	}
-	protected void removeZone(String zoneName) {
+	protected boolean removeZone(String zoneName) {
 		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");
+		return true;
 	}
 
 	public Long addZone(String zoneName, String virtualHost, String mailDomain) {

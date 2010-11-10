@@ -530,7 +530,7 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 
 // Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
-	//ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
+	ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
 	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
 		self.location.href = obj.href;
 		return false;  //This is a wiki, just let the URL be executed in place
@@ -1911,8 +1911,7 @@ function m_setLayoutRoutine(layoutRoutine) {
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
-        	// alert("ssf_onLayoutChange executing routine: " +
-			// ss_onLayoutChangeList[i].name)
+        	//ss_debug("ssf_onLayoutChange executing routine: " + ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -4369,12 +4368,8 @@ function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, str
 }
 
 function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
-	ss_setupStatusMessageDiv();
-	
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:entryId, operation:"reload_entry_attachments", namespace:namespace});
-	var ajaxRequest = new ss_AjaxRequest(url); // Create AjaxRequest object
-	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  // Send the request
+	self.location.reload();
+	return;
 }
 
 
@@ -4593,9 +4588,11 @@ function ss_showContentFrame() {
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
+	ss_hideSunburst(id, binderId);
 	return ss_loadEntryUrl(obj.href, id, binderId, entityType, namespace, isDashboard);
 }
 function ss_loadEntryUrl(url, id, binderId, entityType, namespace, isDashboard) {
+	ss_hideSunburst(id, binderId);
 	if (ss_getUserDisplayStyle() == "accessible") {
 		self.location.href = url;
 		return false;
@@ -4608,7 +4605,6 @@ function ss_loadEntryUrl(url, id, binderId, entityType, namespace, isDashboard) 
 	} else {
 		ss_showForumEntry(url, isDashboard);
 	}
-	ss_hideSunburst(id, binderId);
 	return false;
 }
 
@@ -4766,12 +4762,18 @@ function ss_setCurrentIframeHeight() {
 			var parentIframeObj = parent.document.getElementById(iframeId);
 			if (parentIframeObj != null && 
 					parseInt(parentIframeObj.style.height) != parseInt(iframeHeight + ss_entryInPlaceIframeOffset)) {
+				//ss_debug("   Current height: "+parseInt(parentIframeObj.style.height) + ", new height: "+parseInt(iframeHeight + ss_entryInPlaceIframeOffset));
+				var scrollLeft = ss_getScrollXY()[0];
+				var scrollTop = ss_getScrollXY()[1];
 				parentIframeObj.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px";
+				//ss_debug("scroll left: "+scrollLeft+", scroll top: "+scrollTop+", current: "+document.body.scrollTop);
+				//Put the scroll back to what it was before resizine the iframe
+				setTimeout("parent.document.getElementById(window.name).contentWindow.scrollTo('"+scrollLeft+"','"+scrollTop+"');", 50)
 				//ss_debug("   Setting "+iframeId+" height to: "+parentIframeObj.style.height)
 				// Signal that the layout changed
 				if (parent.ssf_onLayoutChange) parent.ssf_onLayoutChange();
 			}
-		} catch(e) {}
+		} catch(e) {ss_debug("ss_setCurrentIframeHeight: "+e)}
 	}
 }
 
@@ -6724,11 +6726,29 @@ function ss_checkForRequiredFields(obj) {
 						// alert('text found: xxx'+eleObj0.value+'xxx');
 						continue;
 					}
+					var formObj = ss_findOwningElement(eleObj0, "form");
+					
+					//See if it is a file browse option and there is a request to create a file instead
+					var fileNameId = "createFileName_" + id;
+					var fileTypeId = "createFileType_" + id;
+					var fnObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == fileNameId) fnObj = formObj.elements[j];
+					}
+					if (fnObj != null && typeof(fnObj) != 'undefined' && typeof(fnObj.length) != 'undefined') fnObj = fnObj[0];
+					var ftObj = null;
+					for (var j = 0; j < formObj.elements.length; j++) {
+						if (formObj.elements[j].name == timeId) ftObj = formObj.elements[j];
+					}
+					if (ftObj != null && typeof(ftObj) != 'undefined' && typeof(ftObj.length) != 'undefined') ftObj = ftObj[0];
+					if ((fnObj != null && fnObj.value != '') || (ftObj != null && ftObj.value != '')) {
+						// alert('create file found: '+fnObj.value);
+						continue;
+					}					
 					
 					// See if this is a date field.
 					var dateId = id + "_fullDate";
 					var timeId = id + "_0_fullTime";
-					var formObj = ss_findOwningElement(eleObj0, "form");
 					var dObj = null;
 					for (var j = 0; j < formObj.elements.length; j++) {
 						if (formObj.elements[j].name == dateId) dObj = formObj.elements[j];
@@ -7253,7 +7273,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner'] + this.NBSP2));
 		eA         = document.createElement("a");
 		eA.href    = "#";
-		eA.onclick = function(e) {ss_helpSystem.showHelp( 'http://www.novell.com/documentation/teaming3/team3_user/data/trouble_editoroverrides.html' );return false;};
+		eA.onclick = function(e) {ss_helpSystem.showHelp( 'http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_user/data/trouble_editoroverrides.html' );return false;};
 		eIMG       = document.createElement("img");
  		eIMG.alt   =
  		eIMG.title = this.strings['sidebar.appConfig.Banner.Alt.Help'];
@@ -9137,6 +9157,13 @@ function ss_showEmailLinks() {
 
 // Session timeout
 function ss_startSessionTimoutTimer(maxInactiveInterval) {
+	// If we're running in the GWT UI...
+	if (ss_isGwtUIActive) {
+		// ...these session timeout timers are meaningless because of
+		// ...the extensive use of AJAX calls.  Ignore them.
+		return;
+	}
+	
 	if (typeof maxInactiveInterval == 'undefined' || maxInactiveInterval == '') return;
 	var maxInt = parseInt(maxInactiveInterval);
 	
@@ -9145,6 +9172,13 @@ function ss_startSessionTimoutTimer(maxInactiveInterval) {
 	setTimeout("ss_resetSessionTimeoutTimer('"+maxInactiveInterval+"');", timeToWarn)
 }
 function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
+	// If we're running in the GWT UI...
+	if (ss_isGwtUIActive) {
+		// ...these session timeout timers are meaningless because of
+		// ...the extensive use of AJAX calls.  Ignore them.
+		return;
+	}
+	
 	var now = new Date();
 	if (confirm(ss_sessionTimeoutText + "\n  (" + now.toLocaleString() + ")")) {
 		ss_setupStatusMessageDiv();
@@ -9157,6 +9191,13 @@ function ss_resetSessionTimeoutTimer(maxInactiveInterval) {
 	}
 }
 function ss_resetSessionTimeoutTimer2(obj) {
+	// If we're running in the GWT UI...
+	if (ss_isGwtUIActive) {
+		// ...these session timeout timers are meaningless because of
+		// ...the extensive use of AJAX calls.  Ignore them.
+		return;
+	}
+	
 	var maxInactiveInterval = obj.getData("maxInactiveInterval");
 	// See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {

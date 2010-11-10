@@ -56,6 +56,7 @@
 			userLoginId : '${ssUser.name}',
 			adaptedUrl : '${adaptedUrl}',
 			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+			jsPath : '<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
 			errMsg : '<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 			isNovellTeaming : ${isNovellTeaming},
@@ -228,16 +229,23 @@
 		function ss_logoff() {
 			var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 			if(x == null || x == "") {
+				var logoutForm;
 				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
-				//alert(y);
-				// Are we running the new GWT ui?
-				if ( ss_isGwtUIActive )
+
+				//!!!alert(y);
+				// Get the logout form.  We use a form so the logout request can be made with
+				// a "post" instead of a "get".  This prevents logout spoofing.
+				logoutForm = document.getElementById( 'logoutForm' );
+				if ( logoutForm != null )
 				{
-					// Yes, update the top window's href.
-					window.top.location.href = y;
+					logoutForm.action = y;
+					logoutForm.submit();
 				}
 				else
-					self.location.href=y;
+				{
+					// This should never happen.
+					alert( 'Could not find the logout form.' );
+				}
 			} else {
 				//alert (x);
 				var y = '<%= org.kablink.teaming.web.util.WebUrlUtil.getServletRootURL(request) + org.kablink.teaming.web.WebKeys.SERVLET_LOGOUT %>';
@@ -258,7 +266,7 @@
 			x = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 			
-			x.open("GET", logoutURL, true);
+			x.open("POST", logoutURL, true);
 			
 			x.onreadystatechange = function() {
 				if (x.readyState != 4) {
@@ -305,5 +313,18 @@
 	</div>
 
     <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+    
+    <!-- This form is used for logging out. -->
+    <!-- The value of the action attribute will be filled in at runtime. -->
+	<form name="logoutForm" id="logoutForm" method="post" action="" >
+	</form> 
+    
+	<!--  For auto complete to work in IE the form element must be present in the original html -->
+	<!--  and not dynamically added.  The following form is used with the login dialog. -->
+	<form name="loginFormName" target="" action="" method="post" autocomplete="">
+		<input type="text" tabindex="0" class="gwt-TextBox" name="j_username" id="j_username" size="20"/>
+		<input type="password" tabindex="0" class="gwt-PasswordTextBox" name="j_password" id="j_password" size="20"/>
+	</form>
+
   </body>
 </html>

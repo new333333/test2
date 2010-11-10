@@ -284,7 +284,6 @@ ul.ss_actions_bar1 li a:hover {
 	}
 .ss_actions_bar3 li a:hover {
 	/* background-color: ${ss_style_background_color_side_panel}; */
-		background-color: #FFFFFF;
 	text-decoration:none;
 	}
 ul.ss_actions_bar4 li {
@@ -323,7 +322,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar3 {
  /* background-color: ${ss_toolbar1_background_color}; */
-  	background-color: #FFFFFF;
+  	background-color: #414648;
   	background-image: none;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -332,7 +331,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 	}
 div.ss_actions_bar_submenu ul.ss_actions_bar4 {
  /* background-color: ${ss_toolbar1_background_color}; */
-  	background-color: #FFFFFF;
+  	background-color: #414648;
  	background-image: none;
   	opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -907,20 +906,20 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	-webkit-border-radius: 10px;
 	}
 .roundcornerSM {
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}	
 .roundcornerSM-bottom {
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 	}	
 .roundcornerSM-top {
-	-moz-border-radius-topleft: 5px;
-	-moz-border-radius-topright: 5px;
-	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 	}	
 .roundcornerLG {
 	-moz-border-radius: 40px;

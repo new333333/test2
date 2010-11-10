@@ -43,6 +43,9 @@ public class LoggingInterceptor implements MethodInterceptor {
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		try {
+			if(logger.isDebugEnabled())
+				logger.debug(invocation.toString());
+			
 			return invocation.proceed();
 		}
 		catch(Throwable t) {

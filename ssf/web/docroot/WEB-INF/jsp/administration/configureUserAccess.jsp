@@ -127,7 +127,7 @@
 <ssf:form title="${titleTag}" >
 
 	<c:if test="${!empty ssException}">
-	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+	<span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span><br>
 	</c:if>
 
 	<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 

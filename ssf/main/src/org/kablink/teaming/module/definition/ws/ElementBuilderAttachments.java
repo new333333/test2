@@ -41,6 +41,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.remoting.ws.model.AttachmentsField;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
 import org.kablink.teaming.remoting.ws.model.AttachmentsField.Attachment;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 
@@ -60,8 +61,8 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 				}
 				if(attachments != null)
 					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(),
-							new Timestamp(att.getCreation().getPrincipal().getName(), att.getCreation().getDate()),
-							new Timestamp(att.getModification().getPrincipal().getName(), att.getModification().getDate()),
+							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getCreation().getPrincipal()).getName(), att.getCreation().getDate()),
+							new Timestamp(Utils.redactUserPrincipalIfNecessary(att.getModification().getPrincipal()).getName(), att.getModification().getDate()),
 							att.getFileItem().getLength(), webUrl));
 				context.handleAttachment(att, webUrl);
 			}

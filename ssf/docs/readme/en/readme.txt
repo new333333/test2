@@ -1,43 +1,48 @@
-﻿Kablink Teaming 2.1
+﻿Novell Vibe 3 On-Premise Software
 
 
 1.0  Getting Started
 
      Complete system requirements and detailed software installation instructions
-     are provided for the Kablink™ Teaming administrator in the "Teaming 2.1
-     Installation Guide." Teaming site setup as well as ongoing site
-     administration and maintenance instructions are available in the "Teaming
-     2.1 Administration Guide."
+     are provided for the Kablink Vibe administrator in the "Vibe 3 On-Premise
+     Software Installation Guide." Vibe site setup as well as ongoing site
+     administration and maintenance instructions are available in the "Vibe 3
+     On-Premise Software Administration Guide."
 
-     After your Kablink Teaming site is set up, Teaming users can obtain
-     instructions in the "Teaming 2.1 User Guide" and the "Teaming 2.1 Advanced
-     User Guide".
+     After your Vibe site is set up, Vibe users can obtain instructions in the
+     "Vibe 3 On-Premise Software User Guide" and the "Vibe 3 On-Premise Software
+     Advanced User Guide".
 
-     You can display the Kablink Teaming documentation, as well as online help,
-     when you log in to your Teaming site. 
+     You can display the Vibe online help when you log in to your Vibe site.
 
 
 2.0  Known Issues
 
      For an up-to-date list of known issues for this release, see the full
-     Teaming 2.1 product Readme located on the Kablink Teaming 2.1 Documentation
-     Web site (http://www.novell.com/documentation/kablinkteaming21).
+     Kablink Vibe 3 product Readme located on the Kablink Vibe 3 On-Premise
+     Software Documentation Web site
+     (http://www.novell.com/documentation/kablinkvibe3_on_premise/index.html).
 
 
 3.0  Documentation
 
-     All Teaming 2.1 documentation is available at the Kablink Teaming 2.1
-     Documentation Web site
-     (http://www.novell.com/documentation/kablinkteaming21):
+     All Kablink Vibe 3 documentation is available at the Kablink Vibe 3
+     On-Premise Software Documentation Web site
+     (http://www.novell.com/documentation/kablinkvibe3_on_premise):
 
-     -  Full Teaming 2.1 product Readme
+     -  Full Vibe 3 product Readme
+
      -  "Installation Guide"
+
      -  "Administration Guide"
+
      -  "User Guide"
+
      -  "Advanced User Guide"
+
      -  "Developer Guide"
 
-     For more information about Teaming, visit the Kablink Open Collaboration
+     For more information about Vibe, visit the Kablink Open Collaboration
      Project (http://www.kablink.org).
 
 
@@ -46,17 +51,14 @@
      In this documentation, a greater-than symbol (>) is used to separate actions
      within a step and items in a cross-reference path.
 
-     A trademark symbol (®, ™, etc.) denotes a Novell trademark; an asterisk (*)
-     denotes a third-party trademark.
-
 
 5.0  Open Source Code
 
      Novell, hereby, offers to give any third party a complete machine-readable
-     copy of the source code of Kablink Teaming, under the terms of Sections 1
-     and 2 of version 2 of the GNU General Public License as published by the
-     Free Software Foundation, on a medium customarily used for software
-     interchange. Please contact Novell Developer Services or visit Kablnik.org
+     copy of the source code of Kablink Vibe, under the terms of Sections 1 and 2
+     of version 2 of the GNU General Public License as published by the Free
+     Software Foundation, on a medium customarily used for software interchange.
+     Please contact Novell Developer Services or visit Kablnik.org
      (http://kablink.org) if you require a copy of the same.
 
 
@@ -119,13 +121,6 @@
      MALFUNCTION, OR ANY AND ALL OTHER DAMAGES OR LOSSES ARISING OUT OF OR
      RELATING TO USE OF THE DOCUMENT AND MODIFIED VERSIONS OF THE DOCUMENT, EVEN
      IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES.
-
-     Novell, Inc. has intellectual property rights relating to technology
-     embodied in the product that is described in this document. In particular,
-     and without limitation, these intellectual property rights may include one
-     or more of the U.S. patents listed on the Novell Legal Patents Web page
-     (http://www.novell.com/company/legal/patents/) and one or more additional
-     patents or pending patent applications in the U.S. and in other countries.
 
      For Novell trademarks, see the Novell Trademark and Service Mark list
      (http://www.novell.com/company/legal/trademarks/tmlist.html).

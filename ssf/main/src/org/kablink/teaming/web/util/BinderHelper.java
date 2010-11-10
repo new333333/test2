@@ -77,6 +77,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.security.AuthenticationException;
 import org.springframework.security.ui.AbstractProcessingFilter;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -117,6 +118,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.file.NewableFileSupport;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -138,6 +140,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.util.search.Restrictions;
@@ -2324,12 +2327,12 @@ public class BinderHelper {
 									}
 								}
 								faSet.add(fa);
-								entry.addCustomAttribute(name, faSet);
+								if (entry.getCustomAttribute(name) == null) entry.addCustomAttribute(name, faSet);
 								break;
 							}
 						}
 					} else {
-						entry.addCustomAttribute(name, attrValue);
+						if (entry.getCustomAttribute(name) == null) entry.addCustomAttribute(name, attrValue);
 					}
 				}
 			}
@@ -2390,7 +2393,7 @@ public class BinderHelper {
 				if (e.getId().equals(eventId)) {
 					//Add the event
 					event.setTimeZone(e.getTimeZone());
-					entry.addCustomAttribute(e.getName(), event);
+					if (entry.getCustomAttribute(e.getName()) == null) entry.addCustomAttribute(e.getName(), event);
 					break;
 				}
 			}
@@ -2418,10 +2421,10 @@ public class BinderHelper {
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_LONG)) {
     		return Long.valueOf(value);
     	} else if (type.equals(ObjectKeys.XTAG_TYPE_DATE)) {
-    		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd'T'HHmmss");
+    		SimpleDateFormat sdf = new SimpleDateFormat("MMM dd HH:mm:ss 'GMT' yyyy");  //Fri Nov 12 05:00:00 GMT 2010
     		Date date;
     		try {
-    			date = sdf.parse(value);
+    			date = sdf.parse(value.substring(4));
     			return date;
     		} catch (ParseException e) {
     			return null;
@@ -3791,16 +3794,20 @@ public class BinderHelper {
 	}
 	
 	public static boolean isBinderTracked(AllModulesInjected bs, Long binderId) {
+		boolean reply = false;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long userWorkspaceId = user.getWorkspaceId();
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
-		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-		if (relevanceMap == null) relevanceMap = new HashMap();
-		List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
-		if (trackedBinders == null) {
-			trackedBinders = new ArrayList();
+		if (null != userForumProperties) {
+			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+			if (relevanceMap != null) {
+				List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+				if (trackedBinders != null) {
+					reply = trackedBinders.contains(binderId);
+				}
+			}
 		}
-		return trackedBinders.contains(binderId);
+		return reply;
 	}
 
 	/**
@@ -3821,12 +3828,15 @@ public class BinderHelper {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			Long userWorkspaceId = user.getWorkspaceId();
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
-			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-			if (relevanceMap == null) relevanceMap = new HashMap();
-			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
-			if (trackedPeople != null) {
-				Binder binder = bs.getBinderModule().getBinder(binderId);
-				reply = trackedPeople.contains(binder.getOwnerId());
+			if (null != userForumProperties) {
+				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+				if (relevanceMap != null) {
+					List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+					if (trackedPeople != null) {
+						Binder binder = bs.getBinderModule().getBinder(binderId);
+						reply = trackedPeople.contains(binder.getOwnerId());
+					}
+				}
 			}
 		}
 		
@@ -4177,6 +4187,29 @@ public class BinderHelper {
 		} catch(AccessControlException e) {}
 		return fa;
 	}
+	
+	//Look for requests to create new files during the add or modify entry operations
+	public static void processCreateFileRequests(AllModulesInjected bs, ActionRequest request, Map fileMap) {
+		Map formData = request.getParameterMap();
+		Iterator itFormData = formData.keySet().iterator();
+		while (itFormData.hasNext()) {
+			String key = (String)itFormData.next();
+			if (key.startsWith(WebKeys.CREATE_FILE_NAME_FORM_ELEMENT)) {
+				//Found a key, get the form element name (which is appended to the end)
+				String eleName = key.substring(WebKeys.CREATE_FILE_NAME_FORM_ELEMENT.length(), key.length());
+				String[] fileName = (String[])formData.get(WebKeys.CREATE_FILE_NAME_FORM_ELEMENT + eleName);
+				String[] fileType = (String[])formData.get(WebKeys.CREATE_FILE_TYPE_FORM_ELEMENT + eleName);
+				if (Validator.isNotNull(fileName[0]) && Validator.isNotNull(fileType[0])) {
+					String fn = fileName[0];
+					if(!fn.contains("."))
+						fn += fileType[0];
+					MultipartFile mf = new SimpleMultipartFile(fn, 
+							getNewableFileSupport().getInitialFileContent(fileType[0]));
+					fileMap.put(eleName, mf);
+				}
+			}
+		}
+	}
 
 	public static void fixupFolderAndEntryDefinitions(PortletRequest request, AllModulesInjected bs, Long binderId,
 			boolean folderFixups, boolean entryFixups, String entryDefinition) throws FixupFolderDefsException {
@@ -4285,4 +4318,8 @@ public class BinderHelper {
 		
 		return reply;
 	}	
+	
+	private static NewableFileSupport getNewableFileSupport() {
+		return (NewableFileSupport) SpringContextUtil.getBean("newableFileSupport");
+	}
 }

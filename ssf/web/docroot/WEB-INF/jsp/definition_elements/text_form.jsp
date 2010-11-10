@@ -47,6 +47,13 @@
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String elementName = (String) request.getAttribute("property_name");
+
+	String moreInfo = "";
+	if(elementName != null && elementName.equals("conferencingID") ) {
+		String locMoreInfo = NLT.get("profile.moreInfo");
+		moreInfo = "<a href='http://www.novellconferencing.com' target='_blank'>"+locMoreInfo+"</a>";
+	}
+	
 	String caption = (String) request.getAttribute("property_caption");
 	String caption2 = NLT.get("general.required.caption", new Object[]{caption});
 	String width = (String) request.getAttribute("property_width");
@@ -75,7 +82,7 @@
 %>
 <c:if test="${empty ssReadOnlyFields[property_name]}">
   <div class="ss_entryContent ${ss_fieldModifyStyle}">
-  <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %></div>
+  <div class="ss_labelAbove"><c:out value="${property_caption}"/><%= required %> <%= moreInfo %></div>
   <input type="text" class="ss_text" name="<%= elementName %>" <%= width %> ${ss_fieldModifyInputAttribute}
    value="<c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/>"/>
   </div>

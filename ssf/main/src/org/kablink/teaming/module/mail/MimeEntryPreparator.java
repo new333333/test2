@@ -66,27 +66,27 @@ public class MimeEntryPreparator extends MimeNotifyPreparator {
 	}
 	@SuppressWarnings("unchecked")
 	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
-		Collection<InternetAddress> addrs = (Collection)details.get(MailModule.TO);
-		Collection<InternetAddress> validAddrs;;
-		if (addrs == null || addrs.isEmpty()) {
+		// Validate the To:, Cc: and Bcc: addresses.
+		Collection<InternetAddress> toAddrs  = MiscUtil.validateInternetAddressCollection(MailModule.TO,  ((Collection) details.get(MailModule.TO)));
+		Collection<InternetAddress> ccAddrs  = MiscUtil.validateInternetAddressCollection(MailModule.CC,  ((Collection) details.get(MailModule.CC)));
+		Collection<InternetAddress> bccAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, ((Collection) details.get(MailModule.BCC)));
+
+		// Do we have any To:, Cc: or Bcc: addresses?
+		boolean hasTo  = ((null != toAddrs)  && (!(toAddrs.isEmpty())));
+		boolean hasCc  = ((null != ccAddrs)  && (!(ccAddrs.isEmpty())));
+		boolean hasBcc = ((null != bccAddrs) && (!(bccAddrs.isEmpty())));
+		if ((!hasTo) && (!hasCc) && (!hasBcc)) {
+			// No!  The send the email to the from only.
 			if (details.containsKey(MailModule.FROM)) 
-				helper.setTo((InternetAddress)details.get(MailModule.FROM));
-			else
-				helper.setTo(defaultFrom);
+				 helper.setTo((InternetAddress)details.get(MailModule.FROM));
+			else helper.setTo(defaultFrom);
+			
 		} else {
-			//Using 1 set results in 1 TO: line in mime-header - GW like this better
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.TO, addrs);
-			helper.setTo(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
-		} 
-		addrs = (Collection)details.get(MailModule.CC);
-		if (addrs != null) {
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.CC, addrs);
-			helper.setCc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
-		}		
-		addrs = (Collection)details.get(MailModule.BCC);
-		if (addrs != null) {
-			validAddrs = MiscUtil.validateInternetAddressCollection(MailModule.BCC, addrs);
-			helper.setBcc(validAddrs.toArray(new InternetAddress[validAddrs.size()]));
+			// Yes, we have some To:'s, Cc:'s or Bcc:'s!  Handle them
+			// accordingly.
+			if (hasTo)  helper.setTo( toAddrs.toArray( new InternetAddress[toAddrs.size()]));
+			if (hasCc)  helper.setCc( ccAddrs.toArray( new InternetAddress[ccAddrs.size()]));
+			if (hasBcc) helper.setBcc(bccAddrs.toArray(new InternetAddress[bccAddrs.size()]));
 		}
 	}
 

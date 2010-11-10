@@ -127,6 +127,7 @@ public class Constants {
 	public static final String OWNER_NAME_FIELD = "_ownerName";
 	public static final String OWNER_TITLE_FIELD = "_ownerTitle";
 	public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
+	public static final String CREATED_WITH_DEFINITION_FIELD = "_createdWithDef";
 	public static final String ENTRY_DEFINITIONS_FIELD = "_entryDefs";
 	public static final String TITLE_FIELD = "title";
 	public static final String SORT_TITLE_FIELD = "_sortTitle";
@@ -199,6 +200,7 @@ public class Constants {
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
 	public static final String PERSONFLAG_FIELD = "_isPerson";
+	public static final String IS_LIBRARY_FIELD = "_isLibrary";
 
 	public Constants() {
 		super();

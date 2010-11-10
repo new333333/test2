@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +59,7 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
@@ -67,6 +69,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.search.QueryBuilder;
@@ -99,7 +102,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
 
 	protected Log logger = LogFactory.getLog(getClass());
-
+	protected ProfileModule profileModule;
+	
 	private String rssRootDir;
 
 	int maxDays = 31;
@@ -109,8 +113,14 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	SimpleDateFormat atomFmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
 	private static final String SCHEME_HOST_PORT_PATTERN = "<link>http.*/ssf/a/";
+	private static final String AUTHOR_ID_PATTERN = "<authorId>([0-9]*)</authorId>\n";
+	private static final String AUTHOR_PATTERN = "<author>(.*)</author>";
+	private static final String AUTHOR_NAME_PATTERN = "<author><name>(.*)</name></author>";
 
 	private Pattern pattern = Pattern.compile(SCHEME_HOST_PORT_PATTERN);
+	private Pattern patternAuthorId = Pattern.compile(AUTHOR_ID_PATTERN);
+	private Pattern patternAuthor = Pattern.compile(AUTHOR_PATTERN);
+	private Pattern patternAuthorName = Pattern.compile(AUTHOR_NAME_PATTERN);
 
 	public RssModuleImpl() {
 
@@ -125,6 +135,9 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	}
 
+	public ProfileModule getProfileModule() {
+		return this.profileModule;
+	}
 	public String getRssRootDir() {
 		return rssRootDir;
 	}
@@ -453,6 +466,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				org.apache.lucene.document.Document doc = hits.doc(count);
 				item = doc.getField("rssItem").stringValue();
 				item = fixupSchemeHostPort(item, adapterRoot);
+				item = fixupAuthor(item, adapterRoot);
 				rss += item;
 				count++;
 			}
@@ -521,6 +535,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				org.apache.lucene.document.Document doc = hits.doc(count);
 				item = doc.getField("atomItem").stringValue();
 				item = fixupSchemeHostPort(item, adapterRoot);
+				item = fixupAuthorName(item, adapterRoot);
 				atom += item;
 				count++;
 			}
@@ -540,6 +555,52 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	protected String fixupSchemeHostPort(String item, String adapterRoot) {
 		Matcher matcher = pattern.matcher(item);
 		return matcher.replaceFirst("<link>" + adapterRoot);
+	}
+	
+	protected String fixupAuthor(String item, String adapterRoot) {
+		//See if this user is allowed to see the author of this entry
+		String id = "";
+		Matcher matcher = patternAuthorId.matcher(item);
+		if (matcher.find()) {
+			id = matcher.group(1);
+			item = matcher.replaceFirst("");
+		}
+		if (Utils.canUserOnlySeeCommonGroupMembers()) {
+			if (!id.equals("")) {
+				Principal p = profileDao.loadPrincipal(Long.valueOf(id), RequestContextHolder.getRequestContext().getZoneId(), true);
+				if (p != null) {
+					p = Utils.fixProxy(p);
+					matcher = patternAuthor.matcher(item);
+					if (matcher.find()) {
+						item = matcher.replaceFirst("<author>" + p.getTitle() + "</author>");
+					}
+				}
+			}
+		}
+		return item;
+	}
+	
+	protected String fixupAuthorName(String item, String adapterRoot) {
+		//See if this user is allowed to see the author of this entry
+		String id = "";
+		Matcher matcher = patternAuthorId.matcher(item);
+		if (matcher.find()) {
+			id = matcher.group(1);
+			item = matcher.replaceFirst("");
+		}
+		if (Utils.canUserOnlySeeCommonGroupMembers()) {
+			if (!id.equals("")) {
+				Principal p = profileDao.loadPrincipal(Long.valueOf(id), RequestContextHolder.getRequestContext().getZoneId(), true);
+				if (p != null) {
+					p = Utils.fixProxy(p);
+					matcher = patternAuthorName.matcher(item);
+					if (matcher.find()) {
+						item = matcher.replaceFirst("<author><name>" + p.getTitle() + "</name></author>");
+					}
+				}
+			}
+		}
+		return item;
 	}
 	
 	/**
@@ -630,9 +691,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<description>" + description + "</description>\n";
 
 		Principal p = entry.getCreation().getPrincipal();
-		p = Utils.fixProxy(p);
-		ret += "<author>" + p.getName()
-				+ "</author>\n";
+		ret += "<authorId>" + p.getId().toString() + "</authorId>\n";
+		ret += "<author>"+ p.getTitle() + "</author>\n";
 
 		Date eDate = entry.getModification().getDate();
 		
@@ -732,9 +792,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		ret += "<subtitle>" + subtitle + "</subtitle>\n";
 
 		Principal p = entry.getCreation().getPrincipal();
-		p = Utils.fixProxy(p);
-		ret += "<author><name>" + p.getName()
-				+ "</name></author>\n";
+		ret += "<authorId>" + p.getId().toString() + "</authorId>\n";
+		ret += "<author><name>"+ p.getTitle() + "</name></author>\n";
 
 		Date eDate = entry.getModification().getDate();
 		

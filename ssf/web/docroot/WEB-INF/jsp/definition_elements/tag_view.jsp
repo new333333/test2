@@ -47,6 +47,8 @@
 var ss_tagConfirmBadCharacters = "<ssf:nlt tag="tags.badChars"/>";
 var ss_tagConfirmTooLong = "<ssf:nlt tag="tags.tooLong"/>";
 var ss_tagConfirmNoPunct = "<ssf:nlt tag="tags.noPunctAllowed"/>";
+var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
+
 </script>
   <c:if test="${empty ss_tags_loaded}">
 	<script type="text/javascript">

@@ -34,6 +34,7 @@
 package org.kablink.teaming.remoting.ws.service.admin;
 
 import java.util.Calendar;
+import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
 
 /**
  * @author Jong Kim
@@ -46,4 +47,6 @@ public interface AdminService {
 	public void admin_destroyApplicationScopedToken(String accessToken, String token);
 	
 	public Calendar admin_getCurrentServerTime(String accessToken);
+	
+	public ReleaseInfo admin_getReleaseInfo(String accessToken);
 }

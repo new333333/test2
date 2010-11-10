@@ -48,6 +48,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
@@ -292,4 +293,23 @@ public class Utils {
 		}
 	}
 
+	public static UserPrincipal redactUserPrincipalIfNecessary(UserPrincipal p) {
+		if (canUserOnlySeeCommonGroupMembers()) {
+			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+			return profileDao.loadUserPrincipal(p.getId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+		}
+		else {
+			return p;
+		}
+	}
+	
+	public static UserPrincipal redactUserPrincipalIfNecessary(Long userPrincipalId) {
+		if (canUserOnlySeeCommonGroupMembers()) {
+			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+			return profileDao.loadUserPrincipal(userPrincipalId, RequestContextHolder.getRequestContext().getZoneId(), false);
+		}
+		else {
+			return null;
+		}
+	}
 }

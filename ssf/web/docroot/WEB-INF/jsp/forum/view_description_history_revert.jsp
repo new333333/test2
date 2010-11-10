@@ -66,11 +66,17 @@ function saveFileId(obj) {
 		if (typeof formObj[obj.name] == "undefined") {
 			var hiddenObj = self.document.createElement("input");
 			hiddenObj.setAttribute("type", "hidden");
+			hiddenObj.setAttribute("id", obj.name);
 			hiddenObj.setAttribute("name", obj.name);
 			formObj.appendChild(hiddenObj);
 			hiddenObj.value = obj.checked;      //Set the value in hiddenObj here because IE can't find objects added this way
 		} else {
 			formObj[obj.name].value = obj.checked;
+		}
+		var objs = self.document.getElementById(obj.name);
+		for (var i = 0; i < objs.length; i += 1) {
+			//Make sure the hidden obj is correctly set in IE
+			objs[i].value = obj.checked;
 		}
 	}
 }

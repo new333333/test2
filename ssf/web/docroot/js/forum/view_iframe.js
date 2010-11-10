@@ -65,7 +65,8 @@ function ss_setEntryDivHeight() {
 	try {
 		var boxNextPrevArea = self.document.getElementById("ss_showEntryDivNextPrev");
 		if (boxNextPrevArea != null) boxNextPrevArea.innerHTML = "";
-		if (typeof window.top.gwtContentIframe.ss_showingFolder != "undefined" && 
+		if (typeof window.top.gwtContentIframe != "undefined" &&
+				typeof window.top.gwtContentIframe.ss_showingFolder != "undefined" && 
 				window.top.gwtContentIframe.ss_showingFolder == true && 
 				typeof window.ss_showentryframe.ss_nextPrevUrl != "undefined" && 
 				window.ss_showentryframe.ss_nextPrevUrl != "" && 
@@ -116,24 +117,32 @@ function ss_loadUrlInEntryFramePrev(url) {
 	url = ss_replaceSubStr(url, "&action=view_folder_entry", "&operation2=view_previous&action=view_folder_entry");
 	url = ss_replaceSubStr(url, "/action/view_folder_entry", "/operation2/view_previous/action/view_folder_entry");
 	var frameObj = self.document.getElementById('ss_showentryframe');
-	if (ss_getUserDisplayStyle() != 'newpage') {
-		//Drop it back down to a reasonable size
-		//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
-		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+	if (frameObj != null) {
+		if (ss_getUserDisplayStyle() != 'newpage') {
+			//Drop it back down to a reasonable size
+			//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
+			frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+		}
+		frameObj.src = url;
+	} else {
+		self.location.href = url;
 	}
-	frameObj.src = url;
 }
 function ss_loadUrlInEntryFrameNext(url) {
 	//ss_debug("**** "+ss_debugTrace());
 	url = ss_replaceSubStr(url, "&action=view_folder_entry", "&operation2=view_next&action=view_folder_entry");
 	url = ss_replaceSubStr(url, "/action/view_folder_entry", "/operation2/view_next/action/view_folder_entry");
 	var frameObj = self.document.getElementById('ss_showentryframe');
-	if (ss_getUserDisplayStyle() != 'newpage') {
-		//Drop it back down to a reasonable size
-		//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
-		frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+	if (frameObj != null) {
+		if (ss_getUserDisplayStyle() != 'newpage') {
+			//Drop it back down to a reasonable size
+			//ss_debug("   ss_loadUrlInEntryFrame, setting height to: "+ss_entryStartingWindowHeight)
+			frameObj.style.height = parseInt(ss_entryStartingWindowHeight) + "px";
+		}
+		frameObj.src = url;
+	} else {
+		self.location.href = url;
 	}
-	frameObj.src = url;
 }
 function ss_showForumEntryInIframe(url) {
 	//ss_debug("**** "+ss_debugTrace());

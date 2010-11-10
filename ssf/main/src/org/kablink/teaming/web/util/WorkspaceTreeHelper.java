@@ -37,7 +37,6 @@ import static org.kablink.util.search.Constants.DOCID_FIELD;
 import static org.kablink.util.search.Constants.ENTITY_FIELD;
 import static org.kablink.util.search.Constants.ENTRY_ANCESTRY;
 import static org.kablink.util.search.Constants.MODIFICATION_DATE_FIELD;
-import static org.kablink.util.search.Constants.TITLE_FIELD;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +51,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -85,13 +83,11 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.profile.impl.GuestProperties;
-import org.kablink.teaming.portal.servlet.DispatchServer;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -105,6 +101,7 @@ import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
+@SuppressWarnings("unchecked")
 public class WorkspaceTreeHelper {
 	protected static final Log logger = LogFactory.getLog(Workspace.class);
 	
@@ -277,14 +274,14 @@ public class WorkspaceTreeHelper {
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
 				
+				boolean isBinderAdmin = false;
 				try {
 					ProfileBinder pbinder = bs.getProfileModule().getProfileBinder();
 					if (bs.getProfileModule().testAccess(pbinder, ProfileOperation.manageEntries)) {
-						model.put(WebKeys.IS_BINDER_ADMIN, true);
-					} else {
-						model.put(WebKeys.IS_BINDER_ADMIN, false);
+						isBinderAdmin = true;
 					}
 				} catch(AccessControlException ex) {}
+				model.put(WebKeys.IS_BINDER_ADMIN, isBinderAdmin);
 				
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
@@ -379,6 +376,10 @@ public class WorkspaceTreeHelper {
 				    			model.put(WebKeys.DELETE_ENTRY_ADAPTER, "");
 				        	}
 				        }
+				        
+				        else {
+							model.put(WebKeys.MODIFY_ENTRY_ALLOWED, false);
+				        }
 						
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
 				        		binder.getId(), type, model);
@@ -440,7 +441,6 @@ public class WorkspaceTreeHelper {
 				// Are we dealing with the Guest user?
 				if ( !(userProperties instanceof GuestProperties) )
 				{
-					String		viewType;
 					Integer binderDefType;
 
 					// No
@@ -550,7 +550,6 @@ public class WorkspaceTreeHelper {
 		return targetJSP;
 	}
 	
-	@SuppressWarnings({ "unchecked" })
 	protected static void getShowWorkspace(AllModulesInjected bs, Map formData, 
 			RenderRequest req, RenderResponse response, Workspace ws, 
 			Document searchFilter, Map<String,Object>model, boolean showTrash) throws Exception {
@@ -1238,7 +1237,7 @@ public class WorkspaceTreeHelper {
 	protected static void getShowModifyProfileAdapter(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace){
 		
-		AdaptedPortletURL adapterUrl = null;
+		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
 
 		

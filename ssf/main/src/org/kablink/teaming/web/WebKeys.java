@@ -719,6 +719,8 @@ public class WebKeys {
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";
+    public static final String CREATE_FILE_NAME_FORM_ELEMENT="createFileName_";
+    public static final String CREATE_FILE_TYPE_FORM_ELEMENT="createFileType_";
     public static final String CSS_THEME="ssCssTheme";
     public static final String DASHBOARD="ssDashboard";
     public static final String DASHBOARD_BEAN_MAP="beans";

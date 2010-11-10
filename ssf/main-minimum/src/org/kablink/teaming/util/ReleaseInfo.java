@@ -38,11 +38,12 @@ import java.util.Date;
 
 public class ReleaseInfo {
 
-	private static final String KABLINK_TEAMING = "Kablink Teaming";
+	private static final String KABLINK_TEAMING = "Kablink Vibe";
 	
 	static String name;
 	static String version;
 	static String buildNumber,buildDate;
+	static Date serverStartTime;
 	static String startTime;
 	static boolean licenseRequiredEdition = true;
 	static String contentVersion;
@@ -56,8 +57,8 @@ public class ReleaseInfo {
 		
 		buildNumber = SPropsUtil.getString("release.build.number", "0");
 		buildDate = SPropsUtil.getString("release.build.date", "");
-	   	Date now = new Date();
-		startTime = String.valueOf(now.getTime());
+	   	serverStartTime = new Date();
+		startTime = String.valueOf(serverStartTime.getTime());
 		contentVersion = SPropsUtil.getString("ssf.content.version", "v3");
 	}
 	
@@ -89,6 +90,14 @@ public class ReleaseInfo {
 	 */
 	public static final String getStartTime() {
 		return startTime;
+	}
+	
+	/**
+	 * Same as <code>getStartTime</code> except that this returns <code>Date</code> value.
+	 * @return
+	 */
+	public static final Date getServerStartTime() {
+		return serverStartTime;
 	}
 	
 	/**

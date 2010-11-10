@@ -1976,6 +1976,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addCommandDefinition(indexDoc, entity, fieldsOnly);
        
         // Add command definition
+        EntityIndexUtils.addCreatedWithDefinition(indexDoc, entity, fieldsOnly);
+       
+        // Add command definition
         EntityIndexUtils.addEntryDefinitions(indexDoc, entity, fieldsOnly);
        
         // Add definition family
@@ -1985,8 +1988,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
         //Add binder path
-        if (entity instanceof Binder) EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
-        
+        if (entity instanceof Binder) {
+        	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
+        	EntityIndexUtils.addBinderIsLibrary(indexDoc, (Binder) entity, fieldsOnly);
+        }
  
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {

@@ -370,10 +370,8 @@ fieldset.ss_fieldset_square {
   	margin-top: 12px;
 	}
 fieldset a {
-	padding: 1px;
 	}
 fieldset a:hover {
-	padding: 0px;
 	border: dotted 1px #000;
 	}
 .ss_legend {

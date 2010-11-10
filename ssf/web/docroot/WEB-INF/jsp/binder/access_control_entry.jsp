@@ -276,7 +276,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 						  <img border="0" src="<html:imagesPath/>icons/close_gray16.png" <ssf:alt tag="alt.hideThisMenu"/>/>
 						</a>
 					  </div>
-					<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
+					<span class="ss_bold" style="color:#fff;"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 					<ul class="ss_actions_bar5 ss_actions_bar_submenu" style="white-space:nowrap;">
 					<c:forEach var="function" items="${ssFunctions}">
 					 <c:if test="${function.scope == 'entry'}">

@@ -74,7 +74,9 @@ advimage:{
 image_desc:"Insertar/editar imagen"
 },
 advlink:{
-link_desc:"Insertar/editar hiperv\u00EDnculo"
+link_desc:"Insertar/editar hiperv\u00EDnculo",
+delta_width:"80",
+delta_height:"80"
 },
 xhtmlxtras:{
 cite_desc:"Cita",

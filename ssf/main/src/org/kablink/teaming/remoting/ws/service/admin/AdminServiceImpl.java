@@ -37,6 +37,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.kablink.teaming.remoting.ws.BaseService;
+import org.kablink.teaming.remoting.ws.model.ReleaseInfo;
 
 /**
  * @author Jong Kim
@@ -57,5 +58,30 @@ public class AdminServiceImpl extends BaseService implements AdminService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());	
 		return calendar;
+	}
+
+	@Override
+	public ReleaseInfo admin_getReleaseInfo(String accessToken) {
+		// Despite of the fact that this operation is defined in admin service, this operation
+		// is not access controlled. In fact, "admin" service does not exclusively mean those 
+		// operations requiring admin privilege, but can also include those operations that
+		// are merely "administrative" in nature such as this.
+		ReleaseInfo releaseInfo = new ReleaseInfo();
+		
+		releaseInfo.setBuildDate(toCalendar(org.kablink.teaming.util.ReleaseInfo.getBuildDate()));
+		releaseInfo.setBuildNumber(org.kablink.teaming.util.ReleaseInfo.getBuildNumber());
+		releaseInfo.setContentVersion(org.kablink.teaming.util.ReleaseInfo.getContentVersion());
+		releaseInfo.setLicenseRequiredEdition(org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition());
+		releaseInfo.setProductName(org.kablink.teaming.util.ReleaseInfo.getName());
+		releaseInfo.setProductVersion(org.kablink.teaming.util.ReleaseInfo.getVersion());
+		releaseInfo.setServerStartTime(toCalendar(org.kablink.teaming.util.ReleaseInfo.getServerStartTime()));
+		
+		return releaseInfo;
+	}
+	
+	private Calendar toCalendar(Date date) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		return cal;
 	}
 }

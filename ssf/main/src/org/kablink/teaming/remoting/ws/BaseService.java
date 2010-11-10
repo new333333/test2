@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
@@ -82,6 +83,7 @@ import org.kablink.teaming.remoting.ws.model.FileVersions.FileVersion;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -413,7 +415,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	protected org.kablink.teaming.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
-		return new Timestamp(hs.getPrincipal().getName(), hs.getDate());
+		return new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate());
 	}
 	
 	protected void fillDefinableEntityModelDefinable(final org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
@@ -508,8 +510,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setDocLevel((new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL((String) entry.get(Constants.BINDER_ID_FIELD),
 					(String) entry.get(Constants.DOCID_FIELD)));
-		entryBrief.setCreation(new Timestamp((String) entry.get(Constants.CREATOR_NAME_FIELD),(Date) entry.get(Constants.CREATION_DATE_FIELD)));
-		entryBrief.setModification(new Timestamp((String) entry.get(Constants.MODIFICATION_NAME_FIELD),(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
+		
+		UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.CREATORID_FIELD)));
+		UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.MODIFICATIONID_FIELD)));
+		
+		entryBrief.setCreation(new Timestamp(((creator != null)? creator.getName() : (String) entry.get(Constants.CREATOR_NAME_FIELD)),(Date) entry.get(Constants.CREATION_DATE_FIELD)));
+		entryBrief.setModification(new Timestamp(((modifier != null)? modifier.getName() : (String) entry.get(Constants.MODIFICATION_NAME_FIELD)),(Date) entry.get(Constants.MODIFICATION_DATE_FIELD)));
 		return entryBrief;
 	}
 	
@@ -558,8 +564,8 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		for(VersionAttachment vatt : vatts) {
 			versions[i++] = new FileVersion(vatt.getId(),
 					vatt.getVersionNumber(),
-					new Timestamp(vatt.getCreation().getPrincipal().getName(), vatt.getCreation().getDate()),
-					new Timestamp(vatt.getModification().getPrincipal().getName(), vatt.getModification().getDate()),
+					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getCreation().getPrincipal()).getName(), vatt.getCreation().getDate()),
+					new Timestamp(Utils.redactUserPrincipalIfNecessary(vatt.getModification().getPrincipal()).getName(), vatt.getModification().getDate()),
 					vatt.getFileItem().getLength(),
 					WebUrlUtil.getFileUrl((String)null, WebKeys.ACTION_READ_FILE, vatt));
 		}

@@ -177,7 +177,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .wiki-actions {
     margin: 0px 0px 5px;
     text-align: right;
-    position: relative;
     }
 
 .wiki-menu a {

@@ -12,6 +12,17 @@
          In all other situations, the default authentication option based on form-based login
          must be used instead. -->
          
+    <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
+		<s:custom-filter position="LOGOUT_FILTER"/>
+		<constructor-arg value="/bitbucket"/>
+		<constructor-arg>
+			<list>
+				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
+			</list>
+		</constructor-arg>
+		<property name="filterProcessesUrl" value="/s/portalLogout"/>
+    </bean>
+         
     <s:http session-fixation-protection="newSession" realm="Teaming">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
@@ -28,7 +39,6 @@
         
         <s:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
         
-        <s:logout logout-url="/s/portalLogout" logout-success-url="/bitbucket" />
         <s:http-basic/>
     </s:http>
 

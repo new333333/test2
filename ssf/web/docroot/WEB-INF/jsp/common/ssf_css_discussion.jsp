@@ -445,6 +445,10 @@ a.ss_new_thread:hover {
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 	}	
+.ss_navbar_not_current {
+	font-weight: normal !important;
+	padding: 2px 5px;
+	}	
 .ss_navbar_new {
 	color: #fff;
 	font-family: Arial;

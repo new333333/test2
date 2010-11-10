@@ -48,7 +48,8 @@ function ssAccessControl(namespace, workAreaId, workAreaType) {
 		if (ss_getUserDisplayStyle() == 'accessible') {
 			selectPrincipalAccessible();
 		} else {
-			if (ss_isIE) {
+			if (1 == 1 || ss_isIE) {
+				//Always use this routine. It will cause the text box to be cleared
 				//IE does not display the table right, so repaint the screen
 				selectPrincipalAccessible();
 			} else {

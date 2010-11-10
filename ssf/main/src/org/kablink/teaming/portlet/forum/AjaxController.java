@@ -71,6 +71,7 @@ import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -177,6 +178,7 @@ import org.kablink.util.search.Order;
  * @author Peter Hurley
  *
  */
+@SuppressWarnings("unchecked")
 public class AjaxController  extends SAbstractControllerRetry {
 	
 	//caller will retry on OptimisiticLockExceptions
@@ -745,7 +747,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxGetFileRelationshipsByEntry(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String relationshipErrorKey = null;
@@ -807,7 +808,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	/*
 	 * Adds information about Attachment relationships to mode.
 	 */
-	@SuppressWarnings("unchecked")
 	private static void buildRelationshipModel(Map model, Set<Attachment> attSet, Set<User> userSet, Set<Workspace> wsSet, String relationshipErrorKey) {
 		model.put("relationshipErrorKey", ((null == relationshipErrorKey) ? ""                        : relationshipErrorKey));
 		model.put("relatedAttachments",   ((null == attSet)               ? new HashSet<Attachment>() : attSet));
@@ -823,7 +823,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxToggleGwtUI(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Binder userWS = getBinderModule().getBinder(RequestContextHolder.getRequestContext().getUser().getWorkspaceId());
@@ -971,7 +970,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	 * @param response
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
 	private ModelAndView ajaxStartFixupFolderDefs( RenderRequest request, RenderResponse response ) throws Exception
 	{
 		// Do we have a fixup thread ready to start?
@@ -2369,56 +2367,112 @@ public class AjaxController  extends SAbstractControllerRetry {
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				options.putAll(ListFolderHelper.getSearchFilter(this, request, binder, userFolderProperties));
 				Document baseFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+				boolean filtered = (null != baseFilter); 
+				if (filtered) {
+					Element preDeletedOnlyTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@preDeletedOnly='true']");
+					if (preDeletedOnlyTerm != null) {
+						options.put(ObjectKeys.SEARCH_PRE_DELETED, Boolean.TRUE);
+					}
+				}				
 				
-				
+				// Are we searching for events in a folder or workspace?
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
+					// Yes!  Are we searching for physical events using
+					// a filter?
 					boolean virtual;
 					String eventsType = EventsViewHelper.getCalendarDisplayEventType(this, user.getId(), binderId);
-					ModeType modeType;
 					virtual = ((null != eventsType) && "virtual".equals(eventsType));
-					if (!virtual) {
-						int binderCount = ((null == binderIds) ? 0 : binderIds.size());
-						switch (binderCount) {
-						case 0:
-							virtual = true;
-							break;
-							
-						case 1:
-							Object binderO = binderIds.get(0);
-							if ((null != binderO) && (binderO instanceof String)) {
-								virtual = ("none".equalsIgnoreCase((String)binderO));
-							}
-							break;
-						}
+					Map retMap;
+					if ((!virtual) && filtered) {
+						// Yes!  Simply perform the search using that
+						// filter.
+						retMap = getBinderModule().executeSearchQuery(baseFilter, options);
+						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
 					}
-					if (virtual) {
-						modeType = ModeType.VIRTUAL;
-					}
+					
 					else {
-						modeType = ModeType.PHYSICAL;
-					}
-					Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
-					Map retMap = getBinderModule().executeSearchQuery(searchFilter, options);
-					entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
-					if (virtual) {
-						searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+						// No, the search is either for virtual event
+						// or not using a filter!  Is it a search for
+						// physical events?
+						if (!virtual) {
+							// Yes!  Is it really?  We'll consider it
+							// a search for virtual event if there
+							// aren't any binders to search through.
+							int binderCount = ((null == binderIds) ? 0 : binderIds.size());
+							switch (binderCount) {
+							case 0:
+								virtual = true;
+								break;
+								
+							case 1:
+								Object binderO = binderIds.get(0);
+								if ((null != binderO) && (binderO instanceof String)) {
+									virtual = ("none".equalsIgnoreCase((String)binderO));
+								}
+								break;
+							}
+						}
+
+						// Is it a search for virtual events using a
+						// defined filter?
+						if (virtual && filtered) {
+							// Yes!  Instead of searching the current
+							// binder, which the filter should have
+							// been setup for, we need to search the
+							// entire tree.  Adjust the filter
+							// accordingly.
+							Element foldersListFilterTerm = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']");
+							Element filterFolderId = (Element)baseFilter.getRootElement().selectSingleNode("//filterTerms/filterTerm[@filterType='foldersList']/filterFolderId");
+							if ((null != foldersListFilterTerm) && (null != filterFolderId)) {
+								foldersListFilterTerm.addAttribute("filterType", "ancestriesList");
+								filterFolderId.setText(String.valueOf(getWorkspaceModule().getTopWorkspace().getId()));
+							}
+						}
+
+						// Search for the events that are calendar
+						// entries.
+						ModeType modeType = (virtual ? ModeType.VIRTUAL : ModeType.PHYSICAL); 
+						Document searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.CALENDAR);
 						retMap = getBinderModule().executeSearchQuery(searchFilter, options);
-						List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
-						int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
-						if (0 < tasks) {
-							for (int i = 0; i < tasks; i += 1) {
-								entries.add(taskEntries.get(i));
+						entries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+						
+						// Are we searching for virtual events?
+						if (virtual) {
+							// Yes!  Search for the events that are
+							// task entries...
+							searchFilter = EventHelper.buildSearchFilterDoc(baseFilter, request, modeType, binderIds, binder, SearchUtils.AssigneeType.TASK);
+							retMap = getBinderModule().executeSearchQuery(searchFilter, options);
+							List taskEntries = (List) retMap.get(ObjectKeys.SEARCH_ENTRIES);
+							int tasks = ((null == taskEntries) ? 0 : taskEntries.size());
+							if (0 < tasks) {
+								// ...and add them to the calendar
+								// ...events we found above.
+								for (int i = 0; i < tasks; i += 1) {
+									entries.add(taskEntries.get(i));
+								}
 							}
 						}
 					}
+					
 				} else {
-					//a template
+					// A template.
 					entries = new ArrayList();
 				}
-				
-				model.putAll(EventsViewHelper.getEventsBeans(this, user.getId(), binderId, entries, calendarViewRangeDates, portletSession, false));
+
+				// If we get here, entries will now contain the
+				// requested events.
+				model.putAll(
+					EventsViewHelper.getEventsBeans(
+						this,
+						user.getId(),
+						binderId,
+						entries,
+						calendarViewRangeDates,
+						portletSession,
+						false));
 			}
+			
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);
 		}

@@ -501,6 +501,13 @@ public class EntityIndexUtils {
         }
     }
         
+    public static void addCreatedWithDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+        if (entry.getCreatedWithDefinitionId() != null) {
+        	Field field = new Field(CREATED_WITH_DEFINITION_FIELD, entry.getCreatedWithDefinitionId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(field);
+        }
+    }
+        
     public static void addEntryDefinitions(Document doc, DefinableEntity folder, boolean fieldsOnly) {
     	if (folder instanceof Folder) {
     		Folder f = (Folder)folder;
@@ -520,7 +527,7 @@ public class EntityIndexUtils {
         	org.dom4j.Document def = entry.getEntryDefDoc();
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
-      			Field eField = new Field(FAMILY_FIELD, family, Field.Store.NO, Field.Index.UN_TOKENIZED);
+      			Field eField = new Field(FAMILY_FIELD, family, Field.Store.YES, Field.Index.UN_TOKENIZED);
     	       	doc.add(eField);	
         	}
         }
@@ -1003,6 +1010,11 @@ public class EntityIndexUtils {
 
     public static void addBinderPath(Document doc, Binder binder, boolean fieldsOnly) {
 		Field path = new Field(ENTITY_PATH, binder.getPathName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		doc.add(path);
+    }
+
+    public static void addBinderIsLibrary(Document doc, Binder binder, boolean fieldsOnly) {
+		Field path = new Field(IS_LIBRARY_FIELD, (binder.isLibrary() ? Constants.TRUE : Constants.FALSE), Field.Store.YES, Field.Index.UN_TOKENIZED);
 		doc.add(path);
     }
 

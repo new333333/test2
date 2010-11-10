@@ -72,6 +72,7 @@
 						folderId="${ssBinder.id}" 
 							 action="view_ws_listing" ><ssf:param name="profile" value="0" /></ssf:url>',
 				imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+				jsPath : '<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
 				myWSUrl : '<ssf:url crawlable="true"
 					adapter="true" portletName="ss_forum"
 						folderId="${ssUser.workspaceId}" 
@@ -95,11 +96,11 @@
 	  <div class="ss_thumbnail_standalone ss_thumbnail_profile">
 		<div>
 			<a onclick="ss_showThisImage(this);return false;" href="javascript:;">
-				<c:if test="${empty ssDefinitionEntry.owner.customAttributes['picture']}">
+				<c:if test="${empty ssBinder.creation.principal.customAttributes['picture']}">
 					<img src="<html:imagesPath/>pics/UserPhoto.png" alt="${userTitle}" />
 	     		</c:if>
-				<c:if test="${!empty ssDefinitionEntry.owner.customAttributes['picture']}">
-				  <c:set var="selections" value="${ssDefinitionEntry.owner.customAttributes['picture'].value}" />
+				<c:if test="${!empty ssBinder.creation.principal.customAttributes['picture']}">
+				  <c:set var="selections" value="${ssBinder.creation.principal.customAttributes['picture'].value}" />
 				  <c:set var="pictureCount" value="0"/>
 				  <c:forEach var="selection" items="${selections}">
 				    <c:if test="${pictureCount == 0}">

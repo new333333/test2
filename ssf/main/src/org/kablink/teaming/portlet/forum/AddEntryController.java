@@ -111,6 +111,9 @@ public class AddEntryController extends SAbstractController {
 				fileMap = new HashMap();
 			}
 			
+			//Look for requests to create files
+			BinderHelper.processCreateFileRequests(this, request, fileMap);
+			
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				MapInputData inputData = new MapInputData(formData);
 				
