@@ -44,7 +44,7 @@
  <tbody>
   <tr><td align="left" width="1%" nowrap>
      <div class="ss_link_2">
-     	<span><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
+     	<span style="white-space:nowrap;"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
   	 </div>
 	</td>
 	<td align="left" width="93%">
@@ -93,17 +93,17 @@
 	 </div>
 	</td>
 	<td align="left" width="5%" nowrap>
-		<div class="ss_normal ss_actions_bar">
+		<div class="ss_link_2">
 			<c:if test="${ssConfigJspStyle != 'template'}">
 			  <a href="<ssf:url ><ssf:param 
 			  name="action" value="build_filter"/><ssf:param 
 			  name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
 			  title="<ssf:nlt tag="sidebar.tags.filterHover"/>"
-			  ><span><ssf:nlt tag="sidebar.tags.filter"/></span></a>
+			  ><span style="white-space:nowrap;"><ssf:nlt tag="sidebar.tags.filter"/></span></a>
 			</c:if>
 			<c:if test="${ssConfigJspStyle == 'template'}">
-			  <span><ssf:nlt tag="sidebar.tags.filter"/></span>
+			  <span style="white-space:nowrap;"><ssf:nlt tag="sidebar.tags.filter"/></span>
 			</c:if>
 		</div>
 	</td>
