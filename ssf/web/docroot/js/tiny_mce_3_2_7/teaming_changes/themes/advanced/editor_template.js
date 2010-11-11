@@ -1106,8 +1106,8 @@
 
 			ed.windowManager.open({
 				url : tinymce.baseURL + '/themes/advanced/link.htm',
-				width : 310 + parseInt(ed.getLang('advanced.link_delta_width', 0)),
-				height : 200 + parseInt(ed.getLang('advanced.link_delta_height', 0)),
+				width : 380 + parseInt(ed.getLang('advanced.link_delta_width', 0)),
+				height : 220 + parseInt(ed.getLang('advanced.link_delta_height', 0)),
 				inline : true
 			}, {
 				theme_url : this.url
