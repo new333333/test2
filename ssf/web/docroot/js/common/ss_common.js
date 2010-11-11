@@ -7273,7 +7273,7 @@ function ssEditAppConfig(menuDIV) {
 		eTD.appendChild(document.createTextNode(this.strings['sidebar.appConfig.Banner'] + this.NBSP2));
 		eA         = document.createElement("a");
 		eA.href    = "#";
-		eA.onclick = function(e) {ss_helpSystem.showHelp( 'http://www.novell.com/documentation/vibe3_on_premise/vibeprem3_user/data/trouble_editoroverrides.html' );return false;};
+		eA.onclick = function(e) {ss_helpSystem.showHelp( 'http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/trouble_editoroverrides.html' );return false;};
 		eIMG       = document.createElement("img");
  		eIMG.alt   =
  		eIMG.title = this.strings['sidebar.appConfig.Banner.Alt.Help'];
