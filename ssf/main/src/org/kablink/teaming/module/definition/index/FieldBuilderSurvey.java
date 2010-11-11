@@ -32,35 +32,71 @@
  */
 package org.kablink.teaming.module.definition.index;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.lucene.document.Field;
+import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.teaming.survey.Answer;
+import org.kablink.teaming.survey.Question;
+import org.kablink.teaming.survey.Survey;
+import org.kablink.teaming.survey.SurveyModel;
+import org.kablink.util.Html;
 
 public class FieldBuilderSurvey extends AbstractFieldBuilder {
     
     protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-    	return new Field[0];
+    	Object obj = getFirstElement(dataElemValue);
+    	if(obj instanceof Survey) {
+    		String fieldName = getSearchFieldName(dataElemName);
+        	List<String> textsToIndex = extractsTextsToIndex((Survey) obj);
+        	List<Field> fields = new ArrayList<Field>();
+    		for(String text : textsToIndex) {
+    			fields.add(new Field(fieldName, text, Field.Store.NO, Field.Index.ANALYZED));
+        		if(!isFieldsOnly(args))
+        			fields.add(BasicIndexUtils.allTextField(text));
+    		}
+    		Field[] fieldArray = new Field[fields.size()];
+    		return (Field[]) fields.toArray(fieldArray);
+    	}
+    	else {
+        	return new Field[0];    		
+    	}
     }
 
 	@Override
 	public String getSearchFieldName(String dataElemName) {
-		return null;
+		return dataElemName;
 	}
 
 	@Override
 	public String getSortFieldName(String dataElemName) {
-		return null;
+		return null; // This element does not support sorting.
 	}
 
 	@Override
 	public boolean isAnalyzed() {
-		return false;
+		return true;
 	}
 
 	@Override
 	public boolean isStored() {
 		return false;
+	}
+	
+	protected List<String> extractsTextsToIndex(Survey survey) {
+		List<String> texts = new ArrayList<String>();
+		SurveyModel sm = survey.getSurveyModel();
+		List<Question> questions = sm.getQuestions();
+		for(Question q : questions) {
+			texts.add(Html.stripHtml(q.getQuestion()).trim());
+			List<Answer> answers = q.getAnswers();
+			for(Answer a : answers)
+				texts.add(a.getText());
+		}
+		return texts;
 	}
 
 }

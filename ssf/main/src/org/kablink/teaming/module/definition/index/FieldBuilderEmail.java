@@ -40,6 +40,6 @@ import org.apache.lucene.document.Field;
 public class FieldBuilderEmail extends FieldBuilderGenericNotAnalyzed {
 	
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
-		return super.build(dataElemName, dataElemValue, args); // $$$$$$$$$$$$$ TODO
+		return super.build(dataElemName, dataElemValue, args);
 	}
 }
