@@ -204,16 +204,18 @@ public class ModifyAvatarDlg extends DlgBox implements NativePreviewHandler, Sub
 		if( profileRequestInfo.isBinderAdmin() || profileRequestInfo.isOwner() ) {
 		
 		final Anchor setDefaultAvatar = new Anchor();
+		setDefaultAvatar.setWidth("150px");
 		content.add(setDefaultAvatar);
 		setDefaultAvatar.addStyleName("qView-a");
 		setDefaultAvatar.addStyleName("qView-action");
-		setDefaultAvatar.setText("Set as default avatar");
+		setDefaultAvatar.setText(GwtTeaming.getMessages().profileSetDefaultAvatar());
 		
 		final Anchor removeAvatar = new Anchor();
+		removeAvatar.setWidth("150px");
 		content.add(removeAvatar);
 		removeAvatar.addStyleName("qView-a");
 		removeAvatar.addStyleName("qView-action");
-		removeAvatar.setText("Remove avatar");
+		removeAvatar.setText(GwtTeaming.getMessages().profileRemoveAvatar());
 		
 		setDefaultAvatar.addClickHandler(new ClickHandler(){
 			public void onClick(ClickEvent event) {

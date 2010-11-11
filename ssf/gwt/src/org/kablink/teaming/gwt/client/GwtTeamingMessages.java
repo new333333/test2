@@ -644,6 +644,8 @@ public interface GwtTeamingMessages extends Messages
 	String profileAboutMe();
 	String profileDataQuota();
 	String profileQuotaUsed();
+	String profileSetDefaultAvatar();
+	String profileRemoveAvatar();
 	
 	// Presence related strings
 	String presenceAvailable();
@@ -713,4 +715,5 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTeamRoot();
 	String hoverWorkspaceTop();
 	String hoverWorkspaceTrash();
+	
 }// end GwtTeamingMessages
