@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -60,6 +61,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -677,18 +679,14 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Returns s Binder from it's ID guarding against any exceptions.
-	 * If an exception is caught, null is returned.
+	 * Returns a Binder from it's ID guarding against any exceptions.
+	 * If an exception is caught, null is returned. 
 	 * 
 	 * @param bm
 	 * @param binderId
 	 * 
 	 * @return
 	 */
-	public static Binder getBinderSafely(BinderModule bm, String binderId) {
-		return getBinderSafely(bm, Long.parseLong(binderId));
-	}
-	
 	public static Binder getBinderSafely(BinderModule bm, Long binderId) {
 		Binder reply;
 		try {
@@ -704,8 +702,53 @@ public class GwtUIHelper {
 		return reply;
 	}
 	
+	public static Binder getBinderSafely(BinderModule bm, String binderId) {
+		// Always use the initial form of this method.
+		return getBinderSafely(bm, Long.parseLong(binderId));
+	}
+	
 	/**
-	 * Returns s FolderEntry from it's ID guarding against any
+	 * Returns a Binder from it's ID guarding against all but access
+	 * control and no binder exceptions.  If another exception is
+	 * caught, null is returned.
+	 * 
+	 * @param bm
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static Binder getBinderSafely2(BinderModule bm, Long binderId) throws AccessControlException, NoBinderByTheIdException {
+		Binder reply;
+		try {
+			reply = bm.getBinder(binderId);
+			if ((null != reply) && (reply.isDeleted() || isBinderPreDeleted(reply))) {
+				reply = null;
+			}
+		}
+		catch (Exception e) {
+			if (e instanceof AccessControlException) {
+				throw ((AccessControlException) e);
+			}
+			
+			else if (e instanceof NoBinderByTheIdException) {
+				throw ((NoBinderByTheIdException) e);
+			}
+			
+			else {
+				m_logger.debug("GwtUIHelper.getBinderSafely2(Binder could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+				reply = null;
+			}
+		}
+		return reply;
+	}
+	
+	public static Binder getBinderSafely2(BinderModule bm, String binderId) throws AccessControlException, NoBinderByTheIdException {
+		// Always use the initial form of this method.
+		return getBinderSafely2(bm, Long.parseLong(binderId));
+	}
+	
+	/**
+	 * Returns a FolderEntry from it's ID guarding against any
 	 * exceptions.  If an exception is caught, null is returned.
 	 * 
 	 * @param fm
@@ -742,6 +785,57 @@ public class GwtUIHelper {
 	public static FolderEntry getEntrySafely(FolderModule fm, String binderId, String entryId) {
 		// Always use the initial form of the method.
 		return getEntrySafely(fm, Long.parseLong(binderId), Long.parseLong(entryId));
+	}
+		
+	/**
+	 * Returns a FolderEntry from it's ID guarding against all but
+	 * access control and no binder exceptions.  If another exception
+	 * is caught, null is returned.
+	 * 
+	 * @param fm
+	 * @param binderId
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static FolderEntry getEntrySafely2(FolderModule fm, Long binderId, Long entryId) throws AccessControlException, NoBinderByTheIdException {
+		FolderEntry reply;
+		try {
+			reply = fm.getEntry(binderId, entryId);
+			if ((null != reply) && (reply.isDeleted() || reply.isPreDeleted())) {
+				reply = null;
+			}
+		}
+		catch (Exception e) {
+			if (e instanceof AccessControlException) {
+				throw ((AccessControlException) e);
+			}
+			
+			else if (e instanceof NoBinderByTheIdException) {
+				throw ((NoBinderByTheIdException) e);
+			}
+			
+			else {
+				m_logger.debug("GwtUIHelper.getEntrySafely2(FolderEntry could not be accessed - EXCEPTION:  " + e.getMessage() + ")");
+				reply = null;
+			}
+		}
+		return reply;
+	}
+	
+	public static FolderEntry getEntrySafely2(FolderModule fm, Long entryId) throws AccessControlException, NoBinderByTheIdException {
+		// Always use the initial form of the method.
+		return getEntrySafely2(fm, null, entryId);
+	}
+	
+	public static FolderEntry getEntrySafely2(FolderModule fm, String entryId) throws AccessControlException, NoBinderByTheIdException {
+		// Always use the initial form of the method.
+		return getEntrySafely2(fm, null, Long.parseLong(entryId));
+	}
+	
+	public static FolderEntry getEntrySafely2(FolderModule fm, String binderId, String entryId) throws AccessControlException, NoBinderByTheIdException {
+		// Always use the initial form of the method.
+		return getEntrySafely2(fm, Long.parseLong(binderId), Long.parseLong(entryId));
 	}
 		
 	/**
