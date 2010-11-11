@@ -107,6 +107,9 @@ public class GwtRpcController extends RemoteServiceServlet
         {
             RPCRequest	rpcRequest;
         	String results;
+        	
+        	//Run the data through the XSS checker
+        	payload = StringCheckUtil.check(payload);
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
