@@ -319,7 +319,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						return null;
 					} else {
 						entryId = targetEntryId.toString();
-						entity = GwtUIHelper.getEntrySafely(getFolderModule(), entryId);
+						entity = GwtUIHelper.getEntrySafely2(getFolderModule(), entryId);
 						String entityBinderId =
 							((null == entity)                      ?
 								GwtUIHelper.getTopWSIdSafely(this) :
@@ -334,7 +334,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						return null;
 					} else {
 						binderId = String.valueOf(targetBinderId);
-						entity = GwtUIHelper.getBinderSafely(getBinderModule(), binderId);
+						entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
 						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 						url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 					}
@@ -366,7 +366,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
 			if (targetBinderId != null) {
 				binderId = String.valueOf(targetBinderId);
-				entity = GwtUIHelper.getBinderSafely(getBinderModule(), binderId);
+				entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
 			}
 			if (null != entity) {
 				if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
