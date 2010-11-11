@@ -76,6 +76,13 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input);
 	}
 
+	public static String[] check(String[] input) throws StringCheckException {
+		String[] result = new String[input.length];
+		for(int i = 0; i < input.length; i++)
+			result[i] = getInstance().checkAll(input[i]);
+		return result;
+	}
+	
 	private String checkAll(String input) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
 			input = checkers[i].check(input);

@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.server;
 
-import java.util.Map;
-
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +42,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -81,17 +78,7 @@ public class GwtRpcController extends RemoteServiceServlet
     	HttpServletRequest request,
         HttpServletResponse response) throws Exception
     {
-		Map formData = request.getParameterMap();
-		Map newFormData = StringCheckUtil.check(formData);
-		HttpServletRequest newReq;
-		if(newFormData != formData) {
-			newReq = new ParamsWrappedHttpServletRequest(request, newFormData);
-		}
-		else {
-			newReq = request;
-		}
-
-        super.doPost( newReq, response );
+        super.doPost( request, response );
         
         return null;
     }// end handleRequest()
@@ -107,15 +94,16 @@ public class GwtRpcController extends RemoteServiceServlet
         {
             RPCRequest	rpcRequest;
         	String results;
-        	
-        	//Run the data through the XSS checker
-        	payload = StringCheckUtil.check(payload);
 
             rpcRequest = RPC.decodeRequest( payload, m_remoteServiceClass );
 
             // If the first parameter to the method is an
             // HttpRequestInfo object...
             Object[] parameters = rpcRequest.getParameters();
+            
+        	//Run the data through the XSS checker
+            parameters = performStringCheck(parameters);
+            
             if ( ( null != parameters ) && ( 0 < parameters.length ) && ( parameters[0] instanceof HttpRequestInfo ) )
             {
             	HttpServletRequest req;
@@ -206,4 +194,27 @@ public class GwtRpcController extends RemoteServiceServlet
     	m_logger.debug("GwtRpcController.doUnexpectedFailure(EXCEPTION):  ", t);
     	super.doUnexpectedFailure(t);
     }
+    
+    Object[] performStringCheck(Object[] input) {
+    	if(input == null)
+    		return null;
+    	else if(input.length == 0)
+    		return input;
+    	else {
+    		Object[] output = new Object[input.length];
+    		for(int i = 0; i < input.length; i++) {
+    			if(input[i] instanceof String) {
+    				output[i] = StringCheckUtil.check((String) input[i]); 
+    			}
+    			else if(input[i] instanceof String[]) {
+    				output[i] = StringCheckUtil.check((String[]) input[i]);     				
+    			}
+    			else {
+    				output[i] = input[i];
+    			}
+    		}
+    		return output;
+    	}
+    }
+    
 }// end GwtRpcController
