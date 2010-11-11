@@ -460,15 +460,15 @@ public class LoginFilter  implements Filter {
 	 * Look at the url in the request and determine if it should be converted to a permalink.
 	 * The url needs to be converted to a permalink if the action parameter equals
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
-	 * and the url does NOT have the parameter "url_created_by_teaming"
+	 * and the url does NOT have the parameter "vibeonprem"
 	 */
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
 		String action;
 		String param;
 		
-		// Does the url have the "url_created_by_teaming" parameter.
-		param = req.getParameter( "url_created_by_teaming" );
+		// Does the url have the "vibeonprem" parameter.
+		param = req.getParameter( WebUrlUtil.VIBEONPREM_URL_FLAG );
 		if ( param != null && param.length() > 0 )
 		{
 			// Yes, no need to convert it.
