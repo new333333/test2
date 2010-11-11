@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.server;
 
+import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
@@ -77,7 +81,17 @@ public class GwtRpcController extends RemoteServiceServlet
     	HttpServletRequest request,
         HttpServletResponse response) throws Exception
     {
-        super.doPost( request, response );
+		Map formData = request.getParameterMap();
+		Map newFormData = StringCheckUtil.check(formData);
+		HttpServletRequest newReq;
+		if(newFormData != formData) {
+			newReq = new ParamsWrappedHttpServletRequest(request, newFormData);
+		}
+		else {
+			newReq = request;
+		}
+
+        super.doPost( newReq, response );
         
         return null;
     }// end handleRequest()
