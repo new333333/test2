@@ -2279,6 +2279,23 @@ public class BinderHelper {
 				//The attachment wasn't found, so add this one
 				entry.addAttachment(fa);
 			}
+			//See if this file attachment already exists in the entity
+			itAtts = entity.getAttachments().iterator();
+			attFound = false;
+			while (itAtts.hasNext()) {
+				Attachment att = (Attachment)itAtts.next();
+				if (att instanceof FileAttachment) {
+					FileAttachment fAtt = (FileAttachment) att;
+					if (fa.getFileItem().getName().equals(fAtt.getFileItem().getName())) {
+						attFound = true;
+						break;
+					}
+				}
+			}
+			if (!attFound) {
+				//The attachment wasn't found, so mark it as non-existent
+				fa.setFileExists(false);
+			}
 		}
 		
 		//Build the title, description and all of the Custom Attributes 

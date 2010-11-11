@@ -66,29 +66,32 @@
      <tr><td valign="top" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
 	    <td valign="top" class="ss_att_meta" nowrap width="5%">
-	      <c:if test="${!empty ss_pseudoEntityRevert && !ss_isBinderMirroredFolder}">
+	      <c:if test="${selection.fileExists && !empty ss_pseudoEntityRevert && !ss_isBinderMirroredFolder}">
 	        <input type="checkbox" name="file_revert_${selection.id}" onChange="saveFileId(this);" checked />
 	      </c:if>
 	    </td>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <c:if test="${!ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && !ss_isBinderMirroredFolder}">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
           </c:if>
-          <c:if test="${ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && ss_isBinderMirroredFolder}">
             <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 			       src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+          </c:if>
+          <c:if test="${!selection.fileExists}">
+            <span class="ss_fineprint"><ssf:nlt tag="milestone.folder.deleted"/></span>
           </c:if>
 	    </div>
 		</td>
 		
 		<td valign="top" style="height:20px;" class="ss_att_title" width="30%">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <c:if test="${!ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && !ss_isBinderMirroredFolder}">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </c:if>
-          <c:if test="${ss_isBinderMirroredFolder}">
+          <c:if test="${!selection.fileExists || ss_isBinderMirroredFolder}">
             ${selection.fileItem.name}
           </c:if>
 		</td>

@@ -37,6 +37,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ss_attachedFile" type="org.kablink.teaming.domain.FileAttachment" scope="request"/>
+<c:if test="${ss_attachedFile.fileExists}">
 <c:set var="ss_divCounter" value="${ss_divCounter + 1}" scope="request" />
 <c:set var="ss_quotaMessage" value="" />
 <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
@@ -226,3 +227,4 @@
 		</c:if>
 
   </div>
+</c:if>
