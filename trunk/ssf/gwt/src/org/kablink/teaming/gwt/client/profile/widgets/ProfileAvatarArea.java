@@ -169,27 +169,39 @@ public class ProfileAvatarArea extends FlowPanel  {
 						int xOff = dlg.getOffsetWidth();
 						int yOff = dlg.getOffsetHeight();
 						
+						//is the dialog larger than 500px wide
 						if(xOff >  500) {
 							xOff = 500;
 							resize = true;
 						}
 						
+						//is the dialog larger than 600px high
 						if(yOff > 600) {
 							yOff = 600;
 							resize = true;
 						}
 						
+						//set the size of the dialog because the image is too large
 						if(resize) {
+							//set the size of the dialog
 							dlg.setSize(xOff+"px", yOff+"px");
+							//set the size of the panel that contains the photo, so that scroll bars will show
 							dlg.setPhotoPanelSize(xOff-30,yOff-120 );
 						}
 						
-						
+						//set the position to launch the new dialog
 						x = anchor.getAbsoluteLeft() + 60;
 						y = anchor.getAbsoluteTop() - dlg.getOffsetHeight() - 60;
 
+						//if the starting positions is half way into the page
+						//and if the dialog is going to be large than set the starting point to the left more
 						if(x > 300 && xOff > 499) {
 							x = 150;
+						}
+
+						//if the starting position is less than the size of the dialog then move down
+						if(y < 600 && yOff > 599) {
+							y = y + 60;
 						}
 						
 						dlg.setPopupPosition( x, y );
