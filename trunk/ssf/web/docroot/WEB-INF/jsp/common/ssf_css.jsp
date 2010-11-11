@@ -473,7 +473,6 @@ div.ss_entryContent a:hover {
   	color: #333;
 	font-family: ${ss_style_title_font_family};
   	font-size: 13px;
-	line-height: 17px;
   	padding: 5px;
     border-top: 1px solid #C4C4C4;
 	-moz-border-radius-bottomleft: 5px;
