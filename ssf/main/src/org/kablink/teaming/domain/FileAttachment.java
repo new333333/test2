@@ -68,6 +68,7 @@ public class FileAttachment extends Attachment {
     private Integer majorVersion;
     private Integer minorVersion;
     private Integer fileStatus = FileStatus.valueOf(FileStatus.not_set);
+    private boolean fileExists = true;
    
     public FileAttachment() {
         
@@ -107,6 +108,14 @@ public class FileAttachment extends Attachment {
 			}
 		}
 	};
+	
+	public boolean getFileExists() {
+		return this.fileExists;
+	}
+
+	public void setFileExists(boolean fileExists) {
+		this.fileExists = fileExists;
+	}
 
     /**
      * @hibernate.component

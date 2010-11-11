@@ -79,12 +79,15 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		<td rowspan="${thumbRowSpan}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_tiny"> 
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <c:if test="${!ss_pseudoEntity || !ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && (!ss_pseudoEntity || !ss_isBinderMirroredFolder)}">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_thumbnail.jsp" />
           </c:if>
-          <c:if test="${ss_pseudoEntity && ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && ss_pseudoEntity && ss_isBinderMirroredFolder}">
             <img border="0" <ssf:alt text="${selection.fileItem.name}"/> 
 			       src="<ssf:fileUrl webPath="readThumbnail" file="${selection}"/>"/>
+          </c:if>
+          <c:if test="${!selection.fileExists}">
+            <span class="ss_fineprint"><ssf:nlt tag="milestone.folder.deleted"/></span>
           </c:if>
 	    </div>
 		</td>
@@ -94,10 +97,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> white-space: normal; <% } %>
 		  ">
           <c:set var="ss_attachedFile" value="${selection}" scope="request" />
-          <c:if test="${!ss_pseudoEntity || !ss_isBinderMirroredFolder}">
+          <c:if test="${selection.fileExists && (!ss_pseudoEntity || !ss_isBinderMirroredFolder)}">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </c:if>
-          <c:if test="${ss_pseudoEntity && ss_isBinderMirroredFolder}">
+          <c:if test="${!selection.fileExists || (ss_pseudoEntity && ss_isBinderMirroredFolder)}">
             ${selection.fileItem.name}
           </c:if>
 		</td>

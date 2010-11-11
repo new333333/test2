@@ -92,10 +92,10 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
 		  <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
 		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
 		>
-		  <c:if test="${ss_isBinderMirroredFolder}">
+		  <c:if test="${ss_isBinderMirroredFolder || !selection.fileExists}">
 		    ${selection.fileItem.name}
 		  </c:if>
-		  <c:if test="${!ss_isBinderMirroredFolder}">
+		  <c:if test="${!ss_isBinderMirroredFolder && selection.fileExists}">
 		  <%
 			  if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 		  %>
