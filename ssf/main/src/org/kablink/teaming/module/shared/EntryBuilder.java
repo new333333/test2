@@ -125,9 +125,16 @@ public class EntryBuilder {
 			try {
 				Object currentVal = InvokeUtil.invokeGetter(target, attr);
 				if (currentVal != null) {
-					if (!currentVal.equals(val)) {
-						changed=true;
-						InvokeUtil.invokeSetter(target, attr, val);
+					if (currentVal instanceof String && val instanceof String[]) {
+						if (!currentVal.equals(((String[])val)[0])) {
+							changed=true;
+							InvokeUtil.invokeSetter(target, attr, ((String[])val)[0]);
+						}
+					} else {
+						if (!currentVal.equals(val)) {
+							changed=true;
+							InvokeUtil.invokeSetter(target, attr, val);
+						}
 					}
 				} else if (val != null) { //already know currentVal is null
 					if (!val.equals("")) { //oracle converts "" to null.  This results in lots of updates, especially when synching with portal
