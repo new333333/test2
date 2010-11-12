@@ -455,7 +455,7 @@ public class GwtMainPage extends Composite
 		else if ( GwtClientHelper.hasString( binderId ) ) contextBinderId = binderId;
 		else                                              contextBinderId = m_selectedBinderId;
 		
-		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<String>()
+		GwtTeaming.getRpcService().getBinderPermalink( HttpRequestInfo.createHttpRequestInfo(), contextBinderId, new AsyncCallback<String>()
 		{
 			public void onFailure( Throwable t )
 			{
