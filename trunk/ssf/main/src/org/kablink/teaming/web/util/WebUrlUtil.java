@@ -135,7 +135,7 @@ public class WebUrlUtil {
 	public static String getSimpleURLContextRootURL(HttpServletRequest req) {
 		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), false);
 		
-		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/teaming");
+		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/vibe");
 		
 		sb.append(ctx).append("/");
 		
@@ -153,7 +153,7 @@ public class WebUrlUtil {
 	public static String getSimpleURLContextRootURL(PortletRequest req) {
 		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), false);
 		
-		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/teaming");
+		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/vibe");
 		
 		sb.append(ctx).append("/");
 		

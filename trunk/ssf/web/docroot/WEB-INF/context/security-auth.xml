@@ -26,7 +26,7 @@
 	
     <bean id="_logoutFilter" class="org.kablink.teaming.spring.security.LogoutFilter" depends-on="sPropsUtil">
 		<s:custom-filter position="LOGOUT_FILTER"/>
-		<constructor-arg value="/redirect/teaming?user.logout=true"/>
+		<constructor-arg value="/redirect/vibe?user.logout=true"/>
 		<constructor-arg>
 			<list>
 				<bean class="org.springframework.security.ui.logout.SecurityContextLogoutHandler"/>
