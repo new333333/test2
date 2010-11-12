@@ -48,7 +48,7 @@ public class RedirectServlet extends HttpServlet {
 	throws ServletException, IOException {
 		String targetPath = req.getPathInfo();
 		if(targetPath == null || targetPath.equals(""))
-			targetPath = "teaming"; // Default target path
+			targetPath = "vibe"; // Default target path
 		else if(targetPath.startsWith("/"))
 			targetPath = targetPath.substring(1);
 		String root = WebUrlUtil.getSSFContextRootURL(req);
