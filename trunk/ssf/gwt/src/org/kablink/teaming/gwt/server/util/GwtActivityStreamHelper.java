@@ -317,7 +317,7 @@ public class GwtActivityStreamHelper {
 		}
 
 		// If we can't find any replies for this entry...
-		Criteria searchCriteria = SearchUtils.entryReplies(feId, GwtUIHelper.isModifyTopEntryOnReply());
+		Criteria searchCriteria = SearchUtils.entryReplies(feId, true);	// true -> All replies, at any level.
 		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, Integer.MAX_VALUE);
 		List     searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
@@ -465,8 +465,8 @@ public class GwtActivityStreamHelper {
 			request,
 			bs,
 			authorCache,
-			getSFromEM(em, (baseEntry ? Constants.CREATORID_FIELD     : Constants.MODIFICATIONID_FIELD)),
-			getSFromEM(em, (baseEntry ? Constants.CREATOR_TITLE_FIELD : Constants.MODIFICATION_TITLE_FIELD)));
+			getSFromEM(em, Constants.CREATORID_FIELD),
+			getSFromEM(em, Constants.CREATOR_TITLE_FIELD));
 		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
 		reply.setAuthorId(         authorInfo.m_authorId       );
 		reply.setAuthorName(       authorInfo.m_authorTitle    );
@@ -474,9 +474,7 @@ public class GwtActivityStreamHelper {
 		reply.setAuthorLogin(
 			getSFromEM(
 				em,
-				(baseEntry                       ?
-					Constants.CREATOR_NAME_FIELD :
-					Constants.MODIFICATION_NAME_FIELD)));
+				Constants.CREATOR_NAME_FIELD));
 
 		// Then the parent binder information.  Does the entry map
 		// contain the ID of the binder that contains the entry?
@@ -724,7 +722,7 @@ public class GwtActivityStreamHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static int getCommentCount(AllModulesInjected bs, String feId) {
-		Criteria searchCriteria = SearchUtils.entryReplies(feId);
+		Criteria searchCriteria = SearchUtils.entryReplies(feId, false);	// false -> Direct replies only.
 		Map      searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, 1);
 		int      totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		return totalRecords;
@@ -1361,7 +1359,8 @@ public class GwtActivityStreamHelper {
 			bs,
 			trackedPlacesAL,
 			trackedUsersAL,
-			GwtUIHelper.isModifyTopEntryOnReply());
+			true,	// true -> Entries only (no replies.)
+			Constants.LASTACTIVITY_FIELD);
 		Map  searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
 		List searchEntries  = ((List)    searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 		int  totalRecords   = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
