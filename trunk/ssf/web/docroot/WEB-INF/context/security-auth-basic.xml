@@ -23,7 +23,7 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
          
-    <s:http session-fixation-protection="newSession" realm="Teaming">
+    <s:http session-fixation-protection="newSession" realm="Vibe">
         <s:intercept-url pattern="/ws/**" filters="none" />
         <s:intercept-url pattern="/rss/**" filters="none" />
         <s:intercept-url pattern="/ical/**" filters="none" />
