@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.util.SZoneConfig;
@@ -211,6 +212,23 @@ public class GwtRpcController extends RemoteServiceServlet
     			}
     			else {
     				output[i] = input[i];
+    				
+    				if ( input[i] instanceof GwtBrandingData )
+    				{
+    					String html;
+    					GwtBrandingData brandingData;
+    					
+    					// Get the html used for the branding.
+    					brandingData = (GwtBrandingData) input[i];
+    					html = brandingData.getBranding();
+    					if ( html != null )
+    					{
+    						html = StringCheckUtil.check( html );
+    						brandingData.setBranding( html );
+    					}
+    					// Have this class check its data for possible xss attacks.
+    					//!!!((GwtXssCheck)input[i]).doXssCheck();
+    				}
     			}
     		}
     		return output;
