@@ -133,7 +133,7 @@ public class SearchUtils {
 	}
 	
 	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
-			List<String> trackedPeopleIds, boolean entriesOnly)
+			List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
 	{
 		String[] entryTypes;
 		if (entriesOnly)
@@ -143,7 +143,7 @@ public class SearchUtils {
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,entryTypes))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}));
-		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		crit.addOrder(Order.desc(searchDateField));
 		
 		Disjunction disjunction = disjunction();
 		if (!userWorkspaces.isEmpty()) disjunction.add(in(ENTRY_ANCESTRY, userWorkspaces));
@@ -157,7 +157,7 @@ public class SearchUtils {
 	public static Criteria entriesForTrackedPlacesAndPeople(AllModulesInjected bs, List userWorkspaces, 
 			List<String> trackedPeopleIds) {
 		// Always use the initial form of the method.
-		return entriesForTrackedPlacesAndPeople(bs, userWorkspaces, trackedPeopleIds, false);
+		return entriesForTrackedPlacesAndPeople(bs, userWorkspaces, trackedPeopleIds, false, MODIFICATION_DATE_FIELD);
 	}
 	
 	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces, String start, String end)

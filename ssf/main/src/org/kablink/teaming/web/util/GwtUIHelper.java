@@ -81,9 +81,9 @@ public class GwtUIHelper {
 	
 	// ssf*.properties settings that affect various aspects of the GWT
 	// based UI.
-	private final static boolean IS_ACTIVITY_STREAMS_ENABLED  = SPropsUtil.getBoolean("enable.activity.streams",   true);
-	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
-	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = SPropsUtil.getBoolean("modify.top.entry.on.reply", true);
+	private final static boolean IS_ACTIVITY_STREAMS_ENABLED  =           SPropsUtil.getBoolean("enable.activity.streams",   true );
+	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN =           SPropsUtil.getBoolean("activity.stream.on.login",  true );
+	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = false; // SPropsUtil.getBoolean("modify.top.entry.on.reply", false);
 	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
