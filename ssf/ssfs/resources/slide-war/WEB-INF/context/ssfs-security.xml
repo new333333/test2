@@ -6,6 +6,8 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
+    <!-- ============================== Basic authentication ============================ -->
+
 	<beans:bean id="_authenticationManager" class="org.kablink.teaming.asmodule.spring.security.config.TeamingAuthenticationManager">
 		<beans:property name="providerBeanNames">
 			<beans:list>
@@ -17,7 +19,7 @@
 
 	<beans:bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
 	
-    <http session-fixation-protection="newSession" realm="Teaming">
+    <http session-fixation-protection="newSession" realm="Vibe">
         <intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />
         <http-basic/>
     </http>
