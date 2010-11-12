@@ -170,7 +170,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						});
 					}
 					
-					else {
+					else if (GwtClientHelper.hasString(selectedBinderId)){
 						// No, we aren't starting in activity stream
 						// mode!  Render the tree.
 						m_treeDisplay.render(selectedBinderId, mainPanel);
