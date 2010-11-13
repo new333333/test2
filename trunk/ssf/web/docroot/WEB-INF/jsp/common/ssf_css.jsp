@@ -3387,7 +3387,6 @@ ul.ss_calendarNaviBar {
 	border: 1px solid #CCCCCC;
 	background-color: #AFC8E3;
 	list-style-type: none;
-	height: 34px;
 	padding: 0px;
 	margin: 0px 0px 5px 0px;
 	width: 100%;
@@ -3405,6 +3404,7 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_cal
 	float: left;
 	height: 30px;
 	line-height: 30px;
+	white-space: nowrap;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption {	
@@ -3459,6 +3459,7 @@ ul.ss_calendarNaviBar li.ss_calSelectDate {
 ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	border: 1px solid white; 
 	margin: 1px 0px 0px 1px;
+	white-space: nowrap;
 }
 
 .ss_hoursSelectorList li  {
