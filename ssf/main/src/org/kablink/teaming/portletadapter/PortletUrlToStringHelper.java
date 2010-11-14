@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.kablink.teaming.portletadapter.support.KeyNames;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
@@ -107,7 +108,14 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 					sb.append(Constants.SLASH);
 				else
 					sb.append(Constants.EQUAL);
-				sb.append(Http.encodeURL(values[i]));
+				String value = values[i];
+				if ((!(name.equals(WebKeys.URL_FILE_NAME))) || (0 <= value.indexOf(' '))) {
+					// Note:  This check is to stop
+					// PermaLinkUtil.getFilePermalink() from getting a
+					// double encoded filename.
+					value = Http.encodeURL(value);
+				}
+				sb.append(value);
 
 			}
 		}
