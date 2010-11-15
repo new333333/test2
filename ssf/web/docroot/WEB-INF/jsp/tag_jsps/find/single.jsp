@@ -47,6 +47,7 @@
 
 <input
 	type="text" 
+	autocomplete="off"
     class="ss_combobox_autocomplete"
     style="width: ${ssFindElementWidth}; white-space:nowrap; "
     name="${ssFindFormElement}" 
