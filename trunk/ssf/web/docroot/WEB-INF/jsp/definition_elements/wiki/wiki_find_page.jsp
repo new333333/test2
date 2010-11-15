@@ -60,7 +60,8 @@ function ss_loadWikiEntryId${renderResponse.namespace}(id) {
 	        name="ss_findWikiPageForm${renderResponse.namespace}"
 	        id="ss_findWikiPageForm${renderResponse.namespace}"
 	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
-					name="binderId" value="${ssBinder.id}"/></ssf:url>">
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
+					name="wiki_folder_list" value="true"/></ssf:url>">
          	 <span><ssf:nlt tag="wiki.findPage"/></span>
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
 		    formElement="searchTitle" 

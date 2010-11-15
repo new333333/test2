@@ -63,6 +63,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -277,6 +278,11 @@ public class SearchUtils {
    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.TITLE_FIELD);
    			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
    			child.setText((String) options.get(ObjectKeys.SEARCH_TITLE));
+   			//Make sure this string is tasted in case it is a double-byte language
+   			String lang = LanguageTaster.taste(((String)options.get(ObjectKeys.SEARCH_TITLE)).toCharArray());
+   			if (!lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
+   				rootElement.addAttribute(Constants.LANGUAGE_ATTRIBUTE, lang);
+
     	}
 
     	//See if there is an end date
