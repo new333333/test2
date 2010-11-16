@@ -173,6 +173,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
 	private FileStore cacheFileStore;
+	private String[] ooNonzerolengthExts;
 		
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -272,6 +273,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		
+		ooNonzerolengthExts = SPropsUtil.getStringArray("openoffice.nonzerolength.extensions", ",");
 		
 		initContentFilter();	
 	}
@@ -2133,12 +2136,27 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					// highest version may not necessarily agree between the application
 					// side and the repository side. Therefore it is important to check
 					// the returned version name against all versions.
-					Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
-							relativeFilePath, versionName));
-					updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null);
-					metadataDirty = true;
-	            	// add the size of the file to the users disk usage
-	            	incrementDiskSpaceUsed(fa);				
+					
+					// One more hack(?) - To work around the OpenOffice problem in Bug #651442,
+					// we add some additional checking here specific to OpenOffice to prevent
+					// extraneous and empty file version to be created in the system.
+					long size = session.getContentLengthVersioned(binder, entity, relativeFilePath, versionName);
+					if(size == 0 && 
+							session.getFactory().isVersionDeletionAllowed() &&
+							isNonzerolengthOpenOfficeFile(relativeFilePath)) {
+						logger.info("Deleting version [" + versionName + "] of file [" + relativeFilePath +
+								"] from repository [" + fa.getRepositoryName() + 
+								"] to prevent OO from errorneously creating zero-length file.");
+						session.deleteVersion(binder, entity, relativeFilePath, versionName);
+					}
+					else {
+						Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
+								relativeFilePath, versionName));
+						updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null);
+						metadataDirty = true;
+		            	// add the size of the file to the users disk usage
+		            	incrementDiskSpaceUsed(fa);								
+					}
 				}  
 			}
 		}
@@ -2147,6 +2165,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		return metadataDirty;
     }
+    
+    private boolean isNonzerolengthOpenOfficeFile(String fileName) {
+		fileName = fileName.toLowerCase();
+		for (String s : ooNonzerolengthExts)
+			if (fileName.endsWith(s))
+				return true;
+		return false;
+	}
     
     private void checkReservation(DefinableEntity entity) 
     	throws ReservedByAnotherUserException {
