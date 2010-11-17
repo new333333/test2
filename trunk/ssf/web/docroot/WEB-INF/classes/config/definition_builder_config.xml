@@ -3724,7 +3724,6 @@
 		</properties>
 		<options>
 			<option name="workflowEntryDataValue" />
-			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 		<help>ihelp.workflow.condition</help>
 	</item>
