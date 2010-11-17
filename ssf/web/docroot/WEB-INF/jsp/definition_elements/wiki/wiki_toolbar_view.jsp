@@ -97,14 +97,14 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 				</c:if>
 
 				<c:if test="${empty toolbarMenu.value.qualifiers.icon && empty toolbarMenu.value.qualifiers.iconclass}">
-					<span>${toolbarMenu.value.title}
+					<span>${toolbarMenu.value.title}</span>
 				</c:if>
 				
 				<c:if test="${!empty toolbarMenu.value.categories}">
 					<img border="0" style="padding-left: 2px;" title="<ssf:nlt tag="alt.showMenu"/>"
 					  <ssf:alt tag="alt.showMenu"/> align="absmiddle" src="<html:imagesPath/>pics/menu_arrow.png"/>
 				</c:if>
-					</span></a>
+				</a>
 			</c:when>
 
 			<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
@@ -143,67 +143,63 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 							(!empty toolbarMenuCategoryItem.value.qualifiers.folder && isWebdavSupported)}">
 
 							<li>
-								<c:choose><%--
-                        --%><c:when test="${!empty toolbarMenuCategoryItem.value.url}"><%--
-                            --%><a href="<c:out value="${toolbarMenuCategoryItem.value.url}"/>"<%--
-                        --%></c:when><%--
-                        --%><c:when test="${!empty toolbarMenuCategoryItem.value.urlParams}"><%--
-                            --%><a href="<%--
-                            --%><ssf:url><%--
-                            --%><c:forEach var="p" items="${toolbarMenuCategoryItem.value.urlParams}"><%--
-                                --%><c:set var="key" value="${p.key}"/><%--
-                                --%><c:set var="value" value="${p.value}"/><%--
-                                --%><ssf:param name="${key}" value="${value}" /><%--
-                            --%></c:forEach><%--
-                            --%></ssf:url>"<%--
-                        --%></c:when><%--
-                    --%></c:choose><%--
-                    --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.folder}"><%--
-                        --%><%
-	                      	if (BrowserSniffer.is_ie(request)) {
-    	                    %><%--
-        	                --%> style="behavior: url(#default#AnchorClick);"<%--
-	                    --%><%
-    	               		}
-	                        %><%--
-                        --%> folder="${toolbarMenuCategoryItem.value.qualifiers.folder}"<%--
-                        --%> target="_blank"<%--
-                    --%></c:if><%--
+							  <a
+								<c:choose>
+                        			<c:when test="${!empty toolbarMenuCategoryItem.value.url}">
+                            			href="<c:out value="${toolbarMenuCategoryItem.value.url}"/>"
+                        			</c:when>
+                        			<c:when test="${!empty toolbarMenuCategoryItem.value.urlParams}">
+                            			href="<ssf:url>
+					                            <c:forEach var="p" items="${toolbarMenuCategoryItem.value.urlParams}">
+					                                <c:set var="key" value="${p.key}"/>
+					                                <c:set var="value" value="${p.value}"/>
+					                                <ssf:param name="${key}" value="${value}" />
+					                            </c:forEach>
+                            				</ssf:url>"
+                        			</c:when>
+                    			</c:choose>
+                    			<c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.folder}">
+			                        <%
+				                      	if (BrowserSniffer.is_ie(request)) {
+			    	                %> 
+			    	                		style="behavior: url(#default#AnchorClick);"
+				                    <%
+			    	               		}
+				                    %>
+			                        folder="${toolbarMenuCategoryItem.value.qualifiers.folder}"
+			                        target="_blank"
+                    			</c:if>
 
-                    --%><c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
-                        --%> onclick="${spin} return ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}');"><%--
-                   --%></c:if><%--
+			                    <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
+			                         onclick="${spin} return ss_openUrlInPortlet(this.href, ${popup}, '${popupWidth}', '${popupHeight}');"
+			                    </c:if>
 
-                    --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
-                       --%> onclick="${spin} ${toolbarMenuCategoryItem.value.qualifiers.onClick}"><%--
-                    --%></c:if><%--
-                
-                    --%><span<%--
-                    
-                    --%><c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}"><%--
-                        --%> id="${toolbarMenuCategoryItem.value.qualifiers.textId}"<%--
-                    --%></c:if><%--
-                    --%><c:if test="${toolbarMenuCategoryItem.value.qualifiers.selected}"><%--
-                        --%> class="ss_bold ss_selected"<%--
-                    --%></c:if><%--
-                    --%>><c:out value="${toolbarMenuCategoryItem.key}" /><%--
-                    --%></span><%--
-                    --%></a><%--
-                    --%></li><%--
-                    --%><c:set var="toolbarCategoryItemSeen" value="true"/><%--
-                --%></c:if><%--
-            --%></c:forEach><%--
-        --%></c:forEach>
+			                    <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
+			                        onclick="${spin} ${toolbarMenuCategoryItem.value.qualifiers.onClick}"
+			                    </c:if>
+			                  >
+                    		  <span
+                    			<c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}">
+                        			id="${toolbarMenuCategoryItem.value.qualifiers.textId}"
+                    			</c:if>
+                    			<c:if test="${toolbarMenuCategoryItem.value.qualifiers.selected}">
+                        			class="ss_bold ss_selected"
+                    			</c:if>
+                    		  ><c:out value="${toolbarMenuCategoryItem.key}" /></span>
+                    		  </a>
+                    		</li>
+                    		<c:set var="toolbarCategoryItemSeen" value="true"/>
+                		</c:if>
+            		</c:forEach>
+        		</c:forEach>
 			</ul>
-		</div><%--
-
-        --%><%
+		</div>
+		<%
 		 	nameCount = new Integer(nameCount.intValue() + 1);
 			renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intValue()));
 			menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
-	  		%><%--
-        --%></li>
-
+	    %>
+		</span>
 		</c:if>
 
 		<c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
@@ -264,7 +260,7 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 									<c:set var="popupHeight" value="${toolbarMenu.value.qualifiers.popupHeight}"/>
 									onclick="ss_toolbarPopupUrl(this.href, '_blank', '${popupWidth}', '${popupHeight}');return false;"
 								</c:if>
-								<c:if test="${!empty spin and empty toolbarMenu.value.qualifiers.popup}">
+								<c:if test="${!empty spin && empty toolbarMenu.value.qualifiers.popup}">
 									onclick="${spin}"
 								</c:if>
 							</c:if>
@@ -298,7 +294,6 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 							</c:if>
 						</span>
 						</a>
-					</span>
 				</c:if>
 			</c:when>
 
@@ -306,7 +301,8 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 				<c:if test="${empty toolbarMenu.value.qualifiers.folder || 
                 		(!empty toolbarMenu.value.qualifiers.folder && isWebdavSupported)}">
 					<span class="ss_smallprint">
-						<a class="action-anchor roundcornerSM" href="<ssf:url><%--
+						<a class="action-anchor roundcornerSM" 
+						   href="<ssf:url><%--
 	                  		 	--%><c:forEach var="p2" items="${toolbarMenu.value.urlParams}"><%--
 	                      			--%><c:set var="key2" value="${p2.key}"/><%--
 	                       			--%><c:set var="value2" value="${p2.value}"/><%--
