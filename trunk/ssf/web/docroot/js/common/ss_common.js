@@ -4368,7 +4368,7 @@ function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, str
 }
 
 function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
-	self.location.reload();
+	self.location.href = self.location.href;
 	return;
 }
 
