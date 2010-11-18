@@ -51,6 +51,7 @@
 			activityStreamsEnabled : ${activityStreamsEnabled},
 			showWhatsNewOnLogin : ${showWhatsNew},
 			binderId : '${binderId}',
+			currentUserWorkspaceId : '${ssUser.workspaceId}',
 			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
 			userId : '${ssUser.id}',
 			userLoginId : '${ssUser.name}',
