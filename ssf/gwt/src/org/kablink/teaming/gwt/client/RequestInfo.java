@@ -63,6 +63,12 @@ public class RequestInfo extends JavaScriptObject
 	
 	
 	/**
+	 * Return the get the current user's workspaceId
+	 */
+	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
+	
+	
+	/**
 	 * Return the url for the css used with the tinyMCE editor.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
