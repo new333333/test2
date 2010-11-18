@@ -154,6 +154,12 @@ public class GwtMainPage extends Composite
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
 		m_selectedBinderId = m_requestInfo.getBinderId();
+		if (!(GwtClientHelper.hasString(m_selectedBinderId))) {
+			m_selectedBinderId = m_requestInfo.getCurrentUserWorkspaceId();
+			if (!(GwtClientHelper.hasString(m_selectedBinderId))) {
+				m_selectedBinderId = m_requestInfo.getTopWSId();
+			}
+		}
 		m_novellTeaming = m_requestInfo.isNovellTeaming();
 		
 		// Add the MastHead to the page.
