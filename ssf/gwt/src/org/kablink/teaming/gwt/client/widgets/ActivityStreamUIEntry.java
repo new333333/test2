@@ -550,6 +550,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			presenceCtrl.addStyleName( "displayInline" );
 			presenceCtrl.addStyleName( "verticalAlignTop" );
 			presenceCtrl.setAnchorStyleName( "cursorPointer" );
+			m_presencePanel.clear();	// Fixes bug 650204.
 			m_presencePanel.add( presenceCtrl );
 		}
 		
