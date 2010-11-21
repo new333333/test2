@@ -232,4 +232,14 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.module.report.ReportModule#getDeletedFolderEntryIds(long[], java.util.Date, java.util.Date)
+	 */
+	@Override
+	public List<Long> getDeletedFolderEntryIds(long[] folderIds,
+			Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -1597,6 +1597,28 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return ids;
 	}
 
+	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final Date startDate, final Date endDate) {
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+                                                          .add(Projections.property("entityId"))))
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
+				.add(Restrictions.eq("transactionType", AuditType.delete.name()))
+				.add(Restrictions.ge("startDate", startDate))
+				.add(Restrictions.lt("startDate", endDate));
+				if(folderIds != null && folderIds.length > 0) {
+					Long[] fIds = new Long[folderIds.length];
+					for(int i = 0; i < fIds.length; i++)
+						fIds[i] = Long.valueOf(folderIds[i]);
+					crit.add(Restrictions.in("owningBinderId", fIds));
+				}
+				return crit.list();
+			}});
+		return ids;
+	}
+
 }
 
 class TimeInterval
