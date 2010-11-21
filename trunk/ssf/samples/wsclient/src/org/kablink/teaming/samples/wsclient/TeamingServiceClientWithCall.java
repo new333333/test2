@@ -250,6 +250,14 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
 				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntries", 
 						new Object[] {null, args[1], sdf.parse(args[2]), sdf.parse(args[3])});
+			} else if(args[0].equals("getDeletedEntriesInFolders")) {
+				String[] sIds = split(args[1]);
+				long[] ids = new long[sIds.length];
+				for(int i = 0; i < sIds.length; i++)
+					ids[i] = Long.parseLong(sIds[i]);
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmm");
+				wsClient.fetchAndPrintPrimitiveArray("TeamingServiceV1", "folder_getDeletedEntriesInFolders", 
+						new Object[] {null, ids, sdf.parse(args[2]), sdf.parse(args[3])});
 			} else if(args[0].equals("getCurrentServerTime")) {
 				wsClient.fetchAndPrintCalendar("TeamingServiceV1", "admin_getCurrentServerTime", new Object[] {null});
 			} else if(args[0].equals("testFolderOperation")) {
@@ -290,6 +298,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getFolderEntries <folder id> <first> <max>"); 
 		System.out.println("getCreatedOrUpdatedEntries <family> <startDateTime - yyyyMMddHHmm> <endDateTime - yyyyMMddHHmm>"); 
 		System.out.println("getDeletedEntries <family> <startDateTime (yyyyMMddHHmm)> <endDateTime (yyyyMMddHHmm)>"); 
+		System.out.println("getDeletedEntriesInFolders <comma separated folder ids> <startDateTime (yyyyMMddHHmm)> <endDateTime (yyyyMMddHHmm)>"); 
 		System.out.println("getTeamMembers <binder id> <explodeGroups> <first> <max>");
 		System.out.println("getTeams");
 		System.out.println("getUserTeams <user id>");
