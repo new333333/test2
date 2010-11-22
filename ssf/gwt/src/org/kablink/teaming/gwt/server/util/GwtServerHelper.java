@@ -1190,6 +1190,21 @@ public class GwtServerHelper {
 				// Add this action to the "reports" category
 				reportsCategory.addAdminOption( adminAction );
 			}
+			
+			// Add a "XSS report"
+			{
+				title = NLT.get( "administration.report.title.xss", "XSS Report" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_XSS_REPORT  );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_XSS );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
 		}
 
 		// Add reports that everyone can run.

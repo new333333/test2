@@ -60,6 +60,7 @@
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
 	<bean id="activityReportByUserController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportByUserController" />
 	<bean id="userAccessReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.UserAccessReportController" />
+	<bean id="xssReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.XssReportController" />
 	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.CreditsController" />
@@ -182,6 +183,7 @@
 						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
 						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>
 						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
+						<entry key="xss_report"><ref bean="xssReportController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
 						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>

@@ -152,6 +152,7 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateExceededHighWaterDiskQuotaReport();
 	public List<Map<String, Object>> generateUserDiskUsageReport(UserQuotaOption option);
 	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
+	public List<Map<String, Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, final String reportType);
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public List<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);

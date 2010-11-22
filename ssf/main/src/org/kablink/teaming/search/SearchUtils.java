@@ -385,6 +385,23 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria entitiesByDateAndAncestor(List binderIds, Date startDate, Date endDate)
+	{
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {ENTRY_TYPE_ENTRY, ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {DOC_TYPE_BINDER, DOC_TYPE_ENTRY}));
+		if (!binderIds.isEmpty()) {
+			crit.add(in(ENTRY_ANCESTRY, binderIds));
+		}
+		if (startDate != null && endDate != null && !binderIds.isEmpty()) {
+			String s_toDate = DateTools.dateToString(endDate, DateTools.Resolution.SECOND);
+			String s_fromDate = DateTools.dateToString(startDate, DateTools.Resolution.SECOND);
+			crit.add(between(MODIFICATION_DATE_FIELD, s_fromDate, s_toDate));
+		}
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
     public static String getIndexName() {
     	// We use zone key as the index name
     	return org.kablink.teaming.util.Utils.getZoneKey();
