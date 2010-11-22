@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -1020,6 +1021,39 @@ public class GwtUIHelper {
 
 	}
 
+	/**
+	 * Checks the session for the session captive (i.e., running under
+	 * GroupWise) state.  If a value is stored, it's returned.  If a
+	 * value is not stored, any captive flag in the request is used to
+	 * generate one and that's stored in the session and returned.
+	 * 
+	 * @param pRequest
+	 * 
+	 * @return
+	 */
+	public static boolean isSessionCaptive(PortletRequest pRequest) {
+		// Do we have access to the session?
+		boolean reply = false;
+		PortletSession session = WebHelper.getRequiredPortletSession(pRequest);;
+		if (null != session) {
+			// Yes!  Do we have a session captive flag stored?
+			String captive;
+			Boolean isCaptive = ((Boolean) session.getAttribute(WebKeys.SESSION_CAPTIVE));
+			if (null == isCaptive) {
+				// No!  Store a session captive flag based on there
+				// being a 'captive=true' setting in the request.
+				captive = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_CAPTIVE, "false");
+				isCaptive = ((MiscUtil.hasString(captive) && "true".equalsIgnoreCase(captive)) ? Boolean.TRUE : Boolean.FALSE);
+				session.setAttribute(WebKeys.SESSION_CAPTIVE, isCaptive);
+			}
+			reply = isCaptive.booleanValue();			
+		}
+		
+		// If we get here, reply is true if we're in session captive
+		// mode and false otherwise.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns true if we're supposed to change the top entry's
 	 * modification time when a reply is posted or modified and false
