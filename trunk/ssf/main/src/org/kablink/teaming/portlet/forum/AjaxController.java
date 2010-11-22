@@ -536,6 +536,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			// Get a user access report.
 			return ajaxGetUserAccessReport( request, response );
 		}
+		else if ( op.equals( WebKeys.OPERATION_GET_XSS_REPORT ) )
+		{
+			// Get a user access report.
+			return ajaxGetXssReport( request, response );
+		}
 		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE)     ||
 				   op.equals(WebKeys.OPERATION_TRASH_PURGE_ALL) ||
 				   op.equals(WebKeys.OPERATION_TRASH_RESTORE)   ||
@@ -853,6 +858,33 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		// Get a report of what items the given user has access to.
         report = getReportModule().generateAccessReportByUser( userId, null, null, "summary" );
+
+        // Add the access report to the response.
+        model.put( "userAccessReport", report );
+
+		response.setContentType( "text/json" );
+		return new ModelAndView("forum/json/user_access_report", model);
+	}// end ajaxGetUserAccessReport()
+
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxGetXssReport( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map		model;
+		String	userIdStr;
+		Long	userId;
+		List<Map<String, Object>> report = null;
+		
+		model = new HashMap();
+		
+		// Get a report of what items the given user has access to.
+		List binderIds = new ArrayList();
+		binderIds.add(getWorkspaceModule().getTopWorkspace());
+        report = getReportModule().generateXssReport( binderIds, null, null, "summary" );
 
         // Add the access report to the response.
         model.put( "userAccessReport", report );

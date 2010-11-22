@@ -296,6 +296,7 @@ public class WebKeys {
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_BINDER_REPORTS = "binder_reports";
     public static final String ACTION_USER_ACCESS_REPORT = "user_access_report";
+    public static final String ACTION_XSS_REPORT = "xss_report";
     public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
     public static final String ACTION_MOBILE_AJAX = "__ajax_mobile";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
@@ -542,6 +543,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_GET_LDAP_SYNC_RESULTS = "getLdapSyncResults";
 	public static final String OPERATION_GET_USER_ACCESS_REPORT = "getUserAccessReport";
+	public static final String OPERATION_GET_XSS_REPORT = "getXssReport";
 	public static final String OPERATION_REMOVE_LDAP_SYNC_RESULTS = "removeLdapSyncResults";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_SHOW_NO_ENTRIES = "show_no_entries";
@@ -1498,6 +1500,7 @@ public class WebKeys {
     public static final String VIEW_TEMPLATE="administration/configureConfiguration";
     public static final String VIEW_TOOLBAR="toolbar/view";
     public static final String VIEW_USER_ACCESS_REPORT = "administration/user_access_report";
+    public static final String VIEW_XSS_REPORT = "administration/xss_report";
     public static final String VIEW_WIKI="wiki/view";
     public static final String VIEW_WIKI_EDIT="wiki/edit";
     public static final String VIEW_WORKAREA="forum/view_workarea";

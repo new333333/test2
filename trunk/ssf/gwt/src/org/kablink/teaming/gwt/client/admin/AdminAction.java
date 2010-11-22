@@ -72,6 +72,7 @@ public enum AdminAction implements IsSerializable
 	REPORT_LICENSE( "Report: license" ),
 	REPORT_LOGIN( "Report: login" ),
 	REPORT_USER_ACCESS( "Report: user access" ),
+	REPORT_XSS( "Report: xss" ),
 	REPORT_VIEW_CHANGELOG( "Report: view change log" ),
 	REPORT_VIEW_CREDITS( "Report: view credits" ),
 	REPORT_VIEW_SYSTEM_ERROR_LOG( "Report: view system error log" ),
