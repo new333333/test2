@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app PUBLIC
+	"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+	"http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+	<display-name>Sample Remote Application</display-name>
+
+	<description>Sample Remote Application</description>
+	
+	<servlet>
+		<servlet-name>nameSearch</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.NameSearchServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>nameSearch</servlet-name>
+		<url-pattern>/namesearch/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>taskList</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.TaskListServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>taskList</servlet-name>
+		<url-pattern>/tasklist/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>addEntry</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.AddEntryServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>addEntry</servlet-name>
+		<url-pattern>/addentry/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>wsTester</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.WSTesterServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>wsTester</servlet-name>
+		<url-pattern>/wstester/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>twitter</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.TwitterServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>twitter</servlet-name>
+		<url-pattern>/twitter/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>googleWave</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.GoogleWaveServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>googleWave</servlet-name>
+		<url-pattern>/googleWave/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>helloWorld</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.HelloWorldServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>helloWorld</servlet-name>
+		<url-pattern>/helloWorld/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>viewTextFile</servlet-name>
+		<servlet-class>org.kablink.teaming.samples.remoteapp.web.ViewTextFileServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+		<init-param>
+			<param-name>filePath</param-name>
+			<param-value>C:/junk/ChineseHello.txt</param-value>
+		</init-param>
+		<init-param>
+			<param-name>charset</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>viewTextFile</servlet-name>
+		<url-pattern>/viewtextfile/*</url-pattern>
+	</servlet-mapping>
+
+	<taglib>
+		<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
+		<taglib-location>/WEB-INF/tags/c.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://java.sun.com/jsp/jstl/fmt</taglib-uri>
+		<taglib-location>/WEB-INF/tags/fmt.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://java.sun.com/jsp/jstl/functions</taglib-uri>
+		<taglib-location>/WEB-INF/tags/fn.tld</taglib-location>
+	</taglib>
+
+</web-app>

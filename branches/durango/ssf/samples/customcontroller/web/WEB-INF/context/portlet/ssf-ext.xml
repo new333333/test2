@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../../dtd/spring-beans.dtd">
+<beans>
+	<!-- The following bean definition for "portletModeParameterHandlerMapping" is copied 
+	     from ssf.xml. It must be copied in its entirety exactly as is. Then, append to it
+	     the mapping(s) for the custom controller as shown below (specifically, the line 
+	     that maps "custom_action" to "customController"). -->
+	
+	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
+			<property name="portletModeParameterMap">
+			<map>
+				<entry key="view">
+					<map>
+						<entry key="build_filter"><ref bean="filterController"/></entry>
+						<entry key="close_window"><ref bean="closeWindowController"/></entry>
+						<entry key="applet_response"><ref bean="appletResponseController"/></entry>
+						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
+						<entry key="configure_definitions"><ref bean="configureController"/></entry>
+						<entry key="definition_builder"><ref bean="definitionController"/></entry>
+						<entry key="viewDefinitionXml"><ref bean="definitionBuilderXmlController"/></entry>
+						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
+						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
+						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
+						<entry key="view_binder_in_parent"><ref bean="viewBinderInParentController"/></entry>
+						<entry key="reload_opener_parent"><ref bean="reloadOpenerController"/></entry>
+						<entry key="reload_previous_page"><ref bean="reloadPreviousPageController"/></entry>
+						<entry key="advanced_search"><ref bean="advancedSearchController"/></entry>
+						<entry key="clipboard"><ref bean="clipboardController"/></entry>
+												
+						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
+						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
+						
+						<entry key="add_folder_attachment"><ref bean="folderAddEntryController"/></entry>
+						
+						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
+						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
+						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="add_entry_attachment"><ref bean="addAttachmentEntryController"/></entry>
+						<entry key="lock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="unlock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="start_workflow"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="stop_workflow"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
+						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
+						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
+						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
+						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
+						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>
+						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
+						<entry key="config_email"><ref bean="emailConfigController"/></entry>
+						<entry key="send_email"><ref bean="sendEmailController"/></entry>
+						<entry key="add_meeting"><ref bean="meetingController"/></entry>					
+						<entry key="add_team_member"><ref bean="teamController"/></entry>					
+						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
+						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
+						<entry key="view_workflow_history"><ref bean="entryWorkflowHistoryController"/></entry>						
+						<entry key="view_credits"><ref bean="creditsController"/></entry>
+						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
+						<entry key="play_tutorial"><ref bean="playTutorialController"/></entry>
+
+						<!-- Keys starting with "__" can handle the user not being logged in -->
+						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>
+						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
+						<entry key="__ajax_dashboard"><ref bean="dashboardAjaxController"/></entry>
+						<entry key="__ajax_find"><ref bean="typeToFindAjaxController"/></entry>
+						<entry key="__ajax_mobile"><ref bean="mobileAjaxController"/></entry>
+						<entry key="__ajax_relevance"><ref bean="relevanceAjaxController"/></entry>
+						<entry key="__login"><ref bean="loginController"/></entry>
+
+						<entry key="site_administration"><ref bean="siteAdministrationController"/></entry>
+						<entry key="import_definition"><ref bean="importDefinitionController"/></entry>
+						<entry key="import_profiles"><ref bean="importProfilesController"/></entry>
+						<entry key="import_templates"><ref bean="importTemplatesController"/></entry>
+						<entry key="login_report"><ref bean="loginReportController"/></entry>
+						<entry key="license_report"><ref bean="licenseReportController"/></entry>
+						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
+						<entry key="activity_report"><ref bean="activityReportController"/></entry>
+						<entry key="activity_report_by_user"><ref bean="activityReportByUserController"/></entry>
+						<entry key="quota_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>
+						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
+						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
+						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
+						<entry key="workflow_report"><ref bean="workflowReportController"/></entry>
+						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
+						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
+						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
+						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
+						<entry key="configure_search_nodes"><ref bean="adminConfigureSearchNodesController"/></entry>
+						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
+						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
+						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
+						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
+						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
+						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
+						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>
+						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
+						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
+
+						<!-- Custom URL mappings start here -->
+						<entry key="custom_action"><ref bean="customController"/></entry>
+
+					</map>
+				</entry>
+				<entry key="edit">
+					<map>
+					</map>
+				</entry>
+				<entry key="help">
+					<map>
+					</map>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<!-- Custom Controllers -->
+	<bean id="customController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.samples.customcontroller.CustomController" />
+</beans>
