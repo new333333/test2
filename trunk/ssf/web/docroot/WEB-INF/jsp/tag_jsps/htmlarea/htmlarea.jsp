@@ -54,6 +54,9 @@
         --%><c:when test="${ssDefinitionEntry.entityType == 'folderEntry'}"><%--
             --%><c:set var="wikiLinkBinderId" value="${ssDefinitionEntry.parentFolder.id}" scope="request" /><%--
         --%></c:when><%--
+        --%><c:when test="${ssDefinitionEntry.entityType == 'user'}"><%--
+            --%><c:set var="wikiLinkBinderId" value="${ssDefinitionEntry.workspaceId}" scope="request" /><%--
+        --%></c:when><%--
         --%><c:otherwise><%--
             --%><c:set var="wikiLinkBinderId" value="${ssDefinitionEntry.id}" scope="request" /><%--
         --%></c:otherwise><%--
