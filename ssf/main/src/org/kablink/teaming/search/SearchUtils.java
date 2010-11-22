@@ -89,7 +89,7 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entryReplies(String entryId, boolean topEntryReplies)
+	public static Criteria entryReplies(String[] entryIds, boolean topEntryReplies)
 	{
 		String entryReplyType;
 		if (topEntryReplies)
@@ -98,15 +98,27 @@ public class SearchUtils {
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
-			.add(in(entryReplyType,new String[] {entryId}));
+			.add(in(entryReplyType, entryIds));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
+	}
+	
+	public static Criteria entryReplies(String entryId, boolean topEntryReplies)
+	{
+		// Always use the initial form of the method.
+		return entryReplies(new String[]{entryId}, topEntryReplies);
+	}
+	
+	public static Criteria entryReplies(String[] entryIds)
+	{
+		// Always use the initial form of the method.
+		return entryReplies(entryIds, false);
 	}
 	
 	public static Criteria entryReplies(String entryId)
 	{
 		// Always use the initial form of the method.
-		return entryReplies(entryId, false);
+		return entryReplies(new String[]{entryId}, false);
 	}
 	
 	public static Criteria entries(List<Long> entryIds)
