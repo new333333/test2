@@ -122,7 +122,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Command cmd = null;
-		boolean beta = true;
+		boolean beta = false;
 		
         m_requestInfo = requestInfo;
         m_mastheadBinderId = m_requestInfo.getBinderId();
