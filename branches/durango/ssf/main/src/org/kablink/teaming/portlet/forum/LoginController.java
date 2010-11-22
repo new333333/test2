@@ -83,6 +83,7 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		boolean sessionCaptive = GwtUIHelper.isSessionCaptive(request);
 
 		// This controller is used to display the sign-in form used for login. 
 		// If form-based login is disallowed, this controller shouldn't display
@@ -151,9 +152,11 @@ public class LoginController  extends SAbstractControllerRetry {
 			String isNovellTeaming;
 			String productName;
 		   
-			// Put out a true/false indicator for the RequestInfo
-			// object as to the state of the new activity streams based
-			// user interface.
+			// Put out information for the RequestInfo object.
+			model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(sessionCaptive));
+			
+			// Put out a true/false indicator as to the state of the
+			// new activity streams based user interface.
 			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
 			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
 			if (isASEnabled) {
