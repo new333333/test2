@@ -340,8 +340,10 @@ public class ViewPermalinkController  extends SAbstractController {
 					}
 				}
 				
+				@SuppressWarnings("unused")
 				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 				User user = RequestContextHolder.getRequestContext().getUser();
+				@SuppressWarnings("unused")
 				String displayStyle = user.getDisplayStyle();
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 				url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
@@ -524,7 +526,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
-		
+
 		if ( response instanceof PortletResponseImpl )
 		{
 			HttpServletResponse httpServletResponse;
@@ -536,6 +538,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			httpServletResponse.setDateHeader( "Expires", 0 );
 		}
 
+		boolean sessionCaptive = GwtUIHelper.isSessionCaptive(request);
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
@@ -569,9 +572,11 @@ public class ViewPermalinkController  extends SAbstractController {
 			boolean showWhatsNew;
 			String param;
 
-			// Put out a true/false indicator for the RequestInfo
-			// object as to the state of the new activity streams based
-			// user interface.
+			// Put out information for the RequestInfo object.
+			model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(sessionCaptive));
+			
+			// Put out a true/false indicator as to the state of the
+			// new activity streams based user interface.
 			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
 			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
 			if (isASEnabled) {

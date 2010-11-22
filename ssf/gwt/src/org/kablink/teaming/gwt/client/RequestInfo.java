@@ -51,6 +51,12 @@ public class RequestInfo extends JavaScriptObject
 
 	
 	/**
+	 * Return the the session captive state.
+	 */
+	public final native boolean isSessionCaptive() /*-{ return this.sessionCaptive; }-*/;
+
+
+	/**
 	 * Return the adapted url.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getAdaptedUrl() /*-{ return this.adaptedUrl; }-*/;

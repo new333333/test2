@@ -259,10 +259,17 @@ public class GwtMainPage extends Composite
 		        DeferredCommand.addCommand( cmd );
 			}
 		}
-		
+				
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_teamingRootPanel );
 
+		// If we're in session captive mode...
+		if (m_requestInfo.isSessionCaptive())
+		{
+			// ...we hide the masthead and sidebar by default.
+			handleAction(TeamingAction.HIDE_MASTHEAD, null);
+			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, null);
+		}
 	}// end GwtMainPage()
 
 	/**
