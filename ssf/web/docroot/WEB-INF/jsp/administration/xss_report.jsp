@@ -35,8 +35,12 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+String wsTreeName = "" + renderResponse.getNamespace();
+%>
 
 <c:set var="ss_windowTitle" value='<%= NLT.get( "administration.report.title.xss", "XSS Report" ) %>' scope="request"/>
 
@@ -76,24 +80,26 @@ var m_profilesEntryType;
 var m_unknownEntryType;
 var m_noAccess;
 var m_cantInvokeAccessControl;
-var m_accessControlUrl;
+var m_modifyUrl;
 
-ss_createOnLoadObj( 'userAccessReport', onLoadEventHandler );
+ss_createOnLoadObj( 'xssReport', onLoadEventHandler );
 
 
 /**
  * Add an entry to the page for the given object the user has access to.
  */
-function addAccessReportDataToPage( entry )
+function addXssReportDataToPage( entry )
 {
 	var table;
 	var tr;
 	var td;
+	var span;
+	var a;
 	var typeName;
 	var anchor;
 
 	// Get the table that holds the list of entries the user has access to.
-	table = document.getElementById( 'accessReportTable' );
+	table = document.getElementById( 'xssReportTable' );
 
 	// Create a <tr> for the entry.
 	tr = table.insertRow( table.rows.length );
@@ -108,13 +114,16 @@ function addAccessReportDataToPage( entry )
 	anchor.style.cursor = 'pointer';
 	anchor.onclick =	function()
 						{
-							// Invoke the Access Control page to let the user change the access control
-							// on this item.
-							invokeAccessControlPage( tr.n_entry );
+							// Invoke the View operation for this page
+							invokeXssPage( tr.n_entry );
 						}
 	span = document.createElement( 'span' );
 	span.className = '';
-	updateElementsTextNode( span, entry.path );
+	var title = entry.title;
+	if (title.length > 80) {
+		title = title.substr(0,79) + "...";
+	}
+	updateElementsTextNode( span, title );
 	anchor.appendChild( span );
 	td.appendChild( anchor );
 
@@ -124,21 +133,41 @@ function addAccessReportDataToPage( entry )
 	span = document.createElement( 'span' );
 	span.className = '';
 	typeName = m_unknownEntryType;
-	if ( entry.entryType == 'workspace' )
+	if ( entry.entityType == 'workspace' )
 		typeName = m_workspaceEntryType;
-	else if ( entry.entryType == 'folder' )
+	else if ( entry.entityType == 'folder' )
 		typeName = m_folderEntryType;
-	else if ( entry.entryType == 'profiles' )
+	else if ( entry.entityType == 'profiles' )
 		typeName = m_profilesEntryType;
+	else if ( entry.entityType == 'folderEntry' )
+		typeName = m_folderEntryEntryType;
+	else if ( entry.entityType == 'user' )
+		typeName = m_userEntryType;
 	updateElementsTextNode( span, typeName );
 	td.appendChild( span );
-}// end addAccessReportDataToPage()
+
+	// Add the entry's Modify command to the table.
+	td = tr.insertCell( 2 );
+	td.style.whiteSpace = 'nowrap';
+	a = document.createElement( 'a' );
+	a.href = "javascript: ";
+	a.onclick =	function()
+		{
+			// Invoke the Modify operation for this page
+			invokeXssModify( tr.n_entry );
+		}
+	span = document.createElement( 'span' );
+	span.className = '';
+	updateElementsTextNode( span, m_modify );
+	a.appendChild( span );
+	td.appendChild( a );
+}// end addXssReportDataToPage()
 
 
 /**
- * Issue an ajax request to get an access report for the given user.
+ * Issue an ajax request to get the xss report.
  */
-function getAccessReport( userId )
+function getXssReport()
 {
 	var	input;
 	var	id;
@@ -151,27 +180,26 @@ function getAccessReport( userId )
 	// Set up the object that will be used in the ajax request.
 	obj = new Object();
 	obj.operation = 'getXssReport'
-	obj.userId = userId;
 
 	// Build the url used in the ajax request.
 	url = ss_buildAdapterUrl( ss_AjaxBaseUrl, obj );
 
-	// Issue the ajax request.  The function handleResponseToGetAccessReport() will be called
+	// Issue the ajax request.  The function handleResponseToGetXssReport() will be called
 	// when we get the response to the request.
-	ss_get_url( url, handleResponseToGetAccessReport );
-}// end getAccessReport()
+	ss_post(url, "reportForm", handleResponseToGetXssReport, "", "")
+}// end getXssReport()
 
 
 /**
  * This function gets called when we get a response to an ajax request to get an access report.
  */
-function handleResponseToGetAccessReport( responseData )
-{
+function handleResponseToGetXssReport( responseData ) {
 	// Hide the wait indicator.
 	hideWaitIndicator();
+	ss_stopSpinner();
 	
 	// Remove any previous access data from the page.
-	removeAccessReportDataFromPage();
+	removeXssReportDataFromPage();
 	
 	if ( responseData.status == 1 )
 	{
@@ -183,15 +211,15 @@ function handleResponseToGetAccessReport( responseData )
 			var div;
 
 			// Yes
-			// Show the table that holds the list of objects the user has access to.
-			div = document.getElementById( 'accessReportDiv1' );
-			div.style.display = '';
-			div = document.getElementById( 'accessReportDiv2' );
-			div.style.display = '';
-			div.style.height = '500px';
+			// Show the table that holds the list of xss problems.
+			div = document.getElementById( 'xssReportDiv1' );
+			div.style.display = 'block';
+			div = document.getElementById( 'xssReportDiv2' );
+			div.style.display = 'block';
+			div.style.height = '400px';
 
 			// responseData.reportData is an array of objects.  Each object holds information about
-			// the object the user has access to.
+			// the xss object.
 			for (i = 0; i < responseData.reportData.length; ++i)
 			{
 				var nextEntry;
@@ -200,18 +228,18 @@ function handleResponseToGetAccessReport( responseData )
 				nextEntry = responseData.reportData[i];
 
 				// Add this entry to the table.
-				addAccessReportDataToPage( nextEntry );
+				addXssReportDataToPage( nextEntry );
 			}// end for() 
 		}
 		else
 		{
-			// Tell the administrator that the selected user doesn't have access to anything.
+			// Tell the administrator that there are no xss problems.
 			alert( m_noAccess );
 		}
 	}
 	else if ( responseData.status == -1 )
 	{
-		// If we get here an error happened retrieving the access report.
+		// If we get here an error happened retrieving the xss report.
 		// Display the error.
 		if ( responseData.errDesc != null )
 		{
@@ -223,9 +251,9 @@ function handleResponseToGetAccessReport( responseData )
 	else
 	{
 		// We should never get here.
-		alert( 'Unknown access report status: ' + responseData.status );
+		alert( 'Unknown xss status: ' + responseData.status );
 	}
-}// end handleResponseToGetAccessReport()
+}// end handleResponseToGetXssReport()
 
 
 /**
@@ -242,27 +270,48 @@ function hideWaitIndicator()
 
 
 /**
- * Invoke the Access Control page for the given item.
+ * Invoke the view operation for this page
  */
-function invokeAccessControlPage( entry )
-{
-	 // We can only invoke the Access Control Page on a workspace, folder or profiles binder
-	 if ( entry.entryType == 'workspace' || entry.entryType == 'folder' || entry.entryType == 'profiles' )
-	 {
-		 var url;
+function invokeXssPage( entry ) {
+	var url = m_viewPermalinkUrl + "&entityType=" + entry.entityType;
+	 
+	if ( entry.entityType == 'workspace' )
+		url += "&binderId=" + entry.id;
+	else if ( entry.entityType == 'folder' )
+		url += "&binderId=" + entry.id;
+	else if ( entry.entityType == 'profiles' )
+		url += "&binderId=" + entry.id;
+	else if ( entry.entityType == 'folderEntry' )
+		url += "&entryId=" + entry.id;
+	else if ( entry.entityType == 'user' )
+		url += "&entryId=" + entry.id;
 
-		 // Construct the url needed to invoke the Access Control page.
-		 url = m_accessControlUrl + '&workAreaId=' + entry.id + '&workAreaType=' + entry.entryType;
+	// Invoke the entity page.
+	ss_openUrlInPortlet( url, true, "", "");
+ 
+}// end invokeXssPage()
 
-		 // Invoke the Access Control page.
-		 ss_openUrlInPortlet( url, true, '', '');
-	 }
-	 else
-	 {
-		 // Tell the user we can't bring up the Access Control page for the selected item.
-		 alert( m_cantInvokeAccessControl );
-	 }
-}// end invokeAccessControlPage()
+/**
+ * Invoke the view operation for this page
+ */
+function invokeXssModify( entry ) {
+	var url = "";
+	 
+	if ( entry.entityType == 'workspace' )
+		url = m_modifyBinderUrl + "&binderType=workspace&binderId=" + entry.id;
+	else if ( entry.entityType == 'folder' )
+		url = m_modifyBinderUrl + "&binderType=folder&binderId=" + entry.id;
+	else if ( entry.entityType == 'profiles' )
+		url = m_modifyBinderUrl + "&binderType=profiles&binderId=" + entry.id;
+	else if ( entry.entityType == 'folderEntry' )
+		url = m_modifyEntryUrl + "&entryId=" + entry.id;
+	else if ( entry.entityType == 'user' )
+		url = m_modifyEntryUrl + "&entryId=" + entry.id;
+
+	// Invoke the entity page.
+	ss_openUrlInPortlet( url, true, "", "");
+ 
+}// end invokeXssPage()
 
 
 /**
@@ -276,12 +325,18 @@ function onLoadEventHandler()
 	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
 	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
 	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
+	m_folderEntryEntryType = 'Entry';
+	m_userEntryType = 'User';
 	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
 	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-	m_noAccess = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.noAccess" /></ssf:escapeJavaScript>';
+	m_noAccess = '<ssf:escapeJavaScript>No XSS problems found.</ssf:escapeJavaScript>';
 
-	// Get the url we need to invoke the access control page.
-	m_accessControlUrl = '${access_control_page_url}';
+	m_modify = '<ssf:escapeJavaScript>Modify</ssf:escapeJavaScript>';
+
+	// Get the url we need to invoke the page.
+	m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
+	m_modifyBinderUrl = "<ssf:url action="modify_binder" />";
+	m_modifyEntryUrl = "<ssf:url action="modify_folder_entry" />";
 }// end onLoadEventHandler()
 
 
@@ -289,13 +344,13 @@ function onLoadEventHandler()
 /**
  * Remove any access report data from the page.
  */
-function removeAccessReportDataFromPage()
+function removeXssReportDataFromPage()
 {
 	var table;
 	var i;
 
 	// Get the table that holds list of objects the user has access to.
-	table = document.getElementById( 'accessReportTable' );
+	table = document.getElementById( 'xssReportTable' );
 
 	// Remove all rows that have a property called 'n_entry'.
 	for (i = 0; i < table.rows.length; ++i)
@@ -308,7 +363,7 @@ function removeAccessReportDataFromPage()
 			--i;
 		}
 	}
-}// end removeAccessReportDataFromPage()
+}// end removeXssReportDataFromPage()
 
 
 /**
@@ -330,7 +385,7 @@ function showWaitIndicator()
 function ss_selectUser${renderResponse.namespace}(id, obj)
 {
 	// Issue an ajax request to get the access report for the given user.
-	getAccessReport( id );
+	getXssReport( id );
 }// end ss_selectUser()
 
 
@@ -348,63 +403,66 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					name="reportForm"
 					id="reportForm">
 
-<c:if test="${1 == 0 }">
 					<div style="margin-top: 2em;">
-						<span style="margin-right: 1em;"><ssf:nlt tag="administration.report.userAccess.selectUser" /></span>
+						<span style="margin-right: 1em;">
+						  <ssf:nlt tag="administration.report.xss.selectBinders" text="Select the binders to be checked:" />
+						</span>
 
-					  	<ssf:find formName="${formName}" formElement="user" 
-									type="user" 
-									singleItem="true"
-									width="80"
-									clickRoutine="ss_selectUser${renderResponse.namespace}" />
+<br>
+<br>
+
+<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
+  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
+
+<br>
 
 						<span id="progressIndicator" style="margin-left: 4em; display: none;">
-							<ssf:nlt tag="administration.report.userAccess.retrievingReport" />
+							<ssf:nlt tag="administration.report.xss.retrievingReport" text="Retrieving report..." />
 							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
 						</span>
 					</div>
-				</form>
 
-				<div id="accessReportDiv1" style="display: none;">
+				<div id="xssReportDiv1" style="display: none;">
 					<table cellspacing="0" cellpadding="3">
 						<tr>
 							<td>
 								<div style="margin-top: .7em;">
-									<span id="header1Span"><ssf:nlt tag="administration.report.userAccess.header1" /></span>
+									<span id="header1Span">
+									  <ssf:nlt tag="administration.report.xss.header1" text="The following items have potential XSS issues" />
+									</span>
 								</div>
 								<div style="margin-bottom: .6em;">
-									<span><ssf:nlt tag="administration.report.userAccess.header2" /></span>
+									<span><ssf:nlt tag="administration.report.xss.header2" text="Clicking Modify and then OK will remove the XSS threat" /></span>
 								</div>
 							</td>
 						</tr>
 					</table>
 				</div>
-				<div id="accessReportDiv2" style="display: none; width: 90%; overflow: auto;">
-					<table id="accessReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
+				<div id="xssReportDiv2" style="display: none; width: 90%; overflow: auto;">
+					<table id="xssReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
 						<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
 							<td align="left">
-								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col1" /><span>
+								<span>&nbsp;<ssf:nlt tag="administration.report.xss.col1" text="Title"/><span>
 							</td>
 							<td align="left">
-								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col2" /><span>
+								<span><ssf:nlt tag="administration.report.xss.col2" text="Type"/><span>
 							</td>
-							<td align="left" width="100%">
-								&nbsp;
+							<td align="left">
+								<span><ssf:nlt tag="administration.report.xss.col3" text="Modify"/><span>
 							</td>
 						</tr>
 					</table>
 				</div>
 
-</c:if>
-<c:if test="${1 == 1}">
-	<div style="padding:30px;">
-	  <span class="ss_bold ss_largerprint">Under Construction</span>
-	</div>
-</c:if>
 				<div style="margin-top: 2em !important;">
-					<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-						onClick="return handleCloseBtn();" />
+				<input type="submit" class="ss_submit" name="okBtn" 
+				  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="getXssReport();ss_startSpinner();return false;">
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				<input type="submit" class="ss_submit" name="closeBtn" 
+				 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 				</div>
+			  </form>
 			</ssf:form>
 		</div>
 	</div>

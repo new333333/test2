@@ -59,8 +59,10 @@ public interface ReportModule {
 	public static final String ENTRY_ID = "entry_id";
 	public static final String ENTRY_TITLE = "entry_title";
 	public static final String ENTITY = "entity";
+	public static final String ENTITY_ID = "entity_id";
 	public static final String ENTITY_TYPE = "entity_type";
 	public static final String ENTITY_PATH = "entity_path";
+	public static final String ENTITY_TITLE = "entity_title";
 	public static final String FILE_ID = "file_id";
 	public static final String FOLDER = "folder";
 	public static final String HAS_ENTRY_ACL = "hasEntryAcl";
