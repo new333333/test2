@@ -574,6 +574,7 @@ public class ViewPermalinkController  extends SAbstractController {
 
 			// Put out information for the RequestInfo object.
 			model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(sessionCaptive));
+			model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
 			
 			// Put out a true/false indicator as to the state of the
 			// new activity streams based user interface.

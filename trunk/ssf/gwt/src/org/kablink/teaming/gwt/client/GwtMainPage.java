@@ -883,7 +883,7 @@ public class GwtMainPage extends Composite
 		case HELP:
 			String url;
 			
-			url = "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/bookinfo.html";
+			url = m_requestInfo.getHelpUrl();
 			Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
 			break;
 
