@@ -48,8 +48,19 @@ var newItemsCount = 0;
 var newItemsCountLast = 0;
 var pollIntervalMinutes = <%= String.valueOf(org.kablink.teaming.util.feed.TeamingFeedCache.feedClientUpdateInterval) %>;
 var pollInterval = pollIntervalMinutes * 60 * 1000;
-var titleToggleCount = 0;
+var titleToggleCount = -1;
 var titleToggleTimer = null;
+
+self.onfocus = 
+self.document.onfocus = function(e) {
+	titleToggleCount = -1
+	if (titleToggleTimer != null) clearTimeout(titleToggleTimer);
+	var titleText = "<ssf:nlt tag="teaming.live"/>";
+	var titleObj = document.getElementsByTagName("title").item(0);
+	try {
+		titleObj.innerHTML = titleText;
+	} catch(e) {}
+};
 
 function initiatePolling() {
 	if (pollTimer != null) clearTimeout(pollTimer);
@@ -71,7 +82,6 @@ function pollForActivity() {
 function postPollForActivity() {
 	var pollStatusObj = self.document.getElementById("poll_status");
 	
-
 	if (pollTimer != null) clearTimeout(pollTimer);
 	pollTimer = setTimeout("pollForActivity();", pollInterval);
 	
@@ -105,55 +115,55 @@ function postPollForUpdate(s, divId) {
 	}
 	ss_executeJavascript(targetDiv);
 	
-	if (newItemsCountLast != newItemsCount) {
-		newItemsCountLast = newItemsCount;
-		//Flash the title for awhile to get attention
-		titleToggleCount = 15;
-		toggleTitle();
-	}
+	titleToggleCount = 0;
+	toggleTitle();
 }
 
 function toggleTitle() {
+	//scroll the title
 	if (titleToggleTimer != null) clearTimeout(titleToggleTimer);
 	titleToggleTimer = null;
+	if (titleToggleCount < 0) return;
 	
   <c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.items"/>"
-	if (newItemsCount == 1) {
-		titleCount1 = "1 <ssf:nlt tag="teaming.live.item"/>"
-	}
-	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.items"/>"
-	if (newItemsCount == 1) {
-		titleCount2 = "**1** <ssf:nlt tag="teaming.live.item"/>"
-	}
+	var titleText = "<ssf:nlt tag="teaming.live.items"/>... "
   </c:if>	
   <c:if test="<%= !org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
-	var titleCount1 = newItemsCount + " <ssf:nlt tag="teaming.live.kablink.items"/>"
-	if (newItemsCount == 1) {
-		titleCount1 = "1 <ssf:nlt tag="teaming.live.kablink.item"/>"
-	}
-	var titleCount2 = "**" + newItemsCount + "** <ssf:nlt tag="teaming.live.kablink.items"/>"
-	if (newItemsCount == 1) {
-		titleCount2 = "**1** <ssf:nlt tag="teaming.live.kablink.item"/>"
-	}
+	var titleText = "<ssf:nlt tag="teaming.live.kablink.items"/>... "
   </c:if>	
-	
-	titleToggleCount--;
+
+	var i = titleToggleCount%titleText.length;
+	var title1 = titleText.substr(0,i);
+	var title2 = titleText.substr(i,titleText.length);
+	var newTitle = ss_trim(title2 + title1);
+	if (title2.charAt(0) == ' ') newTitle = ss_replaceSubStr(newTitle, "...", "....");
+	if (title1.charAt(title1.length -1) == ' ') newTitle = ss_replaceSubStr(newTitle, "...", "....");
 	var titleObj = document.getElementsByTagName("title").item(0);
 	try {
-		if (titleToggleCount <= 0) {
-			titleObj.innerHTML = titleCount1;
-		} else {
-			if (titleObj.innerHTML == titleCount1) {
-				titleObj.innerHTML = titleCount2;
-			} else {
-				titleObj.innerHTML = titleCount1;
-			}
-		}
+		titleObj.innerHTML = newTitle;
 	} catch(e) {}
-	if (titleToggleCount > 0) {
-		titleToggleTimer = setTimeout("toggleTitle();", 500);
-	}
+	titleToggleCount++;
+	if (title2.charAt(0) == ' ') titleToggleCount++;
+	titleToggleTimer = setTimeout("toggleTitle();", 400);
+}
+
+function wopen(url, name, w, h) {
+    var wFudge = 40;
+    var hFudge = 40;
+    wleft = screen.width - w - wFudge;
+    wtop = screen.height - h - hFudge;
+    
+    var win = window.open(url,
+    name,
+    'width=' + w + ', height=' + h + ', ' +
+    'left=' + wleft + ', top=' + wtop + ', ' +
+    'location=no, menubar=no, ' +
+    'status=no, toolbar=no, scrollbars=no, resizable=no');
+    // Just in case width and height are ignored
+    win.resizeTo(w, h);
+    // Just in case left and top are ignored
+    win.moveTo(wleft, wtop);
+    win.blur();
 }
 
 ss_createOnLoadObj("initiatePolling", initiatePolling);
