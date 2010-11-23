@@ -151,6 +151,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.upload.FileUploadProgressListener;
 import org.kablink.teaming.web.upload.ProgressListenerSessionResolver;
@@ -875,23 +876,28 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxGetXssReport( RenderRequest request, RenderResponse response ) throws Exception
 	{
 		Map		model;
-		String	userIdStr;
-		Long	userId;
 		List<Map<String, Object>> report = null;
 		
 		model = new HashMap();
 		
-		// Get a report of what items the given user has access to.
+		//Get the binders to be indexed
+		Map formData = request.getParameterMap();
+		Collection<Long> ids = TreeHelper.getSelectedIds(formData);
+
+		// Get a report of items that have XSS problems.
 		List binderIds = new ArrayList();
-		binderIds.add(getWorkspaceModule().getTopWorkspace());
+		for (Long id : ids) {
+			binderIds.add(String.valueOf(id));
+		}
+		if (binderIds.isEmpty()) binderIds.add(getWorkspaceModule().getTopWorkspace().getId().toString());
         report = getReportModule().generateXssReport( binderIds, null, null, "summary" );
 
         // Add the access report to the response.
-        model.put( "userAccessReport", report );
+        model.put( "xssReport", report );
 
 		response.setContentType( "text/json" );
-		return new ModelAndView("forum/json/user_access_report", model);
-	}// end ajaxGetUserAccessReport()
+		return new ModelAndView("forum/json/xss_report_json", model);
+	}// end ajaxGetXssReport()
 	
 	
 	/**
