@@ -3,14 +3,14 @@ addressing 1.0 (WS-Addressing implementation; required by WSS4J)
 Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
-ASM (from hibernate distribution, needed by cglib)
-Asm-attrs (from hibernate distribution, needed by cglib)
+ASM 3.1.0 (from spring distribution, needed by cglib)
+Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
 backport-concurrent.jar 2.1 Concurrent(Backport)
 bcprov-jdk15.jar 1.32 (BouncyCastle library; required by WSS4J)
 bsh 2.0b2
 Catalina 6.0.29 (from Tomcat 6.0.29 distribution)
-cglib 2.1.3(from hibernate distribution)
+cglib 2.2.0(from Hibernate distribution, needed by Hibernate)
 Colt CERN Colt Library 1.2
 Commons Beanutils 1.7 (from spring distribution)
 Commons Codec 1.3 (required by WSS4J)
@@ -36,7 +36,7 @@ ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.7.4
 gwt 2.0.4 (Google Web Toolkit)
-Hibernate 3.2.6.ga
+Hibernate 3.6.0.Final
 ical4j 1.0-rc1
 icu4j 4.0.1 (needed by jasypt.jar)
 Jackrabbit API 1.4
@@ -45,10 +45,11 @@ Jackrabbit Core 1.4.5
 Jackrabbit SPI 1.4
 Jackrabbit SPI Commons 1.4
 Jakarta Taglibs Standard 1.1
-Jasypt 1.5
+Jasypt 1.7
 JavaMail 1.4.1 (Sun's reference implementation)
 java_uno.jar (from OpenOffice 2.0)
 java_uno_accessbridge.jar (from OpenOffice 2.0)
+javassist 3.12.0.GA (from Hibernate distribution, needed by Hibernate)
 Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
@@ -57,10 +58,13 @@ JBoss Portal 2.6.1.GA portal-identity-lib.jar
 JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
+Jersey 1.4 (JAX-RS JSR311 reference implementation)
 Joda-Time 1.6
+JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)
 jQuery 1.2.6 (Javascript library)
 jQuery UI Tabs 1.5.2 (Javascript library)
 Json-lib 1.1 for jdk15
+JSR 311 (JAX-RS) API 1.1.1 (from Jersey distribution)
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
@@ -104,7 +108,7 @@ Slide WCK 1.0
 Slide WebDAV client library 2.1
 Slide Roles 2.2-pre1 (for ssfs)
 Slide Stores 2.2-pre1 (for ssfs)
-Spring 3.0.1.RELEASE 
+Spring 3.0.5.RELEASE 
 Spring Security 2.0.5
 Spring LDAP 1.3.0.RELEASE
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
