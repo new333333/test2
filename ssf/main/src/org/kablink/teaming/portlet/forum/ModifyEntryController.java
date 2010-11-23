@@ -92,8 +92,9 @@ public class ModifyEntryController extends SAbstractController {
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+		if (folderId == null) folderId = entry.getParentFolder().getId();
 		if (op.equals(WebKeys.OPERATION_DELETE) && WebHelper.isMethodPost(request)) {
-			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 			Binder parentBinder = entry.getParentBinder();
 			if (!entry.isTop()) entry = entry.getTopEntry();
 			else entry = null;
@@ -237,7 +238,6 @@ public class ModifyEntryController extends SAbstractController {
 				if (!sectionToEdit.equals("")) {
 					String newSectionText = PortletRequestUtils.getStringParameter(request, elementToEdit, "");
 					//This is a request to edit just one section of the text; get the section to be edited
-					FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 					//Start by getting the original full text of the element in the entry
 					String elementText = "";
 					if (elementToEdit.equals("description")) {

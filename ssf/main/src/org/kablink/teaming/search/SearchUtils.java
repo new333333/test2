@@ -400,8 +400,7 @@ public class SearchUtils {
 	public static Criteria entitiesByDateAndAncestor(List binderIds, Date startDate, Date endDate)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {ENTRY_TYPE_ENTRY, ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {DOC_TYPE_BINDER, DOC_TYPE_ENTRY}));
+		crit.add(in(DOC_TYPE_FIELD,new String[] {DOC_TYPE_BINDER, DOC_TYPE_ENTRY}));
 		if (!binderIds.isEmpty()) {
 			crit.add(in(ENTRY_ANCESTRY, binderIds));
 		}

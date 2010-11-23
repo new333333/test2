@@ -790,14 +790,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		for(Map item : items) {
-			Long binderId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
-			String binderPath = (String)item.get(Constants.ENTITY_PATH);
-			String binderType = (String)item.get(Constants.ENTITY_FIELD);
+			Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+			String entityPath = (String)item.get(Constants.ENTITY_PATH);
+			String entityTitle = (String)item.get(Constants.TITLE_FIELD);
+			String entityType = (String)item.get(Constants.ENTITY_FIELD);
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
-			row.put(ReportModule.BINDER_ID, binderId);
-			row.put(ReportModule.ENTITY_TYPE, binderType);
-			row.put(ReportModule.ENTITY_PATH, binderPath);
+			row.put(ReportModule.ENTITY_ID, entityId);
+			row.put(ReportModule.ENTITY_TYPE, entityType);
+			row.put(ReportModule.ENTITY_PATH, entityPath);
+			row.put(ReportModule.ENTITY_TITLE, entityTitle);
 		}
 		return report;
 	}
