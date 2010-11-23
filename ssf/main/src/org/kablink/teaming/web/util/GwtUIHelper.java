@@ -1100,4 +1100,14 @@ public class GwtUIHelper {
 			hSession.setAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive && isGwtUIEnabled()));
 		}
 	}
+
+	/**
+	 * Returns the URL for the GWT UI to use to bring up help.
+	 * 
+	 * @return
+	 */
+	private final static String BASE_HELPURL = "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/bookinfo.html";
+	public static String getHelpUrl() {
+		return MiscUtil.localizeHelpUrl(BASE_HELPURL);
+	}
 }
