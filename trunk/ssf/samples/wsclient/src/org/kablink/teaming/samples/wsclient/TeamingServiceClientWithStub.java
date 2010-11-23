@@ -131,7 +131,9 @@ public class TeamingServiceClientWithStub {
 		
 		//fetchCalendarEntriesModifiedBetweenTwoDates();
 		
-		addFileEntry();
+		// addFileEntry();
+		
+		addTaskEntry();
 		
 /*		try {
 			getEntryFileVersions(9, "debug.doc");
@@ -988,4 +990,29 @@ public class TeamingServiceClientWithStub {
 		}
 	}
 
+	public static void addTaskEntry() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		
+	    FolderEntry fe = new FolderEntry();
+
+		fe.setTitle("This task entry is added via web services");
+		fe.setDescription(new Description(1,"Creating a task entry through web services"));
+		fe.setParentBinderId(new Long(47)); // My task folder ID
+
+		CustomStringArrayField[] allFields = new CustomStringArrayField[3];
+		CustomStringArrayField status = new CustomStringArrayField("status",
+				"selectbox", new String[] { "s2" });
+		CustomStringArrayField priority = new CustomStringArrayField(
+				"priority", "selectbox", new String[] { "p3" });
+		CustomStringArrayField completed = new CustomStringArrayField(
+				"completed", "selectbox", new String[] { "c030" });
+		allFields[0] = status;
+		allFields[1] = priority;
+		allFields[2] = completed;
+		fe.setCustomStringArrayFields(allFields);
+
+		long entryId = stub.folder_addEntry(null, fe, null);
+		
+		System.out.println("Successfully created a task entry with ID = " + entryId);		
+	}
 }
