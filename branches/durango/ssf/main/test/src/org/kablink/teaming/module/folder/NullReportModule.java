@@ -213,6 +213,11 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 
+	public List<Map<String, Object>> generateXssReport(List binderIds, Date startDate, Date endDate, String reportType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public void addAuditTrail(AuditType type, DefinableEntity entity,
 			Date startDate) {
 		// TODO Auto-generated method stub
