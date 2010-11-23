@@ -638,6 +638,7 @@ public final class MiscUtil
 		"es-es",
 		"fr-fr",
 		"hu-hu",
+		"it-it",
 		"ja-jp",
 		"nl-nl",
 		"pl-pl",
