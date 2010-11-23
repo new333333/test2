@@ -38,8 +38,15 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.tree.SearchTreeHelper;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -64,11 +71,16 @@ public class XssReportController extends  AbstractReportController {
 		model = new HashMap();
 		populateModel( request, model );
 	
-		// Construct the urls needed to view or modify the offending entity and add the urls to the response.
-		url = response.createRenderURL();
-		url.setParameter( WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL );
-		model.put( "access_control_page_url", url.toString() );
-
+		Document pTree = DocumentHelper.createDocument();
+    	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
+    	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
+				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
+    	//merge the trees
+    	rootElement.appendAttributes(wsTree.getRootElement());
+    	rootElement.appendContent(wsTree.getRootElement());
+ 		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
+		
 		return new ModelAndView( chooseView( formData ), model );
 	}// end handleRenderRequestInternal()
 	
