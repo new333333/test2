@@ -267,6 +267,7 @@ public class WebKeys {
 	public static final String URL_WORKFLOW_PROCESS_ID = "workflowProcessId";
 	public static final String URL_UPLOAD_REQUEST_UID = "ss_upload_request_uid";
 	public static final String URL_PURGE_MIRRORED_SOURCES = "purgeMirroredSources";
+	public static final String URL_HELPURL = "ss_helpUrl";
 		
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
