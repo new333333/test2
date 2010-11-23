@@ -63,10 +63,12 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.StringUtil;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -626,5 +628,71 @@ public final class MiscUtil
 		}
 		
 		return reply;
+	}
+
+	// The following defines the language strings that may need to be
+	// patched into a documentation URL.
+	private final static String[] DOC_LANGS = {
+		"da-dk",
+		"de-de",
+		"es-es",
+		"fr-fr",
+		"hu-hu",
+		"ja-jp",
+		"nl-nl",
+		"pl-pl",
+		"pt-br",
+		"ru-ru",
+		"sv-se",
+		"zh-cn",
+		"zh-tw",		
+	};
+	
+	// The following defines the portion of a documentation URL that
+	// may need patching for a locale.
+	private final static String CHANGE_THIS = "documentation/vibe_onprem3";
+	public static String localizeHelpUrl(String helpUrl) {
+		// If we don't have a URL...
+		if ((null == helpUrl) || (0 == helpUrl.length())) {
+			// ...there's nothing to localize.
+			return helpUrl;
+		}
+		
+		// If the URL doesn't contain the pattern that needs
+		// localization information added to it...
+		int pos = helpUrl.indexOf(CHANGE_THIS);
+		if (0 > pos) {
+			// ...there's nothing to localize.
+			return helpUrl;
+		}
+
+		// If we don't know the language that we're running in... 
+		String lang = NLT.get("Teaming.Lang", "");
+		if ((!(hasString(lang))) || (0 == lang.indexOf("en"))) {
+			// ...there's nothing to localize.
+			return helpUrl;
+		}
+
+		// We only need the first two characters of the language to
+		// localize the documentation URLs.
+		if (2 < lang.length()) {
+			lang = lang.substring(0, 2); 
+		}
+
+		// Do we have a documentation patch for this language?
+		int i;
+		for (i = 0; i < DOC_LANGS.length; i += 1) {
+			if (0 == DOC_LANGS[i].indexOf(lang)) {
+				break;
+			}
+		}		
+		if (i == DOC_LANGS.length) {
+			// No!  There's nothing to localize.
+			return helpUrl;
+		}
+
+		// Finally, return the localized documentation URL.
+		final String toThis = (DOC_LANGS[i] + "/" + CHANGE_THIS);
+		return StringUtil.replace(helpUrl, CHANGE_THIS, toThis);
 	}
 }// end MiscUtil
