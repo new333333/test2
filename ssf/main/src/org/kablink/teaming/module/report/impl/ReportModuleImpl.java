@@ -757,58 +757,63 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
         final User user = RequestContextHolder.getRequestContext().getUser();
         getAdminModule().testAccess(AdminOperation.report);
 
-        int returnCount = 1000000;
+        int returnCount = 10000;
+        int page = 0;
+        int loopDetect = 1000;
         
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 
-		//Get the documents bean for the documents the the user just authored or modified
-		Map options = new HashMap();
-		String page = "0";
-		
-		String entriesPerPage = String.valueOf(returnCount);
-		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
-		
-		Integer searchUserOffset = 0;
-		Integer searchLuceneOffset = 0;
-		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
-		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
-		
-		Integer maxHits = new Integer(entriesPerPage);
-		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
-		
-		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
-		if (searchUserOffset > 0) {
-			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
-		}
-		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
-
-		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf("0"));
-		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
-		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
-		
-		org.kablink.util.search.Criteria crit = SearchUtils.entitiesByDateAndAncestor(binderIds, null, null);
-		Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, user.getId());
-
-    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-
-		for(Map item : items) {
-			try {
-				//See if this data has any XSS issues
-				StringCheckUtil.check(item, true);
-			} catch(StringCheckException e) {
-				//Yes, this entity is tainted. Add it to the report
-				Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
-				String entityPath = (String)item.get(Constants.ENTITY_PATH);
-				String entityTitle = (String)item.get(Constants.TITLE_FIELD);
-				String entityType = (String)item.get(Constants.ENTITY_FIELD);
-				Map<String, Object> row = new HashMap<String, Object>();
-				report.add(row);
-				row.put(ReportModule.ENTITY_ID, entityId);
-				row.put(ReportModule.ENTITY_TYPE, entityType);
-				row.put(ReportModule.ENTITY_PATH, entityPath);
-				row.put(ReportModule.ENTITY_TITLE, entityTitle);
-			} 
+		while (loopDetect > 0) {
+			loopDetect--;
+			//Get the documents bean for the documents the the user just authored or modified
+			Map options = new HashMap();
+			
+			String entriesPerPage = String.valueOf(returnCount);
+			options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+			
+			Integer searchUserOffset = 0;
+			Integer searchLuceneOffset = page * returnCount;
+			options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+			options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+			
+			Integer maxHits = new Integer(entriesPerPage);
+			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+			
+			Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+			if (searchUserOffset > 0) {
+				intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+			}
+			options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+	
+			int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+			
+			org.kablink.util.search.Criteria crit = SearchUtils.entitiesByDateAndAncestor(binderIds, null, null);
+			Map results = getBinderModule().executeSearchQuery(crit, offset, maxResults, user.getId());
+			page++;
+	
+	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items.isEmpty()) break;
+	
+			for(Map item : items) {
+				try {
+					//See if this data has any XSS issues
+					StringCheckUtil.check(item, true);
+				} catch(StringCheckException e) {
+					//Yes, this entity is tainted. Add it to the report
+					Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+					String entityPath = (String)item.get(Constants.ENTITY_PATH);
+					String entityTitle = (String)item.get(Constants.TITLE_FIELD);
+					String entityType = (String)item.get(Constants.ENTITY_FIELD);
+					Map<String, Object> row = new HashMap<String, Object>();
+					report.add(row);
+					row.put(ReportModule.ENTITY_ID, entityId);
+					row.put(ReportModule.ENTITY_TYPE, entityType);
+					row.put(ReportModule.ENTITY_PATH, entityPath);
+					row.put(ReportModule.ENTITY_TITLE, entityTitle);
+				} 
+			}
 		}
 		return report;
 	}

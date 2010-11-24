@@ -194,11 +194,11 @@ public class XSSCheck implements StringCheck {
 				data.put("sequence", decodedString);
 				String oldCleanString = decodedString;
 				if (checkIfStringValid(type, data)) {
-					if (checkOnly) {
-						//This request is to check the validity only. Since it isn't valid, throw error
-						throw new XSSCheckException();
-					}
 					break;
+				}
+				if (checkOnly) {
+					//This request is to check the validity only. Since it isn't valid, throw error
+					throw new XSSCheckException();
 				}
 				changed = true;
 				decodedString = (String)data.get("sequence");
