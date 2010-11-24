@@ -229,10 +229,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 				//if(!ks.startsWith("_")) {
 				if(isStaticallyDefinedElement(ks)) {
 					Object val = user.get(ks);
-					if(val instanceof String)
-						entryElem.addAttribute(ks, (String) val); 
-					else if(val instanceof SearchFieldResult)
-						entryElem.addAttribute(ks, ((SearchFieldResult)val).getValueString());
+					String strVal = getValueAsString(val);
+					if(strVal != null)
+						entryElem.addAttribute(ks, strVal); 
 				}
 			}
 		}
@@ -525,12 +524,24 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return principalBrief;
 	}
 	
+	private String getValueAsString(Object value) {
+		if(value instanceof String) {
+			return (String) value;
+		}
+		else if(value instanceof SearchFieldResult) {
+			return ((SearchFieldResult) value).getValueString();
+		}
+		else {
+			return null;
+		}
+	}
+	
 	protected void setPrincipalBrief(Map principal, PrincipalBrief principalBrief) {
 		principalBrief.setId(Long.valueOf((String) principal.get(Constants.DOCID_FIELD)));
 		principalBrief.setBinderId(Long.valueOf((String) principal.get(Constants.BINDER_ID_FIELD)));
 		principalBrief.setDefinitionId((String) principal.get(Constants.COMMAND_DEFINITION_FIELD));
 		principalBrief.setTitle((String) principal.get(Constants.TITLE_FIELD));
-		principalBrief.setEmailAddress((String) principal.get(Constants.EMAIL_FIELD));
+		principalBrief.setEmailAddress(getValueAsString(principal.get(Constants.EMAIL_FIELD)));
 		principalBrief.setType((String) principal.get(Constants.ENTRY_TYPE_FIELD));
 		principalBrief.setReserved(principal.get(Constants.RESERVEDID_FIELD)!=null);
 		String name = getPrincipalName(principal);
