@@ -78,7 +78,7 @@ var m_workspaceEntryType;
 var m_folderEnryType;
 var m_profilesEntryType;
 var m_unknownEntryType;
-var m_noAccess;
+var m_noProblemsFound;
 var m_cantInvokeAccessControl;
 var m_modifyUrl;
 
@@ -234,7 +234,7 @@ function handleResponseToGetXssReport( responseData ) {
 		else
 		{
 			// Tell the administrator that there are no xss problems.
-			alert( m_noAccess );
+			alert( m_noProblemsFound );
 		}
 	}
 	else if ( responseData.status == -1 )
@@ -329,7 +329,7 @@ function onLoadEventHandler()
 	m_userEntryType = 'User';
 	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
 	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-	m_noAccess = '<ssf:escapeJavaScript>No XSS problems found.</ssf:escapeJavaScript>';
+	m_noProblemsFound = '<ssf:escapeJavaScript>No XSS problems found.</ssf:escapeJavaScript>';
 
 	m_modify = '<ssf:escapeJavaScript>Modify</ssf:escapeJavaScript>';
 
