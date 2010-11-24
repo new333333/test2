@@ -138,8 +138,8 @@ public class XSSCheck implements StringCheck {
 	}
 	
 	public String check(String input, boolean checkOnly) throws XSSCheckException {
-		if(enable)
-			return doCheck(input, TYPE_CHECK_STRING, modeDefault);
+		if(enable || checkOnly)
+			return doCheck(input, TYPE_CHECK_STRING, modeDefault, checkOnly);
 		else
 			return input;
 	}
