@@ -99,6 +99,9 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.stringcheck.StringCheckException;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.teaming.util.stringcheck.XSSCheckException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.search.Constants;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -790,16 +793,22 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		for(Map item : items) {
-			Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
-			String entityPath = (String)item.get(Constants.ENTITY_PATH);
-			String entityTitle = (String)item.get(Constants.TITLE_FIELD);
-			String entityType = (String)item.get(Constants.ENTITY_FIELD);
-			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			row.put(ReportModule.ENTITY_ID, entityId);
-			row.put(ReportModule.ENTITY_TYPE, entityType);
-			row.put(ReportModule.ENTITY_PATH, entityPath);
-			row.put(ReportModule.ENTITY_TITLE, entityTitle);
+			try {
+				//See if this data has any XSS issues
+				StringCheckUtil.check(item, true);
+			} catch(StringCheckException e) {
+				//Yes, this entity is tainted. Add it to the report
+				Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+				String entityPath = (String)item.get(Constants.ENTITY_PATH);
+				String entityTitle = (String)item.get(Constants.TITLE_FIELD);
+				String entityType = (String)item.get(Constants.ENTITY_FIELD);
+				Map<String, Object> row = new HashMap<String, Object>();
+				report.add(row);
+				row.put(ReportModule.ENTITY_ID, entityId);
+				row.put(ReportModule.ENTITY_TYPE, entityType);
+				row.put(ReportModule.ENTITY_PATH, entityPath);
+				row.put(ReportModule.ENTITY_TITLE, entityTitle);
+			} 
 		}
 		return report;
 	}
