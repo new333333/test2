@@ -137,6 +137,13 @@ public class XSSCheck implements StringCheck {
 			return input;
 	}
 	
+	public String check(String input, boolean checkOnly) throws XSSCheckException {
+		if(enable)
+			return doCheck(input, TYPE_CHECK_STRING, modeDefault);
+		else
+			return input;
+	}
+	
 	public String checkFile(String fileContentAsString) throws XSSCheckException {
 		if(enable)
 			return doCheck(fileContentAsString, TYPE_CHECK_FILE, modeFile);
@@ -146,6 +153,9 @@ public class XSSCheck implements StringCheck {
 	
 	// A subclass can override this method to provide custom or enhanced implementation.
 	protected String doCheck(String input, String type, String mode) throws XSSCheckException {
+		return doCheck(input, type, mode, false);
+	}
+	protected String doCheck(String input, String type, String mode, boolean checkOnly) throws XSSCheckException {
 		if(input == null || input.equals(""))
 			return input;
 		
@@ -184,6 +194,10 @@ public class XSSCheck implements StringCheck {
 				data.put("sequence", decodedString);
 				String oldCleanString = decodedString;
 				if (checkIfStringValid(type, data)) {
+					if (checkOnly) {
+						//This request is to check the validity only. Since it isn't valid, throw error
+						throw new XSSCheckException();
+					}
 					break;
 				}
 				changed = true;

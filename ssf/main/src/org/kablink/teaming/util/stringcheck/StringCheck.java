@@ -35,4 +35,6 @@ package org.kablink.teaming.util.stringcheck;
 public interface StringCheck {
 
 	public String check(String input) throws StringCheckException;
+	
+	public String check(String input, boolean checkOnly) throws StringCheckException;
 }
