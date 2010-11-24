@@ -92,7 +92,7 @@
 <c:if test="${empty xssReport}">
 	<% // No %>
 {
-	status : -1,
+	status : 1,
 	errDesc : null,
 	reportData : []
 }
