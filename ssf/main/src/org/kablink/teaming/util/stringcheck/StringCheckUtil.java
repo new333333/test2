@@ -69,36 +69,44 @@ public class StringCheckUtil implements InitializingBean {
     }
 
 	public static String check(String input) throws StringCheckException {
-		return getInstance().checkAll(input);
+		return getInstance().checkAll(input, false);
+	}
+	
+	public static String check(String input, boolean checkOnly) throws StringCheckException {
+		return getInstance().checkAll(input, checkOnly);
 	}
 	
 	public static Map<String,?> check(Map<String,?> input) throws StringCheckException {
-		return getInstance().checkAll(input);
+		return getInstance().checkAll(input, false);
+	}
+
+	public static Map<String,?> check(Map<String,?> input, boolean checkOnly) throws StringCheckException {
+		return getInstance().checkAll(input, checkOnly);
 	}
 
 	public static String[] check(String[] input) throws StringCheckException {
 		String[] result = new String[input.length];
 		for(int i = 0; i < input.length; i++)
-			result[i] = getInstance().checkAll(input[i]);
+			result[i] = getInstance().checkAll(input[i], false);
 		return result;
 	}
 	
-	private String checkAll(String input) throws StringCheckException {
+	private String checkAll(String input, boolean checkOnly) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
-			input = checkers[i].check(input);
+			input = checkers[i].check(input, checkOnly);
 		}
 		return input;
 	}
 	
-	private Map<String,?> checkAll(Map<String,?> input) throws StringCheckException {
+	private Map<String,?> checkAll(Map<String,?> input, boolean checkOnly) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
-			input = checkAll(checkers[i], input);
+			input = checkAll(checkers[i], input, checkOnly);
 		}
 		return input;
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String,?> checkAll(StringCheck checker, Map<String,?> input) throws StringCheckException {
+	private Map<String,?> checkAll(StringCheck checker, Map<String,?> input, boolean checkOnly) throws StringCheckException {
 		Map output = new TreeMap();
 		
 		Object value, newValue;
@@ -109,13 +117,13 @@ public class StringCheckUtil implements InitializingBean {
 				newValue = null;
 			}
 			else if(value instanceof String) {
-				newValue = checker.check((String)value);
+				newValue = checker.check((String)value, checkOnly);
 			}
 			else if(value instanceof String[]) {
 				String[] valueSA = (String[]) value;
 				String[] newValueSA = new String[valueSA.length];
 				for(int i = 0; i < valueSA.length; i++)
-					newValueSA[i] = checker.check(valueSA[i]);
+					newValueSA[i] = checker.check(valueSA[i], checkOnly);
 				newValue = newValueSA;
 			}
 			else {
