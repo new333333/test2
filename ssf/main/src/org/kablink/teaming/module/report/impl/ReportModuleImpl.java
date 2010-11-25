@@ -103,12 +103,10 @@ import org.kablink.teaming.util.stringcheck.StringCheckException;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.util.stringcheck.XSSCheckException;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
-import com.liferay.util.Validator;
-
 
 public class ReportModuleImpl extends HibernateDaoSupport implements ReportModule {
 	protected Set enabledTypes=new HashSet();
@@ -1707,7 +1705,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return ids;
 	}
 
-	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final Date startDate, final Date endDate) {
+	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
@@ -1718,6 +1716,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				.add(Restrictions.eq("transactionType", AuditType.delete.name()))
 				.add(Restrictions.ge("startDate", startDate))
 				.add(Restrictions.lt("startDate", endDate));
+				if(Validator.isNotNull(family))
+					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
 				if(folderIds != null && folderIds.length > 0) {
 					Long[] fIds = new Long[folderIds.length];
 					for(int i = 0; i < fIds.length; i++)

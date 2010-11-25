@@ -130,11 +130,12 @@ public interface FolderService {
 	 * 
 	 * @param accessToken
 	 * @param folderIds a list of parent folder IDs; if null or empty, the match is not confined by parent folder
+	 * @param family string representing a family; if null, the match is performed irrespective of family type 
 	 * @param startTime the start time, inclusive; this argument is optional
 	 * @param endTime the end time, exclusive; this argument is required
 	 * @return
 	 */
-	public long[] folder_getDeletedEntriesInFolders(String accessToken, long[] folderIds, Calendar startTime, Calendar endTime);
+	public long[] folder_getDeletedEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime);
 
 	/**
 	 * Test if the calling user has the right to execute the specified operation on each of the folders specified.
