@@ -164,5 +164,5 @@ public interface ReportModule {
 	public Collection<ActivityInfo> getActivity(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
 	public List<Map<String,Object>> getUsersStatuses(Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 	public List<Long> getDeletedFolderEntryIds(String family, Date startDate, Date endDate);
-	public List<Long> getDeletedFolderEntryIds(long[] folderIds, Date startDate, Date endDate);
+	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
 }
