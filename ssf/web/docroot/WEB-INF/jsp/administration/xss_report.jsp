@@ -97,6 +97,7 @@ function addXssReportDataToPage( entry )
 	var a;
 	var typeName;
 	var anchor;
+	var br;
 
 	// Get the table that holds the list of entries the user has access to.
 	table = document.getElementById( 'xssReportTable' );
@@ -126,6 +127,23 @@ function addXssReportDataToPage( entry )
 	updateElementsTextNode( span, title );
 	anchor.appendChild( span );
 	td.appendChild( anchor );
+	if (entry.path != null && entry.path != "") {
+		br = document.createElement( 'br' );
+		span = document.createElement( 'span' );
+		span.className = 'ss_fineprint';
+		span.style.paddingLeft = "20px";
+		var path = entry.path;
+		// Remove the last folder name from the path
+		if (path.lastIndexOf("/") >= 0) {
+			path = path.substr(0, path.lastIndexOf("/"));
+		}
+		if (path.length > 120) {
+			path = "..." + path.substr(path.length-120, path.length);
+		}
+		updateElementsTextNode( span, path );
+		td.appendChild( br );
+		td.appendChild( span );
+	}
 
 	// Add the entry's type to the table.
 	td = tr.insertCell( 1 );
