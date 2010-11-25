@@ -760,6 +760,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
         int returnCount = 10000;
         int page = 0;
         int loopDetect = 1000;
+    	List<Long> foundBinderIds = new ArrayList<Long>();
+    	List<Long> foundItemIds = new ArrayList<Long>();
         
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
@@ -797,22 +799,61 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	    	if (items.isEmpty()) break;
 	
 			for(Map item : items) {
+				Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
+				String entityType = (String)item.get(Constants.ENTITY_FIELD);
+				String entityPath = (String)item.get(Constants.ENTITY_PATH);
+				String entityTitle = (String)item.get(Constants.TITLE_FIELD);
+				if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
+						EntityIdentifier.EntityType.folder.name().equals(entityType)) {
+					//Do the binders by loading them from the database
+					foundBinderIds.add(entityId);
+				}
 				try {
 					//See if this data has any XSS issues
 					StringCheckUtil.check(item, true);
 				} catch(StringCheckException e) {
 					//Yes, this entity is tainted. Add it to the report
-					Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
-					String entityPath = (String)item.get(Constants.ENTITY_PATH);
-					String entityTitle = (String)item.get(Constants.TITLE_FIELD);
-					String entityType = (String)item.get(Constants.ENTITY_FIELD);
 					Map<String, Object> row = new HashMap<String, Object>();
 					report.add(row);
 					row.put(ReportModule.ENTITY_ID, entityId);
 					row.put(ReportModule.ENTITY_TYPE, entityType);
 					row.put(ReportModule.ENTITY_PATH, entityPath);
 					row.put(ReportModule.ENTITY_TITLE, entityTitle);
-				} 
+					if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
+							EntityIdentifier.EntityType.folder.name().equals(entityType)) {
+						//Do the binders by loading them from the database
+						foundItemIds.add(Long.valueOf(entityId));
+					}
+				}
+			}
+		}
+		//Now check any binders that were found
+		int inClauseLimit = SPropsUtil.getInt("db.clause.limit", 1000);
+		int nextId = 0;
+		while (nextId < foundBinderIds.size()) {
+			int lastId = nextId + inClauseLimit;
+			if (lastId > foundBinderIds.size()) lastId = foundBinderIds.size();
+			List<Long> ids = new ArrayList<Long>();
+			ids.addAll(foundBinderIds.subList(nextId, lastId));
+			nextId = nextId + inClauseLimit;
+	    	List<Binder> binders = getCoreDao().loadObjects(ids, Binder.class, 
+	    			RequestContextHolder.getRequestContext().getZoneId());
+			for (Binder binder : binders) {
+				if (!foundItemIds.contains(binder.getId())) {
+					try {
+						StringCheckUtil.check(binder.getDescription().getText(), true);
+						StringCheckUtil.check(binder.getBranding(), true);
+						StringCheckUtil.check(binder.getBrandingExt(), true);
+					} catch(StringCheckException e) {
+						//Yes, this entity is tainted. Add it to the report
+						Map<String, Object> row = new HashMap<String, Object>();
+						report.add(row);
+						row.put(ReportModule.ENTITY_ID, binder.getId());
+						row.put(ReportModule.ENTITY_TYPE, binder.getEntityType().name());
+						row.put(ReportModule.ENTITY_PATH, binder.getPathName());
+						row.put(ReportModule.ENTITY_TITLE, binder.getTitle());
+					} 
+				}
 			}
 		}
 		return report;
