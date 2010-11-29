@@ -172,7 +172,7 @@ if (typeof ss_workarea_showId == "undefined")
 <!-- end of iframe div -->
 </c:if>
 
-<div id="ss_aboutBoxDiv" style="position:absolute; display:none; background-color:#fff;">
+<div id="ss_aboutBoxDiv" style="position:absolute; display:none;">
 	<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 		<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>
  	</c:if>
