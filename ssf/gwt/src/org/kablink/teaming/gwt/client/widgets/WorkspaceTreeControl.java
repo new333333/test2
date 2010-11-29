@@ -208,8 +208,10 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @param binderId
 	 */
 	public void contextLoaded(String binderId) {
-		// Simply tell the display that the context has been loaded.
-		m_treeDisplay.contextLoaded(binderId);
+		if (null != m_treeDisplay) {
+			// Simply tell the display that the context has been loaded.
+			m_treeDisplay.contextLoaded(binderId);
+		}
 	}
 	
 	/**
@@ -220,7 +222,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 */
 	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
 		// If we're displaying a sidebar tree...
-		if (TreeMode.VERTICAL == m_tm) {
+		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
 			// ...tell it to load the activity stream navigation
 			// ...points.
 			m_treeDisplay.enterActivityStreamMode(defaultASI);
@@ -233,7 +235,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 */
 	public void exitActivityStreamMode() {
 		// If we're displaying a sidebar tree...
-		if (TreeMode.VERTICAL == m_tm) {
+		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
 			// ...tell it to exit activity stream mode.
 			m_treeDisplay.exitActivityStreamMode();
 		}
@@ -256,7 +258,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @return
 	 */
 	public boolean isInActivityStreamMode() {
-		return m_treeDisplay.isInActivityStreamMode();
+		return ((null != m_treeDisplay) && m_treeDisplay.isInActivityStreamMode());
 	}
 	
 	/**
@@ -266,7 +268,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 */
 	public void setActivityStream(ActivityStreamInfo asi) {
 		// If we're displaying a sidebar tree...
-		if (TreeMode.VERTICAL == m_tm) {
+		if ((TreeMode.VERTICAL == m_tm) && (null != m_treeDisplay)) {
 			// ...tell it to select this activity stream.
 			m_treeDisplay.setActivityStream(asi);
 		}
@@ -279,7 +281,9 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @param binderInfo
 	 */
 	public void setSelectedBinder(OnSelectBinderInfo binderInfo) {
-		m_treeDisplay.setSelectedBinder(binderInfo);
+		if (null != m_treeDisplay) {
+			m_treeDisplay.setSelectedBinder(binderInfo);
+		}
 	}
 	
 	/**
@@ -330,7 +334,9 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @param osbInfo
 	 */
 	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
-		m_treeDisplay.showBinderBusy(osbInfo);
+		if (null != m_treeDisplay) {
+			m_treeDisplay.showBinderBusy(osbInfo);
+		}
 	}
 	
 	/**
