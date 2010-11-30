@@ -624,8 +624,17 @@ public class ActivityStreamCtrl extends Composite
 		{
 			public void onClick( ClickEvent clickEvent )
 			{
-				// Refresh the results of the search query.
-				refreshActivityStream();
+				Command  cmd;
+				
+				cmd = new Command()
+				{
+					public void execute()
+					{
+						// Issue a request to refresh the activity stream.
+						refreshActivityStream();
+					}
+				};
+				DeferredCommand.addCommand( cmd );
 			}
 		};
 		img.addClickHandler( clickHandler );
@@ -654,6 +663,13 @@ public class ActivityStreamCtrl extends Composite
 		if ( m_activityStreamParams == null )
 		{
 			Window.alert( "In executeSearch(), m_activityStreamParams is null.  This should never happen." );
+			return;
+		}
+		
+		// Is a search already in progress?
+		if ( m_searchInProgress )
+		{
+			// Yes.
 			return;
 		}
 		
