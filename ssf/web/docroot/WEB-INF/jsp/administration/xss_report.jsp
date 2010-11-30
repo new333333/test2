@@ -305,7 +305,10 @@ function invokeXssPage( entry ) {
 		url += "&entryId=" + entry.id;
 
 	// Invoke the entity page.
-	ss_openUrlInPortlet( url, true, "", "");
+	if (confirm("<ssf:nlt tag='administration.report.xss.warnOnView' 
+			text='Caution: Viewing an XSS infected item could trigger the XSS attack. \n\nViewing these items as an administrator is not recommended.\n\nProceed?'/>")) {
+		ss_openUrlInPortlet( url, true, "", "");
+	}
  
 }// end invokeXssPage()
 
