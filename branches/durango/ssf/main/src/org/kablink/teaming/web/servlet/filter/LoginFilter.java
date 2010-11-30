@@ -69,6 +69,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
@@ -316,6 +317,16 @@ public class LoginFilter  implements Filter {
 	}
 	
 	protected String getWorkspaceURL(final HttpServletRequest req) {
+		String reply = getWorkspaceURLImpl(req);
+		if (MiscUtil.hasString(reply)) {
+			if (0 < reply.indexOf("/do?"))
+			     reply += ("?" + WebUrlUtil.VIBEONPREM_ROOT_FLAG + "=1");
+			else reply += ("/" + WebUrlUtil.VIBEONPREM_ROOT_FLAG + "/1");
+		}
+		return reply;
+	}
+	
+	private String getWorkspaceURLImpl(final HttpServletRequest req) {
 		final String userId;
 		Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 		HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
