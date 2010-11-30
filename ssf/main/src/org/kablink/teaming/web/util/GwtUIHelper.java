@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
@@ -1022,6 +1021,17 @@ public class GwtUIHelper {
 	}
 
 	/**
+	 * Returns true if we're supposed to change the top entry's
+	 * modification time when a reply is posted or modified and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isModifyTopEntryOnReply() {
+		return IS_MODIFY_TOP_ENTRY_ON_REPLY;
+	}
+	
+	/**
 	 * Checks the session for the session captive (i.e., running under
 	 * GroupWise) state.  If a value is stored, it's returned.  If a
 	 * value is not stored, any captive flag in the request is used to
@@ -1037,32 +1047,44 @@ public class GwtUIHelper {
 		PortletSession session = WebHelper.getRequiredPortletSession(pRequest);;
 		if (null != session) {
 			// Yes!  Do we have a session captive flag stored?
-			String captive;
 			Boolean isCaptive = ((Boolean) session.getAttribute(WebKeys.SESSION_CAPTIVE));
 			if (null == isCaptive) {
-				// No!  Store a session captive flag based on there
-				// being a 'captive=true' setting in the request.
-				captive = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_CAPTIVE, "false");
-				isCaptive = ((MiscUtil.hasString(captive) && "true".equalsIgnoreCase(captive)) ? Boolean.TRUE : Boolean.FALSE);
-				session.setAttribute(WebKeys.SESSION_CAPTIVE, isCaptive);
+				// No!  Is the request a Vibe root URL or does it refer
+				// to a Vibe root URL?
+				if (!(isVibeRoot(pRequest))) {
+					// No!  Store a session captive flag based on there
+					// being a 'captive=true' setting in the request.
+					String captive = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_CAPTIVE, "false");
+					isCaptive = ((MiscUtil.hasString(captive) && "true".equalsIgnoreCase(captive)) ? Boolean.TRUE : Boolean.FALSE);
+					session.setAttribute(WebKeys.SESSION_CAPTIVE, isCaptive);
+				}
 			}
-			reply = isCaptive.booleanValue();			
+			reply = ((null != isCaptive) && isCaptive.booleanValue());			
 		}
 		
 		// If we get here, reply is true if we're in session captive
 		// mode and false otherwise.  Return it.
 		return reply;
 	}
-	
-	/**
-	 * Returns true if we're supposed to change the top entry's
-	 * modification time when a reply is posted or modified and false
-	 * otherwise.
-	 * 
-	 * @return
+
+	/*
+	 * Returns true if a request is a Vibe root URL or refers to a Vibe
+	 * root URL and returns false otherwise.
 	 */
-	public static boolean isModifyTopEntryOnReply() {
-		return IS_MODIFY_TOP_ENTRY_ON_REPLY;
+	private static boolean isVibeRoot(PortletRequest pRequest) {
+		// Is the base request a Vibe root URL?
+		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebUrlUtil.VIBEONPREM_ROOT_FLAG, "");
+		boolean reply = MiscUtil.hasString(urlParam);
+		if (!(reply)) {
+			// No!  Does the request refer to a Vibe root URL?
+			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_REFERER_URL, "");
+			reply = MiscUtil.hasString(urlParam) && (0 < urlParam.indexOf(WebUrlUtil.VIBEONPREM_ROOT_FLAG));
+		}
+		
+		// If we get here, reply is true if the request is a Vibe root
+		// URL or refers to a Vibe root URL and is false otherwise.
+		// Return it.
+		return reply;
 	}
 	
 	/*
