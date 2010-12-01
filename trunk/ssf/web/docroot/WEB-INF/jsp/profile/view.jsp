@@ -37,7 +37,7 @@
 <div class="ss_portlet_style ss_portlet">
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar2 ss_actions_bar" />
 
-<table width="100%">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr><td>
  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
  		name="action" value="view_ws_listing"/><portlet:param 
