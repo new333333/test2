@@ -30,7 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.DeleteHandler;
 import org.kablink.teaming.gwt.client.EditHandler;

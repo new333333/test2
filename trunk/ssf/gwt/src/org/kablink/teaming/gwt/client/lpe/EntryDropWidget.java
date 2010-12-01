@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.ClickEvent;

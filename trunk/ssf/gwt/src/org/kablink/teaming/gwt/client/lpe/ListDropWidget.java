@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.EditDeleteControl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.ui.FlexTable;

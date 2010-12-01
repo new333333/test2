@@ -80,11 +80,11 @@ public class LandingPageEditor extends Composite
 	private DropZone		m_canvas;
 	private boolean		m_paletteItemDragInProgress;
 	private DragProxy		m_paletteItemDragProxy;
-	private PaletteItem	m_paletteItemBeingDragged = null;
+	private PaletteItem		m_paletteItemBeingDragged = null;
 	private DropZone		m_selectedDropZone = null;
 	private Stack<DropZone>		m_enteredDropZones = null;
-	private HandlerRegistration	m_previewHandlerReg = null;
-	private HandlerRegistration	m_mouseUpHandlerReg = null;
+	private HandlerRegistration		m_previewHandlerReg = null;
+	private HandlerRegistration		m_mouseUpHandlerReg = null;
 	private Hidden m_configResultsInputCtrl = null;
 	private static TextArea m_textBox = null;//!!!
 	
