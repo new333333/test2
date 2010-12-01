@@ -64,7 +64,7 @@
 		g_appConfigStrings["sidebar.appConfig.Message.NoData"]				= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Message.NoData"/></ssf:escapeJavaScript>";
 		g_appConfigStrings["sidebar.appConfig.SelectAnExtension"]			= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.SelectAnExtension"/></ssf:escapeJavaScript>";
 		g_appConfigStrings["sidebar.appConfig.Warning.DuplicateExtension"]	= "<ssf:escapeJavaScript><ssf:nlt tag="sidebar.appConfig.Warning.DuplicateExtension"/></ssf:escapeJavaScript>";
-		g_appConfigStrings["sidebar.appConfig.helpUrl"]						= "<ssf:escapeJavaScript><%= MiscUtil.localizeHelpUrl("http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/trouble_editoroverrides.html") %></ssf:escapeJavaScript>";
+		g_appConfigStrings["sidebar.appConfig.helpUrl"]						= "<ssf:escapeJavaScript><%= MiscUtil.fixupHelpUrl("http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/trouble_editoroverrides.html") %></ssf:escapeJavaScript>";
 
 
 	<% /* Load the defined edit-in-place extensions from the */ %>
