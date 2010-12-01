@@ -162,7 +162,6 @@ public class AdaptedPortletURL {
 		this.preq = null;
 		this.portletName = portletName;
 		this.action = action;
-		this.secure = Boolean.FALSE;
 		this.params = new HashMap();
 	}
 	
