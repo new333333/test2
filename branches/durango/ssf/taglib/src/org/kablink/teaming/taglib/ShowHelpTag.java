@@ -47,14 +47,15 @@ import org.kablink.util.servlet.StringServletResponse;
 
 /**
  * @author Jay Wootton
- *
  */
+@SuppressWarnings("serial")
 public class ShowHelpTag extends BodyTagSupport
 {
 	private String guideName;
 	private String pageId;
 	private String sectionId;
 	private String className;
+	@SuppressWarnings("unused")
 	private String _bodyContent;
     
 	/**
@@ -148,7 +149,7 @@ public class ShowHelpTag extends BodyTagSupport
 				// If we have a help URL...
 				if (MiscUtil.hasString(url)) {
 					// ...make sure it contains any required localizations.
-					url = MiscUtil.localizeHelpUrl(url);
+					url = MiscUtil.fixupHelpUrl(url);
 				}
 				
 				jsp = "/WEB-INF/jsp/tag_jsps/inline_help/show_help.jsp";				
