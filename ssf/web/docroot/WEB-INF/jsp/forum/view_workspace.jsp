@@ -51,7 +51,7 @@ function ss_resizeTopDiv_${renderResponse.namespace}() {
 ss_createOnResizeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 ss_createOnLayoutChangeObj("ss_resizeTopDiv", ss_resizeTopDiv_${renderResponse.namespace});
 </script>
-<table width="100%">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr>
 <td>
 <ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
