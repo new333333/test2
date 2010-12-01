@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client;
 
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.VibeProduct;
+
 import com.google.gwt.core.client.JavaScriptObject;
 
 
@@ -172,6 +175,20 @@ public class RequestInfo extends JavaScriptObject
 	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
 	public final native String getUserName() /*-{ return this.userName; }-*/;
+
+
+	/**
+	 * Return the flag that tells us what product we're running.
+	 */
+	public final native String      getVibeProductString() /*-{ return this.vibeProduct; }-*/;
+	public final        VibeProduct getVibeProduct() {
+		VibeProduct reply = VibeProduct.OTHER;
+		String vp = getVibeProductString();
+		if (GwtClientHelper.hasString(vp)) {
+			reply = VibeProduct.valueOf(Integer.parseInt(vp));
+		}
+		return reply;
+	}
 
 
 	/**
