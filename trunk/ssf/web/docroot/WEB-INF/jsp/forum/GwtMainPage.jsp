@@ -61,6 +61,7 @@
 			jsPath : '<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
 			myWSUrl : '${myWorkspaceUrl}',
 			errMsg : '<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
+			vibeProduct : '${vibeProduct}',
 			isNovellTeaming : ${isNovellTeaming},
 			productName : '${productName}',
 			language : '${ssUser.locale.language}',

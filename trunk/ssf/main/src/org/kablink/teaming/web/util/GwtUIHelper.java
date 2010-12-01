@@ -64,6 +64,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -107,6 +108,19 @@ public class GwtUIHelper {
 		WebKeys.GWT_MISC_TOOLBAR,
 		WebKeys.WHATS_NEW_TOOLBAR,
 	};
+	
+	// Values used to communicate the Vibe product that's running.
+	//
+	// *** WARNING *** WARNING *** WARNING *** WARNING ***
+	// ***
+	// *** These integer values are used as the numeric representation
+	// *** of the enumeration values in VibeProduct.java.
+	// ***
+	// *** WARNING *** WARNING *** WARNING *** WARNING ***
+	public final static int VIBE_PRODUCT_OTHER		= 0;
+	public final static int VIBE_PRODUCT_GW			= 1;	// GroupWise integration.
+	public final static int VIBE_PRODUCT_KABLINK	= 2;	// Kablink Vibe.
+	public final static int VIBE_PRODUCT_NOVELL		= 3;	// Novell  Vibe (outside of GroupWise integration.)
 
 	// Used as a qualifier in a toolbar to indicate the value maps to a
 	// GWT UI TeamingAction.
@@ -1131,5 +1145,76 @@ public class GwtUIHelper {
 	private final static String BASE_HELPURL = "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/bookinfo.html";
 	public static String getHelpUrl() {
 		return MiscUtil.localizeHelpUrl(BASE_HELPURL);
+	}
+
+	/**
+	 * Based on information in the request, returns the product Vibe is
+	 * running as.
+	 * 
+	 * @param request
+	 * 
+	 * @return
+	 */
+	public static int getVibeProduct(PortletRequest request) {
+		int reply;
+		if      (isSessionCaptive(request))              reply = VIBE_PRODUCT_GW;
+		else if (ReleaseInfo.isLicenseRequiredEdition()) reply = VIBE_PRODUCT_NOVELL;
+		else                                             reply = VIBE_PRODUCT_KABLINK;		
+		return reply;
+	}
+	
+	/**
+	 * Sets the common GWT RequestInfo parameters required by the
+	 * definition of m_requestInfo in GwtMainPage.jsp.
+	 * 
+	 * Items included are:
+	 * - sessionCaptive
+	 * - isNovellTeaming
+	 * - vibeProduct
+	 * - productName
+	 * - ss_helpUrl
+	 * - topWSId
+	 * - activityStreamsEnabled
+	 * - showWhatsNew
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param model
+	 */
+	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
+		// Put out the session captive flag.
+		model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(isSessionCaptive(request)));
+		
+		// Put out the flag that tells us if we are running Novell or
+		// Kablink Vibe.
+		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
+		model.put( "isNovellTeaming", isNovellTeaming );
+
+		// Put out the flag indicating which product we're running as.
+		int vp = getVibeProduct(request);
+		model.put(WebKeys.VIBE_PRODUCT, String.valueOf(vp));
+
+		// Put out the name of the product (Novell or Kablink Vibe)
+		// that's running.
+		String productName = ReleaseInfo.getName();
+		model.put("productName", productName);
+			
+		// Put out the main help URL for Vibe.
+		model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
+
+		// Put out the ID of the top Vibe workspace.
+		String topWSId = GwtUIHelper.getTopWSIdSafely(bs);
+		model.put("topWSId", topWSId);
+		
+		// Put out a true/false indicator as to the state of the
+		// activity streams based user interface.
+		boolean isASEnabled, showWhatsNew;
+		isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
+		model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
+		if (isASEnabled) {
+			String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+			showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		}
+		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
 	}
 }

@@ -90,6 +90,7 @@ public class WebKeys {
     public static final String THEME_IC_COOL_GREEN = "iccg";
     public static final String THEME_IC_WINTRY_GRAY = "icwg";
     public static final String SESSION_CAPTIVE = "sessionCaptive";
+    public static final String VIBE_PRODUCT = "vibeProduct";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
