@@ -651,8 +651,13 @@ public final class MiscUtil
 	
 	// The following defines the portion of a documentation URL that
 	// may need patching for a locale.
-	private final static String CHANGE_THIS = "documentation/vibe_onprem3";
-	public static String localizeHelpUrl(String helpUrl) {
+	private final static String CHANGE_THIS 		= "documentation/vibe_onprem3";
+	private final static String TO_THIS_FOR_KABLINK	= "documentation/kablinkvibe_onprem3";
+	
+	/*
+	 * Tweaks a help URL to account for localization specifics.
+	 */
+	private static String localizeHelpUrl(String helpUrl) {
 		// If we don't have a URL...
 		if ((null == helpUrl) || (0 == helpUrl.length())) {
 			// ...there's nothing to localize.
@@ -695,5 +700,40 @@ public final class MiscUtil
 		// Finally, return the localized documentation URL.
 		final String toThis = (DOC_LANGS[i] + "/" + CHANGE_THIS);
 		return StringUtil.replace(helpUrl, CHANGE_THIS, toThis);
+	}
+
+	/**
+	 * Performs any and all necessary fixups on a help URL based on
+	 * locale, the product that's running, ...
+	 * 
+	 * @param helpUrl
+	 * 
+	 * @return
+	 */
+	public static String fixupHelpUrl(String helpUrl) {
+		// If we don't have a URL...
+		if ((null == helpUrl) || (0 == helpUrl.length())) {
+			// ...there's nothing to fixup.
+			return helpUrl;
+		}
+		
+		// Are we running Novell Vibe...
+		helpUrl = localizeHelpUrl(helpUrl);
+		if (ReleaseInfo.isLicenseRequiredEdition()) {
+			// ...no further fixup is necessary.  Return what we've
+			// ...got.
+			return helpUrl;
+		}
+		
+		// If the URL doesn't contain the pattern that needs fixing...
+		int pos = helpUrl.indexOf(CHANGE_THIS);
+		if (0 > pos) {
+			// ...no further fixup is necessary.  Return what we've
+			// ...got.
+			return helpUrl;
+		}
+
+		// Perform the Kablink Vibe specific fixups.
+		return StringUtil.replace(helpUrl, CHANGE_THIS, TO_THIS_FOR_KABLINK);
 	}
 }// end MiscUtil

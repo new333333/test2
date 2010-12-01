@@ -1130,6 +1130,6 @@ public class GwtUIHelper {
 	 */
 	private final static String BASE_HELPURL = "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/bookinfo.html";
 	public static String getHelpUrl() {
-		return MiscUtil.localizeHelpUrl(BASE_HELPURL);
+		return MiscUtil.fixupHelpUrl(BASE_HELPURL);
 	}
 }
