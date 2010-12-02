@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -263,8 +264,9 @@ public class GwtMainPage extends Composite
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_teamingRootPanel );
 
-		// If we're in session captive mode...
-		if (m_requestInfo.isSessionCaptive())
+		// If we're running GroupWise integrations or otherwise require
+		// session captive mode...
+		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
 			handleAction(TeamingAction.HIDE_MASTHEAD, null);

@@ -82,9 +82,10 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		// Force the session captive state to be saved into the session
-		// cache as appropriate.
-		GwtUIHelper.isSessionCaptive(request);
+		// Force the Vibe product that's running to be determined.
+		// This will set the session captive state, ... into the
+		// session cache as appropriate.
+		GwtUIHelper.getVibeProduct(request);
 
 		// This controller is used to display the sign-in form used for login. 
 		// If form-based login is disallowed, this controller shouldn't display

@@ -320,8 +320,8 @@ public class LoginFilter  implements Filter {
 		String reply = getWorkspaceURLImpl(req);
 		if (MiscUtil.hasString(reply)) {
 			if (0 < reply.indexOf("/do?"))
-			     reply += ("?" + WebUrlUtil.VIBEONPREM_ROOT_FLAG + "=1");
-			else reply += ("/" + WebUrlUtil.VIBEONPREM_ROOT_FLAG + "/1");
+			     reply += ("?" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "=1");
+			else reply += ("/" + WebKeys.URL_VIBEONPREM_ROOT_FLAG + "/1");
 		}
 		return reply;
 	}
@@ -479,7 +479,7 @@ public class LoginFilter  implements Filter {
 		String param;
 		
 		// Does the url have the "vibeonprem" parameter.
-		param = req.getParameter( WebUrlUtil.VIBEONPREM_URL_FLAG );
+		param = req.getParameter( WebKeys.URL_VIBEONPREM_URL_FLAG );
 		if ( param != null && param.length() > 0 )
 		{
 			// Yes, no need to convert it.
