@@ -90,6 +90,7 @@ public class WebKeys {
     public static final String THEME_IC_COOL_GREEN = "iccg";
     public static final String THEME_IC_WINTRY_GRAY = "icwg";
     public static final String SESSION_CAPTIVE = "sessionCaptive";
+    public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
     
     //URL parameters
@@ -129,6 +130,12 @@ public class WebKeys {
     public static final String URL_BY_TEAM_MEMBERS="ss_byTeamMembers";
     public static final String URL_BY_ALL_USERS="ss_byAllUsers";
 	public static final String URL_CAPTIVE="captive";
+	public static final String URL_PRODUCT="product";
+	public static final String URL_PRODUCT_GW="gw";
+	public static final String URL_PRODUCT_KABLINK="kablink";
+	public static final String URL_PRODUCT_NOVELL="novell";
+	public static final String URL_VIBEONPREM_ROOT_FLAG="vibeonprem_root";
+	public static final String URL_VIBEONPREM_URL_FLAG="vibeonprem_url";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";

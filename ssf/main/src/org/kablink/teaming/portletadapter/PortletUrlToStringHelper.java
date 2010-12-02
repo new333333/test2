@@ -133,7 +133,7 @@ public class PortletUrlToStringHelper implements PortletUrlToStringHelperInterfa
 				sb.append( Constants.AMPERSAND );
 			}
 			
-			sb.append( WebUrlUtil.VIBEONPREM_URL_FLAG );
+			sb.append( WebKeys.URL_VIBEONPREM_URL_FLAG );
 			
 			if( adaptedPortletUrl.crawler )
 				sb.append( Constants.SLASH );
