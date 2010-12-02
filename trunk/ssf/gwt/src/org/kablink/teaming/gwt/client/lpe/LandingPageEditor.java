@@ -39,7 +39,6 @@ import java.util.Stack;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.lpe.PaletteItem.DragProxy;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -81,6 +80,9 @@ public class LandingPageEditor extends Composite
 	private boolean		m_paletteItemDragInProgress;
 	private DragProxy		m_paletteItemDragProxy;
 	private PaletteItem		m_paletteItemBeingDragged = null;
+	private boolean		m_existingItemDragInProgress;
+	private DragProxy		m_existingItemDragProxy = null;
+	private DropWidget		m_existingItemBeingDragged = null;
 	private DropZone		m_selectedDropZone = null;
 	private Stack<DropZone>		m_enteredDropZones = null;
 	private HandlerRegistration		m_previewHandlerReg = null;
@@ -100,6 +102,7 @@ public class LandingPageEditor extends Composite
 		Label			hintLabel;
 		int				i;
 		int				numItems;
+		boolean			doLog;
 		
 		// Get the configuration data that defines this landing page.
 		lpeConfig = getLandingPageConfig();
@@ -157,7 +160,8 @@ public class LandingPageEditor extends Composite
 		m_configResultsInputCtrl = new Hidden( lpeConfig.getMashupPropertyName() );
 		vPanel.add( m_configResultsInputCtrl );
 		
-		if ( false )
+		doLog = false;
+		if ( doLog == true )
 		{
 			LandingPageEditor.m_textBox = new TextArea();
 			LandingPageEditor.m_textBox.setVisibleLines( 20 );
@@ -166,6 +170,7 @@ public class LandingPageEditor extends Composite
 		}
 		
 		m_paletteItemDragInProgress = false;
+		m_existingItemDragInProgress = false;
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( vPanel );
@@ -413,24 +418,67 @@ public class LandingPageEditor extends Composite
 		int mouseX;
 		int mouseY;
 		
-		// Yes, update the position of the drag proxy.
-		mouseX = clientX + Window.getScrollLeft();
-		mouseY = clientY + Window.getScrollTop();
-		m_paletteItemDragProxy.setPopupPosition( mouseX+10, mouseY+10 );
-		
-		// Is the mouse over a drop zone?
-		if ( m_selectedDropZone != null )
+		// Is the user dragging an item from the palette?
+		if ( m_paletteItemDragInProgress )
 		{
-			// Yes, have the drop zone update the visual drop clue.
-			m_selectedDropZone.showDropClue( clientX, clientY );
+			// Yes, update the position of the drag proxy.
+			mouseX = clientX + Window.getScrollLeft();
+			mouseY = clientY + Window.getScrollTop();
+			m_paletteItemDragProxy.setPopupPosition( mouseX+10, mouseY+10 );
+			
+			// Is the mouse over a drop zone?
+			if ( m_selectedDropZone != null )
+			{
+				// Yes, have the drop zone update the visual drop clue.
+				m_selectedDropZone.showDropClue( clientX, clientY );
+			}
+		}
+		// Is the user dragging an existing item?
+		else if ( m_existingItemDragInProgress )
+		{
+			// Yes, update the position of the drag proxy.
+			mouseX = clientX + Window.getScrollLeft();
+			mouseY = clientY + Window.getScrollTop();
+			m_existingItemDragProxy.setPopupPosition( mouseX+10, mouseY+10 );
+			
+			// Is the mouse over a drop zone?
+			if ( m_selectedDropZone != null )
+			{
+				//!!! Add a check to make sure the drop zone is not the item being dragged
+				//!!! or a child of the item being dragged.
+				// Yes, have the drop zone update the visual drop clue.
+				m_selectedDropZone.showDropClue( clientX, clientY );
+			}
 		}
 	}// end handleMouseMove()
 	
+
+	/**
+	 * Return a boolean indicating whether or not the user is current dragging an item from
+	 * the palette or an existing item.
+	 */
+	public boolean isDragInProgress()
+	{
+		if ( isExistingItemDragInProgress() || isPaletteItemDragInProgress() )
+			return true;
 		
+		return false;
+	}
+	
+	
+	/**
+	 * Return a boolean indicating whether or not the user is currently dragging an existing item.
+	 */
+	private boolean isExistingItemDragInProgress()
+	{
+		return m_existingItemDragInProgress;
+	}
+
+	
 	/**
 	 * Return a boolean indicating whether or not the user is currently dragging a palette item.
 	 */
-	public boolean isPaletteItemDragInProgress()
+	private boolean isPaletteItemDragInProgress()
 	{
 		return m_paletteItemDragInProgress;
 	}// end isPaletteItemDragInProgress()
@@ -563,6 +611,58 @@ public class LandingPageEditor extends Composite
 				dropWidget.editProperties( this, this, x, y );
 			}
 		}
+		// Is the user currently dragging an item from the palette?
+		else if ( m_existingItemDragInProgress && m_existingItemDragProxy != null && m_existingItemBeingDragged!= null )
+		{
+			// Yes
+			m_existingItemDragInProgress = false;
+			
+			// Hide the drag proxy widget.
+			m_existingItemDragProxy.hide();
+			m_existingItemDragProxy = null;
+			
+			// Remove the mouse-up event handler
+			if ( m_mouseUpHandlerReg != null )
+			{
+				m_mouseUpHandlerReg.removeHandler();
+				m_mouseUpHandlerReg = null;
+			}
+			
+			// Remove the preview event handler
+			if ( m_previewHandlerReg != null )
+			{
+				m_previewHandlerReg.removeHandler();
+				m_previewHandlerReg = null;
+			}
+			
+			// Clear the stack of drop zones.
+			m_enteredDropZones.clear();
+			
+			// Did the user drop the existing item on a drop zone?
+			if ( m_selectedDropZone != null )
+			{
+				Command cmd;
+				
+				// Yes, hide the drop clue.
+				m_selectedDropZone.hideDropClue();
+				
+				// Let the drop zone figure out where to insert the dropped widget.
+				m_selectedDropZone.setDropLocation( event.getClientX(), event.getClientY() );
+				
+				// Add the DropWidget to the DropZone it was dropped on.
+				m_selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
+				
+				// Adjust the height of things to make sure everything fits.
+				cmd = new Command()
+				{
+					public void execute()
+					{
+						m_canvas.adjustHeightOfAllTableWidgets();
+					}
+				};
+				DeferredCommand.addCommand( cmd );
+			}
+		}
 	}// end onMouseUp()
 	
 	
@@ -579,7 +679,8 @@ public class LandingPageEditor extends Composite
 		if ( eventType != Event.ONMOUSEMOVE )
 			return;
 		
-		if ( isPaletteItemDragInProgress() )
+		// Is the user dragging an item from the palette or dragging an existing item?
+		if ( isPaletteItemDragInProgress() || isExistingItemDragInProgress() )
 		{
 			NativeEvent nativeEvent;
 			int x;
@@ -588,6 +689,7 @@ public class LandingPageEditor extends Composite
 			int scrollLeft;
 			int windowHeight;
 
+			// Yes
 			nativeEvent = previewEvent.getNativeEvent();
 			x = nativeEvent.getClientX();
 			y = nativeEvent.getClientY();
@@ -628,10 +730,22 @@ public class LandingPageEditor extends Composite
 	 */
 	private void setDropZone( DropZone dropZone, int clientX, int clientY )
 	{
-		// Is the user dragging an item from the palette?
-		if ( m_paletteItemDragInProgress )
+		// Is the user dragging an item from the palette or dragging an existing item?
+		if ( m_paletteItemDragInProgress || m_existingItemDragInProgress )
 		{
 			// Yes
+			// If we are dragging an existing item, make sure the drop zone is not the item
+			// being dragged or a child of the item being dragged.
+			if ( m_existingItemDragInProgress && m_existingItemBeingDragged instanceof HasDropZone )
+			{
+				// Does the given drop zone live inside the item being dragged?
+				if ( ((HasDropZone) m_existingItemBeingDragged).containsDropZone( dropZone ) )
+				{
+					// Yes, we can't let the user drop the item on itself, so bail.
+					return;
+				}
+			}
+			
 			// Do we currently have a selected drop zone that is different from the new drop zone?
 			if ( m_selectedDropZone != null && dropZone != m_selectedDropZone )
 			{
@@ -652,6 +766,36 @@ public class LandingPageEditor extends Composite
 			m_selectedDropZone = dropZone;
 		}
 	}// end setDropZone()
+	
+	
+	/**
+	 * This method initiates the drag/drop of an existing item in the canvas.
+	 */
+	public void startDragExistingItem( DropWidget dropWidget, MouseDownEvent event )
+	{
+		// Get the drag proxy widget we should display and display it.
+		m_existingItemDragProxy = dropWidget.getDragProxy();
+		
+		// Remember the existing item we are dragging.
+		m_existingItemBeingDragged = dropWidget;
+
+		// Position the drag proxy widget at the cursor position.
+		m_existingItemDragProxy.setPopupPosition( event.getClientX()+10, event.getClientY()+10 );
+		
+		// Show the drag-proxy widget.
+		m_existingItemDragProxy.show();
+		
+		// Register for mouse up event.
+		m_mouseUpHandlerReg = addMouseUpHandler( this );
+		
+		// Register a preview-event handler.  We do this so we can consume the mouse-move
+		// event when the user is dragging an existing item.
+		m_previewHandlerReg = Event.addNativePreviewHandler( this );
+//!!!		sinkEvents( Event.ONMOUSEMOVE );
+
+		// Remember that the drag process has started.
+		m_existingItemDragInProgress = true;
+	}
 	
 	
 	/**

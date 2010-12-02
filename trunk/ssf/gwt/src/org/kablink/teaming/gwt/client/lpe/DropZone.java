@@ -169,6 +169,43 @@ public class DropZone extends Composite
 		return getOffsetHeight();
 	}// end adjustHeightOfAllTableWidgets()
 	
+
+	/**
+	 * Check to see if this widget contains the given DropZone.
+	 */
+	public boolean containsDropZone( DropZone dropZone )
+	{
+		ArrayList<DropWidget> childWidgets;
+		DropWidget nextWidget;
+		int i;
+
+		// Get the list of widgets that are children of this DropZone.
+		childWidgets = getWidgets();
+		
+		// Spin through the list of child widgets and see if they contain the given DropZone
+		if ( childWidgets != null )
+		{
+			for (i = 0; i < childWidgets.size(); ++i)
+			{
+				nextWidget = childWidgets.get( i );
+				
+				// Does this widget have DropZones?
+				if ( nextWidget instanceof HasDropZone )
+				{
+					// Yes, does this widget hold the given DropZone
+					if ( ((HasDropZone) nextWidget).containsDropZone( dropZone ) )
+					{
+						// Yes
+						return true;
+					}
+				}
+			}
+		}
+
+		// If we get here, we don't hold the given drop zone.
+		return false;
+	}
+	
 	
 	/**
 	 * If the user dropped a widget at the given mouse position, calculate the widget the dropped widget
@@ -362,8 +399,8 @@ public class DropZone extends Composite
 	 */
 	public void onMouseOut( MouseOutEvent event )
 	{
-		// Is the user currently dragging an item from the palette?
-		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
+		// Is the user currently dragging an item?
+		if ( m_lpe != null && m_lpe.isDragInProgress() )
 		{
 			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
 			m_lpe.leavingDropZone( this, event.getClientX(), event.getClientY() );
@@ -376,8 +413,8 @@ public class DropZone extends Composite
 	 */
 	public void onMouseOver( MouseOverEvent event )
 	{
-		// Is the user currently dragging an item from the palette?
-		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
+		// Is the user currently dragging an item?
+		if ( m_lpe != null && m_lpe.isDragInProgress() )
 		{
 			// Yes, tell the landing page editor what drop zone the cursor is over.
 			m_lpe.enteringDropZone( this, event.getClientX(), event.getClientY() );

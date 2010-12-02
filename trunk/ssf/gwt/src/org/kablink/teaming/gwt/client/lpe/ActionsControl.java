@@ -38,8 +38,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -49,67 +49,68 @@ import com.google.gwt.user.client.ui.Image;
  * @author jwootton
  *
  */
-public class EditDeleteControl extends Composite
+public class ActionsControl extends Composite
 	implements ClickHandler
 {
-	private EditHandler	m_editHandler;	// Handler to call when the user presses the "edit" link.
+	private EditHandler		m_editHandler;	// Handler to call when the user presses the "edit" link.
 	private DeleteHandler	m_deleteHandler;// Handler to call when the user presses the "delete" link.
-	private Anchor			m_editAnchor;
-	private Anchor			m_deleteAnchor;
+	private Image			m_editImg;
+	private Image			m_deleteImg;
 	
 	/**
 	 * This control has 2 images, an "edit" image and a "delete" image.  When the user clicks
 	 * on the "edit" image, the editHandler will be called.  When the user clicks on the "delete"
 	 * image, the deleteHandler will be called.
 	 */
-	public EditDeleteControl(
+	public ActionsControl(
+		MouseDownHandler mouseDownHandler,
 		EditHandler editHandler,	// Gets called when the user clicks on the "edit" link.
 		DeleteHandler deleteHandler )// Gets called when the user clicks on the "delete" link.
 	{
 		FlowPanel mainPanel;
 		ImageResource imageResource;
-		Image img;
 		
 		m_editHandler = editHandler;
 		m_deleteHandler = deleteHandler;
 
 		mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "editDeleteControl" );
+		mainPanel.addStyleName( "lpeActionsControl" );
 		
-		// Create an "edit" anchor.
+		// Create a "move" image
 		{
-			m_editAnchor = new Anchor();
-			m_editAnchor.addClickHandler( this );
-			m_editAnchor.addStyleName( "editDeleteControlAnchor" );
+			Image img;
 			
 			imageResource = GwtTeaming.getImageBundle().edit10();
 			img = new Image(imageResource);
+			img.addMouseDownHandler( mouseDownHandler );
 			img.addStyleName( "margin-right-5" );
+			img.addStyleName( "cursorMove" );
 			
-			// Add the edit image to the anchor.
-			m_editAnchor.getElement().appendChild( img.getElement() );
-			
-			mainPanel.add( m_editAnchor );
+			mainPanel.add( img );
 		}
 		
-		// Create a "delete" anchor.
+		// Create an "edit" image
 		{
-			m_deleteAnchor = new Anchor();
-			m_deleteAnchor.addClickHandler( this );
-			m_deleteAnchor.addStyleName( "editDeleteControlAnchor" );
+			imageResource = GwtTeaming.getImageBundle().edit10();
+			m_editImg = new Image(imageResource);
+			m_editImg.addClickHandler( this );
+			m_editImg.addStyleName( "margin-right-5" );
 			
+			mainPanel.add( m_editImg );
+		}
+		
+		// Create a "delete" image.
+		{
 			imageResource = GwtTeaming.getImageBundle().delete10();
-			img = new Image(imageResource);
-
-			// Add the delete image to the anchor.
-			m_deleteAnchor.getElement().appendChild( img.getElement() );
+			m_deleteImg = new Image(imageResource);
+			m_deleteImg.addClickHandler( this );
 			
-			mainPanel.add( m_deleteAnchor );
+			mainPanel.add( m_deleteImg );
 		}
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
-	}// end EditDeleteControl()
+	}// end ActionsControl()
 	
 	
 	/*
@@ -122,8 +123,8 @@ public class EditDeleteControl extends Composite
 		// Get the object that was clicked on.
 		source = event.getSource();
 		
-		// Did the user click on the "edit" link?
-		if ( source == m_editAnchor )
+		// Did the user click on the "edit" image?
+		if ( source == m_editImg )
 		{
 			// Yes
 			// Do we have a handler we need to call?
@@ -141,8 +142,8 @@ public class EditDeleteControl extends Composite
 			return;
 		}
 		
-		// Did the user click on the "delete" link?
-		if ( source == m_deleteAnchor )
+		// Did the user click on the "delete" image?
+		if ( source == m_deleteImg )
 		{
 			// Yes
 			// Do we have a handler we need to call?
@@ -153,4 +154,4 @@ public class EditDeleteControl extends Composite
 			}
 		}
 	}// end onClick()
-}// end EditDeleteControl
+}// end ActionsControl

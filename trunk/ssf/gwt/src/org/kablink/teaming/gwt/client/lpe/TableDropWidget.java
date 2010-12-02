@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
@@ -49,6 +50,7 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  *
  */
 public class TableDropWidget extends DropWidget
+	implements HasDropZone
 {
 	private static TableWidgetDlgBox m_tableDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private TableProperties	m_properties = null;
@@ -244,6 +246,53 @@ public class TableDropWidget extends DropWidget
 	
 	
 	/**
+	 * Check to see if this widget contains the given DropZone.
+	 */
+	public boolean containsDropZone( DropZone dropZone )
+	{
+		int i;
+		int numColumns;
+
+		numColumns = m_flexTable.getCellCount( 0 );
+
+		// For every cell, check to see if that cell holds the given DropZone
+		for (i = 0; i < numColumns; ++i)
+		{
+			Widget widget;
+
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone nextDropZone;
+				
+				// Yes
+				nextDropZone = (DropZone) widget;
+				
+				// Is this the DropZone we are looking for?
+				if ( dropZone == nextDropZone )
+				{
+					// Yes
+					return true;
+				}
+				
+				// Does this drop zone contain the given drop zone?
+				if ( nextDropZone.containsDropZone( dropZone ) )
+				{
+					// Yes
+					return true;
+				}
+			}
+		}// end for()
+
+		// If we get here, we don't hold the given drop zone.
+		return false;
+	}
+	
+	
+	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
 	public String createConfigString()
@@ -302,6 +351,21 @@ public class TableDropWidget extends DropWidget
 	
 	
 	/**
+	 * Return the drag proxy object that should be displayed when the user drags this item.
+	 */
+	public DragProxy getDragProxy()
+	{
+		if ( m_dragProxy == null )
+		{
+			// Create a drag proxy that will be displayed when the user drags this item.
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorTable(), GwtTeaming.getMessages().lpeTable() );
+		}
+		
+		return m_dragProxy;
+	}
+	
+
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -337,10 +401,10 @@ public class TableDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			EditDeleteControl ctrl;
+			ActionsControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new EditDeleteControl( this, this );
+			ctrl = new ActionsControl( this, this, this );
 			ctrl.addStyleName( "upperRight" );
 
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right

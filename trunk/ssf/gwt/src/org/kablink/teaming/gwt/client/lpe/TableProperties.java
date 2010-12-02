@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.http.client.URL;
 
 
 /**
@@ -206,7 +205,20 @@ public class TableProperties
 	 */
 	public void setNumColumns( int numColumns )
 	{
+		int defaultWidth;
+		int i;
+		
 		m_colWidths = new int[numColumns];
+		
+		// Set the default width of each column.
+		if ( numColumns > 0 )
+		{
+			defaultWidth = 100 / numColumns;
+			for (i = 0; i < numColumns; ++i)
+			{
+				m_colWidths[i] = defaultWidth;
+			}
+		}
 	}// end setNumColumns()
 	
 	

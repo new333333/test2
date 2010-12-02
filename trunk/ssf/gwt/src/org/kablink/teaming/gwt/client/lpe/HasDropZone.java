@@ -30,102 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.lpe;
-
-import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * This class holds all of the properties needed to define a list widget in a landing page.
+ * 
  * @author jwootton
  *
  */
-public class ListProperties
-	implements PropertiesObj
+public interface HasDropZone
 {
-	private boolean	m_showBorder;
-	private String		m_title;
-	
-	/**
-	 * 
-	 */
-	public ListProperties()
-	{
-		m_showBorder = false;
-		m_title = null;
-	}// end ListProperties()
-	
-	
-	/**
-	 * 
-	 */
-	public void copy( PropertiesObj props )
-	{
-		if ( props instanceof ListProperties )
-		{
-			ListProperties listProps;
-			
-			listProps = (ListProperties) props;
-			setShowBorder( listProps.getShowBorderValue() );
-			setTitle( listProps.getTitle() );
-		}
-	}// end copy()
-	
-	
-	/**
-	 * Return the properties as a string that can be stored in the db.
-	 */
-	public String createConfigString()
-	{
-		String str;
-		
-		// The string should look like: "listStart,showBorder=1,title=something;"
-		str = "listStart,";
-		if ( m_showBorder )
-			str += "showBorder=1,";
-		
-		str += "title=";
-		if ( m_title != null )
-			str += ConfigData.encodeConfigData( m_title );
-		str += ";";
-
-		return str;
-	}// end createConfigString()
-	
-	
-	/**
-	 * Return the value of the "show border" property
-	 */
-	public boolean getShowBorderValue()
-	{
-		return m_showBorder;
-	}// end getShowBorderValue()
-	
-	
-	/**
-	 * Return the value of the title property
-	 */
-	public String getTitle()
-	{
-		return m_title;
-	}// end getTitle()
-	
-	
-	/**
-	 * 
-	 */
-	public void setShowBorder( boolean show )
-	{
-		m_showBorder = show;
-	}// end setShowBorder()
-	
-	
-	/**
-	 * 
-	 */
-	public void setTitle( String title )
-	{
-		m_title = title;
-	}// end setTitle()
-}// end ListProperties
+	public boolean containsDropZone( DropZone dropZone );
+}
