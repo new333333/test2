@@ -44,7 +44,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 
@@ -97,6 +96,21 @@ public class EntryDropWidget extends DropWidget
 	
 	
 	/**
+	 * Return the drag proxy object that should be displayed when the user drags this item.
+	 */
+	public DragProxy getDragProxy()
+	{
+		if ( m_dragProxy == null )
+		{
+			// Create a drag proxy that will be displayed when the user drags this item.
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorEntry(), GwtTeaming.getMessages().lpeEntry() );
+		}
+		
+		return m_dragProxy;
+	}
+	
+
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -132,10 +146,10 @@ public class EntryDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			EditDeleteControl ctrl;
+			ActionsControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new EditDeleteControl( this, this );
+			ctrl = new ActionsControl( this, this, this );
 			ctrl.addStyleName( "upperRight" );
 			
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right

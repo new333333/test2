@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
@@ -47,6 +48,7 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class ListDropWidget extends DropWidget
+	implements HasDropZone
 {
 	private static ListWidgetDlgBox m_listDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private ListProperties		m_properties = null;
@@ -121,6 +123,19 @@ public class ListDropWidget extends DropWidget
 	
 	
 	/**
+	 * Check to see if this widget contains the given DropZone.
+	 */
+	public boolean containsDropZone( DropZone dropZone )
+	{
+		if ( m_dropZone == dropZone )
+			return true;
+		
+		// Check all of the widgets found in our drop zone to see if they contain the given DropZone.
+		return m_dropZone.containsDropZone( dropZone );
+	}
+	
+	
+	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
 	public String createConfigString()
@@ -156,6 +171,21 @@ public class ListDropWidget extends DropWidget
 	}// end createConfigString()
 	
 	
+	/**
+	 * Return the drag proxy object that should be displayed when the user drags this item.
+	 */
+	public DragProxy getDragProxy()
+	{
+		if ( m_dragProxy == null )
+		{
+			// Create a drag proxy that will be displayed when the user drags this item.
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorList(), GwtTeaming.getMessages().lpeList() );
+		}
+		
+		return m_dragProxy;
+	}
+	
+
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
@@ -213,10 +243,10 @@ public class ListDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			EditDeleteControl ctrl;
+			ActionsControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new EditDeleteControl( this, this );
+			ctrl = new ActionsControl( this, this, this );
 			ctrl.addStyleName( "upperRight" );
 			
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right

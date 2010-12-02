@@ -32,10 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import java.util.ArrayList;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.user.client.Window;
 
 
 /**

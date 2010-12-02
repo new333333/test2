@@ -40,8 +40,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.event.dom.client.MouseDownEvent;
+import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
@@ -51,7 +54,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  *
  */
 public abstract class DropWidget extends Composite
-	implements EditSuccessfulHandler, EditCanceledHandler, EditHandler, DeleteHandler
+	implements EditSuccessfulHandler, EditCanceledHandler, EditHandler, DeleteHandler, MouseDownHandler
 {
 	private DlgBox					m_dlgBox = null;
 	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
@@ -59,6 +62,7 @@ public abstract class DropWidget extends Composite
 	private PopupPanel.PositionCallback m_popupCallback = null;
 	private int m_dlgX;
 	private int m_dlgY;
+	protected DragProxy m_dragProxy = null;
 	protected LandingPageEditor	m_lpe = null;
 
 
@@ -231,6 +235,12 @@ public abstract class DropWidget extends Composite
 
 	
 	/**
+	 * Return the drag proxy object that should be displayed when the user drags this item.
+	 */
+	public abstract DragProxy getDragProxy();
+	
+
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public abstract DlgBox getPropertiesDlgBox( int xPos, int yPos );
@@ -304,6 +314,26 @@ public abstract class DropWidget extends Composite
 	{
 		editProperties( null, null, x, y );
 	}// end onEdit()
+	
+	
+	/**
+	 * Handles the MouseDownEvent.  This will initiate the dragging of this item.
+	 */
+	public void onMouseDown( MouseDownEvent event )
+	{
+		Object	eventSender;
+		
+		// Is the object that sent this event a PaletteItem object?
+		eventSender = event.getSource();
+		if ( eventSender instanceof Image )
+		{
+			// Yes
+			m_lpe.startDragExistingItem( this, event );
+			
+			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
+			event.getNativeEvent().preventDefault();
+		}
+	}// end onMouseDown()
 	
 	
 	/**

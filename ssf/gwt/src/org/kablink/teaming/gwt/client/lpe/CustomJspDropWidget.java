@@ -87,6 +87,21 @@ public class CustomJspDropWidget extends DropWidget
 	
 	
 	/**
+	 * Return the drag proxy object that should be displayed when the user drags this item.
+	 */
+	public DragProxy getDragProxy()
+	{
+		if ( m_dragProxy == null )
+		{
+			// Create a drag proxy that will be displayed when the user drags this item.
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorCustomJsp(), GwtTeaming.getMessages().lpeCustomJSP() );
+		}
+		
+		return m_dragProxy;
+	}
+	
+
+	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -123,10 +138,10 @@ public class CustomJspDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			EditDeleteControl ctrl;
+			ActionsControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new EditDeleteControl( this, this );
+			ctrl = new ActionsControl( this, this, this );
 			ctrl.addStyleName( "upperRight" );
 			
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
@@ -205,9 +220,6 @@ public class CustomJspDropWidget extends DropWidget
 	 */
 	private void updateWidget()
 	{
-		String entryName;
-		String binderName;
-
 		// Are we waiting for the ajax call to get the entry name to finish?
 		if ( m_properties.isRpcInProgress() )
 		{

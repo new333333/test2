@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.http.client.URL;
 
 
 /**

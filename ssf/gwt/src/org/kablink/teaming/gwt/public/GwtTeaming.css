@@ -520,6 +520,11 @@ body, table td, select
 	cursor: pointer;
 }
 
+.cursorMove
+{
+	cursor: move;
+}
+
 /* Styles used with instructions in a dialog box. */
 .dlgInstructions
 {
@@ -573,15 +578,15 @@ body, table td, select
 	padding: 4px 8px;
 }
 
-/* Styles used with the Edit-Delete control. */
-.editDeleteControl
+/* Styles used with the actions control found on a widget in the landing page editor. */
+.lpeActionsControl
 {
 	background-color: #EBECA5;
 	border: 1px solid #CCCCCC;
 	padding: 1px;
 	padding-right: 4px;
 	white-space: nowrap;
-	width: 25px;
+	width: 41px;
 }
 
 /* Styles used with the "edit" anchor in the Edit-Delete control. */
@@ -1111,6 +1116,14 @@ body, table td, select
 
 /* Styles for the image used on a palette item. */
 .lpePaletteItemImg
+{
+	margin-right: 2px;
+	vertical-align: text-bottom;
+	z-index: 130;
+}
+
+/* Styles for the image used on a DragProxy widget. */
+.lpeDragProxyImg
 {
 	margin-right: 2px;
 	vertical-align: text-bottom;
