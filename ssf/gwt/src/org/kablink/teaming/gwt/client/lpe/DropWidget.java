@@ -62,6 +62,7 @@ public abstract class DropWidget extends Composite
 	private PopupPanel.PositionCallback m_popupCallback = null;
 	private int m_dlgX;
 	private int m_dlgY;
+	private DropZone m_parentDropZone = null;	// The DropZone this widget lives in.
 	protected DragProxy m_dragProxy = null;
 	protected LandingPageEditor	m_lpe = null;
 
@@ -239,6 +240,15 @@ public abstract class DropWidget extends Composite
 	 */
 	public abstract DragProxy getDragProxy();
 	
+	
+	/**
+	 * Return the DropZone this widget lives in.
+	 */
+	public DropZone getParentDropZone()
+	{
+		return m_parentDropZone;
+	}
+	
 
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
@@ -334,6 +344,15 @@ public abstract class DropWidget extends Composite
 			event.getNativeEvent().preventDefault();
 		}
 	}// end onMouseDown()
+	
+	
+	/**
+	 * Set the DropZone this widget lives in.
+	 */
+	public void setParentDropZone( DropZone dropZone )
+	{
+		m_parentDropZone = dropZone;
+	}
 	
 	
 	/**

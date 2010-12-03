@@ -431,6 +431,40 @@ public class TableDropWidget extends DropWidget
 	
 
 	/**
+	 * Set the DropZone this widget lives in.
+	 */
+	public void setParentDropZone( DropZone dropZone )
+	{
+		int i;
+		int numColumns;
+
+		super.setParentDropZone( dropZone );
+		
+		numColumns = m_flexTable.getCellCount( 0 );
+
+		// For every cell, tell the DropZone in that cell who its parent DropZone is.
+		for (i = 0; i < numColumns; ++i)
+		{
+			Widget widget;
+
+			// Get the DropZone for this cell.
+			widget = m_flexTable.getWidget( 0, i );
+			
+			// Is this widget a DropZone
+			if ( widget instanceof DropZone )
+			{
+				DropZone nextDropZone;
+				
+				// Yes
+				nextDropZone = (DropZone) widget;
+				nextDropZone.setParentDropZone( dropZone );
+				
+			}
+		}// end for()
+	}
+	
+	
+	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
 	public void updateWidget( PropertiesObj props )
@@ -464,6 +498,7 @@ public class TableDropWidget extends DropWidget
 				
 				m_flexTable.addCell( 0 );
 				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+				dropZone.setParentDropZone( getParentDropZone() );
 				m_flexTable.setWidget( 0, i, dropZone );
 			}
 		}
@@ -488,6 +523,7 @@ public class TableDropWidget extends DropWidget
 					
 					m_flexTable.addCell( 0 );
 					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
+					dropZone.setParentDropZone( getParentDropZone() );
 					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
 				}
 			}
