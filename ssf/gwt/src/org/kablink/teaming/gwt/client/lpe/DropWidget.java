@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
@@ -337,8 +339,24 @@ public abstract class DropWidget extends Composite
 		eventSender = event.getSource();
 		if ( eventSender instanceof Image )
 		{
-			// Yes
-			m_lpe.startDragExistingItem( this, event );
+			final int x;
+			final int y;
+			final DropWidget dropWidget;
+			Command cmd;
+			
+			dropWidget = this;
+			x = event.getClientX();
+			y = event.getClientY();
+			
+			cmd = new Command()
+			{
+				public void execute()
+				{
+					// Yes
+					m_lpe.startDragExistingItem( dropWidget, x, y );
+				}
+			};
+			DeferredCommand.addCommand( cmd );
 			
 			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
 			event.getNativeEvent().preventDefault();

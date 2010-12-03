@@ -63,6 +63,7 @@ public class DropZone extends Composite
 	private LandingPageEditor	m_lpe	= null;
 	private DropWidget m_dropBeforeWidget = null;	// When a widget gets dropped on this drop zone we will insert it before this widget.
 	private DropZone m_parentDropZone = null;		// The DropZone this DropZone lives in.
+	private String m_debugName = "";				// This is used for debug purposes only.
 	
 	/**
 	 * 
@@ -84,6 +85,9 @@ public class DropZone extends Composite
 		
 		// Remember the Landing Page Editor this drop zone is a part of.
 		m_lpe = lpe;
+		
+		if ( styleName != null )
+			m_debugName += styleName;
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_panel );
@@ -208,6 +212,15 @@ public class DropZone extends Composite
 
 		// If we get here, we don't hold the given drop zone.
 		return false;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public String getDebugName()
+	{
+		return m_debugName;
 	}
 	
 	
