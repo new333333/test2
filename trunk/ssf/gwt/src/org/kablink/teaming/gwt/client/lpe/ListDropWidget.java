@@ -237,6 +237,7 @@ public class ListDropWidget extends DropWidget
 		
 		// Add a DropZone where the user can drop widgets from the palette.
 		m_dropZone = new DropZone( m_lpe, "lpeListDropZone" );
+		m_dropZone.setParentDropZone( getParentDropZone() );
 		m_flexTable.setWidget( 0, 0, m_dropZone );
 		m_mainPanel.add( m_flexTable );
 		
@@ -270,6 +271,18 @@ public class ListDropWidget extends DropWidget
 	}// end init()
 	
 
+	/**
+	 * Set the DropZone this widget lives in.
+	 */
+	public void setParentDropZone( DropZone dropZone )
+	{
+		super.setParentDropZone( dropZone );
+		
+		// Tell our DropZone who its parent DropZone is.
+		m_dropZone.setParentDropZone( dropZone );
+	}
+	
+	
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */

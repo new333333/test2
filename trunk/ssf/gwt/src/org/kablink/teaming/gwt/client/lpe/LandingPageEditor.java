@@ -128,6 +128,7 @@ public class LandingPageEditor extends Composite
 		// Create a palette and a canvas.
 		m_palette = new Palette( this );
 		m_canvas = new DropZone( this, "lpeCanvas" );
+		m_canvas.setParentDropZone( null );
 		
 		// Add items to the canvas that are defined in the configuration.
 		numItems = configData.size();
@@ -773,6 +774,8 @@ public class LandingPageEditor extends Composite
 	 */
 	public void startDragExistingItem( DropWidget dropWidget, MouseDownEvent event )
 	{
+		DropZone dropZone;
+		
 		// Get the drag proxy widget we should display and display it.
 		m_existingItemDragProxy = dropWidget.getDragProxy();
 		
@@ -795,6 +798,36 @@ public class LandingPageEditor extends Composite
 
 		// Remember that the drag process has started.
 		m_existingItemDragInProgress = true;
+
+		// Set the initial drop zone to be the DropZone that holds the widget being dragged.
+		dropZone = dropWidget.getParentDropZone();
+		if ( dropZone != null )
+		{
+			// Configure the stack of entered drop zones.
+			{
+				DropZone parentDropZone;
+				ArrayList<DropZone> parentDropZones;
+				int i;
+				
+				parentDropZones = new ArrayList<DropZone>();
+				
+				parentDropZone = dropZone.getParentDropZone();
+				while( parentDropZone != null )
+				{
+					parentDropZones.add( parentDropZone );
+					
+					parentDropZone = parentDropZone.getParentDropZone();
+				}
+				
+				for (i = parentDropZones.size(); i > 0; --i)
+				{
+					m_enteredDropZones.push( parentDropZones.get( i-1 ) );
+				}
+			}
+
+			m_enteredDropZones.push( dropZone );
+			setDropZone( dropZone, event.getClientX(), event.getClientY() );
+		}
 	}
 	
 	

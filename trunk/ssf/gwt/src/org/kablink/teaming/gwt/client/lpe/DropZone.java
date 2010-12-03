@@ -62,6 +62,7 @@ public class DropZone extends Composite
 	private FlowPanel m_dropIndicator;	// Horizontal bar that shows the user where a dropped widget will be inserted.
 	private LandingPageEditor	m_lpe	= null;
 	private DropWidget m_dropBeforeWidget = null;	// When a widget gets dropped on this drop zone we will insert it before this widget.
+	private DropZone m_parentDropZone = null;		// The DropZone this DropZone lives in.
 	
 	/**
 	 * 
@@ -124,6 +125,9 @@ public class DropZone extends Composite
 			// Yes, insert the dropped widget at the appropriate location.
 			m_panel.insert( dropWidget, m_panel.getWidgetIndex( m_dropBeforeWidget ) );
 		}
+		
+		// Tell the widget which DropZone he lives in.
+		dropWidget.setParentDropZone( this );
 	}// end addWidgetToDropZone()
 	
 	
@@ -171,7 +175,7 @@ public class DropZone extends Composite
 	
 
 	/**
-	 * Check to see if this widget contains the given DropZone.
+	 * Check to see if this DropZone contains the given DropZone.
 	 */
 	public boolean containsDropZone( DropZone dropZone )
 	{
@@ -312,6 +316,15 @@ public class DropZone extends Composite
 	
 	
 	/**
+	 * Return the DropZone this widget lives in.
+	 */
+	public DropZone getParentDropZone()
+	{
+		return m_parentDropZone;
+	}
+	
+
+	/**
 	 * Return how much this drop zone has been scrolled vertically.
 	 */
 	public int getScrollY()
@@ -442,6 +455,15 @@ public class DropZone extends Composite
 		element = m_panel.getElement();
 		DOM.setStyleAttribute( element, "height", cssHeight );
 	}// end setHeight()
+	
+	
+	/**
+	 * Set the DropZone this DropZone lives in.
+	 */
+	public void setParentDropZone( DropZone dropZone )
+	{
+		m_parentDropZone = dropZone;
+	}
 	
 	
 	/**
