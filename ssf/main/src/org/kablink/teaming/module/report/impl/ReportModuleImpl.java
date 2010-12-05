@@ -800,7 +800,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
 				String entityType = (String)item.get(Constants.ENTITY_FIELD);
 				String entityPath = (String)item.get(Constants.ENTITY_PATH);
+				Long entityPathId = null;
 				String entityTitle = (String)item.get(Constants.TITLE_FIELD);
+				Long entityCreatorId = Long.valueOf((String)item.get(Constants.CREATORID_FIELD));
 				if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
 						EntityIdentifier.EntityType.folder.name().equals(entityType)) {
 					//Do the binders by loading them from the database
@@ -811,12 +813,29 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					StringCheckUtil.check(item, true);
 				} catch(StringCheckException e) {
 					//Yes, this entity is tainted. Add it to the report
+					if (EntityType.folderEntry.name().equals(entityType)) {
+				    	FolderEntry fe = null;
+				    	fe = (FolderEntry) coreDao.load(FolderEntry.class, Long.valueOf(entityId));
+				    	if (fe != null && fe.getParentFolder() != null) {
+				    		entityPath = fe.getParentFolder().getPathName() + "/" + fe.getParentFolder().getTitle();
+				    		entityPathId = fe.getParentFolder().getId();
+				    	}
+					} else if (EntityType.workspace.name().equals(entityType) || EntityType.folder.name().equals(entityType)) {
+				    	Binder b = null;
+				    	b = (Binder) coreDao.load(Binder.class, Long.valueOf(entityId));
+				    	if (b != null && b.getParentBinder() != null) {
+				    		entityPath = b.getPathName();
+				    		entityPathId = b.getParentBinder().getId();
+				    	}
+					}
 					Map<String, Object> row = new HashMap<String, Object>();
 					report.add(row);
 					row.put(ReportModule.ENTITY_ID, entityId);
 					row.put(ReportModule.ENTITY_TYPE, entityType);
 					row.put(ReportModule.ENTITY_PATH, entityPath);
+					row.put(ReportModule.ENTITY_PATH_ID, entityPathId);
 					row.put(ReportModule.ENTITY_TITLE, entityTitle);
+					row.put(ReportModule.ENTITY_CREATOR_ID, entityCreatorId);
 					if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
 							EntityIdentifier.EntityType.folder.name().equals(entityType)) {
 						//Do the binders by loading them from the database
@@ -849,7 +868,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						row.put(ReportModule.ENTITY_ID, binder.getId());
 						row.put(ReportModule.ENTITY_TYPE, binder.getEntityType().name());
 						row.put(ReportModule.ENTITY_PATH, binder.getPathName());
+						row.put(ReportModule.ENTITY_PATH_ID, binder.getParentBinder().getId());
 						row.put(ReportModule.ENTITY_TITLE, binder.getTitle());
+						row.put(ReportModule.ENTITY_CREATOR_ID, binder.getOwnerId());
 					} 
 				}
 			}

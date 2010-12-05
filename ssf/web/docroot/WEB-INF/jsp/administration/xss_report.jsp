@@ -124,11 +124,29 @@ function addXssReportDataToPage( entry )
 	if (title.length > 80) {
 		title = title.substr(0,79) + "...";
 	}
+	title = ss_replaceSubStrAll(title, "\"", "&quot;");
+	title = ss_replaceSubStrAll(title, "<", "&lt;")
+	title = ss_replaceSubStrAll(title, ">", "&gt;")
 	updateElementsTextNode( span, title );
 	anchor.appendChild( span );
 	td.appendChild( anchor );
-	if (entry.path != null && entry.path != "") {
+	if (entry.creatorName != null && entry.creatorName != "") {
 		br = document.createElement( 'br' );
+		span = document.createElement( 'span' );
+		span.className = 'ss_fineprint';
+		span.style.paddingLeft = "20px";
+		updateElementsTextNode( span, entry.creatorName );
+		td.appendChild( br );
+		td.appendChild( span );
+	}
+	if (entry.path != null && entry.path != "") {
+		anchor = document.createElement( 'a' );
+		anchor.style.cursor = 'pointer';
+		anchor.onclick =	function()
+							{
+								// Invoke the View operation for this path
+								invokeXssPath( tr.n_entry );
+							}
 		span = document.createElement( 'span' );
 		span.className = 'ss_fineprint';
 		span.style.paddingLeft = "20px";
@@ -141,8 +159,10 @@ function addXssReportDataToPage( entry )
 			path = "..." + path.substr(path.length-120, path.length);
 		}
 		updateElementsTextNode( span, path );
+		anchor.appendChild( span );
+		br = document.createElement( 'br' );
 		td.appendChild( br );
-		td.appendChild( span );
+		td.appendChild( anchor );
 	}
 
 	// Add the entry's type to the table.
@@ -192,6 +212,9 @@ function getXssReport()
 	var url;
 	var obj;
 
+	// Remove any previous access data from the page.
+	removeXssReportDataFromPage();
+	
 	// Display the wait indicator.
 	showWaitIndicator();
 	
@@ -311,6 +334,18 @@ function invokeXssPage( entry ) {
 	}
  
 }// end invokeXssPage()
+
+/**
+ * Invoke the view operation for this page
+ */
+function invokeXssPath( entry ) {
+	var url = m_viewPermalinkUrl + "&entityType=folder";
+	url += "&binderId=" + entry.pathId;
+
+	// Invoke the entity page.
+	ss_openUrlInPortlet( url, true, "", "");
+ 
+}// end invokeXssPath()
 
 /**
  * Invoke the view operation for this page
