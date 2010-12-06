@@ -64,6 +64,8 @@ public class DropZone extends Composite
 	private DropWidget m_dropBeforeWidget = null;	// When a widget gets dropped on this drop zone we will insert it before this widget.
 	private DropZone m_parentDropZone = null;		// The DropZone this DropZone lives in.
 	private String m_debugName = "";				// This is used for debug purposes only.
+	private String m_id;
+	private static int m_baseId = 0;
 	
 	/**
 	 * 
@@ -72,6 +74,9 @@ public class DropZone extends Composite
 	{
 		m_panel = new FlowPanel();
 		m_panel.setStylePrimaryName( styleName );
+		m_id = "dropZone" + m_baseId;
+		++m_baseId;
+		m_panel.getElement().setId( m_id );
 
 		// Create a visual indicator that show the user where a dropped widget will be inserted.
 		m_dropIndicator = new FlowPanel();
@@ -82,9 +87,12 @@ public class DropZone extends Composite
 		// Register for mouse-over and mouse-out events.
 		addMouseOverHandler( this );
 		addMouseOutHandler( this );
-		
+
 		// Remember the Landing Page Editor this drop zone is a part of.
 		m_lpe = lpe;
+		
+		// Tell the Landing Page Editor to cache is DropZone.
+		m_lpe.cacheDropZone( this );
 		
 		if ( styleName != null )
 			m_debugName += styleName;
@@ -329,6 +337,15 @@ public class DropZone extends Composite
 	
 	
 	/**
+	 * 
+	 */
+	public String getId()
+	{
+		return m_id;
+	}
+	
+	
+	/**
 	 * Return the DropZone this widget lives in.
 	 */
 	public DropZone getParentDropZone()
@@ -439,6 +456,11 @@ public class DropZone extends Composite
 	 */
 	public void onMouseOver( MouseOverEvent event )
 	{
+		// Because of a problem with IE we need to handle the on-mouse-over event in the
+		// LandingPageEditor.onPreviewNativeEvent().  That is why we just return.
+		if ( event != null || event == null )
+			return;
+		
 		// Is the user currently dragging an item?
 		if ( m_lpe != null && m_lpe.isDragInProgress() )
 		{
