@@ -70,7 +70,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class LandingPageEditor extends Composite
-	implements MouseDownHandler, MouseUpHandler,
+	implements MouseDownHandler,
+				MouseUpHandler,
 				 HasMouseUpHandlers,
 				 EditSuccessfulHandler, EditCanceledHandler,
 				 Event.NativePreviewHandler
@@ -88,6 +89,7 @@ public class LandingPageEditor extends Composite
 	private HandlerRegistration		m_previewHandlerReg = null;
 	private HandlerRegistration		m_mouseUpHandlerReg = null;
 	private Hidden m_configResultsInputCtrl = null;
+	private ArrayList<DropZone> m_dropZones = null;
 	private static TextArea m_textBox = null;//!!!
 	
 	/**
@@ -103,6 +105,9 @@ public class LandingPageEditor extends Composite
 		int				i;
 		int				numItems;
 		boolean			doLog;
+		
+		// Create an ArrayList that will hold all DropZones that are created.
+		m_dropZones = new ArrayList<DropZone>();
 		
 		// Get the configuration data that defines this landing page.
 		lpeConfig = getLandingPageConfig();
@@ -266,6 +271,15 @@ public class LandingPageEditor extends Composite
 	
 	
 	/**
+	 * 
+	 */
+	public void cacheDropZone( DropZone dropZone )
+	{
+		m_dropZones.add( dropZone );
+	}
+	
+	
+	/**
 	 * Create the configuration string that will be stored in the db.
 	 */
 	public String createConfigString()
@@ -402,6 +416,35 @@ public class LandingPageEditor extends Composite
 	{
 		return m_canvas.getScrollY();
 	}// end getCanvasScrollY()
+	
+	
+	/**
+	 * 
+	 */
+	private DropZone getDropZoneById( String id )
+	{
+		int i;
+		
+		if ( id == null || id.length() == 0 )
+			return null;
+		
+		for (i = 0; i < m_dropZones.size(); ++i)
+		{
+			DropZone dropZone;
+			String nextId;
+			
+			dropZone = m_dropZones.get( i );
+			if ( dropZone != null )
+			{
+				nextId = dropZone.getId();
+				if ( id.equalsIgnoreCase( nextId ) )
+					return dropZone;
+			}
+		}
+		
+		// If we get here we didn't find a DropZone with the given id.
+		return null;
+	}
 	
 	
 	/**
@@ -565,6 +608,9 @@ public class LandingPageEditor extends Composite
 			
 			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
 			event.getNativeEvent().preventDefault();
+			//!!!event.getNativeEvent().stopPropagation();
+			//!!!event.preventDefault();
+			//!!!event.stopPropagation();
 		}
 	}// end onMouseDown()
 	
@@ -692,6 +738,38 @@ public class LandingPageEditor extends Composite
 
 		eventType = previewEvent.getTypeInt();
 		
+		if ( eventType == Event.ONMOUSEOVER && isDragInProgress() )
+		{
+			NativeEvent nativeEvent;
+			EventTarget eventTarget;
+
+			nativeEvent = previewEvent.getNativeEvent();
+
+			// Get the target for the mouse-over event
+			eventTarget = nativeEvent.getEventTarget();
+			
+			if ( eventTarget != null && Element.is( eventTarget ) )
+			{
+				Element targetElement;
+				String id;
+
+				// Is the mouse over a DropZone?
+				targetElement = Element.as( eventTarget );
+				id = targetElement.getId();
+				if ( id != null && id.startsWith( "dropZone" ) )
+				{
+					DropZone dropZone;
+					
+					// Yes
+					dropZone = getDropZoneById( id );
+					if ( dropZone != null )
+						enteringDropZone( dropZone, nativeEvent.getClientX(), nativeEvent.getClientY() );
+				}
+			}
+			
+			return;
+		}
+		
 		// We are only interested in mouse-move events.
 		if ( eventType != Event.ONMOUSEMOVE )
 			return;
@@ -700,18 +778,26 @@ public class LandingPageEditor extends Composite
 		if ( isPaletteItemDragInProgress() || isExistingItemDragInProgress() )
 		{
 			NativeEvent nativeEvent;
-			int x;
-			int y;
+			final int x;
+			final int y;
 			int scrollTop;
 			int scrollLeft;
 			int windowHeight;
+			Command cmd;
 
 			// Yes
 			nativeEvent = previewEvent.getNativeEvent();
 			x = nativeEvent.getClientX();
 			y = nativeEvent.getClientY();
 			
-			handleMouseMove( x, y );
+			cmd = new Command()
+			{
+				public void execute()
+				{
+					handleMouseMove( x, y );
+				}
+			};
+			DeferredCommand.addCommand( cmd );
 			
 			scrollTop = Window.getScrollTop();
 			scrollLeft = Window.getScrollLeft();
@@ -735,9 +821,9 @@ public class LandingPageEditor extends Composite
 			}
 			
 			// Kill this mouse-move event so text on the page does not get highlighted when the user moves the mouse.
-			previewEvent.cancel();
+			//previewEvent.cancel();
 			nativeEvent.preventDefault();
-			nativeEvent.stopPropagation();
+			//nativeEvent.stopPropagation();
 		}
 	}// end onPreviewNativeEvent()
 	
@@ -793,6 +879,7 @@ public class LandingPageEditor extends Composite
 	{
 		DropZone dropZone;
 		
+		GWT.log( "******** startDragExistingItem() ***********" );
 		// Get the drag proxy widget we should display and display it.
 		m_existingItemDragProxy = dropWidget.getDragProxy();
 		
@@ -857,6 +944,7 @@ public class LandingPageEditor extends Composite
 	 */
 	private void startDragPaletteItem( PaletteItem paletteItem, int x, int y )
 	{
+		GWT.log( "!!!!!!!!! startDragPaletteItem() !!!!!!!!!!" );
 		// Get the drag proxy widget we should display and display it.
 		m_paletteItemDragProxy = paletteItem.getDragProxy();
 		
