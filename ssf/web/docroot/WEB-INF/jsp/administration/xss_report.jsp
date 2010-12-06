@@ -329,7 +329,7 @@ function invokeXssPage( entry ) {
 
 	// Invoke the entity page.
 	if (confirm("<ssf:nlt tag='administration.report.xss.warnOnView' 
-			text='Caution: Viewing an XSS infected item could trigger the XSS attack. \n\nViewing these items as an administrator is not recommended.\n\nProceed?'/>")) {
+			text='Caution: Viewing an XSS infected item could trigger the XSS attack. \\n\\nViewing these items as an administrator is not recommended.\\n\\nProceed?'/>")) {
 		ss_openUrlInPortlet( url, true, "", "");
 	}
  
@@ -381,13 +381,13 @@ function onLoadEventHandler()
 	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
 	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
 	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
-	m_folderEntryEntryType = 'Entry';
-	m_userEntryType = 'User';
+	m_folderEntryEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryEntryType" text="Entry" /></ssf:escapeJavaScript>';
+	m_userEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.userEntryType" text="User" /></ssf:escapeJavaScript>';
 	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
 	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-	m_noProblemsFound = '<ssf:escapeJavaScript>No XSS problems found.</ssf:escapeJavaScript>';
+	m_noProblemsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.noProblems" text="No XSS problems found." /></ssf:escapeJavaScript>';
 
-	m_modify = '<ssf:escapeJavaScript>Modify</ssf:escapeJavaScript>';
+	m_modify = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.modify" text="Modify" /></ssf:escapeJavaScript>';
 
 	// Get the url we need to invoke the page.
 	m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
@@ -462,11 +462,13 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					<div style="margin-top: 2em;">
 					    <div style="padding-bottom:20px;">
 					      <span style="margin-right: 1em;">
-					        This report scans the binders and entries in each selected binder looking for 
-					        potential XSS (Cross-Site Scripting) issues. If a threat is located, it can
-					        usually be remedied by clicking "Modify" followed by clicking "Ok" 
-					        on the offending item. This procedure removes the potential XSS threat usually 
-					        without any noticeable effect. The scan takes about 1 minute for every 1000 entries.
+					        <ssf:nlt tag="administration.report.xss.desc1" 
+					        text="This report scans the binders and entries in each 
+					        selected binder looking for potential XSS (Cross-Site Scripting) issues. 
+					        If a threat is located, it can usually be remedied by clicking 'Modify' 
+					        followed by clicking 'Ok' on the offending item. This procedure removes 
+					        the potential XSS threat usually without any noticeable effect. The scan 
+					        takes about 1 minute for every 1000 entries." />
 					      </span>
 					    </div>
 						<span style="margin-right: 1em;">
