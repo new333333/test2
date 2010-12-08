@@ -132,4 +132,6 @@ public interface BinderService {
 	 */
 	public boolean[] binder_testOperation(String accessToken, String binderOperationName, long[] binderIds);
 
+	public long binder_getTopWorkspaceId(String accessToken);
+	
 }
