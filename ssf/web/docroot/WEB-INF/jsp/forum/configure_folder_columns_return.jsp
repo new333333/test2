@@ -49,7 +49,6 @@
 %>
 <c:set var="allColumns" value="<%= allColumns %>" />
 <c:forEach var="colName1" items="${ssFolderColumnsSortOrder}" >
-${colName1}/${ssFolderColumns[colName1]}<br>
   <c:if test="${!empty ssFolderColumns[colName1]}" >
     <jsp:useBean id="colName1" type="java.lang.String" scope="page"/>
     <% 
