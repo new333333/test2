@@ -9063,6 +9063,22 @@ function ss_deleteAttribute(obj, id) {
 	return true;
 }
 
+//Function used in ordering folder columns
+function ss_saveColumnOrder(obj, name) {
+	var formObj = ss_getContainingForm(obj);
+	var hiddenObj = formObj[name];
+	hiddenObj.value = "";
+	var tableNode = ss_findOwningElement(obj, 'tbody')
+	for (var i = 0; i < tableNode.childNodes.length; i++) {
+		var node = tableNode.childNodes[i]
+		if (node.tagName && node.tagName.toLowerCase() == 'tr') {
+			if (hiddenObj.value != '') hiddenObj.value += '|';
+			hiddenObj.value += node.id;
+		}
+	}
+}
+
+
 /**
  * This function will update the given element's text node with the given text.
  */

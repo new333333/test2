@@ -219,6 +219,8 @@ public interface ObjectKeys {
     
     public static final String BINDER_PROPERTY_FILTERS = "binderFilters";
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
+    public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "folderColumnSortOrder";
+    public static final String BINDER_PROPERTY_FOLDER_COLUMN_TITLES = "folderColumnTitles";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
@@ -382,6 +384,8 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
+    public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
+    public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";
