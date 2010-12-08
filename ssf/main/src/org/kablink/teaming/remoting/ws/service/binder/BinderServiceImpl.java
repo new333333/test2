@@ -658,4 +658,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	interface FolderSearcher {
 		Map searchFolders();
 	}
+	
+	@Override
+	public long binder_getTopWorkspaceId(String accessToken) {
+		return getWorkspaceModule().getTopWorkspaceId();
+	}
 }

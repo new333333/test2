@@ -411,6 +411,8 @@ public abstract class WSClientBase {
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
 		Object object = fetch(serviceName, operation, args, filename);
 		System.out.println("Successfully executed " + operation + " on " + serviceName);
+		System.out.println("Return type: " + object.getClass().toString());
+		System.out.println("Return value: " + object.toString());
 	}
 	
 	void fetchAndPrintReleaseInfo(String serviceName, String operation, Object[] args) throws Exception {

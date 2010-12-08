@@ -52,6 +52,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		try {
 			if(args[0].equals("getWorkspaceTree")) {
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
+			} else if(args[0].equals("getTopWorkspaceId")) {
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTopWorkspaceId", new Object[] {null});
 			} else if(args[0].equals("getUser")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUserByName")) {
@@ -288,6 +290,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
+		System.out.println("getTopWorkspaceId");
 		System.out.println("getUser  <user id>  <includeAttachments>");
 		System.out.println("getUserByName  <user name>  <includeAttachments>");
 		System.out.println("getUsersByEmail  <email address>  [<email type>]");
