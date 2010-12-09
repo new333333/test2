@@ -183,7 +183,7 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
-	
+
 	/**
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
@@ -225,6 +225,64 @@ public class GwtServerHelper {
 		}// end compare()
 	}// end GwtAdminActionComparator	   
 	   
+	/**
+	 * Inner class used within the GWT server code to dump profiling
+	 * information to the system log.
+	 */
+	public static class GwtServerProfiler {
+		private boolean m_debugEnabled;	// true m_debugLogger has debugging enabled.  false -> It doesn't.
+		private Log     m_debugLogger;	// The Log that profiling information is written to.
+		private long    m_debugBegin;	// If m_debugEnabled is true, contains the system time in MS that start() was called.
+		private String  m_debugFrom;	// Contains information about where the profile is being used from.
+
+		/*
+		 * Class constructor.
+		 */
+		private GwtServerProfiler(Log logger) {
+			m_debugLogger  = logger;
+			m_debugEnabled = m_debugLogger.isDebugEnabled();
+		}
+		
+		/**
+		 * If the logger has debugging enabled, dumps a message
+		 * to the log regarding how long an operation took.
+		 */
+		public void end() {
+			if (m_debugEnabled) {
+				long diff = System.currentTimeMillis() - m_debugBegin;
+				m_debugLogger.debug(m_debugFrom + ":  Ended in " + diff + "ms");
+			}
+		}
+		
+		/**
+		 * Creates a GwtServerProfiler object based on a Log and called
+		 * from string.  If the logger has debugging enabled, dumps a
+		 * message to the log regarding the profiling being started.
+		 * 
+		 * @param logger
+		 * @param from
+		 * 
+		 * @return
+		 */
+		public static GwtServerProfiler start(Log logger, String from) {
+			GwtServerProfiler reply = new GwtServerProfiler(logger);
+			
+			if (reply.m_debugEnabled) {
+				reply.m_debugFrom = from;
+				reply.m_debugBegin = System.currentTimeMillis();
+				
+				reply.m_debugLogger.debug(from + ":  Starting...");
+			}
+			
+			return reply;
+		}
+		
+		public static GwtServerProfiler start(String from) {
+			// Always use the initial form of the method.
+			return start(m_logger, from);
+		}
+	}
+	
 	/**
 	 * Inner class used compare two SavedSearchInfo objects.
 	 */
@@ -611,7 +669,7 @@ public class GwtServerHelper {
 		// we were given.  Return it.
 		return reply;
 	}
-	
+
 	/*
 	 * Scans the tags in newTags and any that aren't defined in oldTags
 	 * are defined on the binder.
@@ -2147,7 +2205,6 @@ public class GwtServerHelper {
 	/**
 	 * Return login information such as self registration and auto complete.
 	 */
-	@SuppressWarnings("unchecked")
 	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
 	{
 		GwtLoginInfo loginInfo;
