@@ -115,7 +115,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
       </ssf:slidingTableColumn>
 	</c:if>
 
-  	<c:if test="${!empty ssFolderColumns['number']}">
+  	<c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
+  	<c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.number") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['number']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['number']}</c:set>
@@ -155,7 +156,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['title']}">
+  <c:if test="${columnName == 'title' && !empty ssFolderColumns['title']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.title") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['title']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['title']}</c:set>
@@ -196,7 +197,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
   
-  <c:if test="${!empty ssFolderColumns['author']}">
+  <c:if test="${columnName == 'author' && !empty ssFolderColumns['author']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.author") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['author']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['author']}</c:set>
@@ -237,7 +238,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['comments']}">
+  <c:if test="${columnName == 'comments' && !empty ssFolderColumns['comments']}">
     <c:if test="${ss_folderViewStyle == 'folder'}">
       <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Replies"/></c:set>
     </c:if>
@@ -252,7 +253,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['size']}">
+  <c:if test="${columnName == 'size' && !empty ssFolderColumns['size']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.size") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['size']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['size']}</c:set>
@@ -291,7 +292,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['download']}">
+  <c:if test="${columnName == 'download' && !empty ssFolderColumns['download']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.download") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['download']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['download']}</c:set>
@@ -301,7 +302,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['html']}">
+  <c:if test="${columnName == 'html' && !empty ssFolderColumns['html']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.html") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['html']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['html']}</c:set>
@@ -311,7 +312,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['state']}">
+  <c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.state") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['state']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['state']}</c:set>
@@ -352,7 +353,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${!empty ssFolderColumns['date']}">
+  <c:if test="${columnName == 'date' && !empty ssFolderColumns['date']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.date") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['date']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['date']}</c:set>
@@ -394,7 +395,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
   
   <c:forEach var="column" items="${ssFolderColumns}">
-    <c:set var="colName" value="${column.key}"/>
+   <c:set var="colName" value="${column.key}"/>
+   <c:if test="${columnName == colName}">
     <c:set var="defId" value=""/>
     <c:set var="eleType" value=""/>
     <c:set var="eleName" value=""/>
@@ -468,9 +470,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	}
 %>
+   </c:if>
   </c:forEach>
   
-  <c:if test="${!empty ssFolderColumns['rating']}">
+  <c:if test="${columnName == 'rating' && !empty ssFolderColumns['rating']}">
   	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.rating") %></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['rating']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['rating']}</c:set>
@@ -509,6 +512,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     </ssf:slidingTableColumn>
   </c:if>
 
+  </c:forEach>
 </ssf:slidingTableRow>
 
   <% // Beginning of Rows %>
@@ -581,7 +585,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
 
- <c:if test="${!empty ssFolderColumns['number']}">
+ <c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
+ <c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
@@ -601,7 +606,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['title']}">
+ <c:if test="${columnName == 'title' && !empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
   <!-- to keep sunburst in line -->
     <c:if test="${!empty seenStyleburst}">
@@ -674,19 +679,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
-  <c:if test="${!empty ssFolderColumns['author']}">
+  <c:if test="${columnName == 'author' && !empty ssFolderColumns['author']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
 	<ssf:showUser user='<%=(User)entry1.get("_principal")%>' titleStyle="<%= seenStyleAuthor %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
  
- <c:if test="${!empty ssFolderColumns['comments']}">
+ <c:if test="${columnName == 'comments' && !empty ssFolderColumns['comments']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
       <span <%= seenStyle %>>${entry1._totalReplyCount}</span>
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['size']}">
+ <c:if test="${columnName == 'size' && !empty ssFolderColumns['size']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileSize}">
       <%
@@ -701,7 +706,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['download']}">
+ <c:if test="${columnName == 'download' && !empty ssFolderColumns['download']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 <%
@@ -736,7 +741,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['html']}">
+ <c:if test="${columnName == 'html' && !empty ssFolderColumns['html']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${entry1._fileName}" browserType="<%=strBrowserType%>">
@@ -755,7 +760,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
-<c:if test="${!empty ssFolderColumns['state']}">
+<c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
@@ -778,7 +783,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
 
- <c:if test="${!empty ssFolderColumns['date']}">
+ <c:if test="${columnName == 'date' && !empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
   	<% if (MiscUtil.isEntryReserved(e1BinderId, e1DocId)) { %><img
 		style="margin-right: 1px;"
@@ -804,6 +809,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <jsp:useBean id="eleCaption2" type="java.lang.String"/>
   <c:forEach var="column" items="${ssFolderColumns}">
 	<jsp:useBean id="column" type="java.util.Map.Entry"/>
+	<c:set var="colName2" value="${column.key}"/>
+	<c:if test="${columnName == colName2}">
 <%
 	String[] temp = new String[] {};
 	colName2 = column.getKey().toString();
@@ -891,9 +898,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	}
 %>
+    </c:if>
   </c:forEach>
 
- <c:if test="${!empty ssFolderColumns['rating']}">
+ <c:if test="${columnName == 'rating' && !empty ssFolderColumns['rating']}">
    <ssf:slidingTableColumn  style="${slidingTableColStyle}">
      <c:if test="${!empty entry1._rating}">
 		<span class = "ss_nowrap">
@@ -924,6 +932,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
    </ssf:slidingTableColumn>
  </c:if>
   
+ </c:forEach>
 </ssf:slidingTableRow>
 <%
 	}
