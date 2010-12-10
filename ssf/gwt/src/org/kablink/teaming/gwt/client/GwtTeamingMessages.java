@@ -83,6 +83,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltEntry();
 	String lpeAltFolder();
 	String lpeAltGraphic();
+	String lpeAltHtml();
 	String lpeAltLinkEntry();
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
@@ -91,10 +92,12 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltUtilityElement();
 	String lpeCustomJSP();
 	String lpeDeleteWidget();
+	String lpeEditHtml();
 	String lpeEntry();
 	String lpeFolder();
 	String lpeGraphic();
 	String lpeHint();
+	String lpeHtml();
 	String lpeLinkEntry();
 	String lpeLinkFolderWS();
 	String lpeLinkURL();

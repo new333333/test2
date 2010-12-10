@@ -38,7 +38,6 @@ import org.kablink.teaming.gwt.client.EditHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
@@ -217,7 +216,7 @@ public abstract class DropWidget extends Composite
 		boolean retVal = true;
 		
 		// Layout the controls on this widget according to the values found in the properties object.
-		updateWidget( (PropertiesObj) propertiesObj );
+		updateWidget( propertiesObj );
 
 		// Do we have a handler we are supposed to call?
 		if ( m_editSuccessfulHandler != null )
@@ -376,6 +375,6 @@ public abstract class DropWidget extends Composite
 	/**
 	 * Layout the widget according to the values found in the properties object.
 	 */
-	public abstract void updateWidget( PropertiesObj props );
+	public abstract void updateWidget( Object props );
 	
 }// end DropWidget

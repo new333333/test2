@@ -189,12 +189,13 @@ public class UtilityElementDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( PropertiesObj props )
+	public void updateWidget( Object props )
 	{
 		String utilityElementName;
 
 		// Save the properties that were passed to us.
-		m_properties.copy( props );
+		if ( props instanceof PropertiesObj )
+			m_properties.copy( (PropertiesObj) props );
 		
 		// Update the utility element name.
 		// Get the utility element name.

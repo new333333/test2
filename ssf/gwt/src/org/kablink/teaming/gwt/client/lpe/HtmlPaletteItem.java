@@ -32,54 +32,34 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-
-import com.google.gwt.core.client.JavaScriptObject;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 
 
 /**
- * This class wraps a JavaScript object that holds the string that defines the landing page.
- * @author jwootton
- *
+ * 
  */
-public class LandingPageConfig extends JavaScriptObject
+public class HtmlPaletteItem extends PaletteItem
 {
 	/**
-	 * Overlay types always have a protected, zero-arg constructors.
+	 * 
 	 */
-	protected LandingPageConfig()
+	public HtmlPaletteItem()
 	{
-	}// end LandingPageConfig()
+		super( GwtTeaming.getImageBundle().landingPageEditorHtml(), GwtTeaming.getMessages().lpeHtml(), GwtTeaming.getMessages().lpeAltHtml() );
+	}
 
-	
-	/**
-	 * Return the id of the binder we are editing.
-	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
-	
-	
-	/**
-	 * Return the string that holds the landing page configuration.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
-	 */
-	public final native String getConfigStr() /*-{ return this.configData; }-*/;
-	
-	
-	/**
-	 * Return the url to the content css
-	 */
-	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
 
-	
 	/**
-	 * Return the language we are running in.
+	 * Create the widget that will be added to the landing page editor when the user drops a palette item.
 	 */
-	public final native String getLanguage() /*-{ return this.language; }-*/;
-	
-	
-	/**
-	 * Return the string that holds the landing page mashup property name.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
-	 */
-	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
-	
-}// end LandingPageConfig
+	public DropWidget createDropWidget( LandingPageEditor lpe )
+	{
+		HtmlDropWidget	htmlDropWidget;
+		
+		htmlDropWidget = new HtmlDropWidget( lpe, (HtmlProperties)null );
+
+		return htmlDropWidget;
+	}
+}
+
+

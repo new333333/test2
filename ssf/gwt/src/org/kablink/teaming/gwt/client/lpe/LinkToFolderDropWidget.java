@@ -197,11 +197,11 @@ public class LinkToFolderDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( PropertiesObj props )
+	public void updateWidget( Object props )
 	{
 		// Save the properties that were passed to us.
-		if ( props != null )
-			m_properties.copy( props );
+		if ( props != null && props instanceof PropertiesObj )
+			m_properties.copy( (PropertiesObj) props );
 		
 		// Get the needed information from the server.
 		m_properties.getDataFromServer();

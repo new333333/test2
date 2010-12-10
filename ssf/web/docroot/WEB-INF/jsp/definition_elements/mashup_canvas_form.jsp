@@ -65,11 +65,14 @@
 // m_landingPageConfig holds the string that defines the content of this landing page and is referenced by the GWT code.
 var m_landingPageConfig = null;
 
-m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />' };
+m_landingPageConfig = { configData : '<ssf:escapeJavaScript value="${ssDefinitionEntry.customAttributes[property_name].value}" />', mashupPropertyName: '<ssf:escapeJavaScript value="${ss_mashupPropertyName}" />', binderId: '', language : '${ssUser.locale.language}', contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>', };
 
 // Create an array of objects where each object holds the name and id of a file attachment.
 <c:if test="${!empty ssBinder}">
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+
+m_landingPageConfig.binderId = '<% ssBinder.getId().toString(); %>';
+
 m_fileAttachments = 
 	[
 	<%

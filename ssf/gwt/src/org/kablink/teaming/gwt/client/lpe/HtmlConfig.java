@@ -30,56 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
 
-import com.google.gwt.core.client.JavaScriptObject;
-
 
 /**
- * This class wraps a JavaScript object that holds the string that defines the landing page.
+ * This class represents the configuration data for an Html widget
  * @author jwootton
  *
  */
-public class LandingPageConfig extends JavaScriptObject
+public class HtmlConfig extends ConfigItem
 {
+	private HtmlProperties	m_properties;
+	
 	/**
-	 * Overlay types always have a protected, zero-arg constructors.
+	 * 
 	 */
-	protected LandingPageConfig()
+	public HtmlConfig( String configStr )
 	{
-	}// end LandingPageConfig()
-
-	
-	/**
-	 * Return the id of the binder we are editing.
-	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
-	
-	
-	/**
-	 * Return the string that holds the landing page configuration.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
-	 */
-	public final native String getConfigStr() /*-{ return this.configData; }-*/;
+		String[] results;
+		
+		m_properties = new HtmlProperties();
+		
+		// Split the configuration data into its parts.
+		results = configStr.split( "[,;]" );
+		if ( results != null )
+		{
+		}
+	}
 	
 	
 	/**
-	 * Return the url to the content css
+	 * 
 	 */
-	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
-
-	
-	/**
-	 * Return the language we are running in.
-	 */
-	public final native String getLanguage() /*-{ return this.language; }-*/;
+	public void addChild( ConfigItem configItem )
+	{
+		// Nothing to do.
+	}
 	
 	
 	/**
-	 * Return the string that holds the landing page mashup property name.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
+	 * 
 	 */
-	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
-	
-}// end LandingPageConfig
+	public HtmlProperties getProperties()
+	{
+		return m_properties;
+	}
+}

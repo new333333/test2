@@ -90,6 +90,7 @@ public class LandingPageEditor extends Composite
 	private HandlerRegistration		m_mouseUpHandlerReg = null;
 	private Hidden m_configResultsInputCtrl = null;
 	private ArrayList<DropZone> m_dropZones = null;
+	private LandingPageConfig m_lpeConfig = null;
 	private static TextArea m_textBox = null;//!!!
 	
 	/**
@@ -97,7 +98,6 @@ public class LandingPageEditor extends Composite
 	 */
 	public LandingPageEditor()
 	{
-		LandingPageConfig lpeConfig;
 		ConfigData		configData;
 		HorizontalPanel	hPanel;
 		VerticalPanel 	vPanel;
@@ -110,8 +110,8 @@ public class LandingPageEditor extends Composite
 		m_dropZones = new ArrayList<DropZone>();
 		
 		// Get the configuration data that defines this landing page.
-		lpeConfig = getLandingPageConfig();
-		configData = new ConfigData( lpeConfig.getConfigStr() );
+		m_lpeConfig = getLandingPageConfig();
+		configData = new ConfigData( m_lpeConfig.getConfigStr() );
 		
 		// Parse the configuration data.
 		configData.parse();
@@ -163,7 +163,7 @@ public class LandingPageEditor extends Composite
 		
 		// Create a hidden input control where we will put the configuration string when
 		// the user presses the ok button.
-		m_configResultsInputCtrl = new Hidden( lpeConfig.getMashupPropertyName() );
+		m_configResultsInputCtrl = new Hidden( m_lpeConfig.getMashupPropertyName() );
 		vPanel.add( m_configResultsInputCtrl );
 		
 		doLog = false;
@@ -374,6 +374,15 @@ public class LandingPageEditor extends Composite
 	
 
 	/**
+	 * Return the id of the binder we are working with.
+	 */
+	public String getBinderId()
+	{
+		return m_lpeConfig.getBinderId();
+	}
+	
+	
+	/**
 	 * Return the height of the canvas.
 	 */
 	public int getCanvasHeight()
@@ -444,6 +453,24 @@ public class LandingPageEditor extends Composite
 		
 		// If we get here we didn't find a DropZone with the given id.
 		return null;
+	}
+	
+	
+	/**
+	 * Return the url to the content css
+	 */
+	public String getContentCss()
+	{
+		return m_lpeConfig.getContentCss();
+	}
+	
+	
+	/**
+	 * Return the language we are running in.
+	 */
+	public String getLanguage()
+	{
+		return m_lpeConfig.getLanguage();
 	}
 	
 	

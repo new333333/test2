@@ -101,6 +101,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/info2.png")
 	public ImageResource info2();
 
+	@Source( "org/kablink/teaming/gwt/public/images/lpe_accessory.gif" )
+	public ImageResource landingPageEditorAccessory();
+	
 	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
 	public ImageResource landingPageEditorCustomJsp();
 
@@ -110,9 +113,15 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/lpe_folder.gif")
 	public ImageResource landingPageEditorFolder();
 
+	@Source( "org/kablink/teaming/gwt/public/images/lpe_google_gadget.gif" )
+	public ImageResource landingPageEditorGoogleGadget();
+	
 	@Source("org/kablink/teaming/gwt/public/images/lpe_graphic16.png")
 	public ImageResource landingPageEditorGraphic();
 
+	@Source( "org/kablink/teaming/gwt/public/images/lpe_html.gif" )
+	public ImageResource landingPageEditorHtml();
+	
 	@Source("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
 	public ImageResource landingPageEditorLinkEntry();
 

@@ -286,12 +286,13 @@ public class ListDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( PropertiesObj props )
+	public void updateWidget( Object props )
 	{
 		String title;
 		
 		// Save the properties that were passed to us.
-		m_properties.copy( props );
+		if ( props instanceof PropertiesObj )
+			m_properties.copy( (PropertiesObj) props );
 		
 		// Get the title.
 		title = m_properties.getTitle();

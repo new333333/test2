@@ -43,8 +43,8 @@ public abstract class AbstractTinyMCEConfiguration
 {
 	private String mode = "none";
 	private String theme = "advanced";
-	private String language = GwtMainPage.m_requestInfo.getLanguage();
-	private String contentCss = GwtMainPage.m_requestInfo.getContentCss();
+	protected String language = null;
+	protected String contentCss = null;
 	private boolean relativeUrls = false;
 	private boolean removeScriptHost = false;
 	private String width = "100%";
@@ -639,5 +639,17 @@ public abstract class AbstractTinyMCEConfiguration
 	{
 		this.width = width;
 	}
+
+
+	/**
+	 * Set the content css we should use.
+	 */
+	public abstract void setContentCss();
+	
+	
+	/**
+	 * Set the language we are running in.
+	 */
+	public abstract void setLanguage();
 	
 }// end AbstractTinyMCEConfiguration

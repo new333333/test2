@@ -35,46 +35,44 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * 
  * @author jwootton
  *
  */
-public class CustomJspDropWidget extends DropWidget
+public class HtmlDropWidget extends DropWidget
 {
-	private static CustomJspWidgetDlgBox m_customJspDlgBox = null;		// For efficiency sake, we only create one dialog box.
-	private CustomJspProperties	m_properties = null;
-	private InlineLabel			m_jspName = null;
-	private Timer				m_timer = null;
+	private static TinyMCEDlg m_tinyMCEDlg = null;		// For efficiency sake, we only create one dialog box.
+	private HtmlProperties	m_properties = null;
+	private FlowPanel m_htmlPanel;
 	
 
 	/**
 	 * 
 	 */
-	public CustomJspDropWidget( LandingPageEditor lpe, CustomJspConfig configData )
+	public HtmlDropWidget( LandingPageEditor lpe, HtmlConfig configData )
 	{
-		CustomJspProperties properties;
+		HtmlProperties properties;
 		
 		properties = null;
 		if ( configData != null )
 			properties = configData.getProperties();
 		
 		init( lpe, properties );
-	}// end CustomJspDropWidget()
+	}
 	
 	
 	/**
 	 * 
 	 */
-	public CustomJspDropWidget( LandingPageEditor lpe, CustomJspProperties properties )
+	public HtmlDropWidget( LandingPageEditor lpe, HtmlProperties properties )
 	{
 		init( lpe, properties );
-	}// end CustomJspDropWidget()
+	}
 	
 
 	/**
@@ -83,7 +81,7 @@ public class CustomJspDropWidget extends DropWidget
 	public String createConfigString()
 	{
 		return m_properties.createConfigString();
-	}// end createConfigString()
+	}
 	
 	
 	/**
@@ -94,7 +92,7 @@ public class CustomJspDropWidget extends DropWidget
 		if ( m_dragProxy == null )
 		{
 			// Create a drag proxy that will be displayed when the user drags this item.
-			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorCustomJsp(), GwtTeaming.getMessages().lpeCustomJSP() );
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorHtml(), GwtTeaming.getMessages().lpeHtml() );
 		}
 		
 		return m_dragProxy;
@@ -104,29 +102,44 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	public DlgBox getPropertiesDlgBox( int x, int y )
 	{
-		// Have we already created a dialog?
-		if ( m_customJspDlgBox == null )
+		// Have we already created a dialog box?
+		if ( m_tinyMCEDlg == null )
 		{
-			// Pass in the object that holds all the properties for a CustomJspDropWidget.
-			m_customJspDlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			LPETinyMCEConfiguration tinyMCEConfig;
+			
+			// No, create one.
+			tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, "1848" /*m_lpe.getBinderId()*/ );
+			//!!!tinyMCEConfig.setListOfFileAttachments( m_listOfFileAttachments );
+
+			// No, create a "Edit Advanced Branding" dialog.
+			m_tinyMCEDlg = new TinyMCEDlg(
+										GwtTeaming.getMessages().lpeEditHtml(),
+										tinyMCEConfig,
+										this,
+										this,
+										false,
+										true,
+										x,
+										y,
+										null );
 		}
 		else
 		{
-			m_customJspDlgBox.init( m_properties );
-			m_customJspDlgBox.initHandlers( this, this );
+			// Yes, update the controls in the dialog with the values from the properties.
+			m_tinyMCEDlg.init( m_properties );
+			m_tinyMCEDlg.initHandlers( this, this );
 		}
 		
-		return m_customJspDlgBox;
-	}// end getPropertiesDlgBox()
+		return m_tinyMCEDlg;
+	}
 	
 	
 	/**
-	 * @param lpe
-	 * @param properties
+	 * 
 	 */
-	public void init( LandingPageEditor lpe, CustomJspProperties properties )
+	private void init( LandingPageEditor lpe, HtmlProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -153,100 +166,45 @@ public class CustomJspDropWidget extends DropWidget
 			wrapperPanel.add( panel );
 		}
 		
-		// Create the controls that will hold the jsp name
+		// Create the controls that will hold the html
 		{
-			FlowPanel mainPanel;
-			InlineLabel label;
+			m_htmlPanel = new FlowPanel();
+			m_htmlPanel.addStyleName( "lpeDropWidget" );
+			m_htmlPanel.addStyleName( "lpeHtmlWidget" );
 			
-			mainPanel = new FlowPanel();
-			mainPanel.addStyleName( "lpeDropWidget" );
-			mainPanel.addStyleName( "lpeCustomJspWidget" );
-			
-			// Add a label that identifies this widget as a Custom Jsp.
-			label = new InlineLabel( GwtTeaming.getMessages().customJspLabel() );
-			label.addStyleName( "lpeWidgetIdentifier" );
-			mainPanel.add( label );
-			
-			m_jspName = new InlineLabel();
-			m_jspName.addStyleName( "lpeCustomJspName" );
-			mainPanel.add( m_jspName );
-			
-			wrapperPanel.add( mainPanel );
+			wrapperPanel.add( m_htmlPanel );
 		}
 		
-		// Create an object to hold all of the properties that define a "custom jsp" widget.
-		m_properties = new CustomJspProperties();
+		// Create an object to hold all of the properties that define an "HTML" widget.
+		m_properties = new HtmlProperties();
 		
 		// If we were passed some properties, make a copy of them.
 		if ( properties != null )
 			m_properties.copy( properties );
 		
-		// Update the dynamic parts of this widget
-		updateWidget( m_properties );
-		
 		// All composites must call initWidget() in their constructors.
 		initWidget( wrapperPanel );
-	}// end init()
-	
 
+		// Update the dynamic parts of this widget
+		updateWidget( m_properties );
+	}
+	
+	
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
 	public void updateWidget( Object props )
 	{
-		String jspName;
-
 		// Save the properties that were passed to us.
 		if ( props instanceof PropertiesObj )
 			m_properties.copy( (PropertiesObj) props );
-		
-		// Update the jsp name
-		// Get the jsp name.
-		jspName = m_properties.getJspName();
-		
-		if ( jspName == null || jspName.length() == 0 )
-			m_jspName.setText( "" );
-		else
-			m_jspName.setText( jspName );
-
-		// Get the needed information from the server.
-		m_properties.getDataFromServer();
-		
-		updateWidget();
-	}// end updateWidget()
-
-
-	/**
-	 * 
-	 */
-	private void updateWidget()
-	{
-		// Are we waiting for the ajax call to get the entry name to finish?
-		if ( m_properties.isRpcInProgress() )
+		else if ( props instanceof String )
 		{
-			// Yes
-			// Have we already created a timer?
-			if ( m_timer == null )
-			{
-				// No, create one.
-				m_timer = new Timer()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void run()
-					{
-						updateWidget();
-					}// end run()
-				};
-			}
-			
-			m_timer.schedule( 250 );
-			return;
+			m_properties.setHtml( (String) props );
 		}
-
-		// Notify the landing page editor that this widget has been updated.
-		m_lpe.notifyWidgetUpdated( this );
-	}// end updateWidget()
-}// end CustomJspDropWidget
+		
+		// Update this widget with the given html.
+		if ( m_htmlPanel != null )
+			m_htmlPanel.getElement().setInnerHTML( m_properties.getHtml() );
+	}
+}

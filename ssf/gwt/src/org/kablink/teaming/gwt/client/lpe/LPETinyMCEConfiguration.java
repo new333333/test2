@@ -31,16 +31,16 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.widgets.AbstractTinyMCEConfiguration;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -48,17 +48,19 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 /**
  * 
  */
-public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
+public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 {
 	private String m_binderId = null;	// Id of the binder we are dealing with.
 	private AsyncCallback<String> m_rpcCallback = null;
 	private ArrayList<String> m_listOfFileAttachments = null;
+	private LandingPageEditor m_lpe;
 	
 	/**
 	 * 
 	 */
-	public BrandingTinyMCEConfiguration( String binderId )
+	public LPETinyMCEConfiguration( LandingPageEditor lpe, String binderId )
 	{
+		m_lpe = lpe;
 		m_binderId = binderId;
 
 		// Create the callback that will be used when we issue an ajax call to get
@@ -93,7 +95,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		// Issue an ajax request to get the document base url for this binder.
 		getDocumentBaseUrlFromServer();
 		
-	}// end BrandingTinyMCEConfiguration()
+	}
 	
 	
 	/**
@@ -153,7 +155,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 
 		// Add a language pack for the plugin that shows/hides the 2nd row of controls in the tiny mce toolbar.
 		addToolbarLanguagePack( getLanguage() + ".pdw", messages );
-	}// end addLanguagePacks()
+	}
 
 	
 	/**
@@ -222,13 +224,16 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 */
 	private void getDocumentBaseUrlFromServer()
 	{
-		GwtRpcServiceAsync rpcService;
-
-		rpcService = GwtTeaming.getRpcService();
-		
-		// Issue an ajax request to get the base url for the binder.
-		rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
-	}// end getDocumentBaseUrlFromServer()
+		if ( m_binderId != null )
+		{
+			GwtRpcServiceAsync rpcService;
+	
+			rpcService = GwtTeaming.getRpcService();
+			
+			// Issue an ajax request to get the base url for the binder.
+			rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
+		}
+	}
 	
 	
 	/**
@@ -246,13 +251,12 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 		}
 	}
 	
-	
 	/**
 	 * Set the content css we should be using.
 	 */
 	public void setContentCss()
 	{
-		contentCss = GwtMainPage.m_requestInfo.getContentCss();
+		contentCss = m_lpe.getContentCss();
 	}
 	
 	
@@ -261,7 +265,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 */
 	public void setLanguage()
 	{
-		language = GwtMainPage.m_requestInfo.getLanguage();
+		language = m_lpe.getLanguage();
 	}
 	
 	/**
@@ -270,5 +274,5 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	public void setListOfFileAttachments( 	ArrayList<String> listOfFileAttachments )
 	{
 		m_listOfFileAttachments = listOfFileAttachments;
-	}// end setListOfFileAttachments()
-}// end BrandingTinyMCEConfiguration
+	}
+}
