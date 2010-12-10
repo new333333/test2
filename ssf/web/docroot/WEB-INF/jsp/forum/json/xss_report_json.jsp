@@ -65,14 +65,33 @@
 		String	entityIdStr;
 		String	entityType;
 		String	entityPath;
+		Long	entityPathId;
+		String	entityPathIdStr;
 		String	entityTitle;
+		Long	entityCreatorId;
+		String	entityCreatorTitle;
 		
 		nextItem = (Map) xssReport.get( i );
 		entityId = (Long)nextItem.get( ReportModule.ENTITY_ID );
 		entityIdStr = entityId.toString();
 		entityType = (String)nextItem.get( ReportModule.ENTITY_TYPE );
 		entityPath = (String)nextItem.get( ReportModule.ENTITY_PATH );
+		entityPathId = (Long)nextItem.get( ReportModule.ENTITY_PATH_ID );
+		entityPathIdStr = entityPathId.toString();
 		entityTitle = (String)nextItem.get( ReportModule.ENTITY_TITLE );
+		entityCreatorId = (Long)nextItem.get( ReportModule.ENTITY_CREATOR_ID );
+		entityCreatorTitle = "";
+		java.util.Set ids = new java.util.HashSet();
+		ids.add(entityCreatorId);
+		java.util.List users = org.kablink.teaming.util.ResolveIds.getPrincipals(ids, false);
+		if (!users.isEmpty()) {
+			java.util.Iterator itUsers = users.iterator();
+			while (itUsers.hasNext()) {
+				org.kablink.teaming.domain.User u = (org.kablink.teaming.domain.User) itUsers.next();
+				if (u != null) entityCreatorTitle = u.getTitle();
+				break;
+			}
+		}
 
 		// If this is not the first entity, add a ',' before we add another entity.
 		if ( i != 0 )
@@ -80,7 +99,7 @@
 		else
 			separator = "";
 %>
-		<%= separator %>{ entityType : '<%= entityType %>', id : <%= entityIdStr %>, path: '<ssf:escapeJavaScript value="<%= entityPath %>" />', title: '<ssf:escapeJavaScript value="<%= entityTitle %>" />' }
+		<%= separator %>{ entityType : '<%= entityType %>', id : <%= entityIdStr %>, path: '<ssf:escapeJavaScript value="<%= entityPath %>" />', title: '<ssf:escapeJavaScript value="<%= entityTitle %>" />', pathId: <%= entityPathIdStr %>, creatorName: '<ssf:escapeJavaScript value="<%= entityCreatorTitle %>" />' }
 <%
 	}// end for()
 %>
