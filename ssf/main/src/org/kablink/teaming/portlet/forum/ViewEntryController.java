@@ -127,7 +127,12 @@ public class ViewEntryController extends  SAbstractController {
 				if (replyId == null) replyId = entryId;
 		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
 				String toState = PortletRequestUtils.getStringParameter(request, "toState", "");
-				if (!toState.equals("")) getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
+				if (!toState.equals("")) {
+					//Check if this user is allowed to do this manual transition
+					if (getFolderModule().checkIfManualTransitionAllowed(folderId, replyId, tokenId, toState)) {
+						getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
+					}
+				}
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 			} else if (formData.containsKey("changeRatingBtn") && WebHelper.isMethodPost(request)) {
 				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
