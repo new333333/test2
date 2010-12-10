@@ -820,14 +820,6 @@ body, table td, select
 	font-size: 12px;
 }
 
-/* Styles for the "Custom Jsp" widget. */
-.lpeCustomJspWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 /* Styles for the drag proxy widget that is used when the user drags an item from the palette in the landing page editor. */
 .lpeDragProxy
 {
@@ -896,14 +888,6 @@ body, table td, select
 	color: blue;
 }
 
-/* Styles for the "Entry" widget. */
-.lpeEntryWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 /* Styles used for the binder name in a "folder" widget */
 .lpeFolderBinderName
 {
@@ -935,14 +919,6 @@ body, table td, select
 	color: blue;
 }
 
-/* Styles for the "Folder" widget. */
-.lpeFolderWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 /* Styles used for the graphic name in a "graphic" widget */
 .lpeGraphicName
 {
@@ -952,14 +928,23 @@ body, table td, select
 	font-size: 12px;
 }
 
-/* Styles for the "Graphic" widget. */
-.lpeGraphicWidget
+
+/* Styles for the "Custom Jsp", "Entry", "Folder", "Graphic", "Link to Entry", */
+/* "Link to Folder", "Link to Url", "Utility Element" widgets. */
+.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeUtilityElementWidget
 {
 	background-color: #E5E5E5;
 	border: 1px solid #AEAEAE;
 	padding: 6px;
 }
 
+/* Styles for the "Html" widget. */
+.lpeHtmlWidget
+{
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+	width: 100%;
+}
 
 /* Styles for the landing page editor hint. */
 .lpeHint
@@ -988,14 +973,6 @@ body, table td, select
 	font-size: 12px;
 }
 
-/* Styles for the "Link to Entry" widget. */
-.lpeLinkToEntryWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 /* Styles used for the folder name in the "link to folder" widget */
 .lpeLinkToFolderName
 {
@@ -1013,22 +990,6 @@ body, table td, select
 	color: #333333;
 	font-family: Arial,sans-serif;
 	font-size: 12px;
-}
-
-/* Styles for the "Link to Entry" widget. */
-.lpeLinkToFolderWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
-/* Styles for the "Link to Url" widget. */
-.lpeLinkToUrlWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
 }
 
 /* Styles used for the title in a "link to url" widget */
@@ -1165,15 +1126,6 @@ body, table td, select
 	font-family: Arial,sans-serif;
 	font-size: 12px;
 }
-
-/* Styles for the "Utility Element" widget. */
-.lpeUtilityElementWidget
-{
-	background-color: #E5E5E5;
-	border: 1px solid #AEAEAE;
-	padding: 6px;
-}
-
 
 /* Styles used for the label that identifies a widget, ie Link, Utility Element */
 .lpeWidgetIdentifier

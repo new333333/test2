@@ -467,14 +467,15 @@ public class TableDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( PropertiesObj props )
+	public void updateWidget( Object props )
 	{
 		int i;
 		int numColumns;
 		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
-		m_properties.copy( props );
+		if ( props instanceof PropertiesObj )
+			m_properties.copy( (PropertiesObj) props );
 		
 		numColumns = m_properties.getNumColumnsInt();
 		

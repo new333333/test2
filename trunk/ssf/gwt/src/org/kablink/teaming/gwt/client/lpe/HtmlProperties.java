@@ -30,56 +30,76 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.lpe;
 
-
-import com.google.gwt.core.client.JavaScriptObject;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 
 /**
- * This class wraps a JavaScript object that holds the string that defines the landing page.
+ * This class holds all of the properties needed to define an "HTML" widget in a landing page.
  * @author jwootton
  *
  */
-public class LandingPageConfig extends JavaScriptObject
+public class HtmlProperties
+	implements PropertiesObj
 {
+	private String m_html;
+	
 	/**
-	 * Overlay types always have a protected, zero-arg constructors.
+	 * 
 	 */
-	protected LandingPageConfig()
+	public HtmlProperties()
 	{
-	}// end LandingPageConfig()
+		m_html = null;
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void copy( PropertiesObj props )
+	{
+		if ( props instanceof HtmlProperties )
+		{
+			HtmlProperties htmlProps;
+			
+			htmlProps = (HtmlProperties) props;
+			setHtml( htmlProps.getHtml() );
+		}
+	}
+	
 
-	
 	/**
-	 * Return the id of the binder we are editing.
+	 * Return the properties as a string that can be stored in the db.
 	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
-	
-	
-	/**
-	 * Return the string that holds the landing page configuration.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
-	 */
-	public final native String getConfigStr() /*-{ return this.configData; }-*/;
-	
-	
-	/**
-	 * Return the url to the content css
-	 */
-	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
+	public String createConfigString()
+	{
+		String str;
+		
+		//!!! Finish
+		// The string should look like: "html,xxx;"
+		str = "graphic";
+		str += ";";
 
-	
-	/**
-	 * Return the language we are running in.
-	 */
-	public final native String getLanguage() /*-{ return this.language; }-*/;
+		return str;
+	}
 	
 	
 	/**
-	 * Return the string that holds the landing page mashup property name.  This class is an
-	 * Overlay on the JavaScript object called m_landingPageConfig.
+	 * 
 	 */
-	public final native String getMashupPropertyName() /*-{ return this.mashupPropertyName; }-*/;
+	public String getHtml()
+	{
+		return m_html;
+	}
 	
-}// end LandingPageConfig
+	
+	/**
+	 * 
+	 */
+	public void setHtml( String html )
+	{
+		m_html = html;
+	}
+}
