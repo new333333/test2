@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.workflow;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ import org.kablink.util.Validator;
  */
 public class WorkflowUtils {
         
-    public static Map<String, String> getManualTransitions(Definition wfDef, String stateName) {
+    public static Map<String, Map> getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -63,7 +64,9 @@ public class WorkflowUtils {
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
 			if (transitions != null) {
 				for (int j = 0; j < transitions.size(); j++) {
-					String toStateValue = DefinitionUtils.getPropertyValue((Element)transitions.get(j), "toState");
+					Element transitionEle = (Element)transitions.get(j);
+					Element transitionAccessEle = (Element) transitionEle.selectSingleNode("./item[@name='transitionManualAccess']");
+					String toStateValue = DefinitionUtils.getPropertyValue(transitionEle, "toState");
 					String toStateCaption = "";
 					if (!Validator.isNull(toStateValue)) {
 						//We have a transition. get the caption;
@@ -73,7 +76,10 @@ public class WorkflowUtils {
 						}
 						if (Validator.isNull(toStateCaption)) toStateCaption = toStateValue;
 						//Ok, add this transition to the map
-						transitionData.put(toStateValue, toStateCaption);
+						Map data = new HashMap();
+						data.put("toStateCaption", toStateCaption);
+						data.put("transitionAccessElement", transitionAccessEle);
+						transitionData.put(toStateValue, data);
 					}
 				}
 			}

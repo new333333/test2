@@ -919,7 +919,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 		return acl;
 	}
 
-	private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
+	public static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
 		if (aclElement == null) return null;
 		List<Element>props = aclElement.selectNodes("./properties/property");
 		String name, value;

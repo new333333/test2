@@ -48,7 +48,8 @@ public class WfAcl {
 		modifyField, 
 		delete, 
 		transitionIn, 
-		transitionOut;
+		transitionOut,
+		manualTransition;
 	};
 	public WfAcl(AccessType type) {
 		this.type = type;

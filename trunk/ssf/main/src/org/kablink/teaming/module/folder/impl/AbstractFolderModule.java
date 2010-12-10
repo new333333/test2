@@ -55,6 +55,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -1223,6 +1224,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         processor.deleteEntryWorkflow(entry.getParentBinder(), entry, def);
 
     }
+    public boolean checkIfManualTransitionAllowed(Long folderId, Long entryId, Long workflowTokenId, String toState) throws AccessControlException {
+        boolean result = false;
+        FolderEntry entry = loadEntry(folderId, entryId);
+		Set states = entry.getWorkflowStates();
+		for (Iterator iter=states.iterator(); iter.hasNext();) {
+			WorkflowState ws = (WorkflowState)iter.next();
+			if (ws.getTokenId().equals(workflowTokenId)) {
+				Map transitions = getManualTransitions(entry, ws.getId());
+				//See if the toState is in this list
+				if (transitions.containsKey(toState)) result = true;
+			}
+		}
+		return result;
+     }
    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
        FolderEntry entry = loadEntry(folderId, entryId);   	
        Folder folder = entry.getParentFolder();
@@ -1234,15 +1249,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
-		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
+		Map<String,Map> result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
 		Map transitionData = new LinkedHashMap();
 		if (testTransitionOutStateAllowed(entry, stateId)) {
 			for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry me = (Map.Entry)iter.next();
+					Map data = (Map)me.getValue();
 					try {
 						//access check
-					AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
-					transitionData.put(me.getKey(), me.getValue());
+						if (data.get("transitionAccessElement") != null) {
+							Element accessEle = (Element)data.get("transitionAccessElement");
+							AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
+						}
+						AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+						transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
 					} catch (AccessControlException ac) {};
 			}
 			return transitionData;

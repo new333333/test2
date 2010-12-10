@@ -3653,9 +3653,21 @@
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
+			<option name="transitionManualAccess" caption="__transitionManualAccess" />
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
+	
+	<item name="transitionManualAccess" caption="__transitionManualAccess" multipleAllowedInParent="false">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
+		</properties>
+	</item>
+	
 	<item name="transitionImmediate" caption="__transitionImmediate" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
