@@ -454,8 +454,17 @@ public class LandingPageEditor extends Composite
 		// If we get here we didn't find a DropZone with the given id.
 		return null;
 	}
+
 	
+	/**
+	 * Use JSNI to grab the JavaScript object that holds the list of file attachments.
+	 */
+	public static native FileAttachments getFileAttachments() /*-{
+		// Return a reference to the JavaScript variable called, m_fileAttachments.
+		return $wnd.m_fileAttachments;
+	}-*/;
 	
+
 	/**
 	 * Return the url to the content css
 	 */

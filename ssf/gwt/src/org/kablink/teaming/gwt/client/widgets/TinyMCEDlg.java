@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.user.client.Command;
@@ -139,6 +138,10 @@ public class TinyMCEDlg extends DlgBox
 	 */
 	public void init( Object props )
 	{
+		if ( props instanceof String )
+			setText( (String) props );
+		else
+			setText( null );
 	}// end init()
 	
 	

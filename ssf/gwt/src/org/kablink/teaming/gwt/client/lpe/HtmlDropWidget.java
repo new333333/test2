@@ -32,11 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
@@ -108,10 +111,28 @@ public class HtmlDropWidget extends DropWidget
 		if ( m_tinyMCEDlg == null )
 		{
 			LPETinyMCEConfiguration tinyMCEConfig;
+			FileAttachments fileAttachments;
+			ArrayList<String> listOfFileNames = null;
 			
 			// No, create one.
-			tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, "1848" /*m_lpe.getBinderId()*/ );
-			//!!!tinyMCEConfig.setListOfFileAttachments( m_listOfFileAttachments );
+			tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, m_lpe.getBinderId() );
+			
+			// Get the file attachments for the landing page.
+			listOfFileNames = new ArrayList<String>();
+			fileAttachments = m_lpe.getFileAttachments();
+			if ( fileAttachments != null )
+			{
+				int i;
+				
+				for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
+				{
+					String fileName;
+					
+					fileName = fileAttachments.getFileName( i );
+					listOfFileNames.add( fileName );
+				}
+			}
+			tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
 
 			// No, create a "Edit Advanced Branding" dialog.
 			m_tinyMCEDlg = new TinyMCEDlg(
@@ -128,7 +149,7 @@ public class HtmlDropWidget extends DropWidget
 		else
 		{
 			// Yes, update the controls in the dialog with the values from the properties.
-			m_tinyMCEDlg.init( m_properties );
+			m_tinyMCEDlg.init( m_properties.getHtml() );
 			m_tinyMCEDlg.initHandlers( this, this );
 		}
 		

@@ -183,6 +183,8 @@ public abstract class DropWidget extends Composite
 					{
 						// Adjust the x position so the right edge of the dialog does not extend past the right edge of the canvas.
 						m_dlgX -= overlap;
+						if ( m_dlgX < 0 )
+							m_dlgX = m_lpe.getCanvasLeft();
 					}
 					
 					canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();
@@ -195,6 +197,8 @@ public abstract class DropWidget extends Composite
 					{
 						// Adjust the y position so the bottom of the dialog does not extend pas the bottom of the canvas.
 						m_dlgY -= overlap;
+						if ( m_dlgY < 0 )
+							m_dlgY = 50;
 					}
 					
 					m_dlgBox.setPopupPosition( m_dlgX, m_dlgY );
