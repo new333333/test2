@@ -32,12 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
-import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -46,19 +43,19 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * @author jwootton
  *
  */
-public class HtmlDropWidget extends DropWidget
+public class GoogleGadgetDropWidget extends DropWidget
 {
-	private static TinyMCEDlg m_tinyMCEDlg = null;		// For efficiency sake, we only create one dialog box.
-	private HtmlProperties	m_properties = null;
-	private FlowPanel m_htmlPanel;
+	private static GoogleGadgetWidgetDlgBox m_googleGadgetDlgBox = null;		// For efficiency sake, we only create one dialog box.
+	private GoogleGadgetProperties	m_properties = null;
+	private FlowPanel m_htmlPanel = null;
 	
 
 	/**
 	 * 
 	 */
-	public HtmlDropWidget( LandingPageEditor lpe, HtmlConfig configData )
+	public GoogleGadgetDropWidget( LandingPageEditor lpe, GoogleGadgetConfig configData )
 	{
-		HtmlProperties properties;
+		GoogleGadgetProperties properties;
 		
 		properties = null;
 		if ( configData != null )
@@ -71,7 +68,7 @@ public class HtmlDropWidget extends DropWidget
 	/**
 	 * 
 	 */
-	public HtmlDropWidget( LandingPageEditor lpe, HtmlProperties properties )
+	public GoogleGadgetDropWidget( LandingPageEditor lpe, GoogleGadgetProperties properties )
 	{
 		init( lpe, properties );
 	}
@@ -94,7 +91,7 @@ public class HtmlDropWidget extends DropWidget
 		if ( m_dragProxy == null )
 		{
 			// Create a drag proxy that will be displayed when the user drags this item.
-			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorHtml(), GwtTeaming.getMessages().lpeHtml() );
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorGoogleGadget(), GwtTeaming.getMessages().lpeGoogleGadget() );
 		}
 		
 		return m_dragProxy;
@@ -104,62 +101,29 @@ public class HtmlDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public DlgBox getPropertiesDlgBox( int x, int y )
+	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
-		// Have we already created a dialog box?
-		if ( m_tinyMCEDlg == null )
+		// Have we already created a dialog?
+		if ( m_googleGadgetDlgBox == null )
 		{
-			LPETinyMCEConfiguration tinyMCEConfig;
-			FileAttachments fileAttachments;
-			ArrayList<String> listOfFileNames = null;
-			
-			// No, create one.
-			tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, m_lpe.getBinderId() );
-			
-			// Get the file attachments for the landing page.
-			listOfFileNames = new ArrayList<String>();
-			fileAttachments = m_lpe.getFileAttachments();
-			if ( fileAttachments != null )
-			{
-				int i;
-				
-				for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
-				{
-					String fileName;
-					
-					fileName = fileAttachments.getFileName( i );
-					listOfFileNames.add( fileName );
-				}
-			}
-			tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
-
-			// No, create a "Edit Advanced Branding" dialog.
-			m_tinyMCEDlg = new TinyMCEDlg(
-										GwtTeaming.getMessages().lpeEditHtml(),
-										tinyMCEConfig,
-										this,
-										this,
-										false,
-										true,
-										x,
-										y,
-										null );
+			// Pass in the object that holds all the properties for a GoogleGadgetDropWidget.
+			m_googleGadgetDlgBox = new GoogleGadgetWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{
-			// Yes, update the controls in the dialog with the values from the properties.
-			m_tinyMCEDlg.init( m_properties.getHtml() );
-			m_tinyMCEDlg.initHandlers( this, this );
+			m_googleGadgetDlgBox.init( m_properties );
+			m_googleGadgetDlgBox.initHandlers( this, this );
 		}
 		
-		return m_tinyMCEDlg;
+		return m_googleGadgetDlgBox;
 	}
 	
 	
 	/**
-	 * 
+	 * @param lpe
+	 * @param properties
 	 */
-	private void init( LandingPageEditor lpe, HtmlProperties properties )
+	public void init( LandingPageEditor lpe, GoogleGadgetProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -195,36 +159,40 @@ public class HtmlDropWidget extends DropWidget
 			wrapperPanel.add( m_htmlPanel );
 		}
 		
-		// Create an object to hold all of the properties that define an "HTML" widget.
-		m_properties = new HtmlProperties();
+		// Create an object to hold all of the properties that define a "Google Gadget" widget.
+		m_properties = new GoogleGadgetProperties();
 		
 		// If we were passed some properties, make a copy of them.
 		if ( properties != null )
 			m_properties.copy( properties );
 		
-		// All composites must call initWidget() in their constructors.
-		initWidget( wrapperPanel );
-
 		// Update the dynamic parts of this widget
 		updateWidget( m_properties );
-	}
+		
+		// All composites must call initWidget() in their constructors.
+		initWidget( wrapperPanel );
+	}// end init()
 	
-	
+
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
 	public void updateWidget( Object props )
 	{
+		String gadgetCode;
+		
 		// Save the properties that were passed to us.
 		if ( props instanceof PropertiesObj )
 			m_properties.copy( (PropertiesObj) props );
-		else if ( props instanceof String )
-		{
-			m_properties.setHtml( (String) props );
-		}
 		
-		// Update this widget with the given html.
-		if ( m_htmlPanel != null )
-			m_htmlPanel.getElement().setInnerHTML( m_properties.getHtml() );
+		// Get the Google Gadget Code
+		gadgetCode = m_properties.getGadgetCode();
+		
+		if ( gadgetCode == null || gadgetCode.length() == 0 )
+			m_htmlPanel.getElement().setInnerHTML( "" );
+		else
+			m_htmlPanel.getElement().setInnerHTML( gadgetCode );
+
 	}
+
 }

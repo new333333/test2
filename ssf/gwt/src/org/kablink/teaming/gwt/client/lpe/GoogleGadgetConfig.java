@@ -36,24 +36,24 @@ package org.kablink.teaming.gwt.client.lpe;
 import com.google.gwt.http.client.URL;
 
 /**
- * This class represents the configuration data for a Custom Jsp
+ * This class represents the configuration data for a "Google Gadget" widget.
  * @author jwootton
  *
  */
-public class CustomJspConfig extends ConfigItem
+public class GoogleGadgetConfig extends ConfigItem
 {
-	private CustomJspProperties		m_properties;
+	private GoogleGadgetProperties		m_properties;
 	
 	/**
 	 * 
 	 */
-	public CustomJspConfig( String configStr )
+	public GoogleGadgetConfig( String configStr )
 	{
 		String[] results;
 		
-		m_properties = new CustomJspProperties();
+		m_properties = new GoogleGadgetProperties();
 		
-		// Split the configuration data into its parts.  ie customJsp=xxx
+		// Split the configuration data into its parts.  ie googleGadget=xxx
 		results = configStr.split( "[,;]" );
 		if ( results != null )
 		{
@@ -68,32 +68,8 @@ public class CustomJspConfig extends ConfigItem
 				{
 					try
 					{
-						if ( results2[0].equalsIgnoreCase( "customJsp" ) )
-							m_properties.setJspName( URL.decodeComponent( results2[1] ) );
-						else if ( results2[0].equalsIgnoreCase( "folderId" ) )
-							m_properties.setFolderId( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "entryId" ) )
-							m_properties.setEntryId( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "showTitle" ) )
-							m_properties.setShowTitle( results2[1].equalsIgnoreCase( "1" ) );
-						else if ( results2[0].equalsIgnoreCase( "zoneUUID" ) )
-							m_properties.setZoneUUID( results2[1] );
-						else if ( results2[0].equalsIgnoreCase( "entriesToShow" ) )
-						{
-							int numToShow;
-
-							numToShow = 0;
-							try
-							{
-								numToShow = Integer.parseInt( URL.decodeComponent( results2[1] ) );
-							}
-							catch (Exception ex)
-							{
-								// Nothing to do.  This is here to handle the case when the data is
-								// not properly url encoded or an invalid number string was entered.
-							}
-							m_properties.setNumEntriesToBeShownValue( numToShow );
-						}
+						if ( results2[0].equalsIgnoreCase( "gadgetCode" ) )
+							m_properties.setGadgetCode( URL.decodeQueryString( results2[1] ) );
 					}
 					catch (Exception ex)
 					{
@@ -103,7 +79,7 @@ public class CustomJspConfig extends ConfigItem
 				}
 			}
 		}
-	}// end CustomJspConfig()
+	}
 	
 	
 	/**
@@ -112,15 +88,14 @@ public class CustomJspConfig extends ConfigItem
 	public void addChild( ConfigItem configItem )
 	{
 		// Nothing to do.
-	}// end addChild()
+	}
 	
 	
 	/**
 	 * 
 	 */
-	public CustomJspProperties getProperties()
+	public GoogleGadgetProperties getProperties()
 	{
 		return m_properties;
-	}// end getProperties()
-
-}// end CustomJspConfig
+	}
+}
