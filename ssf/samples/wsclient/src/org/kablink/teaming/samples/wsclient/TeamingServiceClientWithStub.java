@@ -234,6 +234,7 @@ public class TeamingServiceClientWithStub {
 
 		// Create search criteria
 		Criteria crit = new Criteria()
+		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_TASK)) // only task family
 		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
 		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20100931235959")) // modification time should fall in this range (inclusive)
@@ -265,6 +266,7 @@ public class TeamingServiceClientWithStub {
 
 		// Create search criteria
 		Criteria crit = new Criteria()
+		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
 		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
 		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20101031235959")) // modification time should fall in this range (inclusive)
@@ -294,8 +296,9 @@ public class TeamingServiceClientWithStub {
 
 		// Create search criteria
 		Criteria crit = new Criteria()
+		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
+		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only top-level entries, not replies
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
-		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
 		.add(disjunction().
 				add(between(Constants.CREATION_DATE_FIELD, beginDate, endDate)). // creation date falls in this range (inclusive)
 				add(between(Constants.MODIFICATION_DATE_FIELD, beginDate, endDate)). // modification date falls in this range (inclusive)
@@ -305,8 +308,8 @@ public class TeamingServiceClientWithStub {
 		System.out.println("Here's the search string in XML");
 		System.out.println(crit.toQuery().asXML());
 		// The above search string should print like this.
-		// <QUERY><AND><FIELD fieldname="_family" exactphrase="TRUE"><TERMS>calendar</TERMS></FIELD><FIELD fieldname="_entryType" exactphrase="TRUE"><TERMS>entry</TERMS></FIELD><OR><RANGE fieldname="_creationDate" inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE><RANGE fieldname="_modificationDate" inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE><RANGE fieldname="_eventDates" inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE></OR><OR><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>43</TERMS></FIELD><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>148</TERMS></FIELD></OR></AND></QUERY>
- 
+		// <QUERY><AND><FIELD fieldname="_docType" exactphrase="TRUE"><TERMS>entry</TERMS></FIELD><FIELD fieldname="_entryType" exactphrase="TRUE"><TERMS>entry</TERMS></FIELD><FIELD fieldname="_family" exactphrase="TRUE"><TERMS>calendar</TERMS></FIELD><OR><RANGE fieldname="_creationDate" inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE><RANGE fieldname="_modificationDate"inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE><RANGE fieldname="_eventDates" inclusive="TRUE"><START>20101101000000</START><FINISH>20101201000000</FINISH></RANGE></OR><OR><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>43</TERMS></FIELD><FIELD fieldname="_binderId" exactphrase="TRUE"><TERMS>148</TERMS></FIELD></OR></AND></QUERY>
+		 
 		// Execute the search against a Teaming server and print the result.
 		FolderEntryCollection coll = stub.search_getFolderEntries(null, crit.toQuery().asXML(), 0, 100);
 		
