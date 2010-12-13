@@ -72,6 +72,10 @@ public interface GwtTeamingMessages extends Messages
 	String showFolderDesc();
 	String showTitleBar();
 	
+	// Strings used with the Googld Gadget widget in the landing page editor
+	String googleGadgetCodeLabel();
+	String googleGadgetProperties();
+	
 	// Strings used with the Graphic widget in the landing page editor.
 	String graphicLabel();
 	String graphicProperties();
@@ -82,6 +86,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltCustomJsp();
 	String lpeAltEntry();
 	String lpeAltFolder();
+	String lpeAltGoogleGadget();
 	String lpeAltGraphic();
 	String lpeAltHtml();
 	String lpeAltLinkEntry();
@@ -95,6 +100,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeEditHtml();
 	String lpeEntry();
 	String lpeFolder();
+	String lpeGoogleGadget();
 	String lpeGraphic();
 	String lpeHint();
 	String lpeHtml();

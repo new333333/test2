@@ -931,7 +931,7 @@ body, table td, select
 
 /* Styles for the "Custom Jsp", "Entry", "Folder", "Graphic", "Link to Entry", */
 /* "Link to Folder", "Link to Url", "Utility Element" widgets. */
-.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeUtilityElementWidget
+.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGoogleGadgetWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeUtilityElementWidget
 {
 	background-color: #E5E5E5;
 	border: 1px solid #AEAEAE;
