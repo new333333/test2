@@ -51,4 +51,8 @@ public class NoObjectByTheNameException extends UncheckedCodedException {
     public NoObjectByTheNameException(String errorCode, String objName, Throwable cause) {
         super(errorCode, new Object[] {objName}, cause);
     }
+    
+    public int getHttpStatusCode() {
+    	return 404; // Not Found
+    }
 }

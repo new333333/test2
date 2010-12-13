@@ -48,4 +48,8 @@ public class UncheckedIOException extends UncheckedCodedException {
     public UncheckedIOException(IOException cause) {
         super(UncheckedIOException_ErrorCode, new Object[]{cause.getLocalizedMessage()}, cause);
     }
+    
+    public int getHttpStatusCode() {
+    	return 500; // Internal Server Error
+    }
 }

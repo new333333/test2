@@ -47,4 +47,8 @@ public class FilterException extends UncheckedCodedException {
         super(FilterException_DefaultErrorCode, new Object[]{fileName, details});
     }
 
+    public int getHttpStatusCode() {
+    	return 400; // Bad Request
+    }
+
 }

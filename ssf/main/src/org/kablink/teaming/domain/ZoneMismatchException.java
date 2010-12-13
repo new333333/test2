@@ -44,4 +44,8 @@ public class ZoneMismatchException extends UncheckedCodedException {
     public ZoneMismatchException(Long foundZoneId, Long expectedZoneId) {
         super(ZoneMismatchException_ErrorCode, new Object[]{foundZoneId, expectedZoneId});
     }
+    
+    public int getHttpStatusCode() {
+    	return 500; // Internal Server Error
+    }
 }

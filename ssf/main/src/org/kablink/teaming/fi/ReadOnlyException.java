@@ -40,4 +40,9 @@ public class ReadOnlyException extends FIException {
 	public ReadOnlyException(String driverTitle, String operationName) {
 		super(ERROR_CODE, operationName, driverTitle);
 	}
+	
+    public int getHttpStatusCode() {
+    	return 403; // Forbidden
+    }
+
 }

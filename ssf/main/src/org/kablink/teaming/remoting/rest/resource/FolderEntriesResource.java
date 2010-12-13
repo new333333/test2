@@ -30,29 +30,63 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.resource;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class StringCheckException extends UncheckedCodedException {
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 
-	private static final long serialVersionUID = 1L;
+import org.kablink.teaming.remoting.rest.model.FolderEntry;
+
+@Path("/folder_entries")
+public class FolderEntriesResource extends AbstractResource {
+
+	@Context UriInfo uriInfo;
+
+	/*
+	// Resource method for browser
+	@GET
+	@Produces(MediaType.TEXT_XML)
+	public List<FolderEntry> getFolderEntriesBrowser() {
+		List<FolderEntry> result = new ArrayList<FolderEntry>();
+		FolderEntry entry = new FolderEntry();
+		entry.setId(10L);
+		entry.setTitle("My title");
+		entry.setDescription("My description");
+		result.add(entry);
+		entry = new FolderEntry();
+		entry.setId(20L);
+		entry.setTitle("Your title");
+		entry.setDescription("Your description");
+		result.add(entry);
+		return result;
+	}
+	*/
 	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
-
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+	// Resource method for application
+	@GET
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<FolderEntry> getFolderEntries(
+			@QueryParam("folderid") Long folderId,
+			@QueryParam("offset") Integer offset,
+			@QueryParam("maxcount") Integer maxCount) {
+		MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters(); 
+		return null;
 	}
 	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
-	}
-	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
-	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
+	/*
+	// Sub-resource locator
+	@Path("{folderEntryId}")
+	public FolderEntryResource getFolderEntryResource(@PathParam("folderEntryId") long id) {
+		return new FolderEntryResource();
+	}*/
 }
