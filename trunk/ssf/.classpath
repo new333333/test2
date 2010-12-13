@@ -148,5 +148,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ehcache-core.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jsr311-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-bundle.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
