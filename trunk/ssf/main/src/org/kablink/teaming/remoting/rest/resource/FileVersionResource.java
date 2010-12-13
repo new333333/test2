@@ -30,29 +30,59 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.resource;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import java.io.File;
 
-public class StringCheckException extends UncheckedCodedException {
+import javax.activation.MimetypesFileTypeMap;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-	private static final long serialVersionUID = 1L;
-	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
+import org.kablink.teaming.remoting.rest.model.FileVersionProperties;
 
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+@Path("/file_version/{id}")
+public class FileVersionResource extends AbstractResource {
+
+	// Read file version content
+	@GET
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response getFileVersion(@PathParam("id") String id) {
+		return null;
 	}
 	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
+	// Read file version properties
+	@GET
+	@Path("properties")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public FileVersionProperties getFileVersionProperties(@PathParam("id") String id) {
+		return null;
 	}
 	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
+	// Delete file version. This deletes both the content and the properties associated with the version.
+	@DELETE
+	public void deleteFileVersion(@PathParam("id") String id) {
+		
 	}
+
 	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
+	// Update file version resource
+	@PUT
+	public Response putFile(@PathParam("id") String id) {
+		// How do I receive file from client?
+		return null;
+	}
+
+	// Delete file version resource
+	@DELETE
+	public void deleteFile(@PathParam("id") String id) {
+		
+	}
+
 }

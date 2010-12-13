@@ -41,4 +41,8 @@ public class LockIdMismatchException extends UncheckedCodedException {
 	public LockIdMismatchException() {
 		super(LockIdMismatchException_ErrorCode, new Object[] {});
 	}
+	
+    public int getHttpStatusCode() {
+    	return 400; // Bad Request
+    }
 }

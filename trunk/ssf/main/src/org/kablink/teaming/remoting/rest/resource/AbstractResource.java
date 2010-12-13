@@ -30,29 +30,25 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.resource;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
+import org.kablink.teaming.util.SpringContextUtil;
 
-public class StringCheckException extends UncheckedCodedException {
-
-	private static final long serialVersionUID = 1L;
+public class AbstractResource {
 	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
-
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+	protected FolderModule getFolderModule() {
+		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}
-	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
+
+	protected BinderModule getBinderModule() {
+		return (BinderModule) SpringContextUtil.getBean("binderModule");
 	}
-	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
+
+	protected WorkspaceModule getWorkspaceModule() {
+		return (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
 	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
+
 }

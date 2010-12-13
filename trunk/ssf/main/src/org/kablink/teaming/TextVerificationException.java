@@ -49,4 +49,9 @@ public class TextVerificationException extends UncheckedCodedException
     {
         super( errorCode );
     }
+    
+    public int getHttpStatusCode() {
+    	return 400; // Bad Request
+    }
+
 }// end TextVerificationException

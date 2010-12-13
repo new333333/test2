@@ -30,29 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.provider;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-public class StringCheckException extends UncheckedCodedException {
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 
-	private static final long serialVersionUID = 1L;
-	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
-
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+@Provider
+public class HibernateOptimisticLockingFailureMapper implements ExceptionMapper<HibernateOptimisticLockingFailureException> {
+	public Response toResponse(HibernateOptimisticLockingFailureException ex) {
+		return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).type(MediaType.TEXT_PLAIN).build();
 	}
-	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
-	}
-	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
-	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }

@@ -51,5 +51,9 @@ public class RemoteApplicationException extends UncheckedCodedException {
     public RemoteApplicationException(Long applicationId, Throwable cause) {
         super(RemoteApplicationException_ErrorCode, new Object[]{applicationId}, cause);
     }
+    
+    public int getHttpStatusCode() {
+    	return 500; // Inrernal Server Error
+    }
 
 }

@@ -59,4 +59,7 @@ public class DefinitionInvalidOperation extends UncheckedCodedException {
 		super(DefinitionInvalidOperation_ErrorCode, new Object[]{cause});
 	}
 
+    public int getHttpStatusCode() {
+    	return 400; // Bad Request
+    }
 }

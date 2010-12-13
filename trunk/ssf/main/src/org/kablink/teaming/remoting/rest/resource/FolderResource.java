@@ -30,29 +30,40 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.resource;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-public class StringCheckException extends UncheckedCodedException {
+import org.kablink.teaming.remoting.rest.model.Folder;
 
-	private static final long serialVersionUID = 1L;
-	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
+@Path("/folder/{id}")
+public class FolderResource extends AbstractResource {
 
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+	// Read folder (meaning returning folder properties)
+	@GET
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Folder getFolder(@PathParam("id") long id) {
+		return null;
 	}
 	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
+	// Update folder (meaning updating folder properties)
+	@PUT
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response putFolder(@PathParam("id") long id) {
+		return null;
 	}
 	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
+	// Delete folder (meaning not only the properties but also everything included in the folder)
+	@DELETE
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void deleteFolder(@PathParam("id") long id) {
+		
 	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }

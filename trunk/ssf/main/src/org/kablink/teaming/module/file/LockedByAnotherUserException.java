@@ -70,4 +70,9 @@ public class LockedByAnotherUserException extends UncheckedCodedException {
 	public Principal getLockOwner() {
 		return lockOwner;
 	}
+	
+    public int getHttpStatusCode() {
+    	return 409; // Conflict
+    }
+
 }

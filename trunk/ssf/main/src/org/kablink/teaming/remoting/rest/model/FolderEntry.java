@@ -30,29 +30,33 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.remoting.rest.model;
 
-import org.kablink.teaming.exception.UncheckedCodedException;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class StringCheckException extends UncheckedCodedException {
+@XmlRootElement
+public class FolderEntry {
 
-	private static final long serialVersionUID = 1L;
-	
-	private static final String StringCheckException_ErrorCode = "errorcode.string.check.failed";
-
-	public StringCheckException() {
-		super(StringCheckException_ErrorCode);
+	private Long id;
+	private String title;
+	private String description;
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
-	public StringCheckException(String errorCode) {
-		super(errorCode);
-	}
-	
-	public StringCheckException(String errorCode, Object[] args) {
-		super(errorCode, args);
-	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }
