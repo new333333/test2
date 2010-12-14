@@ -52,6 +52,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.kablink.teaming.remoting.rest.model.FolderEntry;
+import org.kablink.teaming.remoting.rest.model.Rating;
+import org.kablink.teaming.remoting.rest.model.Subscription;
 import org.kablink.teaming.remoting.rest.model.Tag;
 
 @Path("/folder_entry/{id}")
@@ -156,6 +158,31 @@ public class FolderEntryResource extends AbstractResource {
 		return null;
 	}
 
+	// Get subscription for the folder entry
+	@GET
+	@Path("subscription")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Subscription getSubscription(@PathParam("id") long id) {
+		return null;
+	}
+	
+	// Get rating for the folder entry
+	@GET
+	@Path("rating")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Rating getRating(@PathParam("id") long id) {
+		return null;
+	}
+	
+	// Test if the user has the right to execute the specified operation on the folder entry
+	@GET
+	@Path("test_operation/{operation_name}")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public boolean testOperation(@PathParam("id") long id,
+			@PathParam("operation_name") String operationName) {
+		return false;
+	}
+	
 	// Controller resource for adding workflow to a folder entry
 	@POST
 	@Path("add_workflow")

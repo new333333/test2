@@ -32,79 +32,34 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-import java.util.List;
-
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.Folder;
-import org.kablink.teaming.remoting.rest.model.FolderEntry;
+import org.kablink.teaming.remoting.rest.model.Subscription;
 
-@Path("/folder/{id}")
-public class FolderResource extends AbstractResource {
+@Path("/subscription/{user_id}/{entity_type}/{entity_id}")
+public class SubscriptionResource {
 
-	// Read folder (meaning returning folder properties)
+	// Read subscription
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Folder getFolder(@PathParam("id") long id) {
+	public Subscription getSubscription(@PathParam("user_id") long userId,
+			@PathParam("entity_type") int entityType,
+			@PathParam("entity_id") long entityId) {
 		return null;
 	}
 	
-	// Update folder (meaning updating folder properties)
+	// Set subscription (This will create or update subscription)
 	@PUT
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
+	public Response putSubscription(@PathParam("user_id") long userId,
+			@PathParam("entity_type") int entityType,
+			@PathParam("entity_id") long entityId) {
 		return null;
 	}
-	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
-	@DELETE
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
-		
-	}
-	
-	// Add folder entry in the folder
-	@POST
-	@Path("add_folder_entry")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Read sub-folders
-	@GET
-	@Path("subfolders")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Folder> getSubFolders(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Read entries
-	@GET
-	@Path("entries")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<FolderEntry> getFolderEntries(@PathParam("id") long id) {
-		return null;
-	}
-
-	// Test if the user has the right to execute the specified operation on the folder
-	@GET
-	@Path("test_operation/{operation_name}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public boolean testOperation(@PathParam("id") long id,
-			@PathParam("operation_name") String operationName) {
-		return false;
-	}
-	
-
 }
