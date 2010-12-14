@@ -52,6 +52,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.kablink.teaming.remoting.rest.model.FolderEntry;
+import org.kablink.teaming.remoting.rest.model.Tag;
 
 @Path("/folder_entry/{id}")
 public class FolderEntryResource extends AbstractResource {
@@ -86,12 +87,72 @@ public class FolderEntryResource extends AbstractResource {
 		getFolderModule().deleteEntry(null, id);
 	}
 	
-	// Create a new file as an attachment to the folder entry.
+	// Add a file as an attachment to the folder entry.
 	@POST
-	@Path("create_file")
+	@Path("add_file")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public  FileResource createFile() {
+	public  FileResource addFile(@PathParam("id") long id) {
 		// How ??
+		return null;
+	}
+	
+	// Add a reply to the folder entry which may be another reply.
+	@POST
+	@Path("add_reply")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public  Response addReply(@PathParam("id") long parentEntryId) {
+		// Note: The parentEntryId may refer to top-level entry or another reply.
+		// Does this taint the consistency of the API?
+		return null;
+	}
+	
+	// Copy a folder entry
+	@POST
+	@Path("copy")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public  Response copyFolderEntry(@PathParam("id") long id,
+			@QueryParam("destination_id") Long destinationId) {
+		return null;
+	}
+
+	// Move a folder entry
+	@POST
+	@Path("move")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public  Response moveFolderEntry(@PathParam("id") long id,
+			@QueryParam("destination_id") Long destinationId) {
+		return null;
+	}
+	
+	// Lock a folder entry
+	@POST
+	@Path("lock")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public  Response lockFolderEntry(@PathParam("id") long id) {
+		return null;
+	}
+
+	// Unlock a folder entry
+	@POST
+	@Path("unlock")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public  Response unlockFolderEntry(@PathParam("id") long id) {
+		return null;
+	}
+
+	// Read a list of tags associated with the folder entry
+	@GET
+	@Path("tags")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<Tag> getTags(@PathParam("id") long id) {
+		return null;
+	}
+	
+	// Add a tag to the folder entry
+	@POST
+	@Path("add_tag")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Response addTag(@PathParam("id") long id) {
 		return null;
 	}
 

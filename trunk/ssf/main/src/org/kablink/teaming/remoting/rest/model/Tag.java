@@ -30,49 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.remoting.rest.resource;
+package org.kablink.teaming.remoting.rest.model;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+public class Tag {
 
-import org.kablink.teaming.remoting.rest.model.Folder;
-
-@Path("/folder/{id}")
-public class FolderResource extends AbstractResource {
-
-	// Read folder (meaning returning folder properties)
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Folder getFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Update folder (meaning updating folder properties)
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
-	@DELETE
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
-		
-	}
-	
-	// Add folder entry in the folder
-	@POST
-	@Path("add_folder_entry")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
-		return null;
-	}
 }

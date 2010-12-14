@@ -34,45 +34,27 @@ package org.kablink.teaming.remoting.rest.resource;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.Folder;
+import org.kablink.teaming.remoting.rest.model.Tag;
 
-@Path("/folder/{id}")
-public class FolderResource extends AbstractResource {
+@Path("/tag/{id}")
+public class TagResource extends AbstractResource {
 
-	// Read folder (meaning returning folder properties)
+	// Read tag
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Folder getFolder(@PathParam("id") long id) {
+	public Tag getTag(@PathParam("id") String id) {
 		return null;
 	}
-	
-	// Update folder (meaning updating folder properties)
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
+
+	// Delete tag
 	@DELETE
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
-		
-	}
-	
-	// Add folder entry in the folder
-	@POST
-	@Path("add_folder_entry")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
-		return null;
+	public void deleteTag(@PathParam("id") String id) {
+
 	}
 }
