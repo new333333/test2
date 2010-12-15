@@ -52,7 +52,7 @@ import org.kablink.teaming.remoting.rest.model.FolderEntry;
 @Path("/folder/{id}")
 public class FolderResource extends AbstractResource {
 
-	// Read folder (meaning returning folder properties)
+	// Read folder (meaning returning folder properties, not including children list)
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Folder getFolder(@PathParam("id") long id) {
