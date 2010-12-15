@@ -239,6 +239,7 @@
 		<options>
 			<option name="entryFormForm" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__layout_options" />
 		</options>
 		
 		<jsps>
@@ -267,6 +268,7 @@
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='entryData']"/>
 			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']"/>
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
@@ -390,6 +392,7 @@
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='entryLayoutView']"/>
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
@@ -3127,6 +3130,41 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
 		</jsps>
 	</item>
+	
+<!-- Entry layout items -->
+	<item name="onlyInState" caption="__only_in_state" category="entryLayout" display="form">
+		<properties>
+			<property name="showWhenNoWorkflow" caption="__showWhenNoWorkflow" type="checkbox"/>
+			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" definitionType="1" caption="__title" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']"  />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/only_in_state.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="onlyInStateView" caption="__only_in_state" category="entryLayoutView" display="view">
+		<properties>
+			<property name="showWhenNoWorkflow" caption="__showWhenNoWorkflow" type="checkbox"/>
+			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/only_in_state.jsp" />
+		</jsps>
+	</item>
+		
 <!-- General layout items -->
 	<item name="box" caption="__box" category="generalLayout" display="form">
 		<properties>
@@ -3720,11 +3758,24 @@
 			<property name="question" caption="__workflow_question" type="text" />
 			<property name="response" caption="__workflow_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+			<property name="everyone" caption="__workflow_response_everyone" type="checkbox"/>
 		</properties>
 		<options>
+			<option name="transitionResponseAccess" caption="__workflow_response_access" />
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
+
+	<item name="transitionResponseAccess" caption="__transitionResponseAccess" multipleAllowedInParent="false">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
+		</properties>
+	</item>
+	
 	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" >
 		<properties>
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">

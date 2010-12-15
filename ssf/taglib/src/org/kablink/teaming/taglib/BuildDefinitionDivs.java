@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.repository.RepositoryUtil;
@@ -90,6 +91,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.SortedMap;
+import java.util.Map.Entry;
 
 
 /**
@@ -119,9 +121,11 @@ public class BuildDefinitionDivs extends TagSupport {
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 	private Long binderId;
     private ProfileModule profileModule;
+    private DefinitionModule definitionModule;
     
 	public int doStartTag() throws JspException {
 		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
+		definitionModule = (DefinitionModule)SpringContextUtil.getBean("definitionModule");
 	    if(this.title == null)
 	        throw new JspException("ssf:buildDefinitionDivs: The title must be specified.");
 	    
@@ -1272,6 +1276,61 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
 						
+					
+					} else if (type.equals("workflowStatesList")) {
+						String selectedId ="";
+						List<String> previousStates = new ArrayList();
+						Element processProperty = (Element)rootElement.selectSingleNode("properties/property[@name='states']");
+						if (processProperty != null) {
+							selectedId = processProperty.attributeValue("workflowDefinitionId", "");
+							sb.append("<input type=\"hidden\" name=\"previous_workflowDefinitionId\" value=\""+selectedId+"\" />\n");
+							//Add the list of previously selected state names as hidden fields
+							List<Element> workflowStateElements = processProperty.selectNodes("workflowState");
+							if (workflowStateElements != null && !workflowStateElements.isEmpty()) {
+								for (Element workflowStateEle : workflowStateElements) {
+									String state = workflowStateEle.attributeValue("name", "");
+									previousStates.add(state);
+									sb.append("<input type=\"hidden\" name=\"previous_workflowState\" value=\""+state+"\" />\n");
+								}
+							}
+						}
+						sb.append(propertyConfigCaption);
+						sb.append("<select name=\"propertyId_" + 
+								propertyId + "\"");
+						sb.append(" onChange=\"getConditionSelectbox(this, 'get_entry_workflow_states')\" ");
+						sb.append(">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_workflowProcess")).append("</option>\n");
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.WORKFLOW);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
+							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
+							if (entryDef.getId().equals(sourceDocument.getRootElement().attributeValue("databaseId"))) continue;
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							if (entryDef.getId().equals(selectedId)) {
+								sb.append(" selected=\"selected\"");
+							}
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")
+									.replaceAll("<", "&lt;").replaceAll(">", "&gt;")).append("</option>\n");								
+						}
+
+						sb.append("</select>\n<br/><br/>\n");
+						sb.append("<input type=\"hidden\" name=\""+WebKeys.PROPERTY_ID+"\" value=\""+propertyId+"\" />");
+						sb.append("<div id=\"entryWorkflowStates\">");
+						if (!selectedId.equals("")) {
+							sb.append("<span class=\"ss_bold\">"+NLT.get("definition.selectWorkflowStates")+"</span><br/>");
+							Map<String,Map> stateData = definitionModule.getWorkflowDefinitionStates(selectedId);
+							sb.append("<select multiple=\"multiple\" name=\"workflowStateNames\">\n");
+							sb.append("<option value=\"\">"+NLT.get("filter.selectStates")+"</option>\n");
+							for (Map.Entry<String, Map> me : stateData.entrySet()) {
+								sb.append("<option value=\""+me.getKey()+"\"");
+								if (previousStates.contains(me.getKey())) {
+									sb.append(" selected=\"selected\" ");
+								}
+								sb.append(">"+me.getValue().get("caption")+"</option>\n");
+							}
+							sb.append("</select>\n");
+						}
+						sb.append("</div><br/>\n");						
 					
 					} else if (type.equals("userGroupSelect")) {
 						sb.append(propertyConfigCaption);
