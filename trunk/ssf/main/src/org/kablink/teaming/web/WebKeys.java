@@ -485,6 +485,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
 	public static final String OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
+	public static final String OPERATION_GET_ENTRY_WORKFLOW_STATES = "get_entry_workflow_states";
 	public static final String OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
@@ -848,6 +849,7 @@ public class WebKeys {
     public static final String ENTRY_HAS_META_HIT="_entryHasMetaHit";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
+    public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String TRASH_VIEW_TOOLBAR="ssTrashViewToolbar";
     public static final String FOLDER_VIEWS_TOOLBAR="ssFolderViewsToolbar";
@@ -1080,6 +1082,7 @@ public class WebKeys {
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
     public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
+    public static final String PROPERTY_ID="ssPropertyId";
     public static final String QUOTAS_ENABLED="ss_quotasEnabled";
     public static final String QUOTAS_DEFAULT="ss_quotasDefault";
     public static final String QUOTAS_GROUPS="ss_quotasGroups";

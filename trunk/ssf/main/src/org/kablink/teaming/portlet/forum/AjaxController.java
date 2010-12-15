@@ -342,6 +342,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 				return new ModelAndView("definition_builder/get_condition_element", model);
+			} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
+				return new ModelAndView("definition_builder/get_entry_workflow_states", model);
 			} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
@@ -481,6 +483,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
+			return ajaxGetEntryWorkflowStates(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL) ||
 					op.equals(WebKeys.OPERATION_SHOW_BUSINESS_CARD) ||
@@ -1505,6 +1509,33 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else {
 			return new ModelAndView("definition_builder/get_condition_entry_element_value", model);
 		}
+	}
+	
+	private ModelAndView ajaxGetEntryWorkflowStates(RenderRequest request, 
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String propertyId = PortletRequestUtils.getStringParameter(request,WebKeys.PROPERTY_ID, "");
+		if (Validator.isNotNull(propertyId)) {
+			String defId = PortletRequestUtils.getStringParameter(request, "propertyId_" + propertyId, "");
+			if (Validator.isNotNull(defId)) {
+				model.put(WebKeys.WORKFLOW_DEFINITION_ID, defId);
+				model.put(WebKeys.PROPERTY_ID, propertyId);
+				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
+				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+				model.put("previous_workflowDefinitionId", PortletRequestUtils.getStringParameter(request,"previous_workflowDefinitionId", ""));
+				String[] previousStates = PortletRequestUtils.getStringParameters(request, "previous_workflowState");
+				Map previousStatesList = new HashMap();
+				if (previousStates != null) {
+					for (int i = 0; i < previousStates.length; i++) {
+						previousStatesList.put(previousStates[i], true);
+					}
+				}
+				model.put("previous_workflowStates", previousStatesList);
+			}
+		}
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("definition_builder/get_entry_workflow_states", model);
 	}
 	
 	private ModelAndView ajaxGetWorkspaceTree(RenderRequest request, 
