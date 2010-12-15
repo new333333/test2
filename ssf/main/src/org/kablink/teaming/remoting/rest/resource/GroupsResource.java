@@ -36,6 +36,7 @@ import java.util.List;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -47,7 +48,7 @@ import javax.ws.rs.core.Response;
 import org.kablink.teaming.remoting.rest.model.Group;
 
 @Path("/groups")
-public class GroupResource {
+public class GroupsResource {
 
 	// Get all groups
 	@GET
@@ -58,12 +59,32 @@ public class GroupResource {
 		return null;
 	}
 
+	// Create a new group.
+	@POST
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void createGroup() {		
+	}
+
 	// Get group
 	@GET
 	@Path("group/{id}")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Group getGroup(@PathParam("id") Long id) {
+	public Group getGroup(@PathParam("id") long id) {
 		return null;
+	}
+	
+	// Update group. This only updates properties/metadata.
+	@PUT
+	@Path("group/{id}")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void updateGroup(@PathParam("id") long id) {
+	}
+	
+	// Delete group.
+	@DELETE
+	@Path("group/{id}")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void deleteGroup(@PathParam("id") long id) {
 	}
 	
 	// Get group by name
@@ -80,6 +101,7 @@ public class GroupResource {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response addMember(@PathParam("id") long id,
 			@PathParam("user_or_group_id") long userPrincipalId) {
+		// How about providing interface where client can add more than one members in a single call?
 		return null;
 	}
 	
@@ -98,6 +120,10 @@ public class GroupResource {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List getMembers(@PathParam("id") long id) {
 		// TODO $$$ Can I use polymorphism here, that is, a list of "
+		// Unfortunately, polymopshism won't work with a collection.
+		// We should consider offering two variations - one with a list of
+		// full objects, and the other with a list of brief objects (i.e, 
+		// handle/reference/identity only).
 		return null;
 	}
 }

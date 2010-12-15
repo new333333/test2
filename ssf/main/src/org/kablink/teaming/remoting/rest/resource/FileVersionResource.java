@@ -79,10 +79,4 @@ public class FileVersionResource extends AbstractResource {
 		return null;
 	}
 
-	// Delete file version resource
-	@DELETE
-	public void deleteFile(@PathParam("id") String id) {
-		
-	}
-
 }

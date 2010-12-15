@@ -236,11 +236,4 @@ public class FolderEntryResource extends AbstractResource {
 		return "Hello!";
 	}
 	
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public String getFolderEntry() {
-		// Actually, this implementation doesn't make sense. The returned string
-		// must be formatted according to the media type.
-		return "Hello!";
-	}
 }

@@ -34,7 +34,10 @@ package org.kablink.teaming.remoting.rest.resource;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -55,12 +58,26 @@ public class UsersResource {
 		return null;
 	}
 	
+	// Create a new user.
+	@POST
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void createUser() {		
+		// optionally accept initial password
+	}
+	
 	@GET
-	@Path("/byemail")
+	@Path("byemail")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public List<User> getUsersByEmail(
 		@QueryParam("email_address") String emailAddress,
 		@QueryParam("email_type") String emailType) {
+		return null;
+	}
+
+	@GET
+	@Path("user")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public User getUserByName(@QueryParam("name") String name) {
 		return null;
 	}
 
@@ -71,11 +88,38 @@ public class UsersResource {
 		return null;
 	}
 	
-	@GET
-	@Path("user")
+	// Update user. This only updates properties/metadata.
+	@PUT
+	@Path("user/{id}")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public User getUserByName(@QueryParam("name") String name) {
-		return null;
+	public void updateUser(@PathParam("id") long id) {
 	}
 	
+	// Delete user.
+	@DELETE
+	@Path("user/{id}")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void deleteUser(@PathParam("id") long id) {
+	}
+
+	// Create personal workspace for the user, if it doesn't already exist. 
+	@PUT
+	@Path("user/{id}/personal_workspace")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void addPersonalWorkspace(@PathParam("id") long id) {
+	}
+
+	// Change password
+	@POST
+	@Path("user/{id}/password")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void changePassword(@PathParam("id") long id) {
+	}
+
+	@GET
+	@Path("user/{id}/favorites")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void getFavorites(@PathParam("id") long id) {
+		// Return a list of favorites (i.e., a list of binders).
+	}
 }
