@@ -107,6 +107,53 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 
+	// Copy folder
+	@POST
+	@Path("dest_binder/{dest_binder_id}/copy")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void copyFolder(@PathParam("id") long id,
+			@PathParam("dest_binder_id") long destBinderId) {
+	}
+
+	// Move folder
+	@POST
+	@Path("dest_binder/{dest_binder_id}/move")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void moveFolder(@PathParam("id") long id,
+			@PathParam("dest_binder_id") long destBinderId) {
+	}
+
+	// Index folder
+	@PUT
+	@Path("index")
+	public void indexFolder(@PathParam("id") long id,
+			@QueryParam("include_entries") Boolean includeEntries) {
+		
+	}
+
+	// Index folder recursively. This always include entries.
+	@PUT
+	@Path("index_recursively")
+	public void indexRecursively(@PathParam("id") long id) {
+		
+	}
+
+	// Set whether to inherit ACL (role membership) or not
+	@PUT
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("acl")
+	public void setInheritAcl(@QueryParam("inherit") boolean inheritRoleMembership) {
+		
+	}
+
+	// Set owner
+	@PUT
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("owner/{id}")
+	public void setOwner(@PathParam("id") long userId) {
+		
+	}
+
 	// Test if the user has the right to execute the specified operation on the folder
 	@GET
 	@Path("test_operation/{operation_name}")

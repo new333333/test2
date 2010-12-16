@@ -51,45 +51,15 @@ import org.kablink.teaming.rest.model.Tag;
 
 public class BinderResource {
 
-	// Copy binder
-	//public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
+	// Set definitions (LATER)
+	//public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
+
+
+	
+	
 	
 	// Get binder by path name
 	//public Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments);
-
-	
-	// Move binder
-	//public void binder_moveBinder(String accessToken, long binderId, long destinationId);
-
-	// Index binder
-	//public void binder_indexBinder(String accessToken, long binderId);
-
-	
-	// Index tree
-    //public Long[] binder_indexTree(String accessToken, long binderId);
-
-	// Set definitions
-	@POST
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void setDefinitions() {
-		
-	}
-	
-	// Set whether to inherit ACL (role membership) or not
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("inherit_acl/{inherit_acl}")
-	public void setInheritAcl(@PathParam("inherit_acl") boolean inheritRoleMembership) {
-		
-	}
-	
-	// Set owner
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Path("owner/{id}")
-	public void setOwner(@PathParam("id") long userId) {
-		
-	}
 
 	// Set function membership
 	// public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
@@ -100,39 +70,6 @@ public class BinderResource {
 	// Set team members 
 	//public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
 
-	// Get subscription for the folder
-	@GET
-	@Path("subscription")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Subscription getSubscription(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Read a list of tags associated with the folder
-	@GET
-	@Path("tags")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Tag> getTags(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Add a tag to the folder
-	@POST
-	@Path("add_tag")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addTag(@PathParam("id") long id) {
-		return null;
-	}
-
-	// Test if the user has the right to execute the specified operation on the folder
-	@GET
-	@Path("test_operation/{operation_name}")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public boolean testOperation(@PathParam("id") long id,
-			@PathParam("operation_name") String operationName) {
-		return false;
-	}
-	
 	// Get top workspace ID
 	//public long binder_getTopWorkspaceId(String accessToken);
 
