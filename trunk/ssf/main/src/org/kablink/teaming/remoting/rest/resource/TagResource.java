@@ -39,7 +39,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.client.rest.model.Tag;
+import org.kablink.teaming.rest.model.Tag;
 
 @Path("/tag/{id}")
 public class TagResource extends AbstractResource {
