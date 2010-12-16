@@ -41,6 +41,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -106,6 +107,52 @@ public class WorkspaceResource {
 		return null;
 	}
 	
+	// Copy workspace
+	@POST
+	@Path("dest_workspace/{dest_workspace_id}/copy")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void copyWorkspace(@PathParam("id") long id,
+			@PathParam("dest_workspace_id") long destWorkspaceId) {
+	}
+
+	// Move workspace
+	@POST
+	@Path("dest_workspace/{dest_workspace_id}/copy")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void moveWorkspace(@PathParam("id") long id,
+			@PathParam("dest_workspace_id") long destWorkspaceId) {
+	}
+
+	// Index workspace
+	@PUT
+	@Path("index")
+	public void indexWorkspace(@PathParam("id") long id) {
+	}
+
+	// Index workspace recursively
+	@PUT
+	@Path("index_recursively")
+	public void indexWorkspaceRecursively(@PathParam("id") long id) {
+		
+	}
+
+	// Set whether to inherit ACL (role membership) or not
+	@PUT
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("acl")
+	public void setInheritAcl(@QueryParam("inherit") boolean inheritRoleMembership) {
+		
+	}
+
+	// Set owner
+	@PUT
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Path("owner/{id}")
+	public void setOwner(@PathParam("id") long userId) {
+		
+	}
+
+
 	// Test if the user has the right to execute the specified operation on the workspace
 	@GET
 	@Path("test_operation/{operation_name}")
