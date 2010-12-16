@@ -43,8 +43,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.Subscription;
-import org.kablink.teaming.remoting.rest.model.Tag;
+import org.kablink.teaming.client.rest.model.Subscription;
+import org.kablink.teaming.client.rest.model.Tag;
 import org.kablink.teaming.remoting.ws.model.Binder;
 import org.kablink.teaming.remoting.ws.model.FunctionMembership;
 import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;

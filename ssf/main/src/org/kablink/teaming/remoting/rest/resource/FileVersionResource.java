@@ -45,7 +45,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.FileVersionProperties;
+import org.kablink.teaming.client.rest.model.FileVersionProperties;
 
 @Path("/file_version/{id}")
 public class FileVersionResource extends AbstractResource {
