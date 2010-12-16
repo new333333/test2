@@ -108,6 +108,8 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
@@ -2938,6 +2940,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (fileAtt != null) {
 				bs.getFileModule().modifyFileStatus(entity, fileAtt, fileStatus);
 				BinderHelper.indexEntity(bs, entity);
+				if (entity instanceof WorkflowControlledEntry) {
+					//This is a workflow entity, so see if anything needs to be triggered on modify
+					getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+				}
 			}
 		}
 	}
