@@ -36,7 +36,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.NamedFrame;
 
 /**
  * 
@@ -45,9 +47,12 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class GoogleGadgetDropWidget extends DropWidget
 {
+	private static int m_baseId = 0;
+	
 	private static GoogleGadgetWidgetDlgBox m_googleGadgetDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private GoogleGadgetProperties	m_properties = null;
-	private FlowPanel m_htmlPanel = null;
+	private NamedFrame m_frame = null;
+	private String m_iFrameId;
 	
 
 	/**
@@ -152,11 +157,23 @@ public class GoogleGadgetDropWidget extends DropWidget
 		
 		// Create the controls that will hold the html
 		{
-			m_htmlPanel = new FlowPanel();
-			m_htmlPanel.addStyleName( "lpeDropWidget" );
-			m_htmlPanel.addStyleName( "lpeHtmlWidget" );
-			
-			wrapperPanel.add( m_htmlPanel );
+			FlowPanel htmlPanel = null;
+
+			htmlPanel = new FlowPanel();
+			htmlPanel.addStyleName( "lpeDropWidget" );
+			htmlPanel.addStyleName( "lpeGoogleGadgetWidget" );
+
+			// We need to create an iframe for the gadget to live in because the Google
+			// code that loads a gadget does a document.write() which overwrites the page.
+			// Give the iframe a name so that view_workarea_navbar.jsp, doesn't set the url of the browser.
+			m_iFrameId = "googleGadgetIFrame-" + String.valueOf( m_baseId );
+			++m_baseId;
+			m_frame = new NamedFrame( m_iFrameId );
+			m_frame.getElement().setId( m_iFrameId );
+			m_frame.setUrl( "" );
+			htmlPanel.add( m_frame );
+
+			wrapperPanel.add( htmlPanel );
 		}
 		
 		// Create an object to hold all of the properties that define a "Google Gadget" widget.
@@ -166,33 +183,62 @@ public class GoogleGadgetDropWidget extends DropWidget
 		if ( properties != null )
 			m_properties.copy( properties );
 		
+		// All composites must call initWidget() in their constructors.
+		initWidget( wrapperPanel );
+
 		// Update the dynamic parts of this widget
 		updateWidget( m_properties );
 		
-		// All composites must call initWidget() in their constructors.
-		initWidget( wrapperPanel );
 	}// end init()
 	
 
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( Object props )
+	public void updateWidget( final Object props )
 	{
-		String gadgetCode;
+		Scheduler.ScheduledCommand cmd;
 		
-		// Save the properties that were passed to us.
-		if ( props instanceof PropertiesObj )
-			m_properties.copy( (PropertiesObj) props );
-		
-		// Get the Google Gadget Code
-		gadgetCode = m_properties.getGadgetCode();
-		
-		if ( gadgetCode == null || gadgetCode.length() == 0 )
-			m_htmlPanel.getElement().setInnerHTML( "" );
-		else
-			m_htmlPanel.getElement().setInnerHTML( gadgetCode );
-
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
+			{
+				String html;
+				String gadgetCode;
+				
+				// Save the properties that were passed to us.
+				if ( props instanceof PropertiesObj )
+					m_properties.copy( (PropertiesObj) props );
+				
+				// Get the Google Gadget Code
+				gadgetCode = m_properties.getGadgetCode();
+				
+				if ( gadgetCode == null || gadgetCode.length() == 0 )
+					html = "<html><head></head><body></body></html>";
+				else
+					html = "<html><head></head><body>" + gadgetCode + "</body></html>";
+				
+				// We need to stick the google gadget code inside an iframe because when the
+				// google gadget code runs it does a document.write() which overwrites the
+				// current page.
+				setIFrameHtml( m_iFrameId, html );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 
+	/**
+	 * 
+	 */
+	private native void setIFrameHtml( String iFrameId, String html ) /*-{
+		var iFrame;
+		
+		iFrame = $wnd.frames[iFrameId];
+		if ( iFrame != null && iFrame.document != null && iFrame.document != 'undefined' )
+		{
+			iFrame.document.open();
+			iFrame.document.write( html );
+			iFrame.document.close();
+		}
+	}-*/;
 }
