@@ -429,12 +429,13 @@ public class AccessUtils  {
 	}
     
 	private static void operationCheck(User user, Binder binder, WorkflowSupport entry, WorkAreaOperation operation) {
-		WfAcl.AccessType accessType = WfAcl.AccessType.delete;
+		WfAcl.AccessType accessType = null;
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
 		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete; 
- 		if (!entry.hasAclSet()) {
-			//This entry does not have a workflow ACL set, so just go check for entry level access
+ 		if (accessType == null || !entry.hasAclSet()) {
+			//This entry does not have a workflow ACL set or this check is not covered by workflow access checks, 
+ 			//  so just go check for entry level access
  			operationCheck(user, binder, (Entry)entry, operation);
 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
  			//"Widening" is allowed, we need to only check workflow ACL
@@ -443,7 +444,8 @@ public class AccessUtils  {
  				checkAccess(user, binder, entry, accessType);
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(accessType)) { 		
- 					//The workflow ACL did not allow this operation, so now see if the entry affords this operation
+ 					//The workflow ACL did not allow this operation but the acl specifies "forum default", 
+ 					//  so now see if the entry affords this operation
  					operationCheck(user, binder, (Entry)entry, operation);
  				} else throw ex;
  			}
@@ -451,8 +453,7 @@ public class AccessUtils  {
  		} else {
  			//"Widening" is not allowed, so we must also have READ access to binder
  			if (entry.isWorkAreaAccess(accessType)) {
- 				//optimization: if pass modify binder check, don't need to do read binder check
- 				// all done if binder access is enough
+ 				//The workflow specifies "forum default" for this access. So, just do the regular check. If that fails check the workflow acl.
  				try {
  					operationCheck(user, binder, (Entry)entry, operation);
 					return;
