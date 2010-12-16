@@ -34,86 +34,78 @@ package org.kablink.teaming.remoting.rest.resource;
 
 import java.util.List;
 
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.Folder;
-import org.kablink.teaming.remoting.rest.model.FolderEntry;
 import org.kablink.teaming.remoting.rest.model.Subscription;
 import org.kablink.teaming.remoting.rest.model.Tag;
+import org.kablink.teaming.remoting.ws.model.Binder;
+import org.kablink.teaming.remoting.ws.model.FunctionMembership;
+import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
 
-@Path("/folder/{id}")
-public class FolderResource extends AbstractResource {
+public class BinderResource {
 
-	// Read folder (meaning returning folder properties, not including children list)
-	@GET
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Folder getFolder(@PathParam("id") long id) {
-		return null;
-	}
+	// Copy binder
+	//public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade);
 	
-	// Update folder (meaning updating folder properties)
-	@PUT
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
-		return null;
-	}
+	// Get binder by path name
+	//public Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments);
+
 	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
-	@DELETE
+	// Move binder
+	//public void binder_moveBinder(String accessToken, long binderId, long destinationId);
+
+	// Index binder
+	//public void binder_indexBinder(String accessToken, long binderId);
+
+	
+	// Index tree
+    //public Long[] binder_indexTree(String accessToken, long binderId);
+
+	// Set definitions
+	@POST
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
+	public void setDefinitions() {
 		
 	}
 	
-	// Add folder entry in the folder
-	@POST
-	@Path("add_folder_entry")
+	// Set whether to inherit ACL (role membership) or not
+	@PUT
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
-		return null;
+	@Path("inherit_acl/{inherit_acl}")
+	public void setInheritAcl(@PathParam("inherit_acl") boolean inheritRoleMembership) {
+		
 	}
 	
-	// Add subfolder
-	@POST
-	@Path("add_subfolder")
+	// Set owner
+	@PUT
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addSubFolder(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Read sub-folders
-	@GET
-	@Path("subfolders")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<Folder> getSubFolders(@PathParam("id") long id) {
-		return null;
-	}
-	
-	// Read entries
-	@GET
-	@Path("entries")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<FolderEntry> getFolderEntries(@PathParam("id") long id) {
-		return null;
+	@Path("owner/{id}")
+	public void setOwner(@PathParam("id") long userId) {
+		
 	}
 
-	// Test if the user has the right to execute the specified operation on the folder
+	// Set function membership
+	// public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
+
+	// Get team members
+	//public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords);
+	
+	// Set team members 
+	//public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
+
+	// Get subscription for the folder
 	@GET
-	@Path("test_operation/{operation_name}")
+	@Path("subscription")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public boolean testOperation(@PathParam("id") long id,
-			@PathParam("operation_name") String operationName) {
-		return false;
+	public Subscription getSubscription(@PathParam("id") long id) {
+		return null;
 	}
 	
 	// Read a list of tags associated with the folder
@@ -132,13 +124,16 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 
-	// Get subscription for the folder
+	// Test if the user has the right to execute the specified operation on the folder
 	@GET
-	@Path("subscription")
+	@Path("test_operation/{operation_name}")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Subscription getSubscription(@PathParam("id") long id) {
-		return null;
+	public boolean testOperation(@PathParam("id") long id,
+			@PathParam("operation_name") String operationName) {
+		return false;
 	}
 	
+	// Get top workspace ID
+	//public long binder_getTopWorkspaceId(String accessToken);
 
 }
