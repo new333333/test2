@@ -387,7 +387,7 @@ public class GwtActivityStreamHelper {
 					if (null == commentAuthorInfo) {
 						// No!  Construct one and cache it now.
 						User authorUser = userMap.get(commentAuthorId);
-						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, entryData.getAuthorTitle());
+						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, commentEntryData.getAuthorTitle());
 						authorInfoMap.put(commentAuthorId, commentAuthorInfo);
 					}
 
