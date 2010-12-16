@@ -44,7 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.kablink.teaming.client.rest.model.User;
+import org.kablink.teaming.rest.model.User;
 
 @Path("/users")
 public class UsersResource {

@@ -30,33 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.client.rest.model;
+package org.kablink.teaming.rest.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class FileVersionProperties {
 
-@XmlRootElement
-public class FolderEntry {
-
-	private Long id;
-	private String title;
-	private String description;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
 }

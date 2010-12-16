@@ -44,11 +44,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.client.rest.model.Folder;
-import org.kablink.teaming.client.rest.model.FolderEntry;
-import org.kablink.teaming.client.rest.model.Subscription;
-import org.kablink.teaming.client.rest.model.Tag;
-import org.kablink.teaming.client.rest.model.Workspace;
+import org.kablink.teaming.rest.model.Folder;
+import org.kablink.teaming.rest.model.FolderEntry;
+import org.kablink.teaming.rest.model.Subscription;
+import org.kablink.teaming.rest.model.Tag;
+import org.kablink.teaming.rest.model.Workspace;
 
 @Path("/workspace/{id}")
 public class WorkspaceResource {
