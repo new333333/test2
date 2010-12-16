@@ -57,6 +57,7 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 	
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
+		/* TODO $$$
 		// Check authentication
 		checkAuthentication(request);
 		
@@ -71,7 +72,7 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 		
 		// Resolve request context
 		resolveRequestContext(request);
-		
+		*/
 		return request;
 	}
 

@@ -40,7 +40,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.rest.model.Subscription;
+import org.kablink.teaming.client.rest.model.Subscription;
 
 @Path("/subscription/{user_id}/{entity_type}/{entity_id}")
 public class SubscriptionResource {
