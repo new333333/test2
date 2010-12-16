@@ -65,6 +65,8 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -72,6 +74,7 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.security.AccessControlException;
@@ -147,6 +150,10 @@ public class ModifyFileController extends SAbstractController {
 						getFileModule().deleteVersion(binder, entity, fileAtt.getHighestVersion());
 						BinderHelper.indexEntity(this, entity);  //Must re-index since there is a new top file version
 					}
+					if (entity instanceof WorkflowControlledEntry) {
+						//This is a workflow entity, so see if anything needs to be triggered on modify
+						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+					}
 				}
 			
 			} else if (op.equals(WebKeys.OPERATION_DELETE_MULTIPLE_VERSIONS) && WebHelper.isMethodPost(request)) {
@@ -183,6 +190,10 @@ public class ModifyFileController extends SAbstractController {
 					Description description = new Description(text);
 					getFileModule().modifyFileComment(entity, fileAtt, description);
 					BinderHelper.indexEntity(this, entity);
+					if (entity instanceof WorkflowControlledEntry) {
+						//This is a workflow entity, so see if anything needs to be triggered on modify
+						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+					}
 				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT) && WebHelper.isMethodPost(request)) {
@@ -191,6 +202,10 @@ public class ModifyFileController extends SAbstractController {
 					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
 					getFileModule().revertFileVersion(entity, fileVer);
 					BinderHelper.indexEntity(this, entity);
+					if (entity instanceof WorkflowControlledEntry) {
+						//This is a workflow entity, so see if anything needs to be triggered on modify
+						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+					}
 				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_MAJOR_VERSION) && WebHelper.isMethodPost(request)) {
@@ -198,6 +213,10 @@ public class ModifyFileController extends SAbstractController {
 				if (fileAtt != null) {
 					getFileModule().incrementMajorFileVersion(entity, fileAtt);
 					BinderHelper.indexEntity(this, entity);
+					if (entity instanceof WorkflowControlledEntry) {
+						//This is a workflow entity, so see if anything needs to be triggered on modify
+						getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
+					}
 				}
 			}
 
