@@ -41,45 +41,44 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.kablink.teaming.remoting.rest.model.Folder;
 import org.kablink.teaming.remoting.rest.model.FolderEntry;
 import org.kablink.teaming.remoting.rest.model.Subscription;
 import org.kablink.teaming.remoting.rest.model.Tag;
+import org.kablink.teaming.remoting.rest.model.Workspace;
 
-@Path("/folder/{id}")
-public class FolderResource extends AbstractResource {
+@Path("/workspace/{id}")
+public class WorkspaceResource {
 
-	// Read folder (meaning returning folder properties, not including children list)
+	// Read workspace (meaning returning workspace properties, not including children list)
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Folder getFolder(@PathParam("id") long id) {
+	public Workspace getWorkspace(@PathParam("id") long id) {
 		return null;
 	}
 	
-	// Update folder (meaning updating folder properties)
+	// Update workspace (meaning updating workspace properties)
 	@PUT
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response putFolder(@PathParam("id") long id) {
+	public Response putWorkspace(@PathParam("id") long id) {
 		return null;
 	}
 	
-	// Delete folder (meaning not only the properties but also the folder itself and everything in it)
+	// Delete workspace (meaning not only the properties but also the workspace itself and everything in it recursively)
 	@DELETE
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public void deleteFolder(@PathParam("id") long id) {
+	public void deleteWorkspace(@PathParam("id") long id) {
 		
 	}
 	
-	// Add folder entry in the folder
+	// Add subworkspace
 	@POST
-	@Path("add_folder_entry")
+	@Path("add_subworkspace")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response addFolderEntry(@PathParam("id") long id) {
+	public Response addSubWorkspace(@PathParam("id") long id) {
 		return null;
 	}
 	
@@ -90,8 +89,16 @@ public class FolderResource extends AbstractResource {
 	public Response addSubFolder(@PathParam("id") long id) {
 		return null;
 	}
+
+	// Read subworkspaces
+	@GET
+	@Path("subworkspaces")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<Workspace> getSubWorkspaces(@PathParam("id") long id) {
+		return null;
+	}
 	
-	// Read sub-folders
+	// Read subfolders
 	@GET
 	@Path("subfolders")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -99,15 +106,7 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 	
-	// Read entries
-	@GET
-	@Path("entries")
-	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<FolderEntry> getFolderEntries(@PathParam("id") long id) {
-		return null;
-	}
-
-	// Test if the user has the right to execute the specified operation on the folder
+	// Test if the user has the right to execute the specified operation on the workspace
 	@GET
 	@Path("test_operation/{operation_name}")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -116,7 +115,7 @@ public class FolderResource extends AbstractResource {
 		return false;
 	}
 	
-	// Read a list of tags associated with the folder
+	// Read a list of tags associated with the workspace
 	@GET
 	@Path("tags")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -124,7 +123,7 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 	
-	// Add a tag to the folder
+	// Add a tag to the workspace
 	@POST
 	@Path("add_tag")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -132,7 +131,7 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 
-	// Get subscription for the folder
+	// Get subscription for the workspace
 	@GET
 	@Path("subscription")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
