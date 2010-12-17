@@ -97,6 +97,7 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -515,18 +516,31 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param asp
 	 * @param asi
 	 * @param pagingData
+	 * @param asdt
 	 * 
 	 * @return
 	 */
+	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt )
+	{
+		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData, asdt );
+	}// end getActivityStreamData()
+	
 	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData )
 	{
-		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData );
+		// Always use the initial form of the method.
+		return getActivityStreamData( ri, asp, asi, pagingData, ActivityStreamDataType.ALL );
 	}// end getActivityStreamData()
 	
 	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi )
 	{
 		// Always use the initial form of the method.
-		return getActivityStreamData(ri, asp, asi, null);
+		return getActivityStreamData( ri, asp, asi, null, ActivityStreamDataType.ALL );
+	}// end getActivityStreamData()
+	
+	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt )
+	{
+		// Always use the initial form of the method.
+		return getActivityStreamData( ri, asp, asi, null, asdt );
 	}// end getActivityStreamData()
 	
 	/**
@@ -594,6 +608,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
+	@SuppressWarnings("unused")
 	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try

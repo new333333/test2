@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -208,10 +209,12 @@ public interface GwtRpcServiceAsync
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 
 	// Activity Stream servicing APIs.
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                  AsyncCallback<ActivityStreamParams> callback );
-	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                          AsyncCallback<ActivityStreamInfo>   callback );
-	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );	
-	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd,                              AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                                             AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                                               AsyncCallback<ActivityStreamParams> callback );
+	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                                                       AsyncCallback<ActivityStreamInfo>   callback );
+	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );	
+	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );
 }// end GwtRpcServiceAsync

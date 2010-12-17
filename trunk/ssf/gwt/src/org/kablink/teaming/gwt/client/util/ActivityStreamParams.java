@@ -51,6 +51,8 @@ public class ActivityStreamParams implements IsSerializable {
 	private int     m_entriesPerPage;
 	private int     m_lookback;
 	private int     m_maxHits;
+	private long    m_readEntryDays;
+	private int     m_readEntryMax;
 	
 	/**
 	 * Constructor method.
@@ -72,18 +74,22 @@ public class ActivityStreamParams implements IsSerializable {
 	public int     getEntriesPerPage()         {return m_entriesPerPage;        }
 	public int     getLookback()               {return m_lookback;              }
 	public int     getMaxHits()                {return m_maxHits;               }
+	public long    getReadEntryDays()          {return m_readEntryDays;         }
+	public int     getReadEntryMax()           {return m_readEntryMax;          }
 	
 	/**
 	 * Set'er methods.
 	 */
-	public void setActivityStreamsOnLogin(boolean activityStreamsOnLogin) {m_activityStreamsOnLogin = activityStreamsOnLogin;}
-	public void setActiveComments(        int     activeComments)         {m_activeComments         = activeComments;        }
-	public void setCacheRefresh(          int     cacheRefresh)           {m_cacheRefresh           = cacheRefresh;          }
-	public void setClientRefresh(         int     clientRefresh)          {m_clientRefresh          = clientRefresh;         }
-	public void setDisplayWords(          int     displayWords)           {m_displayWords           = displayWords;          }
-	public void setEntriesPerPage(        int     entriesPerPage)         {m_entriesPerPage         = entriesPerPage;        }
-	public void setLookback(              int     lookback)               {m_lookback               = lookback;              }
-	public void setMaxHits(               int     maxHits)                {m_maxHits                = maxHits;               }
+	public void setActivityStreamsOnLogin(boolean activityStreamsOnLogin) {m_activityStreamsOnLogin = activityStreamsOnLogin;      }
+	public void setActiveComments(        int     activeComments)         {m_activeComments         = activeComments;              }
+	public void setCacheRefresh(          int     cacheRefresh)           {m_cacheRefresh           = cacheRefresh;                }
+	public void setClientRefresh(         int     clientRefresh)          {m_clientRefresh          = clientRefresh;               }
+	public void setDisplayWords(          int     displayWords)           {m_displayWords           = displayWords;                }
+	public void setEntriesPerPage(        int     entriesPerPage)         {m_entriesPerPage         = entriesPerPage;              }
+	public void setLookback(              int     lookback)               {m_lookback               = lookback;                    }
+	public void setMaxHits(               int     maxHits)                {m_maxHits                = maxHits;                     }
+	public void setReadEntryDays(         long    readEntryDays)          {m_readEntryDays          = Math.min(readEntryDays, 30L);}	// See ObjectKeys.SEEN_TIMEOUT_DAYS.
+	public void setReadEntryMax(          int     readEntryMax)           {m_readEntryMax           = readEntryMax;                }
 	
 	/**
 	 * Creates a copy ActivityStreamParams with the base information
@@ -102,6 +108,8 @@ public class ActivityStreamParams implements IsSerializable {
 		reply.setEntriesPerPage(        getEntriesPerPage()        );
 		reply.setLookback(              getLookback()              );
 		reply.setMaxHits(               getMaxHits()               );
+		reply.setReadEntryDays(         getReadEntryDays()         );
+		reply.setReadEntryMax(          getReadEntryMax()          );
 		
 		return reply;
 	}
