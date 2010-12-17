@@ -751,6 +751,14 @@ public class LandingPageEditor extends Composite
 				// Add the DropWidget to the DropZone it was dropped on.
 				m_selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
 				
+				// Did we just drop a Google Gadget widget?
+				if ( m_existingItemBeingDragged instanceof GoogleGadgetDropWidget )
+				{
+					// Yes, for some reason the Google gadget widget needs to be refreshed
+					// after we move it.
+					((GoogleGadgetDropWidget) m_existingItemBeingDragged).refresh();
+				}
+				
 				// Adjust the height of things to make sure everything fits.
 				cmd = new Command()
 				{

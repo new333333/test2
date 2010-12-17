@@ -193,9 +193,9 @@ public class GoogleGadgetDropWidget extends DropWidget
 	
 
 	/**
-	 * Create the appropriate ui based on the given properties.
+	 * Update the iframe with the google gadget code fund in our properties.
 	 */
-	public void updateWidget( final Object props )
+	public void refresh()
 	{
 		Scheduler.ScheduledCommand cmd;
 		
@@ -203,42 +203,72 @@ public class GoogleGadgetDropWidget extends DropWidget
 		{
 			public void execute()
 			{
-				String html;
-				String gadgetCode;
-				
-				// Save the properties that were passed to us.
-				if ( props instanceof PropertiesObj )
-					m_properties.copy( (PropertiesObj) props );
-				
-				// Get the Google Gadget Code
-				gadgetCode = m_properties.getGadgetCode();
-				
-				if ( gadgetCode == null || gadgetCode.length() == 0 )
-					html = "<html><head></head><body></body></html>";
-				else
-					html = "<html><head></head><body>" + gadgetCode + "</body></html>";
-				
-				// We need to stick the google gadget code inside an iframe because when the
-				// google gadget code runs it does a document.write() which overwrites the
-				// current page.
-				setIFrameHtml( m_iFrameId, html );
+				refreshNow();
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
 	}
-
+	
 	/**
 	 * 
 	 */
-	private native void setIFrameHtml( String iFrameId, String html ) /*-{
-		var iFrame;
+	private void refreshNow()
+	{
+		String html;
+		String gadgetCode;
 		
-		iFrame = $wnd.frames[iFrameId];
-		if ( iFrame != null && iFrame.document != null && iFrame.document != 'undefined' )
+		// Get the Google Gadget Code
+		gadgetCode = m_properties.getGadgetCode();
+		
+		if ( gadgetCode == null || gadgetCode.length() == 0 )
+			html = "<html><head></head><body></body></html>";
+		else
+			html = "<html><head></head><body>" + gadgetCode + "</body></html>";
+		
+		// We need to stick the google gadget code inside an iframe because when the
+		// google gadget code runs it does a document.write() which overwrites the
+		// current page.
+		setIFrameHtml( m_iFrameId, html );
+	}
+	
+	
+	/**
+	 * 
+	 */
+	private native int setIFrameHtml( String iFrameId, String html ) /*-{
+		var i;
+		
+		for (i = 0; i < $wnd.frames.length; ++i)
 		{
-			iFrame.document.open();
-			iFrame.document.write( html );
-			iFrame.document.close();
+			var iFrame;
+			
+			iFrame = $wnd.frames[i];
+			if ( iFrameId == iFrame.name )
+			{
+				if ( iFrame.document != null && iFrame.document != 'undefined' )
+				{
+					iFrame.document.open();
+					iFrame.document.write( html );
+					iFrame.document.close();
+				}
+				
+				return 1;
+			} 
 		}
+		
+		return 0;
 	}-*/;
+
+	
+	/**
+	 * Create the appropriate ui based on the given properties.
+	 */
+	public void updateWidget( final Object props )
+	{
+		// Save the properties that were passed to us.
+		if ( props instanceof PropertiesObj )
+			m_properties.copy( (PropertiesObj) props );
+		
+		refresh();
+	}
 }
