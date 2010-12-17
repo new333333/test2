@@ -44,9 +44,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
@@ -55,6 +57,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
@@ -77,6 +80,7 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Restrictions;
 
 /**
  * Helper methods for the GWT UI server code that services activity
@@ -108,10 +112,12 @@ public class GwtActivityStreamHelper {
 		m_activityStreamParams.setLookback(              cacheLookback);
 		m_activityStreamParams.setClientRefresh(         clientRefresh);
 		m_activityStreamParams.setCacheRefresh(          cacheRefresh);
-		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments", 2));
-		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words", (-1)));
-		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",          25));
-		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",      1000));
+		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments",   2));
+		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words",  (-1)));
+		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",            25));
+		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",        1000));
+		m_activityStreamParams.setReadEntryDays(         SPropsUtil.getInt("activity.stream.read.entry.days",  30));
+		m_activityStreamParams.setReadEntryMax(          SPropsUtil.getInt("activity.stream.read.entry.max", 1000));
 	};
 	
 	/*
@@ -596,6 +602,24 @@ public class GwtActivityStreamHelper {
 			return reply;
 		}		
 	}
+
+	/*
+	 * Inner class used to wrap the data returned from an activity
+	 * stream data search.
+	 */
+	@SuppressWarnings("unchecked")
+	private static class ASSearchResults {
+		private int m_totalRecords;
+		private List<Map> m_searchEntries;
+		
+		private ASSearchResults(List<Map> searchEntries, int totalRecords) {
+			m_searchEntries = searchEntries;
+			m_totalRecords = totalRecords;
+		}
+		
+		private int       getTotalRecords()  {return m_totalRecords; }
+		private List<Map> getSearchEntries() {return m_searchEntries;}
+	}
 	
 	/*
 	 * Inner class used to collect data about what needs to be
@@ -1019,10 +1043,11 @@ public class GwtActivityStreamHelper {
 	 * @param asp
 	 * @param asi
 	 * @param pagingData - null -> Start fresh at page 0.
+	 * @param asdt
 	 * 
 	 * @return
 	 */
-	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd) {
+	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt) {
 		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
 			m_logger,
 			"GwtActivityStreamHelper.getActivityStreamData()");
@@ -1052,7 +1077,8 @@ public class GwtActivityStreamHelper {
 					Utils.canUserOnlySeeCommonGroupMembers(),
 					reply,
 					asp,
-					asi);		
+					asi,
+					asdt);		
 			}
 			catch (Exception e) {
 				m_logger.error("GwtActivityStreamHelper.getActivityStreamData( EXCEPTION ):  ", e);
@@ -1680,13 +1706,108 @@ public class GwtActivityStreamHelper {
 	public static boolean isDebugLoggingEnabled() {
 		return m_logger.isDebugEnabled();
 	}
+
+	/*
+	 * Constructs and returns the base Criteria object for performing
+	 * the search for activity stream data.
+	 */
+	private static Criteria buildBaseCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
+		return 
+			SearchUtils.entriesForTrackedPlacesAndPeople(
+				bs,
+				trackedPlacesAL,
+				trackedUsersAL,
+				true,	// true -> Entries only (no replies.)
+				Constants.LASTACTIVITY_FIELD);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for all entries in the
+	 * tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_All(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage) {
+		// Perform the search...
+		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			pageStart,
+			entriesPerPage);
+
+		// ...and return an appropriate ASSearchResults.
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(searchEntries, totalRecords);
+	}
+	
+	/*
+	 * Returns an ASSearchResults object containing the search results
+	 * from performing an activity stream search for the read or unread
+	 * entries in the tracked places and users lists. 
+	 */
+	@SuppressWarnings("unchecked")
+	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp) {
+	    // Return up to the maximum number entries that have had
+		// activity within last n days.
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
+		
+		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
+		searchCriteria.add(
+			Restrictions.between(
+				Constants.LASTACTIVITY_FIELD,
+				startDate,
+				now));
+		
+		Map searchResults = bs.getBinderModule().executeSearchQuery(
+			searchCriteria,
+			pageStart,
+			asp.getReadEntryMax());
+
+		// Get the user's seen map...
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+		
+		// ...and scan the entries we read.
+		List<Map> targetEntries = new ArrayList<Map>();
+		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		for (Map searchEntry: searchEntries) {
+			// If the user has seen this entry and we're looking for
+			// read entries or the user has not seen it and we're
+			// looking for unread entries...
+			boolean hasSeen = seen.checkIfSeen(searchEntry);
+			if (hasSeen == read) {
+				// ...keep track of it until we've got all the entries
+				// ...we need.
+				targetEntries.add(searchEntry);
+				if (targetEntries.size() >= (pageStart + entriesPerPage)) {
+					break;
+				}
+			}
+		}
+
+		// Ensure that we've only got the entries we need from the
+		// list...
+		if (targetEntries.size() > pageStart && targetEntries.size() >= pageStart + entriesPerPage) {
+			targetEntries = targetEntries.subList(pageStart, pageStart + entriesPerPage);
+		}		
+		else if (targetEntries.size() > pageStart) {
+			targetEntries = targetEntries.subList(pageStart, targetEntries.size());
+		}
+				
+		// ...and return an appropriate ASSearchResults.
+		int totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		return new ASSearchResults(targetEntries, totalRecords);
+	}
 	
 	/*
 	 * Reads the activity stream data based on an activity stream
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi) {		
+	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -1735,15 +1856,16 @@ public class GwtActivityStreamHelper {
 		sATosL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
-		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(
-			bs,
-			trackedPlacesAL,
-			trackedUsersAL,
-			true,	// true -> Entries only (no replies.)
-			Constants.LASTACTIVITY_FIELD);
-		Map       searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
-		List<Map> searchEntries  = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-		int  totalRecords        = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		ASSearchResults searchResults;
+		switch (asdt) {
+		default:
+		case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
+		case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
+		case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
+		}
+		
+		List<Map> searchEntries  = searchResults.getSearchEntries();
+		int  totalRecords        = searchResults.getTotalRecords();
 
 		// Update the paging data in the activity stream data.
     	pd.setTotalRecords(totalRecords);
