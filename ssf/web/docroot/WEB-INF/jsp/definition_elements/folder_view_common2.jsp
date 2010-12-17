@@ -429,10 +429,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   	    <c:set var="ss_colHeaderText">${ssFolderColumnTitles[colName]}</c:set>
 	  </c:if>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
-	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'hidden' && eleType != 'checkbox' && eleType != 'date' && eleType != 'datetime'}">
+	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'hidden' && eleType != 'checkbox' && eleType != 'date' && eleType != 'date_time' && eleType != 'event' && eleType != 'number' && eleType != 'url'}">
 	      <div class="ss_title_menu">${ss_colHeaderText}</div>
 	    </c:if>
-	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'hidden' || eleType == 'checkbox' || eleType == 'date' || eleType == 'datetime'}">
+	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'hidden' || eleType == 'checkbox' || eleType == 'date' || eleType == 'date_time' || eleType == 'event' || eleType == 'number' || eleType == 'url'}">
 		    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 		    	name="operation" value="save_folder_sort_info"/><ssf:param 
 		    	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -839,42 +839,125 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <jsp:useBean id="entryDef" type="org.kablink.teaming.domain.Definition"/>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
          <span <%= seenStyle %>>
-         <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
-	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes'}">
+         <c:if test="${!empty eleName2 && !empty entry1[eleName2] || !empty eleName2 && eleType2 == 'event'}">
+	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes' || eleType2 == 'hidden'}">
 	         <%
 	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
 	         <%= eleValues %>
 	       </c:if>
+	       
+	       <c:if test="${eleType2 == 'number'}">
+	         <%
+	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         %>
+	         <span style="white-space:nowrap;"><%= eleValues %></span>
+	       </c:if>
+	       
+	       <c:if test="${eleType2 == 'url'}">
+	         <%
+	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         	Element ele = (Element)org.kablink.teaming.web.util.DefinitionHelper.findAttribute(eleName2, entryDef.getDefinition());
+	         	String linkText = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "linkText");
+	         	String target = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "target");
+	         	if (linkText == null || linkText.equals("")) linkText = eleValues;
+	         	if (target == null || target.equals("false")) target = "";
+	         	if (target != null && target.equals("true")) target = "_blank";
+	         %>
+	         <a target="<%= target %>" href="<%= eleValues %>"><%= linkText %></a>
+	       </c:if>
+	       
 	       <c:if test="${eleType2 == 'date'}">
 	       	 <c:if test="${!empty entry1[eleName2]}">
-<%
-	try {
-		java.text.SimpleDateFormat formatter;
-		java.util.Date date;
-		String tdStamp = ((String) entry1.get(eleName2));
-	    String year  = tdStamp.substring(0, 4);
-		String month = tdStamp.substring(4, 6);
-		String day   = tdStamp.substring(6, 8);
-		if (8 < tdStamp.length()) {
-			String time = tdStamp.substring(8);
-			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
-			date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
-			%>
-				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" type="date" dateStyle="short" />
-			<%
-		}
-		else {
-			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-			date = formatter.parse(year + "-" + month + "-" + day);
-			%>
-				<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
-			<%
-		}
-	} catch(Exception e) {}
-%>
+				<%
+					try {
+						java.text.SimpleDateFormat formatter;
+						java.util.Date date;
+						String tdStamp = ((String) entry1.get(eleName2));
+					    String year  = tdStamp.substring(0, 4);
+						String month = tdStamp.substring(4, 6);
+						String day   = tdStamp.substring(6, 8);
+						if (8 < tdStamp.length()) {
+							String time = tdStamp.substring(8);
+							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
+							date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+							%>
+								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" type="date" dateStyle="short" />
+							<%
+						}
+						else {
+							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+							date = formatter.parse(year + "-" + month + "-" + day);
+							%>
+								<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
+							<%
+						}
+					} catch(Exception e) {}
+				%>
 	       	 </c:if>
 	       </c:if>
+	       
+	       <c:if test="${eleType2 == 'date_time'}">
+	       	 <c:if test="${!empty entry1[eleName2]}">
+				<%
+					try {
+						java.text.SimpleDateFormat formatter;
+						java.util.Date date;
+						String tdStamp = ((String) entry1.get(eleName2));
+					    String year  = tdStamp.substring(0, 4);
+						String month = tdStamp.substring(4, 6);
+						String day   = tdStamp.substring(6, 8);
+						if (8 < tdStamp.length()) {
+							String time = tdStamp.substring(8);
+							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
+							date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+							%>
+								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" 
+								  type="both" dateStyle="short" timeStyle="short" />
+							<%
+						}
+						else {
+							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+							date = formatter.parse(year + "-" + month + "-" + day);
+							%>
+								<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
+							<%
+						}
+					} catch(Exception e) {}
+				%>
+	       	 </c:if>
+	       </c:if>
+	       
+	       <c:if test="${eleType2 == 'event'}">
+				<%
+					try {
+						java.util.Date startDate = ((java.util.Date) entry1.get(eleName2+"#StartDate"));
+						if (startDate != null) {
+							%>
+								<span style="white-space:nowrap;">
+								<ssf:nlt tag="folder.column.event.startAbbreviation" text="S"/>
+								  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
+								    type="date" dateStyle="short" />
+								</span>
+							<%
+						}
+						java.util.Date endDate = ((java.util.Date) entry1.get(eleName2+"#EndDate"));
+						if (startDate != null && endDate != null) {
+							%><br/><%
+						}
+						if (endDate != null) {
+							%>
+								<span style="white-space:nowrap;">
+								  <ssf:nlt tag="folder.column.event.endAbbreviation" text="E"/>
+								  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
+								    type="date" dateStyle="short" />
+								</span>
+							<%
+						}
+					} catch(Exception e) {}
+				%>
+	       </c:if>
+	       
 	       <c:if test="${eleType2 == 'user_list' || 
 	       				 eleType2 == 'userListSelectbox'}">
           	<c:set var="separator" value=""/>
