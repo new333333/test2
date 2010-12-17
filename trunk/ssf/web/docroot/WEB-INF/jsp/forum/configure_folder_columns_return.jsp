@@ -69,7 +69,12 @@
                      element.value.type == 'radio' || 
                      element.value.type == 'checkbox' || 
        				 element.value.type == 'date'  || 
+       				 element.value.type == 'date_time'  || 
+       				 element.value.type == 'event'  || 
        				 element.value.type == 'text'  || 
+       				 element.value.type == 'number'  || 
+       				 element.value.type == 'url'  || 
+       				 element.value.type == 'hidden'  || 
        				 element.value.type == 'user_list' || 
        				 element.value.type == 'userListSelectbox'}">
 		  <c:set var="colName2" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
