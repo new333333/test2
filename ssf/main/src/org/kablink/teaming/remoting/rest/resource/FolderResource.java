@@ -50,6 +50,7 @@ import org.kablink.teaming.rest.model.Folder;
 import org.kablink.teaming.rest.model.FolderEntry;
 import org.kablink.teaming.rest.model.Subscription;
 import org.kablink.teaming.rest.model.Tag;
+import org.kablink.teaming.rest.model.Team;
 
 @Path("/folder/{id}")
 public class FolderResource extends AbstractResource {
@@ -187,5 +188,21 @@ public class FolderResource extends AbstractResource {
 		return null;
 	}
 	
+	@GET
+	@Path("team")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Team getTeam(@PathParam("id") long id,
+			@QueryParam("explode_groups") Boolean explodeGroups,
+			@QueryParam("offset") Integer offset,
+			@QueryParam("maxcount") Integer maxCount) {
+		return null;
+	}
+	
+	@PUT
+	@Path("team")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void setTeam(@PathParam("id") long id) {
+		
+	}
 
 }

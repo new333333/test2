@@ -44,6 +44,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.kablink.teaming.rest.model.Team;
 import org.kablink.teaming.rest.model.User;
 
 @Path("/users")
@@ -121,5 +122,13 @@ public class UsersResource {
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void getFavorites(@PathParam("id") long id) {
 		// Return a list of favorites (i.e., a list of binders).
+	}
+	
+	// Return my teams (i.e, a list of teams I'm a member of).
+	@GET
+	@Path("user/{id}/teams")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public List<Team> getTeams(@PathParam("id") long id) {
+		return null;
 	}
 }
