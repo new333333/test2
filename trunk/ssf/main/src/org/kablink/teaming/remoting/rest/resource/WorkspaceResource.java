@@ -46,14 +46,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.kablink.teaming.rest.model.Folder;
-import org.kablink.teaming.rest.model.FolderEntry;
 import org.kablink.teaming.rest.model.Subscription;
 import org.kablink.teaming.rest.model.Tag;
+import org.kablink.teaming.rest.model.Team;
 import org.kablink.teaming.rest.model.Workspace;
 
 @Path("/workspace/{id}")
 public class WorkspaceResource {
 
+	// TODO $$$ Get top workspace ID
+	//public long binder_getTopWorkspaceId(String accessToken);
+	
 	// Read workspace (meaning returning workspace properties, not including children list)
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
@@ -117,7 +120,7 @@ public class WorkspaceResource {
 
 	// Move workspace
 	@POST
-	@Path("dest_workspace/{dest_workspace_id}/copy")
+	@Path("dest_workspace/{dest_workspace_id}/move")
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public void moveWorkspace(@PathParam("id") long id,
 			@PathParam("dest_workspace_id") long destWorkspaceId) {
@@ -186,5 +189,20 @@ public class WorkspaceResource {
 		return null;
 	}
 	
+	@GET
+	@Path("team")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Team getTeam(@PathParam("id") long id,
+			@QueryParam("explode_groups") Boolean explodeGroups,
+			@QueryParam("offset") Integer offset,
+			@QueryParam("maxcount") Integer maxCount) {
+		return null;
+	}
 
+	@PUT
+	@Path("team")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public void setTeam(@PathParam("id") long id) {
+		
+	}
 }

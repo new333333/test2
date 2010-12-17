@@ -32,34 +32,22 @@
  */
 package org.kablink.teaming.remoting.rest.resource;
 
-import java.util.List;
-
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import org.kablink.teaming.remoting.ws.model.Binder;
-import org.kablink.teaming.remoting.ws.model.FunctionMembership;
-import org.kablink.teaming.remoting.ws.model.TeamMemberCollection;
-import org.kablink.teaming.rest.model.Subscription;
-import org.kablink.teaming.rest.model.Tag;
+import org.kablink.teaming.rest.model.ReleaseInfo;
 
-public class BinderResource {
+@Path("/misc")
+public class MiscResource {
 
-	// Set definitions (LATER)
-	//public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
-
-
+	@GET
+	@Path("release_info")
+	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public ReleaseInfo getReleaseInfo() {
+		return null;
+	}
 	
 	
-	
-	// Set function membership (LATER)
-	// public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
-
-
 }
