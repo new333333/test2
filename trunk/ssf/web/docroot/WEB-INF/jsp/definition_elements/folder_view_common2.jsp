@@ -35,6 +35,8 @@
 <% // Folder listing %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
 <%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
+<%@ page import="java.util.Date" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <script type="text/javascript">
@@ -424,6 +426,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleSortName" value="${eleName}"/>
 	  <c:if test="${eleType == 'selectbox' || eleType == 'radio'}"><c:set var="eleSortName" value="_caption_${eleName}"/></c:if>
 	  <c:if test="${eleType == 'text' || eleType == 'hidden'}"><c:set var="eleSortName" value="_sort_${eleName}"/></c:if>
+	  <c:if test="${eleType == 'event'}"><c:set var="eleSortName" value="${eleName}#StartDate"/></c:if>
   	  <c:set var="ss_colHeaderText">${eleCaption}</c:set>
   	  <c:if test="${!empty ssFolderColumnTitles[colName]}">
   	    <c:set var="ss_colHeaderText">${ssFolderColumnTitles[colName]}</c:set>
@@ -930,29 +933,61 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	       
 	       <c:if test="${eleType2 == 'event'}">
 				<%
+					String eventTimeZoneId = (String) entry1.get(eleName2 + "#TimeZoneID");
 					try {
-						java.util.Date startDate = ((java.util.Date) entry1.get(eleName2+"#StartDate"));
-						if (startDate != null) {
-							%>
-								<span style="white-space:nowrap;">
-								<ssf:nlt tag="folder.column.event.startAbbreviation" text="S"/>
-								  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
-								    type="date" dateStyle="short" />
-								</span>
-							<%
-						}
-						java.util.Date endDate = ((java.util.Date) entry1.get(eleName2+"#EndDate"));
+						boolean showTime = false;
+						Date startDate = (Date) entry1.get(eleName2 + "#StartDate");
+						Date endDate = (Date) entry1.get(eleName2 + "#EndDate");
 						if (startDate != null && endDate != null) {
-							%><br/><%
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+							if (sdf.format(startDate).equals(sdf.format(endDate))) {
+								//The two dates are the same, so show the time field
+								showTime = true;
+							}
 						}
-						if (endDate != null) {
-							%>
-								<span style="white-space:nowrap;">
-								  <ssf:nlt tag="folder.column.event.endAbbreviation" text="E"/>
-								  <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
-								    type="date" dateStyle="short" />
-								</span>
-							<%
+						if (eventTimeZoneId != null) {
+							//Regular event
+							if (startDate != null) {
+								%>
+									<span style="white-space:nowrap;">
+									<ssf:nlt tag="folder.column.event.startAbbreviation" text="S"/>
+									  <% if (showTime) { %>
+									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
+									      type="both" dateStyle="short" timeStyle="short" />
+									  <% } else { %>
+									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
+									      type="date" dateStyle="short" />
+									  <% } %>
+									</span>
+								<%
+							}
+							if (startDate != null && endDate != null) {
+								%><br/><%
+							}
+							if (endDate != null) {
+								%>
+									<span style="white-space:nowrap;">
+									  <ssf:nlt tag="folder.column.event.endAbbreviation" text="E"/>
+									  <% if (showTime) { %>
+									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
+									      type="both" dateStyle="short" timeStyle="short" />
+									  <% } else { %>
+									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
+									      type="date" dateStyle="short" />
+									  <% } %>
+									</span>
+								<%
+							}
+						} else {
+							//All day event
+							if (startDate != null) {
+								%>
+									<span style="white-space:nowrap;">
+									    <fmt:formatDate timeZone="GMT" value="<%= startDate %>" 
+									      type="date" dateStyle="short" />
+									</span>
+								<%
+							}
 						}
 					} catch(Exception e) {}
 				%>
