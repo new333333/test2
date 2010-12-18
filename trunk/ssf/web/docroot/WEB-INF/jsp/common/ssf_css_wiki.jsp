@@ -270,7 +270,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 
 
-.nv-footer-wiki     { border-top: 1px solid #c4c4c4;}
+.nv-footer-wiki     { border-top: 1px solid #c4c4c4; border-bottom: 1px solid #c4c4c4; padding-bottom:10px;}
 .nv-footer-wiki .ss_muster_users { font-size: 11px;}
 .nv-footer          { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: center; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
 .nv-footer-r        { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
