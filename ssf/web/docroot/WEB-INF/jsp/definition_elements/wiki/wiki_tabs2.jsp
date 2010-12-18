@@ -34,84 +34,9 @@
 %>
 <% //view the wiki tabs %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-  <c:if test="${empty ss_tagDivNumber}">
-  	<c:set var="ss_tagDivNumber" value="0" scope="request"/>
-  </c:if>
-
-<script type="text/javascript">
-function ss_showHideCommentsAndAttachmentsSection() {
-	ss_hideTagsSection();
-	var divObj = self.document.getElementById("ss_commentsAndAttachmentsSection");
-	if (divObj != null) {
-		if (divObj.style.display != "block") {
-			divObj.style.display = "block";
-		} else {
-			divObj.style.display = "none";
-		}
-	}
-}
-function ss_hideCommentsAndAttachmentsSection() {
-	var divObj = self.document.getElementById("ss_commentsAndAttachmentsSection");
-	if (divObj != null) {
-		if (divObj.style.display != "none") {
-			divObj.style.display = "none";
-		}
-	}
-}
-
-function ss_showHideTagsSection() {
-	ss_hideCommentsAndAttachmentsSection();
-	var divObj = self.document.getElementById("ss_showHideTagsSection");
-	if (divObj != null) {
-		if (divObj.style.display != "block") {
-			divObj.style.display = "block";
-			ss_tagShow("${renderResponse.namespace}", "${ss_tagDivNumber}");
-		} else {
-			divObj.style.display = "none";
-		}
-	}
-}
-function ss_hideTagsSection() {
-	var divObj = self.document.getElementById("ss_showHideTagsSection");
-	if (divObj != null) {
-		if (divObj.style.display != "none") {
-			divObj.style.display = "none";
-		}
-	}
-}
-
-</script>
-<div class="wiki-tabs2 marginbottom2 margintop2">
-	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
-		<tr>
-			<td nowrap>
-			    <span class="wiki-menu">
-			      <a href="javascript: ;" onClick="ss_showHideTagsSection();return false;">
-			        <ssf:nlt tag="tags.tags"/>
-			      </a>
-			    </span>
-			    <c:if test="${ss_commentsAndAttachmentsSectionRequested}">
-			      <span class="wiki-menu">
-			        <a href="javascript: ;" onClick="ss_showHideCommentsAndAttachmentsSection();return false;">
-			          <ssf:nlt tag="wiki.commentsAndAttachments">
-			            <ssf:param name="value" value="${ss_commentsAndAttachmentsReplyCount}"/>
-			            <ssf:param name="value" value="${ss_commentsAndAttachmentsAttachmentCount}"/>
-			          </ssf:nlt>
-			        </a>
-			      </span>
-			    </c:if>
-			</td>
-		</tr>	
-	</table>	
-</div>
-
-<div id="ss_showHideTagsSection" class="ss_entryContent" style="display:none;" >
-  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
-</div>
-
 <c:if test="${ss_commentsAndAttachmentsSectionRequested}">
   	<c:set var="ss_delayShowingCommentsAndAttachments" value="false" scope="request"/>
-	<div id="ss_commentsAndAttachmentsSection" class="ss_entryContent" style="display:none;" >
+	<div id="ss_commentsAndAttachmentsSection" class="ss_entryContent" style="display:block;" >
 	  <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_comments_and_attachments.jsp" />
 	</div>
 </c:if>

@@ -151,6 +151,29 @@ ss_createOnLoadObj("ss_initThisTab${ss_tabDivCount}",
 	  </div>
 	  </td>
 	  </c:if>
+	  
+	  <c:if test="${empty ss_pseudoEntity}">
+	  <td valign="middle" width="1%" nowrap>
+	  <div id="viewTags${ss_tabDivCount}Tab" 
+		class="wg-tab roundcornerSM" 
+		onMouseOver="ss_hoverOverTab('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onMouseOut="ss_hoverOverTabStopped('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');"
+		onClick="ss_showTab('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');return false;">
+		<ssf:nlt tag="tags.tags"/>
+	  </div>
+	  </td>
+	  </c:if>
+	  
+	  <td valign="middle" align="right" width="97%" nowrap>&nbsp;
+		<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
+		<div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
+		<a href="javascript: ;" 
+		  onClick="ss_toggleRegion(this, 'commentsAndAttachmentsRegion${ss_divCounter}', 'commentsAndAttachmentsRegion', 'wg-tab-content', 300);return false;" 
+		  alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"
+		><img src="<html:rootPath/>images/pics/${regionImg}"/></a>
+		</div>
+		</c:if>
+	  </td>
 	  <td valign="middle" align="right" width="97%" nowrap>&nbsp;
 		<c:if test="${ssDefinitionEntry.top && empty ss_pseudoEntity}">
 		<div id="commentsAndAttachmentsRegionImg${ss_divCounter}" style="display:none;">
@@ -201,6 +224,12 @@ ss_createOnLayoutChangeObj('ss_resizeEntryHistoryIframe${ss_divCounter}',
 <div id="viewFileVersions${ss_tabDivCount}Div" style="display:none;">
   <c:set var="property_caption" value="" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_file_versions.jsp" />
+</div>
+</c:if>
+
+<c:if test="${empty ss_pseudoEntity}">
+<div id="viewTags${ss_tabDivCount}Div" class="ss_entryContent" style="display:none;" >
+  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
 </div>
 </c:if>
 

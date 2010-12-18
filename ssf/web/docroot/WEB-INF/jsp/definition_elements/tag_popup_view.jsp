@@ -70,7 +70,7 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
 	     				  	title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
 	  			</ssHelpSpot>
 			</span>
-	  		<ssf:nlt tag="tags.tags"/>:
+	  		<ssf:nlt tag="tags.tags.colon"/>
 		</div>
 
 	  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}">
