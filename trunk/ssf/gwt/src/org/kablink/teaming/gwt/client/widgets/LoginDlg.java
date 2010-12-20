@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -54,9 +55,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -594,13 +593,13 @@ public class LoginDlg extends DlgBox
 	 */
 	public void show()
 	{
-		Command cmd;
+		Scheduler.ScheduledCommand cmd;
 		
 		super.show();
 		
 		m_submitCount = 0;
 		
-		cmd = new Command()
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
@@ -608,8 +607,7 @@ public class LoginDlg extends DlgBox
 				getLoginInfoFromServer();
 			}
 		};
-		DeferredCommand.addCommand( cmd );
-		
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end show()
 	
 	
@@ -636,9 +634,9 @@ public class LoginDlg extends DlgBox
 	 */
 	private void submitLoginRequest()
 	{
-		Command cmd;
-		
-		cmd = new Command()
+		Scheduler.ScheduledCommand cmd;
+
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
@@ -652,7 +650,7 @@ public class LoginDlg extends DlgBox
 				m_formPanel.submit();
 			}
 		};
-		DeferredCommand.addCommand( cmd );
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end submitLoginRequest()
 	
 	

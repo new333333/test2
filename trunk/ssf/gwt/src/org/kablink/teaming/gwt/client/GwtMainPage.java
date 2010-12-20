@@ -58,10 +58,9 @@ import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -172,9 +171,11 @@ public class GwtMainPage extends Composite
 		final String errMsg = m_requestInfo.getErrMsg();
 		if ( GwtClientHelper.hasString( errMsg ) )
 		{
+			Scheduler.ScheduledCommand cmd;
+
 			// Yes
 			// Execute a deferred command the will display it.
-			DeferredCommand.addCommand( new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -191,7 +192,8 @@ public class GwtMainPage extends Composite
 					// message box is displayed.
 					Window.alert( errMsg );
 				}
-			} );
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
 		// Add the main menu to the page.
@@ -239,7 +241,7 @@ public class GwtMainPage extends Composite
 			// Should we invoke the login dialog?
 			if ( m_requestInfo.promptForLogin() == true )
 			{
-				Command cmd;
+				Scheduler.ScheduledCommand cmd;
 				
 				// Yes
 				// Hide the workspace tree control and the menu bar.
@@ -247,17 +249,14 @@ public class GwtMainPage extends Composite
 				m_mainMenuCtrl.setVisible( false );
 				
 				// invoke the login dialog.
-		        cmd = new Command()
-		        {
-		        	/**
-		        	 * 
-		        	 */
-		            public void execute()
-		            {
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
 						invokeLoginDlg( false );
-		            }
-		        };
-		        DeferredCommand.addCommand( cmd );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		}
 				
@@ -820,7 +819,7 @@ public class GwtMainPage extends Composite
 			break;
 		
 		case CLOSE_ADMINISTRATION:
-			Command cmd;
+			Scheduler.ScheduledCommand cmd;
 			
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
@@ -841,23 +840,23 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.hideAdministrationMenubar();
 
 			// Restore the ui state to what it was before we opened the site administration.
-			cmd = new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
 					restoreUIState();
 				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 			
-			cmd = new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
 					relayoutPage( true );
 				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 			break;
 			
 		case EDIT_BRANDING:
@@ -1827,19 +1826,16 @@ public class GwtMainPage extends Composite
 		}
 		else
 		{
-			Command cmd;
-			
-	        cmd = new Command()
-	        {
-	        	/**
-	        	 * 
-	        	 */
-	            public void execute()
-	            {
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
 					relayoutPage( true );
-	            }
-	        };
-	        DeferredCommand.addCommand( cmd );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}// end relayoutPage()
 

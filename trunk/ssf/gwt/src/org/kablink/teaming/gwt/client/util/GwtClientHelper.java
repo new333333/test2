@@ -38,11 +38,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
@@ -120,11 +119,16 @@ public class GwtClientHelper {
 	 */
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
-			DeferredCommand.addCommand( new Command() {
-				public void execute() {
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
 					Window.alert(msg);
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 

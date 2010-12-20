@@ -39,10 +39,9 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Image;
@@ -345,13 +344,13 @@ public abstract class DropWidget extends Composite
 			final int x;
 			final int y;
 			final DropWidget dropWidget;
-			Command cmd;
+			Scheduler.ScheduledCommand cmd;
 			
 			dropWidget = this;
 			x = event.getClientX();
 			y = event.getClientY();
 			
-			cmd = new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -359,8 +358,8 @@ public abstract class DropWidget extends Composite
 					m_lpe.startDragExistingItem( dropWidget, x, y );
 				}
 			};
-			DeferredCommand.addCommand( cmd );
-			
+			Scheduler.get().scheduleDeferred( cmd );
+
 			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
 			event.getNativeEvent().preventDefault();
 		}
