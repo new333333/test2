@@ -49,7 +49,6 @@
 		// Through an overlay we will access m_requestInfo from java.
 		var m_requestInfo = {
 			sessionCaptive : ${sessionCaptive},
-			activityStreamsEnabled : ${activityStreamsEnabled},
 			showWhatsNewOnLogin : ${showWhatsNew},
 			binderId : '${binderId}',
 			currentUserWorkspaceId : '${ssUser.workspaceId}',

@@ -381,12 +381,7 @@ public class LoginFilter  implements Filter {
 		
 		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
-				boolean startWithActivityStreams =
-					(GwtUIHelper.isActivityStreamsEnabled() &&
-					 GwtUIHelper.isActivityStreamOnLogin());
-				
-				String wsUrl = PermaLinkUtil.getUserPermalink(req, userId, startWithActivityStreams);
-				return wsUrl;
+				return PermaLinkUtil.getUserPermalink(req, userId, GwtUIHelper.isActivityStreamOnLogin());
 			}
 		}, WebHelper.getRequiredZoneName(req));									
 	}

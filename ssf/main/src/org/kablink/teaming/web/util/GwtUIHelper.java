@@ -80,9 +80,12 @@ import org.springframework.web.portlet.ModelAndView;
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
 	
+	// Used to write a flag to the session cache regarding the state
+	// of the GWT UI.
+	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
+	
 	// ssf*.properties settings that affect various aspects of the GWT
 	// based UI.
-	private final static boolean IS_ACTIVITY_STREAMS_ENABLED  =           SPropsUtil.getBoolean("enable.activity.streams",   true );
 	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN =           SPropsUtil.getBoolean("activity.stream.on.login",  true );
 	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = false; // SPropsUtil.getBoolean("modify.top.entry.on.reply", false);
 	
@@ -536,32 +539,6 @@ public class GwtUIHelper {
 		}
 	}
 
-	/**
-	 * Builds the GWT UI toolbar for a binder.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param user
-	 * @param binder
-	 * @param model
-	 * @param qualifiers
-	 * @param gwtUIToolbar
-	 */
-	@SuppressWarnings("unchecked")
-	public static void buildGwtUIToolbar(AllModulesInjected bs, RenderRequest request, User user, Binder binder, Map model, Toolbar gwtUIToolbar) {
-		// If the GWT UI is enabled and we're not in captive mode...
-		if (isGwtUIEnabled() && (!(MiscUtil.isCaptive(request)))) {
-			// ...add the GWT UI button to the menu bar.
-			String title = "Activate the Durango UI";
-			Map qualifiers = new HashMap();
-			qualifiers.put("title", title);
-			qualifiers.put("icon", "gwt.png");
-			qualifiers.put("iconGwtUI", "true");
-			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
-			gwtUIToolbar.addToolbarMenu("1_gwtUI", title, "javascript: //;", qualifiers);
-		}
-	}
-
 	/*
 	 * Generates the appropriate resource key for the given binder.
 	 * 
@@ -945,15 +922,6 @@ public class GwtUIHelper {
 	}
 	
 	/**
-	 * Returns true if activity streams are enabled and false otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isActivityStreamsEnabled() {
-		return IS_ACTIVITY_STREAMS_ENABLED;
-	}
-	
-	/**
 	 * Returns true if a Binder is preDeleted and false otherwise.
 	 * 
 	 * @param binder
@@ -990,36 +958,6 @@ public class GwtUIHelper {
 	}
 	
 	/**
-	 * Returns true if the GWT UI should be default UI and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIDefault() {
-		return new GwtUIDefaults().isGwtUIDefault();
-	}
-
-	/**
-	 * Returns true if the GWT UI should be available and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIEnabled() {
-		return new GwtUIDefaults().isGwtUIEnabled();
-	}
-
-	/**
-	 * Returns true if once in GWT UI mode, we should disallow
-	 * returning to the traditional UI and false otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGwtUIExclusive() {
-		return new GwtUIDefaults().isGwtUIExclusive();
-	}
-
-	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
 	 * @param pRequest
@@ -1043,18 +981,15 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isGwtUIActive(HttpServletRequest hRequest) {
-		boolean reply = isGwtUIEnabled();
+		boolean reply = (null != hRequest);
 		if (reply) {
-			reply = (null != hRequest);
-			if (reply) {
-				HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-				Object durangoUI = hSession.getAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG);
-				if (null == durangoUI) {
-					reply = new Boolean(isGwtUIDefault());
-				}
-				else {
-					reply = ((durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
-				}
+			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+			Object gwtUI = hSession.getAttribute(GWT_UI_ENABLED_FLAG);
+			if (null == gwtUI) {
+				reply = Boolean.TRUE;
+			}
+			else {
+				reply = ((gwtUI instanceof Boolean) && ((Boolean) gwtUI).booleanValue());
 			}
 		}
 		return reply;
@@ -1167,7 +1102,7 @@ public class GwtUIHelper {
 	public static void setGwtUIActive(HttpServletRequest hRequest, boolean gwtUIActive) {
 		if (null != hRequest) {
 			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-			hSession.setAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive && isGwtUIEnabled()));
+			hSession.setAttribute(GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive));
 		}
 	}
 
@@ -1273,7 +1208,6 @@ public class GwtUIHelper {
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
-	 * - activityStreamsEnabled
 	 * - showWhatsNew
 	 * 
 	 * @param request
@@ -1309,13 +1243,8 @@ public class GwtUIHelper {
 		
 		// Put out a true/false indicator as to the state of the
 		// activity streams based user interface.
-		boolean isASEnabled, showWhatsNew;
-		isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
-		model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
-		if (isASEnabled) {
-			String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-			showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
-		}
+		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
 		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
 	}
 }

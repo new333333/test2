@@ -58,10 +58,6 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource closeX();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/gwt.png")
-	public ImageResource gwtUI();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/MainMenu/home16.png")
 	public ImageResource home16();
 	

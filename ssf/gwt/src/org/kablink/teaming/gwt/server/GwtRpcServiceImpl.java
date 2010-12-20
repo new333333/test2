@@ -1720,44 +1720,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getUserWorkspacePermalink()
 	
 	/**
-	 * Returns true if the GWT UI is the default UI at login and false
-	 * otherwise.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public Boolean getGwtUIDefault( HttpRequestInfo ri )
-	{
-		return new Boolean( GwtUIHelper.isGwtUIDefault() );
-	}// end getGwtUI()
-	
-	/**
-	 * Returns true if the GWT UI is the enabled and false otherwise.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public Boolean getGwtUIEnabled( HttpRequestInfo ri )
-	{
-		return new Boolean( GwtUIHelper.isGwtUIEnabled() );
-	}// end getGwtUI()
-	
-	/**
-	 * Returns true if there should be no UI exposed to exit the GWT UI
-	 * and false otherwise.
-	 * 
-	 * @param ri
-	 * 
-	 * @return
-	 */
-	public Boolean getGwtUIExclusive( HttpRequestInfo ri )
-	{
-		return new Boolean( GwtUIHelper.isGwtUIExclusive() );
-	}// end getGwtUI()
-
-	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a List<Long> of Binder IDs
 	 * (i.e., a bucket list.)
