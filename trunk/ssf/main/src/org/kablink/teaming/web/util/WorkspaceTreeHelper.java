@@ -111,6 +111,7 @@ public class WorkspaceTreeHelper {
  		String view = setupWorkspaceBeans(bs, binderId, request, response, model, showTrash);
  		return new ModelAndView(view, model);
 	}
+	@SuppressWarnings("unused")
 	public static String setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, Map model, boolean showTrash) throws Exception {
 		model.put(WebKeys.URL_SHOW_TRASH, new Boolean(showTrash));
@@ -165,7 +166,9 @@ public class WorkspaceTreeHelper {
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
 		if (entryId != null) {
-			Long workspaceId = bs.getProfileModule().getEntryWorkspaceId(entryId);
+			Long workspaceId;
+			try                 {workspaceId = bs.getProfileModule().getEntryWorkspaceId(entryId);}
+			catch (Exception e) {workspaceId = null;                                              }
 			if (workspaceId == null && user.getId().equals(entryId)) {
 				//This is the user trying to access his or her own workspace; try to create it
 				binder = bs.getProfileModule().addUserWorkspace(user, null);
@@ -214,9 +217,12 @@ public class WorkspaceTreeHelper {
 					}
 				}
 			} else {
-				User entry = null;
-				entry = (User)bs.getProfileModule().getEntry(entryId);
-				model.put(WebKeys.USER_OBJECT, entry);
+				try {
+					User entry = (User)bs.getProfileModule().getEntry(entryId);
+					model.put(WebKeys.USER_OBJECT, entry);
+				}
+				catch(Exception e) {
+				}
 				// Redirect to viewing the profile entry
 				PortletURL reloadUrl = response.createRenderURL();
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, bs.getProfileModule().getProfileBinder().getId().toString());
@@ -726,6 +732,7 @@ public class WorkspaceTreeHelper {
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}
 	
+	@SuppressWarnings("unused")
 	protected static void buildWorkspaceToolbar(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace, 
 			String forumId) {
