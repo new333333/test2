@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -58,8 +59,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -121,7 +120,7 @@ public class MastHead extends Composite
 	 */
 	public MastHead( RequestInfo requestInfo )
 	{
-		Command cmd = null;
+		Scheduler.ScheduledCommand cmd;
 		boolean beta = true;
 		
         m_requestInfo = requestInfo;
@@ -241,17 +240,14 @@ public class MastHead extends Composite
 		initWidget( m_mainMastheadPanel );
 
 		// Issue an ajax request to get the site branding.
-        cmd = new Command()
-        {
-        	/**
-        	 * 
-        	 */
-            public void execute()
-            {
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
+			{
 				getSiteBrandingDataFromServer();
-            }
-        };
-        DeferredCommand.addCommand( cmd );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end MastHead()
 
 
@@ -860,9 +856,9 @@ public class MastHead extends Composite
 
 		if ( visible == true )
 		{
-			Command cmd;
-			
-			cmd = new Command()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -873,7 +869,7 @@ public class MastHead extends Composite
 						m_binderBrandingPanel.adjustBrandingPanelHeight();
 				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	

@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -61,8 +62,6 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -689,20 +688,17 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
 		if ( m_focusWidget != null )
 		{
-			Command cmd;
-			
-			cmd = new Command()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
-			     	/**
-			     	 * 
-			     	 */
-			      public void execute()
-			      {
-						if ( m_focusWidget != null )
-							m_focusWidget.setFocus( true );
-			      }
+				public void execute()
+				{
+					if ( m_focusWidget != null )
+						m_focusWidget.setFocus( true );
+				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}// end show()
 	

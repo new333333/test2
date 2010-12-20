@@ -32,9 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import com.google.gwt.user.client.Command;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -244,16 +243,13 @@ public class TinyMCE extends Composite
         // Are we initialized?
         if ( m_loaded == false )
         {
-            Command cmd;
+    		Scheduler.ScheduledCommand cmd;
 
         	// No
-            cmd = new Command()
-            {
-            	/**
-            	 * 
-            	 */
-                public void execute()
-                {
+    		cmd = new Scheduler.ScheduledCommand()
+    		{
+    			public void execute()
+    			{
                     setWidth( "100%" );
                     // Initialize the tinyMCE editor
                     init( m_config );
@@ -265,9 +261,9 @@ public class TinyMCE extends Composite
                     setTextAreaToTinyMCE( m_id );
                     
                     m_loaded = true;
-                }
-            };
-            DeferredCommand.addCommand( cmd );
+    			}
+    		};
+    		Scheduler.get().scheduleDeferred( cmd );
         }
     }// onLoad()
 

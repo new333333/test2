@@ -54,9 +54,8 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -179,12 +178,16 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			});
 			
 			// Set the size of the control.
-	        DeferredCommand.addCommand(
-	        	new Command() {
-	        		public void execute() {
-	        			relayoutPage();
-	        		}
-	        });		
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+        			relayoutPage();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
 		// All composites must call initWidget() in their constructors.
@@ -295,13 +298,17 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		// We only worry about layout if the tree if it's in vertical
 		// mode.  Is it?
 		if (TreeMode.VERTICAL == m_tm) {
+			Scheduler.ScheduledCommand cmd;
+
 			// Yes!  Force it to lay itself out again.
-			DeferredCommand.addCommand(
-				new Command() {
-					public void execute() {
-						relayoutPageImpl();
-					}
-			});
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					relayoutPageImpl();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 		

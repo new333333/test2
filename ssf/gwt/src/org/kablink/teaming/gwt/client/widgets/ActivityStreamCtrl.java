@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -61,9 +62,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.resources.client.ImageResource;
@@ -624,9 +623,9 @@ public class ActivityStreamCtrl extends Composite
 		{
 			public void onClick( ClickEvent clickEvent )
 			{
-				Command  cmd;
-				
-				cmd = new Command()
+				Scheduler.ScheduledCommand cmd;
+
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					public void execute()
 					{
@@ -634,7 +633,7 @@ public class ActivityStreamCtrl extends Composite
 						refreshActivityStream();
 					}
 				};
-				DeferredCommand.addCommand( cmd );
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		img.addClickHandler( clickHandler );
@@ -878,16 +877,16 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void relayoutPage()
 	{
-		Command cmd;
-		
-		cmd = new Command()
+		Scheduler.ScheduledCommand cmd;
+
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
 				relayoutPageNow();
 			}
 		};
-		DeferredCommand.addCommand( cmd );
+		Scheduler.get().scheduleDeferred( cmd );
 	}// end relayoutPage()
 	
 	
@@ -1016,15 +1015,12 @@ public class ActivityStreamCtrl extends Composite
 				 */
 				public void onSuccess( ActivityStreamParams activityStreamParams )
 				{
-					Command cmd;
+					Scheduler.ScheduledCommand cmd;
 					
 					m_activityStreamParams = activityStreamParams;
 					
-					cmd = new Command()
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						/**
-						 * 
-						 */
 						public void execute()
 						{
 							// Now that we have the activity stream parameters, execute the search.
@@ -1034,7 +1030,7 @@ public class ActivityStreamCtrl extends Composite
 							startCheckForChangesTimer();
 						}
 					};
-					DeferredCommand.addCommand( cmd );
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 		}
@@ -1121,21 +1117,21 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void show()
 	{
-		Command cmd;
+		Scheduler.ScheduledCommand cmd;
 
 		setVisible( true );
 
 		// Restart the "check for changes" timer.
 		startCheckForChangesTimer();
 		
-		cmd = new Command()
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
 				relayoutPage();
 			}
 		};
-		DeferredCommand.addCommand( cmd );
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	
@@ -1144,11 +1140,11 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void showMessage( String msg )
 	{
-		Command cmd;
+		Scheduler.ScheduledCommand cmd;
 		
 		m_msgText.setText( msg );
 		
-		cmd = new Command()
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
@@ -1165,7 +1161,7 @@ public class ActivityStreamCtrl extends Composite
 				m_msgPanel.setVisible( true );
 			}
 		};
-		DeferredCommand.addCommand( cmd );
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 
 	

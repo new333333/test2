@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.EventTarget;
 import com.google.gwt.dom.client.InputElement;
@@ -51,8 +52,6 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -624,7 +623,7 @@ public class LandingPageEditor extends Composite
 		eventSender = event.getSource();
 		if ( eventSender instanceof PaletteItem )
 		{
-			Command cmd;
+			Scheduler.ScheduledCommand cmd;
 			final PaletteItem paletteItem;
 			final int x;
 			final int y;
@@ -633,14 +632,15 @@ public class LandingPageEditor extends Composite
 			paletteItem = (PaletteItem) eventSender;
 			x = event.getClientX();
 			y = event.getClientY();
-			cmd = new Command()
+			
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
 					startDragPaletteItem( paletteItem, x, y );
 				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 			
 			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
 			event.getNativeEvent().preventDefault();
@@ -740,7 +740,7 @@ public class LandingPageEditor extends Composite
 			// Did the user drop the existing item on a drop zone?
 			if ( m_selectedDropZone != null )
 			{
-				Command cmd;
+				Scheduler.ScheduledCommand cmd;
 				
 				// Yes, hide the drop clue.
 				m_selectedDropZone.hideDropClue();
@@ -760,14 +760,14 @@ public class LandingPageEditor extends Composite
 				}
 				
 				// Adjust the height of things to make sure everything fits.
-				cmd = new Command()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					public void execute()
 					{
 						m_canvas.adjustHeightOfAllTableWidgets();
 					}
 				};
-				DeferredCommand.addCommand( cmd );
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		}
 	}// end onMouseUp()
@@ -827,21 +827,21 @@ public class LandingPageEditor extends Composite
 			int scrollTop;
 			int scrollLeft;
 			int windowHeight;
-			Command cmd;
+			Scheduler.ScheduledCommand cmd;
 
 			// Yes
 			nativeEvent = previewEvent.getNativeEvent();
 			x = nativeEvent.getClientX();
 			y = nativeEvent.getClientY();
 			
-			cmd = new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				public void execute()
 				{
 					handleMouseMove( x, y );
 				}
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 			
 			scrollTop = Window.getScrollTop();
 			scrollLeft = Window.getScrollLeft();
@@ -1020,7 +1020,9 @@ public class LandingPageEditor extends Composite
 	 */
 	public static void log( final String msg )
 	{
-		DeferredCommand.addCommand( new Command() 
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
 		{
 			public void execute()
 			{
@@ -1038,6 +1040,7 @@ public class LandingPageEditor extends Composite
 					LandingPageEditor.m_textBox.setCursorPos( msg2.length() );
 				}
 			}
-		} );
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 }// end LandingPageEditor

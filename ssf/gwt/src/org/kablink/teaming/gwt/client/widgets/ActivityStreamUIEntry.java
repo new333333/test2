@@ -44,14 +44,13 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -128,23 +127,19 @@ public abstract class ActivityStreamUIEntry extends Composite
 			 */
 			public void onClick( ClickEvent event )
 			{
-				Command cmd;
+				Scheduler.ScheduledCommand cmd;
 				final Object src;
 				
 				src = event.getSource();
 
-				cmd = new Command()
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					/**
-					 * 
-					 */
 					public void execute()
 					{
 						handleClickOnAuthor( ((Widget)src).getElement());
 					}
-					
 				};
-				DeferredCommand.addCommand( cmd );
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
@@ -448,13 +443,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		src = event.getSource();
 		if ( src == m_title || src == m_author || src == m_avatarImg )
 		{
-			Command cmd;
+			Scheduler.ScheduledCommand cmd;
 
-			cmd = new Command()
+			cmd = new Scheduler.ScheduledCommand()
 			{
-				/**
-				 * 
-				 */
 				public void execute()
 				{
 					if ( src == m_title )
@@ -462,9 +454,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 					else if ( src == m_author || src == m_avatarImg )
 						handleClickOnAuthor( ((Widget)src).getElement() );
 				}
-				
 			};
-			DeferredCommand.addCommand( cmd );
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 
