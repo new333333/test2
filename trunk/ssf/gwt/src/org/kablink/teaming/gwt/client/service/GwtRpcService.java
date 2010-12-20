@@ -130,11 +130,6 @@ public interface GwtRpcService extends RemoteService
 	// Returns a permalink to the currently logged in user's workspace.
 	public String getUserWorkspacePermalink( HttpRequestInfo ri );
 	
-	// The following are used to interact with the GWT UI defaults.
-	public Boolean getGwtUIDefault(   HttpRequestInfo ri );
-	public Boolean getGwtUIEnabled(   HttpRequestInfo ri );
-	public Boolean getGwtUIExclusive( HttpRequestInfo ri );
-	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
 	public TreeInfo       expandHorizontalBucket(         HttpRequestInfo ri, List<Long> bucketList );

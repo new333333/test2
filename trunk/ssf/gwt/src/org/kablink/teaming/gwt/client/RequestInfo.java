@@ -238,13 +238,6 @@ public class RequestInfo extends JavaScriptObject
 	public final native String getTopWSId() /*-{ return this.topWSId; }-*/;
 
 	/**
-	 * Returns true if activity streams are enabled and false otherwise.
-	 * 
-	 * @return
-	 */
-	public final native boolean isActivityStreamsEnabled() /*-{ return this.activityStreamsEnabled; }-*/;
-
-	/**
 	 * Returns true if we should be showing the site wide activity stream
 	 * and false otherwise.
 	 * 

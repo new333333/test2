@@ -413,8 +413,7 @@ public class ProfilesBinderHelper {
 		// GWT UI.  Note that these need to be last in the toolbar
 		// building sequence because they access things in the
 		// model to construct toolbars specific to the GWT UI.
-		GwtUIHelper.buildGwtMiscToolbar(bs, request,       binder, model, gwtMiscToolbar);
-		GwtUIHelper.buildGwtUIToolbar(  bs, request, user, binder, model, gwtUIToolbar);
+		GwtUIHelper.buildGwtMiscToolbar(bs, request, binder, model, gwtMiscToolbar);
 
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());

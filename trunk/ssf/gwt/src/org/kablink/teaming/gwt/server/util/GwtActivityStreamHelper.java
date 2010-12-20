@@ -953,6 +953,20 @@ public class GwtActivityStreamHelper {
 	}
 
 	/*
+	 * Constructs and returns the base Criteria object for performing
+	 * the search for activity stream data.
+	 */
+	private static Criteria buildBaseCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
+		return 
+			SearchUtils.entriesForTrackedPlacesAndPeople(
+				bs,
+				trackedPlacesAL,
+				trackedUsersAL,
+				true,	// true -> Entries only (no replies.)
+				Constants.LASTACTIVITY_FIELD);
+	}
+	
+	/*
 	 * Searches the activity stream information objects in a tree
 	 * information object and returns the one that matches the given
 	 * activity stream information object.
@@ -1708,20 +1722,6 @@ public class GwtActivityStreamHelper {
 	}
 
 	/*
-	 * Constructs and returns the base Criteria object for performing
-	 * the search for activity stream data.
-	 */
-	private static Criteria buildBaseCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
-		return 
-			SearchUtils.entriesForTrackedPlacesAndPeople(
-				bs,
-				trackedPlacesAL,
-				trackedUsersAL,
-				true,	// true -> Entries only (no replies.)
-				Constants.LASTACTIVITY_FIELD);
-	}
-	
-	/*
 	 * Returns an ASSearchResults object containing the search results
 	 * from performing an activity stream search for all entries in the
 	 * tracked places and users lists. 
@@ -1750,9 +1750,9 @@ public class GwtActivityStreamHelper {
 	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp) {
 	    // Return up to the maximum number entries that have had
 		// activity within last n days.
-		Date creationDate = new Date();
-		creationDate.setTime(creationDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
-		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		Date activityDate = new Date();
+		activityDate.setTime(activityDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
+		String startDate = DateTools.dateToString(activityDate, DateTools.Resolution.SECOND);
 		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
 		
 		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);

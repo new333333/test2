@@ -87,7 +87,6 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * @author drfoster@novell.com
  */
 public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
-	private boolean							m_activityStreamsUI = GwtMainPage.m_requestInfo.isActivityStreamsEnabled();
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private FlowPanel						m_buttonsPanel;
@@ -240,39 +239,14 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		m_bhButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_buttonsPanel.add(m_bhButton);
 
-		// ...if the user is allowed to exit GWT UI mode...
-		final ActionTrigger actionTrigger = this;
-		GwtTeaming.getRpcService().getGwtUIExclusive(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<Boolean>() {
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetGwtUIInfo());
-			}
-			
-			public void onSuccess(Boolean isGwtUIExclusive) {
-				if (!isGwtUIExclusive) {
-					// ...add the GWT UI button...
-					MenuBarButton gwtUIButton = new MenuBarButton(actionTrigger, m_images.gwtUI(), m_messages.mainMenuAltGwtUI(), TeamingAction.TOGGLE_GWT_UI);
-					gwtUIButton.addStyleName("mainMenuButton subhead-control-bg1 roundcornerSM");
-					m_buttonsPanel.add(gwtUIButton);
-				}
-			}
-		});
-
 		// ...add the buttons to the menu...
 		menuPanel.add(m_buttonsPanel);
 
 		// ...and finally, add the common drop down items to the menu bar.
 		addMyWorkspaceToCommon(        menuPanel);
 		addWhatsNewToCommon(           menuPanel);
-		if (m_activityStreamsUI) {
-			addMyFavoritesToCommon(    menuPanel);
-			addMyTeamsToCommon(        menuPanel);
-		}
-		else {
-			addMyTeamsToCommon(        menuPanel);
-			addMyFavoritesToCommon(    menuPanel);
-		}
+		addMyFavoritesToCommon(        menuPanel);
+		addMyTeamsToCommon(            menuPanel);
 		addCloseAdministrationToCommon(menuPanel);
 	}
 	
@@ -502,12 +476,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Adds the What's New item to the common portion of the menu bar.
 	 */
 	private void addWhatsNewToCommon(FlowPanel menuPanel) {
-		// If we're not running in activity streams mode...
-		if (!m_activityStreamsUI) {
-			// ...we don't display the My Teams menu.
-			return;
-		}
-		
 		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
 		m_whatsNewBox.addClickHandler(
 			new ClickHandler() {
