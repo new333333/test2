@@ -436,6 +436,13 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Sets the text on the main GWT page's <title>.
+	 */
+	public static native void jsSetMainTitle(String title) /*-{
+		$wnd.top.document.title = title;
+	}-*/;
+	
+	/**
 	 * Compares two strings by collation.
 	 * 
 	 * Returns:

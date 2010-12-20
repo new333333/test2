@@ -394,7 +394,6 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will close the administration content panel.
 	 */
-	@SuppressWarnings("unused")
 	private void closeAdministrationContentPanel()
 	{
 		if ( m_adminControl != null )
@@ -406,7 +405,6 @@ public class GwtMainPage extends Composite
 	/*
 	 * Puts a context change from the traditional UI into effect.
 	 */
-	@SuppressWarnings("unused")
 	private void contextLoaded( String binderId, String inSearch, String searchTabId ) {
 		contextLoaded(
 			binderId,
@@ -1110,7 +1108,6 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
-	@SuppressWarnings("unused")
 	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
 	{
 		boolean showMasthead;
@@ -1141,7 +1138,6 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the given page ui in gwt instead of having the jsp page do the work.
 	 */
-	@SuppressWarnings("unused")
 	private void handlePageWithGWT( String pageName )
 	{
 		if ( pageName != null && pageName.length() > 0 )
@@ -1701,8 +1697,11 @@ public class GwtMainPage extends Composite
 			// Yes!  Restore the UI state (i.e., sidebar, ...)
 			restoreUIState();
 
-			// Load the activity stream control...
+			// Put the activity stream text in the tab...
 			final ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
+			GwtClientHelper.jsSetMainTitle( GwtTeaming.getMessages().whatsNewWithName( asi.getTitle() ) );
+			
+			// ...load the activity stream control...
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();
 			

@@ -695,6 +695,7 @@ public interface GwtTeamingMessages extends Messages
 	String resumeActivityStream();
 	String siteWide();
 	String whatsNew();
+	String whatsNewWithName( String name );
 	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.
