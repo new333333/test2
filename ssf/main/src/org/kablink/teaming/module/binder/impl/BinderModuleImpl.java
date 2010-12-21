@@ -656,7 +656,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 							FilterControls filter = new FilterControls(
 									new String[] { "owner.owningBinderId",
 											"type" }, new Object[] {
-											binder.getId(), "f" });
+											binder.getId(), 'f' });
 							filter.setZoneCheck(false); // skip zone, binder
 							// good enough
 							ObjectControls objs = new ObjectControls(
