@@ -77,8 +77,10 @@ function ss_slidingTableDrag(evt) {
         var dObjLeft
         if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
             dObjLeft = evt.pageX - ss_slidingTableOffsetX;
+            if (typeof ss_slidingTableOffsetX != 'undefined') dObjLeft = dObjLeft - ss_slidingTableOffsetX;
         } else {
             dObjLeft = evt.clientX - ss_slidingTableOffsetX;
+            if (typeof ss_slidingTableOffsetX != 'undefined') dObjLeft = dObjLeft - ss_slidingTableOffsetX;
         }
         //Don't let the column go beyond the right or left margins
         if (parseInt(dObjLeft) < parseInt(ss_sTableLeft + ss_sTableMarginLeft)) {

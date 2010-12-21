@@ -112,6 +112,7 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
+import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -125,6 +126,7 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -4103,7 +4105,23 @@ public class BinderHelper {
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		model.put(WebKeys.WORKFLOW_DESCRIPTIONS, descriptionMap);
 	}
-	
+
+    public static boolean checkIfWorkflowResponseAllowed(WorkflowSupport entry, WorkflowState ws, String questionName) {
+     	User user = RequestContextHolder.getRequestContext().getUser();
+     	boolean response = true;
+ 		//Check to make sure this is allowed
+ 		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws.getDefinition(), questionName)) {
+ 			//Build a list of the people who can respond
+ 			Set<Long> responders = WorkflowProcessUtils.getQuestionResponders(entry, ws.getDefinition(), questionName);
+ 			if (!responders.contains(user.getId())) {
+ 				//This user is not on the responder list. Just ignore the request
+ 				response = false;
+ 			}
+ 		}
+ 		return response;
+     }
+     
+
 	public static List getAllApplications(AllModulesInjected bs) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);

@@ -96,6 +96,7 @@ import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -164,6 +165,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
+	}
+	
+	private FolderModule folderModule;
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+	protected FolderModule getFolderModule() {
+		return folderModule;
 	}
 	
 	private FileModule fileModule;
