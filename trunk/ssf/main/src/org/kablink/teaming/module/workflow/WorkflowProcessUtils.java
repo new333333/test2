@@ -79,6 +79,7 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
@@ -338,7 +339,40 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		if (conditions == null) conditions = new ArrayList();
 		return conditions;
-    }    
+    }
+    
+    public static boolean checkIfQuestionRespondersSpecified(WorkflowSupport entry, Definition wfDef, String questionName) {
+		boolean response = false;
+		Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element questionEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "workflowQuestion", questionName);
+		if (questionEle != null) {
+			Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
+			if (questionRespondersEle != null) {
+				response = true;
+			}
+		}
+		return response;
+    }
+    public static Set<Long> getQuestionResponders(WorkflowSupport entry, Definition wfDef, String questionName) {
+		Set<Long> responders = new HashSet();
+		Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element questionEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "workflowQuestion", questionName);
+		if (questionEle != null) {
+			Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
+			if (questionRespondersEle != null) {
+				WfAcl acl = getAcl(questionRespondersEle, (DefinableEntity)entry, WfAcl.AccessType.modify);
+				if (acl != null) {
+					responders.addAll(acl.getPrincipalIds());
+					responders = getInstance().profileDao.explodeGroups(responders, 
+		 					RequestContextHolder.getRequestContext().getZoneId(), false);
+				}
+			}
+		}
+		return responders;
+    }
+
     public static Set<String> getQuestionNames(Definition wfDef, String stateName) {
     	Set<String> qNames = new HashSet();
     	Document wfDoc = wfDef.getDefinition();
@@ -585,17 +619,60 @@ public static void resumeTimers(WorkflowSupport entry) {
 				} else if (type.equals("transitionOnResponse")) {
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
+					boolean everyoneMustRespond = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone"));
+					boolean everyoneMustRespondThis = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone_this"));
+					Set<Long> responders = new HashSet();
+					if (everyoneMustRespond) {
+						//Build a list of the people who must respond
+						responders = getQuestionResponders(entry, state.getDefinition(), question);
+					}
+					Set<Long> respondersFound = new HashSet();
+					boolean doTransition = false;
+					boolean anotherResponseSeen = false;
 					if (!Validator.isNull(question) && !Validator.isNull(response)) {
 						Set responses = entry.getWorkflowResponses();
 						for (Iterator iter=responses.iterator(); iter.hasNext(); ) {
 							WorkflowResponse wr = (WorkflowResponse)iter.next();
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
-									question.equals(wr.getName()) && response.equals(wr.getResponse())) {
-								setVariables(condition, executionContext, entry, state);
-								if (debugEnabled) logger.debug("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
-								return toState;
-							}
+									question.equals(wr.getName())) {
+								if (response.equals(wr.getResponse()) && !everyoneMustRespond && !everyoneMustRespondThis) {
+									//Transition as soon as one person gives this response.
+									doTransition = true;
+									break;
+								} else if (response.equals(wr.getResponse()) && (everyoneMustRespond || everyoneMustRespondThis)) {
+									//We have to wait until we see if all responders answered
+									if (responders.contains(wr.getResponderId())) {
+										respondersFound.add(wr.getResponderId());
+									}
+									if (responders.size() == respondersFound.size() && everyoneMustRespondThis && !anotherResponseSeen) {
+										//all of the responders have responded with exactly this value
+										doTransition = true;
+										break;
+									} else if (responders.size() == respondersFound.size() && !everyoneMustRespondThis) {
+										//all of the responders have responded
+										doTransition = true;
+										break;
+									}
+								} else if (!response.equals(wr.getResponse()) && everyoneMustRespond && !everyoneMustRespondThis) {
+									//Someone has responded with another value
+									anotherResponseSeen = true;
+									//See if all responders answered
+									if (responders.contains(wr.getResponderId())) {
+										respondersFound.add(wr.getResponderId());
+									}
+									if (responders.size() == respondersFound.size()) {
+										//all of the responders have responded 
+										doTransition = true;
+										break;
+									}
+								}
+							} 
 						}
+					}
+					if (doTransition) {
+						setVariables(condition, executionContext, entry, state);
+						if (debugEnabled) logger.debug("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
+						return toState;
 					}
 				} else if (type.equals("transitionOnEntryData")) {
 					Object currentVal=null;

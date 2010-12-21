@@ -3759,23 +3759,13 @@
 			<property name="response" caption="__workflow_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 			<property name="everyone" caption="__workflow_response_everyone" type="checkbox"/>
+			<property name="everyone_this" caption="__workflow_response_everyone_this" type="checkbox"/>
 		</properties>
 		<options>
-			<option name="transitionResponseAccess" caption="__workflow_response_access" />
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
 
-	<item name="transitionResponseAccess" caption="__transitionResponseAccess" multipleAllowedInParent="false">
-		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
-			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="team" caption="__team" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
-			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
-		</properties>
-	</item>
-	
 	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" >
 		<properties>
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
@@ -3824,8 +3814,7 @@
 		</properties>
 	</item>
 	
-	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion"
-		>
+	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion">
 		<properties>
 			<property name="question" caption="__workflow_question_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
@@ -3833,6 +3822,7 @@
 				unique="//item[@type='workflowQuestion']" />
 		</properties>
 		<options>
+			<option name="workflowQuestionResponders" caption="__workflow_question_responders" />
 			<option name="workflowResponse" caption="__workflow_response" />
 		</options>
 	</item>
@@ -3843,6 +3833,16 @@
 			<property name="name" caption="__data_name" type="text" 
 				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
 				unique="//item[@type='workflowResponse']" />
+		</properties>
+	</item>
+	
+	<item name="workflowQuestionResponders" caption="__workflow_question_responders" multipleAllowedInParent="false">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="team" caption="__team" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
 	</item>
 	
