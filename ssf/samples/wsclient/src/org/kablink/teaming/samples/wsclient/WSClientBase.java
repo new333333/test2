@@ -55,6 +55,7 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.model.Attachment;
 import org.kablink.teaming.client.ws.model.AttachmentsField;
+import org.kablink.teaming.client.ws.model.BinderBrief;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
 import org.kablink.teaming.client.ws.model.FileVersion;
 import org.kablink.teaming.client.ws.model.FileVersions;
@@ -112,7 +113,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
 			org.kablink.teaming.client.ws.model.FileVersions.class,
 			org.kablink.teaming.client.ws.model.FileVersion.class,
-			org.kablink.teaming.client.ws.model.ReleaseInfo.class
+			org.kablink.teaming.client.ws.model.ReleaseInfo.class,
+			org.kablink.teaming.client.ws.model.BinderBrief.class
 	};
 
 	protected String host; // optional - default to localhost
@@ -393,6 +395,12 @@ public abstract class WSClientBase {
 		printDefinableEntityArray(deArray);
 	}
 
+	void fetchAndPrintBBArray(String serviceName, String operation, Object[] args) throws Exception {
+		Object bbArray = fetch(serviceName, operation, args);
+
+		printBinderBriefArray((BinderBrief[]) bbArray);
+	}
+
 	void fetchAndPrintPrimitiveArray(String serviceName, String operation, Object[] args) throws Exception {
 		Object deArray = fetch(serviceName, operation, args);
 
@@ -497,6 +505,21 @@ public abstract class WSClientBase {
 		else {
 			System.out.println("Null array");
 		}
+	}
+	
+	void printBinderBriefArray(BinderBrief[] array) {
+		if(array != null) {
+			System.out.println("BinderBrief array size: " + array.length);
+			for(BinderBrief ff:array)
+				printBinderBrief(ff);
+		}
+		else {
+			System.out.println("Null array");
+		}
+	}
+	
+	void printBinderBrief(BinderBrief bb) {
+		System.out.println(bb.getId() + ", " + bb.getTitle());
 	}
 	
 	void printPrimitiveArray(Object array) {
