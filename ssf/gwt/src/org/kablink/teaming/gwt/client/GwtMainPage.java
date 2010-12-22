@@ -47,7 +47,7 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;

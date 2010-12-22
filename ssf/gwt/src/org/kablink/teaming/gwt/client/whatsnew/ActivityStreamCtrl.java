@@ -31,7 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-package org.kablink.teaming.gwt.client.widgets;
+package org.kablink.teaming.gwt.client.whatsnew;
 
 
 
@@ -665,19 +665,19 @@ public class ActivityStreamCtrl extends Composite
 				PopupMenuItem menuItem;
 				
 				// Create the "Reply" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.REPLY, null, null, "Reply" );
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.REPLY, null, null, GwtTeaming.getMessages().reply() );
 				m_actionsPopupMenu.addMenuItem( menuItem );
 
 				// Create the "Share" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SHARE, null, null, "Share" );
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SHARE, null, null, GwtTeaming.getMessages().share() );
 				m_actionsPopupMenu.addMenuItem( menuItem );
 				
 				// Create the "Subscribe" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SUBSCRIBE, null, null, "Subscribe" );
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SUBSCRIBE, null, null, GwtTeaming.getMessages().subscribe() );
 				m_actionsPopupMenu.addMenuItem( menuItem );
 				
 				// Create the "Tag" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.TAG, null, null, "Tag" );
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.TAG, null, null, GwtTeaming.getMessages().tag() );
 				m_actionsPopupMenu.addMenuItem( menuItem );
 			}
 		}
