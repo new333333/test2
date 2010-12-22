@@ -1208,7 +1208,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
     public boolean testIfWorkflowResponseAllowed(FolderEntry entry, Long stateId, String question) {
     	WorkflowState ws = entry.getWorkflowState(stateId);
-    	if (!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws.getDefinition(), question) &&
+    	if (!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question) &&
 				testAccess(entry, FolderOperation.modifyEntry)) {
     		try {
     			//No explicit responders is listed and this user can modify the entry.
@@ -1218,7 +1218,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     			return false;
     		}
     		return true;
-    	} else if (BinderHelper.checkIfWorkflowResponseAllowed(entry, ws, question)) {
+    	} else if (BinderHelper.checkIfWorkflowResponseAllowed(entry, ws, question) ||
+    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(entry, ws, question) &&
+    	    	testAccess((FolderEntry)entry, FolderOperation.modifyEntry))) {
     		//The user was explicitly given the right to respond
     		return true;
     	}
@@ -1298,10 +1300,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
     	//Check if the user is allowed to respond
     	for (String question : qMap.keySet()) {
-    		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified((WorkflowSupport)entry, ws.getDefinition(), question)) {
+    		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question)) {
 	    		if (!BinderHelper.checkIfWorkflowResponseAllowed((WorkflowSupport)entry, ws, question)) {
-	    			//This question is not allowed, so remove it
-	    			qMap.remove(question);
+	    			//The user isn't on the list, so check for forum Default
+	    			if (!WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(entry, ws, question) ||
+	    					!testAccess(entry, FolderOperation.modifyEntry)) {
+		    			//This question is not allowed, so remove it
+		    			qMap.remove(question);
+	    			}
 	    		}
     		} else {
     			if (!testAccess(entry, FolderOperation.modifyEntry)) {
@@ -1317,7 +1323,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
-        processor.setWorkflowResponse(folder, entry, stateId, inputData);
+        Boolean canModifyEntry = testAccess(entry, FolderOperation.modifyEntry);
+        processor.setWorkflowResponse(folder, entry, stateId, inputData, canModifyEntry);
     }
     
    //called by scheduler to complete folder deletions

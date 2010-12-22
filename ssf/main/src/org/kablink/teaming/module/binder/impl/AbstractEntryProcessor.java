@@ -945,7 +945,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
     }
  
-    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
+    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
 		if (!(entry instanceof WorkflowSupport)) return;
  		WorkflowSupport wEntry = (WorkflowSupport)entry;
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -978,9 +978,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 					break;
 				}			
 			}
-			if ((!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(wEntry, ws.getDefinition(), question) &&
-					getFolderModule().testAccess((FolderEntry)entry, FolderOperation.modifyEntry)) || 
-					BinderHelper.checkIfWorkflowResponseAllowed(wEntry, ws, question)) {
+			if ((!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(wEntry, ws, question) && canModifyEntry) || 
+					BinderHelper.checkIfWorkflowResponseAllowed(wEntry, ws, question) || 
+	    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(wEntry, ws, question) &&
+	    			canModifyEntry)) {
 				if (found) {
 					if (!response.equals(wr.getResponse())) {
 						//if no changes have been made update timestamp

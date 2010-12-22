@@ -4110,9 +4110,9 @@ public class BinderHelper {
      	User user = RequestContextHolder.getRequestContext().getUser();
      	boolean response = true;
  		//Check to make sure this is allowed
- 		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws.getDefinition(), questionName)) {
+ 		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, questionName)) {
  			//Build a list of the people who can respond
- 			Set<Long> responders = WorkflowProcessUtils.getQuestionResponders(entry, ws.getDefinition(), questionName);
+ 			Set<Long> responders = WorkflowProcessUtils.getQuestionResponders(entry, ws, questionName);
  			if (!responders.contains(user.getId())) {
  				//This user is not on the responder list. Just ignore the request
  				response = false;
