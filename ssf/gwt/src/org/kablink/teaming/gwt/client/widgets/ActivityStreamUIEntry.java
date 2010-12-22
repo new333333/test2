@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -45,12 +46,14 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -59,6 +62,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -70,6 +74,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 {
 	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
+	private Image m_actionsImg1;
+	private Image m_actionsImg2;
 	private InlineLabel m_title;
 	private FlowPanel m_presencePanel;
 	private ClickHandler m_presenceClickHandler;
@@ -95,6 +101,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( getMainPanelStyleName() );
 		
+		// Add a mouse over/out handler for the main panel.
+		mainPanel.addDomHandler( this, MouseOverEvent.getType() );
+		mainPanel.addDomHandler( this, MouseOutEvent.getType() );
+
 		// Remember the handler we should call when the user selects an item from the search results.
 		m_actionHandler = actionHandler;
 		
@@ -220,9 +230,38 @@ public abstract class ActivityStreamUIEntry extends Composite
 	{
 		FlowPanel headerPanel;
 		FlowPanel titlePanel;
+		ImageResource imageResource;
 		
 		headerPanel = new FlowPanel();
 		headerPanel.addStyleName( getEntryHeaderStyleName() );
+		
+		// Add an image the user can click on to invoke the Actions menu.  Image 1 will
+		// be visible when the mouse is not over the entry.  Image 2 will be visible
+		// when the mouse is over the entry.
+		{
+			ClickHandler clickHandler;
+			
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			m_actionsImg1 = new Image( imageResource );
+			m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
+			headerPanel.add( m_actionsImg1 );
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+			m_actionsImg2 = new Image( imageResource );
+			m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
+			m_actionsImg2.setVisible( false );
+			headerPanel.add( m_actionsImg2 );
+
+			// Add a click handler for the Actions image.
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					// Invoke the Actions menu.
+					invokeActionsMenu( clickEvent.getClientX(), clickEvent.getClientY() );
+				}
+			};
+			m_actionsImg2.addClickHandler( clickHandler );
+		}
 		
 		// Create a <span> to hold the title.
 		titlePanel = new FlowPanel();
@@ -436,6 +475,34 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
+	private void invokeActionsMenu( final int x, final int y )
+	{
+		final PopupMenu popupMenu;
+		
+		// Show the Actions popup menu.
+		popupMenu = ActivityStreamCtrl.getActionsMenu();
+		if ( popupMenu != null )
+		{
+			PopupPanel.PositionCallback posCallback;
+			
+			posCallback = new PopupPanel.PositionCallback()
+			{
+				/**
+				 * 
+				 */
+				public void setPosition( int offsetWidth, int offsetHeight )
+				{
+					popupMenu.setPopupPosition( x - offsetWidth, y );
+				}// end setPosition()
+			};
+			popupMenu.setPopupPositionAndShow( posCallback );
+		}
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public void onClick( ClickEvent event )
 	{
 		final Object src;
@@ -476,6 +543,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			m_avatarImg.removeStyleName( "cursorPointer" );
 		}
+		else if ( src == getWidget() )
+		{
+			// Hide the actions2 image.
+			m_actionsImg2.setVisible( false );
+			m_actionsImg1.setVisible( true );
+		}
 	}
 
 	
@@ -494,6 +567,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 		else if ( src == m_avatarImg )
 		{
 			m_avatarImg.addStyleName( "cursorPointer" );
+		}
+		else if ( src == getWidget() )
+		{
+			// Hide the actions1 image and show the image the user clicks on to invoke the Actions menu.
+			m_actionsImg1.setVisible( false );
+			m_actionsImg2.setVisible( true );
 		}
 	}
 

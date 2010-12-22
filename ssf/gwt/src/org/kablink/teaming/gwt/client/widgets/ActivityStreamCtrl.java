@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.menu.PopupMenu;
+import org.kablink.teaming.gwt.client.menu.PopupMenuItem;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.Scheduler;
@@ -81,7 +83,7 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class ActivityStreamCtrl extends Composite
-	implements ClickHandler
+	implements ActionHandler, ClickHandler
 {
 	private int m_width;
 	private int m_height;
@@ -117,6 +119,8 @@ public class ActivityStreamCtrl extends Composite
 	// We will reuse these ui widgets every time we get a new page of results.
 	// We will NOT create new ui widgets every time we get a new page of results.
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
+	// This menu is used to display an Actions menu for an item in the list.
+	private static PopupMenu m_actionsPopupMenu = null;
 
 	
 	/**
@@ -208,6 +212,9 @@ public class ActivityStreamCtrl extends Composite
 			}// end onSuccess()
 		};
 		m_searchInProgress = false;
+		
+		// Create an Actions popup menu.
+		createActionsPopupMenu();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -643,6 +650,41 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Create the actions popup menu
+	 */
+	private void createActionsPopupMenu()
+	{
+		// Have we created an ActionsMenu yet?
+		if ( m_actionsPopupMenu == null )
+		{
+			// No, create one.
+			m_actionsPopupMenu = new PopupMenu( true, true );
+			
+			// Add all the possible menu items.
+			{
+				PopupMenuItem menuItem;
+				
+				// Create the "Reply" menu item.
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.REPLY, null, null, "Reply" );
+				m_actionsPopupMenu.addMenuItem( menuItem );
+
+				// Create the "Share" menu item.
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SHARE, null, null, "Share" );
+				m_actionsPopupMenu.addMenuItem( menuItem );
+				
+				// Create the "Subscribe" menu item.
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SUBSCRIBE, null, null, "Subscribe" );
+				m_actionsPopupMenu.addMenuItem( menuItem );
+				
+				// Create the "Tag" menu item.
+				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.TAG, null, null, "Tag" );
+				m_actionsPopupMenu.addMenuItem( menuItem );
+			}
+		}
+	}
+	
+	
+	/**
 	 * Create the panel that will hold the search results. 
 	 */
 	private void createSearchResultsPanel( FlowPanel mainPanel )
@@ -703,6 +745,15 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Return the Actions menu that is used with items in the list.
+	 */
+	public static PopupMenu getActionsMenu()
+	{
+		return m_actionsPopupMenu;
+	}
+	
+	
+	/**
 	 * Return the id of the binder that is the source of the activity stream
 	 */
 	private String getActivityStreamSourceBinderId()
@@ -726,6 +777,15 @@ public class ActivityStreamCtrl extends Composite
 	public Object getSelectedObject()
 	{
 		return m_selectedObj;
+	}
+	
+	
+	/**
+	 * This method gets called when the user selects a menu item from the Actions popup menu.
+	 */
+	public void handleAction( TeamingAction action, Object actionData )
+	{
+		Window.alert( action.getUnlocalizedDesc() );
 	}
 	
 	

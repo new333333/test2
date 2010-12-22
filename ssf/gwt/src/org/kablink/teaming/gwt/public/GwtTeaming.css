@@ -14,6 +14,15 @@
 	-webkit-border-radius: 5px;
 }
 
+.activityStreamActionsImg1, .activityStreamActionsImg2
+{
+	cursor: pointer;
+	padding: 5px;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+}
+
 .activityStreamSearchingPanel
 {
 	font-size: 14px;
@@ -2336,3 +2345,36 @@ top:100px;
 #viewNextPageOfResults, #viewPreviousPageOfResults, .viewNextDisabledImg, .viewPreviousDisabledImg {
 	vertical-align: middle;
 	}
+
+.popupMenu
+{
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background-color: #3A3E40;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 400;
+}
+
+.popupMenuTopPanel, .popupMenuBottomPanel
+{
+	padding-top: 5px;
+}
+
+.popupMenuItem
+{
+	color: #FFFFFF;
+	cursor: pointer;
+	line-height: 1.1em; 
+	padding: 0.4em 0.75em 0.5em; 
+	white-space: nowrap;
+}
+
+.popupMenuItem_Hover
+{
+	background: none repeat scroll 0 0 #505354;
+	color: #81B2BD !important;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
