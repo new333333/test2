@@ -256,6 +256,10 @@ public abstract class ActivityStreamUIEntry extends Composite
 			{
 				public void onClick( ClickEvent clickEvent )
 				{
+					// Hide the actions2 image.
+					m_actionsImg2.setVisible( false );
+					m_actionsImg1.setVisible( true );
+
 					// Invoke the Actions menu.
 					invokeActionsMenu( clickEvent.getClientX(), clickEvent.getClientY() );
 				}
