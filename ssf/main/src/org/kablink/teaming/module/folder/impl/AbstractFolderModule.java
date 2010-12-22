@@ -1280,10 +1280,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 					Map data = (Map)me.getValue();
 					try {
 						//access check
-						if (data.get("transitionAccessElement") != null) {
-							Element accessEle = (Element)data.get("transitionAccessElement");
-							AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
-						}
+						Element accessEle = (Element)data.get("transitionAccessElement");
+						AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
 						AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
 						transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
 					} catch (AccessControlException ac) {};
