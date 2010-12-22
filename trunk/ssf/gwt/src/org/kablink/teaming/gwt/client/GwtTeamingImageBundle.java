@@ -44,6 +44,12 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface GwtTeamingImageBundle extends ClientBundle
 {
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions1.png")
+	public ImageResource activityStreamActions1();
+
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions2.png")
+	public ImageResource activityStreamActions2();
+
 	@Source("org/kablink/teaming/gwt/public/images/administration1.png")
 	public ImageResource administration1();
 

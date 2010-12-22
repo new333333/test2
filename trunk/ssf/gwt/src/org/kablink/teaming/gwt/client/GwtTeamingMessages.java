@@ -725,5 +725,11 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTeamRoot();
 	String hoverWorkspaceTop();
 	String hoverWorkspaceTrash();
+
+	// The following strings are used in the "Actions" popup menu.
+	String reply();
+	String share();
+	String subscribe();
+	String tag();
 	
 }// end GwtTeamingMessages
