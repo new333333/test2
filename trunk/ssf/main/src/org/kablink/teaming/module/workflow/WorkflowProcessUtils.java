@@ -85,6 +85,8 @@ import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowCondition;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
@@ -341,11 +343,14 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		return conditions;
     }
     
-    public static boolean checkIfQuestionRespondersSpecified(WorkflowSupport entry, Definition wfDef, String questionName) {
-		boolean response = false;
+    public static boolean checkIfQuestionRespondersSpecified(WorkflowSupport entry, WorkflowState ws, String question) {
+    	Definition wfDef = ws.getDefinition();
+    	boolean response = false;
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
-		Element questionEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "workflowQuestion", questionName);
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
+		if (stateEle == null) return response;
+		Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
 		if (questionEle != null) {
 			Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
 			if (questionRespondersEle != null) {
@@ -354,22 +359,63 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		return response;
     }
-    public static Set<Long> getQuestionResponders(WorkflowSupport entry, Definition wfDef, String questionName) {
-		Set<Long> responders = new HashSet();
+    public static boolean checkIfQuestionRespondersIncludeForumDefault(WorkflowSupport entry, WorkflowState ws, String question) {
+    	Definition wfDef = ws.getDefinition();
+    	boolean response = false;
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
-		Element questionEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "workflowQuestion", questionName);
-		if (questionEle != null) {
-			Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
-			if (questionRespondersEle != null) {
-				WfAcl acl = getAcl(questionRespondersEle, (DefinableEntity)entry, WfAcl.AccessType.modify);
-				if (acl != null) {
-					responders.addAll(acl.getPrincipalIds());
-					responders = getInstance().profileDao.explodeGroups(responders, 
-		 					RequestContextHolder.getRequestContext().getZoneId(), false);
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
+		if (stateEle != null) {
+			Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
+			if (questionEle != null) {
+				Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
+				if (questionRespondersEle != null) {
+					String forumDefault = DefinitionUtils.getPropertyValue(questionRespondersEle, "folderDefault");
+					if ("true".equals(forumDefault)) {
+						response = true;
+					}
 				}
 			}
 		}
+		return response;
+    }
+    public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question) {
+    	Definition wfDef = ws.getDefinition();
+    	Set<Long> responders = new HashSet();
+		Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
+		if (stateEle != null) {
+			Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
+			if (questionEle != null) {
+				Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
+				if (questionRespondersEle != null) {
+					WfAcl acl = getAcl(questionRespondersEle, (DefinableEntity)entry, WfAcl.AccessType.modify);
+					if (acl != null) {
+						responders.addAll(acl.getPrincipalIds());
+						responders = getInstance().profileDao.explodeGroups(responders, 
+			 					RequestContextHolder.getRequestContext().getZoneId(), false);
+					}
+				}
+			}
+		}
+		//See if this question allows folder default
+		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
+			//Yes, add in those users who can modify the entry
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	        Set modifyEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.MODIFY_ENTRIES);
+	        if (modifyEntries.remove(ObjectKeys.OWNER_USER_ID)) modifyEntries.add(entry.getOwnerId());
+	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
+	   		//See if this includes All Users
+	        Long allUsersId = Utils.getAllUsersGroupId();
+	        if (allUsersId != null && modifyEntries.contains(allUsersId)) {
+	        	//We ignore the All Users group
+	        	modifyEntries.remove(allUsersId);
+	        }
+	        Set<Long> defaultResponders = getInstance().profileDao.explodeGroups(modifyEntries, zoneId, false);
+	        responders.addAll(defaultResponders);
+		}
+
 		return responders;
     }
 
@@ -624,7 +670,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 					Set<Long> responders = new HashSet();
 					if (everyoneMustRespond) {
 						//Build a list of the people who must respond
-						responders = getQuestionResponders(entry, state.getDefinition(), question);
+						responders = getQuestionResponders(entry, state, question);
 					}
 					Set<Long> respondersFound = new HashSet();
 					boolean doTransition = false;

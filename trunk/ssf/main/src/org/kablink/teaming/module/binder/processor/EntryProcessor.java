@@ -72,7 +72,7 @@ public interface EntryProcessor extends BinderProcessor {
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options)
     	throws WriteFilesException, WriteEntryDataException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
-    public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
+    public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData, Boolean canModifyEntry);
   	public IndexErrors indexEntries(Collection entries);
   	public IndexErrors indexEntry(Entry entry);
   	public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags);
