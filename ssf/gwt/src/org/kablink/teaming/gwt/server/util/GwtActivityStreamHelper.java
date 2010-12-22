@@ -141,14 +141,14 @@ public class GwtActivityStreamHelper {
 		 * Constructs an ASAuthorInfo object based on its author ID.
 		 */
 		@SuppressWarnings("unchecked")
-		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, User authorUser, String authorTitle) {
+		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, Long authorId, User authorUser, String authorTitle) {
 			// Construct a new ASAuthorInfo object.
 			ASAuthorInfo reply = new ASAuthorInfo();
-			reply.m_authorId = String.valueOf(authorUser.getId());
+			reply.m_authorId = String.valueOf(authorId);
 			reply.m_authorAvatarUrl = "";
 			
 			// Do we have their workspace ID?
-			Long authorWsId = authorUser.getWorkspaceId();
+			Long authorWsId = ((null == authorUser) ? null : authorUser.getWorkspaceId());
 			if (null != authorWsId) {
 				// Yes!  Can we access any avatars for the author?
 				reply.m_authorWsId = String.valueOf(authorWsId);
@@ -371,7 +371,7 @@ public class GwtActivityStreamHelper {
 				if (null == authorInfo) {
 					// No!  Construct one and cache it now.  
 					User authorUser = userMap.get(authorId);
-					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, entryData.getAuthorTitle());
+					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorId, authorUser, entryData.getAuthorTitle());
 					authorInfoMap.put(authorId, authorInfo);
 				}
 				
@@ -387,7 +387,7 @@ public class GwtActivityStreamHelper {
 					if (null == commentAuthorInfo) {
 						// No!  Construct one and cache it now.
 						User authorUser = userMap.get(commentAuthorId);
-						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, commentEntryData.getAuthorTitle());
+						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, commentAuthorId, authorUser, commentEntryData.getAuthorTitle());
 						authorInfoMap.put(commentAuthorId, commentAuthorInfo);
 					}
 
