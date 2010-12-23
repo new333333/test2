@@ -39,6 +39,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -69,6 +70,7 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
@@ -395,6 +397,13 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			}
 		}
 		return response;
+    }
+    public static Map<Long,User> getQuestionResponderPrincipals(WorkflowSupport entry, WorkflowState ws, String question) {
+    	Set<Long> ids = getQuestionResponders(entry, ws, question);
+    	List<User> users = getInstance().profileDao.loadUsers(ids, RequestContextHolder.getRequestContext().getZoneId());
+    	Map<Long,User> userMap = new HashMap<Long,User>();
+    	for (User user : users) userMap.put(user.getId(), user);
+    	return userMap;
     }
     public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question) {
     	Definition wfDef = ws.getDefinition();

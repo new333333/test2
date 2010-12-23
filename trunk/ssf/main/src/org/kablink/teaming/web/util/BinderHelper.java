@@ -4098,7 +4098,7 @@ public class BinderHelper {
 					Map<String,Map> qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
 					//Get the responders for each question
 					for (String q : qMap.keySet()) {
-						Set<Long> qResponders = WorkflowProcessUtils.getQuestionResponders(entry, ws, q);
+						Map<Long,User> qResponders = WorkflowProcessUtils.getQuestionResponderPrincipals(entry, ws, q);
 						questionRespondersMap.put(q, qResponders);
 					}
 					questionsMap.put(ws.getTokenId(), qMap);
