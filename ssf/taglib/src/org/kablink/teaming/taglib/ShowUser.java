@@ -98,7 +98,7 @@ public class ShowUser extends BodyTagSupport {
 			
 			// Get a user object from the principal (do this always if user has limited view of users)
 			if ((user != null) && !(user instanceof User) && !(user instanceof Group) || 
-					Utils.canUserOnlySeeCommonGroupMembers()) {
+					(user != null && Utils.canUserOnlySeeCommonGroupMembers())) {
 				try {
 					//this will remove the proxy and return a real user or group
 					//currently looks like this code is expecting a User
