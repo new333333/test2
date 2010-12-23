@@ -114,7 +114,10 @@ function ss_checkForWorkflowStateSelection(obj) {
 	    <tr>
 	      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;"></td>
 	      <td valign="top" colspan="2" style="padding:0px 0px 4px 20px;">
+	      <table>
 		  <c:forEach var="question" items="${ssWorkflowQuestions[workflow.id]}">
+		    <tr>
+		    <td valign="top">
 		    <form class="ss_style ss_form" method="post" 
 		      action="<ssf:url adapter="true" 
 				        portletName="ss_forum" 
@@ -133,7 +136,40 @@ function ss_checkForWorkflowStateSelection(obj) {
 		    </select><input type="submit" class="ss_submit" name="respondBtn" 
 		     value="<ssf:nlt tag="button.ok" text="OK"/>"><br/>
 		    </form>
+		    </td>
+		    <td valign="top" style="padding-left:10px;">
+		     <c:if test="${question.value.workflow_questionEveryoneMustRespond}">
+		      <c:set var="hasResponded" value="false"/>
+		      <c:set var="responderCount" value="0"/>
+		      <c:forEach var="responderId" items="${question.value.workflow_questionResponders}">
+		        <c:if test="${responderId == ssUser.id}">
+		          <div><ssf:nlt tag="workflow.question.alreadyResponded"/></div>
+		          <c:set var="hasResponded" value="true"/>
+		        </c:if>
+		        <c:set var="responderCount" value="${responderCount + 1}"/>
+		      </c:forEach>
+		      <c:if test="${!hasResponded}">
+		        <div><ssf:nlt tag="workflow.question.hasNotResponded"/></div>
+		      </c:if>
+		      <c:set var="totalResponderCount" value="0"/>
+		      <c:forEach items="${ssWorkflowQuestionResponders[question.key]}" varStatus="s">
+				<c:if test="${s.last}">
+				<c:set var="totalResponderCount" value="${s.count}"/>
+				</c:if>
+			  </c:forEach>
+			  <c:if test="${totalResponderCount > 1}">
+			    <div>
+			      <ssf:nlt tag="workflow.question.waiting">
+			        <ssf:param name="value" value="${responderCount}"/>
+			        <ssf:param name="value" value="${totalResponderCount}"/>
+			      </ssf:nlt>
+			    </div>
+			  </c:if>
+			 </c:if>
+		    </td>
+		    </tr>
 		  </c:forEach>
+		  </table>
 		  </td>
 		</tr>
 	  </c:if>

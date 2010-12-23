@@ -4071,6 +4071,7 @@ public class BinderHelper {
 		Map captionMap = new HashMap();
 		Map threadMap = new HashMap();
 		Map questionsMap = new HashMap();
+		Map questionRespondersMap = new HashMap();
 		Map transitionMap = new HashMap();
 		Map descriptionMap = new HashMap();
 		for (int i=0; i<entryList.size(); i++) {
@@ -4094,7 +4095,12 @@ public class BinderHelper {
 				}
 					
 				if (!entry.isPreDeleted()) {
-					Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
+					Map<String,Map> qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
+					//Get the responders for each question
+					for (String q : qMap.keySet()) {
+						Set<Long> qResponders = WorkflowProcessUtils.getQuestionResponders(entry, ws, q);
+						questionRespondersMap.put(q, qResponders);
+					}
 					questionsMap.put(ws.getTokenId(), qMap);
 				}
 			}
@@ -4102,6 +4108,7 @@ public class BinderHelper {
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
 		model.put(WebKeys.WORKFLOW_THREAD_CAPTIONS, threadMap);
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
+		model.put(WebKeys.WORKFLOW_QUESTION_RESPONDERS, questionRespondersMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		model.put(WebKeys.WORKFLOW_DESCRIPTIONS, descriptionMap);
 	}

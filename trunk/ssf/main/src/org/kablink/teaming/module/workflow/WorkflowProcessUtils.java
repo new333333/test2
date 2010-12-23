@@ -379,6 +379,23 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		return response;
     }
+    public static boolean checkIfEveryoneMustRespondToQuestion(WorkflowSupport entry, WorkflowState ws, String question) {
+    	Definition wfDef = ws.getDefinition();
+    	boolean response = false;
+		Document wfDoc = wfDef.getDefinition();
+		//Find the current state in the definition
+		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
+		if (stateEle == null) return response;
+		List<Element> transitionsOnResponse = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionOnResponse']");
+		for (Element tor : transitionsOnResponse) {
+			if ("true".equals(DefinitionUtils.getPropertyValue(tor, "everyone"))) {
+				//Found one transition where everyone must respond
+				response = true;
+				break;
+			}
+		}
+		return response;
+    }
     public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question) {
     	Definition wfDef = ws.getDefinition();
     	Set<Long> responders = new HashSet();
