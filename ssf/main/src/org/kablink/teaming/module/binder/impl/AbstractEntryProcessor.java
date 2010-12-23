@@ -953,7 +953,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  		WorkflowState ws = wEntry.getWorkflowState(stateId);
 		Definition def = ws.getDefinition();
 		boolean changes = false;
-		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
+		Map questions = WorkflowUtils.getQuestions(def, ws);
 		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			String question = (String)me.getKey();

@@ -1357,6 +1357,7 @@ public class WebKeys {
     public static final String WORKFLOW_DEFINITION_ID="ssWorkflowDefinitionId";
     public static final String WORKFLOW_DESCRIPTIONS="ssWorkflowDescriptions";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
+    public static final String WORKFLOW_QUESTION_RESPONDERS="ssWorkflowQuestionResponders";
     public static final String WORKFLOW_TRANSITIONS="ssWorkflowTransitions";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";

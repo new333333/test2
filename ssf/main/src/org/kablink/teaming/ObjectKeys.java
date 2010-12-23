@@ -162,7 +162,11 @@ public interface ObjectKeys {
     public static final String FILES_FROM_APPLET_FOR_BINDER="ss_attachFile";
     public static final String FILES_FROM_APPLET_FOLDER_INFO_FOR_BINDER="filesFromAppletFolderInfo";
     public static final String WORKFLOW_QUESTION_TEXT="workflow_questionText";
+    public static final String WORKFLOW_QUESTION_EVERYONE_MUST_RESPOND="workflow_questionEveryoneMustRespond";
     public static final String WORKFLOW_QUESTION_RESPONSES="workflow_questionResponses";
+    public static final String WORKFLOW_QUESTION_RESPONSE_COUNT="workflow_questionResponseCount";
+    public static final String WORKFLOW_QUESTION_RESPONDERS="workflow_questionResponders";
+    public static final String WORKFLOW_QUESTION_RESPONSE_RESPONDERS="workflow_questionReponseResponders";
  
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";

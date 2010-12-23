@@ -1295,7 +1295,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
-    	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
+    	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws);
     	//Check if the user is allowed to respond
     	for (String question : qMap.keySet()) {
     		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question)) {
