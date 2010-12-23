@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.model;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -40,6 +41,10 @@ public class FolderEntry {
 	private Long id;
 	private String title;
 	private String description;
+	
+	@XmlElement
+	private String[] products = new String[] {"droid", "iPhone", "Nexus"};
+	
 	public Long getId() {
 		return id;
 	}
@@ -58,5 +63,12 @@ public class FolderEntry {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	/*
+	public String[] getProducts() {
+		return products;
+	}
+	public void setProducts(String[] products) {
+		this.products = products;
+	}*/
 	
 }
