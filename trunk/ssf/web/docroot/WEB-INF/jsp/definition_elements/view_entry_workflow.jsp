@@ -166,7 +166,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 			    </div>
 			  </c:if>
 			  <div>
-			    <a onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
+			    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
 			      <span class="ss_smallprint"><ssf:nlt tag="workflow.viewResponses"/></span>
 			    </a>
 			  </div>
@@ -185,13 +185,13 @@ function ss_checkForWorkflowStateSelection(obj) {
         <c:if test="${workflow2.definition.id == workflow.definition.id}">
           <c:if test="${!empty workflow2.threadName}">
 			  <tr>
-			    <td valign="top" style="padding:0px 0px 4px 20px;">${ssWorkflowThreadCaptions[workflow2.id]}</td>
-			    <td valign="top" style="padding:0px 0px 4px 20px;">${ssWorkflowCaptions[workflow2.id]}</td>
+			    <td valign="top" style="padding:10px 0px 4px 20px;">${ssWorkflowThreadCaptions[workflow2.id]}</td>
+			    <td valign="top" style="padding:10px 0px 4px 20px;">${ssWorkflowCaptions[workflow2.id]}</td>
 			    <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
-			      <td valign="top" align="right" style="padding:0px 0px 4px 20px;">
+			      <td valign="top" align="right" style="padding:10px 0px 4px 20px;">
 			        <b><ssf:nlt tag="workflow.transitionTo" 
 			        text="Transition to:"/></b></td>
-			      <td valign="top" style="padding:0px 0px 4px 4px;">
+			      <td valign="top" style="padding:10px 0px 4px 4px;">
 				  <form class="ss_style ss_form" method="post" 
 				    action="<ssf:url adapter="true" 
 				        portletName="ss_forum" 
@@ -215,7 +215,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 				  </td>
 				</c:if>
 				<c:if test="${empty ssWorkflowTransitions[workflow2.id]}">
-				  <td style="padding:0px 0px 4px 20px;"></td><td style="padding:0px 0px 4px 20px;"></td>
+				  <td style="padding:10px 0px 4px 20px;"></td><td style="padding:10px 0px 4px 20px;"></td>
 				</c:if>
 			  </tr>
 			  <c:if test="${!empty ssWorkflowQuestions[workflow2.id]}">
@@ -278,7 +278,7 @@ function ss_checkForWorkflowStateSelection(obj) {
 					    </div>
 					  </c:if>
 					  <div>
-					    <a onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
+					    <a href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;">
 					      <span class="ss_smallprint"><ssf:nlt tag="workflow.viewResponses"/></span>
 					    </a>
 					  </div>
@@ -313,6 +313,8 @@ function ss_checkForWorkflowStateSelection(obj) {
 <div id="ss_workflowResponsesDiv" class="ss_workflow" style="display:none;">
   <c:forEach var="workflow3" items="${ssDefinitionEntry.workflowStates}">
   <c:forEach var="question" items="${ssWorkflowQuestions[workflow3.id]}">
+    <% java.util.Map haveResponded = new java.util.HashMap(); %>
+    <c:set var="thoseWhoHaveResponded" value="<%= haveResponded %>"/>
     <span class="ss_bold"><ssf:nlt tag="${question.value.workflow_questionText}" checkIfTag="true"/></span><br/>
     <table style="padding-left:10px;">
     <c:forEach var="response" items="${question.value.workflow_questionResponses}">
@@ -321,16 +323,34 @@ function ss_checkForWorkflowStateSelection(obj) {
         <span><ssf:nlt tag="${response.value}" checkIfTag="true"/></span>
       </td>
       <td valign="top" style="padding-left:10px;">
-        <c:forEach var="responderId" items="${question.value.workflow_questionReponseResponders[response.key]}">
-          <c:if test="${!empty ssWorkflowQuestionResponders[question.key][responderId]}">
-            <div><ssf:showUser user="${ssWorkflowQuestionResponders[question.key][responderId]}"/></div>
+        <c:forEach var="workflowResponderId" items="${question.value.workflow_questionReponseResponders[response.key]}">
+          <jsp:useBean id="workflowResponderId" type="Long" />
+          <% haveResponded.put(workflowResponderId, workflowResponderId); %>
+          <c:if test="${!empty ssWorkflowQuestionResponders[question.key][workflowResponderId]}">
+            <div><ssf:showUser user="${ssWorkflowQuestionResponders[question.key][workflowResponderId]}"/></div>
           </c:if>
         </c:forEach>
       </td>
       </tr>
     </c:forEach>
+    <tr>
+      <td valign="top">
+        <span><ssf:nlt tag="workflow.noResponse" /></span>
+      </td>
+      <td valign="top" style="padding-left:10px;">
+        <c:forEach var="workflowResponder" items="${ssWorkflowQuestionResponders[question.key]}">
+          <c:if test="${empty thoseWhoHaveResponded[workflowResponder.key]}">
+            <div><ssf:showUser user="${workflowResponder.value}"/></div>
+          </c:if>
+        </c:forEach>
+      </td>
+    </tr>
     </table>
   </c:forEach>
   </c:forEach>
+  <br/>
+  <br/>
+  <a class="ss_linkButton" href="javascript: ;" onClick="ss_showHide('ss_workflowResponsesDiv');return false;" 
+  ><ssf:nlt tag="button.close"/></a>
 </div>
 </c:if>
