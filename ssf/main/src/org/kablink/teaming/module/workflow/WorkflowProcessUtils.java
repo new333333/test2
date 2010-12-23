@@ -376,6 +376,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 					if ("true".equals(forumDefault)) {
 						response = true;
 					}
+				} else {
+					//If there is no specific responder list, then the responders must be the folder default
+					response = true;
 				}
 			}
 		}
