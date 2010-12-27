@@ -353,6 +353,7 @@ public class WorkspaceTreeHelper {
 				        if (showProfile && 
 				        		!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 
+				        	GwtUIHelper.setCommonRequestInfoData(request, bs, model);
 				        	boolean showModifyProfile = false;
 							if (owner.isActive() && bs.getProfileModule().testAccess(owner, ProfileOperation.modifyEntry)) {
 								showModifyProfile = true;

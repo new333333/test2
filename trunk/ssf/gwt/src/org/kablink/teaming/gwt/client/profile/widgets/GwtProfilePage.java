@@ -73,7 +73,6 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	private FlowPanel mainProfilePage;
 
 	public GwtProfilePage() {
-
 		// Get information about the request we are dealing with.
 		profileRequestInfo = getProfileRequestInfo();
 
@@ -107,7 +106,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		// All composites must call initWidget() in their constructors.
 		initWidget(mainProfilePage);
-	}
+}
 
 	private void initialize() {
 
@@ -214,7 +213,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	 */
 	private native ProfileRequestInfo getProfileRequestInfo() /*-{
 		// Return a reference to the JavaScript variable called, m_requestInfo.
-		return $wnd.profileRequestInfo;
+		return $wnd.m_requestInfo;
 	}-*/;
 
 	/**

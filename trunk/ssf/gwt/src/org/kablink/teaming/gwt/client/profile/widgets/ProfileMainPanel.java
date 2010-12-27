@@ -106,7 +106,6 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @param profileRequestInfo
 	 */
 	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo, ActionTrigger trigger) {
-
 		this.profileRequestInfo = profileRequestInfo;
 		this.actionTrigger = trigger;
 		
