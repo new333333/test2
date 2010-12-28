@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client.whatsnew;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -61,7 +60,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 
@@ -337,6 +335,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the id of this entry.
+	 */
+	public String getEntryId()
+	{
+		return m_entryId;
+	}
+	
+	
+	/**
 	 * Return the title for the given entry.  If the entry is a reply, the title will be the reply number + title.
 	 * For example, 1.6.3 RE: What do you think you are doing?
 	 * If the entry is not a reply, the title will just be the title from the entry.
@@ -478,27 +485,16 @@ public abstract class ActivityStreamUIEntry extends Composite
 	/**
 	 * 
 	 */
-	private void invokeActionsMenu( final int x, final int y )
+	private void invokeActionsMenu( int x, int y )
 	{
-		final PopupMenu popupMenu;
+		ActionsPopupMenu popupMenu;
 		
 		// Show the Actions popup menu.
 		popupMenu = ActivityStreamCtrl.getActionsMenu();
 		if ( popupMenu != null )
 		{
-			PopupPanel.PositionCallback posCallback;
-			
-			posCallback = new PopupPanel.PositionCallback()
-			{
-				/**
-				 * 
-				 */
-				public void setPosition( int offsetWidth, int offsetHeight )
-				{
-					popupMenu.setPopupPosition( x - offsetWidth, y );
-				}// end setPosition()
-			};
-			popupMenu.setPopupPositionAndShow( posCallback );
+			// Show the Actions popup menu.
+			popupMenu.showActionsMenu( this, x, y );
 		}
 	}
 	

@@ -52,8 +52,6 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.menu.PopupMenuItem;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.Scheduler;
@@ -120,7 +118,7 @@ public class ActivityStreamCtrl extends Composite
 	// We will NOT create new ui widgets every time we get a new page of results.
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
 	// This menu is used to display an Actions menu for an item in the list.
-	private static PopupMenu m_actionsPopupMenu = null;
+	private static ActionsPopupMenu m_actionsPopupMenu = null;
 
 	
 	/**
@@ -658,28 +656,7 @@ public class ActivityStreamCtrl extends Composite
 		if ( m_actionsPopupMenu == null )
 		{
 			// No, create one.
-			m_actionsPopupMenu = new PopupMenu( true, true );
-			
-			// Add all the possible menu items.
-			{
-				PopupMenuItem menuItem;
-				
-				// Create the "Reply" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.REPLY, null, null, GwtTeaming.getMessages().reply() );
-				m_actionsPopupMenu.addMenuItem( menuItem );
-
-				// Create the "Share" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SHARE, null, null, GwtTeaming.getMessages().share() );
-				m_actionsPopupMenu.addMenuItem( menuItem );
-				
-				// Create the "Subscribe" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.SUBSCRIBE, null, null, GwtTeaming.getMessages().subscribe() );
-				m_actionsPopupMenu.addMenuItem( menuItem );
-				
-				// Create the "Tag" menu item.
-				menuItem = new PopupMenuItem( m_actionsPopupMenu, this, TeamingAction.TAG, null, null, GwtTeaming.getMessages().tag() );
-				m_actionsPopupMenu.addMenuItem( menuItem );
-			}
+			m_actionsPopupMenu = new ActionsPopupMenu( true, true, this );
 		}
 	}
 	
@@ -747,7 +724,7 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * Return the Actions menu that is used with items in the list.
 	 */
-	public static PopupMenu getActionsMenu()
+	public static ActionsPopupMenu getActionsMenu()
 	{
 		return m_actionsPopupMenu;
 	}

@@ -66,9 +66,11 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Tag;
@@ -84,8 +86,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
@@ -97,6 +101,7 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -104,6 +109,8 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
+import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -3159,5 +3166,66 @@ public class GwtServerHelper {
 		// Return true if we should use search titles and false
 		// otherwise.
 		return (1 == TREE_TITLE_FORMAT);
+	}
+	
+
+	/**
+	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
+	 */
+	public static void validateEntryActions( AllModulesInjected bs, HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
+	{
+		// Initialize all actions as invalid.
+		for ( ActionValidation nextValidation : actionValidations )
+		{
+			// Validate this action.
+			nextValidation.setIsValid( false );
+		}
+
+		try
+		{
+			FolderModule folderModule;
+			FolderEntry folderEntry;
+			Long entryIdL;
+			
+			folderModule = bs.getFolderModule();
+			entryIdL = new Long( entryId );
+
+			folderEntry = folderModule.getEntry( null, entryIdL );
+	        
+			for ( ActionValidation nextValidation : actionValidations )
+			{
+				int teamingAction;
+				
+				// Validate the next action.
+				try
+				{
+					teamingAction = nextValidation.getAction();
+					
+					if ( teamingAction == TeamingAction.REPLY.ordinal() )
+						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
+					else if ( teamingAction == TeamingAction.TAG.ordinal() )
+						folderModule.checkAccess( folderEntry, FolderOperation.manageTag );
+					else if ( teamingAction == TeamingAction.SHARE.ordinal() )
+						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
+					else if ( teamingAction == TeamingAction.SUBSCRIBE.ordinal() )
+						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
+
+					// If we get here the action is valid.
+					nextValidation.setIsValid( true );
+				}
+				catch (AccessControlException acEx)
+				{
+				}
+			}
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
 	}
 }

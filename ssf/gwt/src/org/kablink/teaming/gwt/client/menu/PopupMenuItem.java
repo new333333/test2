@@ -105,6 +105,15 @@ public class PopupMenuItem extends Composite
 	
 	
 	/**
+	 * 
+	 */
+	public TeamingAction getAction()
+	{
+		return m_action;
+	}
+	
+	
+	/**
 	 * This method gets called when this menu item is selected.
 	 */
 	private void handleMenuItemSelected()

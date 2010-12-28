@@ -70,6 +70,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -219,4 +220,8 @@ public interface GwtRpcService extends RemoteService
 	public ActivityStreamInfo   getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId                                                                       );
 	public Boolean              hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi                                             );
 	public Boolean              persistActivityStreamSelection( HttpRequestInfo ri, ActivityStreamInfo asi                                                                       );
+
+	// Validate the given TeamingActions for the given entry id.
+	public ArrayList<ActionValidation> validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId );
+
 }// end GwtRpcService
