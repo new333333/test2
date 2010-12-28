@@ -106,6 +106,7 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
+import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -141,6 +142,8 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 
@@ -3330,4 +3333,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throw ex;
 		}
 	}	
+
+
+	/**
+	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
+	 * for the given entry id. 
+	 * @param ri
+	 * @param teamingActions
+	 * @param entryId
+	 */
+	public ArrayList<ActionValidation> validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
+	{
+		// Validate the given actions.
+		GwtServerHelper.validateEntryActions( this, ri, actionValidations, entryId );
+		
+		return actionValidations;
+	}
+
 }// end GwtRpcServiceImpl
