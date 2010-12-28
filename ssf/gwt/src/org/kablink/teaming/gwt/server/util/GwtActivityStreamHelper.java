@@ -361,12 +361,6 @@ public class GwtActivityStreamHelper {
 		 * a List<ASEntryData>.
 		 */
 		private static void completeAuthorData(HttpServletRequest request, AllModulesInjected bs, Map<Long, User> userMap, boolean isOtherUserAccessRestricted, List<ASEntryData> entryDataList) {
-			// If we don't have any authors...
-			if (userMap.isEmpty()) {
-				// ...we don't have anything else to complete.
-				return;
-			}
-
 			// Scan the List<ASEntryData>.
 			Map<Long, ASAuthorInfo> authorInfoMap = new HashMap<Long, ASAuthorInfo>();
 			for (ASEntryData entryData:  entryDataList) {
