@@ -52,8 +52,8 @@ public class FolderEntriesResource extends AbstractResource {
 
 	@Context UriInfo uriInfo;
 
-	/*
 	// Resource method for browser
+	/*
 	@GET
 	@Produces(MediaType.TEXT_XML)
 	public List<FolderEntry> getFolderEntriesBrowser() {
@@ -72,7 +72,6 @@ public class FolderEntriesResource extends AbstractResource {
 	}
 	*/
 	
-	/*
 	// Resource method for application
 	@GET
 	@Produces( { MediaType.APPLICATION_XML })
@@ -88,11 +87,14 @@ public class FolderEntriesResource extends AbstractResource {
 		entry.setTitle("My title");
 		entry.setDescription("My description");
 		result.add(entry);
-		entry = new FolderEntry();
-		entry.setId(20L);
-		entry.setTitle("Your title");
-		entry.setDescription("Your description");
-		result.add(entry);
+		
+		if(maxCount != null && maxCount.intValue() > 1) {
+			entry = new FolderEntry();
+			entry.setId(20L);
+			entry.setTitle("Your title");
+			entry.setDescription("Your description");
+			result.add(entry);
+		}
 		return result;
 	}
 	
@@ -106,8 +108,6 @@ public class FolderEntriesResource extends AbstractResource {
 		entry.setDescription("Nice description");
 		return entry;
 	}
-	
-	*/
 	
 	
 	@GET
@@ -124,11 +124,14 @@ public class FolderEntriesResource extends AbstractResource {
 		entry.setTitle("My title");
 		entry.setDescription("My description");
 		result.add(entry);
-		entry = new FolderEntry();
-		entry.setId(20L);
-		entry.setTitle("Your title");
-		entry.setDescription("Your description");
-		result.add(entry);
+		
+		if(maxCount != null && maxCount.intValue() > 1) {
+			entry = new FolderEntry();
+			entry.setId(20L);
+			entry.setTitle("Your title");
+			entry.setDescription("Your description");
+			result.add(entry);
+		}
 		return result;
 	}
 	

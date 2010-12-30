@@ -35,6 +35,7 @@ package org.kablink.teaming.rest.model;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+// This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement
 public class FolderEntry {
 
@@ -42,7 +43,7 @@ public class FolderEntry {
 	private String title;
 	private String description;
 	
-	@XmlElement
+	//@XmlElement
 	private String[] products = new String[] {"droid", "iPhone", "Nexus"};
 	
 	public Long getId() {
@@ -69,6 +70,6 @@ public class FolderEntry {
 	}
 	public void setProducts(String[] products) {
 		this.products = products;
-	}*/
-	
+	}
+	*/
 }

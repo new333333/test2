@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.remoting.rest.provider;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 import javax.xml.bind.JAXBContext;
@@ -44,20 +48,26 @@ import com.sun.jersey.api.json.JSONJAXBContext;
 @Provider
 public class JAXBContextResolver implements ContextResolver<JAXBContext> {
 
-	private JAXBContext context;
-	private Class[] types = { FolderEntry.class };
+    private final JAXBContext context;
+    
+    private final Set<Class> types;
+    
+    private final Class[] cTypes = {FolderEntry.class};
+    
+    public JAXBContextResolver() throws Exception {
+        this.types = new HashSet(Arrays.asList(cTypes));
+        
+        // If not using unwrapping (unwrapping is the default), then we get error from jackson
+        // because there is no name associated with the top-level of the output which is a list
+        // of FolderEntry, and we will need to figure out how to specify a name for it. 
+        // So far, the default configuration seems to work fine for us, so we go with it. 
+		//this.context = new JSONJAXBContext(JSONConfiguration.natural().rootUnwrapping(false).build(), cTypes);
 
-	public JAXBContextResolver() throws Exception {
-		this.context = new JSONJAXBContext(JSONConfiguration.natural().rootUnwrapping(false).build(),
-				types);
-	}
+        this.context = new JSONJAXBContext(JSONConfiguration.natural().build(), cTypes);
+    }
+    
+    public JAXBContext getContext(Class<?> objectType) {
+        return (types.contains(objectType)) ? context : null;
+    }
 
-	public JAXBContext getContext(Class<?> objectType) {
-		for (Class type : types) {
-			if (type == objectType) {
-				return context;
-			}
-		}
-		return null;
-	}
 }
