@@ -439,19 +439,20 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (notify.isAppendTitle()) {
 			s = s + " " + entry.getTitle();
 		}
+		s = MarkupUtil.markupStringReplacement(null, null, null, null, entry, s, WebKeys.MARKUP_VIEW);
 		details.put(MailModule.SUBJECT, s);
 		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
-		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_EXPORT);
+		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_VIEW);
 		StringBuffer tMsg = new StringBuffer();
 		tMsg.append(permaLink);
 		tMsg.append("\n\n");
 		
 		String bodyText = MarkupUtil.markupStringReplacement(null, null, null, null, entry, notify.getBody(), WebKeys.MARKUP_VIEW);
-		tMsg.append(bodyText);
+		tMsg.append(Html.stripHtml(bodyText));
 		if (notify.isAppendBody()) {
 			tMsg.append("\n");
-			tMsg.append(Html.stripHtml((msgHtml)));
+			tMsg.append(Html.stripHtml(msgHtml));
 			tMsg.append("\n");
 		}
 		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
@@ -460,7 +461,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		TextToHtml textToHtml = new TextToHtml();
 		textToHtml.setBreakOnLines(true);
 		textToHtml.setStripHtml(false);
-		textToHtml.parseText(notify.getBody());
+		textToHtml.parseText(bodyText);
 		String bodyTextHtml = textToHtml.toString();
 
 		StringBuffer hMsg = new StringBuffer();
