@@ -1980,6 +1980,12 @@ body, table td, select
 	padding-top: 8px;
 }
 
+/* */
+.paddingLeft1em
+{
+	padding-left: 1em;
+}
+
 /* Use this style if you want to set text-decoration: none */
 .noTextDecoration
 {

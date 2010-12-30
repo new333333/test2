@@ -250,6 +250,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
+	String rpcFailure_GetSubscriptionData();
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetToolbarItems();
@@ -269,6 +270,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveSavedSearch();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
+	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_Search();
 	String rpcFailure_SetStatus();
 	String rpcFailure_TrackingBinder();
@@ -731,5 +733,12 @@ public interface GwtTeamingMessages extends Messages
 	String share();
 	String subscribe();
 	String tag();
+	
+	// The following strings are used in the "Subscribe to Entry" dialog.
+	String cantSubscribeNoEmailAddresses();
+	String sendEmailTo();
+	String sendEmailWithoutAttachmentsTo();
+	String sendTextTo();
+	String subscribeToEntryDlgHeader();
 	
 }// end GwtTeamingMessages

@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
@@ -216,5 +217,11 @@ public interface GwtRpcServiceAsync
 	
 	// Validate the given TeamingActions for the given entry id.
 	public void validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId, AsyncCallback<ArrayList<ActionValidation>> callback );
+
+	// Get subscription information for the given entry id.
+	public void getSubscriptionData( HttpRequestInfo ri, String entryId, AsyncCallback<SubscriptionData> callback );
+	
+	// Save the given subscription data for the given entry id.
+	public void saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData, AsyncCallback<Boolean> callback );
 
 }// end GwtRpcServiceAsync

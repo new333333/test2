@@ -253,14 +253,32 @@ public abstract class ActivityStreamUIEntry extends Composite
 			{
 				public void onClick( ClickEvent clickEvent )
 				{
-					// Hide the actions2 image.
-					m_actionsImg2.setVisible( false );
-					m_actionsImg1.setVisible( true );
+					Scheduler.ScheduledCommand cmd;
+					final int x;
+					final int y;
+					
+					x = clickEvent.getClientX();
+					y = clickEvent.getClientY();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Hide the actions2 image.
+							m_actionsImg2.setVisible( false );
+							m_actionsImg1.setVisible( true );
 
-					// Invoke the Actions menu.
-					invokeActionsMenu( clickEvent.getClientX(), clickEvent.getClientY() );
+							// Invoke the Actions menu.
+							invokeActionsMenu( x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
+			m_actionsImg1.addClickHandler( clickHandler );
 			m_actionsImg2.addClickHandler( clickHandler );
 		}
 		
