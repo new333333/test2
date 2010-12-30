@@ -102,6 +102,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -2608,6 +2609,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
 	}// end saveSearch()
 	
+	
+	/**
+	 * Save the given subscription data for the given entry id.
+	 * @throws GwtTeamingException 
+	 */
+	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData )
+		throws GwtTeamingException
+	{
+		return GwtServerHelper.saveSubscriptionData( this, entryId, subscriptionData );
+	}
+	
+	
 	/**
 	 * Called to mark that the current user is tracking the specified
 	 * binder.
@@ -2753,6 +2766,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return toolbarItem;
 	}
 
+	/**
+	 * Get the subscription data for the given entry id.
+	 */
+	public SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId )
+	{
+		SubscriptionData subscriptionData;
+		
+		subscriptionData = GwtServerHelper.getSubscriptionData( this, entryId );
+		
+		return subscriptionData;
+	}
+	
+	
 	/**
 	 * Returns a TeamManagementInfo object regarding the current user's
 	 * team management capabilities.

@@ -37,12 +37,12 @@ import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.MouseUpEvent;
+import com.google.gwt.event.dom.client.MouseUpHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -54,7 +54,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  *
  */
 public class PopupMenuItem extends Composite
-	implements MouseDownHandler, MouseOverHandler, MouseOutHandler
+	implements MouseUpHandler, MouseOverHandler, MouseOutHandler
 {
 	private ActionHandler m_actionHandler;
 	private TeamingAction m_action;
@@ -86,7 +86,7 @@ public class PopupMenuItem extends Composite
 		m_mainPanel.add( label );
 		
 		// Add a MouseDown event handler
-		addDomHandler( this, MouseDownEvent.getType() );
+		addDomHandler( this, MouseUpEvent.getType() );
 		
 		// Add a mouse over/out event handlers
 		addDomHandler( this, MouseOverEvent.getType() );
@@ -144,7 +144,7 @@ public class PopupMenuItem extends Composite
 	/**
 	 * This gets called when the user clicks on this menu item.
 	 */
-	public void onMouseDown( MouseDownEvent event )
+	public void onMouseUp( MouseUpEvent event )
 	{
 		Scheduler.ScheduledCommand cmd;
 		

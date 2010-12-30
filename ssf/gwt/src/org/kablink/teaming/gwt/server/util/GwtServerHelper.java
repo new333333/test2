@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -81,18 +82,21 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -118,6 +122,7 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -140,6 +145,7 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
@@ -2486,6 +2492,71 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return subscription data for the given entry id.
+	 */
+	public static SubscriptionData getSubscriptionData( AllModulesInjected bs, String entryId )
+	{
+		SubscriptionData subscriptionData;
+		User user;
+		String address;
+		
+		subscriptionData = new SubscriptionData();
+
+		user = GwtServerHelper.getCurrentUser();
+		
+		// Get the user's primary email address.
+		address = user.getEmailAddress( Principal.PRIMARY_EMAIL );
+		subscriptionData.setPrimaryEmailAddress( address );
+		
+		// Get the user's mobile email address.
+		address = user.getEmailAddress( Principal.MOBILE_EMAIL );
+		subscriptionData.setMobileEmailAddress( address );
+		
+		// Get the user's text message address
+		address = user.getEmailAddress( Principal.TEXT_EMAIL );
+		subscriptionData.setTextMessagingAddress( address );
+
+		// Get the user's subscription data for the given entry.
+		{
+			FolderEntry entry;
+			Subscription sub;
+			FolderModule folderModule;
+			Long entryIdL;
+			
+			// Get the subscription data for the given entry.
+			entryIdL = new Long( entryId );
+			folderModule = bs.getFolderModule();
+			entry = folderModule.getEntry( null, entryIdL );
+			sub = folderModule.getSubscription( entry );			
+			
+			if ( sub != null )
+			{
+				Map<Integer,String[]> subMap;
+				String[] values;
+
+				// Get the map that holds the subscription data.  The following is an example of what the data may look like.
+				// 2:_primary:3:_primary,_text:5:_primary,_text,_mobile:
+				subMap = sub.getStyles();
+				
+				// Get the subscription values for which address should be sent an email.
+				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION );
+				subscriptionData.setSendEmailTo( values );
+				
+				// Get the subscription values for which address should be sent an email without an attachment.
+				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION );
+				subscriptionData.setSendEmailToWithoutAttachment( values );
+				
+				// Get the subscription values for which address should be sent a text.
+				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION );
+				subscriptionData.setSendTextTo( values );
+			}
+		}
+		
+		return subscriptionData;
+	}
+	
+	
+	/**
 	 * Returns information about the teams of a specific user
 	 * @param bs
 	 * @param userId 
@@ -3001,7 +3072,88 @@ public class GwtServerHelper {
 		reply.setName(ssi.getName());
 		return reply;
 	}
-	
+
+	/**
+	 * Save the given subscription data for the given entry id.
+	 */
+	public static Boolean saveSubscriptionData( AllModulesInjected bs, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException
+	{
+		try
+		{
+			FolderEntry entry;
+			FolderModule folderModule;
+			Long entryIdL;
+			Map<Integer, String[]> subscriptionSettings;
+			int sendEmailTo;
+			int sendEmailToWithoutAttachment;
+			int sendTextTo;
+			
+			entryIdL = new Long( entryId );
+			folderModule = bs.getFolderModule();
+			entry = folderModule.getEntry( null, entryIdL );
+			
+			subscriptionSettings = new HashMap<Integer, String[]>();
+			
+			// Get the 3 notification settings.
+			sendEmailTo = subscriptionData.getSendEmailTo();
+			sendEmailToWithoutAttachment = subscriptionData.getSendEmailToWithoutAttachment();
+			sendTextTo = subscriptionData.getSendTextTo();
+			
+			// Are all notifications turned off?
+			if ( sendEmailTo == SubscriptionData.SEND_TO_NONE && sendEmailToWithoutAttachment == SubscriptionData.SEND_TO_NONE && sendTextTo == SubscriptionData.SEND_TO_NONE )
+			{
+				// Yes
+				subscriptionSettings.put( Subscription.DISABLE_ALL_NOTIFICATIONS, null );
+			}
+			else
+			{
+				String[] setting;
+				
+				// Get the setting for "send email to"
+				setting = subscriptionData.getSendEmailToAsString();
+				if ( setting != null && setting.length > 0 )
+					subscriptionSettings.put( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, setting );
+				
+				// Get the setting for "send email to without an attachment"
+				setting = subscriptionData.getSendEmailToWithoutAttachmentAsString();
+				if ( setting != null && setting.length > 0 )
+					subscriptionSettings.put( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, setting );
+				
+				// Get the setting for "send text to"
+				setting = subscriptionData.getSendTextToAsString();
+				if ( setting != null && setting.length > 0 )
+					subscriptionSettings.put( Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, setting );
+			}
+			
+			// Save the subscription settings to the db.
+			folderModule.setSubscription( null, entryIdL, subscriptionSettings );
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			
+			// Nothing to do
+			m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
+			throw ex;
+		}
+		catch (Exception e)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+
+			m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception" );
+			throw ex;
+		}
+		
+		return Boolean.TRUE;
+	}
+
+
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */

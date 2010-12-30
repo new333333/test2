@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.Scheduler;
@@ -73,6 +74,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 
 /**
@@ -119,6 +121,7 @@ public class ActivityStreamCtrl extends Composite
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
 	// This menu is used to display an Actions menu for an item in the list.
 	private static ActionsPopupMenu m_actionsPopupMenu = null;
+	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 
 	
 	/**
@@ -760,9 +763,36 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * This method gets called when the user selects a menu item from the Actions popup menu.
 	 */
-	public void handleAction( TeamingAction action, Object actionData )
+	public void handleAction( final TeamingAction action, final Object actionData )
 	{
-		Window.alert( action.getUnlocalizedDesc() );
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			/**
+			 * 
+			 */
+			public void execute()
+			{
+				switch ( action )
+				{
+				case REPLY:
+				case SHARE:
+				case TAG:
+					Window.alert( action.getUnlocalizedDesc() );
+					break;
+				
+				case SUBSCRIBE:
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						// Invoke the Subscribe to Entry dialog.
+						invokeSubscribeToEntryDlg( (ActivityStreamUIEntry) actionData );
+					}
+					break;
+				}
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	
@@ -791,6 +821,40 @@ public class ActivityStreamCtrl extends Composite
 	public void hideSearchingText()
 	{
 		m_searchingPanel.setVisible( false );
+	}
+	
+	
+	/**
+	 * Invoke the Subscribe to Entry dialog for the given entry.
+	 */
+	private void invokeSubscribeToEntryDlg( final ActivityStreamUIEntry entry )
+	{
+		PopupPanel.PositionCallback posCallback;
+		
+		if ( m_subscribeToEntryDlg == null )
+		{
+			m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
+		}
+		
+		m_subscribeToEntryDlg.init( entry.getEntryId() );
+
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int x;
+				int y;
+				
+				x = Window.getClientWidth() - offsetWidth - 75;
+				y = entry.getAbsoluteTop();
+				
+				m_subscribeToEntryDlg.setPopupPosition( x, y );
+			}// end setPosition()
+		};
+		m_subscribeToEntryDlg.setPopupPositionAndShow( posCallback );
 	}
 	
 	
