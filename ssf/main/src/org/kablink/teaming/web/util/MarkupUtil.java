@@ -533,6 +533,7 @@ public class MarkupUtil {
 						if (searchResults.get(Constants.CREATION_DATE_FIELD) != null) {
 							Date createdOnDate = ((Date) searchResults.get(Constants.CREATION_DATE_FIELD));
 					    	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    	df.setTimeZone(user.getTimeZone());
 					    	result = df.format(createdOnDate);
 						}
 					} else if (vibeFunction.equals("modifiedBy")) {
@@ -552,6 +553,7 @@ public class MarkupUtil {
 						if (searchResults.get(Constants.MODIFICATION_DATE_FIELD) != null) {
 							Date modifiedOnDate = ((Date) searchResults.get(Constants.MODIFICATION_DATE_FIELD));
 					    	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    	df.setTimeZone(user.getTimeZone());
 					    	result = df.format(modifiedOnDate);
 						}
 					} else if (vibeFunction.equals("data")) {
@@ -571,6 +573,7 @@ public class MarkupUtil {
 											} else {
 												df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
 											}
+											df.setTimeZone(user.getTimeZone());
 									    	result = df.format(date);
 										} catch (ParseException e) {}
 									}
@@ -608,8 +611,19 @@ public class MarkupUtil {
 							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
 						}
 					} else if (vibeFunction.equals("image")) {
+						if (functionArgs.length >= 2) {
+							String fileName =  new String(functionArgs[1].trim());
+							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String url = getFileUrlByName(fileName);
+							result = getImageHTML(functionArgs, url);
+						}
 					} else if (vibeFunction.equals("file")) {
-						
+						if (functionArgs.length >= 2) {
+							String fileName =  new String(functionArgs[1].trim());
+							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String url = getFileUrlByName(fileName);
+							result = getFileHTML(functionArgs, url);
+						}
 					}
 				}
 				if (result == null) result = "";
@@ -627,8 +641,11 @@ public class MarkupUtil {
 		String result = "";
 		if (startDate != null) {
 			DateFormat df1 = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+			df1.setTimeZone(user.getTimeZone());
 			DateFormat df2 = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+			df2.setTimeZone(user.getTimeZone());
 			DateFormat df3 = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
+			df3.setTimeZone(user.getTimeZone());
 			if (allDayEvent) {
 				//This is an all day event, just show the start date
 				result = df1.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
@@ -647,6 +664,47 @@ public class MarkupUtil {
 				//This is a date range across days. Show the range
 				String[] args = new String[] {df1.format(startDate.getTime()), df1.format(endDate.getTime())};
 				result = NLT.get("event.fromTo", args);
+			}
+		}
+		return result;
+	}
+	
+	//{{vibe: image | imageName | alt=text | height=y | width=x}}
+	public static String getImageHTML(String[] functionArgs, String url) {
+		String result = "";
+		if (functionArgs.length >= 2) {
+			String qualifiers = "";
+			for (int i = 2; i < functionArgs.length; i++) {
+				String[] fArg = functionArgs[i].trim().split("=");
+				if (fArg.length >= 2 && "alt".equals(fArg[0].trim().toLowerCase())) {
+					qualifiers += " ALT=\"" + fArg[1].trim() + "\"";
+					qualifiers += " TITLE=\"" + fArg[1].trim() + "\"";
+				} else if (fArg.length >= 2 && "height".equals(fArg[0].trim().toLowerCase())) {
+					qualifiers += " HEIGHT=\"" + fArg[1].trim() + "\"";
+				} else if (fArg.length >= 2 && "width".equals(fArg[0].trim().toLowerCase())) {
+					qualifiers += " WIDTH=\"" + fArg[1].trim() + "\"";
+				} else if (fArg.length >= 2 && "border".equals(fArg[0].trim().toLowerCase())) {
+					qualifiers += " BORDER=\"" + fArg[1].trim() + "\"";
+				}
+			}
+			if (url != null) {
+				result = "<img src=\"" + url + "\" " + qualifiers + "/>";
+			}
+		}
+		return result;
+	}
+	
+	//{{vibe: file | fileName | link text}}
+	public static String getFileHTML(String[] functionArgs, String url) {
+		String result = "";
+		if (functionArgs.length >= 2) {
+			String fileName = functionArgs[1].trim();
+			String linkText = fileName;
+			if (functionArgs.length >= 3) {
+				linkText = functionArgs[2].trim();
+			}
+			if (url != null) {
+				result = "<a target=\"_blank\" href=\"" + url + "\" title=\"" + fileName + "\">" + linkText + "</a>";
 			}
 		}
 		return result;
@@ -759,6 +817,7 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("createdOn")) {
 						Date createdOnDate = entity.getCreation().getDate();
 					    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    df.setTimeZone(user.getTimeZone());
 					    result = df.format(createdOnDate);
 					} else if (vibeFunction.equals("modifiedBy")) {
 						if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
@@ -769,6 +828,7 @@ public class MarkupUtil {
 					} else if (vibeFunction.equals("modifiedOn")) {
 						Date modifiedOnDate = entity.getModification().getDate();
 					    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    df.setTimeZone(user.getTimeZone());
 					    result = df.format(modifiedOnDate);
 					} else if (vibeFunction.equals("data")) {
 						if (functionArgs.length >= 2) {
@@ -785,6 +845,7 @@ public class MarkupUtil {
 									} else {
 										df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
 									}
+									df.setTimeZone(user.getTimeZone());
 								    result = df.format(date);
 								} else if ("event".equals(dataType)) {
 									Event e = (Event) dataItem.getValue();
@@ -805,8 +866,19 @@ public class MarkupUtil {
 							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
 						}
 					} else if (vibeFunction.equals("image")) {
+						if (functionArgs.length >= 2) {
+							String fileName =  new String(functionArgs[1].trim());
+							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String url = getFileUrlByName(fileName);
+							result = getImageHTML(functionArgs, url);
+						}
 					} else if (vibeFunction.equals("file")) {
-						
+						if (functionArgs.length >= 2) {
+							String fileName = new String(functionArgs[1].trim());
+							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String url = getFileUrlByName(fileName);
+							result = getFileHTML(functionArgs, url);
+						}
 					}
 				}
 				if (result == null) result = "";
