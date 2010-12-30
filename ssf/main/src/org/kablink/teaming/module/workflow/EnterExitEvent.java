@@ -92,6 +92,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
@@ -445,13 +446,23 @@ public class EnterExitEvent extends AbstractActionHandler {
 		StringBuffer tMsg = new StringBuffer();
 		tMsg.append(permaLink);
 		tMsg.append("\n\n");
-		tMsg.append(notify.getBody());
+		
+		String bodyText = MarkupUtil.markupStringReplacement(null, null, null, null, entry, notify.getBody(), WebKeys.MARKUP_VIEW);
+		tMsg.append(bodyText);
 		if (notify.isAppendBody()) {
 			tMsg.append("\n");
 			tMsg.append(Html.stripHtml((msgHtml)));
 			tMsg.append("\n");
 		}
 		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
+		
+		//Get the body text and turn it into html
+		TextToHtml textToHtml = new TextToHtml();
+		textToHtml.setBreakOnLines(true);
+		textToHtml.setStripHtml(false);
+		textToHtml.parseText(notify.getBody());
+		String bodyTextHtml = textToHtml.toString();
+
 		StringBuffer hMsg = new StringBuffer();
 		hMsg.append("<a href=\"");
 		hMsg.append(permaLink);
@@ -459,7 +470,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		hMsg.append(entry.getTitle());
 		hMsg.append("</a>");
 		hMsg.append("<br /><br />");
-		hMsg.append(notify.getBody());
+		hMsg.append(bodyTextHtml);
 		if (notify.isAppendBody()) {
 			hMsg.append("<p>");
 			hMsg.append(msgHtml);
