@@ -35,12 +35,18 @@ package org.kablink.teaming.web.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,13 +59,21 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -68,9 +82,12 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.repository.RepositoryUtil;
+import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
@@ -130,6 +147,8 @@ public class MarkupUtil {
 	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	protected static Integer youtubeDivId = 0;
+
+	protected final static Pattern vibeFunctionPattern = Pattern.compile("(\\{\\{vibe:([^\\}]*)\\}\\})");
 
 	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 	private static FolderModule folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
@@ -225,7 +244,7 @@ public class MarkupUtil {
     	loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2]: " + description.getText());
+	        	logger.error("Error processing markup [2.1]: " + description.getText());
     			break;
     		}
     		String url = "";
@@ -252,7 +271,7 @@ public class MarkupUtil {
     	loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2]: " + description.getText());
+	        	logger.error("Error processing markup [2.2]: " + description.getText());
     			break;
     		}
     		String url = "";
@@ -313,7 +332,7 @@ public class MarkupUtil {
     	int loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2a]: " + description.getText());
+	        	logger.error("Error processing markup [2.3]: " + description.getText());
     			break;
     		}
     		String linkArgs = "";
@@ -342,7 +361,7 @@ public class MarkupUtil {
     	int loopDetector = 0;
     	while (m.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [2a]: " + description.getText());
+	        	logger.error("Error processing markup [2.4]: " + description.getText());
     			break;
     		}
     		String linkArgs = "";
@@ -374,7 +393,7 @@ public class MarkupUtil {
 			outputBuf = new StringBuffer();
 			do {
 				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [5]: " + description.getText());
+					logger.error("Error processing markup [3]: " + description.getText());
 					return;
 				}
 				if (matcher.groupCount() < 2) continue;
@@ -401,6 +420,7 @@ public class MarkupUtil {
 		public String getRootUrl();
 		public String getImagesRootUrl();
 		public String getRootServletUrl();
+		public String getVibeFunctionResult(String functionText);
 	}
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
 			final HttpServletRequest httpReq, final HttpServletResponse httpRes,
@@ -477,11 +497,159 @@ public class MarkupUtil {
 				}
 				return url;
 			}
+			
+			//vibe functions (for searchResults)
+			public String getVibeFunctionResult(String functionText) {
+				String defId = (String)searchResults.get(Constants.COMMAND_DEFINITION_FIELD);
+				Definition def = null;
+				if (defId != null) def = definitionModule.getDefinition(defId);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				String result = "";
+				String[] functionArgs = functionText.trim().split("\\|");
+				if (functionArgs.length >= 1) {
+					String vibeFunction = functionArgs[0].trim();
+					if (vibeFunction.equals("title")) {
+						result = (String)searchResults.get(Constants.TITLE_FIELD);
+					} else if (vibeFunction.equals("user")) {
+						if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+							result = user.getName();
+						} else {
+							result = user.getTitle();
+						}
+					} else if (vibeFunction.equals("createdBy")) {
+						if (searchResults.get(Constants.CREATORID_FIELD) != null) {
+							Long creatorId = Long.valueOf((String) searchResults.get(Constants.CREATORID_FIELD));
+							ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+							Principal creator = profileDao.loadPrincipal(creatorId, RequestContextHolder.getRequestContext().getZoneId(), false);
+							if (creator != null) {
+								if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+									result = creator.getName();
+								} else {
+									result = creator.getTitle();
+								}
+							}
+						}
+					} else if (vibeFunction.equals("createdOn")) {
+						if (searchResults.get(Constants.CREATION_DATE_FIELD) != null) {
+							Date createdOnDate = ((Date) searchResults.get(Constants.CREATION_DATE_FIELD));
+					    	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    	result = df.format(createdOnDate);
+						}
+					} else if (vibeFunction.equals("modifiedBy")) {
+						if (searchResults.get(Constants.MODIFICATIONID_FIELD) != null) {
+							Long modifierId = Long.valueOf((String) searchResults.get(Constants.MODIFICATIONID_FIELD));
+							ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+							Principal modifier = profileDao.loadPrincipal(modifierId, RequestContextHolder.getRequestContext().getZoneId(), false);
+							if (modifier != null) {
+								if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+									result = modifier.getName();
+								} else {
+									result = modifier.getTitle();
+								}
+							}
+						}
+					} else if (vibeFunction.equals("modifiedOn")) {
+						if (searchResults.get(Constants.MODIFICATION_DATE_FIELD) != null) {
+							Date modifiedOnDate = ((Date) searchResults.get(Constants.MODIFICATION_DATE_FIELD));
+					    	DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    	result = df.format(modifiedOnDate);
+						}
+					} else if (vibeFunction.equals("data")) {
+						if (functionArgs.length >= 2) {
+							//Get the data item
+							String dataName = functionArgs[1];
+							if (def != null) {
+								String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
+								if ("date".equals(dataType) || "date_time".equals(dataType)) {
+									String dateString = (String)searchResults.get(dataName);
+									if (dateString != null) {
+										try {
+											Date date = DateTools.stringToDate(dateString);
+											DateFormat df;
+											if ("date".equals(dataType)) {
+												df = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+											} else {
+												df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+											}
+									    	result = df.format(date);
+										} catch (ParseException e) {}
+									}
+								} else if ("event".equals(dataType)) {
+									Date startDate = (Date)searchResults.get(dataName + 
+											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_START_DATE);
+									Date endDate = (Date)searchResults.get(dataName + 
+											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_END_DATE);
+									String timeZoneSensitive = (String)searchResults.get(dataName + 
+											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE);
+									boolean allDayEvent = false;
+									if (!"true".equals(timeZoneSensitive)) {
+										allDayEvent = true;
+									}
+									if (startDate != null && endDate != null) {
+										Calendar sd = Calendar.getInstance();
+										sd.setTime(startDate);
+										Calendar ed = Calendar.getInstance();
+										ed.setTime(endDate);
+										result = eventToString(sd, ed, allDayEvent);
+									}
+								} else {
+									result = (String)searchResults.get(dataName);
+								}
+							}
+						}
+					} else if (vibeFunction.equals("permalink")) {
+						Long entryId = Long.valueOf((String)searchResults.get(Constants.DOCID_FIELD));
+						String entryEntityType = (String)searchResults.get(Constants.ENTITY_FIELD);
+						EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(entryEntityType);
+						String webUrl = PermaLinkUtil.getPermalink(entryId, entityType);
+						if (functionArgs.length >= 2) {
+							result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+						} else {
+							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+						}
+					} else if (vibeFunction.equals("image")) {
+					} else if (vibeFunction.equals("file")) {
+						
+					}
+				}
+				if (result == null) result = "";
+				return result;
+			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
 				(String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD), 
 				(String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD), 
 				inputString, type, isMobile);
+	}
+	
+	public static String eventToString(Calendar startDate, Calendar endDate, boolean allDayEvent) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String result = "";
+		if (startDate != null) {
+			DateFormat df1 = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+			DateFormat df2 = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+			DateFormat df3 = DateFormat.getTimeInstance(DateFormat.SHORT, user.getLocale());
+			if (allDayEvent) {
+				//This is an all day event, just show the start date
+				result = df1.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
+			} else if (startDate.equals(endDate)) {
+				//This is just a date and time
+				result = df2.format(startDate.getTime());
+			} else if (endDate != null && !startDate.equals(endDate) &&
+					startDate.get(Calendar.YEAR) == endDate.get(Calendar.YEAR) && 
+					startDate.get(Calendar.DAY_OF_YEAR) == endDate.get(Calendar.DAY_OF_YEAR)) {
+				//This is a meeting date, show the date and then a time range
+				String[] args = new String[] {df1.format(startDate.getTime()), df3.format(startDate.getTime()), df3.format(endDate.getTime())};
+				result = NLT.get("event.meeting", args);
+			} else if (endDate != null && !startDate.equals(endDate) &&
+					(startDate.get(Calendar.YEAR) != endDate.get(Calendar.YEAR) || 
+					startDate.get(Calendar.DAY_OF_YEAR) != endDate.get(Calendar.DAY_OF_YEAR))) {
+				//This is a date range across days. Show the range
+				String[] args = new String[] {df1.format(startDate.getTime()), df1.format(endDate.getTime())};
+				result = NLT.get("event.fromTo", args);
+			}
+		}
+		return result;
 	}
 	
 	public static String markupStringReplacement(final RenderRequest req, final RenderResponse res, 
@@ -565,6 +733,85 @@ public class MarkupUtil {
 				}
 				return url;
 			}
+
+			//vibe functions
+			public String getVibeFunctionResult(String functionText) {
+				Definition def = definitionModule.getDefinition(entity.getEntryDefId());
+				User user = RequestContextHolder.getRequestContext().getUser();
+				String result = "";
+				String[] functionArgs = functionText.trim().split("\\|");
+				if (functionArgs.length >= 1) {
+					String vibeFunction = functionArgs[0].trim();
+					if (vibeFunction.equals("title")) {
+						result = entity.getTitle();
+					} else if (vibeFunction.equals("user")) {
+						if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+							result = user.getName();
+						} else {
+							result = user.getTitle();
+						}
+					} else if (vibeFunction.equals("createdBy")) {
+						if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+							result = entity.getCreation().getPrincipal().getName();
+						} else {
+							result = entity.getCreation().getPrincipal().getTitle();
+						}
+					} else if (vibeFunction.equals("createdOn")) {
+						Date createdOnDate = entity.getCreation().getDate();
+					    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    result = df.format(createdOnDate);
+					} else if (vibeFunction.equals("modifiedBy")) {
+						if (functionArgs.length >= 2 && functionArgs[1].equals("name")) {
+							result = entity.getModification().getPrincipal().getName();
+						} else {
+							result = entity.getModification().getPrincipal().getTitle();
+						}
+					} else if (vibeFunction.equals("modifiedOn")) {
+						Date modifiedOnDate = entity.getModification().getDate();
+					    DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+					    result = df.format(modifiedOnDate);
+					} else if (vibeFunction.equals("data")) {
+						if (functionArgs.length >= 2) {
+							//Get the data item
+							CustomAttribute dataItem = entity.getCustomAttribute(functionArgs[1]);
+							String dataName = functionArgs[1];
+							String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
+							if (dataItem != null) {
+								if ("date".equals(dataType) || "date_time".equals(dataType)) {
+									Date date = (Date) dataItem.getValue();
+									DateFormat df;
+									if ("date".equals(dataType)) {
+										df = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+									} else {
+										df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+									}
+								    result = df.format(date);
+								} else if ("event".equals(dataType)) {
+									Event e = (Event) dataItem.getValue();
+									e.getDtStart();
+									e.getDtEnd();
+									e.isAllDayEvent();
+									result = eventToString(e.getDtStart(), e.getDtEnd(), e.isAllDayEvent());
+								} else {
+									result = dataItem.getValue().toString();
+								}
+							}
+						}
+					} else if (vibeFunction.equals("permalink")) {
+						String webUrl = PermaLinkUtil.getPermalink(entity.getId(), entity.getEntityType());
+						if (functionArgs.length >= 2) {
+							result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+						} else {
+							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+						}
+					} else if (vibeFunction.equals("image")) {
+					} else if (vibeFunction.equals("file")) {
+						
+					}
+				}
+				if (result == null) result = "";
+				return result;
+			}
 		};
 		return markupStringReplacement(req, res, httpReq, httpRes, builder,
 				entity.getId().toString(), entity.getEntityType().name(), inputString, type, isMobile);
@@ -591,7 +838,7 @@ public class MarkupUtil {
 					outputBuf = new StringBuffer();
 					do {						
 						if (loopDetector++ > 2000) {
-							logger.error("Error processing markup [6]: " + inputString);
+							logger.error("Error processing markup [4]: " + inputString);
 							return outputBuf.toString();
 						}
 						int count = matcher.groupCount();
@@ -622,7 +869,7 @@ public class MarkupUtil {
 				outputBuf = new StringBuffer();
 				do {
 					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [3]: " + inputString);
+						logger.error("Error processing markup [4.1]: " + inputString);
 						return outputBuf.toString();
 					}
 					if (matcher.groupCount() >= 2) {
@@ -651,7 +898,7 @@ public class MarkupUtil {
 				outputBuf = new StringBuffer();
 				do {
 					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [4]: " + inputString);
+						logger.error("Error processing markup [4.2]: " + inputString);
 						return outputBuf.toString();
 			    	}
 					if (matcher.groupCount() >= 2) {
@@ -745,7 +992,7 @@ public class MarkupUtil {
 				outputBuf = new StringBuffer();
 				do {
 					if (loopDetector++ > 2000) {
-						logger.error("Error processing markup [5]: " + inputString);
+						logger.error("Error processing markup [5.1]: " + inputString);
 						return outputBuf.toString();
 					}
 					if (matcher.groupCount() < 2) continue;
@@ -830,6 +1077,29 @@ public class MarkupUtil {
 				matcher.appendTail(outputBuf);
 			}
 		    	
+	    	//Replace vibe parser functions markup {{vibe: xxx | yyy| zzz}} with the desired text
+			if (type.equals(WebKeys.MARKUP_VIEW)) {
+				//Only do this when viewing the entry. Leave the markup in for forms and export.
+				matcher = vibeFunctionPattern.matcher(outputBuf.toString());
+				if (matcher.find()) {
+					loopDetector = 0;
+					outputBuf = new StringBuffer();
+					do {
+						if (loopDetector++ > 2000) {
+							logger.error("Error processing markup [6]: " + inputString);
+							return outputBuf.toString();
+						}
+						if (matcher.groupCount() < 2) continue;
+						String functionString = matcher.group(2).trim();
+						//Parse and execute the vibe function
+						String replacementText = builder.getVibeFunctionResult(functionString);
+						
+		    			matcher.appendReplacement(outputBuf, replacementText.replace("$", "\\$"));
+			    	} while (matcher.find());
+					matcher.appendTail(outputBuf);
+				}
+			}
+		    	
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
 			if ((entityType.equals(EntityType.folderEntry.name()) || entityType.equals(EntityType.folder.name())) && 
 					(type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT))) {
@@ -839,7 +1109,7 @@ public class MarkupUtil {
 					outputBuf = new StringBuffer();
 			    	do {
 			    		if (loopDetector++ > 2000) {
-				        	logger.error("Error processing markup [6]: " + inputString);
+				        	logger.error("Error processing markup [6.1]: " + inputString);
 			    			return outputBuf.toString();
 			    		}
 			    		//Get the title
@@ -884,7 +1154,7 @@ public class MarkupUtil {
 			outputBuf = new StringBuffer();
 			do {
 				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [5]: " + inputString);
+					logger.error("Error processing markup [8]: " + inputString);
 					return outputBuf.toString();
 				}
 				if (matcher.groupCount() < 2) continue;
@@ -923,7 +1193,7 @@ public class MarkupUtil {
 			outputBuf = new StringBuffer();
 			do {
 				if (loopDetector++ > 2000) {
-					logger.error("Error processing markup [5.1]: " + inputString);
+					logger.error("Error processing markup [8.1]: " + inputString);
 					return outputBuf.toString();
 				}
 				if (matcher.groupCount() < 1) continue;
@@ -964,7 +1234,7 @@ public class MarkupUtil {
     	int loopDetector = 0;
     	while (m1.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [6]: " + body);
+	        	logger.error("Error processing markup [9]: " + body);
     			return bodyParts;
     		}
  			Map part = new HashMap();
@@ -1013,7 +1283,7 @@ public class MarkupUtil {
     	Matcher m1 = sectionPattern.matcher(body);
     	while (m1.find()) {
     		if (loopDetector++ > 2000) {
-	        	logger.error("Error processing markup [6]: " + body);
+	        	logger.error("Error processing markup [9.1]: " + body);
     			return body;
     		}
  			Map part = new HashMap();
@@ -1126,7 +1396,7 @@ public class MarkupUtil {
 						outputBuf = new StringBuffer();
 						do {
 							if (loopDetector++ > 2000) {
-								logger.error("Error processing markup [5]: " + description.getText());
+								logger.error("Error processing markup [10]: " + description.getText());
 								break;
 							}
 							if (matcher.groupCount() < 2) continue;
@@ -1167,7 +1437,7 @@ public class MarkupUtil {
 						outputBuf = new StringBuffer();
 						do {
 							if (loopDetector++ > 2000) {
-								logger.error("Error processing markup [5.2]: " + description.getText());
+								logger.error("Error processing markup [10.1]: " + description.getText());
 								break;
 							}
 							if (matcher.groupCount() < 1) continue;
