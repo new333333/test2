@@ -37,26 +37,22 @@
 
 	<servlet>
 		<servlet-name>restServlet</servlet-name>
-		<servlet-class>org.kablink.teaming.asmodule.servlet.SSFClassLoaderServlet</servlet-class>
-		<init-param>
-			<param-name>servlet-class</param-name>
-			<param-value>org.kablink.teaming.remoting.ws.servlet.SecurityPropagatingAxisServlet</param-value>
-		</init-param>
+		<servlet-class>org.kablink.teaming.rest.servlet.RestInvokingServlet</servlet-class>
+        <!-- Context root path for SSF web app. If not specified, defaults to "/ssf". -->
+        <init-param>
+            <param-name>ssfContextPath</param-name>
+            <param-value>/ssf</param-value>
+        </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
+	
 	<servlet-mapping>
-		<servlet-name>AxisServlet</servlet-name>
-		<url-pattern>/ws/*</url-pattern>
+		<servlet-name>restServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AxisServlet</servlet-name>
-		<url-pattern>/secure/ws/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AxisServlet</servlet-name>
-		<url-pattern>/token/ws/*</url-pattern>
-	</servlet-mapping>
+	
 	<session-config>
 		<session-timeout>1</session-timeout>
 	</session-config>
+	
 </web-app>

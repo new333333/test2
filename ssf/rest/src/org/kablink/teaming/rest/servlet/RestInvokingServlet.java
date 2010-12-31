@@ -32,6 +32,37 @@
  */
 package org.kablink.teaming.rest.servlet;
 
-public class RestInvokingServlet {
+import java.io.IOException;
+
+import javax.servlet.GenericServlet;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+public class RestInvokingServlet extends GenericServlet { 
+	
+	private RequestDispatcher ssfRestDispatcher;
+	
+	public void init() throws ServletException {
+		
+		ServletConfig restServletConfig = getServletConfig();
+		
+		String ssfContextPath = restServletConfig.getInitParameter("ssfContextPath");
+		if(ssfContextPath == null || ssfContextPath.equals(""))
+			ssfContextPath = "/ssf";
+
+		ServletContext ssfContext = restServletConfig.getServletContext().getContext(ssfContextPath);
+		
+		ssfRestDispatcher = ssfContext.getNamedDispatcher("jerseyServlet");
+	}
+
+	@Override
+	public void service(ServletRequest req, ServletResponse res)
+			throws ServletException, IOException {
+		ssfRestDispatcher.include(req, res);
+	}
 
 }
