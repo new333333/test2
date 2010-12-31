@@ -985,6 +985,7 @@ public class WebKeys {
     public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_VIEW="view";
+    public static final String MARKUP_VIEW_TEXT="view_text";
     public static final String MARKUP_EXPORT="export";
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 

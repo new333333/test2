@@ -439,7 +439,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (notify.isAppendTitle()) {
 			s = s + " " + entry.getTitle();
 		}
-		s = MarkupUtil.markupStringReplacement(null, null, null, null, entry, s, WebKeys.MARKUP_VIEW);
+		s = MarkupUtil.markupStringReplacement(null, null, null, null, entry, s, WebKeys.MARKUP_VIEW_TEXT);
 		details.put(MailModule.SUBJECT, s);
 		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
