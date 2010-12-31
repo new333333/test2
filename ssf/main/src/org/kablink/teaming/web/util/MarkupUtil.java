@@ -605,24 +605,28 @@ public class MarkupUtil {
 						String entryEntityType = (String)searchResults.get(Constants.ENTITY_FIELD);
 						EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(entryEntityType);
 						String webUrl = PermaLinkUtil.getPermalink(entryId, entityType);
-						if (functionArgs.length >= 2) {
-							result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+						if (type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
+							result = webUrl;
 						} else {
-							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+							if (functionArgs.length >= 2) {
+								result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+							} else {
+								result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+							}
 						}
 					} else if (vibeFunction.equals("image")) {
 						if (functionArgs.length >= 2) {
 							String fileName =  new String(functionArgs[1].trim());
 							fileName = fileName.replaceFirst("^[^\\w]*", "");
 							String url = getFileUrlByName(fileName);
-							result = getImageHTML(functionArgs, url);
+							result = getImageHTML(functionArgs, url, type);
 						}
 					} else if (vibeFunction.equals("file")) {
 						if (functionArgs.length >= 2) {
 							String fileName =  new String(functionArgs[1].trim());
 							fileName = fileName.replaceFirst("^[^\\w]*", "");
 							String url = getFileUrlByName(fileName);
-							result = getFileHTML(functionArgs, url);
+							result = getFileHTML(functionArgs, url, type);
 						}
 					}
 				}
@@ -670,8 +674,10 @@ public class MarkupUtil {
 	}
 	
 	//{{vibe: image | imageName | alt=text | height=y | width=x}}
-	public static String getImageHTML(String[] functionArgs, String url) {
+	public static String getImageHTML(String[] functionArgs, String url, String type) {
 		String result = "";
+		String fileName =  new String(functionArgs[1].trim());
+		fileName = fileName.replaceFirst("^[^\\w]*", "");
 		if (functionArgs.length >= 2) {
 			String qualifiers = "";
 			for (int i = 2; i < functionArgs.length; i++) {
@@ -688,23 +694,32 @@ public class MarkupUtil {
 				}
 			}
 			if (url != null) {
-				result = "<img src=\"" + url + "\" " + qualifiers + "/>";
+				if (type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
+					result = "[" + fileName + "]";
+				} else {
+					result = "<img src=\"" + url + "\" " + qualifiers + "/>";
+				}
 			}
 		}
 		return result;
 	}
 	
 	//{{vibe: file | fileName | link text}}
-	public static String getFileHTML(String[] functionArgs, String url) {
+	public static String getFileHTML(String[] functionArgs, String url, String type) {
 		String result = "";
+		String fileName =  new String(functionArgs[1].trim());
+		fileName = fileName.replaceFirst("^[^\\w]*", "");
 		if (functionArgs.length >= 2) {
-			String fileName = functionArgs[1].trim();
 			String linkText = fileName;
 			if (functionArgs.length >= 3) {
 				linkText = functionArgs[2].trim();
 			}
 			if (url != null) {
-				result = "<a target=\"_blank\" href=\"" + url + "\" title=\"" + fileName + "\">" + linkText + "</a>";
+				if (type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
+					result = "[" + fileName + "]";
+				} else {
+					result = "<a target=\"_blank\" href=\"" + url + "\" title=\"" + fileName + "\">" + linkText + "</a>";
+				}
 			}
 		}
 		return result;
@@ -860,24 +875,28 @@ public class MarkupUtil {
 						}
 					} else if (vibeFunction.equals("permalink")) {
 						String webUrl = PermaLinkUtil.getPermalink(entity.getId(), entity.getEntityType());
-						if (functionArgs.length >= 2) {
-							result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+						if (type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
+							result = webUrl;
 						} else {
-							result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+							if (functionArgs.length >= 2) {
+								result = "<a href=\"" + webUrl + "\">" + functionArgs[1] + "</a>";
+							} else {
+								result = "<a href=\"" + webUrl + "\">" + webUrl + "</a>";
+							}
 						}
 					} else if (vibeFunction.equals("image")) {
 						if (functionArgs.length >= 2) {
 							String fileName =  new String(functionArgs[1].trim());
 							fileName = fileName.replaceFirst("^[^\\w]*", "");
 							String url = getFileUrlByName(fileName);
-							result = getImageHTML(functionArgs, url);
+							result = getImageHTML(functionArgs, url, type);
 						}
 					} else if (vibeFunction.equals("file")) {
 						if (functionArgs.length >= 2) {
 							String fileName = new String(functionArgs[1].trim());
 							fileName = fileName.replaceFirst("^[^\\w]*", "");
 							String url = getFileUrlByName(fileName);
-							result = getFileHTML(functionArgs, url);
+							result = getFileHTML(functionArgs, url, type);
 						}
 					}
 				}
@@ -1150,7 +1169,7 @@ public class MarkupUtil {
 			}
 		    	
 	    	//Replace vibe parser functions markup {{vibe: xxx | yyy| zzz}} with the desired text
-			if (type.equals(WebKeys.MARKUP_VIEW)) {
+			if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_VIEW_TEXT)) {
 				//Only do this when viewing the entry. Leave the markup in for forms and export.
 				matcher = vibeFunctionPattern.matcher(outputBuf.toString());
 				if (matcher.find()) {
