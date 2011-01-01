@@ -56,7 +56,7 @@ public class FileResource extends AbstractResource {
 	@GET
 	@Produces( { MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response getFileContent(@PathParam("id") String id) {
-		File f = new File("C:/junk/junk1/Blue hills.jpg");
+		File f = new File("C:/junk/Sunset.jpg");
 		
 		if(!f.exists())
 			new WebApplicationException(Response.Status.NOT_FOUND);
