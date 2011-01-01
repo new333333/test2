@@ -44,25 +44,27 @@ import javax.servlet.ServletResponse;
 
 public class RestInvokingServlet extends GenericServlet { 
 	
-	private RequestDispatcher ssfRestDispatcher;
+	private static RequestDispatcher ssfRestDispatcher;
 	
-	public void init() throws ServletException {
-		
-		ServletConfig restServletConfig = getServletConfig();
-		
-		String ssfContextPath = restServletConfig.getInitParameter("ssfContextPath");
-		if(ssfContextPath == null || ssfContextPath.equals(""))
-			ssfContextPath = "/ssf";
-
-		ServletContext ssfContext = restServletConfig.getServletContext().getContext(ssfContextPath);
-		
-		ssfRestDispatcher = ssfContext.getNamedDispatcher("jerseyServlet");
-	}
-
 	@Override
 	public void service(ServletRequest req, ServletResponse res)
 			throws ServletException, IOException {
+		initInternal();
 		ssfRestDispatcher.include(req, res);
+	}
+
+	private void initInternal() {
+		if(ssfRestDispatcher == null) {		
+			ServletConfig restServletConfig = getServletConfig();
+			
+			String ssfContextPath = restServletConfig.getInitParameter("ssfContextPath");
+			if(ssfContextPath == null || ssfContextPath.equals(""))
+				ssfContextPath = "/ssf";
+
+			ServletContext ssfContext = restServletConfig.getServletContext().getContext(ssfContextPath);
+			
+			ssfRestDispatcher = ssfContext.getNamedDispatcher("jerseyServlet");
+		}
 	}
 
 }
