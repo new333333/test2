@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -301,6 +302,21 @@ public class SubscribeToEntryDlg extends DlgBox
 		}
 
 		return subscriptionData;
+	}
+	
+	
+	/**
+	 * Return the HelpData object needed for invoking help on this dialog.
+	 */
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.USER_GUIDE );
+		helpData.setPageId( "informed_notifications" );
+		
+		return helpData;
 	}
 	
 	

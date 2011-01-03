@@ -36,13 +36,18 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -60,6 +65,7 @@ public abstract class DlgBox extends PopupPanel
 	private DlgButtonMode m_dlgBtnMode;
 	private Button		m_okBtn;
 	private Button		m_cancelBtn;
+	private HelpData	m_helpData;
 	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	protected boolean m_modal;
 	protected boolean m_visible = false;
@@ -204,6 +210,49 @@ public abstract class DlgBox extends PopupPanel
 		label = new Label( caption );
 		flowPanel.add( label );
 		
+		// Add a help link to the header if needed.
+		m_helpData = getHelpData();
+		if ( m_helpData != null )
+		{
+			ClickHandler clickHandler;
+			ImageResource imageResource;
+			Image img;
+			
+			imageResource = GwtTeaming.getImageBundle().help3();
+			img = new Image( imageResource );
+			img.addStyleName( "dlgHeaderHelpImg" );
+			img.getElement().setId( "helpImg" );
+			flowPanel.add( img );
+
+			// Add a click handler for the Actions image.
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+					final int x;
+					final int y;
+					
+					x = clickEvent.getClientX();
+					y = clickEvent.getClientY();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Invoke help for this dialog.
+							invokeHelp();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			img.addClickHandler( clickHandler );
+		}
+		
 		return flowPanel;
 	}// end createHeader()
 	
@@ -218,6 +267,16 @@ public abstract class DlgBox extends PopupPanel
 	 * Get the widget that should receive the focus when this dialog is shown.
 	 */
 	public abstract FocusWidget getFocusWidget();
+	
+	
+	/**
+	 * If a dialog wants to have a help link in the header then override this method
+	 * and return a HelpData object.
+	 */
+	public HelpData getHelpData()
+	{
+		return null;
+	}
 	
 	
 	/**
@@ -250,6 +309,19 @@ public abstract class DlgBox extends PopupPanel
 		m_editSuccessfulHandler = editSuccessfulHandler;
 		m_editCanceledHandler = editCanceledHandler;
 	}// end initHandlers()
+	
+	
+	/**
+	 * Invoke help for this dialog if there is help.
+	 */
+	private void invokeHelp()
+	{
+		// Do we have help data?
+		if ( m_helpData != null )
+		{
+			GwtClientHelper.invokeHelp( m_helpData );
+		}
+	}
 	
 	
 	/*

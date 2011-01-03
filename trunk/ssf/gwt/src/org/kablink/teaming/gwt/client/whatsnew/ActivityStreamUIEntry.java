@@ -241,10 +241,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
 			m_actionsImg1 = new Image( imageResource );
 			m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
+			m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
 			headerPanel.add( m_actionsImg1 );
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
 			m_actionsImg2 = new Image( imageResource );
 			m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
+			m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
 			m_actionsImg2.setVisible( false );
 			headerPanel.add( m_actionsImg2 );
 

@@ -548,6 +548,16 @@ body, table td, select
 	font-family: Arial,Helvetica,sans-serif;
 }
 
+/* Styles used for the help link in a dialog header. */
+.dlgHeaderHelpImg
+{
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 8px;
+	top: 9px;
+}
+
 /* Styles used with the panel that wraps a drop widget. */
 .dropWidgetWrapperPanel
 {
