@@ -253,6 +253,25 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Open a window with the url that points to the appropriate help documentation.
+	 */
+	public static void invokeHelp( HelpData helpData )
+	{
+		if ( helpData != null )
+		{
+			String url;
+			
+			// Get the url that points to the appropriate help documentation.
+			url = helpData.getUrl();
+			if ( url != null && url.length() > 0 )
+			{
+				Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
+			}
+		}
+	}
+	
+	
+	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
 	 * @param url
