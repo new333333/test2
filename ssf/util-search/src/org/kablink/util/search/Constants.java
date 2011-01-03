@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -140,10 +140,12 @@ public class Constants {
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
+	public static final String EVENT_FIELD_CALC_START_DATE = "CalcStartDate";
 	public static final String EVENT_FIELD_TIME_ZONE_ID = "TimeZoneID";
 	public static final String EVENT_FIELD_TIME_ZONE_SENSITIVE = "TimeZoneSensitive";
 	public static final String EVENT_FIELD_FREE_BUSY = "FreeBusy";
 	public static final String EVENT_FIELD_END_DATE = "EndDate";
+	public static final String EVENT_FIELD_CALC_END_DATE = "CalcEndDate";
 	public static final String EVENT_COUNT_FIELD = "_eventCount";
 	public static final String EVENT_DATES_FIELD = "_eventDates";
 	public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
