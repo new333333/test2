@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.definition.index;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +52,7 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 		return dataElemName + BasicIndexUtils.DELIMITER + fieldName;
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
 		// This default text implementation ignores args.
 
@@ -62,8 +64,10 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 
 		List fields = new ArrayList();
 		
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_START_DATE,      event.getDtStart());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_START_DATE, event.getDtCalcStart());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_END_DATE,        event.getDtEnd());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_END_DATE,   event.getDtCalcEnd());
 		if (!event.isAllDayEvent()) {
 			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
@@ -73,6 +77,18 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 		realFields = (Field[]) fields.toArray(realFields);
 		return realFields;
 
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void buildEventDateIndex(List fields, String dataElemName, String fieldName, Calendar date) {
+		if (null != date) {
+			fields.add(
+				new Field(
+					makeFieldName(dataElemName, fieldName),
+					DateTools.dateToString(date.getTime(), DateTools.Resolution.SECOND),
+				Field.Store.YES,
+				Field.Index.NOT_ANALYZED));
+		}
 	}
 
 	@Override
