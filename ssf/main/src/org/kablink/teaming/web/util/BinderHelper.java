@@ -2877,6 +2877,7 @@ public class BinderHelper {
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		MapInputData inputData = new MapInputData(request.getParameterMap());
 		Set<Long> idList       = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList"));
 		Set<Long> idListGroups = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList_groups"));
@@ -2910,7 +2911,16 @@ public class BinderHelper {
 					String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
 					String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 					boolean incAtt = (!includeAttachments.equals(""));
-					bs.getAdminModule().sendMail(entry, recipients, null, null, null, null, subject, 
+					Set emailAddress = new HashSet();
+					//See if this user wants to be BCC'd on all mail sent out
+					String bccEmailAddress = user.getBccEmailAddress();
+					if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
+						if (!emailAddress.contains(bccEmailAddress.trim())) {
+							//Add the user's chosen bcc email address
+							emailAddress.add(bccEmailAddress.trim());
+						}
+					}
+					bs.getAdminModule().sendMail(entry, recipients, emailAddress, null, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");

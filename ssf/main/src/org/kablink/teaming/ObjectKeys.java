@@ -485,6 +485,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL="emailAddress";
     public static final String FIELD_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
+    public static final String FIELD_USER_EMAIL_BCC="bccEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_MINIBLOGID="miniBlogId";
     public static final String FIELD_USER_DISKQUOTA="diskQuota";
@@ -586,6 +587,7 @@ public interface ObjectKeys {
     public static final String XTAG_USER_EMAIL="emailAddress";
     public static final String XTAG_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String XTAG_USER_EMAIL_MOBILE="mobileEmailAddress";
+    public static final String XTAG_USER_EMAIL_BCC="bccEmailAddress";
     public static final String XTAG_USER_ZONNAME="zonName";
     public static final String XTAG_USER_ORGANIZATION="organization";
     public static final String XTAG_USER_PHONE="phone";

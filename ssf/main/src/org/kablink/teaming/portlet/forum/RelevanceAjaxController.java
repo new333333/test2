@@ -171,6 +171,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	private void ajaxSaveShareThisBinder(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		//TODO Add more code to store the share request
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
@@ -211,7 +212,16 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		try {
 			String mailTitle = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())});
 			mailTitle += " (" + shortTitle +")";
-			Map status = getAdminModule().sendMail(ids, teams, null, null, null, mailTitle, body);
+			Set emailAddress = new HashSet();
+			//See if this user wants to be BCC'd on all mail sent out
+			String bccEmailAddress = user.getBccEmailAddress();
+			if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
+				if (!emailAddress.contains(bccEmailAddress.trim())) {
+					//Add the user's chosen bcc email address
+					emailAddress.add(bccEmailAddress.trim());
+				}
+			}
+			Map status = getAdminModule().sendMail(ids, teams, emailAddress, null, null, mailTitle, body);
 			Set totalIds = new HashSet();
 			totalIds.addAll(ids);
 			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
