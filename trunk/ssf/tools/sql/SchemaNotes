@@ -51,3 +51,8 @@ Version 12:
 In SS_ZoneConfig:
   ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
 
+Version 13:
+In SS_Events:
+  ALTER TABLE SS_Events ALTER COLUMN dtStart datetime null;
+  ALTER TABLE SS_Events add dtCalcStart datetime null;
+  ALTER TABLE SS_Events add dtCalcEnd datetime null;
