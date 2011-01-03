@@ -616,15 +616,13 @@ public class MarkupUtil {
 						}
 					} else if (vibeFunction.equals("image")) {
 						if (functionArgs.length >= 2) {
-							String fileName =  new String(functionArgs[1].trim());
-							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String fileName =  new String(functionArgs[1].replaceAll("^[\\s\\u00A0]*", "").replaceAll("[\\s\\u00A0]*$", ""));
 							String url = getFileUrlByName(fileName);
 							result = getImageHTML(functionArgs, url, type);
 						}
 					} else if (vibeFunction.equals("file")) {
 						if (functionArgs.length >= 2) {
-							String fileName =  new String(functionArgs[1].trim());
-							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String fileName =  new String(functionArgs[1].replaceAll("^[\\s\\u00A0]*", "").replaceAll("[\\s\\u00A0]*$", ""));
 							String url = getFileUrlByName(fileName);
 							result = getFileHTML(functionArgs, url, type);
 						}
@@ -854,20 +852,21 @@ public class MarkupUtil {
 							if (dataItem != null) {
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
 									Date date = (Date) dataItem.getValue();
-									DateFormat df;
-									if ("date".equals(dataType)) {
-										df = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
-									} else {
-										df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+									if (date != null) {
+										DateFormat df;
+										if ("date".equals(dataType)) {
+											df = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());
+										} else {
+											df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+										}
+										df.setTimeZone(user.getTimeZone());
+									    result = df.format(date);
 									}
-									df.setTimeZone(user.getTimeZone());
-								    result = df.format(date);
 								} else if ("event".equals(dataType)) {
 									Event e = (Event) dataItem.getValue();
-									e.getDtStart();
-									e.getDtEnd();
-									e.isAllDayEvent();
-									result = eventToString(e.getDtStart(), e.getDtEnd(), e.isAllDayEvent());
+									if (e != null) {
+										result = eventToString(e.getDtStart(), e.getDtEnd(), e.isAllDayEvent());
+									}
 								} else {
 									result = dataItem.getValue().toString();
 								}
@@ -886,15 +885,13 @@ public class MarkupUtil {
 						}
 					} else if (vibeFunction.equals("image")) {
 						if (functionArgs.length >= 2) {
-							String fileName =  new String(functionArgs[1].trim());
-							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String fileName =  new String(functionArgs[1].replaceAll("^[\\s\\u00A0]*", "").replaceAll("[\\s\\u00A0]*$", ""));
 							String url = getFileUrlByName(fileName);
 							result = getImageHTML(functionArgs, url, type);
 						}
 					} else if (vibeFunction.equals("file")) {
 						if (functionArgs.length >= 2) {
-							String fileName = new String(functionArgs[1].trim());
-							fileName = fileName.replaceFirst("^[^\\w]*", "");
+							String fileName =  new String(functionArgs[1].replaceAll("^[\\s\\u00A0]*", "").replaceAll("[\\s\\u00A0]*$", ""));
 							String url = getFileUrlByName(fileName);
 							result = getFileHTML(functionArgs, url, type);
 						}
