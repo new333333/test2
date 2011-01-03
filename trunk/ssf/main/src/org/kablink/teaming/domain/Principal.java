@@ -67,6 +67,7 @@ public abstract class Principal extends Entry implements IPrincipal {
 	public static final String PRIMARY_EMAIL="_primary";
 	public static final String TEXT_EMAIL="_text";
 	public static final String MOBILE_EMAIL="_mobile";
+	public static final String BCC_EMAIL="_bcc";
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
@@ -206,6 +207,15 @@ public abstract class Principal extends Entry implements IPrincipal {
     }
     public void setTxtEmailAddress(String address) {
         setEmailAddress(TEXT_EMAIL, address);
+    }
+    /**
+     * @return Returns the bccEmailAddress. All mail sent from this user gets BCC'd to this address.
+     */
+    public String getBccEmailAddress() {
+        return getEmailAddress(BCC_EMAIL);
+    }
+    public void setBccEmailAddress(String address) {
+        setEmailAddress(BCC_EMAIL, address);
     }
     /**
      * @hibernate.property length="128"

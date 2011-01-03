@@ -125,9 +125,18 @@ public class AddFolderController extends SAbstractController {
 					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
 					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");
 					messageBody += announcementText;
+					Set emailAddress = new HashSet();
+					//See if this user wants to be BCC'd on all mail sent out
+					String bccEmailAddress = user.getBccEmailAddress();
+					if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
+						if (!emailAddress.contains(bccEmailAddress.trim())) {
+							//Add the user's chosen bcc email address
+							emailAddress.add(bccEmailAddress.trim());
+						}
+					}
 					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
-						Map status = getAdminModule().sendMail(teamMemberIds, null, null, null, null,
+						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,
 								NLT.get("binder.announcement", new Object[] {Utils.getUserTitle(user), newBinder.getTitle()}), 
 								new Description(messageBody, Description.FORMAT_HTML));
 					}

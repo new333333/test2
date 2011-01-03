@@ -1281,6 +1281,24 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
+	<item name="profileBccEmailAddress" caption="__bccEmailAddress" type="data"  dataType="email" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__bccEmailAddressWithHelp"/>
+			<property name="name" caption="__data_name" type="text" value="bccEmailAddress" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
+		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
+		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
+	</item>
 	<item name="profileConferencingID" caption="__conferencingID" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
@@ -2038,6 +2056,7 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
+			<option name="profileBccEmailAddress" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
@@ -2104,6 +2123,7 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
+			<option name="profileBccEmailAddress" initial="false" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />

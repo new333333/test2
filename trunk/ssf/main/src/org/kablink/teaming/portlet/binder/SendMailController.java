@@ -87,6 +87,14 @@ public class SendMailController extends SAbstractController {
 			for (int i=0; i<to.length; ++i) {
 				emailAddress.add(to[i]);				
 			}
+			//See if this user wants to be BCC'd on all mail sent out
+			String bccEmailAddress = user.getBccEmailAddress();
+			if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
+				if (!emailAddress.contains(bccEmailAddress.trim())) {
+					//Add the user's chosen bcc email address
+					emailAddress.add(bccEmailAddress.trim());
+				}
+			}
 			boolean self = PortletRequestUtils.getBooleanParameter(request, "self", false);
 			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 			Set memberIds = new HashSet();
