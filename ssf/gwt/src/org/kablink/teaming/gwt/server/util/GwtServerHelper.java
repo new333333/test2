@@ -1009,6 +1009,27 @@ public class GwtServerHelper {
 			}
 			catch( AccessControlException e ) {}
 
+			// Does the user have rights to "Manage user accounts"?
+			try
+			{
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
+				{
+					// Yes
+					title = NLT.get( "administration.manage.userAccounts" );
+
+					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_ACCOUNTS );
+					url = adaptedUrl.toString();
+					
+					adminAction = new GwtAdminAction();
+					adminAction.init( title, url, AdminAction.MANAGE_USER_ACCOUNTS );
+					
+					// Add this action to the "management" category
+					managementCategory.addAdminOption( adminAction );
+				}
+			}
+			catch( AccessControlException e ) {}
+
 			// Does the user have rights to "Manage quotas"?
 			try
 			{

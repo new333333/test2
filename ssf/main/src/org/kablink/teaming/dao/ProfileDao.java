@@ -235,4 +235,9 @@ public interface ProfileDao {
  	 * Get the non-default value quotas for either groups or users.
  	 */
  	public List getNonDefaultQuotas(String type, final long zoneId);
+ 	
+ 	/**
+ 	 * Get the list of disabled user accounts.
+ 	 */
+ 	public List<Long> getDisabledUserAccounts(final long zoneId);
  }
