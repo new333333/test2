@@ -366,12 +366,14 @@ public class SearchUtils {
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Long userId) {
 		List<String> sIdList = new ArrayList<String>();
 		UserProperties userProperties = getUserProperties(bs, userId);
-		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
-		if (relevanceMap != null) {
-			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
-			if (trackedPeople != null) {
-				for (Long id: trackedPeople) {
-					sIdList.add(String.valueOf(id));
+		if (userProperties != null) {
+			Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
+			if (relevanceMap != null) {
+				List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+				if (trackedPeople != null) {
+					for (Long id: trackedPeople) {
+						sIdList.add(String.valueOf(id));
+					}
 				}
 			}
 		}
@@ -480,10 +482,12 @@ public class SearchUtils {
 
 		// Access and return the user's properties, using their
 		// workspace ID if available.
-		UserProperties reply;
-		if (null == wsId)
-		     reply = bs.getProfileModule().getUserProperties(userId);
-		else reply = bs.getProfileModule().getUserProperties(userId, wsId);
+		UserProperties reply = null;
+		try {
+			if (null == wsId)
+			     reply = bs.getProfileModule().getUserProperties(userId);
+			else reply = bs.getProfileModule().getUserProperties(userId, wsId);
+		} catch(Exception e) {}
 		return reply;
 	}
 	
