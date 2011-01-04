@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,24 +34,27 @@ package org.kablink.teaming.task;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
-import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
+import org.kablink.teaming.task.TaskLinkage.TaskLink;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -60,111 +63,151 @@ import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 
 
 public class TaskHelper {
+	private static Log m_logger = LogFactory.getLog(TaskHelper.class);
 	
-	public static final String PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME = "priority";
-	
-	public static final String STATUS_TASK_ENTRY_ATTRIBUTE_NAME = "status";
-
-	public static final String COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME = "completed";
-
-	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME = "assignment";
-	
-	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME = "assignment_groups";
-	
-	public static final String ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME = "assignment_teams";
-	
-	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME = "responsible_external";
-	
-	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME = "start_end";
-	
-	public final static String TASK_ASSIGNED_TO = "assignedTo";
-	public final static String TASK_ASSIGNED_TO_GROUPS = "assignedToGroups";
-	public final static String TASK_ASSIGNED_TO_TEAMS = "assignedToTeams";	
+	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME		= "responsible_external";
+	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
+	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME			= "assignment";
+	public static final String ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_teams";
+	public static final String COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME			= "completed";
+	public static final String PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME			= "priority";	
+	public static final String STATUS_TASK_ENTRY_ATTRIBUTE_NAME				= "status";
+	public static final String TASK_ASSIGNED_TO								= "assignedTo";
+	public static final String TASK_ASSIGNED_TO_GROUPS						= "assignedToGroups";
+	public static final String TASK_ASSIGNED_TO_TEAMS						= "assignedToTeams";	
+	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME		= "start_end";
 	
 	public enum FilterType {
-		CLOSED, DAY, WEEK, MONTH, ACTIVE, ALL;
+		CLOSED,
+		DAY,
+		WEEK,
+		MONTH,
+		ACTIVE,
+		ALL;
 	}
 	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
-	
-	@SuppressWarnings("unchecked")
-	public static String getTaskCompletedValue(Entry entry) {
-	
-		CustomAttribute customAttribute = entry.getCustomAttribute(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
 
-		if (customAttribute == null) {
+	/**
+	 * 
+	 * @param entry
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskCompletedValue(Entry entry) {	
+		CustomAttribute customAttribute = entry.getCustomAttribute(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == customAttribute) {
 			return null;
 		}
 		
-		Set value = (Set) customAttribute.getValueSet();
-		
-		if (value == null) {
+		Set value = ((Set) customAttribute.getValueSet());		
+		if (null == value) {
 			return null;
 		}
 		
 		Iterator it = value.iterator();
 		if (it.hasNext()) {
-			return (String)it.next();
+			return ((String) it.next());
 		}
 		
 		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public static String getTaskStatusValue(Entry entry) {
-		
-		CustomAttribute customAttribute = entry.getCustomAttribute(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
 
-		if (customAttribute == null) {
+	/**
+	 * 
+	 * @param entry
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskStatusValue(Entry entry) {		
+		CustomAttribute customAttribute = entry.getCustomAttribute(STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == customAttribute) {
 			return null;
 		}
 		
-		Set value = (Set) customAttribute.getValueSet();
-		
-		if (value == null) {
+		Set value = ((Set) customAttribute.getValueSet());		
+		if (null == value) {
 			return null;
 		}
 		
 		Iterator it = value.iterator();
 		if (it.hasNext()) {
-			return (String)it.next();
+			return ((String) it.next());
 		}
 		
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @param formData
+	 * @param key
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private static String getTaskSingleValue(Map formData, String key) {
 		Object values = formData.get(key);
 		
-		if (values == null)
-			return null;
-		else if (values instanceof String) 
-			return (String)values;
-		else if (values instanceof String[]) 
-			return ((String[]) values)[0];
+		if      (values == null)             return null;
+		else if (values instanceof String)   return ((String)   values);
+		else if (values instanceof String[]) return ((String[]) values)[0];
 		
 		return null;
 	}
 	
+	/**
+	 * 
+	 * @param formData
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static String getTaskStatusValue(Map formData) {
-		return getTaskSingleValue(formData, TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+		return getTaskSingleValue(formData, STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
+	/**
+	 * 
+	 * @param formData
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static String getTaskPriorityValue(Map formData) {
-		return getTaskSingleValue(formData, TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
+		return getTaskSingleValue(formData, PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
+	/**
+	 * 
+	 * @param formData
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static String getTaskCompletedValue(Map formData) {
-		return getTaskSingleValue(formData, TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		return getTaskSingleValue(formData, COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
+	/**
+	 * 
+	 * @param portletSession
+	 * 
+	 * @return
+	 */
 	public static FilterType getTaskFilterType(PortletSession portletSession) {
-		return (FilterType)portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE);
+		return ((FilterType) portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
 	}
 	
+	/**
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * 
+	 * @return
+	 */
 	public static ModeType getTaskModeType(AllModulesInjected bs, Long userId, Long binderId) {
 		return ListFolderHelper.getFolderModeType(bs, userId, binderId);
 	}
@@ -177,13 +220,13 @@ public class TaskHelper {
 	 * @return
 	 */
 	public static FilterType setTaskFilterType(PortletSession portletSession, FilterType filterType) {
-		if (filterType == null) {
-			
+		if (null == filterType) {
 			filterType = getTaskFilterType(portletSession);
-			if (filterType == null) {
+			if (null == filterType) {
 				filterType = FILTER_TYPE_DEFAULT;
 			}
 		}
+		
 		portletSession.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 		return filterType;
 	}
@@ -199,10 +242,25 @@ public class TaskHelper {
 		return ListFolderHelper.setFolderModeType(bs, userId, binderId, modeType);
 	}
 	
+	/**
+	 * 
+	 * @param filterType
+	 * 
+	 * @return
+	 */
 	public static SearchFilter buildSearchFilter(FilterType filterType) {
 		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null, null);
 	}
 	
+	/**
+	 * 
+	 * @param filterType
+	 * @param modeType
+	 * @param model
+	 * @param binder
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model, Binder binder) {
 		SearchFilter searchFilter = new SearchFilter(true);
@@ -210,24 +268,35 @@ public class TaskHelper {
 		DateTimeZone userTimeZone = DateTimeZone.forTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
 		
 		// Handle the filter type.
-		if (filterType.equals(FilterType.CLOSED)) {
+		DateTime dateTime;
+		switch (filterType) {
+		case CLOSED:
 			searchFilter.addTaskStatuses(new String[] {"s3", "s4"});
-		} else if (filterType.equals(FilterType.ACTIVE)) {
+			break;
+		
+		case ACTIVE:
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
-		} else if (filterType.equals(FilterType.DAY)) {
-			DateTime dateTime = (new DateTime(userTimeZone)).plusDays(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
+			break;
+
+		case DAY:
+			dateTime = (new DateTime(userTimeZone)).plusDays(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
-			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
-		} else if (filterType.equals(FilterType.WEEK)) {
-			DateTime dateTime = new DateTime(userTimeZone);
+			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});			
+			break;
+
+		case WEEK:
+			dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusWeeks(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
-		} else if (filterType.equals(FilterType.MONTH)) {
-			DateTime dateTime = new DateTime(userTimeZone);
+			break;
+
+		case MONTH:
+			dateTime = new DateTime(userTimeZone);
 			dateTime = dateTime.plusMonths(1).toDateMidnight().toDateTime().withZone(DateTimeZone.forID("GMT"));
 			searchFilter.addTaskEndDate(dateTime.toString("yyyy-MM-dd HH:mm"));
 			searchFilter.addTaskStatuses(new String[] {"s1", "s2"});
+			break;
 		}
 
 		// Are we only showing tasks assigned to something?
@@ -257,22 +326,28 @@ public class TaskHelper {
 				SearchUtils.AssigneeType.TASK);
 		}
 
-		
 		return searchFilter;
 	}
 
+	/**
+	 * 
+	 * @param entry
+	 * @param formData
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static Map adjustTaskAttributesDependencies(FolderEntry entry, Map formData) {
 		Map result = new HashMap(formData);
-		if (!TaskHelper.isTaskEntryType(entry)) {
+		if (!(isTaskEntryType(entry))) {
 			return formData;
 		}
 		
-		String newPriority = TaskHelper.getTaskPriorityValue(formData);
-		String newStatus = TaskHelper.getTaskStatusValue(formData);
-		String newCompleted = TaskHelper.getTaskCompletedValue(formData);
+		String newPriority = getTaskPriorityValue(formData);
+		String newStatus = getTaskStatusValue(formData);
+		String newCompleted = getTaskCompletedValue(formData);
 
-		TaskHelper.adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
+		adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
 		return result;
 	}
 	
@@ -285,63 +360,205 @@ public class TaskHelper {
 		return ObjectKeys.FAMILY_TASK.equals(family);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
-		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());
-		TaskHelper.adjustTaskAttributesDependencies(entry, family, formData, newPriority, newStatus, newCompleted);
-	}
-	
+	/**
+	 *
+	 * @param entry
+	 * @param typeOfEntry
+	 * @param formData
+	 * @param newPriority
+	 * @param newStatus
+	 * @param newCompleted
+	 */
 	@SuppressWarnings("unchecked")
 	public static void adjustTaskAttributesDependencies(FolderEntry entry, String typeOfEntry, Map formData, String newPriority, String newStatus, String newCompleted) {
-		if ((typeOfEntry != null && !TaskHelper.isTaskEntryType(typeOfEntry)) ||
-				(entry != null && !TaskHelper.isTaskEntryType(entry))) {
+		if (((null != typeOfEntry) && (!(isTaskEntryType(typeOfEntry)))) ||
+			((null != entry)       && (!(isTaskEntryType(entry))))) {
 			return;
 		}
 		
-		if (!newPriority.equals("")) {
-			formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
+		if (!(newPriority.equals(""))) {
+			formData.put(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
 		}
 		
-		if (!newStatus.equals("")) {
-			formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
+		if (!(newStatus.equals(""))) {
+			formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
 			if (newStatus.equals("s3")) {
-				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
 			}
 			
-			if (entry != null) {
-				String statusCurrent = TaskHelper.getTaskStatusValue(entry);
-				String completedCurrent = TaskHelper.getTaskCompletedValue(entry);
+			if (null != entry) {
+				String statusCurrent = getTaskStatusValue(entry);
+				String completedCurrent = getTaskCompletedValue(entry);
 				
-				if ((newStatus.equals("s1") || newStatus.equals("s2")) && "s3".equals(statusCurrent) &&
+				if ((newStatus.equals("s1") || newStatus.equals("s2")) &&
+						"s3".equals(  statusCurrent)                   &&
 						"c100".equals(completedCurrent)) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
+					formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
 				}
 			}
 		}
 		
-		if (!newCompleted.equals("")) {
-			formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});
-			
+		if (!(newCompleted.equals(""))) {
+			formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});			
 			
 			if (newCompleted.equals("c000")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
 			}
 			
-			if (newCompleted.equals("c010") || newCompleted.equals("c020") ||
-					newCompleted.equals("c030") || newCompleted.equals("c040") ||
-					newCompleted.equals("c050") || newCompleted.equals("c060") ||
-					newCompleted.equals("c070") || newCompleted.equals("c080") ||
-					newCompleted.equals("c090")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
+			else if (newCompleted.equals("c010") ||
+				     newCompleted.equals("c020") ||
+				     newCompleted.equals("c030") ||
+				     newCompleted.equals("c040") ||
+				     newCompleted.equals("c050") ||
+				     newCompleted.equals("c060") ||
+				     newCompleted.equals("c070") ||
+				     newCompleted.equals("c080") ||
+				     newCompleted.equals("c090")) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
 			}
 			
-			if (newCompleted.equals("c100")) {
-				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
+			else if (newCompleted.equals("c100")) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
 			}		
 
 		}
 	}
 
-}
-
+	@SuppressWarnings("unchecked")
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
+		// Always use the initial form of the method.
+		adjustTaskAttributesDependencies(
+			entry,
+			DefinitionUtils.getFamily(entry.getEntryDefDoc()),
+			formData,
+			newPriority,
+			newStatus,
+			newCompleted);
+	}
 	
+	/**
+	 * Returns the TaskLinkage from a task folder.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) {
+		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		if (null == reply) {
+			reply = new TaskLinkage();
+		}
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("TaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+			reply.debugDump();
+		}
+		
+		return reply;
+	}
+	
+	/**
+	 * Stores the TaskLinkage for a task folder.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param tl
+	 */
+	public static void setTaskLinkage(AllModulesInjected bs, Binder binder, TaskLinkage tl) {
+		bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
+		if (m_logger.isDebugEnabled()) {
+			if (null == tl) {
+				m_logger.debug("TaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+			}
+			else {
+				m_logger.debug("TaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+				tl.debugDump();
+			}
+		}
+	}
+	
+	/**
+	 * Removes the TaskLinkage from a task folder.
+	 * 
+	 * @param bs
+	 * @param binder
+	 */
+	public static void removeTaskLinkage(AllModulesInjected bs, Binder binder) {
+		setTaskLinkage(bs, binder, null);
+	}
+
+	/**
+	 * Validates the task FolderEntry's referenced by a TaskLinkage.
+	 * 
+	 * @param bs
+	 * @param tl
+	 */
+	public static void validateTaskLinkage(AllModulesInjected bs, TaskLinkage tl) {
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("TaskHelper.validateTaskLinkage( BEFORE ):");
+			tl.debugDump();
+		}
+		
+		// Simply validate the List<TaskList> of the task ordering.
+		validateTaskLinkList(bs, tl.getTaskOrder());
+		
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("TaskHelper.validateTaskLinkage( AFTER ):");
+			tl.debugDump();
+		}
+	}
+
+	/*
+	 * Validates the TaskLink's in a List<TaskLink> removing any that
+	 * are invalid or cannot be accessed.
+	 */
+	private static void validateTaskLinkList(AllModulesInjected bs, List<TaskLink> tlList) {
+		// Scan the TaskLink's in the List<TaskLink>.
+		int c = ((null == tlList) ? 0 : tlList.size());
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			// Is this TaskLink valid?
+			TaskLink tl = tlList.get(i);
+			if (!(isTaskLinkValid(bs, tl))) {
+				// No!  Remove it.
+				tlList.remove(i);
+			}
+			
+			else {			
+				// Yes, this TaskLink is valid!  Validate its subtasks.
+				validateTaskLinkList(bs, tl.getSubtasks());
+			}
+		}
+	}
+	
+	/*
+	 * Returns true if a TaskLink refers to a valid FolderEntry and false
+	 * otherwise.
+	 */
+	private static boolean isTaskLinkValid(AllModulesInjected bs, TaskLink tl) {
+		// If we weren't given a TaskLink...
+		boolean reply = false;
+		if (null == tl) {
+			// ..it can't be valid.
+			return reply;
+		}
+		
+		try {
+			// If we can access the TaskLink's FolderEntry and it's not
+			// deleted or predeleted, it's valid.
+			FolderEntry taskFE = bs.getFolderModule().getEntry(null, tl.getTaskId());
+			reply = ((null != taskFE) && (!(taskFE.isDeleted())) && (!(taskFE.isPreDeleted())));
+		}
+		
+		catch (Exception ex) {
+			// If we can't access the TaskLink's FolderEntry, it's not
+			// valid.
+			m_logger.debug("TaskHelper.isTaskLinkValid( EXCEPTION ):  ", ex);
+			reply = false;
+		}
+		
+		// If we get here, reply is true if the TaskLink references a
+		// task we can access and false otherwise.  Return it.
+		return reply;
+	}
+}
