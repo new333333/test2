@@ -51,13 +51,13 @@ public class TaskLinkage implements Serializable {
 	
 	private List<TaskLink> m_taskOrder;	// Ordered list of the ID's of task FolderEntry's tracked by this TaskLinkage.
 	
-	// Enumeration used to tell moveTaskImpl() which direction a
+	// Enumeration used to tell moveTaskInDirection() which direction a
 	// TaskLink is to be moved within a TaskLinkage object.
 	private enum Direction {
 		UP,
 		DOWN,
-		IN,		// Increases the subtask level.
-		OUT,	// Decreases the subtask level.
+		LEFT,	// Decreases the subtask level.
+		RIGHT,	// Increases the subtask level.
 	}
 	
 	/**
@@ -106,6 +106,30 @@ public class TaskLinkage implements Serializable {
 				}
 				
 				TaskLink reply = tl.findSubtask(id);
+				if (null != reply) {
+					return reply;
+				}
+			}
+			
+			return null;
+		}
+
+		/**
+		 * Searches this tasks subtasks for the given ID and returns
+		 * the List<TaskLink> that contains it.  Returns null if the
+		 * TaskLink cannot be found.
+		 * 
+		 * @param id
+		 * 
+		 * @return
+		 */
+		public List<TaskLink> findSubtaskList(Long id) {
+			for (TaskLink tl:  m_subtasks) {
+				if (id.equals(tl.getTaskId())) {
+					return m_subtasks;
+				}
+				
+				List<TaskLink> reply = tl.findSubtaskList(id);
 				if (null != reply) {
 					return reply;
 				}
@@ -218,11 +242,10 @@ public class TaskLinkage implements Serializable {
 	 * Returns the TaskLink with the given ID from this TaskLinkage.
 	 * 
 	 * @param id
-	 * @param searchSubtasks
 	 * 
 	 * @return
 	 */	
-	public TaskLink findTask(Long id, boolean searchSubtasks) {
+	public TaskLink findTask(Long id) {
 		// Scan the TaskLink's in this TaskLinkage.
 		for (TaskLink tl:  m_taskOrder) {
 			// Is this the TaskLink in question?
@@ -231,14 +254,41 @@ public class TaskLinkage implements Serializable {
 				return tl;
 			}
 
-			// Are we supposed to search the subtasks? 
-			if (searchSubtasks) {
-				// Yes!  Is this ID for a subtask of this TaskLink?
-				TaskLink reply = tl.findSubtask(id);
-				if (null != reply) {
-					// Yes!  Return it.
-					return reply;
-				}
+			// Is this ID for a subtask of this TaskLink?
+			TaskLink reply = tl.findSubtask(id);
+			if (null != reply) {
+				// Yes!  Return it.
+				return reply;
+			}
+		}
+
+		// If we get here, we couldn't find a TaskLink with the given
+		// ID.  Return null.
+		return null;
+	}
+
+	/**
+	 * Returns the List<TaskLink> containing the given ID from this
+	 * TaskLinkage.
+	 * 
+	 * @param id
+	 * 
+	 * @return
+	 */	
+	public List<TaskLink> findTaskList(Long id) {
+		// Scan the TaskLink's in this TaskLinkage.
+		for (TaskLink tl:  m_taskOrder) {
+			// Is this the TaskLink in question?
+			if (tl.getTaskId().equals(id)) {
+				// Yes!  Return it.
+				return m_taskOrder;
+			}
+
+			// Is this ID for a subtask of this TaskLink?
+			List<TaskLink> reply = tl.findSubtaskList(id);
+			if (null != reply) {
+				// Yes!  Return it.
+				return reply;
 			}
 		}
 
@@ -247,9 +297,9 @@ public class TaskLinkage implements Serializable {
 		return null;
 	}
 	
-	public TaskLink findTask(Long id) {
+	public List<TaskLink> findTaskList(TaskLink tl) {
 		// Always use the initial form of the method.
-		return findTask(id, false);
+		return findTaskList(tl.getTaskId());
 	}
 
 	/*
@@ -293,59 +343,62 @@ public class TaskLinkage implements Serializable {
 	}
 
 	/**
+	 * Move one TaskLink above another.
+	 * 
+	 * @param tlMoveThis
+	 * @param tlRelativeToThis
+	 */
+	public void moveTaskAbove(TaskLink tlMoveThis, TaskLink tlRelativeToThis) {
+		// Find the List<TaskLink>'s we're moving from and to...
+		List<TaskLink> tlFrom = findTaskList(tlMoveThis);
+		List<TaskLink> tlTo   = findTaskList(tlRelativeToThis);
+
+		// ...and perform the move.
+		tlFrom.remove(tlMoveThis);
+		tlTo.add(tlTo.indexOf(tlRelativeToThis), tlMoveThis);
+	}
+	
+	public void moveTaskAbove(Long idMoveThis, Long idRelativeToThis) {
+		// Always use the initial form of the method.
+		moveTaskAbove(findTask(idMoveThis), findTask(idRelativeToThis));
+	}
+	
+	/**
+	 * Moves one TaskLink below another.
+	 * 
+	 * @param tlMoveThis
+	 * @param tlRelativeToThis
+	 */
+	public void moveTaskBelow(TaskLink tlMoveThis, TaskLink tlRelativeToThis) {
+		// Find the List<TaskLink>'s we're moving from and to...
+		List<TaskLink> tlFrom = findTaskList(tlMoveThis);
+		List<TaskLink> tlTo   = findTaskList(tlRelativeToThis);
+
+		// ...and perform the move.
+		tlFrom.remove(tlMoveThis);
+		int toIndex = (tlTo.indexOf(tlRelativeToThis) + 1);
+		if (tlTo.size() == toIndex)
+		     tlTo.add(         tlMoveThis);
+		else tlTo.add(toIndex, tlMoveThis);
+	}
+	
+	public void moveTaskBelow(Long idMoveThis, Long idRelativeToThis) {
+		// Always use the initial form of the method.
+		moveTaskBelow(findTask(idMoveThis), findTask(idRelativeToThis));
+	}
+	
+	/**
 	 * Moves a TaskLink down from its current position.
 	 * 
 	 * @param tl
 	 */
 	public void moveTaskDown(TaskLink tl) {
-		moveTaskImpl(tl, m_taskOrder, Direction.DOWN);
+		moveTaskInDirection(tl, m_taskOrder, Direction.DOWN);
 	}
 	
 	public void moveTaskDown(Long taskId) {
 		// Always use the initial form of the method.
 		moveTaskDown(findTask(taskId));
-	}
-	
-	/**
-	 * Moves a TaskLink in from its current position.
-	 * 
-	 * @param tl
-	 */
-	public void moveTaskIn(TaskLink tl) {
-		moveTaskImpl(tl, m_taskOrder, Direction.IN);
-	}
-	
-	public void moveTaskIn(Long taskId) {
-		// Always use the initial form of the method.
-		moveTaskIn(findTask(taskId));
-	}
-	
-	/**
-	 * Moves a TaskLink out from its current position.
-	 * 
-	 * @param tl
-	 */
-	public void moveTaskOut(TaskLink tl) {
-		moveTaskImpl(tl, m_taskOrder, Direction.OUT);
-	}
-	
-	public void moveTaskOut(Long taskId) {
-		// Always use the initial form of the method.
-		moveTaskOut(findTask(taskId));
-	}
-	
-	/**
-	 * Moves a TaskLink up from its current position.
-	 * 
-	 * @param tl
-	 */
-	public void moveTaskUp(TaskLink tl) {
-		moveTaskImpl(tl, m_taskOrder, Direction.UP);
-	}
-	
-	public void moveTaskUp(Long taskId) {
-		// Always use the initial form of the method.
-		moveTaskUp(findTask(taskId));
 	}
 	
 	/*
@@ -359,7 +412,7 @@ public class TaskLinkage implements Serializable {
 	 *    however, is not as what's implemented here works the same as
 	 *    GroupWise's Tasklist feature.
 	 */
-	private boolean moveTaskImpl(TaskLink tl, List<TaskLink> tlList, Direction dir) {
+	private boolean moveTaskInDirection(TaskLink tl, List<TaskLink> tlList, Direction dir) {
 		int tlIndex;
 		int tlSize = tlList.size();
 		TaskLink tlScan = null;
@@ -374,7 +427,7 @@ public class TaskLinkage implements Serializable {
 			}
 
 			// Can we perform the move out of this TaskLink's subtasks?
-			if (moveTaskImpl(tl, tlScan.getSubtasks(), dir)) {
+			if (moveTaskInDirection(tl, tlScan.getSubtasks(), dir)) {
 				// Yes!  Then we're done.
 				return true;
 			}
@@ -409,19 +462,8 @@ public class TaskLinkage implements Serializable {
 			
 			break;
 			
-		case IN:
-			// In (i.e., increase its subtask level)!  If it's not the
-			// first task in the list...
-			if (0 < tlIndex) {
-				// ...make it the last subtask of the one above it.
-				tlList.remove(tlIndex);
-				tlList.get(tlIndex - 1).appendSubtask(tlScan);
-			}
-			
-			break;
-			
-		case OUT:
-			// Out (i.e., decrease its subtask level)!  If it's in
+		case LEFT:
+			// Left (i.e., decrease its subtask level)!  If it's in
 			// other than the outer most task order list...
 			if (tlList != m_taskOrder) {
 				// ...move all of the peer subtasks below it to be
@@ -440,10 +482,97 @@ public class TaskLinkage implements Serializable {
 			}
 			
 			break;
+			
+		case RIGHT:
+			// Right (i.e., increase its subtask level)!  If it's not
+			// the first task in the list...
+			if (0 < tlIndex) {
+				// ...make it the last subtask of the one above it.
+				tlList.remove(tlIndex);
+				tlList.get(tlIndex - 1).appendSubtask(tlScan);
+			}
+			
+			break;
 		}
 
 		// If we get here, we found the TaskLink in the List<TaskLink>,
 		// even if we didn't move it.  Return true.
 		return true;
 	}
+	
+	/**
+	 * Moves one TaskLink into another.
+	 * 
+	 * @param tlMoveThis
+	 * @param tlTarget
+	 * @param targetIndex
+	 */
+	public void moveTaskInto(TaskLink tlMoveThis, TaskLink tlTarget, int targetIndex) {		
+		// Find the List<TaskLink>'s we're moving from and to...
+		List<TaskLink> tlFrom = findTaskList(tlMoveThis);
+		List<TaskLink> tlTo   = findTaskList(tlTarget);
+
+		// ...and perform the move.
+		tlFrom.remove(tlMoveThis);
+		if ((-1) == targetIndex)
+		     tlTo.add(             tlMoveThis);
+		else tlTo.add(targetIndex, tlMoveThis);
+	}
+	
+	public void moveTaskInto(TaskLink tlMoveThis, TaskLink tlTarget) {
+		// Always use the initial form of the method.
+		moveTaskInto(tlMoveThis, tlTarget, 0);
+	}
+	
+	public void moveTaskInto(Long idMoveThis, Long idTarget, int targetIndex) {
+		// Always use the initial form of the method.
+		moveTaskInto(findTask(idMoveThis), findTask(idTarget), targetIndex);
+	}
+	
+	public void moveTaskInto(Long idMoveThis, Long idTarget) {
+		// Always use the initial form of the method.
+		moveTaskInto(findTask(idMoveThis), findTask(idTarget), 0);
+	}
+	
+	/**
+	 * Moves a TaskLink left from its current position.
+	 * 
+	 * @param tl
+	 */
+	public void moveTaskLeft(TaskLink tl) {
+		moveTaskInDirection(tl, m_taskOrder, Direction.LEFT);
+	}
+	
+	public void moveTaskLeft(Long taskId) {
+		// Always use the initial form of the method.
+		moveTaskLeft(findTask(taskId));
+	}
+	
+	/**
+	 * Moves a TaskLink right from its current position.
+	 * 
+	 * @param tl
+	 */
+	public void moveTaskRight(TaskLink tl) {
+		moveTaskInDirection(tl, m_taskOrder, Direction.RIGHT);
+	}
+	
+	public void moveTaskRight(Long taskId) {
+		// Always use the initial form of the method.
+		moveTaskRight(findTask(taskId));
+	}
+	
+	/**
+	 * Moves a TaskLink up from its current position.
+	 * 
+	 * @param tl
+	 */
+	public void moveTaskUp(TaskLink tl) {
+		moveTaskInDirection(tl, m_taskOrder, Direction.UP);
+	}
+	
+	public void moveTaskUp(Long taskId) {
+		// Always use the initial form of the method.
+		moveTaskUp(findTask(taskId));
+	}	
 }
