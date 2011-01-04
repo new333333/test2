@@ -363,6 +363,7 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
+	public static final String ACTION_MANAGE_USER_ACCOUNTS="manage_user_accounts";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
@@ -780,6 +781,7 @@ public class WebKeys {
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DELETE_ENTRY_ADAPTER = "ss_deleteEntryAdapter";
     public static final String DIRECTION="ss_direction";
+    public static final String DISABLED_USER_ACCOUNTS="ss_disabledUserAccounts";
     public static final String DISKQUOTA="diskQuota";
     public static final String DISK_QUOTA_EXCEEDED="ss_diskQuotaExceeded";
     public static final String DISK_QUOTA_HIGH_WATER_MARK_EXCEEDED="ss_diskQuotaHighWaterMarkExceeded";
@@ -1244,6 +1246,7 @@ public class WebKeys {
     public static final String SHOW_USER_SHOW_HINT="ss_showUserShowHint";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_PROFILE_ENTRY="ss_showUserProfileEntry";
+    public static final String SHOW_USER_INACTIVE_ACCOUNTS="ss_showUserInactiveAccounts";
     public static final String SHOW_USER_WORKSPACE_PREDELETED="ss_showUserWorkspacePredeleted";
     public static final String SHOW_USER_TARGET="ss_showUserTarget";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
@@ -1426,6 +1429,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_MANAGE_EXTENSIONS="administration/manage_extensions";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_QUOTAS="administration/manage_quotas";
+    public static final String VIEW_ADMIN_MANAGE_USER_ACCOUNTS="administration/manage_user_accounts";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ADMIN_RELOAD_OPENER="administration/reload_opener";

@@ -77,6 +77,7 @@ public class ShowUser extends BodyTagSupport {
 	private String target = "";
     private Boolean showPresence = Boolean.TRUE;
     private Boolean showProfileEntry = Boolean.FALSE;
+    private Boolean showInactiveAccounts = Boolean.FALSE;
     private Boolean showHint = Boolean.FALSE;
     private Boolean workspacePreDeleted = Boolean.FALSE;
     private Boolean close = Boolean.FALSE;
@@ -119,7 +120,8 @@ public class ShowUser extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.SHOW_USER_PROFILE_ENTRY, showProfileEntry);
 				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_HINT, showHint);
 				httpReq.setAttribute(WebKeys.SHOW_USER_WORKSPACE_PREDELETED, workspacePreDeleted);
-				if (user != null && user.isActive())
+				httpReq.setAttribute(WebKeys.SHOW_USER_INACTIVE_ACCOUNTS, showInactiveAccounts);
+				if (user != null && (user.isActive() || showInactiveAccounts))
 					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
 				else
 					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
@@ -149,6 +151,7 @@ public class ShowUser extends BodyTagSupport {
 			user = null;
 			showPresence = true;
 			showProfileEntry = false;
+			showInactiveAccounts = false;
 			workspacePreDeleted = false;
 			titleStyle = "";
 			target = "";
@@ -166,6 +169,9 @@ public class ShowUser extends BodyTagSupport {
 	}
 	public void setShowProfileEntry(Boolean showProfileEntry) {
 		this.showProfileEntry = showProfileEntry;
+	}
+	public void setShowInactiveAccounts(Boolean showInactiveAccounts) {
+		this.showInactiveAccounts = showInactiveAccounts;
 	}
 	public void setShowHint(Boolean showHint) {
 		this.showHint = showHint; 

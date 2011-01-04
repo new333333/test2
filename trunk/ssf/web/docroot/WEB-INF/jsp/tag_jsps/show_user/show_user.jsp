@@ -65,7 +65,7 @@
 	
 
 	<c:if test="${!ss_showUserShowPresence || ss_showUserIsGroup || ss_showUserProfileEntry}">
-		<c:if test="${ss_showUserUser.active}">
+		<c:if test="${ss_showUserUser.active || ss_showUserInactiveAccounts}">
 			<ssf:ifadapter>
 				<c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
 				  	<c:if test="${!ss_showUserIsGroup}">
@@ -169,7 +169,7 @@
 			  </c:if>
 			</ssf:ifnotadapter>
 		</c:if>
-		<c:if test="${!ss_showUserUser.active}">
+		<c:if test="${!ss_showUserUser.active && !ss_showUserInactiveAccounts}">
 		  <span id="${ss_showUserUser.id}" 
 		    class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
 		</c:if>

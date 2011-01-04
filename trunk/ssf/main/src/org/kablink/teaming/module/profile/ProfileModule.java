@@ -554,6 +554,11 @@ public interface ProfileModule {
     public List getNonDefaultQuotas(String type);
 
     /**
+     *This returns a list of all disabled user account ids 
+     */
+    public List<Long> getDisabledUserAccounts();
+
+    /**
 	 * Test access to a binder
 	 * @param user
 	 * @param binder
