@@ -52,6 +52,9 @@ In SS_ZoneConfig:
   ALTER TABLE SS_LicenseStats add column activeUserCount bigint;
 
 Version 13:
+	Skipped to align version numbers between this file and the ddl-<server>.properties fileStatus
+
+Version 14:
 In SS_Events:
   ALTER TABLE SS_Events ALTER COLUMN dtStart datetime null;
   ALTER TABLE SS_Events add dtCalcStart datetime null;
