@@ -8,7 +8,6 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 
-<beans>
 	<!-- ============================== Modules ============================= -->
 
 	<bean id="folderModuleTarget" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.folder.impl.BaseFolderModule">
