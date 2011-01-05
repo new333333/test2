@@ -364,6 +364,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the title that is being displayed for this entry.
+	 */
+	public String getEntryTitle()
+	{
+		return m_title.getText();
+	}
+	
+	
+	/**
 	 * Return the title for the given entry.  If the entry is a reply, the title will be the reply number + title.
 	 * For example, 1.6.3 RE: What do you think you are doing?
 	 * If the entry is not a reply, the title will just be the title from the entry.
