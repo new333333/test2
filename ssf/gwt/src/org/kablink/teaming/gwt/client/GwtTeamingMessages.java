@@ -740,5 +740,6 @@ public interface GwtTeamingMessages extends Messages
 	String sendEmailWithoutAttachmentsTo();
 	String sendTextTo();
 	String subscribeToEntryDlgHeader();
+	String subscribeToEntryHeader();
 	
 }// end GwtTeamingMessages

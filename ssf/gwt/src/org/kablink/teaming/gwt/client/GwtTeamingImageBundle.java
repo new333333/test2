@@ -104,7 +104,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/help2.png")
 	public ImageResource help2();
 
-	@Source("org/kablink/teaming/gwt/public/images/help3.gif")
+	@Source("org/kablink/teaming/gwt/public/images/help_but_teal.png")
 	public ImageResource help3();
 
 	@Source("org/kablink/teaming/gwt/public/images/info2.png")
@@ -194,19 +194,19 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/personal_prefs2.png")
 	public ImageResource personalPrefs2();
 
-	@Source("org/kablink/teaming/gwt/public/images/presence_available16.png")
+	@Source("org/kablink/teaming/gwt/public/images/presence_available14.png")
 	public ImageResource presenceAvailable16();
 
-	@Source("org/kablink/teaming/gwt/public/images/presence_away16.png")
+	@Source("org/kablink/teaming/gwt/public/images/presence_away14.png")
 	public ImageResource presenceAway16();
 
-	@Source("org/kablink/teaming/gwt/public/images/presence_busy16.png")
+	@Source("org/kablink/teaming/gwt/public/images/presence_busy14.png")
 	public ImageResource presenceBusy16();
 
-	@Source("org/kablink/teaming/gwt/public/images/presence_offline16.png")
+	@Source("org/kablink/teaming/gwt/public/images/presence_offline14.png")
 	public ImageResource presenceOffline16();
 
-	@Source("org/kablink/teaming/gwt/public/images/presence_unknown16.png")
+	@Source("org/kablink/teaming/gwt/public/images/presence_unknown14.png")
 	public ImageResource presenceUnknown16();
 	
 	@Source("org/kablink/teaming/gwt/public/images/arrow_left.png")
