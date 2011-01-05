@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,10 @@
 <% // Task view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%
+	boolean gwtTasks = SPropsUtil.getBoolean("gwt.tasks", false);
+%>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
@@ -90,8 +94,24 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 <div class="ss_clear"></div>
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-<div class="ss_folder" id="ss_task_folder_div">
-<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
-</div>
+<% if (gwtTasks) { %>
+	<div class="ss_gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
+	<script type="text/javascript">
+		function ss_initGwtTaskListing() {
+			if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
+					(window.name == "gwtContentIframe")) {
+				window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}");
+			}
+			else {
+				alert("*Internal Error* - The GWT Task UI code is missing!!!");
+			}
+		}
+		ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
+	</script>
+<% } else { %>
+	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
+	<div class="ss_folder" id="ss_task_folder_div">
+		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
+		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
+	</div>
+<% } %>
