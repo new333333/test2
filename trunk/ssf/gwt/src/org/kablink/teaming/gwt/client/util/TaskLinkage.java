@@ -30,14 +30,12 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.task;
+package org.kablink.teaming.gwt.client.util;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Class used to represent order and hierarchy for the tasks within a
@@ -45,10 +43,7 @@ import org.apache.commons.logging.LogFactory;
  *  
  * @author drfoster
  */
-@SuppressWarnings("serial")
-public class TaskLinkage implements Serializable {
-	private static Log m_logger = LogFactory.getLog(TaskLinkage.class);
-	
+public class TaskLinkage implements IsSerializable {
 	private List<TaskLink> m_taskOrder;	// Ordered list of the ID's of task FolderEntry's tracked by this TaskLinkage.
 	
 	// Enumeration used to tell moveTaskInDirection() which direction a
@@ -64,7 +59,7 @@ public class TaskLinkage implements Serializable {
 	 * Inner class use used to track individual tasks within a
 	 * TaskLinkage object.
 	 */
-	public static class TaskLink implements Serializable {
+	public static class TaskLink implements IsSerializable {
 		private Long			m_taskId;	// ID of the FolderEntry of this task
 		private List<TaskLink>	m_subtasks;	// List<TaskLink> of the subtasks of this task.
 
@@ -187,57 +182,6 @@ public class TaskLinkage implements Serializable {
 		appendTask(new TaskLink(id));
 	}
 
-	/**
-	 * Logs the contents of this TaskLinkage object.
-	 */
-	public void debugDump() {
-		// If debug logging is disabled...
-		if (!(m_logger.isDebugEnabled())) {
-			// ...bail.
-			return;
-		}
-
-		// If there are no TaskLink's in the task order list...
-		if (m_taskOrder.isEmpty()) {
-			// ...log that fact and bail.
-			m_logger.debug("TaskLinkage.debugDump( EMPTY )");
-			return;
-		}
-
-		// Scan the TaskLink's in the task order list...
-		m_logger.debug("TaskLinkage.debugDump( START )");
-		for (TaskLink tl:  m_taskOrder) {
-			// ...logging each of them.
-			debugDump(tl, 0);
-		}
-		m_logger.debug("TaskLinkage.debugDump( END )");
-	}
-
-	/*
-	 * Logs the contents of the supplied TaskLink.  The information is
-	 * indented depth levels.
-	 */
-	private static void debugDump(TaskLink tl, int depth) {
-		// Build a string to write to the log...
-		StringBuffer logBuffer = new StringBuffer("   ");
-		for (int i = 0; i < depth; i += 1) {
-			logBuffer.append("   ");
-		}
-		logBuffer.append(String.valueOf(depth));
-		logBuffer.append(":");
-		logBuffer.append(String.valueOf(tl.getTaskId()));
-		
-		// ...and write it.
-		m_logger.debug(logBuffer.toString());
-		
-		// Scan this TaskLink's subtasks...
-		int subtaskDepth = (depth + 1);
-		for (TaskLink tlScan:  tl.getSubtasks()) {
-			// ...logging each of them one level deeper.
-			debugDump(tlScan, subtaskDepth);
-		}
-	}
-	
 	/**
 	 * Returns the TaskLink with the given ID from this TaskLinkage.
 	 * 
