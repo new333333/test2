@@ -32,25 +32,31 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
 /**
+ * Implements a GWT based task folder list user interface.
  * 
  * @author drfoster@novell.com
  */
 @SuppressWarnings("unused")
 public class TaskListing {
-	private boolean m_sortDescend;		// true -> Sort is descending.  false -> Sort is ascending. 
-	private Element m_taskListingDIV;	// The <DIV> in the content pane that's to contain the task listing.
-	private Long    m_binderId;			// The ID of the binder containing the tasks to be listed.
-	private String  m_filterType;		// The current filtering in affect, if any.
-	private String  m_mode;				// The current mode being displayed (PHYSICAL vs. VITRUAL.)
-	private String  m_sortBy;			// The column the tasks are currently sorted by.
+	private boolean				m_sortDescend;							// true -> Sort is descending.  false -> Sort is ascending. 
+	private Element				m_taskListingDIV;						// The <DIV> in the content pane that's to contain the task listing.
+	private GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	//
+	private Long				m_binderId;								// The ID of the binder containing the tasks to be listed.
+	private String				m_filterType;							// The current filtering in affect, if any.
+	private String				m_mode;									// The current mode being displayed (PHYSICAL vs. VITRUAL.)
+	private String				m_sortBy;								// The column the tasks are currently sorted by.
 
 	/**
 	 * Class constructor.
@@ -77,9 +83,23 @@ public class TaskListing {
 	 * constructor.
 	 */
 	public void show() {
-		Window.alert( "TaskListing.show( " + m_binderId + " )" );
-		
-		GwtClientHelper.removeAllChildren(m_taskListingDIV);
-		m_taskListingDIV.appendChild(new InlineLabel("...this needs to be implemented...").getElement());
+		GwtTeaming.getRpcService().getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, new AsyncCallback<TaskBundle>() {
+			@Override
+			public void onFailure(Throwable t) {
+				String error = m_messages.rpcFailure_GetTaskBundle();
+				GwtClientHelper.handleGwtRPCFailure(t, error);
+				
+				GwtClientHelper.removeAllChildren(m_taskListingDIV);
+				m_taskListingDIV.appendChild(new InlineLabel(m_messages.rpcFailure_GetTaskBundle()).getElement());
+			}
+
+			@Override
+			public void onSuccess(TaskBundle result) {
+				Window.alert( "TaskListing.show( " + m_binderId + " )" );
+				
+				GwtClientHelper.removeAllChildren(m_taskListingDIV);
+				m_taskListingDIV.appendChild(new InlineLabel("...this needs to be implemented...").getElement());
+			}			
+		});		
 	}
 }

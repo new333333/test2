@@ -36,8 +36,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
+<jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
 <%
 	boolean gwtTasks = SPropsUtil.getBoolean("gwt.tasks", false);
+	if (gwtTasks) {
+//		gwtTasks = (ssCurrentFolderModeType == ModeType.PHYSICAL);
+	}
 %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
