@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -112,6 +113,10 @@ public class GwtMainPage extends Composite
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
+		
+		// Initialize the GWT based task listing UI.  This is called
+		// when a task folder is loaded in the content panel.
+		initTaskListingJS(this);
 		
 		// Initialize the pre context switch handler used by the
 		// traditional UI to tell the GWT UI that a context switch is
@@ -317,6 +322,18 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will be invoked from
+	 * task.jsp when a task listing is loaded.
+	 */
+	private native void initTaskListingJS(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend )
+		{
+			var taskListingDIV = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskListingDIV");
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
+		}//end initTaskListingJS()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
 	 * the traditional UI just before a context switch occurs.
 	 */
 	private native void initPreContextSwitchJS(GwtMainPage gwtMainPage) /*-{
@@ -496,7 +513,25 @@ public class GwtMainPage extends Composite
 		});
 	}// end contextLoaded()
 
-	/**
+	/*
+	 * Called when the GWT task listing UI is loading.
+	 */
+	private void initTaskListing( Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend )
+	{
+		// Create a TaskListing object...
+		TaskListing tl = new TaskListing(
+			taskListingDIV,
+			Long.parseLong( binderId ),
+			filterType,
+			mode,
+			sortBy,
+			(GwtClientHelper.hasString( sortDescend ) ? Boolean.parseBoolean(sortDescend) : false) );
+		
+		// ...and show it.
+		tl.show();
+	}// end initTaskListing();
+	
+	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
 	private void editBranding( GwtBrandingData brandingData )
