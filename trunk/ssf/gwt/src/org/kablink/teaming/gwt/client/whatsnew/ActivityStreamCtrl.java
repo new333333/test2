@@ -836,7 +836,7 @@ public class ActivityStreamCtrl extends Composite
 			m_subscribeToEntryDlg = new SubscribeToEntryDlg( false, true, 0, 0 );
 		}
 		
-		m_subscribeToEntryDlg.init( entry.getEntryId(), "lynn" );
+		m_subscribeToEntryDlg.init( entry.getEntryId(), entry.getEntryTitle() );
 
 		posCallback = new PopupPanel.PositionCallback()
 		{

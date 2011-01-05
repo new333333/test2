@@ -59,11 +59,13 @@ public class SubscribeToEntryDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
 	String m_entryId;
+	String m_entryTitle;
 	FlowPanel m_mainPanel;
 	FlowPanel m_sendEmailToPanel1;
 	FlowPanel m_sendEmailToPanel2;
 	FlowPanel m_sendTextToPanel;
-	InlineLabel m_entryTitle;
+	FlowPanel m_titlePanel;
+	InlineLabel m_entryTitleLabel;
 	CheckBox m_primaryAddress1;
 	CheckBox m_mobileAddress1;
 	CheckBox m_textAddress1;
@@ -109,14 +111,21 @@ public class SubscribeToEntryDlg extends DlgBox
 		
 		// Create a panel for the entry title	
 		{
-			FlowPanel titlePanel;
 			InlineLabel titleLabel;
-			titlePanel = new FlowPanel();
-			titleLabel = new InlineLabel( messages.subscribeToEntryHeader() );
 			
-			titlePanel.add( titleLabel );
-			m_entryTitle = new InlineLabel();
-			titlePanel.add( m_entryTitle );
+			m_titlePanel = new FlowPanel();
+			m_titlePanel.addStyleName( "marginbottom2" );
+			
+			titleLabel = new InlineLabel( messages.subscribeToEntryHeader() );
+			titleLabel.addStyleName( "mediumtext" );
+			m_titlePanel.add( titleLabel );
+
+			m_entryTitleLabel = new InlineLabel();
+			m_entryTitleLabel.addStyleName( "mediumtext" );
+			m_entryTitleLabel.addStyleName( "bold" );
+			m_titlePanel.add( m_entryTitleLabel );
+			
+			m_mainPanel.add( m_titlePanel );
 		}
 
 		// Create a panel where the "send email to" ui will go.
@@ -213,6 +222,7 @@ public class SubscribeToEntryDlg extends DlgBox
 
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_textAddress3 = new CheckBox();
 			flowPanel.add( m_textAddress3 );
 			m_sendTextToPanel.add( flowPanel );
@@ -358,9 +368,10 @@ public class SubscribeToEntryDlg extends DlgBox
 	/**
 	 * Issue an rpc request to get the current subscription settings for the given entry.
 	 */
-	public void init( String entryId, final String entryTitle )
+	public void init( String entryId, String entryTitle )
 	{
 		m_entryId = entryId;
+		m_entryTitle = entryTitle;
 		
 		if ( m_readSubscriptionDataCallback == null )
 		{
@@ -382,7 +393,7 @@ public class SubscribeToEntryDlg extends DlgBox
 				public void onSuccess( SubscriptionData subscriptionData )
 				{
 					// Update the dialog with the given subscription data.
-					updateDlg( subscriptionData, entryTitle );
+					updateDlg( subscriptionData, m_entryTitle );
 				}
 			};
 		}
@@ -476,7 +487,15 @@ public class SubscribeToEntryDlg extends DlgBox
 			return;
 		}
 		
-		m_entryTitle.setText( entryTitle );
+		// Limit the title we display to 20 characters.
+		if ( entryTitle != null && entryTitle.length() > 25 )
+		{
+			entryTitle = entryTitle.substring( 0, 25 );
+			entryTitle += "...";
+		}
+		m_entryTitleLabel.setText( entryTitle );
+		
+		m_mainPanel.add( m_titlePanel );
 		m_mainPanel.add( m_sendEmailToPanel1 );
 		m_mainPanel.add( m_sendEmailToPanel2 );
 		m_mainPanel.add( m_sendTextToPanel );
