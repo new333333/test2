@@ -32,12 +32,16 @@
  */
 package org.kablink.teaming.task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -46,7 +50,9 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
@@ -55,7 +61,11 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
+import org.kablink.util.search.Constants;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 
 public class TaskHelper {
@@ -428,5 +438,94 @@ public class TaskHelper {
 			newPriority,
 			newStatus,
 			newCompleted);
+	}
+	
+	/**
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param response
+	 * @param binder
+	 * @param model
+	 * @param options
+	 * 
+	 * @return
+	 * 
+	 * @throws PortletRequestBindingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map findTaskEntries(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Binder binder, Map model, Map options) throws PortletRequestBindingException {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long userId = user.getId();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+		Long binderId = binder.getId();
+		
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+
+		Map folderEntries = new HashMap();
+
+		// What are we filtering for?  (Closed, Today, Week, ...)
+		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
+		FilterType filterType = setTaskFilterType(portletSession, ((filterTypeParam != null) ? FilterType.valueOf(filterTypeParam) : null));
+		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+
+		// Are we producing a physical or virtual listing?
+		ModeType modeType;
+		Boolean showModeSelect;
+		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
+		if (BinderHelper.isBinderUserWorkspace(binderWs)) {
+			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
+			modeType = ListFolderHelper.setFolderModeType(bs, userId, binderId, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
+			showModeSelect = Boolean.TRUE;
+		}
+		else {
+			modeType = ListFolderHelper.setFolderModeType(bs, userId, binderId, ModeType.PHYSICAL);
+			showModeSelect = Boolean.FALSE;
+		}
+		model.put(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
+		model.put(WebKeys.FOLDER_SHOW_MODE_SELECT,  showModeSelect);
+
+		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
+		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, buildSearchFilter(filterType, modeType, model, binder).getFilter());
+       	
+		if (binder instanceof Folder) {
+			folderEntries = bs.getFolderModule().getEntries(binderId, options);
+		} else {
+			//a template
+			folderEntries = new HashMap();
+		}
+
+		// If we have any virtual entries...
+		if ((0 < folderEntries.size()) && (ModeType.VIRTUAL == modeType)) {
+			// ...we need to pass information about their binder's too.
+			List<Long> binderIds = new ArrayList<Long>();
+	    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+		    		String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
+		    		binderIds.add(Long.valueOf(entryBinderId));
+		    	}
+	    	}
+			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
+		}
+
+		Map<String, Map> cacheEntryDef = new HashMap();
+    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+	    		String entryDefId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
+	    		if (cacheEntryDef.get(entryDefId) == null) {
+	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
+	    		}
+	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
+	    	}
+    	}
+		
+		return folderEntries;
 	}	
 }

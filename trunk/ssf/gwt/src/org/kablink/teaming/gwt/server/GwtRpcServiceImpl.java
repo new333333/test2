@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -104,6 +104,9 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskInfo;
+import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -112,6 +115,7 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
+import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -143,10 +147,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
-
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-
 
 /**
  * 
@@ -1432,7 +1432,86 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		return brandingData;
 	}// end getSiteBrandingData()
+
+	/*
+	 * Returns the Binder corresponding to an ID, throwing a GwtTeamingException
+	 * as necessary.
+	 */
+	private Binder getTaskBinder( Long binderId ) throws GwtTeamingException
+	{
+		Binder reply = null;
+		try
+		{
+			reply = getBinderModule().getBinder( binderId );
+		}
+		
+		catch (Exception ex)
+		{
+			ExceptionType exType;
+
+			m_logger.debug( "GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  EXCEPTION ):  ", ex );
+			if      ( ex instanceof AccessControlException   ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+			else if ( ex instanceof NoBinderByTheIdException ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+			else                                               exType = ExceptionType.UNKNOWN;
+			
+			GwtTeamingException gwtEx = new GwtTeamingException();
+			gwtEx.setExceptionType( exType );
+			throw gwtEx;
+		}
+
+		if ( null == reply )
+		{
+			m_logger.debug( "GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  Could not access binder. )" );
+			throw new GwtTeamingException();
+		}
+		
+		return reply; 
+	}// end getTasKBinder()
 	
+	/**
+	 * Reads the tasks from the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public List<TaskInfo> getTasks( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	{
+		return GwtTaskHelper.getTasks( getRequest( ri ), this, getTaskBinder( binderId ));
+	}//end getTasks()
+	
+	/**
+	 * Reads the task information from the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	{
+		return GwtTaskHelper.getTaskBundle( getRequest( ri ), this, getTaskBinder( binderId ) );
+	}// end getTaskBundle()
+	
+	/**
+	 * Reads the task information from the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	{
+		return GwtTaskHelper.getTaskLinkage( this, getTaskBinder( binderId ) );
+	}//end getTaskLinkage()
 	
 	/**
 	 * Returns a List<String> of the user ID's of the people the

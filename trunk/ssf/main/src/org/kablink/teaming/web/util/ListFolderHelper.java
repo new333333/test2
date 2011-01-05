@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.web.util;
 import static org.kablink.util.search.Restrictions.in;
 
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -120,8 +119,12 @@ import org.kablink.util.search.Order;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
+/**
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class ListFolderHelper {
-
 	public static final String[] monthNames = { 
 		"calendar.january",
 		"calendar.february",
@@ -399,7 +402,6 @@ public class ListFolderHelper {
 	 * @param searchTrash
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, Binder binder, UserProperties userFolderProperties, boolean searchTrash) {
 		Map result = new HashMap();
 		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
@@ -414,7 +416,6 @@ public class ListFolderHelper {
 		return getSearchFilter(bs, request, binder, userFolderProperties, false);
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected static void initPageCounts(AllModulesInjected bs, RenderRequest request, 
 			Map userProperties, Tabs.TabEntry tab, Map options) {
 		Map tabOptions = tab.getData();
@@ -753,7 +754,6 @@ public class ListFolderHelper {
 		cal.add(Calendar.MILLISECOND, -1);
 	}
 	
-	@SuppressWarnings("unchecked")
 	protected static String getShowFolder(AllModulesInjected bs, Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
 			Map<String,Object>model, String viewType, boolean showTrash) throws Exception {
@@ -786,7 +786,7 @@ public class ListFolderHelper {
 					// do it with ajax
 				} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui ||
 						!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
-					folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
+					folderEntries = TaskHelper.findTaskEntries(bs, req, response, (Binder) folder, model, options);
 				} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
 						ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 					folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
@@ -2375,91 +2375,33 @@ public class ListFolderHelper {
 		}
 	}
 
-	private static Map findTaskEntries(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Binder binder, Map model, Map options) throws PortletRequestBindingException {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Long userId = user.getId();
-		model.put(WebKeys.USER_PRINCIPAL, user);
-		Long binderId = binder.getId();
-		
-		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-
-		Map folderEntries = new HashMap();
-
-		// What are we filtering for?  (Closed, Today, Week, ...)
-		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
-		TaskHelper.FilterType filterType = TaskHelper.setTaskFilterType(portletSession, ((filterTypeParam != null) ? TaskHelper.FilterType.valueOf(filterTypeParam) : null));
-		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-
-		// Are we producing a physical or virtual listing?
-		ModeType modeType;
-		Boolean showModeSelect;
-		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
-		if (BinderHelper.isBinderUserWorkspace(binderWs)) {
-			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
-			modeType = setFolderModeType(bs, userId, binderId, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
-			showModeSelect = Boolean.TRUE;
-		}
-		else {
-			modeType = setFolderModeType(bs, userId, binderId, ModeType.PHYSICAL);
-			showModeSelect = Boolean.FALSE;
-		}
-		model.put(WebKeys.FOLDER_CURRENT_MODE_TYPE, modeType);
-		model.put(WebKeys.FOLDER_SHOW_MODE_SELECT,  showModeSelect);
-
-		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
-		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, TaskHelper.buildSearchFilter(filterType, modeType, model, binder).getFilter());
-       	
-		if (binder instanceof Folder) {
-			folderEntries = bs.getFolderModule().getEntries(binderId, options);
-		} else {
-			//a template
-			folderEntries = new HashMap();
-		}
-
-		// If we have any virtual entries...
-		if ((0 < folderEntries.size()) && (ModeType.VIRTUAL == modeType)) {
-			// ...we need to pass information about their binder's too.
-			List<Long> binderIds = new ArrayList<Long>();
-	    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-	    	if (items != null) {
-		    	Iterator it = items.iterator();
-		    	while (it.hasNext()) {
-		    		Map entry = (Map)it.next();
-		    		String entryBinderId = (String)entry.get(Constants.BINDER_ID_FIELD);
-		    		binderIds.add(Long.valueOf(entryBinderId));
-		    	}
-	    	}
-			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
-		}
-
-		Map<String, Map> cacheEntryDef = new HashMap();
-    	List items = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-    	if (items != null) {
-	    	Iterator it = items.iterator();
-	    	while (it.hasNext()) {
-	    		Map entry = (Map)it.next();
-	    		String entryDefId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
-	    		if (cacheEntryDef.get(entryDefId) == null) {
-	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
-	    		}
-	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
-	    	}
-    	}
-		
-		return folderEntries;
+	/**
+	 * Returns the current folder mode from the user properties.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static ModeType getFolderModeType(AllModulesInjected bs, Long userId, Long binderId) {
+		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
+		return ((ModeType) userProps.getProperty(WebKeys.FOLDER_MODE_PREF));
 	}
 	
 	/**
-	 * Saves given folder mode in session or default mode if given is <code>null</code> or unknown.
+	 * Saves given folder mode in session or default mode if given is
+	 * <code>null</code> or unknown.
 	 * 
-	 * @param portletSession
+	 * @param bs
+	 * @param userId
+	 * @param binderId
 	 * @param modeType
+	 * 
 	 * @return
 	 */
 	public static ModeType setFolderModeType(AllModulesInjected bs, Long userId, Long binderId, ModeType modeType) {
-		if (modeType == null) {
-			
+		if (null == modeType) {			
 			modeType = getFolderModeType(bs, userId, binderId);
 			if (modeType == null) {
 				modeType = MODE_TYPE_DEFAULT;
@@ -2467,10 +2409,5 @@ public class ListFolderHelper {
 		}
 		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.FOLDER_MODE_PREF, modeType);
 		return modeType;
-	}
-	
-	public static ModeType getFolderModeType(AllModulesInjected bs, Long userId, Long binderId) {
-		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
-		return (ModeType)userProps.getProperty(WebKeys.FOLDER_MODE_PREF);
 	}
 }

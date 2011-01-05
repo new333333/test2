@@ -32,7 +32,10 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,6 +43,9 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -68,17 +74,17 @@ public class GwtTaskHelper {
 		List<TaskLink> taskOrder = linkage.getTaskOrder();
 		if (taskOrder.isEmpty()) {
 			// ...log that fact and bail.
-			m_logger.debug("TaskLinkage.dumpTaskLinkage( EMPTY )");
+			m_logger.debug("GwtTaskHelper.dumpTaskLinkage( EMPTY )");
 			return;
 		}
 
 		// Scan the TaskLink's in the task order list...
-		m_logger.debug("TaskLinkage.dumpTaskLinkage( START )");
+		m_logger.debug("GwtTaskHelper.dumpTaskLinkage( START )");
 		for (TaskLink tl:  taskOrder) {
 			// ...logging each of them.
 			dumpTaskLink(tl, 0);
 		}
-		m_logger.debug("TaskLinkage.dumpTaskLinkage( END )");
+		m_logger.debug("GwtTaskHelper.dumpTaskLinkage( END )");
 	}
 
 	/*
@@ -105,7 +111,43 @@ public class GwtTaskHelper {
 			dumpTaskLink(tlScan, subtaskDepth);
 		}
 	}
-	
+
+	/**
+	 * Reads the tasks from the specified binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+//!		...this needs to be implemented...
+		return new ArrayList<TaskInfo>();
+	}
+
+	/**
+	 * Reads the task information from the specified binder.
+	 * 
+	 * @param request
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public static TaskBundle getTaskBundle( HttpServletRequest request, AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+		TaskBundle tb = new TaskBundle();
+		
+		tb.setTaskLinkage(getTaskLinkage(   bs, binder));
+		tb.setTasks(      getTasks(request, bs, binder));
+		
+		return tb;
+	}
+
 	/**
 	 * Returns the TaskLinkage from a task folder.
 	 * 
@@ -114,14 +156,14 @@ public class GwtTaskHelper {
 	 * 
 	 * @return
 	 */
-	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) {
+	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
 		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
 		if (null == reply) {
 			reply = new TaskLinkage();
 		}
 		
 		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+			m_logger.debug("GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
 			dumpTaskLinkage(reply);
 		}
 		
@@ -150,7 +192,7 @@ public class GwtTaskHelper {
 		catch (Exception ex) {
 			// If we can't access the TaskLink's FolderEntry, it's not
 			// valid.
-			m_logger.debug("TaskHelper.isTaskLinkValid( EXCEPTION ):  ", ex);
+			m_logger.debug("GwtTaskHelper.isTaskLinkValid( EXCEPTION ):  ", ex);
 			reply = false;
 		}
 		
@@ -180,10 +222,10 @@ public class GwtTaskHelper {
 		bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
 		if (m_logger.isDebugEnabled()) {
 			if (null == tl) {
-				m_logger.debug("TaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+				m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
 			}
 			else {
-				m_logger.debug("TaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+				m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
 				dumpTaskLinkage(tl);
 			}
 		}
@@ -197,7 +239,7 @@ public class GwtTaskHelper {
 	 */
 	public static void validateTaskLinkage(AllModulesInjected bs, TaskLinkage tl) {
 		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.validateTaskLinkage( BEFORE ):");
+			m_logger.debug("GwtTaskHelper.validateTaskLinkage( BEFORE ):");
 			dumpTaskLinkage(tl);
 		}
 		
@@ -205,7 +247,7 @@ public class GwtTaskHelper {
 		validateTaskLinkList(bs, tl.getTaskOrder());
 		
 		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.validateTaskLinkage( AFTER ):");
+			m_logger.debug("GwtTaskHelper.validateTaskLinkage( AFTER ):");
 			dumpTaskLinkage(tl);
 		}
 	}
