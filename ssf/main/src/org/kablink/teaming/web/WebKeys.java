@@ -781,6 +781,7 @@ public class WebKeys {
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DELETE_ENTRY_ADAPTER = "ss_deleteEntryAdapter";
     public static final String DIRECTION="ss_direction";
+    public static final String ACTIVE_USER_ACCOUNTS="ss_activeUserAccounts";
     public static final String DISABLED_USER_ACCOUNTS="ss_disabledUserAccounts";
     public static final String DISKQUOTA="diskQuota";
     public static final String DISK_QUOTA_EXCEEDED="ss_diskQuotaExceeded";

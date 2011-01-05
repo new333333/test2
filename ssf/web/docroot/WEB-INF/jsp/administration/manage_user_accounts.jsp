@@ -66,13 +66,30 @@
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
 function showAddUsersDiv() {
-	hideAllDivs();
 	var userDivObj = self.document.getElementById("addUserDiv");
-	userDivObj.style.display = "block";
+	if (userDivObj.style.display != "block") {
+		hideAllDivs();
+		userDivObj.style.display = "block";
+	} else {
+		hideAllDivs();
+	}
+}
+
+function showAllUsersDiv() {
+	var userDivObj = self.document.getElementById("allUserDiv");
+	if (userDivObj.style.display != "block") {
+		hideAllDivs();
+		userDivObj.style.display = "block";
+	} else {
+		hideAllDivs();
+	}
 }
 
 function hideAllDivs() {
 	var userDivObj = self.document.getElementById("addUserDiv");
+	userDivObj.style.display = "none";
+	
+	userDivObj = self.document.getElementById("allUserDiv");
 	userDivObj.style.display = "none";
 }
 </script>
@@ -101,13 +118,20 @@ function hideAllDivs() {
 	</div>
 		
 	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
-		<input type="button" class="ss_submit" name="addUserBtn" 
-		  value="<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>"
-	  onClick="showAddUsersDiv();return false;"/>
+		<span>
+		  <input type="button" class="ss_submit" name="addUserBtn" 
+		    value="<ssf:nlt tag="administration.userAccounts.selectIndividualAccountsToDisable"/>"
+	        onClick="showAddUsersDiv();return false;"/>
+	    </span>
+		<span style="padding-left:20px;">
+		  <input type="button" class="ss_submit" name="addUserBtn" 
+		    value="<ssf:nlt tag="administration.userAccounts.selectAllAccountsToDisable"/>"
+	        onClick="showAllUsersDiv();return false;"/>
+	    </span>
 	</div>  
 	<!--Add User DIV dialog-->
-	<div class="ss_relDiv">
-	  	<div class="ss_diagSmallDiv" id="addUserDiv" style="display: none;">
+	<div>
+	  	<div id="addUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; display: none;">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>
 			</div>
@@ -119,6 +143,37 @@ function hideAllDivs() {
 							<ssf:find formName="form1" formElement="addUsers" type="user" width="150px" />
 						</td>
 					</tr>
+				</table>
+			</div>
+			<div class="ss_diagDivFooter">
+				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
+				  onClick="hideAllDivs();return false;"/>
+			</div>
+	    </div>
+	</div>	
+	<!--END-->
+	<!--All User DIV dialog-->
+	<div>
+	  	<div id="allUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; display: none;">
+			<div class="ss_diagDivTitle">
+		  		<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>
+			</div>
+			<div class="ss_diagDivContent">
+				<table>
+			    <c:forEach var="user" items="${ss_activeUserAccounts}">
+			      <tr>
+			        <td class="leftend">
+			          <input type="checkbox" name="disableUser_${user['_docId']}" />
+			        </td>
+			        <td style="padding-left:6px;">
+			          ${user['title']}
+			        </td>
+			        <td style="padding-left:20px;">
+			          ${user['_loginName']}
+			        </td>
+			      </tr>
+			    </c:forEach>
 				</table>
 			</div>
 			<div class="ss_diagDivFooter">

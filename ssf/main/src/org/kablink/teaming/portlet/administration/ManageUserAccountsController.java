@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -55,6 +56,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.search.Constants;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -66,7 +68,23 @@ public class ManageUserAccountsController extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+			//Get the list of users to disable fro the individual selections
 			Set<Long> disableUserIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
+			
+			//Also check for selections from the full list
+			Iterator itFormData = formData.keySet().iterator();
+			while (itFormData.hasNext()) {
+				String key = (String)itFormData.next();
+				if (key.indexOf("disableUser_") == 0) {
+					String userId = key.substring(12, key.length());
+					try {
+						if (!disableUserIds.contains(Long.valueOf(userId))) {
+							disableUserIds.add(Long.valueOf(userId));
+						}
+					} catch(Exception e) {}
+				}
+			}
+			//Now disable the selected accounts
 			for (Long id : disableUserIds) {
 				List ids = new ArrayList();
 				ids.add(id);
@@ -76,7 +94,7 @@ public class ManageUserAccountsController extends SAbstractController {
 
 			//Check for individual user changes
 			Set<Long> enableUserIds = new HashSet<Long>();
-			Iterator itFormData = formData.keySet().iterator();
+			itFormData = formData.keySet().iterator();
 			while (itFormData.hasNext()) {
 				String key = (String)itFormData.next();
 				if (key.indexOf("enableUser_") == 0) {
@@ -107,8 +125,15 @@ public class ManageUserAccountsController extends SAbstractController {
 
 		List users = getProfileModule().getDisabledUserAccounts();
 		
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.SEARCH_MAX_HITS_ALL_USERS));
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+		Map allUsers = getProfileModule().getUsers(options);
+		
 		SortedSet<Principal> principals = getProfileModule().getPrincipals(users);
 		model.put(WebKeys.DISABLED_USER_ACCOUNTS, principals);
+		model.put(WebKeys.ACTIVE_USER_ACCOUNTS, allUsers.get(ObjectKeys.SEARCH_ENTRIES));
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_USER_ACCOUNTS, model);
 
