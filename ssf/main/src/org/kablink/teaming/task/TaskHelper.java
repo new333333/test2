@@ -34,14 +34,11 @@ package org.kablink.teaming.task;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
@@ -54,7 +51,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
-import org.kablink.teaming.task.TaskLinkage.TaskLink;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -63,8 +59,6 @@ import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 
 
 public class TaskHelper {
-	private static Log m_logger = LogFactory.getLog(TaskHelper.class);
-	
 	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME		= "responsible_external";
 	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
 	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME			= "assignment";
@@ -434,131 +428,5 @@ public class TaskHelper {
 			newPriority,
 			newStatus,
 			newCompleted);
-	}
-	
-	/**
-	 * Returns the TaskLinkage from a task folder.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * 
-	 * @return
-	 */
-	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) {
-		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
-		if (null == reply) {
-			reply = new TaskLinkage();
-		}
-		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
-			reply.debugDump();
-		}
-		
-		return reply;
-	}
-	
-	/**
-	 * Stores the TaskLinkage for a task folder.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * @param tl
-	 */
-	public static void setTaskLinkage(AllModulesInjected bs, Binder binder, TaskLinkage tl) {
-		bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
-		if (m_logger.isDebugEnabled()) {
-			if (null == tl) {
-				m_logger.debug("TaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
-			}
-			else {
-				m_logger.debug("TaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
-				tl.debugDump();
-			}
-		}
-	}
-	
-	/**
-	 * Removes the TaskLinkage from a task folder.
-	 * 
-	 * @param bs
-	 * @param binder
-	 */
-	public static void removeTaskLinkage(AllModulesInjected bs, Binder binder) {
-		setTaskLinkage(bs, binder, null);
-	}
-
-	/**
-	 * Validates the task FolderEntry's referenced by a TaskLinkage.
-	 * 
-	 * @param bs
-	 * @param tl
-	 */
-	public static void validateTaskLinkage(AllModulesInjected bs, TaskLinkage tl) {
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.validateTaskLinkage( BEFORE ):");
-			tl.debugDump();
-		}
-		
-		// Simply validate the List<TaskList> of the task ordering.
-		validateTaskLinkList(bs, tl.getTaskOrder());
-		
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("TaskHelper.validateTaskLinkage( AFTER ):");
-			tl.debugDump();
-		}
-	}
-
-	/*
-	 * Validates the TaskLink's in a List<TaskLink> removing any that
-	 * are invalid or cannot be accessed.
-	 */
-	private static void validateTaskLinkList(AllModulesInjected bs, List<TaskLink> tlList) {
-		// Scan the TaskLink's in the List<TaskLink>.
-		int c = ((null == tlList) ? 0 : tlList.size());
-		for (int i = (c - 1); i >= 0; i -= 1) {
-			// Is this TaskLink valid?
-			TaskLink tl = tlList.get(i);
-			if (!(isTaskLinkValid(bs, tl))) {
-				// No!  Remove it.
-				tlList.remove(i);
-			}
-			
-			else {			
-				// Yes, this TaskLink is valid!  Validate its subtasks.
-				validateTaskLinkList(bs, tl.getSubtasks());
-			}
-		}
-	}
-	
-	/*
-	 * Returns true if a TaskLink refers to a valid FolderEntry and false
-	 * otherwise.
-	 */
-	private static boolean isTaskLinkValid(AllModulesInjected bs, TaskLink tl) {
-		// If we weren't given a TaskLink...
-		boolean reply = false;
-		if (null == tl) {
-			// ..it can't be valid.
-			return reply;
-		}
-		
-		try {
-			// If we can access the TaskLink's FolderEntry and it's not
-			// deleted or predeleted, it's valid.
-			FolderEntry taskFE = bs.getFolderModule().getEntry(null, tl.getTaskId());
-			reply = ((null != taskFE) && (!(taskFE.isDeleted())) && (!(taskFE.isPreDeleted())));
-		}
-		
-		catch (Exception ex) {
-			// If we can't access the TaskLink's FolderEntry, it's not
-			// valid.
-			m_logger.debug("TaskHelper.isTaskLinkValid( EXCEPTION ):  ", ex);
-			reply = false;
-		}
-		
-		// If we get here, reply is true if the TaskLink references a
-		// task we can access and false otherwise.  Return it.
-		return reply;
-	}
+	}	
 }
