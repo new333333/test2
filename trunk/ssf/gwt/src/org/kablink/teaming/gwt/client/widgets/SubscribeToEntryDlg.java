@@ -46,6 +46,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
 
 
@@ -62,6 +63,7 @@ public class SubscribeToEntryDlg extends DlgBox
 	FlowPanel m_sendEmailToPanel1;
 	FlowPanel m_sendEmailToPanel2;
 	FlowPanel m_sendTextToPanel;
+	InlineLabel m_entryTitle;
 	CheckBox m_primaryAddress1;
 	CheckBox m_mobileAddress1;
 	CheckBox m_textAddress1;
@@ -104,29 +106,46 @@ public class SubscribeToEntryDlg extends DlgBox
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.setStyleName( "teamingDlgBoxContent" );
 		m_mainPanel.addStyleName( "dlgContent" );
+		
+		// Create a panel for the entry title	
+		{
+			FlowPanel titlePanel;
+			InlineLabel titleLabel;
+			titlePanel = new FlowPanel();
+			titleLabel = new InlineLabel( messages.subscribeToEntryHeader() );
+			
+			titlePanel.add( titleLabel );
+			m_entryTitle = new InlineLabel();
+			titlePanel.add( m_entryTitle );
+		}
 
 		// Create a panel where the "send email to" ui will go.
 		{
 			m_sendEmailToPanel1 = new FlowPanel();
+			m_sendEmailToPanel1.addStyleName( "marginTop10px" );
 			
 			label = new Label( messages.sendEmailTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "smalltext" );
 			m_sendEmailToPanel1.add( label );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_primaryAddress1 = new CheckBox();
 			flowPanel.add( m_primaryAddress1 );
 			m_sendEmailToPanel1.add( flowPanel );
 
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_mobileAddress1 = new CheckBox();
 			flowPanel.add( m_mobileAddress1 );
 			m_sendEmailToPanel1.add( flowPanel );
 
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_textAddress1 = new CheckBox();
 			flowPanel.add( m_textAddress1 );
 			m_sendEmailToPanel1.add( flowPanel );
@@ -137,26 +156,30 @@ public class SubscribeToEntryDlg extends DlgBox
 		// Create a panel where the "send email without attachment to" ui will go.
 		{
 			m_sendEmailToPanel2 = new FlowPanel();
-			m_sendEmailToPanel2.addStyleName( "paddingTop8px" );
+			m_sendEmailToPanel2.addStyleName( "marginTop10px" );
 		
 			label = new Label( messages.sendEmailWithoutAttachmentsTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "smalltext" );
 			m_sendEmailToPanel2.add( label );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_primaryAddress2 = new CheckBox();
 			flowPanel.add( m_primaryAddress2 );
 			m_sendEmailToPanel2.add( flowPanel );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_mobileAddress2 = new CheckBox();
 			flowPanel.add( m_mobileAddress2 );
 			m_sendEmailToPanel2.add( flowPanel );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_textAddress2 = new CheckBox();
 			flowPanel.add( m_textAddress2 );
 			m_sendEmailToPanel2.add( flowPanel );
@@ -167,20 +190,23 @@ public class SubscribeToEntryDlg extends DlgBox
 		// Create a panel where the "send text to" ui will go.
 		{
 			m_sendTextToPanel = new FlowPanel();
-			m_sendTextToPanel.addStyleName( "paddingTop8px" );
+			m_sendTextToPanel.addStyleName( "marginTop10px" );
 		
 			label = new Label( messages.sendTextTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "smalltext" );
 			m_sendTextToPanel.add( label );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_primaryAddress3 = new CheckBox();
 			flowPanel.add( m_primaryAddress3 );
 			m_sendTextToPanel.add( flowPanel );
 			
 			flowPanel = new FlowPanel();
 			flowPanel.addStyleName( "paddingLeft1em" );
+			flowPanel.addStyleName( "mediumtext" );
 			m_mobileAddress3 = new CheckBox();
 			flowPanel.add( m_mobileAddress3 );
 			m_sendTextToPanel.add( flowPanel );
@@ -332,7 +358,7 @@ public class SubscribeToEntryDlg extends DlgBox
 	/**
 	 * Issue an rpc request to get the current subscription settings for the given entry.
 	 */
-	public void init( String entryId )
+	public void init( String entryId, final String entryTitle )
 	{
 		m_entryId = entryId;
 		
@@ -356,7 +382,7 @@ public class SubscribeToEntryDlg extends DlgBox
 				public void onSuccess( SubscriptionData subscriptionData )
 				{
 					// Update the dialog with the given subscription data.
-					updateDlg( subscriptionData );
+					updateDlg( subscriptionData, entryTitle );
 				}
 			};
 		}
@@ -422,7 +448,7 @@ public class SubscribeToEntryDlg extends DlgBox
 	/**
 	 * Update this dialog with the given subscription data.
 	 */
-	private void updateDlg( SubscriptionData subscriptionData )
+	private void updateDlg( SubscriptionData subscriptionData, String entryTitle )
 	{
 		String primaryAddress;
 		String mobileAddress;
@@ -450,6 +476,7 @@ public class SubscribeToEntryDlg extends DlgBox
 			return;
 		}
 		
+		m_entryTitle.setText( entryTitle );
 		m_mainPanel.add( m_sendEmailToPanel1 );
 		m_mainPanel.add( m_sendEmailToPanel2 );
 		m_mainPanel.add( m_sendTextToPanel );
