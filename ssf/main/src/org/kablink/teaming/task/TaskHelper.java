@@ -42,6 +42,8 @@ import java.util.Set;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -60,6 +62,8 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -68,6 +72,9 @@ import org.kablink.util.search.Constants;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 
+/**
+ *
+ */
 public class TaskHelper {
 	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME		= "responsible_external";
 	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
@@ -90,6 +97,10 @@ public class TaskHelper {
 		ALL;
 	}
 	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
+	
+	// Key into the session cache used to store the find task options
+	// Map for use by the GWT UI.
+	public final static String CACHED_FIND_TASKS_OPTIONS_KEY = "gwt-ui-find-tasks-options";
 
 	/**
 	 * 
@@ -196,12 +207,16 @@ public class TaskHelper {
 	
 	/**
 	 * 
-	 * @param portletSession
+	 * @param session
 	 * 
 	 * @return
 	 */
-	public static FilterType getTaskFilterType(PortletSession portletSession) {
-		return ((FilterType) portletSession.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
+	public static FilterType getTaskFilterType(PortletSession session) {
+		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
+	}
+	
+	public static FilterType getTaskFilterType(HttpSession session) {
+		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
 	}
 	
 	/**
@@ -219,27 +234,42 @@ public class TaskHelper {
 	/**
 	 * Saves given type in session or default type if given is <code>null</code> or unknown.
 	 * 
-	 * @param portletSession
+	 * @param session
 	 * @param filterType
 	 * @return
 	 */
-	public static FilterType setTaskFilterType(PortletSession portletSession, FilterType filterType) {
+	public static FilterType setTaskFilterType(PortletSession session, FilterType filterType) {
 		if (null == filterType) {
-			filterType = getTaskFilterType(portletSession);
+			filterType = getTaskFilterType(session);
 			if (null == filterType) {
 				filterType = FILTER_TYPE_DEFAULT;
 			}
 		}
 		
-		portletSession.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		return filterType;
+	}
+	
+	public static FilterType setTaskFilterType(HttpSession session, FilterType filterType) {
+		if (null == filterType) {
+			filterType = getTaskFilterType(session);
+			if (null == filterType) {
+				filterType = FILTER_TYPE_DEFAULT;
+			}
+		}
+		
+		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 		return filterType;
 	}
 
 	/**
 	 * Saves given folder mode in session or default mode if given is <code>null</code> or unknown.
 	 * 
-	 * @param portletSession
+	 * @param bs
+	 * @param userId
+	 * @param binderId
 	 * @param modeType
+	 * 
 	 * @return
 	 */
 	public static ListFolderHelper.ModeType setTaskModeType(AllModulesInjected bs, Long userId, Long binderId, ListFolderHelper.ModeType modeType) {
@@ -441,6 +471,9 @@ public class TaskHelper {
 	}
 	
 	/**
+	 * Called to read task entries.
+	 * 
+	 * Called from:  ListFolderHelper.getShowFolder()
 	 * 
 	 * @param bs
 	 * @param request
@@ -454,20 +487,103 @@ public class TaskHelper {
 	 * @throws PortletRequestBindingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map findTaskEntries(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Binder binder, Map model, Map options) throws PortletRequestBindingException {
+	public static Map findTaskEntries(
+			AllModulesInjected	bs,
+			RenderRequest		request, 
+			RenderResponse		response,
+			Binder				binder,
+			Map					model,
+			Map					options)
+				throws PortletRequestBindingException {
+		// Read the requested task entries.
+		Map taskEntries = findTaskEntriesImpl(
+			bs,
+			WebHelper.getRequiredPortletSession(request),
+			null,
+			binder,
+			model,
+			PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null),
+			PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null),
+			options);
+
+		// If we're in the GWT UI (i.e., not mobile, ...)...
+		if (GwtUIHelper.isGwtUIActive(request)) {
+			// ...write the options used for the search (which includes
+			// ...the filter, ...) to the session cache.
+			HttpServletRequest hRequest = WebHelper.getHttpServletRequest(request);
+			HttpSession        hSession = WebHelper.getRequiredSession(hRequest);
+			
+			hSession.setAttribute(CACHED_FIND_TASKS_OPTIONS_KEY, new GwtUISessionData(options));
+		}
+
+		// If we get here, taskEntries refers to a Map of the entries
+		// that were read.  Return it.
+		return taskEntries;
+	}
+	
+	/**
+	 * Called to read task entries.
+	 * 
+	 * Called from:  GwtTaskHelper.getTasks()
+	 * 
+	 * @param bs
+	 * @param session
+	 * @param binder
+	 * @param filterType
+	 * @param modeType
+	 * @param options
+	 * 
+	 * @return
+	 * 
+	 * @throws PortletRequestBindingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Map findTaskEntries(
+			AllModulesInjected	bs,
+			HttpSession			session, 
+			Binder				binder,
+			String				filterType,
+			String				modeType,
+			Map					options)
+				throws PortletRequestBindingException {
+		return
+			findTaskEntriesImpl(
+				bs,
+				null,
+				session,
+				binder,
+				new HashMap(),	// The model is not used with the GWT UI.
+				filterType,
+				modeType,
+				options);
+	}
+	
+	/*
+	 * Private method used by the versions of findTaskEntries() above
+	 * to actually read the request task entries.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map findTaskEntriesImpl(
+			AllModulesInjected	bs,
+			PortletSession		pSession,
+			HttpSession			hSession, 
+			Binder				binder,
+			Map					model,
+			String				filterTypeParam,
+			String				modeTypeParam,
+			Map					options)
+				throws PortletRequestBindingException {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long userId = user.getId();
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		Long binderId = binder.getId();
 		
-		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-
 		Map folderEntries = new HashMap();
 
 		// What are we filtering for?  (Closed, Today, Week, ...)
-		String filterTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.TASK_FILTER_TYPE, null);
-		FilterType filterType = setTaskFilterType(portletSession, ((filterTypeParam != null) ? FilterType.valueOf(filterTypeParam) : null));
+		FilterType filterType = ((filterTypeParam != null) ? FilterType.valueOf(filterTypeParam) : null);
+		if (null != pSession) filterType = setTaskFilterType(pSession, filterType);
+		else                  filterType = setTaskFilterType(hSession, filterType);
 		model.put(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
 
 		// Are we producing a physical or virtual listing?
@@ -475,7 +591,6 @@ public class TaskHelper {
 		Boolean showModeSelect;
 		Workspace binderWs = BinderHelper.getBinderWorkspace(binder);
 		if (BinderHelper.isBinderUserWorkspace(binderWs)) {
-			String modeTypeParam = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_MODE_TYPE, null);
 			modeType = ListFolderHelper.setFolderModeType(bs, userId, binderId, ((modeTypeParam != null) ? ModeType.valueOf(modeTypeParam) : null));
 			showModeSelect = Boolean.TRUE;
 		}

@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.List;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -44,6 +46,19 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class TaskInfo implements IsSerializable {
+	private boolean		m_overdue;	
+	private boolean		m_seen;	
+	private List<Long>	m_assignments;
+	private List<Long>	m_assignmentGroups;
+	private List<Long>	m_assignmentTeams;
+	private Long		m_binderId;	
+	private Long		m_taskId;	
+	private String		m_completed;	
+	private String		m_entityType;
+	private String		m_priority;
+	private String		m_title;
+	private String		m_status;
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -52,4 +67,40 @@ public class TaskInfo implements IsSerializable {
 	public TaskInfo() {
 		// Nothing to do.
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean    getOverdue()          {return m_overdue;         }
+	public boolean    getSeen()             {return m_seen;            }
+	public List<Long> getAssignments()      {return m_assignments;     }
+	public List<Long> getAssignmentGroups() {return m_assignmentGroups;}
+	public List<Long> getAssignmentTeams()  {return m_assignmentTeams; }
+	public Long       getBinderId()         {return m_binderId;        }
+	public Long       getTaskId()           {return m_taskId;          }
+	public String     getCompleted()        {return m_completed;       }
+	public String     getEntityType()       {return m_entityType;      }
+	public String     getPriority()         {return m_priority;        }
+	public String     getTitle()            {return m_title;           }
+	public String     getStatus()           {return m_status;          }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @return
+	 */
+	public void setOverdue(         boolean    overdue)          {m_overdue          = overdue;         }
+	public void setSeen(            boolean    seen)             {m_seen             = seen;            }
+	public void setAssignments(     List<Long> assignments)      {m_assignments      = assignments;     }
+	public void setAssignmentGroups(List<Long> assignmentGroups) {m_assignmentGroups = assignmentGroups;}
+	public void setAssignmentTeams( List<Long> assignmentTeams)  {m_assignmentTeams  = assignmentTeams; }
+	public void setBinderId(        Long       binderId)         {m_binderId         = binderId;        }
+	public void setTaskId(          Long       taskId)           {m_taskId           = taskId;          }
+	public void setCompleted(       String     completed)        {m_completed        = completed;       }
+	public void setEntityType(      String     entityType)       {m_entityType       = entityType;      }
+	public void setPriority(        String     priority)         {m_priority         = priority;        }
+	public void setTitle(           String     title)            {m_title            = title;           }
+	public void setStatus(          String     status)           {m_status           = status;          }
 }

@@ -228,7 +228,7 @@ public interface GwtRpcServiceAsync
 	public void saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData, AsyncCallback<Boolean> callback );
 
 	// Task servicing APIs.
-	public void getTasks(       HttpRequestInfo ri, Long binderId, AsyncCallback<List<TaskInfo>> callback );
-	public void getTaskBundle(  HttpRequestInfo ri, Long binderId, AsyncCallback<TaskBundle>     callback );
-	public void getTaskLinkage( HttpRequestInfo ri, Long binderId, AsyncCallback<TaskLinkage>    callback );
+	public void getTasks(       HttpRequestInfo ri, Long binderId, String filterType, String modeType, AsyncCallback<List<TaskInfo>> callback );
+	public void getTaskBundle(  HttpRequestInfo ri, Long binderId, String filterType, String modeType, AsyncCallback<TaskBundle>     callback );
+	public void getTaskLinkage( HttpRequestInfo ri, Long binderId,                                     AsyncCallback<TaskLinkage>    callback );
 }// end GwtRpcServiceAsync
