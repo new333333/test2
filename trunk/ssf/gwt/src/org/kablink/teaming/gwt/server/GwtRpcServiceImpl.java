@@ -1473,14 +1473,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param ri
 	 * @param binderId
+	 * @param filterType
+	 * @param modeType
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public List<TaskInfo> getTasks( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	public List<TaskInfo> getTasks( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTasks( getRequest( ri ), this, getTaskBinder( binderId ));
+		return GwtTaskHelper.getTasks( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
 	}//end getTasks()
 	
 	/**
@@ -1488,14 +1490,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param ri
 	 * @param binderId
+	 * @param filterType
+	 * @param modeType
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTaskBundle( getRequest( ri ), this, getTaskBinder( binderId ) );
+		return GwtTaskHelper.getTaskBundle( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
 	}// end getTaskBundle()
 	
 	/**

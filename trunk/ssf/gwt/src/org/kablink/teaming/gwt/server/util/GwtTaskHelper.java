@@ -33,9 +33,13 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,12 +47,19 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
+import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.DateComparer;
+import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.search.Constants;
 
 
 /**
@@ -59,6 +70,102 @@ import org.kablink.teaming.util.AllModulesInjected;
  */
 public class GwtTaskHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtTaskHelper.class);
+
+	/*
+	 * Converts a String to a Long, if possible, and adds it to a
+	 * List<Long>.
+	 */
+	private static void addLongFromStringToList(String s, List<Long> l) {
+		try {
+			Long lVal = Long.parseLong(s);
+			l.add(lVal);
+		}
+		catch (NumberFormatException nfe) {
+		}
+	}
+
+	/*
+	 * Generates a String to write to the log for a boolean.
+	 */
+	private static String buildDumpString(String label, boolean v) {
+		return (label + ":  " + String.valueOf(v));
+	}
+	
+	/*
+	 * Generates a String to write to the log for a Long.
+	 */
+	private static String buildDumpString(String label, Long v) {
+		return (label + ":  " + ((null == v) ? "null" : String.valueOf(v)));
+	}
+	
+	/*
+	 * Generates a String to write to the log for a List<Long>.
+	 */
+	private static String buildDumpString(String label, List<Long> v) {
+		if (null == v) {
+			v = new ArrayList<Long>();
+		}
+		
+		StringBuffer buf = new StringBuffer(label);
+		buf.append(":  ");
+		if (v.isEmpty()) {
+			buf.append("EMPTY");
+		}
+		else {
+			int c = 0;
+			for (Long l:  v) {
+				if (0 < c++) {
+					buf.append(", ");
+				}
+				buf.append(String.valueOf(l));
+			}
+		}
+		return buf.toString();
+	}
+	
+	/*
+	 * Generates a String to write to the log for a String.
+	 */
+	private static String buildDumpString(String label, String v) {
+		return (label + ":  '" + ((null == v) ? "null" : v) + "'");
+	}
+	
+	/*
+	 * Logs the contents of a List<TaskInfo>.
+	 */
+	private static void dumpTaskInfoList(List<TaskInfo> tasks) {		
+		// If debug logging is disabled...
+		if (!(m_logger.isDebugEnabled())) {
+			// ...bail.
+			return;
+		}
+
+		// If there are no TaskInfo's in the list...
+		if (tasks.isEmpty()) {
+			// ...log that fact and bail.
+			m_logger.debug("GwtTaskHelper.dumpTaskInfoList( EMPTY )");
+			return;
+		}
+
+		// Dump the tasks.
+		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START:  " + String.valueOf(tasks.size()) + " )");
+		for (TaskInfo ti:  tasks) {
+			StringBuffer buf = new StringBuffer(buildDumpString("\n\tTask ID", ti.getTaskId()));
+			buf.append(buildDumpString("\n\t\tOverdue",          ti.getOverdue()         ));
+			buf.append(buildDumpString("\n\t\tSeen",             ti.getSeen()            ));
+			buf.append(buildDumpString("\n\t\tAssignments",      ti.getAssignments()     ));
+			buf.append(buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups()));
+			buf.append(buildDumpString("\n\t\tAssignmentTeams",  ti.getAssignmentTeams() ));
+			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getBinderId()        ));
+			buf.append(buildDumpString("\n\t\tCompleted",        ti.getCompleted()       ));
+			buf.append(buildDumpString("\n\t\tEntityType",       ti.getEntityType()      ));
+			buf.append(buildDumpString("\n\t\tPriority",         ti.getPriority()        ));
+			buf.append(buildDumpString("\n\t\tTitle",            ti.getTitle()           ));
+			buf.append(buildDumpString("\n\t\tStatus",           ti.getStatus()          ));
+			m_logger.debug("GwtTaskHelper.dumpTaskInfoList()" + buf.toString());
+		}
+		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( END )");
+	}
 
 	/*
 	 * Logs the contents of a TaskLinkage object.
@@ -112,20 +219,159 @@ public class GwtTaskHelper {
 		}
 	}
 
+	/*
+	 * Reads a Date from a Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Date getDateFromMap(Map m, String key) {
+		return ((Date) m.get(key));
+	}
+
+	/*
+	 * Reads a Long from a Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Long getLongFromMap(Map m, String key) {
+		Long reply = null;
+		String l = getStringFromMap(m, key);
+		if (0 < l.length()) {
+			reply = Long.parseLong(l);
+		}
+		return reply;
+	}
+	
+	/*
+	 * Reads a List<Long> from a Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Long> getLongListFromMap(Map m, String key) {
+		// Is there value for the key?
+		List<Long> reply = new ArrayList<Long>();
+		Object o = m.get(key);
+		if (null != o) {
+			// Yes!  Is the value is a String?
+			if (o instanceof String) {
+				// Yes!  Added it as a Long to the List<Long>. 
+				addLongFromStringToList(((String) o), reply);
+			}
+
+			// No, the value isn't a String!  Is it a String[]?
+			else if (o instanceof String[]) {
+				// Yes!  Scan them and add each as a Long to the
+				// List<Long>. 
+				String[] strLs = ((String[]) o);
+				int c = strLs.length;
+				for (int i = 0; i < c; i += 1) {
+					addLongFromStringToList(strLs[i], reply);
+				}
+			}
+
+			// No, the value isn't a String[] either!  Is it a
+			// SearchFieldResult?
+			else if (o instanceof SearchFieldResult) {
+				// Yes!  Scan the value set from it and add each as a
+				// Long to the List<Long>. 
+				SearchFieldResult sfr = ((SearchFieldResult) m.get(key));
+				Set<String> strLs = ((Set<String>) sfr.getValueSet());
+				for (String strL:  strLs) {
+					addLongFromStringToList(strL, reply);
+				}
+			}
+		}
+		
+		// If we get here, reply refers to the List<Long> of values
+		// from the Map.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Reads a String from a Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getStringFromMap(Map m, String key) {
+		String reply = ((String) m.get(key));
+		if (null == reply) {
+			reply = "";
+		}
+		return reply;
+	}
+
 	/**
 	 * Reads the tasks from the specified binder.
 	 * 
 	 * @param request
 	 * @param bs
 	 * @param binder
+	 * @param filterType
+	 * @param modeType
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return new ArrayList<TaskInfo>();
+	@SuppressWarnings("unchecked")
+	public static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+		Map taskEntriesMap;		
+		try {
+			// Setup to read the task entries...
+			HttpSession session = WebHelper.getRequiredSession(request);
+			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
+			Map options = ((Map) optionsObj.getData());
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
+			options.put(ObjectKeys.SEARCH_OFFSET,   0);
+	
+			// ...and read them.
+			taskEntriesMap = TaskHelper.findTaskEntries(
+				bs,
+				WebHelper.getRequiredSession(request), 
+				binder,
+				filterType,
+				modeType,
+				options);
+		}
+		catch (Exception ex) {
+			m_logger.error("GwtTaskHelper.getTasks( EXCEPTION ):  ", ex);
+			throw new GwtTeamingException();
+		}		
+    	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
+
+		// Did we find any entries?
+		List<TaskInfo> reply = new ArrayList<TaskInfo>();
+		if ((null == taskEntriesList) || taskEntriesList.isEmpty()) {
+			// No!  Bail.
+			return reply;
+		}
+		
+		// Scan the task entries that we read.
+		SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+		for (Map taskEntry:  taskEntriesList) {			
+			TaskInfo ti = new TaskInfo();
+			
+			Date endDate = getDateFromMap(taskEntry, "start_end#EndDate");
+			ti.setOverdue(         (null == endDate) ? false : DateComparer.isOverdue(endDate));
+			ti.setStatus(          getStringFromMap(   taskEntry, "status"                 ));
+			ti.setTaskId(          getLongFromMap(     taskEntry, Constants.DOCID_FIELD    ));
+			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"              ));
+			ti.setSeen(            seenMap.checkIfSeen(taskEntry                           ));
+			ti.setBinderId(        getLongFromMap(     taskEntry, Constants.BINDER_ID_FIELD));
+			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD   ));
+			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD    ));
+			ti.setPriority(        getStringFromMap(   taskEntry, "priority"               ));
+			ti.setAssignments(     getLongListFromMap( taskEntry, "assignment"             ));
+			ti.setAssignmentGroups(getLongListFromMap( taskEntry, "assignment_groups"      ));
+			ti.setAssignmentTeams( getLongListFromMap( taskEntry, "assignment_teams"       ));
+			
+			reply.add(ti);
+		}
+				
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("GwtTaskHelper.getTasks( Read List<TaskInfo> for binder ):  " + String.valueOf(binder.getId()));
+			dumpTaskInfoList(reply);
+		}
+		
+		// If we get here, reply refers to the List<TaskInfo> of the
+		// entries contained in binder.  Return it. 
+		return reply;
 	}
 
 	/**
@@ -134,16 +380,18 @@ public class GwtTaskHelper {
 	 * @param request
 	 * @param bs
 	 * @param binder
+	 * @param filterType
+	 * @param modeType
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static TaskBundle getTaskBundle( HttpServletRequest request, AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+	public static TaskBundle getTaskBundle( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
 		TaskBundle tb = new TaskBundle();
 		
-		tb.setTaskLinkage(getTaskLinkage(   bs, binder));
-		tb.setTasks(      getTasks(request, bs, binder));
+		tb.setTaskLinkage(getTaskLinkage(   bs, binder                      ));
+		tb.setTasks(      getTasks(request, bs, binder, filterType, modeType));
 		
 		return tb;
 	}

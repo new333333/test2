@@ -83,7 +83,7 @@ public class TaskListing {
 	 * constructor.
 	 */
 	public void show() {
-		GwtTeaming.getRpcService().getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, new AsyncCallback<TaskBundle>() {
+		GwtTeaming.getRpcService().getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {
 				String error = m_messages.rpcFailure_GetTaskBundle();

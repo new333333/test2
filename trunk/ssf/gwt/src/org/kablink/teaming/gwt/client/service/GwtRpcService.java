@@ -235,7 +235,7 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException;
 
 	// Task servicing APIs.
-	public List<TaskInfo> getTasks(       HttpRequestInfo ri, Long binderId ) throws GwtTeamingException;
-	public TaskBundle     getTaskBundle(  HttpRequestInfo ri, Long binderId ) throws GwtTeamingException;
-	public TaskLinkage    getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException;
+	public List<TaskInfo> getTasks(       HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException;
+	public TaskBundle     getTaskBundle(  HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException;
+	public TaskLinkage    getTaskLinkage( HttpRequestInfo ri, Long binderId                                     ) throws GwtTeamingException;
 }// end GwtRpcService
