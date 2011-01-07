@@ -32,11 +32,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Task view %>
+<% // Task Folder Listing View %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
+<%@ page import="java.util.Date"                                         %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil"                    %>
 <%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
+<jsp:useBean id="ssSeenMap"               type="org.kablink.teaming.domain.SeenMap"                     scope="request" />
 <jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
 <jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
 <%
@@ -54,19 +55,18 @@
 		}
 	}
 %>
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
-var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
+	var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
 <c:if test="${ ssCurrentFolderModeType != 'VIRTUAL' }">
 	<table class="ss_statisticTable"><tr>
 	<c:set var="colCount" value="0"/>
 	<c:if test="${!empty ssBinder &&
-					!empty ssBinder.customAttributes['statistics'] && 
-					!empty ssBinder.customAttributes['statistics'].value && 
-					!empty ssBinder.customAttributes['statistics'].value.value}">		
+	              !empty ssBinder.customAttributes['statistics'] && 
+	              !empty ssBinder.customAttributes['statistics'].value && 
+	              !empty ssBinder.customAttributes['statistics'].value.value}">		
 		<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
 			<c:if test="${!empty definition.value}">
 				<c:if test="${!empty definition.value.priority}">
@@ -93,44 +93,47 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 	</table>
 </c:if>
 
-
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
-<ssHelpSpot 
-  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 
-  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
- <% // Entry toolbar %>
- <c:if test="${!empty ssEntryToolbar}">
-  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
- </c:if>
-</ssf:toolbar>
-<div class="ss_clear"></div>
+	<% // Add the toolbar with the navigation widgets, commands and filter %>
+	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
+		<ssHelpSpot 
+			helpId="workspaces_folders/menus_toolbars/folder_toolbar"
+			offsetX="0"
+			offsetY="0" 
+		  	title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
+		<% // Entry toolbar %>
+		<c:if test="${!empty ssEntryToolbar}">
+			<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
+		 </c:if>
+	</ssf:toolbar>
+	<div class="ss_clear"></div>
 </div>
+
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<% // Is the GWT based subtasks feature enabled? %>
-<% if (subtasksEnabled) { %>
-	<% // Yes!  Generate the GWT UI. %>
-	<div class="ss_gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
-	<script type="text/javascript">
-		function ss_initGwtTaskListing() {
-			if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
-					(window.name == "gwtContentIframe")) {
-				window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}");
-			}
-			else {
-				alert("*Internal Error* - The GWT Task UI code is missing!!!");
-			}
-		}
-		ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
-	</script>
-<% } else { %>
-	<% // No, the GWT based subtasks feature isn't enabled! %>
-	<% // Generate the old. JSP based UI.                   %>
+<% if (!subtasksEnabled) { %>
 	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-	<div class="ss_folder" id="ss_task_folder_div">
-		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
-		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
-	</div>
 <% } %>
+
+<div class="ss_folder" id="ss_task_folder_div">
+	<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
+	<% if (subtasksEnabled) { %>
+		<% // Generate the GWT UI. %>
+		<div class="ss_gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
+		<script type="text/javascript">
+			function ss_initGwtTaskListing() {
+				if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
+						(window.name == "gwtContentIframe")) {
+					window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}");
+				}
+				else {
+					alert("*Internal Error* - The GWT Task UI code is missing!!!");
+				}
+			}
+			ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
+		</script>
+	<% } else { %>
+		<% // Generate the old. JSP based UI. %>
+		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
+	<% } %>
+</div>
