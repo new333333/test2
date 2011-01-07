@@ -36,19 +36,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -79,6 +76,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_shareThisTBI;				// The share this                toolbar item, if found.
 	private ToolbarItem m_trackBinderTBI;			// The binder tracking           toolbar item, if found.
 	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
+	private TagThisDlg m_tagThisDlg = null;
 
 	/**
 	 * Class constructor.
@@ -540,39 +538,21 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				// ...hide the menu...
 				hide();
 
-				// ...and run the tag this dialog.
-				GwtTeaming.getRpcService().getBinderTags(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), new AsyncCallback<List<TagInfo>>() {
-					public void onFailure(Throwable t) {
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							m_messages.rpcFailure_GetBinderTags(),
-							m_currentBinder.getBinderId());
-					}
-					public void onSuccess(final List<TagInfo> binderTags) {
-						GwtTeaming.getRpcService().canManagePublicBinderTags(HttpRequestInfo.createHttpRequestInfo(), m_currentBinder.getBinderId(), new AsyncCallback<Boolean>() {
-							public void onFailure(Throwable t) {
-								GwtClientHelper.handleGwtRPCFailure(
-									t,
-									m_messages.rpcFailure_CanManagePublicBinderTags(),
-									m_currentBinder.getBinderId());
-							}
-							public void onSuccess(Boolean isPublicTagManager) {
-								TagThisDlg ttDlg = new TagThisDlg(
-									false,	// false -> Don't auto hide.
-									true,	// true  -> Modal.
-									m_actionTrigger,
-									m_menuLeft,
-									m_menuTop,
-									m_currentBinder,
-									binderTags,
-									((null != isPublicTagManager) && isPublicTagManager.booleanValue()),
-									dlgCaption);
-								ttDlg.addStyleName("tagThisDlg");
-								ttDlg.show();
-							}
-						});
-					}
-				});
+				if ( m_tagThisDlg == null )
+				{
+					m_tagThisDlg = new TagThisDlg(
+											false,	// false -> Don't auto hide.
+											true,	// true  -> Modal.
+											m_actionTrigger,
+											m_menuLeft,
+											m_menuTop,
+											dlgCaption);
+					m_tagThisDlg.addStyleName("tagThisDlg");
+				}
+				
+				m_tagThisDlg.init( m_currentBinder.getBinderId(), null );
+				m_tagThisDlg.show();
+
 			}
 		});
 		addContentWidget(mtA);

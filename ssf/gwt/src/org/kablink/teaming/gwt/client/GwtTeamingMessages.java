@@ -225,7 +225,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
-	String rpcFailure_GetBinderTags();
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetDefaultActivityStream();
 	String rpcFailure_GetEntryPermalink();
@@ -251,6 +250,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
+	String rpcFailure_GetTags();
 	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeams();
@@ -742,5 +742,17 @@ public interface GwtTeamingMessages extends Messages
 	String sendTextTo();
 	String subscribeToEntryDlgHeader();
 	String subscribeToEntryHeader();
+
+	// The following strings are used with the "Tag This" dialog.
+	String addTag();
+	String community();
+	String deleteTagHint();
+	String noTags();
+	String personal();
+	String tagHeader();
+	String tagName();
+	String tagThisEntry();
+	String tagType();
+	String unknownTagType();
 	
 }// end GwtTeamingMessages

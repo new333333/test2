@@ -1985,6 +1985,12 @@ body, table td, select
 	padding-top: 2px;
 }
 
+/* Style used to add padding-top: 5px; */
+.paddingTop5px
+{
+	padding-top: 5px;
+}
+
 /* Style used to add padding-top: 8px; */
 .paddingTop8px
 {
@@ -2397,3 +2403,46 @@ top:100px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
+
+/* The following styles are used with an object list table. */
+.oltHeader
+{
+	background-color: #E9F1F1;
+	border-collapse: separate;
+	border-spacing: 0;
+	color: #666666;
+	font-size: .85em;
+	font-weight: bold;
+}
+
+.oltHeaderPadding, .oltContentPadding
+{
+	padding: 5px 10px 5px 5px;
+}
+
+.oltHeaderBorderBottom, .oltContentBorderBottom
+{
+	border-bottom: 1px solid #DBDBD3;
+}
+
+.oltHeaderBorderTop
+{
+	border-top: 1px solid #5691A6;
+}
+
+.oltBorderLeft
+{
+	border-left: 1px solid #BBBBB9;
+}
+
+.oltBorderRight
+{
+	border-right: 1px solid #BBBBB9;
+}
+
+.oltLastRowBorderBottom
+{
+	border-bottom: 1px solid #BBBBB9;
+}
+
+/* End of styles used with an object list table */

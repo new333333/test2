@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.Scheduler;
@@ -122,6 +123,7 @@ public class ActivityStreamCtrl extends Composite
 	// This menu is used to display an Actions menu for an item in the list.
 	private static ActionsPopupMenu m_actionsPopupMenu = null;
 	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
+	private TagThisDlg m_tagThisDlg = null;
 
 	
 	/**
@@ -778,10 +780,17 @@ public class ActivityStreamCtrl extends Composite
 				{
 				case REPLY:
 				case SHARE:
-				case TAG:
 					Window.alert( action.getUnlocalizedDesc() );
 					break;
 				
+				case TAG:
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						// Invoke the Tag This dialog.
+						invokeTagThisDlg( (ActivityStreamUIEntry) actionData );
+					}
+					break;
+					
 				case SUBSCRIBE:
 					if ( actionData instanceof ActivityStreamUIEntry )
 					{
@@ -855,6 +864,42 @@ public class ActivityStreamCtrl extends Composite
 			}// end setPosition()
 		};
 		m_subscribeToEntryDlg.setPopupPositionAndShow( posCallback );
+	}
+	
+	
+	/**
+	 * Invoke the Tag This dialog for the given entry.
+	 */
+	private void invokeTagThisDlg( final ActivityStreamUIEntry entry )
+	{
+		PopupPanel.PositionCallback posCallback;
+		
+		if ( m_tagThisDlg == null )
+		{
+			//!!! Pass in an ActionTrigger
+			m_tagThisDlg = new TagThisDlg( false, true, null, 0, 0, GwtTeaming.getMessages().tagThisEntry() );
+		}
+		
+		m_tagThisDlg.init( null, entry.getEntryId() );
+
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int x;
+				int y;
+				
+				x = Window.getClientWidth() - offsetWidth - 75;
+				y = entry.getAbsoluteTop();
+				
+				m_tagThisDlg.setPopupPosition( x, y );
+			}
+		};
+		m_tagThisDlg.setPopupPositionAndShow( posCallback );
+		
 	}
 	
 	
