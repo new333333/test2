@@ -44,7 +44,7 @@ Jackrabbit JCR Commons 1.4.2
 Jackrabbit Core 1.4.5
 Jackrabbit SPI 1.4
 Jackrabbit SPI Commons 1.4
-Jackson 1.5.5 (high-performance JSON processor needed by Jersey)
+Jackson 1.5.8 (high-performance JSON processor needed by Jersey)
 Jakarta Taglibs Standard 1.1
 Jasypt 1.7
 JavaMail 1.4.1 (Sun's reference implementation)
