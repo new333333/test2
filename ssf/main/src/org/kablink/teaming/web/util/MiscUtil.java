@@ -81,7 +81,6 @@ import org.springframework.web.multipart.MultipartFile;
 public final class MiscUtil
 {
 	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
-	private static ZoneModule m_zoneModule = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ));
 
 	
 	/**
@@ -426,7 +425,8 @@ public final class MiscUtil
 	 */
 	public static ZoneInfo getCurrentZone()
 	{
-		return m_zoneModule.getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
+		ZoneModule zm = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ));
+		return zm.getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
 	}//end getCurrentZone()
 	
 	/**
