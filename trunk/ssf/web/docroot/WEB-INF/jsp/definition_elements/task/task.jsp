@@ -38,10 +38,20 @@
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
 <jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
+<jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
 <%
-	boolean gwtTasks = SPropsUtil.getBoolean("gwt.tasks", false);
-	if (gwtTasks) {
-//		gwtTasks = (ssCurrentFolderModeType == ModeType.PHYSICAL);
+	// Is the GWT based subtasks feature enabled?
+	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", false);
+	if (subtasksEnabled) {
+		// Yes!  Are we viewing the task list as 'Entries from Folder'?
+		subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
+		if (subtasksEnabled) {
+			// Yes!  Is the number of items that we're working with
+			// within our supported limits?
+			subtasksEnabled =
+				((ss_searchTotalHits != null) &&
+				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", 1000)));
+		}
 	}
 %>
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
@@ -99,7 +109,9 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 <div class="ss_clear"></div>
 </div>
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<% if (gwtTasks) { %>
+<% // Is the GWT based subtasks feature enabled? %>
+<% if (subtasksEnabled) { %>
+	<% // Yes!  Generate the GWT UI. %>
 	<div class="ss_gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
 	<script type="text/javascript">
 		function ss_initGwtTaskListing() {
@@ -114,6 +126,8 @@ var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 		ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
 	</script>
 <% } else { %>
+	<% // No, the GWT based subtasks feature isn't enabled! %>
+	<% // Generate the old. JSP based UI.                   %>
 	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 	<div class="ss_folder" id="ss_task_folder_div">
 		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
