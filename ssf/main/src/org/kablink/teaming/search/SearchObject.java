@@ -59,8 +59,12 @@ public class SearchObject {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
-	private String queryString = null;
+	
+	private String queryString = null; // old
+	
 	private String language = LanguageTaster.DEFAULT;
+	
+	private Query luceneQuery; // new
 	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
@@ -180,7 +184,7 @@ public class SearchObject {
 	/**
 	 * @return Returns the query.
 	 */
-	public synchronized Query getQuery() {
+	public Query getQuery() {
 		try {
 			long startTime = System.currentTimeMillis();
 			Query retQ = getParser().parse(queryString);
@@ -192,6 +196,14 @@ public class SearchObject {
 			return new BooleanQuery();}
 	}
 
+	public void setLuceneQuery(Query luceneQuery) {
+		this.luceneQuery = luceneQuery;
+	}
+	
+	public Query getLuceneQuery() {
+		return luceneQuery;
+	}
+	
 	private Analyzer getCJKAnalyzer() {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new NullAnalyzer());
 		retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
