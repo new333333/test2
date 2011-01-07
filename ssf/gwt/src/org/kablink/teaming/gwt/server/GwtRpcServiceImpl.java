@@ -104,9 +104,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskInfo;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
@@ -1469,23 +1467,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getTasKBinder()
 	
 	/**
-	 * Reads the tasks from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	public List<TaskInfo> getTasks( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
-	{
-		return GwtTaskHelper.getTasks( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
-	}//end getTasks()
-	
-	/**
 	 * Reads the task information from the specified binder.
 	 * 
 	 * @param ri
@@ -1497,25 +1478,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTaskBundle( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
-	}// end getTaskBundle()
-	
-	/**
-	 * Reads the task information from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
-	{
-		return GwtTaskHelper.getTaskLinkage( this, getTaskBinder( binderId ) );
-	}//end getTaskLinkage()
+		return GwtTaskHelper.getTaskList( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
+	}// end getTaskList()
 	
 	/**
 	 * Returns a List<String> of the user ID's of the people the

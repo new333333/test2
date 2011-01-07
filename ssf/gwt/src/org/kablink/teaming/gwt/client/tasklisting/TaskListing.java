@@ -32,11 +32,13 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
@@ -83,18 +85,18 @@ public class TaskListing {
 	 * constructor.
 	 */
 	public void show() {
-		GwtTeaming.getRpcService().getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<TaskBundle>() {
+		GwtTeaming.getRpcService().getTaskList(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<List<TaskListItem>>() {
 			@Override
 			public void onFailure(Throwable t) {
-				String error = m_messages.rpcFailure_GetTaskBundle();
+				String error = m_messages.rpcFailure_GetTaskList();
 				GwtClientHelper.handleGwtRPCFailure(t, error);
 				
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
-				m_taskListingDIV.appendChild(new InlineLabel(m_messages.rpcFailure_GetTaskBundle()).getElement());
+				m_taskListingDIV.appendChild(new InlineLabel(m_messages.rpcFailure_GetTaskList()).getElement());
 			}
 
 			@Override
-			public void onSuccess(TaskBundle result) {
+			public void onSuccess(List<TaskListItem> result) {
 				Window.alert( "TaskListing.show( " + m_binderId + " )" );
 				
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);

@@ -251,7 +251,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
-	String rpcFailure_GetTaskBundle();
+	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetToolbarItems();

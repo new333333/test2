@@ -49,10 +49,10 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -220,6 +220,24 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Searches a List<TaskInfo> for a task with a specific ID.
+	 */
+	private static TaskInfo findTaskInList(Long taskId, List<TaskInfo> tasks) {
+		// Scan the List<TaskInfo>.
+		for (TaskInfo task:  tasks) {
+			// Is this the task in question?
+			if (task.getTaskId().equals(taskId)) {
+				// Yes!  Return it.
+				return task;
+			}
+		}
+		
+		// If we get here, we couldn't find the task in the
+		// List<TaskInfo>.  Return null.
+		return null;
+	}
+
+	/*
 	 * Reads a Date from a Map.
 	 */
 	@SuppressWarnings("unchecked")
@@ -296,21 +314,11 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
-	/**
+	/*
 	 * Reads the tasks from the specified binder.
-	 * 
-	 * @param request
-	 * @param bs
-	 * @param binder
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+	private static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...
@@ -387,24 +395,37 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static TaskBundle getTaskBundle( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
-		TaskBundle tb = new TaskBundle();
-		
-		tb.setTaskLinkage(getTaskLinkage(   bs, binder                      ));
-		tb.setTasks(      getTasks(request, bs, binder, filterType, modeType));
-		
-		return tb;
+	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+		// Create a List<TaskListItem> that we can fill up with the
+		// task list.
+		List<TaskListItem> reply = new ArrayList<TaskListItem>();
+
+		// Read the task linkage and tasks from the binder.
+		TaskLinkage    linkage = getTaskLinkage(   bs, binder                      );
+		List<TaskInfo> tasks   = getTasks(request, bs, binder, filterType, modeType);
+
+		// Process the order/hierarchy information from the task
+		// linkage.
+		processTaskLinkList(reply, tasks, linkage.getTaskOrder());		
+
+		// Scan any remaining tasks...
+		for (TaskInfo task:  tasks) {
+			// ...and add each as a TaskListItem to the task list that
+			// ...we're building.
+			TaskListItem tli = new TaskListItem();
+			tli.setTask(task);
+			reply.add(tli);
+		}
+
+		// If we get here, reply refers to a List<TaskListItem> for the
+		// tasks.  Return it.
+		return reply;
 	}
 
-	/**
+	/*
 	 * Returns the TaskLinkage from a task folder.
-	 * 
-	 * @param bs
-	 * @param binder
-	 * 
-	 * @return
 	 */
-	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+	private static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
 		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
 		if (null == reply) {
 			reply = new TaskLinkage();
@@ -449,6 +470,34 @@ public class GwtTaskHelper {
 		return reply;
 	}
 	
+	/*
+	 * Processes the TaskLink's in a List<TaskLink> into a
+	 * List<TaskListItem>, maintaining order and hierarchy.
+	 */
+	private static void processTaskLinkList(List<TaskListItem> taskList, List<TaskInfo> tasks, List<TaskLink> links) {
+		// Scan the List<TaskLink>.
+		for (TaskLink link:  links) {
+			// Can we find the TaskInfo for this TaskLink?
+			TaskInfo task = findTaskInList(link.getTaskId(), tasks);
+			if (null == task) {
+				// No!  Skip it.
+				continue;
+			}
+
+			// Remove the TaskInfo from the List<TaskInfo>...
+			tasks.remove(task);
+
+			// ...wrap it in a TaskListItem and add it to the
+			// ...List<TaskListItem>...
+			TaskListItem tli = new TaskListItem();
+			tli.setTask(task);			
+			taskList.add(tli);
+			
+			// ...and recursively process any subtasks.
+			processTaskLinkList(tli.getSubtasks(), tasks, link.getSubtasks());
+		}
+	}
+	
 	/**
 	 * Removes the TaskLinkage from a task folder.
 	 * 
@@ -491,7 +540,7 @@ public class GwtTaskHelper {
 			dumpTaskLinkage(tl);
 		}
 		
-		// Simply validate the List<TaskList> of the task ordering.
+		// Simply validate the List<TaskLink> of the task ordering.
 		validateTaskLinkList(bs, tl.getTaskOrder());
 		
 		if (m_logger.isDebugEnabled()) {

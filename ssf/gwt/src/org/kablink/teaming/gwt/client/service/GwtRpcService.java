@@ -70,9 +70,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskInfo;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -235,7 +233,5 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException;
 
 	// Task servicing APIs.
-	public List<TaskInfo> getTasks(       HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException;
-	public TaskBundle     getTaskBundle(  HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException;
-	public TaskLinkage    getTaskLinkage( HttpRequestInfo ri, Long binderId                                     ) throws GwtTeamingException;
+	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException;
 }// end GwtRpcService

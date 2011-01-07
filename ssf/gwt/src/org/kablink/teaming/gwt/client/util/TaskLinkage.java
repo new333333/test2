@@ -44,7 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class TaskLinkage implements IsSerializable {
-	private List<TaskLink> m_taskOrder;	// Ordered list of the ID's of task FolderEntry's tracked by this TaskLinkage.
+	private List<TaskLink> m_taskOrder = new ArrayList<TaskLink>();	// Ordered list of the TaskLink's of task FolderEntry's tracked by this TaskLinkage.
 	
 	// Enumeration used to tell moveTaskInDirection() which direction a
 	// TaskLink is to be moved within a TaskLinkage object.
@@ -60,8 +60,8 @@ public class TaskLinkage implements IsSerializable {
 	 * TaskLinkage object.
 	 */
 	public static class TaskLink implements IsSerializable {
-		private Long			m_taskId;	// ID of the FolderEntry of this task
-		private List<TaskLink>	m_subtasks;	// List<TaskLink> of the subtasks of this task.
+		private List<TaskLink>	m_subtasks = new ArrayList<TaskLink>();	// List<TaskLink> of the subtasks of this task.
+		private Long			m_taskId;								// ID of the FolderEntry of this task
 
 		/**
 		 * Class constructor.
@@ -69,8 +69,8 @@ public class TaskLinkage implements IsSerializable {
 		 * @param taskId
 		 */
 		public TaskLink(Long taskId) {
-			m_taskId   = taskId;
-			m_subtasks = new ArrayList<TaskLink>();
+			// Simply store the parameter.
+			m_taskId = taskId;
 		}
 
 		/**
@@ -165,7 +165,7 @@ public class TaskLinkage implements IsSerializable {
 	 * Class constructor.
 	 */
 	public TaskLinkage() {
-		m_taskOrder = new ArrayList<TaskLink>();
+		// Nothing to do.
 	}
 
 	/**
