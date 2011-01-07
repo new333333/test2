@@ -151,7 +151,6 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   );
 	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
 	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
-	public List<TagInfo>         getBinderTags(                HttpRequestInfo ri, String binderId                                   );
 	public Boolean               canManagePublicBinderTags(    HttpRequestInfo ri, String binderId                                   );
 	public TagInfo               addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
 	public Boolean               removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
@@ -168,7 +167,11 @@ public interface GwtRpcService extends RemoteService
 	public List<TopRankedInfo>   getTopRanked(                 HttpRequestInfo ri                                                    );
 	public Boolean               removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi           );
 	public SavedSearchInfo       saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi           );
-	
+
+	// The following methods are used to manage tags on a binder/entry.
+	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId );
+	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId );
+
 	// The following are used to manage the tracking of information.
 	public List<String> getTrackedPeople( HttpRequestInfo ri                  );
 	public List<String> getTrackedPlaces( HttpRequestInfo ri                  );

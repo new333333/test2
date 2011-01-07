@@ -1979,14 +1979,14 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
+	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
 		BinderModule bm = bs.getBinderModule();
 		return getBinderTags(bm, bm.getBinder(Long.parseLong(binderId)));
 	}
 	
-	public static List<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
+	public static ArrayList<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
 		// Allocate an ArrayList to return the TagInfo's in...
-		List<TagInfo> reply = new ArrayList<TagInfo>();
+		ArrayList<TagInfo> reply = new ArrayList<TagInfo>();
 
 		// ...read the Tag's from the Binder...
 		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(binder));
@@ -2090,6 +2090,56 @@ public class GwtServerHelper {
 		return reply;
 	}
 
+	/**
+	 * Return a list of tags associated with the given entry.
+	 */
+	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId )
+	{
+		FolderEntry entry;
+		Long entryIdL;
+		Map<String, SortedSet<Tag>> tagsMap;
+		ArrayList<TagInfo> tags;
+		
+		tags = new ArrayList<TagInfo>();
+		
+		entryIdL = new Long( entryId );
+		entry = bs.getFolderModule().getEntry( null, entryIdL );
+		tagsMap = TagUtil.uniqueTags( bs.getFolderModule().getTags( entry ) );
+		
+		if ( tagsMap != null )
+		{
+			Set<Tag> communityTagsSet;
+			Set<Tag> personalTagsSet;
+			Iterator<Tag> tagsIT;
+
+			communityTagsSet = tagsMap.get( ObjectKeys.COMMUNITY_ENTITY_TAGS );
+			personalTagsSet  = tagsMap.get( ObjectKeys.PERSONAL_ENTITY_TAGS );
+
+			// ...iterate through the community tags...
+			if ( communityTagsSet != null )
+			{
+				for ( tagsIT = communityTagsSet.iterator(); tagsIT.hasNext(); )
+				{
+					// ...adding each to the reply list...
+					tags.add( buildTIFromTag( TagType.COMMUNITY, tagsIT.next() ) );
+				}
+			}
+
+			// ...iterate through the personal tags...
+			if ( personalTagsSet != null )
+			{
+				for ( tagsIT = personalTagsSet.iterator(); tagsIT.hasNext(); )
+				{
+					// ...adding each to the reply list...
+					tags.add( buildTIFromTag( TagType.PERSONAL, tagsIT.next() ) );
+				}
+			}
+		}
+		
+		return tags;
+	}
+	
+	
 	/*
 	 * Returns a cloned copy of the expanded Binder's list from the
 	 * UserProperties.

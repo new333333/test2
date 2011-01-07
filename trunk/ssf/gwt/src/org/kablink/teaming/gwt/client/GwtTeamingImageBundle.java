@@ -50,6 +50,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions2.png")
 	public ImageResource activityStreamActions2();
 
+	@Source("org/kablink/teaming/gwt/public/images/add_btn.png")
+	public ImageResource add_btn();
+
 	@Source("org/kablink/teaming/gwt/public/images/administration1.png")
 	public ImageResource administration1();
 
@@ -74,6 +77,15 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/collapse_16.png")
 	public ImageResource collapse16();
 
+	@Source("org/kablink/teaming/gwt/public/images/delete.png")
+	public ImageResource delete();
+
+	@Source("org/kablink/teaming/gwt/public/images/delete_10.png")
+	public ImageResource delete10();
+
+	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
+	public ImageResource delete16();
+
 	@Source("org/kablink/teaming/gwt/public/images/edit_10.png")
 	public ImageResource edit10();
 
@@ -82,12 +94,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 
 	@Source("org/kablink/teaming/gwt/public/images/expand_16.png")
 	public ImageResource expand16();
-
-	@Source("org/kablink/teaming/gwt/public/images/delete_10.png")
-	public ImageResource delete10();
-
-	@Source("org/kablink/teaming/gwt/public/images/delete_16.gif")
-	public ImageResource delete16();
 
 	@Source("org/kablink/teaming/gwt/public/images/entry_blog.png")
 	public ImageResource entry_blog();

@@ -146,7 +146,6 @@ public interface GwtRpcServiceAsync
 	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
 	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
 	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void getBinderTags(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<List<TagInfo>>         callback );
 	public void canManagePublicBinderTags(    HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
 	public void addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
 	public void removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
@@ -163,6 +162,10 @@ public interface GwtRpcServiceAsync
 	public void getTopRanked(                 HttpRequestInfo ri,                                                    AsyncCallback<List<TopRankedInfo>>   callback );
 	public void removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
 	public void saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
+
+	// The following methods are used to manage tags on a binder/entry.
+	public void getEntryTags( HttpRequestInfo ri, String entryId, AsyncCallback<ArrayList<TagInfo>> callback );
+	public void getBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<TagInfo>> callback );
 
 	// The following are used to manage the tracking of information.
 	public void getTrackedPeople( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );

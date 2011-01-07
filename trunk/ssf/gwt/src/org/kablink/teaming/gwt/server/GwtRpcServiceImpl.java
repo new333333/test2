@@ -899,6 +899,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	
 	/**
+	 * Return a list of tags associated with the given entry.
+	 */
+	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId )
+	{
+		return GwtServerHelper.getEntryTags( this, entryId );
+	}
+	
+	
+	/**
 	 * Return a list of the names of the files that are attachments for the given binder
 	 * 
 	 * @param ri
@@ -2166,7 +2175,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public List<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
+	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderTags( this, binderId );
 	}//end getBinderTags()
@@ -2826,7 +2835,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		return subscriptionData;
 	}
-	
 	
 	/**
 	 * Returns a TeamManagementInfo object regarding the current user's
