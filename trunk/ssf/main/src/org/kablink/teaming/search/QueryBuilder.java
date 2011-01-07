@@ -42,7 +42,13 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -164,7 +170,10 @@ public class QueryBuilder {
 		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
 		so.setLanguage(lang);
 		
+		// old
 		parseRootElement(root, so);
+		// new
+		handleRootElement(root, so);
 		
 		//If searching as a different user, add in the acl for that user
 		if (asUserId != null && !ignoreAcls) {
@@ -235,12 +244,29 @@ public class QueryBuilder {
 		so.setQueryString(qString);
 	}
 
+	private void handleRootElement(Element element, SearchObject so) {
+		BooleanQuery bQuery = new BooleanQuery();
+		
+		for (Iterator i = element.elementIterator(); i.hasNext();) {
+			Element elem = (Element) i.next();
+
+			Query query = handleElement(elem, so);
+			
+			if(query != null)
+				bQuery.add(query, BooleanClause.Occur.MUST);
+		}
+		so.setLuceneQuery(bQuery);
+	}
+
 	private String parseElement(Element element, String op, SearchObject so) {
 
 		String qString = "";
 		String resString = "";
 
 		String operator = element.getName();
+
+		if (operator == null)
+			return qString;
 
 		if (operator.equalsIgnoreCase(AND_ELEMENT)
 				|| (operator.equalsIgnoreCase(OR_ELEMENT))) {
@@ -261,8 +287,10 @@ public class QueryBuilder {
 								qString = this.fixQStringforLang(qString, operator);
 						}
 					} else {
-						System.out
-								.println("DOM TREE is not properly formatted!");
+						logger.error("DOM TREE is not properly formatted" +
+								org.kablink.teaming.util.Constants.NEWLINE + 
+								element.asXML()); 
+						throw new IllegalArgumentException("Invalid query in XML");
 					}
 				}
 			}
@@ -271,7 +299,10 @@ public class QueryBuilder {
 			List elements = element.elements();
 			if (elements.size() > 1) {
 				// error, only one term can be NOT'ed at a time
-				System.out.println("Problem in the NOT element");
+				logger.error("Problem in the NOT element" +
+						org.kablink.teaming.util.Constants.NEWLINE + 
+						element.asXML()); 
+				throw new IllegalArgumentException("Invalid query in XML");
 			}
 			Node node = (Node) elements.get(0);
 			qString += " NOT (";
@@ -287,10 +318,84 @@ public class QueryBuilder {
 			qString += "(" + processPERSONALTAGS(element) + ")";
 		} else if (operator.equals(FIELD_ELEMENT)) {
 			qString += processFIELD(element);
-		} else if (operator.equals(null)) {
-			return qString;
 		}
 		return qString;
+	}
+
+	private Query handleElement(Element element, SearchObject so) {
+
+		Query query = null;
+
+		String operator = element.getName();
+		
+		if(operator == null)
+			return query;
+
+		if (operator.equalsIgnoreCase(AND_ELEMENT)
+				|| (operator.equalsIgnoreCase(OR_ELEMENT))) {
+			List elements = element.elements();
+			int elemCount = elements.size();
+
+			if (elemCount > 0) {
+				BooleanQuery bQuery = null;
+				
+				for (int j = 0; j < elemCount; j++) {
+					Node node = (Node) elements.get(j);
+					if (node instanceof Element) {
+						Query subQuery = handleElement((Element) node, so);
+						if(subQuery == null)
+							continue;
+						if(bQuery == null)
+							bQuery = new BooleanQuery();
+						if(node.getName().equalsIgnoreCase(NOT_ELEMENT)) {
+							if(operator.equalsIgnoreCase(AND_ELEMENT)) {
+								bQuery.add(subQuery, BooleanClause.Occur.MUST_NOT);
+							}
+							else {
+								logger.error("NOT must be preceded by AND" +
+										org.kablink.teaming.util.Constants.NEWLINE + 
+										element.asXML()); 
+								throw new IllegalArgumentException("Invalid query in XML");	
+							}
+						}
+						else { 
+							bQuery.add(subQuery, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
+						}
+					} else {
+						logger.error("DOM TREE is not properly formatted" +
+								org.kablink.teaming.util.Constants.NEWLINE + 
+								element.asXML()); 
+						throw new IllegalArgumentException("Invalid query in XML");
+					}
+				}
+				query = bQuery;
+			}
+		} else if (operator.equalsIgnoreCase(NOT_ELEMENT)) {
+			List elements = element.elements();
+			if (elements.size() > 1) {
+				// error, only one term can be NOT'ed at a time
+				logger.error("Problem in the NOT element" +
+						org.kablink.teaming.util.Constants.NEWLINE + 
+						element.asXML()); 
+				throw new IllegalArgumentException("Invalid query in XML");
+			}
+			Node node = (Node) elements.get(0);
+			// There is no standalone query datastructure that encapsulates the negation.
+			// Factoring of the negation is accomplished by adding the negated query into
+			// a parent boolean query. This step is performed by the caller.
+			query = handleElement((Element) node, so);
+		} else if (operator.equals(SORTBY_ELEMENT)) {
+			processSORTBY(element, so);
+		} else if (operator.equals(LANGUAGE_ELEMENT)) {
+			processLANG(element,so);
+		} else if (operator.equals(RANGE_ELEMENT)) {
+			query = handleRANGE(element);
+		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
+			query = handlePERSONALTAGS(element);
+		} else if (operator.equals(FIELD_ELEMENT)) {
+			// $$$$$ TODO qString += processFIELD(element);
+		}
+		return query;
 	}
 
 	private String processFIELD(Element element) {
@@ -395,6 +500,40 @@ public class QueryBuilder {
 		return ptagString;
 	}
 
+	private Query handlePERSONALTAGS(Element element) {
+		Query query = null;
+
+		List children = element.elements();
+		int kidCount = children.size();
+
+		for (int i = 0; i < kidCount; i++) {
+			Element child = (Element) children.get(i);
+			if (child.getName().equalsIgnoreCase(TAG_ELEMENT)) {
+				String tagName = child.attributeValue(TAG_NAME_ATTRIBUTE);
+				if (tagName == null || tagName.equals(""))
+					continue;
+
+				User user = RequestContextHolder.getRequestContext().getUser();
+				TermQuery tQuery = new TermQuery(new Term(Constants.ACL_TAG_FIELD, BasicIndexUtils.buildAclTag(tagName, user.getId().toString())));
+				
+				if(query == null) { // This is first term query
+					query = tQuery;
+				}
+				else { // This is second or subsequent term query. We need to OR them.
+					if(query instanceof TermQuery) {
+						// This is second term query.
+						Query firstQuery = query;
+						BooleanQuery bQuery = new BooleanQuery();
+						bQuery.add(firstQuery, BooleanClause.Occur.SHOULD);
+						query = bQuery;
+					}
+					((BooleanQuery) query).add(tQuery, BooleanClause.Occur.SHOULD);
+				}
+			}
+		}
+		return query;
+	}
+
 	private String processRANGE(Element element) {
 
 		boolean inclusive = false;
@@ -414,8 +553,10 @@ public class QueryBuilder {
 		List children = element.elements();
 		int kidCount = children.size();
 		if (kidCount != 2) {
-			//throw error
-			System.out.println("Range element must have start and finish");
+			logger.error("Range element must have start and finish" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					element.asXML()); 
+			throw new IllegalArgumentException("Invalid query in XML");
 		}
 		for (int i = 0; i < 2; i++) {
 			Node child = (Node) children.get(i);
@@ -424,8 +565,10 @@ public class QueryBuilder {
 			} else if (child.getName().equalsIgnoreCase(RANGE_FINISH)) {
 				finishText = child.getText();
 			} else {
-				//throw error
-				System.out.println("Range has bad children");
+				logger.error("Range has bad children" +
+						org.kablink.teaming.util.Constants.NEWLINE + 
+						element.asXML()); 
+				throw new IllegalArgumentException("Invalid query in XML");
 			}
 		}
 		if (inclusive)
@@ -436,6 +579,49 @@ public class QueryBuilder {
 					+ finishText + "\" }");
 
 		return termText;
+	}
+
+	private Query handleRANGE(Element element) {
+
+		boolean inclusive = false;
+		String termText = "";
+		String startText = "";
+		String finishText = "";
+
+		String inclusiveText = element.attributeValue(INCLUSIVE_ATTRIBUTE);
+		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
+
+		if ((inclusiveText != null)
+				&& (inclusiveText.equalsIgnoreCase(INCLUSIVE_TRUE)))
+			inclusive = true;
+		else
+			inclusive = false;
+
+		List children = element.elements();
+		int kidCount = children.size();
+		if (kidCount != 2) {
+			logger.error("Range element must have start and finish" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					element.asXML()); 
+			throw new IllegalArgumentException("Invalid query in XML");
+		}
+		for (int i = 0; i < 2; i++) {
+			Node child = (Node) children.get(i);
+			if (child.getName().equalsIgnoreCase(RANGE_START)) {
+				startText = child.getText();
+			} else if (child.getName().equalsIgnoreCase(RANGE_FINISH)) {
+				finishText = child.getText();
+			} else {
+				logger.error("Range has bad children" +
+						org.kablink.teaming.util.Constants.NEWLINE + 
+						element.asXML()); 
+				throw new IllegalArgumentException("Invalid query in XML");
+			}
+		}
+		
+		// Currently, we have only a single boolean flag for both ends. We might want to
+		// extend this in the future to allow for different value for each end.
+		return new TermRangeQuery(fieldName, startText, finishText, inclusive, inclusive);
 	}
 
 	private String getAclClause()
@@ -555,6 +741,7 @@ public class QueryBuilder {
 			qString.append(" NOT ");
 		}
 		qString.append(Constants.PRE_DELETED_FIELD  + ":true "); //_preDeleted:true
+		// $$$$$ qString.append(Constants.PRE_DELETED_FIELD  + ":" + Constants.TRUE); //_preDeleted:true
 		
 		return qString.toString();
 	}
@@ -589,7 +776,7 @@ public class QueryBuilder {
 			URL url = new URL("file:///c|/v8/query.txt");
 			document = reader.read(url);
 		} catch (Exception e) {
-			System.out.println(e.toString());
+			logger.error(e.toString());
 		}
 		buildQuery(document);
 	}
