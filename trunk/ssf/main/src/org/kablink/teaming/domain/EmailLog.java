@@ -50,7 +50,7 @@ public class EmailLog extends ZonedObject implements Serializable {
 	protected Long fromId;								//User id of sender
 	protected Long zoneId; 								//zone id
 	protected String subj;								//Subj line from mail message
-	protected String status;							//sent, queued, error
+	protected EmailLogStatus status;							//sent, queued, error
 	protected String comment;							//Error message (if any)
 	protected CommaSeparatedValue fileAttachments;		//comma separated list of file names
 
@@ -62,12 +62,21 @@ public class EmailLog extends ZonedObject implements Serializable {
 		workflowNotification
 	};
 	
-	public EmailLog(EmailLogType type, Date sendDate, List<Long> toIds, Long fromId) {
+	public enum EmailLogStatus {
+		unknown,
+		sent,
+		queued, 
+		error
+	};
+	
+	public EmailLog(EmailLogType type, Date sendDate, List<Long> toIds, Long fromId, EmailLogStatus status, Long zoneId) {
 		this.type = type;
 		this.sendDate = sendDate;
 		this.fromId = fromId;
 		this.toIds = new CommaSeparatedValue();
 		this.toIds.setValue(toIds);
+		this.status = status;
+		this.zoneId = zoneId;
 	}
 	
 	public EmailLogType getType() {
@@ -106,10 +115,10 @@ public class EmailLog extends ZonedObject implements Serializable {
 	public void setSubj(String subj) {
 		this.subj = subj;
 	}
-	public String getStatus() {
+	public EmailLogStatus getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(EmailLogStatus status) {
 		this.status = status;
 	}
 	public String getComment() {
