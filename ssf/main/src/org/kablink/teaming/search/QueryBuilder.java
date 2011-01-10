@@ -170,53 +170,84 @@ public class QueryBuilder {
 		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
 		so.setLanguage(lang);
 		
-		// old
-		parseRootElement(root, so);
-		// new
+		// OLD (executed only for debugging purpose)
+		
+		if(logger.isDebugEnabled()) {
+			parseRootElementDoNotUse(root, so);
+		
+			//If searching as a different user, add in the acl for that user
+			if (asUserId != null && !ignoreAcls) {
+				QueryBuilder aclQ = new QueryBuilder(asUserId);
+				String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
+				if (acls.length() != 0) {
+					String q = so.getQueryStringDoNotUse();
+					if (q.equalsIgnoreCase("(  )"))
+						q = "";
+					if (q.length() > 0)
+						q += "AND ";
+					q += acls;
+					so.setQueryStringDoNotUse(q);
+				}
+			}
+			
+			String q = so.getQueryStringDoNotUse();
+			// add acl check to every query. (If it's the superuser doing this query, then this clause
+			// will return the empty string.
+			
+			if (!ignoreAcls) { 
+				String acls = getAclClause();
+				if (acls.length() != 0) {
+					q = so.getQueryStringDoNotUse();
+					if (q.equalsIgnoreCase("(  )"))
+						q = "";
+					if (q.length() > 0)
+						q += "AND ";
+					q += acls;
+					so.setQueryStringDoNotUse(q);
+				}
+			}
+			
+			// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
+			if (q.equalsIgnoreCase("(  )"))
+				q = " "; // if it's an empty clause - delete it
+			if (q.length() > 0)
+				q += " AND ";  // if there's a clause there, then AND this to it
+			String preDeletedClause = getPreDeletedClauseDoNotUse(preDeleted);
+			q += preDeletedClause;
+			so.setQueryStringDoNotUse(q);
+		} // OLD
+		
+		// NEW
+		
 		handleRootElement(root, so);
 		
 		//If searching as a different user, add in the acl for that user
 		if (asUserId != null && !ignoreAcls) {
 			QueryBuilder aclQ = new QueryBuilder(asUserId);
 			String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
-			if (acls.length() != 0) {
-				String q = so.getQueryString();
-				if (q.equalsIgnoreCase("(  )"))
-					q = "";
-				if (q.length() > 0)
-					q += "AND ";
-				q += acls;
-				so.setQueryString(q);
-			}
+			addAclClauses(acls, so);
 		}
-
-
 		
-		String q = so.getQueryString();
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
 		// will return the empty string.
-		
 		if (!ignoreAcls) { 
 			String acls = getAclClause();
-			if (acls.length() != 0) {
-				q = so.getQueryString();
-				if (q.equalsIgnoreCase("(  )"))
-					q = "";
-				if (q.length() > 0)
-					q += "AND ";
-				q += acls;
-				so.setQueryString(q);
-			}
+			addAclClauses(acls, so);
 		}
 		
 		// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
-		if (q.equalsIgnoreCase("(  )"))
-			q = " "; // if it's an empty clause - delete it
-		if (q.length() > 0)
-			q += " AND ";  // if there's a clause there, then AND this to it
-		String preDeletedClause = getPreDeletedClause(preDeleted);
-		q += preDeletedClause;
-		so.setQueryString(q);
+		Query lq = so.getLuceneQuery();
+		if(!(lq instanceof BooleanQuery)) {
+			BooleanQuery bq = new BooleanQuery();
+			bq.add(lq, BooleanClause.Occur.MUST);
+			lq = bq;
+		}
+		Query preDeletedQ = new TermQuery(new Term(Constants.PRE_DELETED_FIELD, Constants.TRUE));
+		if(preDeleted)
+			((BooleanQuery) lq).add(preDeletedQ, BooleanClause.Occur.MUST);
+		else
+			((BooleanQuery) lq).add(preDeletedQ, BooleanClause.Occur.MUST_NOT);
+		so.setLuceneQuery(lq);
 		
 		if(logger.isDebugEnabled())
 			logger.debug(org.kablink.teaming.util.Constants.NEWLINE + 
@@ -224,14 +255,35 @@ public class QueryBuilder {
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					domQuery.asXML() + 
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					"Lucene query =>" +
+					"Query string (old) =>" +
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					so.getQueryString());
+					so.getQueryStringDoNotUse() + 
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					"Lucene query (old) =>" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					so.getQueryDoNotUse().toString() + 
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					"Lucene query (new) =>" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					so.getLuceneQuery().toString());
 					
 		return so;
 	}
 
-	private void parseRootElement(Element element, SearchObject so) {
+	private void addAclClauses(String acls, SearchObject so) {
+		if (acls != null && acls.length() != 0) {
+			Query top = so.getLuceneQuery();
+			if(!(top instanceof BooleanQuery)) {
+				BooleanQuery bq = new BooleanQuery();
+				bq.add(top, BooleanClause.Occur.MUST);
+				top = bq;
+			}
+			((BooleanQuery) top).add(so.parseQueryStringWSA(acls), BooleanClause.Occur.MUST);
+			so.setLuceneQuery(top);
+		}
+	}
+	
+	private void parseRootElementDoNotUse(Element element, SearchObject so) {
 		String qString = "";
 
 		for (Iterator i = element.elementIterator(); i.hasNext();) {
@@ -241,21 +293,42 @@ public class QueryBuilder {
 			qString += parseElement(elem, operator, so);
 
 		}
-		so.setQueryString(qString);
+		so.setQueryStringDoNotUse(qString);
 	}
 
 	private void handleRootElement(Element element, SearchObject so) {
-		BooleanQuery bQuery = new BooleanQuery();
+		Query query = null;
+		int count = 0;
 		
 		for (Iterator i = element.elementIterator(); i.hasNext();) {
 			Element elem = (Element) i.next();
 
-			Query query = handleElement(elem, so);
+			String operator = elem.getName();
+			Query q = handleElement(elem, so);
 			
-			if(query != null)
-				bQuery.add(query, BooleanClause.Occur.MUST);
+			if(q == null)
+				continue;
+			else
+				count++;
+			
+			if(count == 1) {
+				query = q;
+			}
+			else if(count == 2) {
+				Query first = query;
+				BooleanQuery bq = new BooleanQuery();
+				bq.add(first, BooleanClause.Occur.MUST);
+				bq.add(q, BooleanClause.Occur.MUST);
+				query = bq;
+			}
+			else {
+				((BooleanQuery) query).add(q, BooleanClause.Occur.MUST);
+			}
 		}
-		so.setLuceneQuery(bQuery);
+		logger.debug("Number of first level elements: " + count);
+		if(query == null)
+			query = new BooleanQuery();
+		so.setLuceneQuery(query);
 	}
 
 	private String parseElement(Element element, String op, SearchObject so) {
@@ -337,30 +410,36 @@ public class QueryBuilder {
 			int elemCount = elements.size();
 
 			if (elemCount > 0) {
-				BooleanQuery bQuery = null;
-				
 				for (int j = 0; j < elemCount; j++) {
 					Node node = (Node) elements.get(j);
 					if (node instanceof Element) {
 						Query subQuery = handleElement((Element) node, so);
 						if(subQuery == null)
 							continue;
-						if(bQuery == null)
-							bQuery = new BooleanQuery();
-						if(node.getName().equalsIgnoreCase(NOT_ELEMENT)) {
-							if(operator.equalsIgnoreCase(AND_ELEMENT)) {
-								bQuery.add(subQuery, BooleanClause.Occur.MUST_NOT);
-							}
-							else {
-								logger.error("NOT must be preceded by AND" +
-										org.kablink.teaming.util.Constants.NEWLINE + 
-										element.asXML()); 
-								throw new IllegalArgumentException("Invalid query in XML");	
-							}
+						if(query == null) {
+							query = subQuery;
 						}
-						else { 
-							bQuery.add(subQuery, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
-						}
+						else {
+							if(!(query instanceof BooleanQuery)) {
+								BooleanQuery bQuery = new BooleanQuery();
+								bQuery.add(query, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
+								query = bQuery;
+							}
+							if(node.getName().equalsIgnoreCase(NOT_ELEMENT)) {
+								if(operator.equalsIgnoreCase(AND_ELEMENT)) {
+									((BooleanQuery) query).add(subQuery, BooleanClause.Occur.MUST_NOT);
+								}
+								else {
+									logger.error("NOT must be preceded by AND" +
+											org.kablink.teaming.util.Constants.NEWLINE + 
+											element.asXML()); 
+									throw new IllegalArgumentException("Invalid query in XML");	
+								}
+							}
+							else { 
+								((BooleanQuery) query).add(subQuery, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
+							}
+						}						
 					} else {
 						logger.error("DOM TREE is not properly formatted" +
 								org.kablink.teaming.util.Constants.NEWLINE + 
@@ -368,7 +447,6 @@ public class QueryBuilder {
 						throw new IllegalArgumentException("Invalid query in XML");
 					}
 				}
-				query = bQuery;
 			}
 		} else if (operator.equalsIgnoreCase(NOT_ELEMENT)) {
 			List elements = element.elements();
@@ -393,7 +471,7 @@ public class QueryBuilder {
 		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 			query = handlePERSONALTAGS(element);
 		} else if (operator.equals(FIELD_ELEMENT)) {
-			// $$$$$ TODO qString += processFIELD(element);
+			query = handleFIELD(element, so);
 		}
 		return query;
 	}
@@ -405,7 +483,6 @@ public class QueryBuilder {
 
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
-		String nearText = element.attributeValue(NEAR_ATTRIBUTE);
 
 		if ((exactPhrase != null)
 				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_TRUE)))
@@ -421,9 +498,6 @@ public class QueryBuilder {
 					termText = fieldName + ":\"" + child.getText() + "\"";
 				else
 					termText = "\"" + child.getText() + "\"";
-				if (nearText != null) {
-					termText += "~" + nearText;
-				}
 			} else {
 				if(fieldName != null && !fieldName.equals(""))
 					termText = fieldName + ":(" + child.getText() + ")";
@@ -432,6 +506,40 @@ public class QueryBuilder {
 			}
 		}
 		return termText;
+	}
+
+	private Query handleFIELD(Element element, SearchObject so) {
+
+		boolean exact;
+		Query query = null;
+
+		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
+		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
+
+		if ((exactPhrase != null)
+				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_TRUE)))
+			exact = true;
+		else
+			exact = false;
+
+		List children = element.elements();
+		Node child = (Node) children.get(0);
+		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
+			if (exact) {
+				if(fieldName == null || fieldName.equals(""))
+					fieldName = Constants.ALL_TEXT_FIELD;
+				
+				query = new TermQuery(new Term(fieldName, child.getText()));
+			} else {
+				String queryStr;
+				if(fieldName != null && !fieldName.equals(""))
+					queryStr = fieldName + ":(" + child.getText() + ")";
+				else
+					queryStr = child.getText();
+				query = so.parseQueryString(queryStr);
+			}
+		}
+		return query;
 	}
 
 	private void processSORTBY(Element element, SearchObject so) {
@@ -732,7 +840,7 @@ public class QueryBuilder {
 		return qString.toString();
 	}
 	
-	private String getPreDeletedClause(boolean searchPreDeleted)
+	private String getPreDeletedClauseDoNotUse(boolean searchPreDeleted)
 	{
 
 		StringBuffer qString = new StringBuffer();
@@ -741,7 +849,6 @@ public class QueryBuilder {
 			qString.append(" NOT ");
 		}
 		qString.append(Constants.PRE_DELETED_FIELD  + ":true "); //_preDeleted:true
-		// $$$$$ qString.append(Constants.PRE_DELETED_FIELD  + ":" + Constants.TRUE); //_preDeleted:true
 		
 		return qString.toString();
 	}

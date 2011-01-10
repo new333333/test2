@@ -1250,7 +1250,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());
