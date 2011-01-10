@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.search;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
@@ -52,7 +54,9 @@ import org.apache.lucene.search.TermRangeQuery;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -61,11 +65,10 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlUtil;
 import org.kablink.util.search.Constants;
 
 
@@ -253,7 +256,7 @@ public class QueryBuilder {
 			logger.debug(org.kablink.teaming.util.Constants.NEWLINE + 
 					"XML query =>" + 
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					domQuery.asXML() + 
+					((SPropsUtil.getBoolean("querybuilder.debug.format.dom", false))? XmlUtil.asPrettyString(domQuery) : domQuery.asXML()) +
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					"Query string (old) =>" +
 					org.kablink.teaming.util.Constants.NEWLINE + 
