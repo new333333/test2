@@ -36,7 +36,6 @@ public class Constants {
 
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
-	public static final String NEAR_ATTRIBUTE = "near";
 	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
 	public static final String DISTANCE_ATTRIBUTE = "distance";
 	public static final String ASCENDING_ATTRIBUTE = "ascending";
@@ -57,8 +56,8 @@ public class Constants {
 	public static final String ASCENDING_TRUE = "TRUE";
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
-	public static final String TRUE = "TRUE";
-	public static final String FALSE = "FALSE";
+	public static final String TRUE = "true";
+	public static final String FALSE = "false";
 	public static final String TAG_ELEMENT = "TAG";
 	public static final String SORT_FIELD_PREFIX = "_sort_";
 	public static final String UID_FIELD = "_uid";

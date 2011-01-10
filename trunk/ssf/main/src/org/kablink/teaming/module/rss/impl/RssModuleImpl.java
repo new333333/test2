@@ -452,7 +452,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(so.getQuery(),so.getSortBy());
+			Hits hits = indexSearcher.search(so.getLuceneQuery(),so.getSortBy());
 
 			// create the return string, add the channel info
 			String rss = addRssHeader(request, binder, binder.getTitle());
@@ -521,7 +521,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			SearchObject so = buildRssQuery();
 
 			// get the matching entries
-			Hits hits = indexSearcher.search(so.getQuery(), so.getSortBy());
+			Hits hits = indexSearcher.search(so.getLuceneQuery(), so.getSortBy());
 
 			// create the return string, add the channel info
 			String atom = addAtomHeader(binder.getTitle());

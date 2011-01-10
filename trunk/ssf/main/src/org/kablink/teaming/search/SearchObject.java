@@ -36,6 +36,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanQuery;
@@ -44,7 +45,6 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.NullAnalyzer;
-import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.util.ReflectHelper;
@@ -71,6 +71,7 @@ public class SearchObject {
 	private static ThreadLocal<QueryParser> queryParserARABIC = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserHEBREW = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserCJK = new ThreadLocal<QueryParser>();
+	private static ThreadLocal<QueryParser> queryParserWSA = new ThreadLocal<QueryParser>();
 	
 	
 	/**
@@ -84,19 +85,21 @@ public class SearchObject {
 			QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
+			qp = new QueryParser(Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
+			queryParserWSA.set(qp);
 		}
 	}
 	
 	/**
 	 * @return Returns the queryString.
 	 */
-	public String getQueryString() {
+	public String getQueryStringDoNotUse() {
 		return queryString;
 	}
 	/**
 	 * @param queryString The queryString to set.
 	 */
-	public void setQueryString(String queryString) {
+	public void setQueryStringDoNotUse(String queryString) {
 		this.queryString = queryString;
 	}
 	/**
@@ -122,6 +125,33 @@ public class SearchObject {
 		return this.language;
 	}
 
+	/**
+	 * @return Returns the query.
+	 */
+	public Query getQueryDoNotUse() {
+		return parse(getParser(), queryString);
+	}
+
+	public Query parseQueryString(String qStr) {
+		return parse(getParser(), qStr);
+	}
+	
+	public Query parseQueryStringWSA(String qStr) {
+		return parse(getParserWSA(), qStr);
+	}
+	
+	public void setLuceneQuery(Query luceneQuery) {
+		this.luceneQuery = luceneQuery;
+	}
+	
+	public Query getLuceneQuery() {
+		return luceneQuery;
+	}
+	
+	private QueryParser getParserWSA() {
+		return (QueryParser) queryParserWSA.get();
+	}
+	
 	private QueryParser getParser() {
 		String lang = getLanguage();
 		if (lang.equalsIgnoreCase(LanguageTaster.DEFAULT))
@@ -181,27 +211,17 @@ public class SearchObject {
 		}
 	}
 	
-	/**
-	 * @return Returns the query.
-	 */
-	public Query getQuery() {
+	private Query parse(QueryParser parser, String qStr) {
 		try {
 			long startTime = System.currentTimeMillis();
-			Query retQ = getParser().parse(queryString);
+			Query retQ = parser.parse(qStr);
 			long endTime = System.currentTimeMillis();
-			logger.debug("QueryParser instantiating new QP took " + (endTime - startTime) + " milliseconds");
+			if(logger.isDebugEnabled())
+				logger.debug("QueryParser instantiating new QP took " + (endTime - startTime) + " milliseconds");
 			return retQ;
 		} catch (ParseException pe){ 
-			logger.debug("Parser exception, can't parse: " + queryString);
-			return new BooleanQuery();}
-	}
-
-	public void setLuceneQuery(Query luceneQuery) {
-		this.luceneQuery = luceneQuery;
-	}
-	
-	public Query getLuceneQuery() {
-		return luceneQuery;
+			logger.warn("Parser exception, can't parse: " + qStr);
+			return new BooleanQuery();}	
 	}
 	
 	private Analyzer getCJKAnalyzer() {

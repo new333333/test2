@@ -645,14 +645,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(crit.toQuery());
     	
-    	if(logger.isDebugEnabled())
-    		logger.debug("Query is: " + so.getQueryString());
-    	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {
-        	results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
+        	results = luceneSession.search(so.getLuceneQuery(),so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());

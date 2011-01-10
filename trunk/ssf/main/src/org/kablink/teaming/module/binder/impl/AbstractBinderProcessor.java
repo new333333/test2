@@ -1370,7 +1370,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + soQuery.toString());
@@ -1537,7 +1537,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		crit.add(conjunction().add(
 				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
 		Hits hits = luceneSessionn.search(qbb.buildQuery(crit.toQuery(), true)
-				.getQuery());
+				.getLuceneQuery());
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {
 			doc = hits.doc(i);
