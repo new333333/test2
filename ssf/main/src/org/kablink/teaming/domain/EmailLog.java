@@ -32,27 +32,29 @@
  */
 package org.kablink.teaming.domain;
 
-import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import com.liferay.util.StringUtil;
+
 /**
  * This class represents an email log entry.
  *
  */
-public class EmailLog extends ZonedObject implements Serializable {
+public class EmailLog extends ZonedObject {
 
-	private static final long serialVersionUID = 1L;
-	protected EmailLogType type = EmailLogType.unknown;	//Type of mail
-	protected Date sendDate;							//Date mail was sent
-	protected CommaSeparatedValue toIds;				//comma separated list of user ids
-	protected CommaSeparatedValue toEmailAddresses;		//comma separated list of email addresses
-	protected Long fromId;								//User id of sender
-	protected Long zoneId; 								//zone id
-	protected String subj;								//Subj line from mail message
-	protected EmailLogStatus status;							//sent, queued, error
-	protected String comment;							//Error message (if any)
-	protected CommaSeparatedValue fileAttachments;		//comma separated list of file names
+	protected String id;										
+	
+	protected Date sendDate;									//Date mail was sent
+	protected String from;										//Email address of sender
+	protected String subj;										//Subj line from mail message
+	protected String comment;									//Error message (if any)
+	protected EmailLogType type = EmailLogType.unknown;			//Type of mail
+	protected EmailLogStatus status = EmailLogStatus.unknown;	//sent, queued, error
+	protected String[] toEmailAddresses;						//comma separated list of email addresses
+	protected String[] fileAttachments;							//comma separated list of file names
 
 	public enum EmailLogType {
 		unknown,
@@ -69,16 +71,24 @@ public class EmailLog extends ZonedObject implements Serializable {
 		error
 	};
 	
-	public EmailLog(EmailLogType type, Date sendDate, List<Long> toIds, Long fromId, EmailLogStatus status, Long zoneId) {
+	// Applications use this constructor
+	public EmailLog(EmailLogType type, Date sendDate, EmailLogStatus status, String from) {
 		this.type = type;
 		this.sendDate = sendDate;
-		this.fromId = fromId;
-		this.toIds = new CommaSeparatedValue();
-		this.toIds.setValue(toIds);
 		this.status = status;
-		this.zoneId = zoneId;
+		this.from = from;
 	}
 	
+	// This constructor is reserved for use by Hibernate only.
+	protected EmailLog() {}
+
+    public String getId() {
+        return id;
+    }
+    protected void setId(String id) {
+        this.id = id;
+    }
+
 	public EmailLogType getType() {
 		return type;
 	}
@@ -91,23 +101,29 @@ public class EmailLog extends ZonedObject implements Serializable {
 	public void setSendDate(Date sendDate) {
 		this.sendDate = sendDate;
 	}
-	public CommaSeparatedValue getToIds() {
-		return toIds;
-	}
-	public void setToIds(CommaSeparatedValue toIds) {
-		this.toIds = toIds;
-	}
-	public CommaSeparatedValue getToEmailAddresses() {
+	public String[] getToEmailAddresses() {
 		return toEmailAddresses;
 	}
-	public void setToEmailAddresses(CommaSeparatedValue toEmailAddresses) {
+	public List<String> getToEmailAddressesAsList() {
+		if(toEmailAddresses == null)
+			return new ArrayList<String>();
+		else
+			return Arrays.asList(toEmailAddresses);
+	}
+	public void setToEmailAddresses(String[] toEmailAddresses) {
 		this.toEmailAddresses = toEmailAddresses;
 	}
-	public Long getFromId() {
-		return fromId;
+	public void setToEmailAddresses(List<String> toEmailAddresses) {
+		if(toEmailAddresses == null)
+			this.toEmailAddresses = null;
+		else
+			this.toEmailAddresses = toEmailAddresses.toArray(new String[]{});
 	}
-	public void setFromId(Long fromId) {
-		this.fromId = fromId;
+	public String getFrom() {
+		return from;
+	}
+	public void setFrom(String from) {
+		this.from = from;
 	}
 	public String getSubj() {
 		return subj;
@@ -127,19 +143,77 @@ public class EmailLog extends ZonedObject implements Serializable {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	public CommaSeparatedValue getFileAttachments() {
+	public String[] getFileAttachments() {
 		return fileAttachments;
 	}
-	public void setFileAttachments(CommaSeparatedValue fileAttachments) {
+	public List<String> getFileAttachmentsAsList() {
+		if(fileAttachments == null)
+			return new ArrayList<String>();
+		else
+			return Arrays.asList(fileAttachments);
+	}
+	public void setFileAttachments(String[] fileAttachments) {
 		this.fileAttachments = fileAttachments;
 	}
-	public Long getZoneId() {
-		return zoneId;
-	}
-	public void setZoneId(Long zoneId) {
-		this.zoneId = zoneId;
-	}
-	protected EmailLog() {
+	public void setFileAttachments(List<String> fileAttachments) {
+		if(fileAttachments == null)
+			this.fileAttachments = null;
+		else
+			this.fileAttachments = fileAttachments.toArray(new String[]{});
 	}
 
+	/// Begin Persistence - The methods in this section are used only by Hibernate for persistence.
+	protected String getTypeStr() {
+		if(type == null)
+			return EmailLogType.unknown.name();
+		else
+			return type.name();
+	}
+	protected void setTypeStr(String typeStr) {
+		type = EmailLogType.valueOf(typeStr);
+	}
+	
+	protected String getStatusStr() {
+		if(status == null)
+			return EmailLogStatus.unknown.name();
+		else
+			return status.name();
+	}
+	protected void setStatusStr(String statusStr) {
+		status = EmailLogStatus.valueOf(statusStr);
+	}
+	
+	protected String getToEmailAddressesStr() {
+		// Return a comma separated list of email addresses for storage
+		if(toEmailAddresses == null)
+			return null;
+		else
+			return StringUtil.merge(toEmailAddresses);
+	}
+	
+	protected void setToEmailAddressesStr(String toEmailAddressesStr) {
+		// Receive a command separated list of email addresses from storage
+		if(toEmailAddressesStr == null)
+			toEmailAddresses = null;
+		else
+			toEmailAddresses = StringUtil.split(toEmailAddressesStr);
+	}
+	
+	protected String getFileAttachmentsStr() {
+		// Return a comma separated list of file names for storage
+		if(fileAttachments == null)
+			return null;
+		else
+			return StringUtil.merge(fileAttachments);
+	}
+	
+	protected void setFileAttachmentsStr(String fileAttachmentsStr) {
+		// Receive a command separated list of file names from storage
+		if(fileAttachmentsStr == null)
+			fileAttachments = null;
+		else
+			fileAttachments = StringUtil.split(fileAttachmentsStr);
+	}
+	
+	/// End Persistence
 }
