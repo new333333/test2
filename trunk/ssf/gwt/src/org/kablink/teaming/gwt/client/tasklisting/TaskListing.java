@@ -80,6 +80,30 @@ public class TaskListing {
 		m_sortDescend    = sortDescend;
 	}
 
+	/*
+	 * Renders a List<TaskListItem> in to the task listing DIV.
+	 */
+	private void render(List<TaskListItem> taskItemList) {
+		// Scan the List<TaskListItem>...
+		for (TaskListItem taskItem:  taskItemList) {
+			// ...rendering each TaskListItem into the task listing.
+			renderTaskItem(taskItem);
+		}
+	}
+
+	// Renders a TaskListItem into the task listing.
+	private void renderTaskItem(TaskListItem taskItem) {
+//!		...this needs to be implemented...
+		m_taskListingDIV.appendChild(new InlineLabel(taskItem.getTask().getTitle() + ":  ...this needs to be implemented...").getElement());
+		
+		// Does this TaskListItem contain any subtasks?
+		List<TaskListItem> subtasks = taskItem.getSubtasks();
+		if ((null != subtasks) && (!(subtasks.isEmpty()))) {
+			// Yes!  Render them.
+			render(subtasks);
+		}
+	}
+	
 	/**
 	 * Show's the task listing based on the parameters passed into the
 	 * constructor.
@@ -88,19 +112,21 @@ public class TaskListing {
 		GwtTeaming.getRpcService().getTaskList(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<List<TaskListItem>>() {
 			@Override
 			public void onFailure(Throwable t) {
+				// Handle the failure...
 				String error = m_messages.rpcFailure_GetTaskList();
 				GwtClientHelper.handleGwtRPCFailure(t, error);
 				
+				// ...and display the error as the task listing.
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
-				m_taskListingDIV.appendChild(new InlineLabel(m_messages.rpcFailure_GetTaskList()).getElement());
+				m_taskListingDIV.appendChild(new InlineLabel(error).getElement());
 			}
 
 			@Override
 			public void onSuccess(List<TaskListItem> result) {
-				Window.alert( "TaskListing.show( " + m_binderId + " )" );
-				
+				// Clear the task listing DIV's contents and render the
+				// task list.
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
-				m_taskListingDIV.appendChild(new InlineLabel("...this needs to be implemented...").getElement());
+				render(result);
 			}			
 		});		
 	}
