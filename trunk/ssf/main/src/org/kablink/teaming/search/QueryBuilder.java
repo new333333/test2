@@ -419,30 +419,22 @@ public class QueryBuilder {
 						Query subQuery = handleElement((Element) node, so);
 						if(subQuery == null)
 							continue;
-						if(query == null) {
-							query = subQuery;
+						if(query == null)
+							query = new BooleanQuery();
+						if(node.getName().equalsIgnoreCase(NOT_ELEMENT)) {
+							if(operator.equalsIgnoreCase(AND_ELEMENT)) {
+								((BooleanQuery) query).add(subQuery, BooleanClause.Occur.MUST_NOT);
+							}
+							else {
+								logger.error("NOT must be preceded by AND" +
+										org.kablink.teaming.util.Constants.NEWLINE + 
+										element.asXML()); 
+								throw new IllegalArgumentException("Invalid query in XML");	
+							}
 						}
-						else {
-							if(!(query instanceof BooleanQuery)) {
-								BooleanQuery bQuery = new BooleanQuery();
-								bQuery.add(query, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
-								query = bQuery;
-							}
-							if(node.getName().equalsIgnoreCase(NOT_ELEMENT)) {
-								if(operator.equalsIgnoreCase(AND_ELEMENT)) {
-									((BooleanQuery) query).add(subQuery, BooleanClause.Occur.MUST_NOT);
-								}
-								else {
-									logger.error("NOT must be preceded by AND" +
-											org.kablink.teaming.util.Constants.NEWLINE + 
-											element.asXML()); 
-									throw new IllegalArgumentException("Invalid query in XML");	
-								}
-							}
-							else { 
-								((BooleanQuery) query).add(subQuery, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
-							}
-						}						
+						else { 
+							((BooleanQuery) query).add(subQuery, (operator.equalsIgnoreCase(AND_ELEMENT)? BooleanClause.Occur.MUST : BooleanClause.Occur.SHOULD));
+						}					
 					} else {
 						logger.error("DOM TREE is not properly formatted" +
 								org.kablink.teaming.util.Constants.NEWLINE + 
