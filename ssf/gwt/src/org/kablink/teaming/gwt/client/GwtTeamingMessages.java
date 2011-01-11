@@ -214,7 +214,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AccessToFolderDenied();
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_AddFavorite();
-	String rpcFailure_CanManagePublicBinderTags();
+	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_ExpandBucket();
@@ -272,6 +272,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
+	String rpcFailure_SaveTags();
 	String rpcFailure_Search();
 	String rpcFailure_SetStatus();
 	String rpcFailure_TrackingBinder();

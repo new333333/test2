@@ -119,6 +119,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -2195,47 +2196,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return new Boolean(getBinderModule().testAccess(binder, BinderOperation.manageTag));
 	}//end canManagePublicBinderTags()
 	
+
 	/**
-	 * Adds a tag to those defined on a binder.
+	 * Returns true if the user can manage public tags on the given entry
+	 * and false otherwise.
 	 *
 	 * @param ri
 	 * @param binderId
-	 * @param binderTag
 	 * 
 	 * @return
 	 */
-	public TagInfo addBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
+	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId )
 	{
-		return GwtServerHelper.addBinderTag( this, binderId, binderTag );
-	}//end addBinderTag()
-	
-	/**
-	 * Removes a tag from those defined on a binder.
-	 *
-	 * @param ri
-	 * @param binderId
-	 * @param binderTag
-	 * 
-	 * @return
-	 */
-	public Boolean removeBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
-	{
-		return GwtServerHelper.removeBinderTag( this, binderId, binderTag );
-	}//end removeBinderTag()
-	
-	/**
-	 * Updates the list of tags defined on a binder.
-	 *
-	 * @param ri
-	 * @param binderId
-	 * @param binderTags
-	 * 
-	 * @return
-	 */
-	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, List<TagInfo> binderTags )
-	{
-		return GwtServerHelper.updateBinderTags( this, binderId, binderTags );
-	}//end updateBinderTags()
+		return GwtServerHelper.canManagePublicEntryTags( this, entryId );
+	}
 	
 	/**
 	 * Returns a BinderInfo describing a binder.
@@ -3415,7 +3389,25 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ex.setExceptionType( ExceptionType.UNKNOWN );
 			throw ex;
 		}
-	}	
+	}
+	
+	
+	/**
+	 * Update the tags for the given binder.
+	 */
+	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	{
+		return GwtServerHelper.updateBinderTags( this, binderId, tagsToBeDeleted, tagsToBeAdded );
+	}
+
+
+	/**
+	 * Update the tags for the given entry.
+	 */
+	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	{
+		return GwtServerHelper.updateEntryTags( this, entryId, tagsToBeDeleted, tagsToBeAdded );
+	}
 
 
 	/**

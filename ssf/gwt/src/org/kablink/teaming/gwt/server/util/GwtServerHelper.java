@@ -82,7 +82,6 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
-import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -122,7 +121,6 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -145,7 +143,6 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
@@ -394,36 +391,39 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Adds a tag to those defined on a binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param binderTag
-	 * 
-	 * @return
+	 * Add a tag to the given binder.
 	 */
-	public static TagInfo addBinderTag(AllModulesInjected bs, String binderIdS, TagInfo binderTag) {
+	public static void addBinderTag( BinderModule bm, Binder binder, TagInfo tagInfo )
+	{
+		boolean community;
+		Long binderId;
+		String tagName;
+
 		// Define the new tag.
-		boolean community = binderTag.isCommunityTag();
-		BinderModule bm = bs.getBinderModule();
-		Long binderId = Long.parseLong(binderIdS);
-		String binderTagName = binderTag.getTagName();
-		bm.setTag(binderId, binderTagName, community);
-
-		// Find the new tag in those attached to the binder...
-		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(bm.getBinder(binderId)));
-		Set<Tag> tags = tagsMap.get(community ? ObjectKeys.COMMUNITY_ENTITY_TAGS : ObjectKeys.PERSONAL_ENTITY_TAGS);
-		for (Iterator<Tag> tagsIT = tags.iterator(); tagsIT.hasNext(); ) {
-			Tag tag = tagsIT.next();
-			if (tag.getName().equalsIgnoreCase(binderTagName)) {
-				// ...and return a new TagInfo for it. 
-				return buildTIFromTag(binderTag.getTagType(), tag);
-			}
-		}
-
-		// If we get here, something about creating the tag failed.
-		return null;
+		community = tagInfo.isCommunityTag();
+		binderId = binder.getId();
+		tagName = tagInfo.getTagName();
+		bm.setTag( binderId, tagName, community );
 	}
+	
+	/**
+	 * Add a tag to the given entry
+	 */
+	public static void addEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )
+	{
+		String tagName;
+		TagType tagType;
+		boolean community;
+		
+		tagName = tagInfo.getTagName();
+		tagType = tagInfo.getTagType();
+		community = false;
+		if ( tagType == TagType.COMMUNITY )
+			community = true;
+		
+		fm.setTag( null, entryId, tagName, community );
+	}
+	
 	
 	/**
 	 * Adds a Trash folder to the TreeInfo.
@@ -683,60 +683,70 @@ public class GwtServerHelper {
 		return reply;
 	}
 
-	/*
-	 * Scans the tags in newTags and any that aren't defined in oldTags
-	 * are defined on the binder.
+	
+	/**
+	 * See if the user has rights to manage public tags on the given entry.
 	 */
-	private static void defineNewTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags, boolean community) {
-		// Scan the new tags...
-		for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
-			// ...scan the old tags looking for this new tag... 
-			TagInfo ti = newTagsIT.next();
-			boolean found = false;
-			for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
-				Tag tag = oldTagsIT.next();
-				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
-					// ...and break out of the old tag scan loop if we
-					// ...find the new tag.
-					found = true;
-					break;
-				}
-			}
+	public static Boolean canManagePublicEntryTags( AllModulesInjected bs, String entryId )
+	{
+		try
+		{
+			FolderModule folderModule;
+			FolderEntry folderEntry;
+			Long entryIdL;
+			
+			folderModule = bs.getFolderModule();
+			entryIdL = new Long( entryId );
 
-			// If we didn't find the new tag in the old tag list...
-			if (!found) {
-				// ...define it.
-				bm.setTag(binderId, ti.getTagName(), community);				
-			}
+			folderEntry = folderModule.getEntry( null, entryIdL );
+	        
+			// Check to see if the user can manage public tags on this entry.
+			folderModule.checkAccess( folderEntry, FolderOperation.manageTag );
+
+			// If we get here the action is valid.
+			return Boolean.TRUE;
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to manage public tags on the entry.
+		return Boolean.FALSE;
+	}
+	
+	/**
+	 * Delete the given tag from the given entry.
+	 */
+	public static void deleteEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )
+	{
+		String tagId;
+		
+		// Does this tag already exist?
+		tagId = tagInfo.getTagId();
+		if ( tagId != null && tagId.length() > 0 )
+		{
+			// Yes, delete it from the given entry.
+			fm.deleteTag( null, entryId, tagId );
 		}
 	}
 	
 	/*
-	 * Scans the tags in oldTags and any that aren't defined in newTags
+	 * Remove the given tag from the given binder.
 	 * are deleted from the binder.
 	 */
-	private static void deleteMissingTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags) {
-		// Scan the old tags...
-		for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
-			// ...scan the new tags looking for this old tag...
-			Tag tag = oldTagsIT.next();
-			boolean found = false;
-			for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
-				TagInfo ti = newTagsIT.next();
-				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
-					// ...and break out of the new tag scan loop if we
-					// ...find the old tag.
-					found = true;
-					break;
-				}
-			}
-
-			// If we didn't find the old tag in the new tag list...
-			if (!found) {
-				// ...delete it.
-				bm.deleteTag(binderId, tag.getId());
-			}
-		}
+	private static void deleteBinderTag( BinderModule bm, Binder binder, TagInfo tag )
+	{
+		String tagId;
+		
+		tagId = tag.getTagId();
+		if ( tagId != null && tagId.length() > 0 )
+			bm.deleteTag( binder.getId(), tagId );
 	}
 	
 	/**
@@ -3043,20 +3053,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Removes a tag from those defined on a binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param binderTag
-	 * 
-	 * @return
-	 */
-	public static Boolean removeBinderTag(AllModulesInjected bs, String binderId, TagInfo binderTag) {
-		bs.getBinderModule().deleteTag(Long.parseLong(binderId), binderTag.getTagId());
-		return Boolean.TRUE;
-	}
-	
-	/**
 	 * Removes a search based on its SavedSearchInfo.
 	 *
 	 * @param bs
@@ -3261,45 +3257,56 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Updates the tags defined on a binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param binderTags
-	 * 
-	 * @return
+	 * Update the tags for the given binder.
 	 */
-	public static Boolean updateBinderTags(AllModulesInjected bs, String binderId, List<TagInfo> binderTags) {
-		BinderModule bm = bs.getBinderModule();
-		return updateBinderTags(bm, bm.getBinder(Long.parseLong(binderId)), binderTags);
+	public static Boolean updateBinderTags( AllModulesInjected bs, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	{
+		BinderModule bm;
+		Binder binder;
+
+		bm = bs.getBinderModule();
+		binder = bm.getBinder( Long.parseLong( binderId ) );
+		
+		// Go through the list of tags to be deleted and delete them.
+		for ( TagInfo nextTag : tagsToBeDeleted )
+		{
+			deleteBinderTag( bm, binder, nextTag );
+		}
+		
+		// Go through the list of tags to be added and add them.
+		for ( TagInfo nextTag : tagsToBeAdded )
+		{
+			addBinderTag( bm, binder, nextTag );
+		}
+		
+		// If we get here, everything worked.
+		return Boolean.TRUE;
 	}
 	
-	public static Boolean updateBinderTags(BinderModule bm, Binder binder, List<TagInfo> binderTags) {
-		// Split the tags between community tags and personal tags.
-		List<TagInfo> newCommunityTags = new ArrayList<TagInfo>();
-		List<TagInfo> newPersonalTags  = new ArrayList<TagInfo>();
-		for (Iterator<TagInfo> tagsIT = binderTags.iterator(); tagsIT.hasNext(); ) {
-			TagInfo ti = tagsIT.next();
-			if (ti.isCommunityTag()) newCommunityTags.add(ti);
-			else                     newPersonalTags.add(ti);
+	/**
+	 * Update the tags for the given entry.
+	 */
+	public static Boolean updateEntryTags( AllModulesInjected bs, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
+	{
+		FolderModule fm;
+		Long entryIdL;
+		
+		fm = bs.getFolderModule();
+		entryIdL = Long.parseLong( entryId );
+		
+		// Go through the list of tags to be deleted and delete them.
+		for ( TagInfo nextTag : tagsToBeDeleted )
+		{
+			deleteEntryTag( fm, entryIdL, nextTag );
+		}
+		
+		// Go through the list of tags to be added and add them.
+		for ( TagInfo nextTag : tagsToBeAdded )
+		{
+			addEntryTag( fm, entryIdL, nextTag );
 		}
 
-		// Read the currently defined tags from the binder.
-		Map<String, SortedSet<Tag>> oldTags = TagUtil.uniqueTags(bm.getTags(binder));
-		Set<Tag> oldCommunityTags = oldTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
-		Set<Tag> oldPersonalTags  = oldTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-
-		// Delete any existing tags that aren't part of the new list...
-		Long binderId = binder.getId();
-		deleteMissingTags(bm, binderId, newCommunityTags, oldCommunityTags);
-		deleteMissingTags(bm, binderId, newPersonalTags,  oldPersonalTags);
-
-		// ...and define and new tags that aren't part of the existing
-		// ...list.
-		defineNewTags(bm, binderId, newCommunityTags, oldCommunityTags, true);
-		defineNewTags(bm, binderId, newPersonalTags,  oldPersonalTags,  false);
-
-		// If we get here, the update was successful.  Return true.
+		// If we get here, everything worked.
 		return Boolean.TRUE;
 	}
 	
@@ -3427,7 +3434,7 @@ public class GwtServerHelper {
 					if ( teamingAction == TeamingAction.REPLY.ordinal() )
 						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
 					else if ( teamingAction == TeamingAction.TAG.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.manageTag );
+						folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
 					else if ( teamingAction == TeamingAction.SHARE.ordinal() )
 						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
 					else if ( teamingAction == TeamingAction.SUBSCRIBE.ordinal() )
