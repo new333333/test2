@@ -87,6 +87,8 @@ public class TagThisDlg extends DlgBox
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
 	private AsyncCallback<ArrayList<TagInfo>> m_readTagsCallback = null;
+	private AsyncCallback<Boolean> m_saveTagsCallback = null;
+	private AsyncCallback<Boolean> m_publicTagManagerCallback = null;
 	private ArrayList<TagInfo> m_currentListOfTags;
 	private ArrayList<TagInfo> m_toBeAdded;			// List of tags to be added.
 	private ArrayList<TagInfo> m_toBeDeleted;		// List of tags to be deleted.
@@ -148,15 +150,6 @@ public class TagThisDlg extends DlgBox
 	
 	/**
 	 * Class constructor.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param left
-	 * @param top
-	 * @param currentBinder
-	 * @param binderTags
-	 * @param isPublicTagManager
-	 * @param dlgCaption
 	 */
 	public TagThisDlg(
 		boolean autoHide,
@@ -175,7 +168,8 @@ public class TagThisDlg extends DlgBox
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_toBeAdded = new ArrayList<TagInfo>();
 		m_toBeDeleted = new ArrayList<TagInfo>();
-	
+		m_currentListOfTags = new ArrayList<TagInfo>();
+
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			dlgCaption,
@@ -212,6 +206,7 @@ public class TagThisDlg extends DlgBox
 		String type;
 		int row;
 		DeleteTagWidget delWidget;
+		boolean canDelete;
 		
 		row = m_table.getRowCount();
 		
@@ -234,6 +229,10 @@ public class TagThisDlg extends DlgBox
 			}
 		}
 		
+		// Add the tag as the first tag in the table.
+		row = 1;
+		m_table.insertRow( row );
+		
 		// Add the tag name in the first column.
 		m_cellFormatter.setColSpan( row, 0, 1 );
 		m_table.setText( row, 0, tagInfo.getTagName() );
@@ -247,9 +246,20 @@ public class TagThisDlg extends DlgBox
 			type = GwtTeaming.getMessages().unknownTagType();
 		m_table.setText( row, 1, type );
 
-		// Add the delete image to the 3rd column.
-		delWidget = new DeleteTagWidget( tagInfo );
-		m_table.setWidget( row, 2, delWidget );
+		// If this is a community tag and the user can't manage public tags then don't
+		// add the delete widget.
+		canDelete = true;
+		if ( tagInfo.getTagType() == TagType.COMMUNITY && m_isPublicTagManager == false )
+		{
+			canDelete = false;
+		}
+		
+		if ( canDelete )
+		{
+			// Add the delete image to the 3rd column.
+			delWidget = new DeleteTagWidget( tagInfo );
+			m_table.setWidget( row, 2, delWidget );
+		}
 
 		// Add the necessary styles to the cells in the row.
 		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
@@ -260,6 +270,9 @@ public class TagThisDlg extends DlgBox
 		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
 		m_cellFormatter.addStyleName( row, 1, "oltContentPadding" );
 		m_cellFormatter.addStyleName( row, 2, "oltContentPadding" );
+		
+		// Add the tag to our current list of tags.
+		m_currentListOfTags.add( tagInfo );
 	}
 	
 	
@@ -460,7 +473,12 @@ public class TagThisDlg extends DlgBox
 		// Did we find the tag in the table?
 		if ( row > 0 )
 		{
+			String tagId;
+			
 			// Yes
+			// Remove the tag from our list of tags.
+			removeTagFromListOfTags( m_currentListOfTags, tagInfo );
+			
 			// Remove the tag from the table.
 			m_table.removeRow( row );
 			
@@ -472,8 +490,18 @@ public class TagThisDlg extends DlgBox
 				addNoTagsMessage();
 			}
 			
-			// Remember we need to delete this tag.
-			m_toBeDeleted.add( tagInfo );
+			// Does this tag already exist in the db?
+			tagId = tagInfo.getTagId();
+			if ( GwtClientHelper.hasString( tagId ) )
+			{
+				// Yes, Remember we need to delete this tag.
+				m_toBeDeleted.add( tagInfo );
+			}
+			else
+			{
+				// No, remove this tag from the list of tags to be added.
+				removeTagFromListOfTags( m_toBeAdded, tagInfo );
+			}
 		}
 	}
 	
@@ -496,7 +524,7 @@ public class TagThisDlg extends DlgBox
 	
 	/**
 	 * This method gets called when user user presses the OK push
-	 * button.
+	 * button.  We will issue an ajax request to save the list of tags.
 	 * 
 	 * Implements the EditSuccessfulHandler.editSuccessful() interface
 	 * method.
@@ -507,7 +535,49 @@ public class TagThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
-		// Nothing to do.  Return true to close the dialog.
+		// Issue an ajax request to save the subscription data.
+		if ( m_saveTagsCallback == null )
+		{
+			m_saveTagsCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_SaveTags() );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( Boolean results )
+				{
+					// Nothing to do.
+				}
+			};
+		}
+		
+		// Issue an ajax request to save the tags for the binder/entry we are working with.
+		// Are we working with a binder?
+		if ( m_binderId != null && m_binderId.length() > 0 )
+		{
+			// Yes, Issue a request to update the tags associated with the given binder.
+			GwtTeaming.getRpcService().updateBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+		}
+		else if ( m_entryId != null && m_entryId.length() > 0 )
+		{
+			// We are working with an entry.
+			// Issue a request to update the tags associated with the given entry.
+			GwtTeaming.getRpcService().updateEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+		}
+		else
+		{
+			Window.alert( "binderId and entryId are both empty.  This doesn't work!!!" );
+		}
+
 		return true;
 	}
 
@@ -594,17 +664,39 @@ public class TagThisDlg extends DlgBox
 			if ( selectedObj instanceof GwtTag )
 			{
 				TagInfo tagInfo;
+				TagType tagType;
+				String tagName;
 				
-				// Does this tag already exist in the list?
-				//!!! Finish
+				// Get the name of the selected tag.
+				tagName = ((GwtTag) selectedObj).getTagName();
 				
+				// Get the type of tag we are dealing with.
+				tagType = getSelectedTagType();
+				
+				// Is the tag valid?
+				tagName = validateTagName( tagName, tagType );
+				if ( GwtClientHelper.hasString( tagName ) == false )
+				{
+					// No!  validateTagName() will have told the user
+					// about any problems.  Simply bail.
+					
+					// Hide the search-results widget.
+					m_findCtrl.hideSearchResults();
+
+					return;
+				}
+				
+				// If we get here the tag is valid.
 				// Create a TagInfo object and initialize it.
 				tagInfo = new TagInfo();
-				tagInfo.setTagName( ((GwtTag) selectedObj).getTagName() );
-				tagInfo.setTagType( getSelectedTagType() );
+				tagInfo.setTagName( tagName );
+				tagInfo.setTagType( tagType );
 				
 				// Add the tag to the table that holds the list of tags.
 				addTagToTable( tagInfo );
+				
+				// Add this tag to our "to be added" list.
+				m_toBeAdded.add( tagInfo );
 				
 				// Hide the search-results widget.
 				m_findCtrl.hideSearchResults();
@@ -618,7 +710,35 @@ public class TagThisDlg extends DlgBox
 	 */
 	private void handleClickOnAddTag()
 	{
+		String tagName;
+		TagType tagType;
+		TagInfo tagInfo;
 		
+		tagName = m_findCtrl.getText();
+		
+		// Get the type of tag we are dealing with.
+		tagType = getSelectedTagType();
+		
+		// Is the tag valid?
+		tagName = validateTagName( tagName, tagType );
+		if ( GwtClientHelper.hasString( tagName ) == false )
+		{
+			// No!  validateTagName() will have told the user
+			// about any problems.  Simply bail.
+			return;
+		}
+		
+		// If we get here the tag is valid.
+		// Create a TagInfo object and initialize it.
+		tagInfo = new TagInfo();
+		tagInfo.setTagName( tagName );
+		tagInfo.setTagType( tagType );
+		
+		// Add the tag to the table that holds the list of tags.
+		addTagToTable( tagInfo );
+		
+		// Add this tag to our "to be added" list.
+		m_toBeAdded.add( tagInfo );
 	}
 	
 	/**
@@ -646,6 +766,7 @@ public class TagThisDlg extends DlgBox
 		m_binderId = binderId;
 		m_entryId = entryId;
 		m_isPublicTagManager = false;
+		m_findCtrl.setInitialSearchString( "" );
 
 		if ( m_readTagsCallback == null )
 		{
@@ -681,17 +802,69 @@ public class TagThisDlg extends DlgBox
 			};
 		}
 		
+		if ( m_publicTagManagerCallback == null )
+		{
+			// Create a callback that will be used when we issue an ajax request to see if the
+			// user can manage public tags.
+			m_publicTagManagerCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					String entityId;
+					
+					if ( m_binderId != null && m_binderId.length() > 0 )
+						entityId = m_binderId;
+					else
+						entityId = m_entryId;
+					
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_CanManagePublicTags(),
+						entityId );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( Boolean isPublicTagManager )
+				{
+					m_isPublicTagManager = isPublicTagManager.booleanValue();
+					
+					// If the user can't manage public tags then hide the "Community tag" radio button.
+					m_communityRB.setVisible( isPublicTagManager );
+
+					// Are we working with a binder?
+					if ( m_binderId != null && m_binderId.length() > 0 )
+					{
+						// Yes, Issue a request to get the tags associated with the given binder.
+						GwtTeaming.getRpcService().getBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_readTagsCallback );
+					}
+					else if ( m_entryId != null && m_entryId.length() > 0 )
+					{
+						// We are working with an entry.
+						// Issue a request to get the tags associated with the given entry.
+						GwtTeaming.getRpcService().getEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readTagsCallback );
+					}
+				}
+			};
+		}
+
 		// Are we working with a binder?
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
-			// Yes, Issue a request to get the tags associated with the given binder.
-			GwtTeaming.getRpcService().getBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_readTagsCallback );
+			// Yes, Issue a request to see if the user can manage public tags.
+			// The onSuccess() method will issue the call to read the tags.
+			GwtTeaming.getRpcService().canManagePublicBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_publicTagManagerCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
 			// We are working with an entry.
-			// Issue a request to get the tags associated with the given entry.
-			GwtTeaming.getRpcService().getEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readTagsCallback );
+			// Issue a request to see if the user can manage public tags.
+			// The onSuccess() method will issue a request to get the tags associated with the given entry.
+			GwtTeaming.getRpcService().canManagePublicEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_publicTagManagerCallback );
 		}
 		else
 		{
@@ -702,6 +875,31 @@ public class TagThisDlg extends DlgBox
 
 
 	/**
+	 * Find the given tag in the given list of tags and remove it. 
+	 */
+	private void removeTagFromListOfTags( ArrayList<TagInfo> listOfTags, TagInfo tagInfo )
+	{
+		int i;
+		TagType tagType;
+		String tagName;
+		
+		tagType = tagInfo.getTagType();
+		tagName = tagInfo.getTagName();
+		i = 0;
+		for ( TagInfo nextTag : listOfTags )
+		{
+			if ( tagType == nextTag.getTagType() && tagName.equalsIgnoreCase( nextTag.getTagName() ) )
+			{
+				listOfTags.remove( i );
+				return;
+			}
+
+			++i;
+		}
+	}
+	
+	
+	/**
 	 * Update the dialog to reflect the given list of tags associated with the binder/entry. 
 	 */
 	private void updateDlg( ArrayList<TagInfo> tags )
@@ -710,11 +908,11 @@ public class TagThisDlg extends DlgBox
 		
 		m_toBeDeleted.clear();
 		m_toBeAdded.clear();
-		m_currentListOfTags = tags;
+		m_currentListOfTags.clear();
 		
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
-		for (i = 1; i < m_table.getRowCount(); ++i)
+		while ( m_table.getRowCount() > 1 )
 		{
 			// Remove the 1st row that holds tag information.
 			m_table.removeRow( 1 );
@@ -791,19 +989,22 @@ public class TagThisDlg extends DlgBox
 				return "";
 			}
 
-			// If this tag is a duplicate...
-		//!!! Finish
-		/*
-			List<TagInfo> tagsList = ((TagType.COMMUNITY == tagType) ? m_communityTags : m_personalTags);
-			for (Iterator<TagInfo> tagsIT = tagsList.iterator(); tagsIT.hasNext(); ) {
-				TagInfo tag = tagsIT.next();
-				if (tag.getTagName().equalsIgnoreCase(reply)) {
-					// ...tell the user that's not valid and bail.
-					Window.alert(m_messages.mainMenuTagThisDlgErrorDuplicateTag());
-					return "";
+			// Check to make sure the tag name is not already in our list.
+			for ( TagInfo nextTag : m_currentListOfTags )
+			{
+				if ( tagType == nextTag.getTagType() )
+				{
+					String nextTagName;
+					
+					nextTagName = nextTag.getTagName();
+					if ( tagName.equalsIgnoreCase( nextTagName ) )
+					{
+						// ...tell the user that's not valid and bail.
+						Window.alert(m_messages.mainMenuTagThisDlgErrorDuplicateTag());
+						return "";
+					}
 				}
 			}
-		*/
 		}
 		
 		// If we get here, reply refers to the validated string or an

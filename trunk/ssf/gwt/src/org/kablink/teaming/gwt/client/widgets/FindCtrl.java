@@ -521,6 +521,19 @@ public class FindCtrl extends Composite
 
 				if ( gwtSearchResults != null )
 				{
+					// Did we get any results back.
+					if ( gwtSearchResults.getCountTotal() > 0 )
+					{
+						// Yes
+						// Show the search-results widget.
+						showSearchResults();
+					}
+					else
+					{
+						// No, hide the search results
+						hideSearchResults();
+					}
+
 					// Add the search results to the search results widget.
 					m_searchResultsWidget.addSearchResults( m_searchCriteria, gwtSearchResults );
 				}
@@ -595,6 +608,14 @@ public class FindCtrl extends Composite
 		return m_selectedObj;
 	}// end getSelectedObject()
 	
+	
+	/**
+	 * Return the text that is currently in the textbox.
+	 */
+	public String getText()
+	{
+		return m_txtBox.getText();
+	}
 	
 	/**
 	 * Hide the search results.
@@ -689,9 +710,6 @@ public class FindCtrl extends Composite
 			// Yes
 			m_prevSearchString = tmp;
 			
-			// Show the search-results widget.
-			showSearchResults();
-	
 			if (( tmp == null ) || ( 0 == tmp.trim().length() ))
 				tmp = "";
 			

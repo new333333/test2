@@ -146,10 +146,6 @@ public interface GwtRpcServiceAsync
 	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
 	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
 	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
-	public void canManagePublicBinderTags(    HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
-	public void addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
-	public void removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
-	public void updateBinderTags(             HttpRequestInfo ri, String binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
 	public void getBinderInfo(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<BinderInfo>            callback );
 	public void getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId,                                   AsyncCallback<String>                callback );
 	public void getFavorites(                 HttpRequestInfo ri,                                                    AsyncCallback<List<FavoriteInfo>>    callback );
@@ -164,8 +160,12 @@ public interface GwtRpcServiceAsync
 	public void saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
 
 	// The following methods are used to manage tags on a binder/entry.
+	public void canManagePublicBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
+	public void canManagePublicEntryTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
 	public void getEntryTags( HttpRequestInfo ri, String entryId, AsyncCallback<ArrayList<TagInfo>> callback );
 	public void getBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<TagInfo>> callback );
+	public void updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded, AsyncCallback<Boolean> callback );
+	public void updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded, AsyncCallback<Boolean> callback );
 
 	// The following are used to manage the tracking of information.
 	public void getTrackedPeople( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );

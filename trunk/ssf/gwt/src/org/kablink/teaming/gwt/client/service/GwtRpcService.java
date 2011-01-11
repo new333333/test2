@@ -151,10 +151,6 @@ public interface GwtRpcService extends RemoteService
 	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   );
 	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
 	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
-	public Boolean               canManagePublicBinderTags(    HttpRequestInfo ri, String binderId                                   );
-	public TagInfo               addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
-	public Boolean               removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag     );
-	public Boolean               updateBinderTags(             HttpRequestInfo ri, String binderId, List<TagInfo>      binderTags    );
 	public BinderInfo            getBinderInfo(                HttpRequestInfo ri, String binderId                                   );
 	public String                getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId                                   );
 	public List<FavoriteInfo>    getFavorites(                 HttpRequestInfo ri                                                    );
@@ -169,8 +165,12 @@ public interface GwtRpcService extends RemoteService
 	public SavedSearchInfo       saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi           );
 
 	// The following methods are used to manage tags on a binder/entry.
+	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId );
+	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId );
 	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId );
 	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId );
+	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded );
+	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded );
 
 	// The following are used to manage the tracking of information.
 	public List<String> getTrackedPeople( HttpRequestInfo ri                  );
