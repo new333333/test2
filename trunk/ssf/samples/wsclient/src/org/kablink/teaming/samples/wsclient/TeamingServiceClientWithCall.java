@@ -150,7 +150,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getDefinitions")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "definition_getDefinitions", new Object[] {null});
 			} else if(args[0].equals("getTemplates")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "template_getTemplates", new Object[] {null});
+				wsClient.fetchAndPrintTC("TeamingServiceV1", "template_getTemplates", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = split(args[2]);
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
