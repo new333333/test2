@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -71,6 +71,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.Subscription;
@@ -126,6 +127,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -2297,6 +2299,42 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns a GwtTeamingException from a generic Exception.
+	 * 
+	 * Note:  The mappings between an instance of an exception and the
+	 *    exception type of the GwtTeamingException returned was based
+	 *    on the code originally constructing these in
+	 *    GwtRpcServiceImpl.
+	 * 
+	 * @param ex
+	 * 
+	 * @return
+	 */
+	public static GwtTeamingException getGwtTeamingException(Exception ex) {
+		GwtTeamingException reply = new GwtTeamingException();
+
+		if (null != ex) {
+			ExceptionType exType;
+			
+			if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+			else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+			else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
+			else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+			else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+			else                                                          exType = ExceptionType.UNKNOWN;
+			
+			reply.setExceptionType( exType );
+		}
+		
+		return reply;
+	}
+	
+	public static GwtTeamingException getGwtTeamingException() {
+		// Always use the initial form of the method.
+		return getGwtTeamingException(null);
+	}
+	
+	/**
 	 * Return login information such as self registration and auto complete.
 	 */
 	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
@@ -3143,6 +3181,7 @@ public class GwtServerHelper {
 	/**
 	 * Save the given subscription data for the given entry id.
 	 */
+	@SuppressWarnings("unused")
 	public static Boolean saveSubscriptionData( AllModulesInjected bs, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException
 	{
 		try
@@ -3195,26 +3234,13 @@ public class GwtServerHelper {
 			// Save the subscription settings to the db.
 			folderModule.setSubscription( null, entryIdL, subscriptionSettings );
 		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			
-			// Nothing to do
-			m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
+			if (e instanceof AccessControlException)
+			     m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
+			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"     );
 			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-
-			m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception" );
-			throw ex;
+			throw getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;

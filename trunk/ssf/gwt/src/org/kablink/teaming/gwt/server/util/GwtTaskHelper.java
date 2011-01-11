@@ -314,6 +314,36 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns the Binder corresponding to an ID, throwing a GwtTeamingException
+	 * as necessary.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Binder getTaskBinder(AllModulesInjected bs, Long binderId) throws GwtTeamingException {
+		Binder reply = null;
+		try {
+			reply = bs.getBinderModule().getBinder(binderId);
+		}
+		
+		catch (Exception ex) {
+			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  EXCEPTION ):  ", ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+
+		if (null == reply) {
+			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  Could not access binder. )");
+			throw GwtServerHelper.getGwtTeamingException();
+		}
+		
+		return reply; 
+	}// end getTasKBinder()
+	
 	/*
 	 * Reads the tasks from the specified binder.
 	 */
@@ -339,7 +369,7 @@ public class GwtTaskHelper {
 		}
 		catch (Exception ex) {
 			m_logger.error("GwtTaskHelper.getTasks( EXCEPTION ):  ", ex);
-			throw new GwtTeamingException();
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
     	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -422,10 +452,17 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
-	/*
+	/**
 	 * Returns the TaskLinkage from a task folder.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
 	 */
-	private static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
 		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
 		if (null == reply) {
 			reply = new TaskLinkage();
@@ -503,9 +540,13 @@ public class GwtTaskHelper {
 	 * 
 	 * @param bs
 	 * @param binder
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static void removeTaskLinkage(AllModulesInjected bs, Binder binder) {
-		setTaskLinkage(bs, binder, null);
+	public static Boolean removeTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
+		return saveTaskLinkage(bs, binder, null);
 	}
 
 	/**
@@ -514,17 +555,28 @@ public class GwtTaskHelper {
 	 * @param bs
 	 * @param binder
 	 * @param tl
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
 	 */
-	public static void setTaskLinkage(AllModulesInjected bs, Binder binder, TaskLinkage tl) {
-		bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
-		if (m_logger.isDebugEnabled()) {
-			if (null == tl) {
-				m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+	public static Boolean saveTaskLinkage(AllModulesInjected bs, Binder binder, TaskLinkage tl) throws GwtTeamingException {
+		try {
+			bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
+			if (m_logger.isDebugEnabled()) {
+				if (null == tl) {
+					m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+				}
+				else {
+					m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+					dumpTaskLinkage(tl);
+				}
 			}
-			else {
-				m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
-				dumpTaskLinkage(tl);
-			}
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 	}
 	
