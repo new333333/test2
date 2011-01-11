@@ -55,8 +55,6 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -104,6 +102,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -128,7 +127,6 @@ import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -640,29 +638,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return adminActions;
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 	}// end getAdminActions()
@@ -716,29 +694,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				baseUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "" );
 			}
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return baseUrl;
@@ -814,29 +772,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				folderEntry.setViewEntryUrl( url );
 			}
 		}
-		catch (NoFolderEntryByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		
@@ -948,29 +886,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				fileNames.add( fileName );
 			}// end for()
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 
         return fileNames;
@@ -1046,29 +964,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				folder.setViewFolderUrl( url );
 			}
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return folder;
@@ -1166,21 +1064,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 			}
 		}
-		catch ( AccessControlException acEx )
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch ( Exception e )
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	
 		return reply;
@@ -1365,7 +1251,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		GwtTeamingException ex;
 		
-		ex = new GwtTeamingException();
+		ex = GwtServerHelper.getGwtTeamingException();
 		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 		throw ex;
 	}// end getSiteAdministrationUrl()
@@ -1441,41 +1327,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return brandingData;
 	}// end getSiteBrandingData()
 
-	/*
-	 * Returns the Binder corresponding to an ID, throwing a GwtTeamingException
-	 * as necessary.
-	 */
-	private Binder getTaskBinder( Long binderId ) throws GwtTeamingException
-	{
-		Binder reply = null;
-		try
-		{
-			reply = getBinderModule().getBinder( binderId );
-		}
-		
-		catch (Exception ex)
-		{
-			ExceptionType exType;
-
-			m_logger.debug( "GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  EXCEPTION ):  ", ex );
-			if      ( ex instanceof AccessControlException   ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-			else if ( ex instanceof NoBinderByTheIdException ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-			else                                               exType = ExceptionType.UNKNOWN;
-			
-			GwtTeamingException gwtEx = new GwtTeamingException();
-			gwtEx.setExceptionType( exType );
-			throw gwtEx;
-		}
-
-		if ( null == reply )
-		{
-			m_logger.debug( "GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  Could not access binder. )" );
-			throw new GwtTeamingException();
-		}
-		
-		return reply; 
-	}// end getTasKBinder()
-	
 	/**
 	 * Reads the task information from the specified binder.
 	 * 
@@ -1490,8 +1341,52 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTaskList( getRequest( ri ), this, getTaskBinder( binderId ), filterType, modeType );
+		return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
 	}// end getTaskList()
+
+	/**
+	 * Returns a TaskLinkage object for the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
+	{
+		return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+	}// end getTaskLinkage()
+
+	/**
+	 * Removes the TaskLinkage object from the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
+		return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+	}// end saveTaskLinkage()
+	
+	/**
+	 * Stores a TaskLinkage object on the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskLinkage
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
+	}// end saveTaskLinkage()
 	
 	/**
 	 * Returns a List<String> of the user ID's of the people the
@@ -2310,16 +2205,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 			GwtTeamingException ex;
 			
-			ex = new GwtTeamingException();
+			ex = GwtServerHelper.getGwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
-		} catch (OperationAccessControlExceptionNoName oae) {
-			GwtTeamingException ex;
-
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
+		} catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}// end getSiteAdministrationUrl()
@@ -2396,16 +2287,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			GwtTeamingException ex;
 
-			ex = new GwtTeamingException();
+			ex = GwtServerHelper.getGwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
-		} catch (OperationAccessControlExceptionNoName oae) {
-			GwtTeamingException ex;
-
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
+		} catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 	}// end getImUrl
 
@@ -2499,18 +2386,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 
 			return gwtPresence;
-		} catch (OperationAccessControlExceptionNoName oae) {
-			GwtTeamingException ex;
-	
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
 		} catch (Exception e) {
-			GwtTeamingException ex;
-	
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}// end getPresenceInfo
 
@@ -2937,29 +2814,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				binderModule.modifyBinder( binderIdL, dataMap, null, null, null );
 			}
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -3037,26 +2894,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
 			}
 		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			
-			// Nothing to do
-			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-
-			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
-			throw ex;
+			if (e instanceof AccessControlException)
+				 m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			else m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -3080,29 +2923,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ProfileInfo profile = GwtProfileHelper.buildProfileInfo(getRequest( ri ), this, Long.valueOf(binderId));
 			return profile;
 		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 	
@@ -3127,29 +2950,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return profile;
 		} 
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 	
@@ -3178,12 +2981,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			return GwtServerHelper.getGroups( getRequest( ri ), this, userId );
-		} catch (OperationAccessControlExceptionNoName oae) {
-			GwtTeamingException ex;
-
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
+		} catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}// end getMyGroups()
@@ -3213,12 +3012,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
-		} catch (OperationAccessControlExceptionNoName oae) {
-			GwtTeamingException ex;
-
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
+		} catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
 	}// end getMyTeams()
@@ -3241,11 +3036,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 		
 		return Boolean.TRUE;
@@ -3306,23 +3097,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, String.valueOf(binderCreator.getId()));
 			return stats;
 		}
-		catch (AccessControlException e)
-		{
-			GwtTeamingException ex = new GwtTeamingException();
-
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
-		catch (NoUserByTheIdException nex)
-		{
-			GwtTeamingException ex;
-
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
 		catch ( Exception e )
 		{
+			if ( ( e instanceof AccessControlException ) ||
+				 ( e instanceof NoUserByTheIdException ) )
+			{
+				throw GwtServerHelper.getGwtTeamingException( e );
+			}
+			
 			//Log other errors
 			logger.error("Error getting stats for user with binderId "+userId, e);
 		}
@@ -3365,29 +3147,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return diskUsageInfo;
 		} 
-		catch (NoBinderByTheIdException nbEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
-			throw ex;
-		}
-		catch (AccessControlException acEx)
-		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
-			throw ex;
-		}
 		catch (Exception e)
 		{
-			GwtTeamingException ex;
-			
-			ex = new GwtTeamingException();
-			ex.setExceptionType( ExceptionType.UNKNOWN );
-			throw ex;
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
 	
