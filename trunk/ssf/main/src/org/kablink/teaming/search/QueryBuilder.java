@@ -527,24 +527,34 @@ public class QueryBuilder {
 
 		List children = element.elements();
 		Node child = (Node) children.get(0);
+		String text = getText(child);
+		if(text == null || text.equals(""))
+			return null;
 		if (child.getName().equalsIgnoreCase(FIELD_TERMS_ELEMENT)) {
 			if (exact) {
 				if(fieldName == null || fieldName.equals(""))
 					fieldName = Constants.ALL_TEXT_FIELD;
-				
-				query = new TermQuery(new Term(fieldName, child.getText()));
+				query = new TermQuery(new Term(fieldName, text));
 			} else {
 				String queryStr;
 				if(fieldName != null && !fieldName.equals(""))
-					queryStr = fieldName + ":(" + child.getText() + ")";
+					queryStr = fieldName + ":(" + text + ")";
 				else
-					queryStr = child.getText();
+					queryStr = text;
 				query = so.parseQueryString(queryStr);
 			}
 		}
 		return query;
 	}
 
+	private String getText(Node node) {
+		String text = node.getText();
+		if(text == null)
+			return null;
+		else
+			return text.trim();
+	}
+	
 	private void processSORTBY(Element element, SearchObject so) {
 
 		boolean descending = true;
