@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.dom.client.Element;
@@ -59,6 +60,7 @@ public class TaskListing {
 	private String				m_filterType;							// The current filtering in affect, if any.
 	private String				m_mode;									// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String				m_sortBy;								// The column the tasks are currently sorted by.
+	private TaskBundle			m_taskBundle;							// The TaskLinkage and List<TaskListItem> that we're listing.
 
 	/**
 	 * Class constructor.
@@ -109,7 +111,7 @@ public class TaskListing {
 	 * constructor.
 	 */
 	public void show() {
-		GwtTeaming.getRpcService().getTaskList(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<List<TaskListItem>>() {
+		GwtTeaming.getRpcService().getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {
 				// Handle the failure...
@@ -122,11 +124,12 @@ public class TaskListing {
 			}
 
 			@Override
-			public void onSuccess(List<TaskListItem> result) {
+			public void onSuccess(TaskBundle result) {
 				// Clear the task listing DIV's contents and render the
 				// task list.
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
-				render(result);
+				m_taskBundle = result;
+				render(result.getTasks());
 			}			
 		});		
 	}

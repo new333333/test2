@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -848,7 +848,7 @@ public class GwtActivityStreamHelper {
 	 * object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, ASEntryData entryData) {
+	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, SeenMap sm, ASEntryData entryData) {
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
 		// First, initialize the author information.
@@ -879,6 +879,7 @@ public class GwtActivityStreamHelper {
 		reply.setEntryTitle(           getSFromEM(        em, Constants.TITLE_FIELD             ));
 		reply.setEntryTopEntryId(      getSFromEM(        em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
 		reply.setEntryType(            getSFromEM(        em, Constants.ENTRY_TYPE_FIELD        ));
+		reply.setEntrySeen(            sm.checkIfSeen(    em                                    ));
 
 		// Finally, scan the comment ASEntryData...
 		List<ActivityStreamEntry> commentsASEList = reply.getComments();
@@ -886,7 +887,7 @@ public class GwtActivityStreamHelper {
 			// ...adding an ActivityStreamEntry for each to the
 			// ...ActivityStreamEntry's List<ActivityStreamEntry> of
 			// ...comments.
-			commentsASEList.add(buildASEFromED(request, commentEntryData));
+			commentsASEList.add(buildASEFromED(request, sm, commentEntryData));
 		}
 		
 		// If we get here, reply refers to the ActivityStreamEntry that
@@ -1082,6 +1083,7 @@ public class GwtActivityStreamHelper {
 				populateASD(
 					request,
 					bs,
+					bs.getProfileModule().getUserSeenMap(null),
 					Utils.canUserOnlySeeCommonGroupMembers(),
 					reply,
 					asp,
@@ -1801,7 +1803,7 @@ public class GwtActivityStreamHelper {
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
+	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -1872,6 +1874,7 @@ public class GwtActivityStreamHelper {
     		// object.
 			populateASDFromED(
 				request,
+				sm,
 				asd,
 				ASEntryData.buildEntryDataList(
 					request,
@@ -1895,13 +1898,13 @@ public class GwtActivityStreamHelper {
 	 * Populates an ActivityStreamData object from the information
 	 * contained in a List<ASEntryData>.
 	 */
-	private static void populateASDFromED(HttpServletRequest request, ActivityStreamData asd, List<ASEntryData> entryDataList) {
+	private static void populateASDFromED(HttpServletRequest request, SeenMap sm, ActivityStreamData asd, List<ASEntryData> entryDataList) {
 		// Scan the List<ASEntryData>...
     	List<ActivityStreamEntry> aseList = asd.getEntries();
     	for (ASEntryData entryData:  entryDataList) {
     		// ...and add an ActivtyStreamEntry for each to the
 			// ...List<ActivityStreamEntry> in the ActivityStreamData.
-   			aseList.add(buildASEFromED(request, entryData));
+   			aseList.add(buildASEFromED(request, sm, entryData));
     	}
 	}
 	

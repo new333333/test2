@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
@@ -426,17 +427,30 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+		return
+			getTaskListImpl(
+				request,
+				bs,
+				binder,
+				getTaskLinkage(bs, binder),
+				filterType,
+				modeType);
+	}
+
+	/*
+	 * Reads the task information from the specified binder.
+	 */
+	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskLinkage taskLinkage, String filterType, String modeType) throws GwtTeamingException {
 		// Create a List<TaskListItem> that we can fill up with the
 		// task list.
 		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 
 		// Read the task linkage and tasks from the binder.
-		TaskLinkage    linkage = getTaskLinkage(   bs, binder                      );
 		List<TaskInfo> tasks   = getTasks(request, bs, binder, filterType, modeType);
 
 		// Process the order/hierarchy information from the task
 		// linkage.
-		processTaskLinkList(reply, tasks, linkage.getTaskOrder());		
+		processTaskLinkList(reply, tasks, taskLinkage.getTaskOrder());		
 
 		// Scan any remaining tasks...
 		for (TaskInfo task:  tasks) {
@@ -452,6 +466,30 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns the TaskBundle from a task folder.
+	 *
+	 * @param request
+	 * @param bs
+	 * @param binder
+	 * @param filterType
+	 * @param modeType
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException 
+	 */
+	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                   );
+		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
+		
+		TaskBundle reply = new TaskBundle();
+		reply.setTaskLinkage(taskLinkage);
+		reply.setTasks(      tasks      );
+		
+		return reply;
+	}
+	
 	/**
 	 * Returns the TaskLinkage from a task folder.
 	 * 

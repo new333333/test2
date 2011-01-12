@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -102,6 +103,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -118,7 +120,6 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -1343,6 +1344,30 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	{
 		return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
 	}// end getTaskList()
+
+	/**
+	 * Returns a TaskBundle object for the specified binder.
+	 *
+	 * @param request
+	 * @param ri
+	 * @param binderId
+	 * @param filterType
+	 * @param modeType
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
+	{
+		return
+			GwtTaskHelper.getTaskBundle(
+				getRequest( ri ),
+				this,
+				GwtTaskHelper.getTaskBinder( this, binderId ),
+				filterType,
+				modeType );
+	}// end getTaskBundle()
 
 	/**
 	 * Returns a TaskLinkage object for the specified binder.
@@ -3187,4 +3212,107 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return actionValidations;
 	}
 
+	/**
+	 * Return true if an entry has been seen and false otherwise.
+	 * 
+	 * @param ri
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public Boolean isSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
+	{
+		try
+		{
+			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
+			FolderEntry fe = getFolderModule().getEntry( null, entryId );
+			return seenMap.checkIfSeen( fe );
+		}
+		
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+	}//end isSeen()
+	
+	/**
+	 * Marks an entry as having been seen.
+	 * 
+	 * @param ri
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public Boolean setSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
+	{
+		try
+		{
+			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
+			FolderEntry fe = getFolderModule().getEntry( null, entryId );
+			seenMap.setSeen( fe );
+			return Boolean.TRUE;
+		}
+		
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+	}//end setSeen()
+	
+	/**
+	 * Marks a list of entries as having been seen.
+	 * 
+	 * @param ri
+	 * @param entryIds
+	 * 
+	 * @return
+	 */
+	public Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
+	{
+		for ( Long entryId:  entryIds )
+		{
+			setSeen( ri, entryId );
+		}
+		return Boolean.TRUE;
+	}//end setSeen()
+	
+	/**
+	 * Marks an entry as having been unseen.
+	 * 
+	 * @param ri
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public Boolean setUnseen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
+	{
+		try
+		{
+			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
+			seenMap.setUnseen( entryId );
+			return Boolean.TRUE;
+		}
+		
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+	}//end setUnseen()
+	
+	/**
+	 * Marks a list of entries as having been unseen.
+	 * 
+	 * @param ri
+	 * @param entryIds
+	 * 
+	 * @return
+	 */
+	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
+	{
+		for ( Long entryId:  entryIds )
+		{
+			setUnseen( ri, entryId );
+		}
+		return Boolean.TRUE;
+	}//end setUnseen()
 }// end GwtRpcServiceImpl
