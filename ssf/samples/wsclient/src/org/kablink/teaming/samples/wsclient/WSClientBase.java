@@ -61,6 +61,8 @@ import org.kablink.teaming.client.ws.model.FileVersion;
 import org.kablink.teaming.client.ws.model.FileVersions;
 import org.kablink.teaming.client.ws.model.FolderBrief;
 import org.kablink.teaming.client.ws.model.FolderCollection;
+import org.kablink.teaming.client.ws.model.TemplateBrief;
+import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
 import org.kablink.teaming.client.ws.model.ReleaseInfo;
 
@@ -416,6 +418,11 @@ public abstract class WSClientBase {
 		printFolderCollection(fc);
 	}
 	
+	void fetchAndPrintTC(String serviceName, String operation, Object[] args) throws Exception {
+		TemplateCollection tc = (TemplateCollection) fetch(serviceName, operation, args);
+		printTemplateCollection(tc);
+	}
+	
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
 		Object object = fetch(serviceName, operation, args, filename);
 		System.out.println("Successfully executed " + operation + " on " + serviceName);
@@ -487,6 +494,20 @@ public abstract class WSClientBase {
 			System.out.println("Folder " + i + " family: " + fb[i].getFamily());
 			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
 			System.out.println("Folder " + i + " path: " + fb[i].getPath());
+		}
+	}
+	
+	void printTemplateCollection(TemplateCollection tc) {
+		TemplateBrief[] fb = tc.getTemplates();
+		System.out.println("Number of templates: " + fb.length);
+		for(int i = 0; i < fb.length; i++) {
+			System.out.println();
+			System.out.println("Template " + i + " id: " + fb[i].getId());
+			System.out.println("Template " + i + " title: " + fb[i].getTitle());
+			System.out.println("Template " + i + " family: " + fb[i].getFamily());
+			System.out.println("Template " + i + " name: " + fb[i].getName());
+			System.out.println("Template " + i + " internalId: " + fb[i].getInternalId());
+			System.out.println("Template " + i + " definitionType: " + fb[i].getDefinitionType());
 		}
 	}
 	
