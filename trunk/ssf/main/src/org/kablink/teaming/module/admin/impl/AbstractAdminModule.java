@@ -76,6 +76,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
+import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
@@ -971,6 +972,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  		message.put(MailModule.TO, emailSet);
  		message.put(MailModule.CC, getEmail(ccIds, errors));
 		message.put(MailModule.BCC, getEmail(bccIds, errors));
+		message.put(MailModule.LOG_TYPE, EmailLogType.sendMail);
  		MailSentStatus results;
  		if (entry != null) {
  			results = getMailModule().sendMail(entry, message, Utils.getUserTitle(user) + " email", sendAttachments);    		

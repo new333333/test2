@@ -68,6 +68,7 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -237,6 +238,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		AuditTrail audit = new AuditTrail(AuditTrail.AuditType.token, requester, requestee);
 		audit.setApplicationId(applicationId);
 		addAuditTrail(audit);
+	}
+	
+	public void addEmailLog(EmailLog emailLog) {
+		getCoreDao().save(emailLog);
 	}
 	
 	public void addLicenseStats(LicenseStats stats) {

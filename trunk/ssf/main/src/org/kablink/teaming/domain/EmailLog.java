@@ -34,10 +34,15 @@ package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.liferay.util.StringUtil;
+import javax.mail.internet.InternetAddress;
+
+import org.kablink.util.StringUtil;
 
 /**
  * This class represents an email log entry.
@@ -72,11 +77,20 @@ public class EmailLog extends ZonedObject {
 	};
 	
 	// Applications use this constructor
-	public EmailLog(EmailLogType type, Date sendDate, EmailLogStatus status, String from) {
+	public EmailLog(EmailLogType type, Date sendDate, Collection<InternetAddress> toEmailAddresses, 
+			InternetAddress from, EmailLogStatus status) {
 		this.type = type;
 		this.sendDate = sendDate;
+		this.from = from.getAddress();
+		this.toEmailAddresses = new String[toEmailAddresses.size()];
+		Set<String> emailAddresses = new HashSet<String>();
+		int i = 0;
+		for (InternetAddress address : toEmailAddresses) {
+			this.toEmailAddresses[i] = address.getAddress();
+			i++;
+		}
 		this.status = status;
-		this.from = from;
+		this.from = from.getAddress();
 	}
 	
 	// This constructor is reserved for use by Hibernate only.

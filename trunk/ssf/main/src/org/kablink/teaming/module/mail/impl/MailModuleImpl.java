@@ -66,6 +66,7 @@ import org.hibernate.StaleObjectStateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -74,6 +75,8 @@ import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
+import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.jobs.FillEmailSubscription;
 import org.kablink.teaming.jobs.SendEmail;
 import org.kablink.teaming.jobs.ZoneSchedule;
@@ -90,6 +93,7 @@ import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.mail.MimeMapPreparator;
 import org.kablink.teaming.module.mail.MimeMessagePreparator;
 import org.kablink.teaming.module.mail.MimeNotifyPreparator;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.NLT;
@@ -847,6 +851,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
 
+  		//Add an entry into the email log for this request
+		Date now = new Date();
+  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
+  		EmailLogType logType = EmailLogType.sendMail;
+  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
+  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
+
 		MailStatus status = new MailStatus(message);
 		Map currentMessage = new HashMap(message); //make changeable copy
  		currentMessage.remove(MailModule.BCC);  //These are already added to addrs
@@ -864,7 +875,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
-	 			Exception[] exceptions = sx.getMessageExceptions();
+				String emailLogComment = emailLog.getComment();
+				if (emailLogComment == null) emailLogComment = "";
+				if (!emailLogComment.equals("")) emailLogComment += "\n";
+				emailLogComment += "Error sending mail:" + getMessage(sx);
+				emailLog.setComment(emailLogComment);
+
+				Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
 	 				//if sent to anyone; or only 1 recipient and couldn't send don't try again
@@ -880,7 +897,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
-	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+				String emailLogComment = emailLog.getComment();
+				if (emailLogComment == null) emailLogComment = "";
+				if (!emailLogComment.equals("")) emailLogComment += "\n";
+				emailLogComment += "Authentication Exception:" + getMessage(ax);
+				emailLog.setComment(emailLogComment);
+
+				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	       		try {
 	       			status.addQueued(helper.getMessage().getAllRecipients());
@@ -888,7 +911,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} 
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		
+		getCoreDao().saveNewSession(emailLog);
 		return status;
     }
  
@@ -901,7 +924,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 
-		MailStatus status = new MailStatus(message);
+  		//Add an entry into the email log for this request
+		Date now = new Date();
+  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
+  		EmailLogType logType = EmailLogType.sendMail;
+  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.sent);
+  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
+
+  		MailStatus status = new MailStatus(message);
 		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
@@ -924,6 +954,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
+				String emailLogComment = emailLog.getComment();
+				if (emailLogComment == null) emailLogComment = "";
+				if (!emailLogComment.equals("")) emailLogComment += "\n";
+				emailLogComment += "Error sending mail:" + getMessage(sx);
+				emailLog.setComment(emailLogComment);
+				
 	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
@@ -939,6 +975,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
+				String emailLogComment = emailLog.getComment();
+				if (emailLogComment == null) emailLogComment = "";
+				if (!emailLogComment.equals("")) emailLogComment += "\n";
+				emailLogComment += "Authentication Exception:" + getMessage(ax);
+				emailLog.setComment(emailLogComment);
+				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
 	       		try {
@@ -947,9 +989,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		}
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
+		getCoreDao().saveNewSession(emailLog);
 		return status;
-
     }
+    
     // schedule mail delivery - 
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
   		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
@@ -960,6 +1003,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  			addrs.addAll((Collection)message.get(MailModule.BCC));
  		}
  		if ((addrs == null) || addrs.isEmpty()) return;
+  		
+ 		//Add an entry into the email log for this request
+ 		Date now = new Date();
+  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
+  		EmailLogType logType = (EmailLogType) message.get(MailModule.LOG_TYPE);
+  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
+  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
+  		
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
 		Map currentMessage = new HashMap(message);
@@ -975,6 +1026,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
+		getCoreDao().saveNewSession(emailLog);
 	}
     class MailStatus implements MailSentStatus {
     	Set<Address> failures;
