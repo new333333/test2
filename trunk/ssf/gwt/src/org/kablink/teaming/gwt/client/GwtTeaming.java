@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,27 +41,26 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.RootPanel;
-import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class GwtTeaming implements EntryPoint
 {
-	private static final GwtTeamingMessages					m_stringMessages = GWT.create( GwtTeamingMessages.class );
-	private static final GwtTeamingImageBundle				m_imageBundle = GWT.create( GwtTeamingImageBundle.class );
-	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle = GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
-	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle = GWT.create( GwtTeamingMainMenuImageBundle.class );
-	private static final GwtRpcServiceAsync					m_gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
-	private static GwtMainPage m_mainPage = null;
+	private static final GwtTeamingMessages					m_stringMessages			=                       GWT.create( GwtTeamingMessages.class                 );
+	private static final GwtTeamingImageBundle				m_imageBundle				=                       GWT.create( GwtTeamingImageBundle.class              );
+	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
+	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
+	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
+	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
 	
-	private static TextBox m_txtBox;
-	private static Frame m_frame = null;
+	private static GwtMainPage	m_mainPage	= null;	
 	
 	/**
-	 * Return the object that is used to retrieve images.
+	 * Returns the object that is used to retrieve images.
+	 * 
+	 * @return
 	 */
 	public static GwtTeamingImageBundle getImageBundle()
 	{
@@ -70,8 +69,10 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Return the object that is used to retrieve Workspace Tree
+	 * Returns the object that is used to retrieve Workspace Tree
 	 * images.
+	 * 
+	 * @return
 	 */
 	public static GwtTeamingWorkspaceTreeImageBundle getWorkspaceTreeImageBundle() {
 		return m_wsTreeImageBundle;
@@ -79,7 +80,9 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Return the object that is used to retrieve Main Menu images.
+	 * Returns the object that is used to retrieve Main Menu images.
+	 * 
+	 * @return
 	 */
 	public static GwtTeamingMainMenuImageBundle getMainMenuImageBundle() {
 		return m_mainMenuImageBundle;
@@ -87,7 +90,19 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Return the GwtMainPage object.
+	 * Returns the object that is used to retrieve Task Listing images.
+	 * 
+	 * @return
+	 */
+	public static GwtTeamingTaskListingImageBundle getTaskListingImageBundle() {
+		return m_taskListingImageBundle;
+	}
+	
+	
+	/**
+	 * Returns the GwtMainPage object.
+	 * 
+	 * @return
 	 */
 	public static GwtMainPage getMainPage()
 	{
@@ -96,7 +111,9 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Return the object that is used to retrieve strings.
+	 * Returns the object that is used to retrieve strings.
+	 * 
+	 * @return
 	 */
 	public static GwtTeamingMessages getMessages()
 	{
@@ -105,7 +122,9 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
-	 * Return the object used to issue ajax requests.
+	 * Returns the object used to issue GWT RPC (i.e., AJAX) requests.
+	 * 
+	 * @return
 	 */
 	public static GwtRpcServiceAsync getRpcService()
 	{

@@ -441,28 +441,43 @@ public class GwtTaskHelper {
 	 * Reads the task information from the specified binder.
 	 */
 	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskLinkage taskLinkage, String filterType, String modeType) throws GwtTeamingException {
-		// Create a List<TaskListItem> that we can fill up with the
-		// task list.
+		// Create a List<TaskListItem> that we'll fill up with the task
+		// list.
 		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 
-		// Read the task linkage and tasks from the binder.
-		List<TaskInfo> tasks   = getTasks(request, bs, binder, filterType, modeType);
+		// Read the tasks from the binder.
+		List<TaskInfo> tasks = getTasks(request, bs, binder, filterType, modeType);
 
-		// Process the order/hierarchy information from the task
+		// Process the order information from the supplied task
 		// linkage.
-		processTaskLinkList(reply, tasks, taskLinkage.getTaskOrder());		
+		List<TaskLink> taskOrder = taskLinkage.getTaskOrder();
+		processTaskLinkList(reply, tasks, taskOrder);		
 
-		// Scan any remaining tasks...
+		// Scan any tasks that weren't addressed by the task linkage...
+		boolean changedLinkage = (!(tasks.isEmpty()));
 		for (TaskInfo task:  tasks) {
-			// ...and add each as a TaskListItem to the task list that
-			// ...we're building.
+			// ...add each as a TaskListItem to the task list being
+			// ...built...
 			TaskListItem tli = new TaskListItem();
 			tli.setTask(task);
 			reply.add(tli);
+			
+			// ...and add it to the linkage since it will now be
+			// ...considered 'linked into' the task folder's order
+			// ...and hierarchy.
+			TaskLink tl = new TaskLink();
+			tl.setTaskId(task.getTaskId());
+			taskOrder.add(tl);
 		}
 
-		// If we get here, reply refers to a List<TaskListItem> for the
-		// tasks.  Return it.
+		// If we changed the task linkage in building the task list...
+		if (changedLinkage) {
+			// ...we need to save the task linkage changes.
+			saveTaskLinkage(bs, binder, taskLinkage);
+		}
+
+		// If we get here, reply refers to the List<TaskListItem> for
+		// the tasks.  Return it.
 		return reply;
 	}
 
@@ -500,11 +515,10 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
+	@SuppressWarnings("unchecked")
 	public static TaskLinkage getTaskLinkage(AllModulesInjected bs, Binder binder) throws GwtTeamingException {
-		TaskLinkage reply = ((TaskLinkage) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
-		if (null == reply) {
-			reply = new TaskLinkage();
-		}
+		Map serializationMap = ((Map) binder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		TaskLinkage reply = TaskLinkage.loadSerializationMap(serializationMap);
 		
 		if (m_logger.isDebugEnabled()) {
 			m_logger.debug("GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
@@ -600,7 +614,13 @@ public class GwtTaskHelper {
 	 */
 	public static Boolean saveTaskLinkage(AllModulesInjected bs, Binder binder, TaskLinkage tl) throws GwtTeamingException {
 		try {
-			bs.getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE, tl);
+			bs.getBinderModule().setProperty(
+				binder.getId(),
+				ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE,
+				((null == tl) ?
+					null      :
+					tl.getSerializationMap()));
+			
 			if (m_logger.isDebugEnabled()) {
 				if (null == tl) {
 					m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));

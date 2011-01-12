@@ -33,7 +33,9 @@
 package org.kablink.teaming.gwt.client.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -48,16 +50,20 @@ public class TaskLinkage implements IsSerializable {
 	
 	// Enumeration used to tell moveTaskInDirection() which direction a
 	// TaskLink is to be moved within a TaskLinkage object.
-	private enum Direction {
+	private enum Direction implements IsSerializable{
 		UP,
 		DOWN,
 		LEFT,	// Decreases the subtask level.
 		RIGHT,	// Increases the subtask level.
 	}
+
+	// The following are used as keys for the information stored in a
+	// Map representation of a TaskLinkage object.
+	private final static String SERIALIZED_TASK_IDS      = "taskIds";
+	private final static String SERIALIZED_SUBTASKS_BASE = "subtasks.";
 	
 	/**
-	 * Inner class use used to track individual tasks within a
-	 * TaskLinkage object.
+	 * Inner class used to track individual tasks within a TaskLinkage.
 	 */
 	public static class TaskLink implements IsSerializable {
 		private List<TaskLink>	m_subtasks = new ArrayList<TaskLink>();	// List<TaskLink> of the subtasks of this task.
@@ -66,11 +72,10 @@ public class TaskLinkage implements IsSerializable {
 		/**
 		 * Class constructor.
 		 * 
-		 * @param taskId
+		 * No parameters as per GWT serialization requirements.
 		 */
-		public TaskLink(Long taskId) {
-			// Simply store the parameter.
-			m_taskId = taskId;
+		public TaskLink() {
+			// Nothing to do.
 		}
 
 		/**
@@ -84,7 +89,9 @@ public class TaskLinkage implements IsSerializable {
 		
 		public void appendSubtask(Long id) {
 			// Always use the initial form of the method.
-			appendSubtask(new TaskLink(id));
+			TaskLink tl = new TaskLink();
+			tl.setTaskId(id);
+			appendSubtask(tl);
 		}
 		
 		/**
@@ -159,10 +166,30 @@ public class TaskLinkage implements IsSerializable {
 		public boolean hasSubtasks() {
 			return (!(m_subtasks.isEmpty()));
 		}
+
+		/**
+		 * Stores a new List<TaskLink> of subtasks on this TaskLink.
+		 * 
+		 * @param subtasks
+		 */
+		public void setSubtasks(List<TaskLink> subtasks) {
+			m_subtasks = subtasks;
+		}
+		
+		/**
+		 * Stores a task ID in this TaskLink.
+		 * 
+		 * @param taskId
+		 */
+		public void setTaskId(Long taskId) {
+			m_taskId = taskId;
+		}
 	}
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * No parameters as per GWT serialization requirements.
 	 */
 	public TaskLinkage() {
 		// Nothing to do.
@@ -179,7 +206,9 @@ public class TaskLinkage implements IsSerializable {
 	
 	public void appendTask(Long id) {
 		// Always use the initial form of the method.
-		appendTask(new TaskLink(id));
+		TaskLink tl = new TaskLink();
+		tl.setTaskId(id);
+		appendTask(id);
 	}
 
 	/**
@@ -276,6 +305,38 @@ public class TaskLinkage implements IsSerializable {
 		return null;
 	}
 
+	/**
+	 * Returns a Map that that represents the serialization of this
+	 * task linkage.
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Map getSerializationMap() {
+		// Simply serialize the List<TaskLink> order list.
+		return getSerializationMapImpl(m_taskOrder);
+	}
+	
+	/*
+	 * Builds a serialization map for the given List<TaskLink>.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Map getSerializationMapImpl(List<TaskLink> links) {
+		Map reply = new HashMap();
+		
+		List<Long> taskIds = new ArrayList<Long>();
+		for (TaskLink tl:  links) {
+			Long tid = tl.getTaskId();
+			taskIds.add(tid);
+			reply.put(
+				(SERIALIZED_SUBTASKS_BASE + String.valueOf(tid)),
+				getSerializationMapImpl(
+					tl.getSubtasks()));
+		}		
+		reply.put(SERIALIZED_TASK_IDS, taskIds);
+				
+		return reply;
+	}
 	
 	/**
 	 * Returns the List<TaskLink> of order from this TaskLinkage.
@@ -286,6 +347,43 @@ public class TaskLinkage implements IsSerializable {
 		return m_taskOrder;
 	}
 
+	/**
+	 * Constructs and returns a TaskLinkage from a serialization Map.
+	 * 
+	 * @param serializationMap
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static TaskLinkage loadSerializationMap(Map serializationMap) {
+		TaskLinkage reply = new TaskLinkage();
+		if ((null != serializationMap) && (!(serializationMap.isEmpty()))) {
+			reply.setTaskOrder(loadSerializationMapImpl(serializationMap));
+		}
+		return reply;
+	}
+
+	/*
+	 * Constructs and returns a List<TaskLink> from a serialization
+	 * Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<TaskLink> loadSerializationMapImpl(Map serializationMap) {
+		List<TaskLink> reply = new ArrayList<TaskLink>();
+		if ((null != serializationMap) && (!(serializationMap.isEmpty()))) {
+			List<Long> taskIds = ((List<Long>) serializationMap.get(SERIALIZED_TASK_IDS));
+			for (Long taskId:  taskIds) {
+				TaskLink taskLink = new TaskLink();
+				taskLink.setTaskId(taskId);
+				taskLink.setSubtasks(
+					loadSerializationMapImpl(
+						((Map) serializationMap.get(SERIALIZED_SUBTASKS_BASE + String.valueOf(taskId)))));
+				reply.add(taskLink);
+			}
+		}
+		return reply;
+	}
+	
 	/**
 	 * Move one TaskLink above another.
 	 * 
@@ -347,7 +445,7 @@ public class TaskLinkage implements IsSerializable {
 	
 	/*
 	 * Moves a TaskLink in the direction specified relative to the
-	 * other TaskLink's in this TaskLinkage object.
+	 * other TaskLink's in this TaskLinkage.
 	 * 
 	 * Returns true if we found the entry to move in the supplied
 	 * List<TaskLink> (even if we didn't move it) and false otherwise.
@@ -518,5 +616,14 @@ public class TaskLinkage implements IsSerializable {
 	public void moveTaskUp(Long taskId) {
 		// Always use the initial form of the method.
 		moveTaskUp(findTask(taskId));
-	}	
+	}
+	
+	/**
+	 * Stores a new List<TaskLink> task ordering in this TaskLinkage.
+	 * 
+	 * @param taskOrder
+	 */
+	public void setTaskOrder(List<TaskLink> taskOrder) {
+		m_taskOrder = taskOrder;
+	}
 }

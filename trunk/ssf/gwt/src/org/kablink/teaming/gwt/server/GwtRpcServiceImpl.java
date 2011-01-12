@@ -3245,18 +3245,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean setSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
 	{
-		try
-		{
-			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
-			FolderEntry fe = getFolderModule().getEntry( null, entryId );
-			seenMap.setSeen( fe );
-			return Boolean.TRUE;
-		}
-		
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
+		List<Long> entryIds = new ArrayList<Long>();
+		entryIds.add( entryId );
+		return setSeen(ri, entryIds);
 	}//end setSeen()
 	
 	/**
@@ -3269,10 +3260,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
-		for ( Long entryId:  entryIds )
-		{
-			setSeen( ri, entryId );
-		}
+		getProfileModule().setSeenIds( GwtServerHelper.getCurrentUser().getId(), entryIds );
 		return Boolean.TRUE;
 	}//end setSeen()
 	
@@ -3286,17 +3274,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean setUnseen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
 	{
-		try
-		{
-			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
-			seenMap.setUnseen( entryId );
-			return Boolean.TRUE;
-		}
-		
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
+		List<Long> entryIds = new ArrayList<Long>();
+		entryIds.add( entryId );
+		return setUnseen( ri, entryIds );
 	}//end setUnseen()
 	
 	/**
@@ -3309,10 +3289,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
 	{
-		for ( Long entryId:  entryIds )
-		{
-			setUnseen( ri, entryId );
-		}
+		getProfileModule().setUnseen( GwtServerHelper.getCurrentUser().getId(), entryIds );
 		return Boolean.TRUE;
 	}//end setUnseen()
 }// end GwtRpcServiceImpl

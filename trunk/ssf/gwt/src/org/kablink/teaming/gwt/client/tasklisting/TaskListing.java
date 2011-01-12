@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -53,14 +54,15 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 @SuppressWarnings("unused")
 public class TaskListing {
-	private boolean				m_sortDescend;							// true -> Sort is descending.  false -> Sort is ascending. 
-	private Element				m_taskListingDIV;						// The <DIV> in the content pane that's to contain the task listing.
-	private GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	//
-	private Long				m_binderId;								// The ID of the binder containing the tasks to be listed.
-	private String				m_filterType;							// The current filtering in affect, if any.
-	private String				m_mode;									// The current mode being displayed (PHYSICAL vs. VITRUAL.)
-	private String				m_sortBy;								// The column the tasks are currently sorted by.
-	private TaskBundle			m_taskBundle;							// The TaskLinkage and List<TaskListItem> that we're listing.
+	private boolean								m_sortDescend;		// true -> Sort is descending.  false -> Sort is ascending. 
+	private Element								m_taskListingDIV;	// The <DIV> in the content pane that's to contain the task listing.
+	private GwtTeamingMessages					m_messages = GwtTeaming.getMessages();					//
+	private GwtTeamingTaskListingImageBundle	m_images   = GwtTeaming.getTaskListingImageBundle();	//
+	private Long								m_binderId;			// The ID of the binder containing the tasks to be listed.
+	private String								m_filterType;		// The current filtering in affect, if any.
+	private String								m_mode;				// The current mode being displayed (PHYSICAL vs. VITRUAL.)
+	private String								m_sortBy;			// The column the tasks are currently sorted by.
+	private TaskBundle							m_taskBundle;		// The TaskLinkage and List<TaskListItem> that we're listing.
 
 	/**
 	 * Class constructor.
