@@ -155,6 +155,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		this.icalModule = icalModule;
 	}	
 
+	private ReportModule reportModule;
+	public ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
 	public String getMailRootDir() {
 		return mailRootDir;
 	}
@@ -911,7 +918,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} 
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getCoreDao().saveNewSession(emailLog);
+		getReportModule().addEmailLog(emailLog);
 		return status;
     }
  
@@ -989,7 +996,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		}
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getCoreDao().saveNewSession(emailLog);
+		getReportModule().addEmailLog(emailLog);
 		return status;
     }
     
@@ -1026,7 +1033,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getCoreDao().saveNewSession(emailLog);
+		getReportModule().addEmailLog(emailLog);
 	}
     class MailStatus implements MailSentStatus {
     	Set<Address> failures;

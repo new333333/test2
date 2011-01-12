@@ -874,6 +874,11 @@
 				<property name="folderModule"><ref bean="folderModule"/></property>
 			</bean>
 		</property>
+		<property name="transactionAttributes">
+			<props>
+				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
 	</bean>			
 
 	<bean id="licenseModule"  parent="moduleTransactionProxy">
@@ -1041,6 +1046,7 @@ text/calendar											  ics
 				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
 				<property name="icalModule"><ref bean="icalModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+				<property name="reportModule"><ref bean="reportModule"/></property>
 			</bean>	
 		</property>
 		<!--<property name="proxyInterfaces">
