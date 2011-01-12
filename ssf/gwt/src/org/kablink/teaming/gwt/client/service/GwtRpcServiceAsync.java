@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -69,6 +68,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -232,7 +232,15 @@ public interface GwtRpcServiceAsync
 
 	// Task servicing APIs.
 	public void getTaskList(       HttpRequestInfo ri, Long binderId, String      filterType, String modeType, AsyncCallback<List<TaskListItem>> callback );
+	public void getTaskBundle(     HttpRequestInfo ri, Long binderId, String      filterType, String modeType, AsyncCallback<TaskBundle>         callback );
 	public void getTaskLinkage(    HttpRequestInfo ri, Long binderId,                                          AsyncCallback<TaskLinkage>        callback );
 	public void removeTaskLinkage( HttpRequestInfo ri, Long binderId,                                          AsyncCallback<Boolean>            callback );
 	public void saveTaskLinkage(   HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage,                 AsyncCallback<Boolean>            callback );
+	
+	// SeenMap servicing APIs.
+	public void isSeen(    HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
+	public void setSeen(   HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
+	public void setSeen(   HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
+	public void setUnseen( HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
+	public void setUnseen( HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
 }// end GwtRpcServiceAsync

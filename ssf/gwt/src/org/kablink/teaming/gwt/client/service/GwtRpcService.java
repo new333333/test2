@@ -70,6 +70,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
@@ -238,7 +239,15 @@ public interface GwtRpcService extends RemoteService
 
 	// Task servicing APIs.
 	public List<TaskListItem> getTaskList(       HttpRequestInfo ri, Long binderId, String      filterType, String modeType ) throws GwtTeamingException;
+	public TaskBundle         getTaskBundle(     HttpRequestInfo ri, Long binderId, String      filterType, String modeType ) throws GwtTeamingException;
 	public TaskLinkage        getTaskLinkage(    HttpRequestInfo ri, Long binderId                                          ) throws GwtTeamingException;
 	public Boolean            removeTaskLinkage( HttpRequestInfo ri, Long binderId                                          ) throws GwtTeamingException;
 	public Boolean            saveTaskLinkage(   HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage                 ) throws GwtTeamingException;
+	
+	// SeenMap servicing APIs.
+	public Boolean isSeen(    HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
+	public Boolean setSeen(   HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
+	public Boolean setSeen(   HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
+	public Boolean setUnseen( HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
+	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
 }// end GwtRpcService

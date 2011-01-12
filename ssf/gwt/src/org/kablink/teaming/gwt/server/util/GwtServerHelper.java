@@ -2311,8 +2311,14 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static GwtTeamingException getGwtTeamingException(Exception ex) {
-		GwtTeamingException reply = new GwtTeamingException();
+		// If we were given a GwtTeamingException...
+		if ((null != ex) && (ex instanceof GwtTeamingException)) {
+			// ...simply return it.
+			return ((GwtTeamingException) ex);
+		}
 
+		// Otherwise, construct an appropriate GwtTeamingException...
+		GwtTeamingException reply = new GwtTeamingException();
 		if (null != ex) {
 			ExceptionType exType;
 			
@@ -2325,7 +2331,8 @@ public class GwtServerHelper {
 			
 			reply.setExceptionType( exType );
 		}
-		
+
+		// ...and return that.
 		return reply;
 	}
 	
