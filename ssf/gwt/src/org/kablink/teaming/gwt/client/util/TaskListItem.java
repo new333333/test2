@@ -37,7 +37,6 @@ import java.util.List;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate information about contents of a task
  * folder between the client (i.e., the TaskListing) and the server

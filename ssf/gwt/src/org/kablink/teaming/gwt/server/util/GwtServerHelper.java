@@ -2312,27 +2312,39 @@ public class GwtServerHelper {
 	 */
 	public static GwtTeamingException getGwtTeamingException(Exception ex) {
 		// If we were given a GwtTeamingException...
+		GwtTeamingException reply;
 		if ((null != ex) && (ex instanceof GwtTeamingException)) {
 			// ...simply return it.
-			return ((GwtTeamingException) ex);
+			reply = ((GwtTeamingException) ex);
+		}
+		
+		else {
+			// Otherwise, construct an appropriate GwtTeamingException.
+			reply = new GwtTeamingException();
+			if (null != ex) {
+				ExceptionType exType;
+				
+				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
+				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
+				else                                                          exType = ExceptionType.UNKNOWN;
+				
+				reply.setExceptionType( exType );
+			}
 		}
 
-		// Otherwise, construct an appropriate GwtTeamingException...
-		GwtTeamingException reply = new GwtTeamingException();
-		if (null != ex) {
-			ExceptionType exType;
-			
-			if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-			else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-			else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
-			else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-			else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-			else                                                          exType = ExceptionType.UNKNOWN;
-			
-			reply.setExceptionType( exType );
+		// If debug logging is enabled...
+		if (m_logger.isDebugEnabled()) {
+			// ...log the exception that get us here.
+			if (null == ex)
+			     m_logger.debug("GwtServerHelper.getGwtTeamingException( EXCEPTION ):  ",         ex   );
+			else m_logger.debug("GwtServerHelper.getGwtTeamingException( DEFAULT EXCEPTION ):  ", reply);
 		}
 
-		// ...and return that.
+		// If we get here, reply refers to the GwtTeamingException that
+		// was requested.  Return it.
 		return reply;
 	}
 	
