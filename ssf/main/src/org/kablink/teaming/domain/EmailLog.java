@@ -40,8 +40,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.mail.Address;
+import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
+import org.kablink.teaming.module.mail.MimeMessagePreparator;
+import org.kablink.teaming.util.NLT;
 import org.kablink.util.StringUtil;
 
 /**
@@ -50,6 +55,9 @@ import org.kablink.util.StringUtil;
  */
 public class EmailLog extends ZonedObject {
 
+	private int maxFromAddressLength = 255;
+	private int maxSubjLength = 255;
+	
 	protected String id;										
 	
 	protected Date sendDate;									//Date mail was sent
@@ -64,16 +72,18 @@ public class EmailLog extends ZonedObject {
 	public enum EmailLogType {
 		unknown,
 		sendMail,
-		binderImmediateNotification, 
-		binderScheduledNotification, 
-		workflowNotification
+		binderNotification, 
+		workflowNotification,
+		retry,
+		emailPosting
 	};
 	
 	public enum EmailLogStatus {
 		unknown,
 		sent,
 		queued, 
-		error
+		error,
+		received
 	};
 	
 	// Applications use this constructor
@@ -83,18 +93,74 @@ public class EmailLog extends ZonedObject {
 		this.sendDate = sendDate;
 		this.from = from.getAddress();
 		this.toEmailAddresses = new String[toEmailAddresses.size()];
-		Set<String> emailAddresses = new HashSet<String>();
 		int i = 0;
 		for (InternetAddress address : toEmailAddresses) {
 			this.toEmailAddresses[i] = address.getAddress();
 			i++;
 		}
 		this.status = status;
-		this.from = from.getAddress();
+	}
+	
+	public EmailLog(EmailLogType type, Date sendDate, Collection<String> toEmailAddresses, 
+			String from, EmailLogStatus status) {
+		this.type = type;
+		this.sendDate = sendDate;
+		this.from = from;
+		this.toEmailAddresses = new String[toEmailAddresses.size()];
+		int i = 0;
+		for (String address : toEmailAddresses) {
+			this.toEmailAddresses[i] = address;
+			i++;
+		}
+		this.status = status;
+	}
+	
+	public EmailLog(EmailLogType type, Date sendDate, Address[] toEmailAddresses, 
+			String from, EmailLogStatus status) {
+		this.type = type;
+		this.sendDate = sendDate;
+		this.from = from;
+		this.toEmailAddresses = new String[toEmailAddresses.length];
+		for (int i = 0; i < toEmailAddresses.length; i++) {
+			this.toEmailAddresses[i] = toEmailAddresses[i].toString();
+		}
+		this.status = status;
+	}
+	
+	public EmailLog(EmailLogType type, MimeMessage mailMsg, EmailLogStatus status) {
+ 		Date sendDate = new Date();
+		this.type = type;
+		this.sendDate = sendDate;
+		this.status = status;
+		this.fillFromMimeMessage(mailMsg);
+	}
+	
+	public EmailLog(EmailLogType type, EmailLogStatus status) {
+ 		Date sendDate = new Date();
+		this.type = type;
+		this.sendDate = sendDate;
+		this.status = status;
 	}
 	
 	// This constructor is reserved for use by Hibernate only.
 	protected EmailLog() {}
+	
+	//Fill fields from mime message
+	public void fillFromMimeMessage(MimeMessage mailMsg) {
+  		String fromAddress = "";
+		try {
+			Address[] from = mailMsg.getFrom();
+		} catch (MessagingException e2) {
+			fromAddress = NLT.get("mail.noFromAddress");
+		}
+		this.setFrom(fromAddress);
+  		try {
+			this.setSubj(mailMsg.getSubject());
+		} catch (MessagingException e1) {
+			this.setSubj(NLT.get("mail.noSubject"));
+		}
+
+	}
 
     public String getId() {
         return id;
@@ -137,13 +203,21 @@ public class EmailLog extends ZonedObject {
 		return from;
 	}
 	public void setFrom(String from) {
-		this.from = from;
+		if (from.length() > maxFromAddressLength) {
+			this.from = from.substring(0, maxFromAddressLength - 4) + "...";
+		} else {
+			this.from = from;
+		}
 	}
 	public String getSubj() {
 		return subj;
 	}
 	public void setSubj(String subj) {
-		this.subj = subj;
+		if (subj.length() > maxSubjLength) {
+			this.subj = subj.substring(0, maxSubjLength - 4) + "...";
+		} else {
+			this.subj = subj;
+		}
 	}
 	public EmailLogStatus getStatus() {
 		return status;

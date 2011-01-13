@@ -835,6 +835,7 @@
 	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster">
 		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
 	<bean id="fileModule" parent="moduleNonTransactionProxy">
