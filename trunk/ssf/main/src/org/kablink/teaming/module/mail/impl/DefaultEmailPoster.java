@@ -59,16 +59,20 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
+import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.EmailPoster;
 import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
@@ -176,6 +180,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
+	private ReportModule reportModule;
+	public ReportModule getReportModule() {
+		return reportModule;
+	}
+	public void setReportModule(ReportModule reportModule) {
+		this.reportModule = reportModule;
+	}
 	@SuppressWarnings("unchecked")
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser) {
 		//initialize collections
@@ -205,6 +216,10 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				if(postAsUser == null || from == null) {
 					from = (InternetAddress)msgs[i].getFrom()[0];
 				}
+		    	//Add an entry into the email log for this request
+		  		EmailLog emailLog = new EmailLog(EmailLogType.emailPosting, EmailLogStatus.received);
+		  		emailLog.setFrom(from.getAddress());
+		  		emailLog.setSubj(title);
 				try {
 					//save original from
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
@@ -214,12 +229,15 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					} else {
 						processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars);
 					}
+				} catch(Exception ex) {
+					emailLog.setComment("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+					throw ex;
 				} finally {
 					//reset context
 					fileItems.clear();
 					inputData.clear();
 					iCalendars.clear();
-					
+					getReportModule().addEmailLog(emailLog);
 				}
 			} catch (MessageRemovedException rx) {
 				continue;
