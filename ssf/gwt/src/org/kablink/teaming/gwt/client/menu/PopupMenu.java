@@ -33,8 +33,6 @@
 
 package org.kablink.teaming.gwt.client.menu;
 
-import org.kablink.teaming.gwt.client.util.TeamingAction;
-
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 

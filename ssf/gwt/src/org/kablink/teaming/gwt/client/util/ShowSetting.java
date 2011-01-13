@@ -30,86 +30,22 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+package org.kablink.teaming.gwt.client.util;
 
-package org.kablink.teaming.gwt.client.whatsnew;
+import com.google.gwt.user.client.rpc.IsSerializable;
 
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-
-import com.google.gwt.user.client.ui.FlowPanel;
 
 /**
+ * Enumeration used to communicate the show setting (show all or show unread)
+ * between the client and the server as part of a GWT RPC request.
  * 
+ * @author jwootton@novell.com
+ *
  */
-public class ActivityStreamComment extends ActivityStreamUIEntry
+public enum ShowSetting implements IsSerializable
 {
-	/**
-	 * 
-	 */
-	public ActivityStreamComment( ActionHandler actionHandler )
-	{
-		super(actionHandler);
-	}
-
-
-	/**
-	 * Nothing to do.
-	 */
-	public void addAdditionalHeaderUI( FlowPanel headerPanel )
-	{
-		// Nothing to do.
-	}
-
+	SHOW_ALL,
+	SHOW_UNREAD,
 	
-	/**
-	 * 
-	 */
-	public String getAvatarImageStyleName()
-	{
-		return "activityStreamCommentAvatarImg";
-	}
-
-	
-	/**
-	 * Return the name of the style used with the content panel.
-	 */
-	public String getContentPanelStyleName()
-	{
-		return "activityStreamCommentContentPanel";
-	}
-
-	
-	/**
-	 * 
-	 */
-	public String getEntryHeaderStyleName()
-	{
-		return "activityStreamCommentHeader";
-	}
-
-
-	/**
-	 * Return the name of the style used with the div that holds the entry.
-	 */
-	public String getMainPanelStyleName()
-	{
-		return "activityStreamCommentMainPanel";
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getTitlePanelStyleName()
-	{
-		return "activityStreamCommentTitlePanel";
-	}
-
-	
-	/**
-	 * 
-	 */
-	public String getTitleStyleName()
-	{
-		return "activityStreamCommentTitle";
-	}
+	UNKNOWN,
 }

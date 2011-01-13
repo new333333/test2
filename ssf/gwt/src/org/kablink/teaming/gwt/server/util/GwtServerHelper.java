@@ -89,6 +89,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
@@ -2880,6 +2881,37 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Return the "show setting" (show all or show unread) for the "What's new" page.
+	 */
+	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
+	{
+		ShowSetting showSetting;
+		
+		showSetting = ShowSetting.SHOW_ALL;
+		
+		// Do we have a user properties?
+		if ( userProperties != null )
+		{
+			Integer property;
+			
+			property = (Integer) userProperties.getProperty( ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING );
+			if ( property != null )
+			{
+				int value;
+				
+				value = property.intValue();
+				
+				if ( value == ShowSetting.SHOW_ALL.ordinal() )
+					showSetting = ShowSetting.SHOW_ALL;
+				else if ( value == ShowSetting.SHOW_UNREAD.ordinal() )
+					showSetting = ShowSetting.SHOW_UNREAD;
+			}
+		}
+		
+		return showSetting;
+	}
+
+	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 
 	 * @param bs
@@ -3265,7 +3297,23 @@ public class GwtServerHelper {
 		return Boolean.TRUE;
 	}
 
-
+	/**
+	 * Save the show setting (show all or show unread) for the What's New page to
+	 * the user's properties.
+	 */
+	public static Boolean saveWhatsNewShowSetting( AllModulesInjected bs, ShowSetting showSetting )
+	{
+		ProfileModule profileModule;
+		Integer setting;
+		
+		// Save the show setting to the user's properties.
+		profileModule = bs.getProfileModule();
+		setting = new Integer( showSetting.ordinal() );
+		profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING , setting );
+		
+		return Boolean.TRUE;
+	}
+	
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */

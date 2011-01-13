@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.menu;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -43,6 +44,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.dom.client.MouseUpHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -61,6 +63,7 @@ public class PopupMenuItem extends Composite
 	private Object m_actionData;
 	private FlowPanel m_mainPanel;
 	private PopupMenu m_popupMenu = null;	// The menu this menu item belongs to.
+	private Image m_checkedImg;				// Image used to put a checkmark next to the menu item.
 	
 	/**
 	 * 
@@ -68,6 +71,7 @@ public class PopupMenuItem extends Composite
 	public PopupMenuItem( PopupMenu popupMenu, ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
 	{
 		InlineLabel label;
+		ImageResource imageResource;
 		
 		m_popupMenu = popupMenu;
 		m_actionHandler = actionHandler;
@@ -78,6 +82,12 @@ public class PopupMenuItem extends Composite
 		m_mainPanel.addStyleName( "popupMenuItem" );
 		m_mainPanel.addStyleName( "smalltext" );
 
+		// Create a checkbox image in case we need it.
+		imageResource = GwtTeaming.getImageBundle().check12();
+		m_checkedImg = new Image( imageResource );
+		m_checkedImg.setVisible( false );
+		m_mainPanel.add( m_checkedImg );
+		
 		// Do we have an image?
 		if ( img != null )
 			m_mainPanel.add( img );
@@ -85,7 +95,7 @@ public class PopupMenuItem extends Composite
 		label = new InlineLabel( text );
 		m_mainPanel.add( label );
 		
-		// Add a MouseDown event handler
+		// Add a MouseUp event handler
 		addDomHandler( this, MouseUpEvent.getType() );
 		
 		// Add a mouse over/out event handlers
@@ -197,5 +207,13 @@ public class PopupMenuItem extends Composite
 	public void setActionData( Object actionData )
 	{
 		m_actionData = actionData;
+	}
+	
+	/**
+	 * Set the checked state of this menu item.
+	 */
+	public void setCheckedState( boolean checked )
+	{
+		m_checkedImg.setVisible( checked );
 	}
 }

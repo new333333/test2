@@ -61,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -118,6 +119,7 @@ public class GwtActivityStreamHelper {
 		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",        1000));
 		m_activityStreamParams.setReadEntryDays(         SPropsUtil.getInt("activity.stream.read.entry.days",  30));
 		m_activityStreamParams.setReadEntryMax(          SPropsUtil.getInt("activity.stream.read.entry.max", 1000));
+		m_activityStreamParams.setShowSetting( ShowSetting.SHOW_ALL );
 	};
 	
 	/*
@@ -1114,11 +1116,21 @@ public class GwtActivityStreamHelper {
 		ActivityStreamParams reply = m_activityStreamParams.copyBaseASP();
 
 		try {
+			UserProperties userProperties;
+			ShowSetting showSetting;
+			
+			// Get the user's properties
+			userProperties = bs.getProfileModule().getUserProperties( null );
+			
 			// Read the user's entries per page setting and store it in
 			// the ActivityStreamParams.
-			String eppS = MiscUtil.entriesPerPage(bs.getProfileModule().getUserProperties(null));
+			String eppS = MiscUtil.entriesPerPage( userProperties );
 			int epp = Integer.parseInt(eppS);
 			reply.setEntriesPerPage(epp);
+			
+			// Read the user's show setting for the what's new page.
+			showSetting = GwtServerHelper.getWhatsNewShowSetting( userProperties );
+			reply.setShowSetting( showSetting );
 		}
 		catch (Exception ex) {
 			// Ignore.  With any error, will just use the default from
