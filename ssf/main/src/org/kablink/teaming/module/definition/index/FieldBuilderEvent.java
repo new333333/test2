@@ -42,6 +42,7 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.search.BasicIndexUtils;
+import org.kablink.util.cal.Duration;
 import org.kablink.util.search.Constants;
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
@@ -64,12 +65,23 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 
 		List fields = new ArrayList();
 		
-		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_START_DATE,      event.getDtStart());
-		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_START_DATE, event.getDtCalcStart());
-		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_END_DATE,        event.getDtEnd());
-		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_END_DATE,   event.getDtCalcEnd());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_START_DATE,         event.getDtStart());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_START_DATE,    event.getDtCalcStart());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_LOGICAL_START_DATE, event.getLogicalStart());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_END_DATE,           event.getDtEnd());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_END_DATE,      event.getDtCalcEnd());
+		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_LOGICAL_END_DATE,   event.getLogicalEnd());
 		if (!event.isAllDayEvent()) {
 			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		}
+		Duration dur = event.getDuration();
+		if (null != dur) {
+			String durField = makeFieldName(dataElemName, Constants.EVENT_FIELD_DURATION);
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_SECONDS), String.valueOf(dur.getSeconds()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_MINUTES), String.valueOf(dur.getMinutes()), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_HOURS),   String.valueOf(dur.getHours()),   Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_DAYS),    String.valueOf(dur.getDays()),    Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_WEEKS),   String.valueOf(dur.getWeeks()),   Field.Store.YES, Field.Index.NOT_ANALYZED));
 		}
 		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_FREE_BUSY), event.getFreeBusy().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
