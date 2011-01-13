@@ -1781,18 +1781,30 @@ public class GwtActivityStreamHelper {
 		// ...and scan the entries we read.
 		List<Map> targetEntries = new ArrayList<Map>();
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
+		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+		boolean   readSatisfied = false;
 		for (Map searchEntry: searchEntries) {
 			// If the user has seen this entry and we're looking for
 			// read entries or the user has not seen it and we're
 			// looking for unread entries...
 			boolean hasSeen = seen.checkIfSeen(searchEntry);
 			if (hasSeen == read) {
-				// ...keep track of it until we've got all the entries
-				// ...we need.
-				targetEntries.add(searchEntry);
-				if (targetEntries.size() >= (pageStart + entriesPerPage)) {
-					break;
+				// ...and we haven't satisfied the number of records
+				// ...requested...
+				if (!readSatisfied) {
+					// ...keep track of it until we've got all the entries
+					// ...we need.
+					targetEntries.add(searchEntry);
+					readSatisfied = (targetEntries.size() >= (pageStart + entriesPerPage));
 				}
+			}
+			
+			else {
+				// Otherwise, this is read when were looking for unread
+				// or unread while we're looking for read!  In either
+				// case, we don't want to include it in the total
+				// record count.
+				totalRecords -= 1;
 			}
 		}
 
@@ -1806,7 +1818,6 @@ public class GwtActivityStreamHelper {
 		}
 				
 		// ...and return an appropriate ASSearchResults.
-		int totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		return new ASSearchResults(targetEntries, totalRecords);
 	}
 	
