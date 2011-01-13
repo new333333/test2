@@ -90,6 +90,17 @@ public class PopupMenu extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Add a separator to this popup menu.
+	 */
+	public void addSeparator()
+	{
+		FlowPanel separatorPanel;
+		
+		separatorPanel = new FlowPanel();
+		separatorPanel.addStyleName( "popupMenuItemSeparator" );
+		m_menuItemsPanel.add( separatorPanel );
+	}
+	/**
 	 * This method gets called when a menu item was selected.
 	 */
 	public void menuItemSelected( PopupMenuItem menuItem )

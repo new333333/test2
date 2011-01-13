@@ -45,9 +45,9 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	public ActivityStreamComment( ActionHandler actionHandler )
+	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActionHandler actionHandler )
 	{
-		super(actionHandler);
+		super( activityStreamCtrl, actionHandler );
 	}
 
 

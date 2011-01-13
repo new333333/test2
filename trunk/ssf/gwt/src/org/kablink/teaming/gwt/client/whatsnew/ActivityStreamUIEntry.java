@@ -69,6 +69,7 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
+	private ActivityStreamCtrl m_activityStreamCtrl;
 	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
@@ -91,11 +92,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 * 
 	 */
 	public ActivityStreamUIEntry(
+		ActivityStreamCtrl activityStreamCtrl,
 		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
 
+		m_activityStreamCtrl = activityStreamCtrl;
+		
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( getMainPanelStyleName() );
 		
@@ -315,7 +319,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						 */
 						public void execute()
 						{
-							markEntryAsRead();
+							// Mark this entry as read.
+							m_activityStreamCtrl.handleAction( TeamingAction.MARK_ENTRY_READ, getThis() );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -342,6 +347,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 		addAdditionalHeaderUI( titlePanel );
 		
 		return headerPanel;
+	}
+	
+	
+	/**
+	 * Return the activity stream we are associated with.
+	 */
+	public ActivityStreamCtrl getActivityStreamCtrl()
+	{
+		return m_activityStreamCtrl;
 	}
 	
 	
@@ -489,6 +503,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return this object.
+	 */
+	private ActivityStreamUIEntry getThis()
+	{
+		return this;
+	}
+	
+	/**
 	 * This method gets invoked when the user clicks on the author.
 	 */
 	public void handleClickOnAuthor( Element element )
@@ -565,9 +587,19 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return whether this entry is unread. 
+	 */
+	public boolean isEntryUnread()
+	{
+		// Base our decision of whether the entry is unread on the visibility of the unread image.
+		return m_unreadImg.isVisible();
+	}
+	
+	
+	/**
 	 * Mark this entry as being read.
 	 */
-	public void markEntryAsRead()
+	public void markEntryAsRead( final boolean hideEntry )
 	{
 		HttpRequestInfo ri;
 		AsyncCallback<Boolean> callback;
@@ -592,6 +624,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 			 */
 			public void onSuccess( Boolean success )
 			{
+				// Update the ui to reflect the fact that this entry is now read.
+				updateReadUnreadUI( true );
+				
+				// Do we need to hide this entry.
+				if ( hideEntry )
+					setVisible( false );
 			}
 		};
 		
@@ -599,9 +637,46 @@ public abstract class ActivityStreamUIEntry extends Composite
 		entryIdL = Long.valueOf( m_entryId );
 		ri = HttpRequestInfo.createHttpRequestInfo();
 		GwtTeaming.getRpcService().setSeen( ri, entryIdL, callback );
+	}
+	
+	
+	/**
+	 * Mark this entry as being unread.
+	 */
+	public void markEntryAsUnread()
+	{
+		HttpRequestInfo ri;
+		AsyncCallback<Boolean> callback;
+		Long entryIdL;
 		
-		// Update the ui to reflect the fact that this entry is now read.
-		updateReadUnreadUI( true );
+		// Create the callback needed.
+		callback = new AsyncCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SetUnseen(),
+					m_entryId );
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( Boolean success )
+			{
+				// Update the ui to reflect the fact that this entry is now read.
+				updateReadUnreadUI( false );
+			}
+		};
+		
+		// Issue an ajax request to mark this entry as unread.
+		entryIdL = Long.valueOf( m_entryId );
+		ri = HttpRequestInfo.createHttpRequestInfo();
+		GwtTeaming.getRpcService().setUnseen( ri, entryIdL, callback );
 	}
 	
 	

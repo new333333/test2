@@ -75,9 +75,9 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	public ActivityStreamTopEntry( ActionHandler actionHandler )
+	public ActivityStreamTopEntry( ActivityStreamCtrl activityStreamCtrl, ActionHandler actionHandler )
 	{
-		super( actionHandler );
+		super( activityStreamCtrl, actionHandler );
 		
 		m_parentBinderId = null;
 		m_parentBinderPermalink = null;
@@ -180,7 +180,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		if ( commentUI == null )
 		{
 			// No, create a new one.
-			commentUI = new ActivityStreamComment( m_actionHandler );
+			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), m_actionHandler );
 			m_comments.add( commentUI );
 		}
 		
