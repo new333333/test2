@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class TaskBundle implements IsSerializable {
+	private boolean				m_canModifyTaskLinkage;
 	private List<TaskListItem>	m_tasks;
 	private TaskLinkage			m_taskLinkage;
 	
@@ -60,14 +61,16 @@ public class TaskBundle implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public List<TaskListItem> getTasks()       {return m_tasks;      }
-	public TaskLinkage        getTaskLinkage() {return m_taskLinkage;}
+	public boolean            getCanModifyTaskLinkage() {return m_canModifyTaskLinkage;}
+	public List<TaskListItem> getTasks()                {return m_tasks;               }
+	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setTasks(      List<TaskListItem> tasks)       {m_tasks       = tasks;      }
-	public void setTaskLinkage(TaskLinkage        taskLinkage) {m_taskLinkage = taskLinkage;}
+	public void setCanModifyTaskLinkage(boolean            canModifyTaskLinkage) {m_canModifyTaskLinkage = canModifyTaskLinkage;}
+	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
+	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 }

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -123,15 +123,15 @@
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
 			    	name="binderId" value="${ssBinder.id}"/><ssf:param 
-			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
+			    	name="ssFolderSortBy" value="start_end#LogicalEndDate"/><c:choose><c:when 
+			    	test="${ ssFolderSortBy == 'start_end#LogicalEndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><ssf:param 
 			    	name="ssFolderModeType" value="${ssCurrentFolderModeType}"/><ssf:param
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></ssf:url>"
 				
 				<c:choose>
-				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+				  <c:when test="${ ssFolderSortBy == 'start_end#LogicalEndDate' && ssFolderSortDescend == 'false'}">
 				  	<ssf:title tag="title.sort.by.column.desc">
 				  		<ssf:param name="value" value='<%= NLT.get("task.dueDate") %>' />
 				  	</ssf:title>
@@ -145,11 +145,11 @@
 				 >
 			      <div >
 			        <span><ssf:nlt tag="task.dueDate"/></span>
-			    	<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'true'}">
+			    	<c:if test="${ ssFolderSortBy == 'start_end#LogicalEndDate' && ssFolderSortDescend == 'true'}">
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
-					<c:if test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">
+					<c:if test="${ ssFolderSortBy == 'start_end#LogicalEndDate' && ssFolderSortDescend == 'false'}">
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
@@ -322,7 +322,7 @@
 				<jsp:useBean id="entry" type="java.util.HashMap" />
 
 				<%
-					boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("start_end#EndDate"));
+					boolean overdue = org.kablink.teaming.util.DateComparer.isOverdue((Date)entry.get("start_end#LogicalEndDate"));
 				%>
 				<c:set var="overdue" value="<%= overdue %>"/>
 				<c:if test="${entry.status == 's3' || entry.status == 's4'}">
@@ -386,18 +386,18 @@
 						</c:if>
 					</td>
 					<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_${renderResponse.namespace}_${entry._docId}_due">
-						<c:if test="${!empty entry['start_end#EndDate']}">
+						<c:if test="${!empty entry['start_end#LogicalEndDate']}">
 							<c:choose>
 								<c:when test="${!empty entry['start_end#TimeZoneID']}">
 									<fmt:formatDate 
 											timeZone="${ssUser.timeZone.ID}"
-											value="${entry['start_end#EndDate']}" type="both" 
+											value="${entry['start_end#LogicalEndDate']}" type="both" 
 											dateStyle="short" timeStyle="short" />						
 								</c:when>	
 								<c:otherwise>
 									<fmt:formatDate 
 											timeZone="GMT"
-											value="${entry['start_end#EndDate']}" type="date" 
+											value="${entry['start_end#LogicalEndDate']}" type="date" 
 											dateStyle="short"/>
 								</c:otherwise>
 							</c:choose>

@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -48,17 +49,23 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.search.Constants;
 
@@ -86,17 +93,51 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Generates a search index field name reference for an event's
+	 * duration field.
+	 */
+	private static String buildDurationFieldName(String fieldName) {
+		return (buildEventFieldName(Constants.EVENT_FIELD_DURATION) + BasicIndexUtils.DELIMITER + fieldName);
+	}
+	
+	/*
 	 * Generates a String to write to the log for a boolean.
 	 */
 	private static String buildDumpString(String label, boolean v) {
-		return (label + ":  " + String.valueOf(v));
+		return (label + ": " + String.valueOf(v));
+	}
+
+	/*
+	 * Generates a String to write to the log for a Date.
+	 */
+	private static String buildDumpString(String label, Date date) {
+		String dateS;
+		
+		if (null == date) {
+			dateS = "null";
+		}
+		
+		else {
+			User user = GwtServerHelper.getCurrentUser();			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());			
+			dateS = df.format(date);
+		}
+		return (label + ": " + dateS);
+	}
+	
+	/*
+	 * Generates a String to write to the log for an integer.
+	 */
+	private static String buildDumpString(String label, int v) {
+		return (label + ": " + String.valueOf(v));
 	}
 	
 	/*
 	 * Generates a String to write to the log for a Long.
 	 */
 	private static String buildDumpString(String label, Long v) {
-		return (label + ":  " + ((null == v) ? "null" : String.valueOf(v)));
+		return (label + ": " + ((null == v) ? "null" : String.valueOf(v)));
 	}
 	
 	/*
@@ -108,13 +149,13 @@ public class GwtTaskHelper {
 		}
 		
 		StringBuffer buf = new StringBuffer(label);
-		buf.append(":  ");
+		buf.append(": ");
 		if (v.isEmpty()) {
 			buf.append("EMPTY");
 		}
 		else {
 			int c = 0;
-			for (Long l:  v) {
+			for (Long l: v) {
 				if (0 < c++) {
 					buf.append(", ");
 				}
@@ -128,7 +169,44 @@ public class GwtTaskHelper {
 	 * Generates a String to write to the log for a String.
 	 */
 	private static String buildDumpString(String label, String v) {
-		return (label + ":  '" + ((null == v) ? "null" : v) + "'");
+		return (label + ": '" + ((null == v) ? "null" : v) + "'");
+	}
+
+	/*
+	 * Generates a String to write to the log for a TaskEvent.
+	 */
+	private static String buildDumpString(String label, TaskEvent event) {
+		StringBuffer buf = new StringBuffer(label);
+		
+		buf.append(buildDumpString("Start", event.getLogicalStart()));
+		buf.append(buildDumpString(", End", event.getLogicalEnd()));
+		buf.append(buildDumpString(", All Day", event.getAllDayEvent()));
+		
+		TaskDuration taskDuration = event.getDuration();
+		buf.append(buildDumpString(", Dur:S",    taskDuration.getSeconds()));
+		buf.append(buildDumpString(", M",        taskDuration.getMinutes()));
+		buf.append(buildDumpString(", H",        taskDuration.getHours()));
+		buf.append(buildDumpString(", D",        taskDuration.getDays()));
+		buf.append(buildDumpString(", W",        taskDuration.getWeeks()));
+		buf.append(buildDumpString(", Interval", taskDuration.getInterval()));
+		
+		return buf.toString();
+	}
+	
+	/*
+	 * Generates a search index field name reference for an event
+	 * field.
+	 */
+	private static String buildEventFieldName(String fieldName) {
+		return (Constants.EVENT_FIELD_START_END + BasicIndexUtils.DELIMITER + fieldName);
+	}
+	
+	/*
+	 * Returns true if the current user has rights to modify the
+	 * TaskLinkage on the given Binder and false otherwise.
+	 */
+	private static boolean canModifyTaskLinkage(AllModulesInjected bs, Binder binder) {
+		return bs.getBinderModule().testAccess(binder, BinderOperation.setProperty);
 	}
 	
 	/*
@@ -149,10 +227,9 @@ public class GwtTaskHelper {
 		}
 
 		// Dump the tasks.
-		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START:  " + String.valueOf(tasks.size()) + " )");
+		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( START: " + String.valueOf(tasks.size()) + " )");
 		for (TaskInfo ti:  tasks) {
 			StringBuffer buf = new StringBuffer(buildDumpString("\n\tTask ID", ti.getTaskId()));
-			buf.append(buildDumpString("\n\t\tOverdue",          ti.getOverdue()         ));
 			buf.append(buildDumpString("\n\t\tSeen",             ti.getSeen()            ));
 			buf.append(buildDumpString("\n\t\tAssignments",      ti.getAssignments()     ));
 			buf.append(buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups()));
@@ -163,6 +240,8 @@ public class GwtTaskHelper {
 			buf.append(buildDumpString("\n\t\tPriority",         ti.getPriority()        ));
 			buf.append(buildDumpString("\n\t\tTitle",            ti.getTitle()           ));
 			buf.append(buildDumpString("\n\t\tStatus",           ti.getStatus()          ));
+			buf.append(buildDumpString("\n\t\tOverdue",          ti.getOverdue()         ));
+			buf.append(buildDumpString("\n\t\tEvent: ",          ti.getEvent()           ));
 			m_logger.debug("GwtTaskHelper.dumpTaskInfoList()" + buf.toString());
 		}
 		m_logger.debug("GwtTaskHelper.dumpTaskInfoList( END )");
@@ -247,6 +326,48 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Reads an event from a map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static TaskEvent getEventFromMap(Map m) {
+		TaskEvent reply = new TaskEvent();
+		
+		// Extract the event's start/end dates from the Map... 
+		reply.setLogicalEnd(  getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  )));
+		reply.setLogicalStart(getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE)));
+
+		// ...extract the event's 'All Day Event' flag from the Map...
+		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
+		reply.setAllDayEvent(!(MiscUtil.hasString(tz)));
+
+		// ...and extract the event's duration fields from the Map.
+		TaskDuration taskDuration = new TaskDuration();
+		taskDuration.setSeconds(getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_SECONDS)));
+		taskDuration.setMinutes(getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_MINUTES)));
+		taskDuration.setHours(  getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_HOURS  )));
+		taskDuration.setDays(   getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_DAYS   )));
+		taskDuration.setWeeks(  getIntFromMap(m, buildDurationFieldName(Constants.DURATION_FIELD_WEEKS  )));
+		reply.setDuration(taskDuration);
+
+		// If we get here, reply refers to the TaskEvent object
+		// constructed from the information in the Map.  Return it.
+		return reply;
+	}
+	
+	/*
+	 * Reads an integer from a Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getIntFromMap(Map m, String key) {
+		int reply = 0;
+		String i = getStringFromMap(m, key);
+		if (0 < i.length()) {
+			reply = Integer.parseInt(i);
+		}
+		return reply;
+	}
+	
+	/*
 	 * Reads a Long from a Map.
 	 */
 	@SuppressWarnings("unchecked")
@@ -304,6 +425,15 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Reads a date from a Map and determines if it's overdue.
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean getOverdueFromMap(Map m, String key) {
+		Date endDate = getDateFromMap(m, key);
+		return ((null == endDate) ? false : DateComparer.isOverdue(endDate));
+	}
+	
+	/*
 	 * Reads a String from a Map.
 	 */
 	@SuppressWarnings("unchecked")
@@ -333,12 +463,12 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  EXCEPTION ):  ", ex);
+			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ": EXCEPTION ): ", ex);
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 
 		if (null == reply) {
-			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ":  Could not access binder. )");
+			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ": Could not access binder. )");
 			throw GwtServerHelper.getGwtTeamingException();
 		}
 		
@@ -369,7 +499,7 @@ public class GwtTaskHelper {
 				options);
 		}
 		catch (Exception ex) {
-			m_logger.error("GwtTaskHelper.getTasks( EXCEPTION ):  ", ex);
+			m_logger.error("GwtTaskHelper.getTasks( EXCEPTION ): ", ex);
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}		
     	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
@@ -386,25 +516,25 @@ public class GwtTaskHelper {
 		for (Map taskEntry:  taskEntriesList) {			
 			TaskInfo ti = new TaskInfo();
 			
-			Date endDate = getDateFromMap(taskEntry, "start_end#EndDate");
-			ti.setOverdue(         (null == endDate) ? false : DateComparer.isOverdue(endDate));
-			ti.setStatus(          getStringFromMap(   taskEntry, "status"                 ));
-			ti.setTaskId(          getLongFromMap(     taskEntry, Constants.DOCID_FIELD    ));
-			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"              ));
-			ti.setSeen(            seenMap.checkIfSeen(taskEntry                           ));
-			ti.setBinderId(        getLongFromMap(     taskEntry, Constants.BINDER_ID_FIELD));
-			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD   ));
-			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD    ));
-			ti.setPriority(        getStringFromMap(   taskEntry, "priority"               ));
-			ti.setAssignments(     getLongListFromMap( taskEntry, "assignment"             ));
-			ti.setAssignmentGroups(getLongListFromMap( taskEntry, "assignment_groups"      ));
-			ti.setAssignmentTeams( getLongListFromMap( taskEntry, "assignment_teams"       ));
+			ti.setOverdue(         getOverdueFromMap(  taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
+			ti.setEvent(           getEventFromMap(    taskEntry                                                             ));
+			ti.setStatus(          getStringFromMap(   taskEntry, "status"                                                   ));
+			ti.setTaskId(          getLongFromMap(     taskEntry, Constants.DOCID_FIELD                                      ));
+			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
+			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
+			ti.setBinderId(        getLongFromMap(     taskEntry, Constants.BINDER_ID_FIELD                                  ));
+			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD                                     ));
+			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD                                      ));
+			ti.setPriority(        getStringFromMap(   taskEntry, "priority"                                                 ));
+			ti.setAssignments(     getLongListFromMap( taskEntry, "assignment"                                               ));
+			ti.setAssignmentGroups(getLongListFromMap( taskEntry, "assignment_groups"                                        ));
+			ti.setAssignmentTeams( getLongListFromMap( taskEntry, "assignment_teams"                                         ));
 			
 			reply.add(ti);
 		}
 				
 		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.getTasks( Read List<TaskInfo> for binder ):  " + String.valueOf(binder.getId()));
+			m_logger.debug("GwtTaskHelper.getTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binder.getId()));
 			dumpTaskInfoList(reply);
 		}
 		
@@ -470,8 +600,9 @@ public class GwtTaskHelper {
 			taskOrder.add(tl);
 		}
 
-		// If we changed the task linkage in building the task list...
-		if (changedLinkage) {
+		// If we changed the task linkage in building the task list and
+		// the user has rights to modify it on this folder...
+		if (changedLinkage && canModifyTaskLinkage(bs, binder)) {
 			// ...we need to save the task linkage changes.
 			saveTaskLinkage(bs, binder, taskLinkage);
 		}
@@ -495,12 +626,14 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
-		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                   );
-		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
+		boolean            canModifyTaskLinkage = canModifyTaskLinkage(    bs, binder                                   );
+		TaskLinkage        taskLinkage          = getTaskLinkage(          bs, binder                                   );
+		List<TaskListItem> tasks                = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
 		
 		TaskBundle reply = new TaskBundle();
-		reply.setTaskLinkage(taskLinkage);
-		reply.setTasks(      tasks      );
+		reply.setCanModifyTaskLinkage(canModifyTaskLinkage);
+		reply.setTaskLinkage(         taskLinkage         );
+		reply.setTasks(               tasks               );
 		
 		return reply;
 	}
@@ -521,7 +654,7 @@ public class GwtTaskHelper {
 		TaskLinkage reply = TaskLinkage.loadSerializationMap(serializationMap);
 		
 		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+			m_logger.debug("GwtTaskHelper.getTaskLinkage( Read TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 			dumpTaskLinkage(reply);
 		}
 		
@@ -550,7 +683,7 @@ public class GwtTaskHelper {
 		catch (Exception ex) {
 			// If we can't access the TaskLink's FolderEntry, it's not
 			// valid.
-			m_logger.debug("GwtTaskHelper.isTaskLinkValid( EXCEPTION ):  ", ex);
+			m_logger.debug("GwtTaskHelper.isTaskLinkValid( EXCEPTION ): ", ex);
 			reply = false;
 		}
 		
@@ -623,10 +756,10 @@ public class GwtTaskHelper {
 			
 			if (m_logger.isDebugEnabled()) {
 				if (null == tl) {
-					m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+					m_logger.debug("GwtTaskHelper.setTaskLinkage( Removed TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 				}
 				else {
-					m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ):  " + String.valueOf(binder.getId()));
+					m_logger.debug("GwtTaskHelper.setTaskLinkage( Stored TaskLinkage for binder ): " + String.valueOf(binder.getId()));
 					dumpTaskLinkage(tl);
 				}
 			}

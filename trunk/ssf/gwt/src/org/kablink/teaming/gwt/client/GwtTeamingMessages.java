@@ -37,9 +37,10 @@ import com.google.gwt.i18n.client.Messages;
 
 
 /**
- * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
+ * This interface is used to retrieve strings from the file
+ * GwtTeamingMessages*.properties.
+ * 
  * @author jwootton
- *
  */
 public interface GwtTeamingMessages extends Messages
 {
@@ -764,4 +765,20 @@ public interface GwtTeamingMessages extends Messages
 	String tagType();
 	String unknownTagType();
 	
+	// The following are used for task folder listing.
+	String taskColumn_dueDate();
+	String taskColumn_name();
+	String taskColumn_percentDone();
+	String taskColumn_priority();
+	String taskColumn_status();
+	String taskPriority_p1();
+	String taskPriority_p2();
+	String taskPriority_p3();
+	String taskPriority_p4();
+	String taskPriority_p5();
+	String taskStatus_cancelled();
+	String taskStatus_completed();
+	String taskStatus_inProcess();
+	String taskStatus_needsAction();
+	String taskUnread();
 }// end GwtTeamingMessages
