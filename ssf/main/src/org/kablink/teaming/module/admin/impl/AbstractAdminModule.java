@@ -1071,7 +1071,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   List<ChangeLog> entryChangeLogs = new ArrayList<ChangeLog>();
 	   for (ChangeLog log: changeLogs) {
 		   if(log.getOperation().equals(ChangeLog.ADDENTRY)
-               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
+	               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
+               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATE)
+               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATEONREPLY)
+               || log.getOperation().equals(ChangeLog.ADDWORKFLOWRESPONSE)
 			   || log.getOperation().equals(ChangeLog.FILEADD)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION)
