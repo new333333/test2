@@ -531,7 +531,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      */
     protected void cleanupAttributes(Attachment attachment) {
     	//make a copy so removes won't collide with iterator
-    	Set<CustomAttribute> attrs = new HashSet(getCustomAttributes().values());
+    	Collection caValues = getCustomAttributes().values();
+    	Set<CustomAttribute> attrs = new HashSet(caValues);
     	for (CustomAttribute attr:attrs) {
     		int type = attr.getValueType();
     		if (type == CustomAttribute.ATTACHMENT) {
