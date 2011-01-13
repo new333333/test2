@@ -273,7 +273,9 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
+	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
+	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
@@ -683,6 +685,7 @@ public interface GwtTeamingMessages extends Messages
 	String autoRefreshIsPaused();
 	String followedPeople();
 	String followedPlaces();
+	String markEntryAsReadHint();
 	String myFavorites();
 	String myTeams();
 	String multipleComments( int numComments );
@@ -697,7 +700,12 @@ public interface GwtTeamingMessages extends Messages
 	String pauseActivityStream( int refreshRate );
 	String refresh();
 	String resumeActivityStream();
+	String selectEntryDisplayStyle();
 	String siteWide();
+	String showAll();
+	String showAllEntries();
+	String showUnread();
+	String showUnreadEntries();
 	String whatsNew();
 	String whatsNewWithName( String name );
 	

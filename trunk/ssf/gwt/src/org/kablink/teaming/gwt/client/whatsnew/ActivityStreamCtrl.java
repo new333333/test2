@@ -42,12 +42,14 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
+import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -74,7 +76,6 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
@@ -102,7 +103,7 @@ public class ActivityStreamCtrl extends Composite
 	private Timer m_searchTimer = null;
 	private Timer m_checkForChangesTimer = null;	// This timer is used to check for updates in the current activity stream.
 	private boolean m_searchInProgress = false;
-	private Label m_nextRefreshLabel = null;
+	private InlineLabel m_showSettingLabel;
 	private Image m_pauseImg;
 	private Image m_resumeImg;
 	private Image m_prevDisabledImg;
@@ -122,8 +123,10 @@ public class ActivityStreamCtrl extends Composite
 	private ArrayList<ActivityStreamTopEntry> m_searchResultsUIWidgets;
 	// This menu is used to display an Actions menu for an item in the list.
 	private static ActionsPopupMenu m_actionsPopupMenu = null;
+	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
 	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
+	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
 	
 	/**
@@ -218,6 +221,9 @@ public class ActivityStreamCtrl extends Composite
 		
 		// Create an Actions popup menu.
 		createActionsPopupMenu();
+		
+		// Create the popup menu used to set "show all" or "show unread"
+		m_showSettingPopupMenu  = new ShowSettingPopupMenu( true, true, this );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -343,9 +349,6 @@ public class ActivityStreamCtrl extends Composite
 		{
 			// Cancel the timer.
 			m_checkForChangesTimer.cancel();
-			
-			// Indicate that the auto refresh is paused.
-			m_nextRefreshLabel.setText( GwtTeaming.getMessages().autoRefreshIsPaused() );
 		}
 	}
 	
@@ -395,8 +398,8 @@ public class ActivityStreamCtrl extends Composite
 			};
 		}
 		
-		// Update the label that indicates when we will check for changes.
-		updateNextRefreshLabel();
+		// Update the text that indicates when we will check for changes.
+		updatePauseTitle();
 		
 		// Issue an ajax request to see if there is anything new.
 		m_rpcService.hasActivityStreamChanged( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamInfo, m_checkForChangesCallback );
@@ -491,6 +494,9 @@ public class ActivityStreamCtrl extends Composite
 		ClickHandler clickHandler;
 		InlineLabel whatsNewLabel;
 		FlowPanel header2;
+		FlowPanel pauseResumePanel;
+		FlexTable table;
+		int col;
 
 		m_headerPanel = new FlowPanel();
 		m_headerPanel.addStyleName( "activityStreamCtrlHeader" );
@@ -579,17 +585,58 @@ public class ActivityStreamCtrl extends Composite
 		whatsNewLabel.addStyleName( "activityStreamCtrlHeaderSubtitle" );
 		header2.add( whatsNewLabel );
 		
-		// Add a "Next Refresh: xxx" label.
-		m_nextRefreshLabel = new Label();
-		m_nextRefreshLabel.addStyleName( "activityStreamCtrlHeaderNextRefreshLabel" );
-		m_headerPanel.add( m_nextRefreshLabel );
+		// Create a table that will hold Show all/unread, pause/resume and refresh
+		table = new FlexTable();
+		table.addStyleName( "activityStreamCtrlHeaderActionsTable" );
+		col = 0;
 		
+		// Add text that displays what the show setting is (show all or show unread).
+		m_showSettingLabel = new InlineLabel();
+		m_showSettingLabel.addStyleName( "activityStreamCtrlHeaderShowSettingLabel" );
+		table.setWidget( 0, col, m_showSettingLabel );
+		++col;
+		
+		// Add a "show all/show unread" image the user can click on.
+		imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+		img = new Image( imageResource );
+		img.addStyleName( "activityStreamCtrlHeaderShowImg" );
+		img.setTitle( GwtTeaming.getMessages().selectEntryDisplayStyle() );
+		table.setWidget( 0, col, img );
+		++col;
+		
+		// Add a click handler for the "show all/show unread" image.
+		clickHandler = new ClickHandler()
+		{
+			public void onClick( ClickEvent clickEvent )
+			{
+				Scheduler.ScheduledCommand cmd;
+				final int x;
+				final int y;
+				
+				x = clickEvent.getClientX();
+				y = clickEvent.getClientY();
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Popup the "show all/show unread" popup menu.
+						m_showSettingPopupMenu.showMenu( x, y );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+		img.addClickHandler( clickHandler );
+
 		// Add a pause button to the header.
+		pauseResumePanel = new FlowPanel();
 		imageResource = GwtTeaming.getImageBundle().pauseActivityStream();
 		m_pauseImg = new Image( imageResource );
 		m_pauseImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
 		m_pauseImg.setVisible( false );
-		m_headerPanel.add( m_pauseImg );
+		pauseResumePanel.add( m_pauseImg );
+		table.setWidget( 0, col, pauseResumePanel );
+		++col;
 		
 		// Add a click handler for the pause button.
 		clickHandler = new ClickHandler()
@@ -608,7 +655,7 @@ public class ActivityStreamCtrl extends Composite
 		m_resumeImg.addStyleName( "activityStreamCtrlHeaderPausePlay" );
 		m_resumeImg.setTitle( GwtTeaming.getMessages().resumeActivityStream() );
 		m_resumeImg.setVisible( false );
-		m_headerPanel.add( m_resumeImg );
+		pauseResumePanel.add( m_resumeImg );
 		
 		// Add a click handler for the resume button.
 		clickHandler = new ClickHandler()
@@ -626,7 +673,10 @@ public class ActivityStreamCtrl extends Composite
 		img = new Image( imageResource );
 		img.addStyleName( "activityStreamCtrlHeaderRefresh" );
 		img.setTitle( GwtTeaming.getMessages().refresh() );
-		m_headerPanel.add( img );
+		table.setWidget( 0, col, img );
+		++col;
+		
+		m_headerPanel.add( table );
 		
 		// Add a click handler for the refresh button.
 		clickHandler = new ClickHandler()
@@ -683,6 +733,8 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	public void executeSearch()
 	{
+		ActivityStreamDataType asType;
+		
 		if ( m_activityStreamParams == null )
 		{
 			Window.alert( "In executeSearch(), m_activityStreamParams is null.  This should never happen." );
@@ -701,7 +753,16 @@ public class ActivityStreamCtrl extends Composite
 
 		// Issue an ajax request to search for the specified type of object.
 		m_searchInProgress = true;
-		m_rpcService.getActivityStreamData( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, m_searchResultsCallback );
+		if ( m_showSetting == ShowSetting.SHOW_ALL )
+			asType = ActivityStreamDataType.ALL;
+		else if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+			asType = ActivityStreamDataType.UNREAD;
+		else
+		{
+			Window.alert( "in executeSearch() unknown m_showSetting" );
+			return;
+		}
+		m_rpcService.getActivityStreamData( HttpRequestInfo.createHttpRequestInfo(), m_activityStreamParams, m_activityStreamInfo, m_pagingData, asType, m_searchResultsCallback );
 
 		// We only want to show "Searching..." after the search has taken more than .5 seconds.
 		// Have we already created a timer?
@@ -722,7 +783,7 @@ public class ActivityStreamCtrl extends Composite
 			};
 		}
 		
-		m_searchTimer.schedule( 500 );
+		m_searchTimer.schedule( 250 );
 	}
 	
 	
@@ -797,6 +858,29 @@ public class ActivityStreamCtrl extends Composite
 						// Invoke the Subscribe to Entry dialog.
 						invokeSubscribeToEntryDlg( (ActivityStreamUIEntry) actionData );
 					}
+					break;
+					
+				case SHOW_ALL_ENTRIES:
+					m_showSetting = ShowSetting.SHOW_ALL;
+
+					refreshActivityStream();
+
+					// Check the appropriate menu item to reflect the show setting.
+					m_showSettingPopupMenu.updateMenu( m_showSetting );
+					
+					// Save the show setting to the user's properties
+					saveShowSetting();
+					break;
+					
+				case SHOW_UNREAD_ENTRIES:
+					m_showSetting = ShowSetting.SHOW_UNREAD;
+					refreshActivityStream();
+
+					// Check the appropriate menu item to reflect the show setting.
+					m_showSettingPopupMenu.updateMenu( m_showSetting );
+
+					// Save the show setting to the user's properties
+					saveShowSetting();
 					break;
 				}
 			}
@@ -1011,7 +1095,7 @@ public class ActivityStreamCtrl extends Composite
 	private void refreshActivityStream()
 	{
 		// Update the label that indicates when we will check for changes.
-		updateNextRefreshLabel();
+		updatePauseTitle();
 		
 		m_pagingData = null;
 		executeSearch();
@@ -1073,6 +1157,37 @@ public class ActivityStreamCtrl extends Composite
 		m_pauseImg.setVisible( true );
 
 		startCheckForChangesTimer();
+	}
+	
+	
+	/**
+	 * Issue an ajax request to save the current show setting to the user's properties.
+	 */
+	private void saveShowSetting()
+	{
+		AsyncCallback<Boolean> callback;
+		
+		callback = new AsyncCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure( t, GwtTeaming.getMessages().rpcFailure_SaveWhatsNewShowSetting() );
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( Boolean success )
+			{
+				// Nothing to do.
+			}
+		};
+		
+		// Issue an ajax request to get the permalink of the source of the activity stream.
+		m_rpcService.saveWhatsNewShowSetting( HttpRequestInfo.createHttpRequestInfo(), m_showSetting, callback );
 	}
 	
 	
@@ -1164,6 +1279,10 @@ public class ActivityStreamCtrl extends Composite
 					Scheduler.ScheduledCommand cmd;
 					
 					m_activityStreamParams = activityStreamParams;
+					m_showSetting = m_activityStreamParams.getShowSetting();
+					
+					// Check the appropriate menu item to reflect the show setting.
+					m_showSettingPopupMenu.updateMenu( m_showSetting );
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
@@ -1174,6 +1293,9 @@ public class ActivityStreamCtrl extends Composite
 							
 							// Start the timer that we will use to check for changes.
 							startCheckForChangesTimer();
+							
+							// Update the label that shows whether we are displaying all or unread.
+							updateShowSettingLabel();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1360,13 +1482,10 @@ public class ActivityStreamCtrl extends Composite
 							checkForChanges();
 						}
 					};
-
-					// Update the title of the pause image.
-					m_pauseImg.setTitle( GwtTeaming.getMessages().pauseActivityStream( seconds ) );
 				}
 
 				// Update the label that indicates when we will check for changes.
-				updateNextRefreshLabel();
+				updatePauseTitle();
 				
 				// Start a timer.  When the timer goes off we will check for changes and
 				// update the activity stream if there is something new.
@@ -1380,29 +1499,55 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * Update the text that indicates when we will refresh the list.
+	 * Update the mouse over text on the pause image
 	 */
-	private void updateNextRefreshLabel()
+	private void updatePauseTitle()
 	{
+		String title = "";
 		String text;
 		Date date;
 		DateTimeFormat dateTimeFormat;
 		long milliSeconds;
+		int seconds = 0;
+
+		if ( m_activityStreamParams != null )
+		{
+			seconds = m_activityStreamParams.getClientRefresh();
+			if ( seconds > 0 )
+				title = GwtTeaming.getMessages().pauseActivityStream( seconds );
+		}
 		
 		// Get the current time.
 		date = new Date();
 		milliSeconds = date.getTime();
 
-		if ( m_activityStreamParams != null )
-		{
-			// Add the number of minutes the refresh rate is set to.
-			milliSeconds += (m_activityStreamParams.getClientRefresh() * 1000);
-			date.setTime( milliSeconds );
-		}
+		// Add the number of minutes the refresh rate is set to.
+		milliSeconds += (seconds * 1000);
+		date.setTime( milliSeconds );
 		
 		dateTimeFormat = DateTimeFormat.getShortTimeFormat();
 		text = dateTimeFormat.format( date );
 		
-		m_nextRefreshLabel.setText( GwtTeaming.getMessages().nextRefresh( text ) );
+		title += GwtTeaming.getMessages().nextRefresh( text );
+		
+		m_pauseImg.setTitle( title );
+	}
+	
+	
+	/**
+	 * Update the label that display the show setting (show all or show unread)
+	 */
+	private void updateShowSettingLabel()
+	{
+		String text;
+		
+		if ( m_showSetting == ShowSetting.SHOW_ALL )
+			text = GwtTeaming.getMessages().showAllEntries();
+		else if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+			text = GwtTeaming.getMessages().showUnreadEntries();
+		else
+			text = "Unknown show setting";
+		
+		m_showSettingLabel.setText( text );
 	}
 }// end ActivityStreamCtrl

@@ -73,6 +73,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
+	private Image m_unreadImg;
 	private InlineLabel m_title;
 	private FlowPanel m_presencePanel;
 	private ClickHandler m_presenceClickHandler;
@@ -288,6 +289,41 @@ public abstract class ActivityStreamUIEntry extends Composite
 		titlePanel = new FlowPanel();
 		titlePanel.addStyleName( getTitlePanelStyleName() );
 		headerPanel.add( titlePanel );
+		
+		// Add an image that indicates this entry has not been read.
+		{
+			ClickHandler clickHandler;
+			
+			imageResource = GwtTeaming.getImageBundle().sunburst();
+			m_unreadImg = new Image( imageResource );
+			m_unreadImg.addStyleName( "unreadImg" );
+			m_unreadImg.setTitle( GwtTeaming.getMessages().markEntryAsReadHint() );
+			m_unreadImg.setVisible( false );
+			titlePanel.add( m_unreadImg );
+
+			// Add a click handler for the "unread" image.
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							markEntryAsRead();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_unreadImg.addClickHandler( clickHandler );
+		}
+		
 		m_title = new InlineLabel();
 		m_title.addStyleName( getTitleStyleName() );
 		titlePanel.add( m_title );
@@ -529,6 +565,47 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Mark this entry as being read.
+	 */
+	public void markEntryAsRead()
+	{
+		HttpRequestInfo ri;
+		AsyncCallback<Boolean> callback;
+		Long entryIdL;
+		
+		// Create the callback needed.
+		callback = new AsyncCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SetSeen(),
+					m_entryId );
+			}
+			
+			/**
+			 * 
+			 */
+			public void onSuccess( Boolean success )
+			{
+			}
+		};
+		
+		// Issue an ajax request to mark this entry as read.
+		entryIdL = Long.valueOf( m_entryId );
+		ri = HttpRequestInfo.createHttpRequestInfo();
+		GwtTeaming.getRpcService().setSeen( ri, entryIdL, callback );
+		
+		// Update the ui to reflect the fact that this entry is now read.
+		updateReadUnreadUI( true );
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public void onClick( ClickEvent event )
@@ -630,6 +707,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
 		m_title.getElement().setInnerHTML( title );
+		updateReadUnreadUI( entryItem.getEntrySeen() );
+		
 		m_author.setText( entryItem.getAuthorName() );
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
@@ -653,6 +732,26 @@ public abstract class ActivityStreamUIEntry extends Composite
 		}
 		
 		m_viewEntryPermalink = null;
+	}
+	
+	/**
+	 * Set the appropriate style on the title based on whether the entry has been read.
+	 */
+	public void updateReadUnreadUI( boolean read )
+	{
+		m_title.removeStyleName( "readEntry" );
+		m_title.removeStyleName( "unreadEntry" );
+
+		if ( read )
+		{
+			m_title.addStyleName( "readEntry" );
+			m_unreadImg.setVisible( false );
+		}
+		else
+		{
+			m_title.addStyleName( "unreadEntry" );
+			m_unreadImg.setVisible( true );
+		}
 	}
 
 	

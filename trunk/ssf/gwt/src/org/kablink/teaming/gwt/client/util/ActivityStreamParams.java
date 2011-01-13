@@ -53,6 +53,7 @@ public class ActivityStreamParams implements IsSerializable {
 	private int     m_maxHits;
 	private long    m_readEntryDays;
 	private int     m_readEntryMax;
+	private ShowSetting m_showSetting;	// What to show, show all or show unread.
 	
 	/**
 	 * Constructor method.
@@ -76,6 +77,13 @@ public class ActivityStreamParams implements IsSerializable {
 	public int     getMaxHits()                {return m_maxHits;               }
 	public long    getReadEntryDays()          {return m_readEntryDays;         }
 	public int     getReadEntryMax()           {return m_readEntryMax;          }
+	/**
+	 * 
+	 */
+	public ShowSetting getShowSetting()
+	{
+		return m_showSetting;
+	}
 	
 	/**
 	 * Set'er methods.
@@ -90,6 +98,13 @@ public class ActivityStreamParams implements IsSerializable {
 	public void setMaxHits(               int     maxHits)                {m_maxHits                = maxHits;                     }
 	public void setReadEntryDays(         long    readEntryDays)          {m_readEntryDays          = Math.min(readEntryDays, 30L);}	// See ObjectKeys.SEEN_TIMEOUT_DAYS.
 	public void setReadEntryMax(          int     readEntryMax)           {m_readEntryMax           = readEntryMax;                }
+	/**
+	 * 
+	 */
+	public void setShowSetting( ShowSetting showSetting )
+	{
+		m_showSetting = showSetting;
+	}
 	
 	/**
 	 * Creates a copy ActivityStreamParams with the base information
@@ -110,6 +125,7 @@ public class ActivityStreamParams implements IsSerializable {
 		reply.setMaxHits(               getMaxHits()               );
 		reply.setReadEntryDays(         getReadEntryDays()         );
 		reply.setReadEntryMax(          getReadEntryMax()          );
+		reply.setShowSetting( getShowSetting() );
 		
 		return reply;
 	}

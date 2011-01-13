@@ -233,6 +233,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
 	public ImageResource spinner16();
 
+	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
+	public ImageResource sunburst();
+
 	@Source("org/kablink/teaming/gwt/public/images/system_config_16.png")
 	public ImageResource system16();
 
