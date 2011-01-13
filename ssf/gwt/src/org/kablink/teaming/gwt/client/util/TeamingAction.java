@@ -63,6 +63,8 @@ public enum TeamingAction implements IsSerializable
 	INVOKE_SIMPLE_PROFILE( "Invoke the Simple Profile dialog" ),
 	LOGIN( "Login" ),
 	LOGOUT( "Logout" ),
+	MARK_ENTRY_READ( "Mark the entry as read" ),
+	MARK_ENTRY_UNREAD( "Mark the entry as unread" ),
 	MY_WORKSPACE( "My Workspace" ),
 	PRE_CONTEXT_SWITCH( "Tells the UI That a Context Switch is About to Take Place" ),
 	RECENT_PLACE_SEARCH( "Executes a Recent Place Search" ),

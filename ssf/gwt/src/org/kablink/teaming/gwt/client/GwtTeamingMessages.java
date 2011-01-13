@@ -278,6 +278,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_Search();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
+	String rpcFailure_SetUnseen();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
@@ -740,6 +741,8 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTrash();
 
 	// The following strings are used in the "Actions" popup menu.
+	String markRead();
+	String markUnread();
 	String reply();
 	String share();
 	String subscribe();

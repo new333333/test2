@@ -93,6 +93,7 @@ public class ActivityStreamCtrl extends Composite
 	private FlowPanel m_headerPanel;
 	private FlowPanel m_searchResultsPanel;
 	private FlowPanel m_footerPanel;
+	private FlowPanel m_showSettingPanel;
 	private Object m_selectedObj = null;
 	private ActionHandler m_actionHandler;
 	private AsyncCallback<ActivityStreamData> m_searchResultsCallback;
@@ -110,6 +111,8 @@ public class ActivityStreamCtrl extends Composite
 	private Image m_prevImg;
 	private Image m_nextDisabledImg;
 	private Image m_nextImg;
+	private Image m_showSettingImg1;
+	private Image m_showSettingImg2;
 	private InlineLabel m_nOfnLabel;
 	private FlowPanel m_searchingPanel;
 	private FlowPanel m_msgPanel;
@@ -271,7 +274,7 @@ public class ActivityStreamCtrl extends Composite
 				if ( topEntry == null )
 				{
 					// No, create a new one.
-					topEntry = new ActivityStreamTopEntry( m_actionHandler );
+					topEntry = new ActivityStreamTopEntry( this, m_actionHandler );
 					m_searchResultsUIWidgets.add( topEntry );
 				}
 				
@@ -419,6 +422,9 @@ public class ActivityStreamCtrl extends Composite
 		for ( ActivityStreamTopEntry nextEntry : m_searchResultsUIWidgets)
 		{
 			nextEntry.clearEntrySpecificInfo();
+			
+			// Sometimes we hide an entry.  Make sure each entry is visible.
+			nextEntry.setVisible( true );
 		}
 		
 		m_nOfnLabel.setText( "" );
@@ -490,7 +496,6 @@ public class ActivityStreamCtrl extends Composite
 	private void createHeader( FlowPanel mainPanel )
 	{
 		ImageResource imageResource;
-		Image img;
 		ClickHandler clickHandler;
 		InlineLabel whatsNewLabel;
 		FlowPanel header2;
@@ -590,44 +595,11 @@ public class ActivityStreamCtrl extends Composite
 		table.addStyleName( "activityStreamCtrlHeaderActionsTable" );
 		col = 0;
 		
-		// Add text that displays what the show setting is (show all or show unread).
-		m_showSettingLabel = new InlineLabel();
-		m_showSettingLabel.addStyleName( "activityStreamCtrlHeaderShowSettingLabel" );
-		table.setWidget( 0, col, m_showSettingLabel );
+		// Add the text that displays what the show setting is (show all or show unread)
+		// and an image for the user to click on to invoke the "Show setting" popup menu.
+		addShowSettingWidgets( table, 0, col );
 		++col;
 		
-		// Add a "show all/show unread" image the user can click on.
-		imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
-		img = new Image( imageResource );
-		img.addStyleName( "activityStreamCtrlHeaderShowImg" );
-		img.setTitle( GwtTeaming.getMessages().selectEntryDisplayStyle() );
-		table.setWidget( 0, col, img );
-		++col;
-		
-		// Add a click handler for the "show all/show unread" image.
-		clickHandler = new ClickHandler()
-		{
-			public void onClick( ClickEvent clickEvent )
-			{
-				Scheduler.ScheduledCommand cmd;
-				final int x;
-				final int y;
-				
-				x = clickEvent.getClientX();
-				y = clickEvent.getClientY();
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
-						// Popup the "show all/show unread" popup menu.
-						m_showSettingPopupMenu.showMenu( x, y );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-		img.addClickHandler( clickHandler );
-
 		// Add a pause button to the header.
 		pauseResumePanel = new FlowPanel();
 		imageResource = GwtTeaming.getImageBundle().pauseActivityStream();
@@ -669,39 +641,157 @@ public class ActivityStreamCtrl extends Composite
 		m_resumeImg.addClickHandler( clickHandler );
 		
 		// Add a refresh button to the header.
-		imageResource = GwtTeaming.getImageBundle().refresh();
-		img = new Image( imageResource );
-		img.addStyleName( "activityStreamCtrlHeaderRefresh" );
-		img.setTitle( GwtTeaming.getMessages().refresh() );
-		table.setWidget( 0, col, img );
-		++col;
+		{
+			Image img;
+			
+			imageResource = GwtTeaming.getImageBundle().refresh();
+			img = new Image( imageResource );
+			img.addStyleName( "activityStreamCtrlHeaderRefresh" );
+			img.setTitle( GwtTeaming.getMessages().refresh() );
+			table.setWidget( 0, col, img );
+			++col;
+
+			// Add a click handler for the refresh button.
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Issue a request to refresh the activity stream.
+							refreshActivityStream();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			img.addClickHandler( clickHandler );
+		}
 		
 		m_headerPanel.add( table );
-		
-		// Add a click handler for the refresh button.
-		clickHandler = new ClickHandler()
-		{
-			public void onClick( ClickEvent clickEvent )
-			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
-						// Issue a request to refresh the activity stream.
-						refreshActivityStream();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-		img.addClickHandler( clickHandler );
 		
 		mainPanel.add( m_headerPanel );
 	}
 	
 	
+	/**
+	 * Add the ui widgets needed to allow the user to "show all" and "show unread"
+	 */
+	private void addShowSettingWidgets( FlexTable table, int row, int col )
+	{
+		m_showSettingPanel = new FlowPanel();
+		m_showSettingPanel.setTitle( GwtTeaming.getMessages().selectEntryDisplayStyle() );
+		
+		// Add the label that shows what the current selection is, "show all" or "show unread"
+		{
+			m_showSettingLabel = new InlineLabel();
+			m_showSettingLabel.addStyleName( "activityStreamCtrlHeaderShowSettingLabel" );
+
+			m_showSettingPanel.add( m_showSettingLabel );
+		}
+		
+		// Add a "show all/show unread" image the user can click on.
+		{
+			ImageResource imageResource;
+			
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
+			m_showSettingImg1 = new Image( imageResource );
+			m_showSettingImg1.addStyleName( "activityStreamCtrlHeaderShowImg" );
+			m_showSettingImg1.getElement().setAttribute( "align", "absmiddle" );
+			m_showSettingPanel.add( m_showSettingImg1 );
+	
+			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
+			m_showSettingImg2 = new Image( imageResource );
+			m_showSettingImg2.addStyleName( "activityStreamCtrlHeaderShowImg" );
+			m_showSettingImg2.getElement().setAttribute( "align", "absmiddle" );
+			m_showSettingImg2.setVisible( false );
+			m_showSettingPanel.add( m_showSettingImg2 );
+		}
+
+		table.setWidget( row, col, m_showSettingPanel );
+
+		// Add a mouse-over handler for the show setting panel.
+		{
+			MouseOverHandler mouseOverHandler;
+			
+			mouseOverHandler = new MouseOverHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOver( MouseOverEvent event )
+				{
+					m_showSettingPanel.addStyleName( "activityStreamHover" );
+					
+					m_showSettingImg1.setVisible( false );
+					m_showSettingImg2.setVisible( true );
+				}
+				
+			};
+			m_showSettingPanel.addDomHandler( mouseOverHandler, MouseOverEvent.getType() );
+		}
+		
+		// Add a mouse-out handler for the show setting label
+		{
+			MouseOutHandler mouseOutHandler;
+			
+			mouseOutHandler = new MouseOutHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onMouseOut( MouseOutEvent event )
+				{
+					m_showSettingPanel.removeStyleName( "activityStreamHover" );
+					
+					m_showSettingImg1.setVisible( true );
+					m_showSettingImg2.setVisible( false );
+				}
+				
+			};
+			m_showSettingPanel.addDomHandler( mouseOutHandler, MouseOutEvent.getType() );
+		}
+		
+		// Add a click handler for the "show all/show unread" image.
+		{
+			ClickHandler clickHandler;
+			
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+					final int x;
+					final int y;
+					
+					x = clickEvent.getClientX();
+					y = clickEvent.getClientY();
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							m_showSettingPanel.removeStyleName( "activityStreamHover" );
+							m_showSettingImg1.setVisible( true );
+							m_showSettingImg2.setVisible( false );
+	
+							// Popup the "show all/show unread" popup menu.
+							m_showSettingPopupMenu.showMenu( x, y );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_showSettingImg1.addClickHandler( clickHandler );
+			m_showSettingImg2.addClickHandler( clickHandler );
+			m_showSettingLabel.addClickHandler( clickHandler );
+		}
+	}
+
+
 	/**
 	 * Create the actions popup menu
 	 */
@@ -844,6 +934,29 @@ public class ActivityStreamCtrl extends Composite
 					Window.alert( action.getUnlocalizedDesc() );
 					break;
 				
+				case MARK_ENTRY_READ:
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						boolean hide;
+						
+						// If we are displaying "show unread" we need to hide this entry.
+						hide = false;
+						if ( m_showSetting == ShowSetting.SHOW_UNREAD )
+							hide = true;
+						
+						// Mark the given entry as read.
+						((ActivityStreamUIEntry) actionData ).markEntryAsRead( hide );
+					}
+					break;
+					
+				case MARK_ENTRY_UNREAD:
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						// Mark the given entry as unread.
+						((ActivityStreamUIEntry) actionData ).markEntryAsUnread();
+					}
+					break;
+					
 				case TAG:
 					if ( actionData instanceof ActivityStreamUIEntry )
 					{
@@ -861,31 +974,38 @@ public class ActivityStreamCtrl extends Composite
 					break;
 					
 				case SHOW_ALL_ENTRIES:
-					m_showSetting = ShowSetting.SHOW_ALL;
-
-					refreshActivityStream();
-
-					// Check the appropriate menu item to reflect the show setting.
-					m_showSettingPopupMenu.updateMenu( m_showSetting );
-					
-					// Save the show setting to the user's properties
-					saveShowSetting();
+					handleNewShowSetting( ShowSetting.SHOW_ALL );
 					break;
 					
 				case SHOW_UNREAD_ENTRIES:
-					m_showSetting = ShowSetting.SHOW_UNREAD;
-					refreshActivityStream();
-
-					// Check the appropriate menu item to reflect the show setting.
-					m_showSettingPopupMenu.updateMenu( m_showSetting );
-
-					// Save the show setting to the user's properties
-					saveShowSetting();
+					handleNewShowSetting( ShowSetting.SHOW_UNREAD );
 					break;
 				}
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	
+	/**
+	 * Take all the actions necessary to handle the changing of the show setting.
+	 * 
+	 */
+	private void handleNewShowSetting( ShowSetting showSetting )
+	{
+		m_showSetting = showSetting;
+		
+		// Update the label that displays what the show setting is.
+		updateShowSettingLabel();
+
+		// Do a search based on the new show setting.
+		refreshActivityStream();
+
+		// Check the appropriate menu item to reflect the show setting.
+		m_showSettingPopupMenu.updateMenu( m_showSetting );
+		
+		// Save the show setting to the user's properties
+		saveShowSetting();
 	}
 	
 	

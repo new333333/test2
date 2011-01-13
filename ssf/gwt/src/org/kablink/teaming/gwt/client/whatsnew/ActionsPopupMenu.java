@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.whatsnew;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.menu.PopupMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -57,6 +58,8 @@ public class ActionsPopupMenu extends PopupMenu
 	private PopupMenuItem m_shareMenuItem;
 	private PopupMenuItem m_subscribeMenuItem;
 	private PopupMenuItem m_tagMenuItem;
+	private PopupMenuItem m_markReadMenuItem;
+	private PopupMenuItem m_markUnreadMenuItem;
 	private AsyncCallback<ArrayList<ActionValidation>> m_checkRightsCallback = null;
 	private ArrayList<ActionValidation> m_actionValidations;
 	private ActivityStreamUIEntry m_entry;
@@ -72,23 +75,38 @@ public class ActionsPopupMenu extends PopupMenu
 		
 		// Add all the possible menu items.
 		{
+			GwtTeamingMessages messages;
+			
+			messages = GwtTeaming.getMessages();
+			
 			m_actionValidations = new ArrayList<ActionValidation>();
 			
 			// Create the "Reply" menu item.
-			m_replyMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.REPLY, null, null, GwtTeaming.getMessages().reply() );
+			m_replyMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.REPLY, null, null, messages.reply() );
 			addMenuItem( m_replyMenuItem );
 			
 			// Create the "Share" menu item.
-			m_shareMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SHARE, null, null, GwtTeaming.getMessages().share() );
+			m_shareMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SHARE, null, null, messages.share() );
 			addMenuItem( m_shareMenuItem );
 			
 			// Create the "Subscribe" menu item.
-			m_subscribeMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SUBSCRIBE, null, null, GwtTeaming.getMessages().subscribe() );
+			m_subscribeMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SUBSCRIBE, null, null, messages.subscribe() );
 			addMenuItem( m_subscribeMenuItem );
 			
 			// Create the "Tag" menu item.
-			m_tagMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.TAG, null, null, GwtTeaming.getMessages().tag() );
+			m_tagMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.TAG, null, null, messages.tag() );
 			addMenuItem( m_tagMenuItem );
+			
+			// Add a separator
+			addSeparator();
+			
+			// Create the "Mark read" menu item.
+			m_markReadMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.MARK_ENTRY_READ, null, null, messages.markRead() );
+			addMenuItem( m_markReadMenuItem );
+
+			// Create the "Mark unread" menu item.
+			m_markUnreadMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.MARK_ENTRY_UNREAD, null, null, messages.markUnread() );
+			addMenuItem( m_markUnreadMenuItem );
 		}
 	}
 	
@@ -194,12 +212,22 @@ public class ActionsPopupMenu extends PopupMenu
 		m_shareMenuItem.setActionData( entry );
 		m_subscribeMenuItem.setActionData( entry );
 		m_tagMenuItem.setActionData( entry );
+		m_markReadMenuItem.setActionData( entry );
+		m_markUnreadMenuItem.setActionData( entry );
 		
 		// Make sure all the menu items are visible.
 		m_replyMenuItem.setVisible( true );
 		m_shareMenuItem.setVisible( true );
 		m_subscribeMenuItem.setVisible( true );
 		m_tagMenuItem.setVisible( true );
+		m_markReadMenuItem.setVisible( true );
+		m_markUnreadMenuItem.setVisible( true );
+		
+		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.
+		if ( entry.isEntryUnread() )
+			m_markUnreadMenuItem.setVisible( false );
+		else
+			m_markReadMenuItem.setVisible( false );
 
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.

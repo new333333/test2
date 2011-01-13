@@ -114,12 +114,22 @@
 	cursor: pointer;
 }
 
-.activityStreamCtrlHeaderNextRefreshLabel, .activityStreamCtrlHeaderShowSettingLabel
+.activityStreamCtrlHeaderNextRefreshLabel
 {
 	color: #666666;
 	font-size: 10px;
 	text-align: right;
 }
+
+ .activityStreamCtrlHeaderShowSettingLabel
+{
+	color: #666666;
+	cursor: pointer;
+	font-size: 11px;
+	padding-right: 5px;
+	text-align: right;
+}
+ 
 
 .activityStreamHover
 {
@@ -1396,7 +1406,7 @@ body, table td, select
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
-.mainMenuPopup_ItemSpacer 
+.mainMenuPopup_ItemSpacer, .popupMenuItemSeparator 
 {
 	border-top: 1px solid #353838;
 	border-bottom: 1px solid #505354;
