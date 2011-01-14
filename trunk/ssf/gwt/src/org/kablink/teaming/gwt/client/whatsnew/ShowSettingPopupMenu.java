@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.whatsnew;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.menu.PopupMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -60,12 +59,10 @@ public class ShowSettingPopupMenu extends PopupMenu
 		super( autoHide, modal );
 
 		// Add the "show all" menu item.
-		m_showAllMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SHOW_ALL_ENTRIES, null, null, GwtTeaming.getMessages().showAll() );
-		addMenuItem( m_showAllMenuItem );
+		m_showAllMenuItem = addMenuItem( actionHandler, TeamingAction.SHOW_ALL_ENTRIES, null, null, GwtTeaming.getMessages().showAll() );
 		
 		// Add the "show unread" menu item.
-		m_showUnreadMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SHOW_UNREAD_ENTRIES, null, null, GwtTeaming.getMessages().showUnread() );
-		addMenuItem( m_showUnreadMenuItem );
+		m_showUnreadMenuItem = addMenuItem( actionHandler, TeamingAction.SHOW_UNREAD_ENTRIES, null, null, GwtTeaming.getMessages().showUnread() );
 	}
 	
 	
@@ -76,13 +73,13 @@ public class ShowSettingPopupMenu extends PopupMenu
 	{
 		if ( showSetting == ShowSetting.SHOW_ALL )
 		{
-			m_showAllMenuItem.setCheckedState( true );
-			m_showUnreadMenuItem.setCheckedState( false );
+			setMenuItemCheckedState( m_showAllMenuItem, true );
+			setMenuItemCheckedState( m_showUnreadMenuItem, false );
 		}
 		else if ( showSetting == ShowSetting.SHOW_UNREAD )
 		{
-			m_showAllMenuItem.setCheckedState( false );
-			m_showUnreadMenuItem.setCheckedState( true );
+			setMenuItemCheckedState( m_showAllMenuItem, false );
+			setMenuItemCheckedState( m_showUnreadMenuItem, true );
 		}
 	}
 

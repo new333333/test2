@@ -38,13 +38,13 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
-import org.kablink.teaming.gwt.client.menu.PopupMenuItem;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
@@ -82,31 +82,25 @@ public class ActionsPopupMenu extends PopupMenu
 			m_actionValidations = new ArrayList<ActionValidation>();
 			
 			// Create the "Reply" menu item.
-			m_replyMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.REPLY, null, null, messages.reply() );
-			addMenuItem( m_replyMenuItem );
+			m_replyMenuItem = addMenuItem( actionHandler, TeamingAction.REPLY, null, null, messages.reply() );
 			
 			// Create the "Share" menu item.
-			m_shareMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SHARE, null, null, messages.share() );
-			addMenuItem( m_shareMenuItem );
+			m_shareMenuItem = addMenuItem( actionHandler, TeamingAction.SHARE, null, null, messages.share() );
 			
 			// Create the "Subscribe" menu item.
-			m_subscribeMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.SUBSCRIBE, null, null, messages.subscribe() );
-			addMenuItem( m_subscribeMenuItem );
+			m_subscribeMenuItem = addMenuItem( actionHandler, TeamingAction.SUBSCRIBE, null, null, messages.subscribe() );
 			
 			// Create the "Tag" menu item.
-			m_tagMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.TAG, null, null, messages.tag() );
-			addMenuItem( m_tagMenuItem );
+			m_tagMenuItem = addMenuItem( actionHandler, TeamingAction.TAG, null, null, messages.tag() );
 			
 			// Add a separator
 			addSeparator();
 			
 			// Create the "Mark read" menu item.
-			m_markReadMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.MARK_ENTRY_READ, null, null, messages.markRead() );
-			addMenuItem( m_markReadMenuItem );
+			m_markReadMenuItem = addMenuItem( actionHandler, TeamingAction.MARK_ENTRY_READ, null, null, messages.markRead() );
 
 			// Create the "Mark unread" menu item.
-			m_markUnreadMenuItem = new PopupMenuItem( this, actionHandler, TeamingAction.MARK_ENTRY_UNREAD, null, null, messages.markUnread() );
-			addMenuItem( m_markUnreadMenuItem );
+			m_markUnreadMenuItem = addMenuItem( actionHandler, TeamingAction.MARK_ENTRY_UNREAD, null, null, messages.markUnread() );
 		}
 	}
 	
@@ -114,18 +108,19 @@ public class ActionsPopupMenu extends PopupMenu
 	/**
 	 * 
 	 */
-	public void addMenuItem( PopupMenuItem menuItem )
+	public PopupMenuItem addMenuItem( ActionHandler actionHandler, TeamingAction action, Object actionData, Image img, String text )
 	{
 		ActionValidation actionValidation;
+		PopupMenuItem menuItem;
 		
-		super.addMenuItem( menuItem );
+		menuItem = super.addMenuItem( actionHandler, action, actionData, img, text );
 
 		actionValidation = new ActionValidation();
-		actionValidation.setAction( menuItem.getAction().ordinal() );
+		actionValidation.setAction( action.ordinal() );
 		
 		m_actionValidations.add( actionValidation );
-
 		
+		return menuItem;
 	}
 	
 	
@@ -172,13 +167,13 @@ public class ActionsPopupMenu extends PopupMenu
 							action = nextValidation.getAction();
 							
 							if ( action == TeamingAction.REPLY.ordinal() )
-								m_replyMenuItem.setVisible( false );
+								setMenuItemVisibility( m_replyMenuItem, false );
 							else if ( action == TeamingAction.SUBSCRIBE.ordinal() )
-								m_subscribeMenuItem.setVisible( false );
+								setMenuItemVisibility( m_subscribeMenuItem, false );
 							else if ( action == TeamingAction.SHARE.ordinal() )
-								m_shareMenuItem.setVisible( false );
+								setMenuItemVisibility( m_shareMenuItem, false );
 							else if ( action == TeamingAction.TAG.ordinal() )
-								m_tagMenuItem.setVisible( false );
+								setMenuItemVisibility( m_tagMenuItem, false );
 						}
 					}
 					
@@ -216,18 +211,18 @@ public class ActionsPopupMenu extends PopupMenu
 		m_markUnreadMenuItem.setActionData( entry );
 		
 		// Make sure all the menu items are visible.
-		m_replyMenuItem.setVisible( true );
-		m_shareMenuItem.setVisible( true );
-		m_subscribeMenuItem.setVisible( true );
-		m_tagMenuItem.setVisible( true );
-		m_markReadMenuItem.setVisible( true );
-		m_markUnreadMenuItem.setVisible( true );
+		setMenuItemVisibility( m_replyMenuItem, true );
+		setMenuItemVisibility( m_shareMenuItem, true );
+		setMenuItemVisibility( m_subscribeMenuItem, true );
+		setMenuItemVisibility( m_tagMenuItem, true );
+		setMenuItemVisibility( m_markReadMenuItem, true );
+		setMenuItemVisibility( m_markUnreadMenuItem, true );
 		
 		// Hide "Mark read" or "Mark unread" depending on whether or not the entry has been read.
 		if ( entry.isEntryUnread() )
-			m_markUnreadMenuItem.setVisible( false );
+			setMenuItemVisibility( m_markUnreadMenuItem, false );
 		else
-			m_markReadMenuItem.setVisible( false );
+			setMenuItemVisibility( m_markReadMenuItem, false );
 
 		// Make an ajax request to see what rights the user has for the given entry.
 		// After the ajax request returns we will display this menu.

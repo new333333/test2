@@ -230,6 +230,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/resume.png")
 	public ImageResource resumeActivityStream();
 
+	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
+	public ImageResource spacer1px();
+
 	@Source("org/kablink/teaming/gwt/public/images/spinner16x16.gif")
 	public ImageResource spinner16();
 
