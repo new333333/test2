@@ -120,6 +120,10 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 	
+	public List<Map<String, Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType) {
+		return null;
+	}
+
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate)
 	{
 		return null;
