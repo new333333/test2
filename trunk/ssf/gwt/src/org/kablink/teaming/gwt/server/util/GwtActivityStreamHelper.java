@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
@@ -130,15 +131,17 @@ public class GwtActivityStreamHelper {
 	 * don't have to repeatedly read the same information.
 	 */
 	private static class ASAuthorInfo {
-		private String m_authorAvatarUrl;	// The author's avatar URL.
-		private String m_authorId;			// The author's ID.
-		private String m_authorWsId;		// The author's workspace ID.
-		private String m_authorTitle;		// The author's title, given visibility by the current user.
+		private GwtPresenceInfo m_authorPresence;	// The author's presence information.
+		private String          m_authorAvatarUrl;	// The author's avatar URL.
+		private String          m_authorId;			// The author's ID.
+		private String          m_authorWsId;		// The author's workspace ID.
+		private String          m_authorTitle;		// The author's title, given visibility by the current user.
 
 		/*
 		 * Class constructor.
 		 */
 		private ASAuthorInfo() {
+			m_authorPresence  = GwtServerHelper.getPresenceInfoDefault();
 			m_authorAvatarUrl =
 			m_authorId        =
 			m_authorWsId      =
@@ -149,7 +152,7 @@ public class GwtActivityStreamHelper {
 		 * Constructs an ASAuthorInfo object based on its author ID.
 		 */
 		@SuppressWarnings("unchecked")
-		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, Long authorId, User authorUser, String authorTitle) {
+		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, Long authorId, User authorUser, String authorTitle) {
 			// Construct a new ASAuthorInfo object.
 			ASAuthorInfo reply = new ASAuthorInfo();
 			reply.m_authorId = String.valueOf(authorId);
@@ -175,6 +178,12 @@ public class GwtActivityStreamHelper {
 				// Store something as the author's URL so that we don't
 				// try to look it up again.
 				reply.m_authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
+			}
+
+			// If the presence service is enabled...
+			if (isPresenceEnabled) {
+				// ...obtain the author's presence information.
+				reply.m_authorPresence = GwtServerHelper.getPresenceInfo(authorUser);
 			}
 
 			// Finally, store the title for the author based on the
@@ -309,7 +318,7 @@ public class GwtActivityStreamHelper {
 		 * Returns a List<ASEntryData> corresponding to what should be
 		 * displayed for a given List<Map> of entry search results.
 		 */
-		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
+		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
 			// If we weren't given any search results...
 			List<ASEntryData> reply = new ArrayList<ASEntryData>();			
 			if ((null == searchEntries) || searchEntries.isEmpty()) {
@@ -348,8 +357,8 @@ public class GwtActivityStreamHelper {
 				Map<Long, Binder> binderMap = readBinders(bs, userMap, reply);
 				
 				// ...and complete their binder and author data.
-				completeBinderData(         bs, binderMap,                            reply);
-				completeAuthorData(request, bs, userMap, isOtherUserAccessRestricted, reply);
+				completeBinderData(         bs, binderMap,                                               reply);
+				completeAuthorData(request, bs, userMap, isPresenceEnabled, isOtherUserAccessRestricted, reply);
 			}
 
 			// If we get here, reply refers to a List<ASEntryData> of
@@ -362,7 +371,7 @@ public class GwtActivityStreamHelper {
 		 * Uses a Map<Long, User> to complete the author information in
 		 * a List<ASEntryData>.
 		 */
-		private static void completeAuthorData(HttpServletRequest request, AllModulesInjected bs, Map<Long, User> userMap, boolean isOtherUserAccessRestricted, List<ASEntryData> entryDataList) {
+		private static void completeAuthorData(HttpServletRequest request, AllModulesInjected bs, Map<Long, User> userMap, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, List<ASEntryData> entryDataList) {
 			// Scan the List<ASEntryData>.
 			Map<Long, ASAuthorInfo> authorInfoMap = new HashMap<Long, ASAuthorInfo>();
 			for (ASEntryData entryData:  entryDataList) {
@@ -373,7 +382,7 @@ public class GwtActivityStreamHelper {
 				if (null == authorInfo) {
 					// No!  Construct one and cache it now.  
 					User authorUser = userMap.get(authorId);
-					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorId, authorUser, entryData.getAuthorTitle());
+					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isPresenceEnabled, isOtherUserAccessRestricted, authorId, authorUser, entryData.getAuthorTitle());
 					authorInfoMap.put(authorId, authorInfo);
 				}
 				
@@ -389,7 +398,7 @@ public class GwtActivityStreamHelper {
 					if (null == commentAuthorInfo) {
 						// No!  Construct one and cache it now.
 						User authorUser = userMap.get(commentAuthorId);
-						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, commentAuthorId, authorUser, commentEntryData.getAuthorTitle());
+						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isPresenceEnabled, isOtherUserAccessRestricted, commentAuthorId, authorUser, commentEntryData.getAuthorTitle());
 						authorInfoMap.put(commentAuthorId, commentAuthorInfo);
 					}
 
@@ -856,6 +865,7 @@ public class GwtActivityStreamHelper {
 		// First, initialize the author information.
 		Map em = entryData.getEntryMap();
 		ASAuthorInfo authorInfo = entryData.getAuthorInfo();
+		reply.setAuthorPresence(   authorInfo.m_authorPresence );
 		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
 		reply.setAuthorId(         authorInfo.m_authorId       );
 		reply.setAuthorName(       authorInfo.m_authorTitle    );
@@ -1086,6 +1096,7 @@ public class GwtActivityStreamHelper {
 					request,
 					bs,
 					bs.getProfileModule().getUserSeenMap(null),
+					GwtServerHelper.isPresenceEnabled(),
 					Utils.canUserOnlySeeCommonGroupMembers(),
 					reply,
 					asp,
@@ -1826,7 +1837,7 @@ public class GwtActivityStreamHelper {
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
+	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -1902,6 +1913,7 @@ public class GwtActivityStreamHelper {
 				ASEntryData.buildEntryDataList(
 					request,
 					bs,
+					isPresenceEnabled,
 					isOtherUserAccessRestricted,
 					asp,
 					searchEntries));

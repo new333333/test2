@@ -2242,7 +2242,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end getSiteAdministrationUrl()
 	
 	/**
-	 * Return the URL needed to start an Instant Message with the user.
+	 * Return true if the presence service is enabled and false
+	 * otherwise.
 	 * 
 	 * @param ri
 	 * 
@@ -2250,15 +2251,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
  	 */
 	public Boolean isPresenceEnabled( HttpRequestInfo ri )
 	{
-		PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
-		if (presenceService != null)
-		{
-			return presenceService.isEnabled();
-		}
-		else
-		{
-			return Boolean.FALSE;
-		}
+		return GwtServerHelper.isPresenceEnabled();
 	}
 
 	/**
