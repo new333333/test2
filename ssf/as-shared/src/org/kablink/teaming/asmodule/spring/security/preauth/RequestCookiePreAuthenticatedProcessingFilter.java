@@ -48,14 +48,22 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	protected String principalRequestCookie; 	// required
 	protected String credentialsRequestCookie; 	// optional
 	
-	protected String noPrincipalCookie = THROW;
-	protected String noPrincipal = THROW;
-	protected String noCredentialsCookie = THROW;
-	protected String noCredentials = THROW;
+	protected String noPrincipalCookie = NULL; // This default reaction will commence regular entry point if configured.
+	protected String noPrincipal = NULL; // This default reaction will commence regular entry point if configured.
+	protected String noCredentialsCookie = EMPTY; // This default reaction returns an empty string.
+	protected String noCredentials = EMPTY; // This default reaction returns an empty string.
 
     public void afterPropertiesSet() throws Exception {
     	super.afterPropertiesSet();
         Assert.notNull(principalRequestCookie, "An principalRequestCookie must be set");
+        if(!noPrincipalCookie.equals(THROW) && !noPrincipalCookie.equals(NULL) && !noPrincipalCookie.equals(EMPTY))
+        	throw new IllegalArgumentException("Illegal value for noPrincipalCookie property: " + noPrincipalCookie);
+        if(!noPrincipal.equals(THROW) && !noPrincipal.equals(NULL) && !noPrincipal.equals(EMPTY))
+        	throw new IllegalArgumentException("Illegal value for noPrincipal property: " + noPrincipal);
+        if(!noCredentialsCookie.equals(THROW) && !noCredentialsCookie.equals(NULL) && !noCredentialsCookie.equals(EMPTY))
+        	throw new IllegalArgumentException("Illegal value for noCredentialsCookie property: " + noCredentialsCookie);
+        if(!noCredentials.equals(THROW) && !noCredentials.equals(NULL) && !noCredentials.equals(EMPTY))
+        	throw new IllegalArgumentException("Illegal value for noCredentials property: " + noCredentials);
     }
 
 	public void setPrincipalRequestCookie(String principalRequestCookie) {

@@ -15,10 +15,10 @@
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
 		<property name="principalRequestCookie"><value>dummy</value></property>
-		<property name="noPrincipalCookie"><value>throw</value></property>
-		<property name="noPrincipal"><value>throw</value></property>
-		<property name="noCredentialsCookie"><value>throw</value></property>
-		<property name="noCredentials"><value>throw</value></property>
+		<property name="noPrincipalCookie"><value>null</value></property>
+		<property name="noPrincipal"><value>null</value></property>
+		<property name="noCredentialsCookie"><value>empty</value></property>
+		<property name="noCredentials"><value>empty</value></property>
     </bean>
 
     <!-- ============================== Form-based authentication ============================ -->
