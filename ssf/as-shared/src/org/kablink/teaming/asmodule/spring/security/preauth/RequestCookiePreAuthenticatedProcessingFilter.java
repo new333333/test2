@@ -41,14 +41,53 @@ import org.springframework.security.ui.preauth.PreAuthenticatedCredentialsNotFou
 import org.springframework.util.Assert;
 
 public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
-	private String principalRequestCookie; 		// required
-	private String credentialsRequestCookie; 	// optional
+	protected static final String THROW = "throw";
+	protected static final String NULL 	= "null";
+	protected static final String EMPTY = "empty";
+	
+	protected String principalRequestCookie; 	// required
+	protected String credentialsRequestCookie; 	// optional
+	
+	protected String noPrincipalCookie = THROW;
+	protected String noPrincipal = THROW;
+	protected String noCredentialsCookie = THROW;
+	protected String noCredentials = THROW;
 
     public void afterPropertiesSet() throws Exception {
     	super.afterPropertiesSet();
         Assert.notNull(principalRequestCookie, "An principalRequestCookie must be set");
     }
 
+	public void setPrincipalRequestCookie(String principalRequestCookie) {
+		Assert.hasText(principalRequestCookie, "principalRequestCookie must not be empty or null");
+		this.principalRequestCookie = principalRequestCookie;
+	}
+
+	public void setCredentialsRequestCookie(String credentialsRequestCookie) {
+		Assert.hasText(credentialsRequestCookie, "credentialsRequestCookie must not be empty or null");		
+		this.credentialsRequestCookie = credentialsRequestCookie;
+	}
+
+	public void setNoPrincipalCookie(String noPrincipalCookie) {
+		this.noPrincipalCookie = noPrincipalCookie;
+	}
+
+	public void setNoPrincipal(String noPrincipal) {
+		this.noPrincipal = noPrincipal;
+	}
+
+	public void setNoCredentialsCookie(String noCredentialsCookie) {
+		this.noCredentialsCookie = noCredentialsCookie;
+	}
+
+	public void setNoCredentials(String noCredentials) {
+		this.noCredentials = noCredentials;
+	}
+
+	public int getOrder() {
+		return FilterChainOrder.PRE_AUTH_FILTER;
+	}
+	
 	/**
 	 * Read and returns the header named by <tt>principalRequestCookie</tt> from the request.
 	 * 
@@ -106,20 +145,6 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 		}
 	}
 	
-	public void setPrincipalRequestCookie(String principalRequestCookie) {
-		Assert.hasText(principalRequestCookie, "principalRequestCookie must not be empty or null");
-		this.principalRequestCookie = principalRequestCookie;
-	}
-
-	public void setCredentialsRequestCookie(String credentialsRequestCookie) {
-		Assert.hasText(credentialsRequestCookie, "credentialsRequestCookie must not be empty or null");		
-		this.credentialsRequestCookie = credentialsRequestCookie;
-	}
-
-	public int getOrder() {
-		return FilterChainOrder.PRE_AUTH_FILTER;
-	}
-	
 	protected Cookie getCookie(HttpServletRequest request, String cookieName) {
 		Cookie[] cookies = request.getCookies();
 		if(cookies != null) {
@@ -132,21 +157,23 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	}
 	
 	protected Object handleNoPrincipalCookie(HttpServletRequest request) {
-		/*
-		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.noprincipalcookie.throw", true))
+		if(noPrincipalCookie.equals(NULL))
+			return null;
+		else if(noPrincipalCookie.equals(EMPTY))
+			return "";
+		else
 			throw new PreAuthenticatedCredentialsNotFoundException(principalRequestCookie 
 					+ " cookie not found in request.");
-		else */
-			return null;
 	}
 	
 	protected Object handleNoPrincipal(HttpServletRequest request) {
-		/*
-		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.noprincipal.throw", true))
+		if(noPrincipal.equals(NULL))
+			return null;
+		else if(noPrincipal.equals(EMPTY))
+			return "";
+		else
 			throw new PreAuthenticatedCredentialsNotFoundException("Failed to extract principal from "
 				+ principalRequestCookie + " cookie in request.");
-		else */
-			return null;
 	}
 	
 	protected String extractPrincipalFromCookie(HttpServletRequest request, Cookie principalCookie) {
@@ -162,21 +189,23 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	}
 	
 	protected Object handleNoCredentialsCookie(HttpServletRequest request) {
-		/*
-		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.nocredentialscookie.throw", true))
+		if(noCredentialsCookie.equals(NULL))
+			return null;
+		else if(noCredentialsCookie.equals(EMPTY))
+			return "";
+		else
 			throw new PreAuthenticatedCredentialsNotFoundException(credentialsRequestCookie 
 				+ " cookie not found in request.");
-		else */
-			return null;
 	}
 	
 	protected Object handleNoCredentials(HttpServletRequest request) {
-		/*
-		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.nocredentials.throw", true))
+		if(noCredentials.equals(NULL))
+			return null;
+		else if(noCredentials.equals(EMPTY))
+			return "";
+		else
 			throw new PreAuthenticatedCredentialsNotFoundException("Failed to extract credentials from "
 				+ credentialsRequestCookie + " cookie in request.");
-		else */
-			return null;
 	}
 }
 
