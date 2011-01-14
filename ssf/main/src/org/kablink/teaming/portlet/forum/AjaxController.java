@@ -42,9 +42,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,6 +78,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -543,9 +546,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 			// Get a user access report.
 			return ajaxGetUserAccessReport( request, response );
 		}
+		else if ( op.equals( WebKeys.OPERATION_GET_EMAIL_REPORT ) )
+		{
+			// Get email report.
+			return ajaxGetEmailReport( request, response );
+		}
 		else if ( op.equals( WebKeys.OPERATION_GET_XSS_REPORT ) )
 		{
-			// Get a user access report.
+			// Get the XSS report.
 			return ajaxGetXssReport( request, response );
 		}
 		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE)     ||
@@ -873,6 +881,40 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/user_access_report", model);
 	}// end ajaxGetUserAccessReport()
 
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxGetEmailReport( RenderRequest request, RenderResponse response ) throws Exception
+	{
+		Map model;
+		List<Map<String, Object>> report = null;
+		
+		model = new HashMap();
+		
+		Map formData = request.getParameterMap();
+		MapInputData inputData = new MapInputData(formData);
+		GregorianCalendar cal = new GregorianCalendar();
+		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
+		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
+		
+		if(endDate != null) {
+			cal.setTime(endDate);
+			cal.add(Calendar.DATE, 1);
+			endDate = cal.getTime();
+		}
+        report = getReportModule().generateEmailReport( startDate, endDate, "summary" );
+
+        // Add the access report to the response.
+        model.put( "emailReport", report );
+
+		response.setContentType( "text/json" );
+		return new ModelAndView("forum/json/email_report_json", model);
+	}// end ajaxGetXssReport()
+	
+	
 	/**
 	 * 
 	 * @param request
