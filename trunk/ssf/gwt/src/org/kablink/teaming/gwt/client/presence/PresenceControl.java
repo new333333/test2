@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.presence;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -58,6 +57,9 @@ public class PresenceControl extends Composite {
 	private FlowPanel panel;
 	
 	public PresenceControl(String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown) {
+		this(binderId, bShowStatusText, bClickStartsIm, bHideIfUnknown, null);
+	}
+	public PresenceControl(String binderId, boolean bShowStatusText, boolean bClickStartsIm, boolean bHideIfUnknown, GwtPresenceInfo presenceInfo) {
 		m_binderId = binderId;
 		m_bShowStatusText = bShowStatusText;
 		m_bClickStartsIm = bClickStartsIm;
@@ -65,7 +67,7 @@ public class PresenceControl extends Composite {
 
 		panel = new FlowPanel();
 
-		getPresenceInfo();
+		getPresenceInfo(presenceInfo);
 
 		initWidget(panel);
 	}
@@ -87,89 +89,98 @@ public class PresenceControl extends Composite {
 		}
 	}
 	
-	private void getPresenceInfo() {
+	private void getPresenceInfo(GwtPresenceInfo pi) {
 		m_presenceA = new Anchor();
 
-		AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
-			public void onFailure(Throwable t) {
-				// Just ignore any errors.  All we need to do is hide the presence control
-				// See bug 648358.
-				//GwtClientHelper.handleGwtRPCFailure(
-				//	t,
-				//	GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
-				//	m_binderId);
-				
-				panel.setVisible(false);
-			}
-
-			public void onSuccess(GwtPresenceInfo pi) {
-				String statusText = pi.getStatusText();
-				switch (pi.getStatus()) {
-					case GwtPresenceInfo.STATUS_AVAILABLE:
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16());
-						if (statusText == null) {
-							statusText = GwtTeaming.getMessages().presenceAvailable();
-						}
-						break;
-					case GwtPresenceInfo.STATUS_IDLE:
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
-						if (statusText == null) {
-							statusText = GwtTeaming.getMessages().presenceIdle();
-						}
-						break;
-					case GwtPresenceInfo.STATUS_AWAY:
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
-						if (statusText == null) {
-							statusText = GwtTeaming.getMessages().presenceAway();
-						}
-						break;
-					case GwtPresenceInfo.STATUS_BUSY:
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16());
-						if (statusText == null) {
-							statusText = GwtTeaming.getMessages().presenceBusy();
-						}
-						break;
-					case GwtPresenceInfo.STATUS_OFFLINE:
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16());
-						if (statusText == null) {
-							statusText = GwtTeaming.getMessages().presenceOffline();
-						}
-						break;
-					default:
-						statusText = "";
-						m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
-				}
-				if (pi.getStatus() != GwtPresenceInfo.STATUS_UNKNOWN || !m_bHideIfUnknown) {
-					if ( m_presenceAStyleName != null )
-						m_presenceA.addStyleName( m_presenceAStyleName );
-					else
-						m_presenceA.addStyleName("presenceImgA");
-					m_presenceImage.getElement().setAttribute( "align", m_presenceImgAlignment );
-					m_presenceA.getElement().appendChild(m_presenceImage.getElement());
-					m_presenceA.setVisible(true);
+		if (null == pi) {
+			AsyncCallback<GwtPresenceInfo> callback = new AsyncCallback<GwtPresenceInfo>() {
+				public void onFailure(Throwable t) {
+					// Just ignore any errors.  All we need to do is hide the presence control
+					// See bug 648358.
+					//GwtClientHelper.handleGwtRPCFailure(
+					//	t,
+					//	GwtTeaming.getMessages().rpcFailure_GetPresenceInfo(),
+					//	m_binderId);
 					
-					if ( m_presenceAClickHandler != null )
-						m_presenceA.addClickHandler( m_presenceAClickHandler );
-					
-					if (m_bClickStartsIm) {
-						m_presenceA.addClickHandler(new InstantMessageClickHandler(m_binderId));
-						m_presenceA.setTitle(GwtTeaming.getMessages().qViewInstantMessageTitle() + " (" + statusText + ")");
-					} else {
-						m_presenceA.setTitle(statusText);
-					}
-					panel.add(m_presenceA);
-					if (m_bShowStatusText && statusText != null && statusText.length() > 0) {
-						InlineLabel statusTextLabel = new InlineLabel("(" + statusText + ")");
-						panel.add(statusTextLabel);
-					}
-				} else {
 					panel.setVisible(false);
 				}
+	
+				public void onSuccess(GwtPresenceInfo piFromRPC) {
+					getPresenceInfoData(piFromRPC);
+				}
+			};
+	
+			GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
+			rpcService.getPresenceInfo(HttpRequestInfo.createHttpRequestInfo(), m_binderId, callback);
+		}
+		else {
+			getPresenceInfoData(pi);
+		}
+	}
+	
+	private void getPresenceInfoData(GwtPresenceInfo pi) {
+		String statusText = pi.getStatusText();
+		switch (pi.getStatus()) {
+			case GwtPresenceInfo.STATUS_AVAILABLE:
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAvailable16());
+				if (statusText == null) {
+					statusText = GwtTeaming.getMessages().presenceAvailable();
+				}
+				break;
+			case GwtPresenceInfo.STATUS_IDLE:
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
+				if (statusText == null) {
+					statusText = GwtTeaming.getMessages().presenceIdle();
+				}
+				break;
+			case GwtPresenceInfo.STATUS_AWAY:
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceAway16());
+				if (statusText == null) {
+					statusText = GwtTeaming.getMessages().presenceAway();
+				}
+				break;
+			case GwtPresenceInfo.STATUS_BUSY:
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceBusy16());
+				if (statusText == null) {
+					statusText = GwtTeaming.getMessages().presenceBusy();
+				}
+				break;
+			case GwtPresenceInfo.STATUS_OFFLINE:
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceOffline16());
+				if (statusText == null) {
+					statusText = GwtTeaming.getMessages().presenceOffline();
+				}
+				break;
+			default:
+				statusText = "";
+				m_presenceImage = new Image(GwtTeaming.getImageBundle().presenceUnknown16());
+		}
+		if (pi.getStatus() != GwtPresenceInfo.STATUS_UNKNOWN || !m_bHideIfUnknown) {
+			if ( m_presenceAStyleName != null )
+				m_presenceA.addStyleName( m_presenceAStyleName );
+			else
+				m_presenceA.addStyleName("presenceImgA");
+			m_presenceImage.getElement().setAttribute( "align", m_presenceImgAlignment );
+			m_presenceA.getElement().appendChild(m_presenceImage.getElement());
+			m_presenceA.setVisible(true);
+			
+			if ( m_presenceAClickHandler != null )
+				m_presenceA.addClickHandler( m_presenceAClickHandler );
+			
+			if (m_bClickStartsIm) {
+				m_presenceA.addClickHandler(new InstantMessageClickHandler(m_binderId));
+				m_presenceA.setTitle(GwtTeaming.getMessages().qViewInstantMessageTitle() + " (" + statusText + ")");
+			} else {
+				m_presenceA.setTitle(statusText);
 			}
-		};
-
-		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();		
-		rpcService.getPresenceInfo(HttpRequestInfo.createHttpRequestInfo(), m_binderId, callback);
+			panel.add(m_presenceA);
+			if (m_bShowStatusText && statusText != null && statusText.length() > 0) {
+				InlineLabel statusTextLabel = new InlineLabel("(" + statusText + ")");
+				panel.add(statusTextLabel);
+			}
+		} else {
+			panel.setVisible(false);
+		}
 	}
 	
 	
