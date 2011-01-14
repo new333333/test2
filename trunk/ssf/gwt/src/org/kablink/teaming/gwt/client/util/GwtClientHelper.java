@@ -465,6 +465,15 @@ public class GwtClientHelper {
 	public static native void jsSetMainTitle(String title) /*-{
 		$wnd.top.document.title = title;
 	}-*/;
+
+	/**
+	 * Runs an entry view URL in the content frame.
+	 * 
+	 * @param url
+	 */
+	public static native void jsShowForumEntry(String entryUrl) /*-{
+		window.top.gwtContentIframe.ss_showForumEntry(entryUrl);
+	}-*/;
 	
 	/**
 	 * Compares two strings by collation.

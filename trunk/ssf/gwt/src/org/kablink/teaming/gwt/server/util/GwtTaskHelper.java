@@ -50,6 +50,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
@@ -810,15 +811,26 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
-		boolean            canModifyTaskLinkage = canModifyTaskLinkage(    bs, binder                                   );
-		TaskLinkage        taskLinkage          = getTaskLinkage(          bs, binder                                   );
-		List<TaskListItem> tasks                = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
-		
+		// Read the task linkage and tasks...
+		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                   );
+		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
+
+		// ...and use that to create a TaskBundle. 
 		TaskBundle reply = new TaskBundle();
-		reply.setCanModifyTaskLinkage(canModifyTaskLinkage);
-		reply.setTaskLinkage(         taskLinkage         );
-		reply.setTasks(               tasks               );
+		reply.setTaskLinkage(taskLinkage);
+		reply.setTasks(      tasks      );
 		
+		// Set the Binder based rights...
+		reply.setCanModifyTaskLinkage(canModifyTaskLinkage( bs, binder ));
+
+		// ...and the Folder base rights on the TaskBundle.
+		FolderModule fm = bs.getFolderModule();
+		reply.setCanModifyEntry(fm.testAccess(((Folder) binder), FolderOperation.modifyEntry   ));
+		reply.setCanPurgeEntry( fm.testAccess(((Folder) binder), FolderOperation.deleteEntry   ));
+		reply.setCanTrashEntry( fm.testAccess(((Folder) binder), FolderOperation.preDeleteEntry));
+
+		// If we get here, reply refers to the request TaskBundle.
+		// Return it.
 		return reply;
 	}
 	

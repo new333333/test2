@@ -521,6 +521,7 @@ public class GwtMainPage extends Composite
 		// Create a TaskListing object...
 		TaskListing tl = new TaskListing(
 			taskListingDIV,
+			this,
 			Long.parseLong( binderId ),
 			filterType,
 			mode,
@@ -1128,6 +1129,17 @@ public class GwtMainPage extends Composite
 			else
 			{
 				Window.alert( "In handleAction( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
+			}
+			break;
+			
+		case SHOW_FORUM_ENTRY:
+			if ( obj instanceof String )
+			{
+				GwtClientHelper.jsShowForumEntry( (String) obj );
+			}
+			else
+			{
+				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
 			

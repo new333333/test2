@@ -43,7 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class TaskBundle implements IsSerializable {
-	private boolean				m_canModifyTaskLinkage;
+	private boolean				m_canModifyTaskLinkage;	// Based on BinderOperation.setProperty.
+	private boolean				m_canModifyEntry;		// Based on FolderOperation.modifyEntry.
+	private boolean				m_canPurgeEntry;		// Based on FolderOperation.deleteEntry.
+	private boolean				m_canTrashEntry;		// Based on FolderOperation.preDeleteEntry.
 	private List<TaskListItem>	m_tasks;
 	private TaskLinkage			m_taskLinkage;
 	
@@ -62,6 +65,9 @@ public class TaskBundle implements IsSerializable {
 	 * @return
 	 */
 	public boolean            getCanModifyTaskLinkage() {return m_canModifyTaskLinkage;}
+	public boolean            getCanModifyEntry()       {return m_canModifyEntry;      }
+	public boolean            getCanPurgeEntry()        {return m_canPurgeEntry;       }
+	public boolean            getCanTrashEntry()        {return m_canTrashEntry;       }
 	public List<TaskListItem> getTasks()                {return m_tasks;               }
 	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
 	
@@ -71,6 +77,9 @@ public class TaskBundle implements IsSerializable {
 	 * @param
 	 */
 	public void setCanModifyTaskLinkage(boolean            canModifyTaskLinkage) {m_canModifyTaskLinkage = canModifyTaskLinkage;}
+	public void setCanModifyEntry(      boolean            canModifyEntry)       {m_canModifyEntry       = canModifyEntry;      }
+	public void setCanPurgeEntry(       boolean            canPurgeEntry)        {m_canPurgeEntry        = canPurgeEntry;       }
+	public void setCanTrashEntry(       boolean            canTrashEntry)        {m_canTrashEntry        = canTrashEntry;       }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 }
