@@ -8,16 +8,17 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
     http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
 	    
-    <!-- ============================== Pre-authentication using IIS ============================ -->
+    <!-- ============================== Pre-authentication using cookie ============================ -->
 
     <bean id="iisFilter" class="org.kablink.teaming.asmodule.spring.security.preauth.RequestCookiePreAuthenticatedProcessingFilter">
 		<security:custom-filter position="PRE_AUTH_FILTER"/>
 		<property name="authenticationManager" ref="_authenticationManager"/>
 		<property name="continueFilterChainOnUnsuccessfulAuthentication"><value>false</value></property>
-		<property name="noPrincipalCookie"<value>throw</value></property>
-		<property name="noPrincipal"<value>throw</value></property>
-		<property name="noCredentialsCookie"<value>throw</value></property>
-		<property name="noCredentials"<value>throw</value></property>
+		<property name="principalRequestCookie"><value>dummy</value></property>
+		<property name="noPrincipalCookie"><value>throw</value></property>
+		<property name="noPrincipal"><value>throw</value></property>
+		<property name="noCredentialsCookie"><value>throw</value></property>
+		<property name="noCredentials"><value>throw</value></property>
     </bean>
 
     <!-- ============================== Form-based authentication ============================ -->
