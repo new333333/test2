@@ -35,7 +35,6 @@ package org.kablink.teaming.asmodule.spring.security.preauth;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.security.ui.FilterChainOrder;
 import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.ui.preauth.PreAuthenticatedCredentialsNotFoundException;
@@ -133,18 +132,20 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	}
 	
 	protected Object handleNoPrincipalCookie(HttpServletRequest request) {
+		/*
 		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.noprincipalcookie.throw", true))
 			throw new PreAuthenticatedCredentialsNotFoundException(principalRequestCookie 
 					+ " cookie not found in request.");
-		else
+		else */
 			return null;
 	}
 	
 	protected Object handleNoPrincipal(HttpServletRequest request) {
+		/*
 		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.noprincipal.throw", true))
 			throw new PreAuthenticatedCredentialsNotFoundException("Failed to extract principal from "
 				+ principalRequestCookie + " cookie in request.");
-		else
+		else */
 			return null;
 	}
 	
@@ -161,18 +162,20 @@ public class RequestCookiePreAuthenticatedProcessingFilter extends AbstractPreAu
 	}
 	
 	protected Object handleNoCredentialsCookie(HttpServletRequest request) {
+		/*
 		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.nocredentialscookie.throw", true))
 			throw new PreAuthenticatedCredentialsNotFoundException(credentialsRequestCookie 
 				+ " cookie not found in request.");
-		else
+		else */
 			return null;
 	}
 	
 	protected Object handleNoCredentials(HttpServletRequest request) {
+		/*
 		if(SPropsUtil.getBoolean("requestcookiepreauthenticatedprocessingfilter.nocredentials.throw", true))
 			throw new PreAuthenticatedCredentialsNotFoundException("Failed to extract credentials from "
 				+ credentialsRequestCookie + " cookie in request.");
-		else
+		else */
 			return null;
 	}
 }
