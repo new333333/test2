@@ -63,6 +63,7 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -106,6 +107,7 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -126,6 +128,8 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.presence.PresenceInfo;
+import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -135,6 +139,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -2398,6 +2403,107 @@ public class GwtServerHelper {
 	}
 
 	/**
+	 * Returns a GwtPresenceInfo object for a User.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static GwtPresenceInfo getPresenceInfo(User user)
+	{
+		GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
+		
+		try {
+			// Guest user can't get presence information.
+			User userAsking = GwtServerHelper.getCurrentUser();
+			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
+				PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
+				if (null != presenceService) {
+					PresenceInfo pi = null;
+					int userStatus = PresenceInfo.STATUS_UNKNOWN;
+
+					CustomAttribute attr = user.getCustomAttribute("presenceID");
+					String userID = ((null != attr) ? ((String) attr.getValue()) : null);
+					  
+					attr = userAsking.getCustomAttribute("presenceID");
+					String userIDAsking = ((null != attr) ? ((String) attr.getValue()) : null);
+
+					if (MiscUtil.hasString(userID) && MiscUtil.hasString(userIDAsking)) {
+						pi = presenceService.getPresenceInfo(userIDAsking, userID);
+						if (null != pi) {
+							gwtPresence.setStatusText(pi.getStatusText());
+							userStatus = pi.getStatus();
+						}	
+					}
+					
+					switch (userStatus) {
+					case PresenceInfo.STATUS_AVAILABLE:  gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE); break;
+					case PresenceInfo.STATUS_AWAY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);      break;
+					case PresenceInfo.STATUS_IDLE:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);      break;
+					case PresenceInfo.STATUS_BUSY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);      break;
+					case PresenceInfo.STATUS_OFFLINE:    gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);   break;
+					default:                             gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);   break;
+					}
+				}
+			}
+		}
+		catch (Exception e) {}
+		return gwtPresence;
+	}
+
+	/**
+	 * Returns a default GwtPresence info object that contains a
+	 * localized status text string.
+	 * 
+	 * @return
+	 */
+	public static GwtPresenceInfo getPresenceInfoDefault() {
+		GwtPresenceInfo reply = new GwtPresenceInfo();		
+		setPresenceText(reply);
+		return reply;
+	}
+
+	/**
+	 * Returns the image for the presence dude to display for a
+	 * GwtPresenceInfo.
+	 * 
+	 * @param pi
+	 * 
+	 * @return
+	 */
+	public static String getPresenceDude(GwtPresenceInfo pi) {
+		String dudeGif;
+		switch (pi.getStatus()) {
+		case PresenceInfo.STATUS_AVAILABLE:  dudeGif = "pics/sym_s_green_dude.gif";  break;
+		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/sym_s_yellow_dude.gif"; break;
+		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/sym_s_yellow_dude.gif"; break;
+		case PresenceInfo.STATUS_BUSY:       dudeGif = "pics/sym_s_red_dude.gif";    break;
+		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/sym_s_gray_dude.gif";   break;
+		default:                             dudeGif = "pics/sym_s_white_dude.gif";  break;
+		}
+		return dudeGif;
+	}
+
+	/**
+	 * Stores a localized status text in a GwtPresenceInfo base on its
+	 * status.
+	 * 
+	 * @param pi
+	 */
+	public static void setPresenceText(GwtPresenceInfo pi) {
+		String statusText;
+		switch (pi.getStatus()) {
+		case PresenceInfo.STATUS_AVAILABLE:  statusText = NLT.get("presence.online");  break;
+		case PresenceInfo.STATUS_AWAY:       statusText = NLT.get("presence.away");    break;
+		case PresenceInfo.STATUS_IDLE:       statusText = NLT.get("presence.idle");    break;
+		case PresenceInfo.STATUS_BUSY:       statusText = NLT.get("presence.busy");    break;
+		case PresenceInfo.STATUS_OFFLINE:    statusText = NLT.get("presence.offline"); break;
+		default:                             statusText = NLT.get("presence.none");    break;
+		}
+		pi.setStatusText(statusText);
+	}
+
+	/**
 	 * Returns information about the recent places the current user has
 	 * visited.
 	 * 
@@ -2987,6 +3093,19 @@ public class GwtServerHelper {
 		return false;
 	}
 	
+	/**
+	 * Return true if the presence service is enabled and false
+	 * otherwise.
+	 * 
+	 * @param
+ 	 */
+	public static boolean isPresenceEnabled()
+	{
+		PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
+		boolean reply = ((null != presenceService) ? presenceService.isEnabled() : false);
+		return reply;
+	}
+
 	/*
 	 * Returns true if two List<Long>'s contain different values and
 	 * false otherwise.

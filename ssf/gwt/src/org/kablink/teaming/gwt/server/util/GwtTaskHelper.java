@@ -55,7 +55,9 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
@@ -164,7 +166,7 @@ public class GwtTaskHelper {
 	/*
 	 * Generates a String to write to the log for a List<AssignmentInfo>.
 	 */
-	private static String buildDumpString(String label, List<AssignmentInfo> v, boolean showMembers) {
+	private static String buildDumpString(String label, List<AssignmentInfo> v, boolean teamOrGroup) {
 		if (null == v) {
 			v = new ArrayList<AssignmentInfo>();
 		}
@@ -182,10 +184,10 @@ public class GwtTaskHelper {
 				}
 				buf.append(String.valueOf(ai.getId()));
 				buf.append("(" + ai.getTitle());
-				if (showMembers) {
-					buf.append(":" + String.valueOf(ai.getMembers()));
-				}
-				buf.append(")");
+				if (teamOrGroup)
+				     buf.append(":" + String.valueOf(ai.getMembers()));
+				else buf.append(":" + ai.getPresence().getStatusText());
+				buf.append(":" + ai.getPresenceDude() + ")");
 			}
 		}
 		return buf.toString();
@@ -301,8 +303,10 @@ public class GwtTaskHelper {
 
 		// Construct Maps, mapping the principal IDs to their titles
 		// and membership counts.
-		Map<Long, String>  principalTitles = new HashMap<Long, String>();
-		Map<Long, Integer> groupCounts     = new HashMap<Long, Integer>();
+		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
+		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, GwtPresenceInfo> userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
 		if (hasPrincipals) {
 			List principals = null;
 			try {principals = ResolveIds.getPrincipals(principalIds);}
@@ -314,6 +318,9 @@ public class GwtTaskHelper {
 					principalTitles.put(pId, p.getTitle());					
 					if (p instanceof GroupPrincipal) {
 						groupCounts.put(pId, getGroupCount((GroupPrincipal) p));						
+					}
+					else if (isPresenceEnabled && (p instanceof UserPrincipal)) {
+						userPresence.put(pId, GwtServerHelper.getPresenceInfo((User) p));
 					}
 				}
 			}
@@ -341,7 +348,8 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees again...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...setting each one's title.
-				setAITitle(ai, principalTitles);
+				setAITitle(   ai, principalTitles);
+				setAIPresence(ai, userPresence   );
 			}
 			
 			// Scan this TaskInfo's group assignees again...
@@ -349,6 +357,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				setAITitle(  ai, principalTitles);
 				setAIMembers(ai, groupCounts    );
+				ai.setPresenceDude("pics/group_icon_small.gif");
 			}
 			
 			// Scan this TaskInfo's team assignees again...
@@ -356,6 +365,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				setAITitle(  ai, teamTitles);
 				setAIMembers(ai, teamCounts);
+				ai.setPresenceDude("trees/people.gif");
 			}
 		}
 	}
@@ -974,6 +984,17 @@ public class GwtTaskHelper {
 		if (MiscUtil.hasString(title)) {
 			ai.setTitle(title);
 		}
+	}
+
+	/*
+	 * Stores a GwtPresenceInfo of an AssignmentInfo based on Map
+	 * lookup using its ID.
+	 */
+	private static void setAIPresence(AssignmentInfo ai, Map<Long, GwtPresenceInfo> presenceMap) {
+		GwtPresenceInfo pi = presenceMap.get(ai.getId());
+		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
+		ai.setPresence(pi);
+		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
 	}
 
 	/**
