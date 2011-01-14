@@ -263,6 +263,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceUrl();
+	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();

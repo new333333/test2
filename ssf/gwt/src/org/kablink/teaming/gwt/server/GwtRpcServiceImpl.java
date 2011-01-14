@@ -838,6 +838,31 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}
 	
+	/**
+	 * Return a base view folder entry URL that can be used directly in the
+	 * content panel.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param entryId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		try {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
+			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY );
+			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, String.valueOf( binderId ) );
+			adapterUrl.setParameter( WebKeys.URL_ENTRY_ID,  String.valueOf( entryId  ) );			
+			return adapterUrl.toString();
+		}
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}		
+	}
 	
 	/**
 	 * Return a list of tags associated with the given entry.

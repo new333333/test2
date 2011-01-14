@@ -109,6 +109,10 @@ public interface GwtRpcService extends RemoteService
 	// Return a permalink that can be used to view the given entry.
 	public String getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID );
 	
+	// Return a base view folder entry URL that can be used directly in
+	// the content panel.
+	public String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException;
+	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public ArrayList<String> getFileAttachments( HttpRequestInfo ri, String binderId ) throws GwtTeamingException;
 	
