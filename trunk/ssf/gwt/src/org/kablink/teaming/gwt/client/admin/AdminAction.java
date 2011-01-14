@@ -70,6 +70,7 @@ public enum AdminAction implements IsSerializable
 	REPORT_DATA_QUOTA_EXCEEDED( "Report: data quota exceeded" ),
 	REPORT_DATA_QUOTA_HIGHWATER_EXCEEDED( "Report: data quota highwater exceeded" ),
 	REPORT_DISK_USAGE( "Report: disk usage" ),
+	REPORT_EMAIL( "Report: email" ),
 	REPORT_LICENSE( "Report: license" ),
 	REPORT_LOGIN( "Report: login" ),
 	REPORT_USER_ACCESS( "Report: user access" ),

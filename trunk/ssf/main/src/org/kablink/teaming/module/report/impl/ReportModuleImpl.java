@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -667,7 +668,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
 			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().testAccess(AdminOperation.report);
+        getAdminModule().checkAccess(AdminOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -705,7 +706,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateAccessReportByUser(final Long userId,
 			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().testAccess(AdminOperation.report);
+        getAdminModule().checkAccess(AdminOperation.report);
 
         int returnCount = 1000000;
         
@@ -755,10 +756,49 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<Map<String,Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType) {
+        final User user = RequestContextHolder.getRequestContext().getUser();
+        getAdminModule().checkAccess(AdminOperation.report);
+
+		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				List emailLog = null;
+				try {
+					ProjectionList proj = Projections.projectionList()
+								.add(Projections.property("sendDate"))
+								.add(Projections.property("from"))
+								.add(Projections.property("subj"))
+								.add(Projections.property("comment"))
+								.add(Projections.property("type"))
+								.add(Projections.property("status"))
+								.add(Projections.property("toEmailAddresses"))
+								.add(Projections.property("fileAttachments"));
+					Criteria crit = session.createCriteria(EmailLog.class)
+						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+					    .add(Restrictions.in("type", new Object[] {EmailLogType.binderNotification.name(), 
+																	EmailLogType.sendMail.name(), 
+																	EmailLogType.retry.name(), 
+																	EmailLogType.workflowNotification.name(), 
+																	EmailLogType.unknown.name()}))
+						.add(Restrictions.ge("sendDate", startDate))
+						.add(Restrictions.lt("sendDate", endDate));
+					crit.addOrder(Order.desc("sendDate"));
+					emailLog = crit.list();
+				} catch(Exception e) {
+				}
+				return emailLog;
+
+			}});
+		
+		return generateEmailReportList(result, reportType);
+	}
+
 	public List<Map<String,Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, 
 			final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().testAccess(AdminOperation.report);
+        getAdminModule().checkAccess(AdminOperation.report);
 
         int returnCount = 10000;
         int page = 0;
@@ -1123,6 +1163,32 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				sortedresult.put(cols[index], cols);	
 		}
 		return sortedresult.values();
+	}
+	
+	private LinkedList<Map<String,Object>> generateEmailReportList(List emailLogs, String reportType) {
+		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		if (emailLogs == null || emailLogs.isEmpty()) return report;
+		
+		for(Object o : emailLogs) {
+			Object[] cols = (Object[]) o;
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.USER_ID, cols[ReportModule.USER_ID_INDEX]);
+			
+			Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
+			
+			row.put(ReportModule.ACTIVITY_DATE, sdFormat.format(temp.getTime()));
+			row.put(ReportModule.ACTIVITY_TYPE, cols[ReportModule.ACTIVITY_TYPE_INDEX]);
+			row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
+			row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
+			row.put(ReportModule.ENTITY, cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]);
+			
+			// Add the count of how many times this activity happened.
+			row.put( ReportModule.COUNT, cols[ReportModule.ACTIVITY_COUNT_INDEX] );
+		}
+		return report;
 	}
 	
 	private LinkedList<Map<String,Object>> generateShortLoginReportList(List logins) {

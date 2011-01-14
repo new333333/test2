@@ -1194,6 +1194,21 @@ public class GwtServerHelper {
 		if ( adminModule.testAccess( AdminOperation.report ) )
 		{
 			// Yes
+			// Create an "email report"
+			{
+				title = NLT.get( "administration.report.title.email" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EMAIL_REPORT );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.REPORT_EMAIL );
+				
+				// Add this action to the "reports" category
+				reportsCategory.addAdminOption( adminAction );
+			}
+			
 			// Create a "login report"
 			{
 				title = NLT.get( "administration.report.title.login" );

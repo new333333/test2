@@ -342,6 +342,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_AJAX_FIND = "__ajax_find";
+	public static final String ACTION_EMAIL_REPORT="email_report";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
@@ -552,6 +553,7 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
+	public static final String OPERATION_GET_EMAIL_REPORT = "getEmailReport";
 	public static final String OPERATION_GET_LDAP_SYNC_RESULTS = "getLdapSyncResults";
 	public static final String OPERATION_GET_USER_ACCESS_REPORT = "getUserAccessReport";
 	public static final String OPERATION_GET_XSS_REPORT = "getXssReport";
@@ -1454,6 +1456,7 @@ public class WebKeys {
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_CONFIRM_DELETE_MIRRRED_BINDER="binder/confirm_delete_mirrored_binder";
     public static final String VIEW_FORUM_EDIT="forum/edit";
+    public static final String VIEW_EMAIL_REPORT="administration/email_report";
     public static final String VIEW_ENTERPRISE_ONLY="enterpriseOnly";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_ENTRY_ACL_REPORT="binder/view_entry_acl_report";
