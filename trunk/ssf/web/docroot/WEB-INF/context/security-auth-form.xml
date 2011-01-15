@@ -51,6 +51,7 @@
         <security:intercept-url pattern="/images/**" filters="none" />
         <security:intercept-url pattern="/js/**" filters="none" />
         <security:intercept-url pattern="/redirect/**" filters="none" />
+        <security:intercept-url pattern="/bitbucket/**" filters="none" />
         <security:intercept-url pattern="/html/**" filters="none" />
         
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_REMEMBERED,ROLE_ANONYMOUS" />
