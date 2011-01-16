@@ -30,58 +30,28 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.web.context.support;
+package org.kablink.teaming.web.servlet.listener;
 
-import java.io.IOException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.BootstrapProperties;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.util.StringUtils;
 
-public class XmlWebApplicationContext extends org.springframework.web.context.support.XmlWebApplicationContext {
-
-	private static final Log logger = LogFactory.getLog(XmlWebApplicationContext.class);
+public class ContextListenerPreSpring implements ServletContextListener {
 	
-	private boolean[] optional;
-	
-	public void setConfigLocations(String[] locations) {
-		String bsp = BootstrapProperties.getProperty("spring.context.config.location");
-		if(bsp != null)
-			locations = StringUtils.tokenizeToStringArray(bsp, CONFIG_LOCATION_DELIMITERS);
-		
-		optional = new boolean[locations.length];
-		String[] locs = new String[locations.length];
-		for(int i = 0; i < locations.length; i++) {
-			if(locations[i].startsWith("optional:")) {
-				locs[i] = locations[i].substring(9);
-				optional[i] = true;
-			}
-			else {
-				locs[i] = locations[i];
-				optional[i] = false;
-			}
-		}
-		super.setConfigLocations(locs);
+	/* (non-Javadoc)
+	 * @see javax.servlet.ServletContextListener#contextInitialized(javax.servlet.ServletContextEvent)
+	 */
+	@Override
+	public void contextInitialized(ServletContextEvent sce) {
+		BootstrapProperties.init();
 	}
 
-	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
-		String[] configLocations = getConfigLocations();
-		if (configLocations != null) {
-			for (int i = 0; i < configLocations.length; i++) {
-				try {
-					reader.loadBeanDefinitions(configLocations[i]);
-				}
-				catch(BeansException e) {
-					if(optional[i])
-						logger.debug("Cannot load optional config file " + configLocations[i]);
-					else
-						throw e;
-				}
-			}
-		}
+	/* (non-Javadoc)
+	 * @see javax.servlet.ServletContextListener#contextDestroyed(javax.servlet.ServletContextEvent)
+	 */
+	@Override
+	public void contextDestroyed(ServletContextEvent sce) {
 	}
 
 }
