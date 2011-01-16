@@ -42,7 +42,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
-public class ContextListener implements ServletContextListener {
+public class ContextListenerPostSpring implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
 		// Do not destroy all tokens when a node starts up because -

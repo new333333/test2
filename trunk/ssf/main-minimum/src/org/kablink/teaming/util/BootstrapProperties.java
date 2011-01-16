@@ -30,58 +30,39 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.web.context.support;
+package org.kablink.teaming.util;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.util.BootstrapProperties;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.util.StringUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-public class XmlWebApplicationContext extends org.springframework.web.context.support.XmlWebApplicationContext {
-
-	private static final Log logger = LogFactory.getLog(XmlWebApplicationContext.class);
+public class BootstrapProperties {
+	private static Log logger = LogFactory.getLog(BootstrapProperties.class);
+	private static final String BOOTSTRAP_PROPERTIES_EXT_FILE = "/config/bootstrap-ext.properties";
+	private static Properties properties;
 	
-	private boolean[] optional;
-	
-	public void setConfigLocations(String[] locations) {
-		String bsp = BootstrapProperties.getProperty("spring.context.config.location");
-		if(bsp != null)
-			locations = StringUtils.tokenizeToStringArray(bsp, CONFIG_LOCATION_DELIMITERS);
-		
-		optional = new boolean[locations.length];
-		String[] locs = new String[locations.length];
-		for(int i = 0; i < locations.length; i++) {
-			if(locations[i].startsWith("optional:")) {
-				locs[i] = locations[i].substring(9);
-				optional[i] = true;
-			}
-			else {
-				locs[i] = locations[i];
-				optional[i] = false;
-			}
+	public static void init() {
+		try {
+			ClassPathResource resource = new ClassPathResource(BOOTSTRAP_PROPERTIES_EXT_FILE);
+			if(resource.exists())
+				properties = PropertiesLoaderUtils.loadProperties(resource);
+			else
+				properties = new Properties(); // empty
 		}
-		super.setConfigLocations(locs);
-	}
-
-	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
-		String[] configLocations = getConfigLocations();
-		if (configLocations != null) {
-			for (int i = 0; i < configLocations.length; i++) {
-				try {
-					reader.loadBeanDefinitions(configLocations[i]);
-				}
-				catch(BeansException e) {
-					if(optional[i])
-						logger.debug("Cannot load optional config file " + configLocations[i]);
-					else
-						throw e;
-				}
-			}
+		catch (IOException ex) {
+			throw new IllegalStateException("Could not load '" + BOOTSTRAP_PROPERTIES_EXT_FILE + "': " + ex.getMessage());
 		}
 	}
 
+	public static String getProperty(String key) {
+		return properties.getProperty(key);
+	}
+
+	public static String getProperty(String key, String defaultValue) {
+		return properties.getProperty(key, defaultValue);
+	}
 }

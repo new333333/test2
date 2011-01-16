@@ -176,12 +176,18 @@
 		<listener-class>org.kablink.teaming.spring.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
+	<!-- This servlet context listener must be loaded BEFORE Spring's context loader listener -->
+	<listener>
+		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListenerPreSpring</listener-class>
+	</listener>
+
 	<listener>
 		<listener-class>org.kablink.teaming.spring.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	<!-- This servlet context listener must be loaded AFTER Spring's context loader listener -->
 	<listener>
-		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListener</listener-class>
+		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring</listener-class>
 	</listener>
 
     <listener>
