@@ -770,14 +770,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 								.add(Projections.property("from"))
 								.add(Projections.property("subj"))
 								.add(Projections.property("comment"))
-								.add(Projections.property("type"))
-								.add(Projections.property("status"))
-								.add(Projections.property("toEmailAddresses"))
-								.add(Projections.property("fileAttachments"));
+								.add(Projections.property("typeStr"))
+								.add(Projections.property("statusStr"))
+								.add(Projections.property("toEmailAddressesStr"))
+								.add(Projections.property("fileAttachmentsStr"));
 					Criteria crit = session.createCriteria(EmailLog.class)
 						.setProjection(proj)
 						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-					    .add(Restrictions.in("type", new Object[] {EmailLogType.binderNotification.name(), 
+					    .add(Restrictions.in("typeStr", new Object[] {EmailLogType.binderNotification.name(), 
 																	EmailLogType.sendMail.name(), 
 																	EmailLogType.retry.name(), 
 																	EmailLogType.workflowNotification.name(), 
