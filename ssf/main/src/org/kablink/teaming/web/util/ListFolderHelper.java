@@ -787,6 +787,7 @@ public class ListFolderHelper {
 				} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && (!accessible_simple_ui ||
 						!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle))) {
 					folderEntries = TaskHelper.findTaskEntries(bs, req, response, (Binder) folder, model, options);
+					model.put(WebKeys.TASK_CAN_MODIFY_LINKAGE, new Boolean(TaskHelper.canModifyTaskLinkage(req, bs, ((Binder) folder))));
 				} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && accessible_simple_ui &&
 						ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 					folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);

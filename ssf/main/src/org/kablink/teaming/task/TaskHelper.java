@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -56,6 +57,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -468,6 +470,25 @@ public class TaskHelper {
 			newPriority,
 			newStatus,
 			newCompleted);
+	}
+	
+	/**
+	 * Returns true if the current user has rights to modify the
+	 * TaskLinkage on the given Binder and false otherwise.
+	 * 
+	 * @param bs
+	 * @param binder
+	 */
+	public static boolean canModifyTaskLinkage(HttpServletRequest hRequest, AllModulesInjected bs, Binder binder) {
+		return (GwtUIHelper.isGwtUIActive(hRequest) && canModifyTaskLinkageImpl(bs, binder));
+	}
+	
+	public static boolean canModifyTaskLinkage(PortletRequest pRequest, AllModulesInjected bs, Binder binder) {
+		return (GwtUIHelper.isGwtUIActive(pRequest) && canModifyTaskLinkageImpl(bs, binder));
+	}
+	
+	private static boolean canModifyTaskLinkageImpl(AllModulesInjected bs, Binder binder) {
+		return bs.getBinderModule().testAccess(binder, BinderOperation.setProperty);
 	}
 	
 	/**

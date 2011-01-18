@@ -37,18 +37,24 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.HasMouseOutHandlers;
+import com.google.gwt.event.dom.client.HasMouseOverHandlers;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
 /**
  * Provides a panel than can be instantiated by code in the outer frame
  * (i.e., GwtMainPage), placed in an inner frame (i.e., the content frame)
- * and have the click handlers work.
+ * and have the defined handlers work.
  * 
  * @author drfoster@novell.com
  */
-public class ClickablePanel extends AbsolutePanel implements HasClickHandlers {
-	public ClickablePanel(Element elem) {
+public class PassThroughEventsPanel extends AbsolutePanel implements HasClickHandlers, HasMouseOutHandlers, HasMouseOverHandlers {
+	public PassThroughEventsPanel(Element elem) {
 		super(elem.<com.google.gwt.user.client.Element> cast());
 		onAttach();
 	}
@@ -57,4 +63,14 @@ public class ClickablePanel extends AbsolutePanel implements HasClickHandlers {
 	public HandlerRegistration addClickHandler(ClickHandler handler) {
 		return addDomHandler(handler, ClickEvent.getType());
 	}
+
+	@Override
+	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
+		return addDomHandler(handler, MouseOverEvent.getType());
+	}
+
+	@Override
+	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
+		return addDomHandler(handler, MouseOutEvent.getType());
+	}	
 }

@@ -67,7 +67,6 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -245,14 +244,6 @@ public class GwtTaskHelper {
 			// Ignore.
 		}
 		return reply;
-	}
-	
-	/*
-	 * Returns true if the current user has rights to modify the
-	 * TaskLinkage on the given Binder and false otherwise.
-	 */
-	private static boolean canModifyTaskLinkage(AllModulesInjected bs, Binder binder) {
-		return bs.getBinderModule().testAccess(binder, BinderOperation.setProperty);
 	}
 	
 	/*
@@ -787,7 +778,7 @@ public class GwtTaskHelper {
 
 		// If we changed the task linkage in building the task list and
 		// the user has rights to modify it on this folder...
-		if (changedLinkage && canModifyTaskLinkage(bs, binder)) {
+		if (changedLinkage && TaskHelper.canModifyTaskLinkage(request, bs, binder)) {
 			// ...we need to save the task linkage changes.
 			saveTaskLinkage(bs, binder, taskLinkage);
 		}
@@ -821,7 +812,7 @@ public class GwtTaskHelper {
 		reply.setTasks(      tasks      );
 		
 		// Set the Binder based rights...
-		reply.setCanModifyTaskLinkage(canModifyTaskLinkage( bs, binder ));
+		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage( request, bs, binder ));
 
 		// ...and the Folder base rights on the TaskBundle.
 		FolderModule fm = bs.getFolderModule();

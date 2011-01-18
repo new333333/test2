@@ -770,11 +770,19 @@ public interface GwtTeamingMessages extends Messages
 	String unknownTagType();
 	
 	// The following are used for task folder listing.
+	String taskAltDelete();
+	String taskAltMoveDown();
+	String taskAltMoveLeft();
+	String taskAltMoveRight();
+	String taskAltMoveUp();
 	String taskColumn_dueDate();
 	String taskColumn_name();
 	String taskColumn_percentDone();
 	String taskColumn_priority();
 	String taskColumn_status();
+	String taskLabelDelete();
+	String taskLabelOrder();
+	String taskLabelSubtask();
 	String taskPriority_p1();
 	String taskPriority_p2();
 	String taskPriority_p3();
