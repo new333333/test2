@@ -134,6 +134,7 @@ public interface ReportModule {
 	
 	public static final String EMAIL_REPORT_TYPE_SEND = "send";
 	public static final String EMAIL_REPORT_TYPE_RECEIVE = "receive";
+	public static final String EMAIL_REPORT_TYPE_ERRORS = "errors";
 	
 	public static class ActivityInfo
 	{

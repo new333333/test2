@@ -77,6 +77,7 @@ var m_unknownEntryType;
 var m_noProblemsFound;
 var m_cantInvokeAccessControl;
 var m_modifyUrl;
+var m_noRecordsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.email.noRecordsFound" /></ssf:escapeJavaScript>';
 
 ss_createOnLoadObj( 'emailReport', onLoadEventHandler );
 
@@ -133,7 +134,6 @@ function addEmailReportDataToPage( entry )
 
 	// Add the to addresses to the table.
 	td = tr.insertCell( 2 );
-	td.style.whiteSpace = 'nowrap';
 	td.style.verticalAlign = 'top';
 	td.style.paddingRight = '15px';
 	td.setAttribute("width", "5%");
@@ -141,6 +141,13 @@ function addEmailReportDataToPage( entry )
 	div.className = '';
 	text = entry.toAddresses;
 	text = ss_replaceSubStrAll(text, ",", "<br/>")
+	//If text has is a "/" in it, then this is a path name
+	if (text.indexOf("/") < 0) {
+		td.style.whiteSpace = 'nowrap'; 
+	} else {
+		text = ss_replaceSubStrAll(text, " ", "&nbsp;")
+		text = ss_replaceSubStrAll(text, "/", " /")
+	}
 	div.innerHTML = text;
 	td.appendChild( div );
 
@@ -280,7 +287,7 @@ function handleResponseToGetEmailReport( responseData ) {
 		else
 		{
 			// Tell the administrator that there are no email problems.
-			alert( m_noProblemsFound );
+			alert( m_noRecordsFound );
 		}
 	}
 	else if ( responseData.status == -1 )
@@ -396,7 +403,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 		  </div>
 		  <br/>
 		  <ssf:nlt tag="administration.report.dates"/>
-		  <div class="ss_toolbar_color" style="display:inline;">
+		  <div style="display:inline;">
 		    <ssf:datepicker formName="reportForm" showSelectors="true" 
 			 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
 			 immediateMode="false" 
@@ -404,8 +411,8 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 			 />
 		  </div>
 		  <div id="ss_startPopup" class="ss_calPopupDiv"></div>
-		  <ssf:nlt tag="smallWords.and"/>
-		  <div class="ss_toolbar_color" style="display:inline;">
+		  <span style="padding:0px 10px;"><ssf:nlt tag="smallWords.and"/></span>
+		  <div style="display:inline;">
 		    <ssf:datepicker formName="reportForm" showSelectors="true" 
 			 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
 			 immediateMode="false" 
@@ -415,12 +422,16 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 		  <div id="ss_endPopup" class="ss_calPopupDiv"></div>
 		  
 		  <br/>				 
+		  <br/>				 
 		  <div id="ss_report_panel_forum">
 		   <input type="radio" class="ss_radio" name="reportType" value="send" id="sendReport" checked="checked" />
 		   <label class="ss_radio_label" for="sendReport"><ssf:nlt tag="administration.report.label.emailSend"/></label>
 		   <br/>
 		   <input type="radio" class="ss_radio" name="reportType" value="receive" id="receiveReport" />
 		   <label class="ss_radio_label" for="receiveReport"><ssf:nlt tag="administration.report.label.emailReceive"/></label>
+		   <br/>
+		   <input type="radio" class="ss_radio" name="reportType" value="errors" id="errorsReport" />
+		   <label class="ss_radio_label" for="errorsReport"><ssf:nlt tag="administration.report.label.emailErrors"/></label>
 		   <br/>
 		  </div>
 		   <br/>

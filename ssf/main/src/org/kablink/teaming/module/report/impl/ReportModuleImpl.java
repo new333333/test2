@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
+import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -786,6 +787,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 																	EmailLogType.unknown.name()}));
 					} else if (ReportModule.EMAIL_REPORT_TYPE_RECEIVE.equals(reportType)) {
 						crit.add(Restrictions.in("typeStr", new Object[] {EmailLogType.emailPosting.name()}));
+					} else if (ReportModule.EMAIL_REPORT_TYPE_ERRORS.equals(reportType)) {
+						crit.add(Restrictions.in("statusStr", new Object[] {EmailLogStatus.error.name()}));
 					}
 					crit.add(Restrictions.ge("sendDate", startDate))
 						.add(Restrictions.lt("sendDate", endDate));
