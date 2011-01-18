@@ -89,11 +89,13 @@ function addEmailReportDataToPage( entry )
 	var table;
 	var tr;
 	var td;
+	var div;
 	var span;
 	var a;
 	var typeName;
 	var anchor;
 	var br;
+	var text;
 
 	// Get the table that holds the list of entries the user has access to.
 	table = document.getElementById( 'emailReportTable' );
@@ -102,99 +104,109 @@ function addEmailReportDataToPage( entry )
 	tr = table.insertRow( table.rows.length );
 
 	// Remember the entry this row is dealing with.
+	//  This is used to be able to delete this row later
 	tr.n_entry = entry;
 
-	// Add the entry's path to the table.
+	// Add the entry's date to the table.
 	td = tr.insertCell( 0 );
 	td.style.whiteSpace = 'nowrap';
-	anchor = document.createElement( 'a' );
-	anchor.style.cursor = 'pointer';
-	anchor.onclick =	function()
-						{
-							// Invoke the View operation for this page
-							invokeEmailPage( tr.n_entry );
-						}
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
 	span = document.createElement( 'span' );
 	span.className = '';
-	var title = entry.title;
-	if (title.length > 80) {
-		title = title.substr(0,79) + "...";
-	}
-	title = ss_replaceSubStrAll(title, "\"", "&quot;");
-	title = ss_replaceSubStrAll(title, "<", "&lt;")
-	title = ss_replaceSubStrAll(title, ">", "&gt;")
-	updateElementsTextNode( span, title );
-	anchor.appendChild( span );
-	td.appendChild( anchor );
-	if (entry.creatorName != null && entry.creatorName != "") {
-		br = document.createElement( 'br' );
-		span = document.createElement( 'span' );
-		span.className = 'ss_fineprint';
-		span.style.paddingLeft = "20px";
-		updateElementsTextNode( span, entry.creatorName );
-		td.appendChild( br );
-		td.appendChild( span );
-	}
-	if (entry.path != null && entry.path != "") {
-		anchor = document.createElement( 'a' );
-		anchor.style.cursor = 'pointer';
-		anchor.onclick =	function()
-							{
-								// Invoke the View operation for this path
-								invokeEmailPath( tr.n_entry );
-							}
-		span = document.createElement( 'span' );
-		span.className = 'ss_fineprint';
-		span.style.paddingLeft = "20px";
-		var path = entry.path;
-		// Remove the last folder name from the path
-		if (path.lastIndexOf("/") >= 0) {
-			path = path.substr(0, path.lastIndexOf("/"));
-		}
-		if (path.length > 120) {
-			path = "..." + path.substr(path.length-120, path.length);
-		}
-		updateElementsTextNode( span, path );
-		anchor.appendChild( span );
-		br = document.createElement( 'br' );
-		td.appendChild( br );
-		td.appendChild( anchor );
-	}
-
-	// Add the entry's type to the table.
+	text = entry.sendDate;
+	updateElementsTextNode( span, text );
+	td.appendChild( span );
+	
+	// Add the from address to the table.
 	td = tr.insertCell( 1 );
 	td.style.whiteSpace = 'nowrap';
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
 	span = document.createElement( 'span' );
 	span.className = '';
-	typeName = m_unknownEntryType;
-	if ( entry.entityType == 'workspace' )
-		typeName = m_workspaceEntryType;
-	else if ( entry.entityType == 'folder' )
-		typeName = m_folderEntryType;
-	else if ( entry.entityType == 'profiles' )
-		typeName = m_profilesEntryType;
-	else if ( entry.entityType == 'folderEntry' )
-		typeName = m_folderEntryEntryType;
-	else if ( entry.entityType == 'user' )
-		typeName = m_userEntryType;
-	updateElementsTextNode( span, typeName );
+	text = entry.from;
+	updateElementsTextNode( span, text );
 	td.appendChild( span );
 
-	// Add the entry's Modify command to the table.
+	// Add the to addresses to the table.
 	td = tr.insertCell( 2 );
 	td.style.whiteSpace = 'nowrap';
-	a = document.createElement( 'a' );
-	a.href = "javascript: ";
-	a.onclick =	function()
-		{
-			// Invoke the Modify operation for this page
-			invokeEmailModify( tr.n_entry );
-		}
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
+	div = document.createElement( 'div' );
+	div.className = '';
+	text = entry.toAddresses;
+	text = ss_replaceSubStrAll(text, ",", "<br/>")
+	div.innerHTML = text;
+	td.appendChild( div );
+
+	// Add the type to the table.
+	td = tr.insertCell( 3 );
+	td.style.whiteSpace = 'nowrap';
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
 	span = document.createElement( 'span' );
 	span.className = '';
-	updateElementsTextNode( span, m_modify );
-	a.appendChild( span );
-	td.appendChild( a );
+	text = entry.logType;
+	updateElementsTextNode( span, text );
+	td.appendChild( span );
+
+	// Add the status to the table.
+	td = tr.insertCell( 4 );
+	td.style.whiteSpace = 'nowrap';
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
+	span = document.createElement( 'span' );
+	span.className = '';
+	text = entry.logStatus;
+	updateElementsTextNode( span, text );
+	td.appendChild( span );
+
+	// Add the subject to the table.
+	td = tr.insertCell( 5 );
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "35%");
+	span = document.createElement( 'span' );
+	span.className = '';
+	text = entry.subject;
+	span.setAttribute("title", text);
+	if (text.length > 80) text = text.substring(0, 80) + "...";
+	updateElementsTextNode( span, text );
+	td.appendChild( span );
+
+	// Add the attached files to the table.
+	td = tr.insertCell( 6 );
+	td.style.whiteSpace = 'nowrap';
+	td.style.verticalAlign = 'top';
+	td.style.paddingRight = '15px';
+	td.setAttribute("width", "5%");
+	div = document.createElement( 'div' );
+	div.className = '';
+	text = entry.attachedFiles;
+	text = ss_replaceSubStrAll(text, "\"", "&quot;");
+	text = ss_replaceSubStrAll(text, "<", "&lt;")
+	text = ss_replaceSubStrAll(text, ">", "&gt;")
+	text = ss_replaceSubStrAll(text, ",", "<br/>")
+	div.innerHTML = text;
+	td.appendChild( div );
+
+	// Add the comment to the table.
+	td = tr.insertCell( 7 );
+	td.style.verticalAlign = 'top';
+	td.setAttribute("width", "30%");
+	span = document.createElement( 'span' );
+	span.className = '';
+	text = entry.comment;
+	updateElementsTextNode( span, text );
+	td.appendChild( span );
+
 }// end addEmailReportDataToPage()
 
 
@@ -249,11 +261,8 @@ function handleResponseToGetEmailReport( responseData ) {
 
 			// Yes
 			// Show the table that holds the list of email problems.
-			div = document.getElementById( 'emailReportDiv1' );
+			div = document.getElementById( 'emailReportDiv' );
 			div.style.display = 'block';
-			div = document.getElementById( 'emailReportDiv2' );
-			div.style.display = 'block';
-			div.style.height = '400px';
 
 			// responseData.reportData is an array of objects.  Each object holds information about
 			// the email object.
@@ -305,67 +314,6 @@ function hideWaitIndicator()
 	span.style.display = 'none';
 }// end hideWaitIndicator()
 
-
-/**
- * Invoke the view operation for this page
- */
-function invokeEmailPage( entry ) {
-	var url = m_viewPermalinkUrl + "&entityType=" + entry.entityType;
-	 
-	if ( entry.entityType == 'workspace' )
-		url += "&binderId=" + entry.id;
-	else if ( entry.entityType == 'folder' )
-		url += "&binderId=" + entry.id;
-	else if ( entry.entityType == 'profiles' )
-		url += "&binderId=" + entry.id;
-	else if ( entry.entityType == 'folderEntry' )
-		url += "&entryId=" + entry.id;
-	else if ( entry.entityType == 'user' )
-		url += "&entryId=" + entry.id;
-
-	// Invoke the entity page.
-	if (confirm("<ssf:nlt tag='administration.report.email.warnOnView' 
-			text='Caution: Viewing an Email infected item could trigger the Email attack. \\n\\nViewing these items as an administrator is not recommended.\\n\\nProceed?'/>")) {
-		ss_openUrlInPortlet( url, true, "", "");
-	}
- 
-}// end invokeEmailPage()
-
-/**
- * Invoke the view operation for this page
- */
-function invokeEmailPath( entry ) {
-	var url = m_viewPermalinkUrl + "&entityType=folder";
-	url += "&binderId=" + entry.pathId;
-
-	// Invoke the entity page.
-	ss_openUrlInPortlet( url, true, "", "");
- 
-}// end invokeEmailPath()
-
-/**
- * Invoke the view operation for this page
- */
-function invokeEmailModify( entry ) {
-	var url = "";
-	 
-	if ( entry.entityType == 'workspace' )
-		url = m_modifyBinderUrl + "&binderType=workspace&binderId=" + entry.id;
-	else if ( entry.entityType == 'folder' )
-		url = m_modifyBinderUrl + "&binderType=folder&binderId=" + entry.id;
-	else if ( entry.entityType == 'profiles' )
-		url = m_modifyBinderUrl + "&binderType=profiles&binderId=" + entry.id;
-	else if ( entry.entityType == 'folderEntry' )
-		url = m_modifyEntryUrl + "&entryId=" + entry.id;
-	else if ( entry.entityType == 'user' )
-		url = m_modifyEntryUrl + "&entryId=" + entry.id;
-
-	// Invoke the entity page.
-	ss_openUrlInPortlet( url, true, "", "");
- 
-}// end invokeEmailPage()
-
-
 /**
  * This function gets called when the page is loaded.
  */
@@ -373,22 +321,6 @@ function onLoadEventHandler()
 {
 	var form;
 	
-	// Load the various strings we will need.
-	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
-	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
-	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
-	m_folderEntryEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryEntryType" text="Entry" /></ssf:escapeJavaScript>';
-	m_userEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.userEntryType" text="User" /></ssf:escapeJavaScript>';
-	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
-	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-	m_noProblemsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.email.noProblems" text="No Email problems found." /></ssf:escapeJavaScript>';
-
-	m_modify = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.email.modify" text="Modify" /></ssf:escapeJavaScript>';
-
-	// Get the url we need to invoke the page.
-	m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
-	m_modifyBinderUrl = "<ssf:url action="modify_binder" />";
-	m_modifyEntryUrl = "<ssf:url action="modify_folder_entry" />";
 }// end onLoadEventHandler()
 
 
@@ -484,50 +416,49 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 		  
 		  <br/>				 
 		  <div id="ss_report_panel_forum">
-		   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" id="summary" checked="checked" />
-		   <label class="ss_radio_label" for="summary"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
+		   <input type="radio" class="ss_radio" name="reportType" value="send" id="sendReport" checked="checked" />
+		   <label class="ss_radio_label" for="sendReport"><ssf:nlt tag="administration.report.label.emailSend"/></label>
 		   <br/>
-		   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="activity" id="activity" />
-		   <label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
+		   <input type="radio" class="ss_radio" name="reportType" value="receive" id="receiveReport" />
+		   <label class="ss_radio_label" for="receiveReport"><ssf:nlt tag="administration.report.label.emailReceive"/></label>
 		   <br/>
 		  </div>
 		   <br/>
 
 				<div style="margin-top: 2em;">
 					<span id="progressIndicator" style="margin-left: 4em; display: none;">
-							<ssf:nlt tag="administration.report.email.retrievingReport" text="Retrieving report..." />
+							<ssf:nlt tag="administration.report.retrievingReport" text="Retrieving report..." />
 							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
 					</span>
 				</div>
 
-				<div id="emailReportDiv1" style="display: none;">
-					<table cellspacing="0" cellpadding="3">
-						<tr>
-							<td>
-								<div style="margin-top: .7em;">
-									<span id="header1Span">
-									  <ssf:nlt tag="administration.report.email.header1" text="The following items have potential Email issues" />
-									</span>
-								</div>
-								<div style="margin-bottom: .6em;">
-									<span><ssf:nlt tag="administration.report.email.header2" text="Clicking Modify and then OK will remove the Email threat" /></span>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div id="emailReportDiv2" style="display: none; width: 90%; overflow: auto;">
+				<div id="emailReportDiv" style="display: none;">
 					<table id="emailReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
 						<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
-							<td align="left">
-								<span>&nbsp;<ssf:nlt tag="administration.report.email.col1" text="Title"/><span>
-							</td>
-							<td align="left">
-								<span><ssf:nlt tag="administration.report.email.col2" text="Type"/><span>
-							</td>
-							<td align="left">
-								<span><ssf:nlt tag="administration.report.email.col3" text="Modify"/><span>
-							</td>
+							<th>
+								<span>&nbsp;<ssf:nlt tag="administration.report.email.col1"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col2"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col3"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col4"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col5"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col6"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col7"/><span>
+							</th>
+							<th>
+								<span><ssf:nlt tag="administration.report.email.col8"/><span>
+							</th>
 						</tr>
 					</table>
 				</div>

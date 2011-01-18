@@ -776,13 +776,18 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 								.add(Projections.property("fileAttachmentsStr"));
 					Criteria crit = session.createCriteria(EmailLog.class)
 						.setProjection(proj)
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-					    .add(Restrictions.in("typeStr", new Object[] {EmailLogType.binderNotification.name(), 
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()));
+					
+					if (ReportModule.EMAIL_REPORT_TYPE_SEND.equals(reportType)) {
+						crit.add(Restrictions.in("typeStr", new Object[] {EmailLogType.binderNotification.name(), 
 																	EmailLogType.sendMail.name(), 
 																	EmailLogType.retry.name(), 
 																	EmailLogType.workflowNotification.name(), 
-																	EmailLogType.unknown.name()}))
-						.add(Restrictions.ge("sendDate", startDate))
+																	EmailLogType.unknown.name()}));
+					} else if (ReportModule.EMAIL_REPORT_TYPE_RECEIVE.equals(reportType)) {
+						crit.add(Restrictions.in("typeStr", new Object[] {EmailLogType.emailPosting.name()}));
+					}
+					crit.add(Restrictions.ge("sendDate", startDate))
 						.add(Restrictions.lt("sendDate", endDate));
 					crit.addOrder(Order.desc("sendDate"));
 					emailLog = crit.list();
@@ -1166,7 +1171,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	private LinkedList<Map<String,Object>> generateEmailReportList(List emailLogs, String reportType) {
-		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd KK:mm:ss aa");
+		User user = RequestContextHolder.getRequestContext().getUser();
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
+		df.setTimeZone(user.getTimeZone());
 		
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
 		if (emailLogs == null || emailLogs.isEmpty()) return report;
@@ -1175,18 +1182,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] cols = (Object[]) o;
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
-			row.put(ReportModule.USER_ID, cols[ReportModule.USER_ID_INDEX]);
+			Timestamp sendDate = ((Timestamp) cols[ReportModule.EMAIL_LOG_SEND_DATE_INDEX]);
 			
-			Timestamp temp = ((Timestamp) cols[ReportModule.ACTIVITY_DATE_INDEX]);
-			
-			row.put(ReportModule.ACTIVITY_DATE, sdFormat.format(temp.getTime()));
-			row.put(ReportModule.ACTIVITY_TYPE, cols[ReportModule.ACTIVITY_TYPE_INDEX]);
-			row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
-			row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
-			row.put(ReportModule.ENTITY, cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]);
-			
-			// Add the count of how many times this activity happened.
-			row.put( ReportModule.COUNT, cols[ReportModule.ACTIVITY_COUNT_INDEX] );
+			row.put(ReportModule.EMAIL_LOG_SEND_DATE, df.format(sendDate.getTime()));
+			row.put(ReportModule.EMAIL_LOG_FROM_ADDRESS, cols[ReportModule.EMAIL_LOG_FROM_ADDRESS_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_SUBJECT, cols[ReportModule.EMAIL_LOG_SUBJECT_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_COMMENT, cols[ReportModule.EMAIL_LOG_COMMENT_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_TYPE, cols[ReportModule.EMAIL_LOG_TYPE_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_STATUS, cols[ReportModule.EMAIL_LOG_STATUS_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_TO_ADDRESSES, cols[ReportModule.EMAIL_LOG_TO_ADDRESSES_INDEX]);
+			row.put(ReportModule.EMAIL_LOG_ATTACHED_FILES, cols[ReportModule.EMAIL_LOG_ATTACHED_FILES_INDEX]);
 		}
 		return report;
 	}

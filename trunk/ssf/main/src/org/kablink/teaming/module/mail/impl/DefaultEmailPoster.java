@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.mail.BodyPart;
 import javax.mail.Part;
@@ -220,14 +221,16 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		  		EmailLog emailLog = new EmailLog(EmailLogType.emailPosting, EmailLogStatus.received);
 		  		emailLog.setFrom(from.getAddress());
 		  		emailLog.setSubj(title);
+		  		String[] toEmailAddresses = new String[] {folder.getPathName()};
+		  		emailLog.setToEmailAddresses(toEmailAddresses);
 				try {
 					//save original from
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
 					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 					if (isReply(folder, title, msgs[i])) {						
-						processReply(folder, from, msgs[i], inputData, fileItems, iCalendars);
+						processReply(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
 					} else {
-						processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars);
+						processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
 					}
 				} catch(Exception ex) {
 					emailLog.setComment("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
@@ -253,7 +256,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
+	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
+			List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		String title = (String)inputData.get(ObjectKeys.FIELD_ENTITY_TITLE);
 		Long parentDocId = getParentDocId(folder, title, msg);
@@ -268,6 +272,18 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		Definition def = getReplyDefinition(folder, parentDocId);
 		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
+		if (fileItems != null && !fileItems.isEmpty()) {
+			//Log the files that were attached
+			List<String> fileNames = new ArrayList<String>();
+			Iterator itFileItems = fileItems.entrySet().iterator();
+			while (itFileItems.hasNext()) {
+				Map.Entry fileItemEntry = (Map.Entry) itFileItems.next();
+				FileHandler fh = (FileHandler)fileItemEntry.getValue();
+				fileNames.add(fh.getName());
+			}
+			emailLog.setFileAttachments(fileNames);
+		}
+
 		FolderEntry reply = getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
 		if(reply != null) {
 			try {
@@ -279,7 +295,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	@SuppressWarnings("unchecked")
-	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars ) throws Exception {
+	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
+			List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		User fromUser = setUser(folder, from);
 		if (fromUser == null) {
@@ -294,6 +311,15 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		if (!fileItems.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
+			//Log the files that were attached
+			List<String> fileNames = new ArrayList<String>();
+			Iterator itFileItems = fileItems.entrySet().iterator();
+			while (itFileItems.hasNext()) {
+				Map.Entry fileItemEntry = (Map.Entry) itFileItems.next();
+				FileHandler fh = (FileHandler)fileItemEntry.getValue();
+				fileNames.add(fh.getOriginalFilename());
+			}
+			emailLog.setFileAttachments(fileNames);
 		}
 		if (!iCalendars.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalInline(folder, def, inputData, fileItems, iCalendars));

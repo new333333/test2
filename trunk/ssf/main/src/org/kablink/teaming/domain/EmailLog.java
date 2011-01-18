@@ -159,7 +159,9 @@ public class EmailLog extends ZonedObject {
 		} catch (MessagingException e1) {
 			this.setSubj(NLT.get("mail.noSubject"));
 		}
-
+		try {
+			mailMsg.getFileName();
+		} catch (MessagingException e) {}
 	}
 
     public String getId() {
