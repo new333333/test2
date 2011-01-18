@@ -113,6 +113,28 @@ public interface ReportModule {
 	public static final String LOGIN_COUNT_SORT = "login_count_sort";
 	public static final String LOGIN_DATE_SORT = "login_date_sort";
 	
+	//Email Log Report
+	public static final String EMAIL_LOG_SEND_DATE = "sendDate";
+	public static final String EMAIL_LOG_FROM_ADDRESS = "from";
+	public static final String EMAIL_LOG_SUBJECT = "subj";
+	public static final String EMAIL_LOG_COMMENT = "comment";
+	public static final String EMAIL_LOG_TYPE = "type";
+	public static final String EMAIL_LOG_STATUS = "status";
+	public static final String EMAIL_LOG_TO_ADDRESSES = "to_addresses";
+	public static final String EMAIL_LOG_ATTACHED_FILES = "attached_files";
+	
+	public static final Integer EMAIL_LOG_SEND_DATE_INDEX = 0;
+	public static final Integer EMAIL_LOG_FROM_ADDRESS_INDEX = 1;
+	public static final Integer EMAIL_LOG_SUBJECT_INDEX = 2;
+	public static final Integer EMAIL_LOG_COMMENT_INDEX = 3;
+	public static final Integer EMAIL_LOG_TYPE_INDEX = 4;
+	public static final Integer EMAIL_LOG_STATUS_INDEX = 5;
+	public static final Integer EMAIL_LOG_TO_ADDRESSES_INDEX = 6;
+	public static final Integer EMAIL_LOG_ATTACHED_FILES_INDEX = 7;
+	
+	public static final String EMAIL_REPORT_TYPE_SEND = "send";
+	public static final String EMAIL_REPORT_TYPE_RECEIVE = "receive";
+	
 	public static class ActivityInfo
 	{
 		DefinableEntity whoOrWhat;

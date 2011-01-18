@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.mail.Address;
@@ -66,9 +67,11 @@ import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NotifyStatus;
@@ -659,6 +662,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	  		EmailLogType logType = EmailLogType.binderNotification;
 	  		EmailLog emailLog = new EmailLog(logType, now, rcpts, fromAddress, 
 	  				EmailLogStatus.queued);
+	  		mHelper.setEmailLog(emailLog);
 	  		
 	  		//break to list into pieces if big
 			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
@@ -1001,6 +1005,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
   		EmailLogType logType = EmailLogType.sendMail;
   		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.sent);
   		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
+  		if (sendAttachments) {
+  			SortedSet<FileAttachment> atts = entry.getFileAttachments();
+  			List<String> fileNames = new ArrayList<String>();
+  			for (FileAttachment fa : atts) {
+  				fileNames.add(fa.getFileItem().getName());
+  			}
+  			emailLog.setFileAttachments(fileNames);
+  		}
 
   		MailStatus status = new MailStatus(message);
 		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);

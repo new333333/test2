@@ -65,6 +65,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -489,7 +490,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			}
 			details.put(MailModule.FROM, ia);
 		} catch  (Exception useDefault) {}
-		
+		details.put(MailModule.LOG_TYPE, EmailLog.EmailLogType.workflowNotification);
 		EmailUtil.putHTML(details, MailModule.HTML_MSG, hMsg.toString());
 		try {
 			//to keep transaction small, schedule it

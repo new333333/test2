@@ -128,6 +128,7 @@ import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
+import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
@@ -892,6 +893,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model;
 		List<Map<String, Object>> report = null;
 		
+		String reportType = PortletRequestUtils.getStringParameter(request, "reportType", 
+				ReportModule.EMAIL_REPORT_TYPE_SEND);
+		
 		model = new HashMap();
 		
 		Map formData = request.getParameterMap();
@@ -905,7 +909,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			cal.add(Calendar.DATE, 1);
 			endDate = cal.getTime();
 		}
-        report = getReportModule().generateEmailReport( startDate, endDate, "summary" );
+        report = getReportModule().generateEmailReport( startDate, endDate, reportType );
 
         // Add the access report to the response.
         model.put( "emailReport", report );

@@ -40,10 +40,10 @@
 <%@ page import="org.kablink.teaming.module.report.ReportModule" %>
 
 <% // This is a JSON AJAX response %>
-<% // Do we have an xss report? %>
-<c:if test="${!empty xssReport}">
+<% // Do we have an email report? %>
+<c:if test="${!empty emailReport}">
 	<% // Yes %>
-	<jsp:useBean id="xssReport" type="java.util.List" scope="request" />
+	<jsp:useBean id="emailReport" type="java.util.List" scope="request" />
 
 <%
 	int		i;
@@ -57,41 +57,25 @@
 
 	reportData : [
 <%
-	for (i = 0; i < xssReport.size(); ++i)
+	for (i = 0; i < emailReport.size(); ++i)
 	{
 		Map		nextItem;
 		String	separator;
-		Long	entityId;
-		String	entityIdStr;
-		String	entityType;
-		String	entityPath;
-		Long	entityPathId;
-		String	entityPathIdStr;
-		String	entityTitle;
-		Long	entityCreatorId;
-		String	entityCreatorTitle;
 		
-		nextItem = (Map) xssReport.get( i );
-		entityId = (Long)nextItem.get( ReportModule.ENTITY_ID );
-		entityIdStr = entityId.toString();
-		entityType = (String)nextItem.get( ReportModule.ENTITY_TYPE );
-		entityPath = (String)nextItem.get( ReportModule.ENTITY_PATH );
-		entityPathId = (Long)nextItem.get( ReportModule.ENTITY_PATH_ID );
-		entityPathIdStr = entityPathId.toString();
-		entityTitle = (String)nextItem.get( ReportModule.ENTITY_TITLE );
-		entityCreatorId = (Long)nextItem.get( ReportModule.ENTITY_CREATOR_ID );
-		entityCreatorTitle = "";
-		java.util.Set ids = new java.util.HashSet();
-		ids.add(entityCreatorId);
-		java.util.List users = org.kablink.teaming.util.ResolveIds.getPrincipals(ids, false);
-		if (!users.isEmpty()) {
-			java.util.Iterator itUsers = users.iterator();
-			while (itUsers.hasNext()) {
-				org.kablink.teaming.domain.User u = (org.kablink.teaming.domain.User) itUsers.next();
-				if (u != null) entityCreatorTitle = u.getTitle();
-				break;
-			}
-		}
+		nextItem = (Map) emailReport.get( i );
+		String sendDate = (String)nextItem.get( ReportModule.EMAIL_LOG_SEND_DATE );
+		String from = (String)nextItem.get( ReportModule.EMAIL_LOG_FROM_ADDRESS );
+		if (from == null) from = "";
+		String subject = (String)nextItem.get( ReportModule.EMAIL_LOG_SUBJECT );
+		if (subject == null) subject = "";
+		String comment = (String)nextItem.get( ReportModule.EMAIL_LOG_COMMENT );
+		if (comment == null) comment = "";
+		String logType = (String)nextItem.get( ReportModule.EMAIL_LOG_TYPE );
+		String logStatus = (String)nextItem.get( ReportModule.EMAIL_LOG_STATUS );
+		String toAddresses = (String)nextItem.get( ReportModule.EMAIL_LOG_TO_ADDRESSES );
+		if (toAddresses == null) toAddresses = "";
+		String attachedFiles = (String)nextItem.get( ReportModule.EMAIL_LOG_ATTACHED_FILES );
+		if (attachedFiles == null) attachedFiles = "";
 
 		// If this is not the first entity, add a ',' before we add another entity.
 		if ( i != 0 )
@@ -99,7 +83,7 @@
 		else
 			separator = "";
 %>
-		<%= separator %>{ entityType : '<%= entityType %>', id : <%= entityIdStr %>, path: '<ssf:escapeJavaScript value="<%= entityPath %>" />', title: '<ssf:escapeJavaScript value="<%= entityTitle %>" />', pathId: <%= entityPathIdStr %>, creatorName: '<ssf:escapeJavaScript value="<%= entityCreatorTitle %>" />' }
+		<%= separator %>{ sendDate : '<%= sendDate %>', from : '<%= from %>', subject: '<ssf:escapeJavaScript value="<%= subject %>" />', comment: '<ssf:escapeJavaScript value="<%= comment %>" />', logType: '<%= logType %>', logStatus: '<%= logStatus %>', toAddresses: '<ssf:escapeJavaScript value="<%= toAddresses %>" />', attachedFiles: '<ssf:escapeJavaScript value="<%= attachedFiles %>" />' }
 <%
 	}// end for()
 %>
@@ -107,8 +91,8 @@
 }
 </c:if>
 
-<% // Do we have an xss report? %>
-<c:if test="${empty xssReport}">
+<% // Do we have an email report? %>
+<c:if test="${empty emailReport}">
 	<% // No %>
 {
 	status : 1,
