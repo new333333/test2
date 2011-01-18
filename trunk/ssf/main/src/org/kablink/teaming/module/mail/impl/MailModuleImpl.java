@@ -689,6 +689,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		    		logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 					logger.debug("EXCEPTION", sx);
 					emailLog.setComment("Error sending mail:" + getMessage(sx));
+					emailLog.setStatus(EmailLogStatus.error);
 		 			Exception[] exceptions = sx.getMessageExceptions();
 		 			if (exceptions != null && exceptions.length > 0) {
 		 				logger.error(sx.toString());
@@ -701,6 +702,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		       		logger.error("EXCEPTION:  " + getMessage(ex));
 					logger.debug("EXCEPTION", ex);
 					emailLog.setComment("Error handling subscriptions:" + getMessage(ex));
+					emailLog.setStatus(EmailLogStatus.error);
 		    	}
 			}
 			getReportModule().addEmailLog(emailLog);
@@ -847,6 +849,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
  			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+ 			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
  			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
 		}
@@ -878,6 +881,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
  			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+ 			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
 			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
 		}
@@ -898,6 +902,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
        		logger.error("EXCEPTION:  " + getMessage(ex));
 			logger.debug("EXCEPTION", ex);
 			emailLog.setComment("Error in sendMail:" + getMessage(ex));
+			emailLog.setStatus(EmailLogStatus.error);
     	}
 		emailLog.fillFromMimeMessage(msg);
 		mailSender.send(msg);
@@ -955,6 +960,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
 				emailLog.setComment(emailLogComment);
+				emailLog.setStatus(EmailLogStatus.error);
 
 				Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
@@ -977,6 +983,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
 				emailLog.setComment(emailLogComment);
+				emailLog.setStatus(EmailLogStatus.error);
 
 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
@@ -1042,6 +1049,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
 				emailLog.setComment(emailLogComment);
+				emailLog.setStatus(EmailLogStatus.error);
 				
 	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
@@ -1063,6 +1071,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
 				emailLog.setComment(emailLogComment);
+				emailLog.setStatus(EmailLogStatus.error);
 				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);

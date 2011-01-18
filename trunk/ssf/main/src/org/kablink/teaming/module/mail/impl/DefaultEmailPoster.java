@@ -234,6 +234,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					}
 				} catch(Exception ex) {
 					emailLog.setComment("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+					emailLog.setStatus(EmailLogStatus.error);
 					throw ex;
 				} finally {
 					//reset context
