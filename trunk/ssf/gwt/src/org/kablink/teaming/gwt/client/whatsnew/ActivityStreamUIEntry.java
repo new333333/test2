@@ -85,7 +85,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
-	private String m_viewEntryPermalink;
+	private String m_viewEntryUrl;
 	
 	
 	/**
@@ -181,7 +181,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorId = null;
 		m_authorWSId = null;
 		m_entryId = null;
-		m_viewEntryPermalink = null;
+		m_viewEntryUrl = null;
 		
 		// Remove the presence control from the presence panel.
 		m_presencePanel.clear();
@@ -529,11 +529,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void handleClickOnTitle()
 	{
-		// Do we have a permalink that we can use to view the entry?
-		if ( m_viewEntryPermalink == null )
+		// Do we have a url that we can use to view the entry?
+		if ( m_viewEntryUrl == null )
 		{
 			HttpRequestInfo ri;
 			AsyncCallback<String> callback;
+			Long entryId;
 			
 			// No, issue an ajax request to get it.
 			callback = new AsyncCallback<String>()
@@ -545,24 +546,25 @@ public abstract class ActivityStreamUIEntry extends Composite
 				{
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						GwtTeaming.getMessages().rpcFailure_GetEntryPermalink(),
+						GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
 						m_entryId );
 				}
 				
 				/**
 				 * 
 				 */
-				public void onSuccess( String entryPermalink )
+				public void onSuccess( String viewEntryUrl )
 				{
-					// Open the entry using the permalink.
-					m_viewEntryPermalink = entryPermalink;
+					// Open the entry using the view entry url.
+					m_viewEntryUrl = viewEntryUrl;
 					viewEntry();
 				}
 			};
 			
-			// Issue an ajax request to get the permalink of the binder that is the source of the activity stream.
+			// Issue an ajax request to get the url needed to view this entry.
 			ri = HttpRequestInfo.createHttpRequestInfo();
-			GwtTeaming.getRpcService().getEntryPermalink( ri, m_entryId, null, callback );
+			entryId = Long.parseLong( m_entryId );
+			GwtTeaming.getRpcService().getViewFolderEntryUrl( ri, null, entryId, callback );
 		}
 		else
 			viewEntry();
@@ -806,7 +808,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_presencePanel.add( presenceCtrl );
 		}
 		
-		m_viewEntryPermalink = null;
+		m_viewEntryUrl = null;
 	}
 	
 	/**
@@ -835,8 +837,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void viewEntry()
 	{
-		if ( GwtClientHelper.hasString( m_viewEntryPermalink ) )
-			m_actionHandler.handleAction( TeamingAction.VIEW_FOLDER_ENTRY, m_viewEntryPermalink );
+		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
+			m_actionHandler.handleAction( TeamingAction.SHOW_FORUM_ENTRY, m_viewEntryUrl );
 		else
 			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
 	}

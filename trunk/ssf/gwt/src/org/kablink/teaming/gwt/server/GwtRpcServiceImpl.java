@@ -854,6 +854,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		try {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
 			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY );
+			if ( binderId == null )
+			{
+				FolderEntry entry;
+				
+				entry = getFolderModule().getEntry( null, entryId );
+				binderId = entry.getParentBinder().getId();
+			}
 			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, String.valueOf( binderId ) );
 			adapterUrl.setParameter( WebKeys.URL_ENTRY_ID,  String.valueOf( entryId  ) );			
 			return adapterUrl.toString();
