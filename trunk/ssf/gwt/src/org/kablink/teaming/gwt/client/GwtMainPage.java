@@ -95,6 +95,7 @@ public class GwtMainPage extends Composite
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
+	private TaskListing m_taskListing;
 	private TeamingPopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
@@ -328,8 +329,14 @@ public class GwtMainPage extends Composite
 		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend )
 		{
 			var taskListingDIV = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskListingDIV");
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
-		}//end initTaskListingJS()
+			var taskToolsDIV   = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskToolsDIV"  );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
+		}//end ss_initTaskListing()
+		
+		$wnd.ss_handleTaskAction = function( action )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleTaskAction(Ljava/lang/String;)( taskAction );
+		}// end ss_handleTaskAction()
 	}-*/;
 
 	/*
@@ -516,10 +523,11 @@ public class GwtMainPage extends Composite
 	/*
 	 * Called when the GWT task listing UI is loading.
 	 */
-	private void initTaskListing( Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend )
+	private void initTaskListing( Element taskToolsDIV, Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend )
 	{
 		// Create a TaskListing object...
-		TaskListing tl = new TaskListing(
+		m_taskListing = new TaskListing(
+			taskToolsDIV,
 			taskListingDIV,
 			this,
 			Long.parseLong( binderId ),
@@ -529,8 +537,30 @@ public class GwtMainPage extends Composite
 			(GwtClientHelper.hasString( sortDescend ) ? Boolean.parseBoolean(sortDescend) : false) );
 		
 		// ...and show it.
-		tl.show();
+		m_taskListing.show();
 	}// end initTaskListing();
+	
+	private void handleTaskAction( TeamingAction taskAction, Object obj )
+	{
+		if (null != m_taskListing)
+		{
+			m_taskListing.handleAction( taskAction, obj );
+		}
+		else
+			Window.alert( "in handleTaskAction() and there's no TaskListing to handle it" );
+	}// end handleTaskAction()
+	
+	private void handleTaskAction( TeamingAction taskAction )
+	{
+		// Always use the initial form of the method.
+		handleTaskAction( taskAction, null );
+	}// end handleTaskAction()
+	
+	private void handleTaskAction( String taskAction )
+	{
+		// Always use the initial form of the method.
+		handleTaskAction( TeamingAction.valueOf( taskAction ), null );
+	}// end handleTaskAction()
 	
 	/*
 	 * Invoke the "Edit Branding" dialog.
@@ -1142,7 +1172,15 @@ public class GwtMainPage extends Composite
 				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
-			
+
+		case TASK_MOVE_UP:
+		case TASK_MOVE_DOWN:
+		case TASK_MOVE_LEFT:
+		case TASK_MOVE_RIGHT:
+		case TASK_DELETE:
+			handleTaskAction( action, obj );
+			break;
+
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );

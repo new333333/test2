@@ -90,6 +90,11 @@ public enum TeamingAction implements IsSerializable
 	VIEW_FOLDER_ENTRY( "Open an entry for viewing" ),
 	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" ),
 	SHOW_FORUM_ENTRY( "Open an entry for viewing" ),
+	TASK_MOVE_UP( "Move the Selected Task Up in the Ordering." ),
+	TASK_MOVE_DOWN( "Move the Selected Task Down in the Ordering." ),
+	TASK_MOVE_LEFT( "Move the Selected Task Left (i.e., Decrease its Subtask Level.)" ),
+	TASK_MOVE_RIGHT( "Move the Selected Task Right (i.e., Increase its Subtask Level.)" ),
+	TASK_DELETE( "Delete the Selected Tasks." ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

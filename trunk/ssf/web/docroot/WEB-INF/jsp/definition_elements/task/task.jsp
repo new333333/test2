@@ -112,7 +112,9 @@
 </div>
 
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<% if (!subtasksEnabled) { %>
+<% if (subtasksEnabled) { %>
+	<div class="gwtTaskTools" id="ss_gwtTaskToolsDIV"></div>
+<% } else {%>
 	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <% } %>
 
@@ -120,7 +122,7 @@
 	<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
 	<% if (subtasksEnabled) { %>
 		<% // Generate the GWT UI. %>
-		<div class="ss_gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
+		<div class="gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
 		<script type="text/javascript">
 			function ss_initGwtTaskListing() {
 				if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
