@@ -13,6 +13,7 @@
 		<pathelement path="${classpath}" />
 		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"/>
 		<pathelement location="${project.dir}/tools/gwt/gwt-user.jar"/>
+		<pathelement location="${project.dir}/tools/gwt/gwt-incubator.jar"/>
 		<fileset dir="${project.dir}/lib">
 			<include name="*.jar" />
 			<exclude name="gwt-servlet.jar" />
