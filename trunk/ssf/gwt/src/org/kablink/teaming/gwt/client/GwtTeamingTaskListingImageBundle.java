@@ -158,7 +158,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource inProcess();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/menu.png")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/menu16.png")
 	public ImageResource menu();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

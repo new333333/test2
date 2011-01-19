@@ -47,12 +47,10 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 
-
 /**
  * Class used to implement a task tool button.  
  * 
  * @author drfoster@novell.com
- *
  */
 public class TaskButton extends Anchor {
 	private ActionTrigger	m_actionTrigger;	// The interface to trigger TeamingAction's through.
