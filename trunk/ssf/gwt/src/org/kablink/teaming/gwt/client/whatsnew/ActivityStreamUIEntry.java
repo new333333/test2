@@ -31,9 +31,11 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 
-
 package org.kablink.teaming.gwt.client.whatsnew;
 
+import java.util.HashMap;
+
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
@@ -77,6 +79,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_unreadImg;
 	private InlineLabel m_title;
 	private FlowPanel m_presencePanel;
+	private FlowPanel m_commentsPanel;
 	private ClickHandler m_presenceClickHandler;
 	private Label m_author;
 	private Label m_date;
@@ -86,6 +89,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
 	private String m_viewEntryUrl;
+	private ActivityStreamReply m_replyWidget;
 	
 	
 	/**
@@ -97,6 +101,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	{
 		FlowPanel mainPanel;
 		FlowPanel panel;
+		EditSuccessfulHandler onSuccessHandler;
 
 		m_activityStreamCtrl = activityStreamCtrl;
 		
@@ -131,6 +136,35 @@ public abstract class ActivityStreamUIEntry extends Composite
 		panel = createContentPanel();
 		mainPanel.add( panel );
 		
+		// Create a reply widget and hide it.
+		onSuccessHandler = new EditSuccessfulHandler()
+		{
+			@SuppressWarnings("unchecked")
+			public boolean editSuccessful( Object replyData )
+			{
+				if ( replyData instanceof HashMap )
+				{
+					HashMap<String, String> map;
+					
+					// replyData is a HashMap that holds the title and the description.
+					map = (HashMap<String,String>)replyData;
+					
+					replyToEntry( map.get( "title" ), map.get( "description" ) );
+				}
+				
+				return true;
+			}
+			
+		};
+		m_replyWidget = new ActivityStreamReply( onSuccessHandler );
+		m_replyWidget.setVisible( false );
+		mainPanel.add( m_replyWidget );
+		
+		// Create a panel for comments to go in.
+		m_commentsPanel = createCommentsPanel();
+		if ( m_commentsPanel != null )
+			mainPanel.add( m_commentsPanel );
+
 		// Create a click handler that will be used for the presence control.
 		m_presenceClickHandler = new ClickHandler()
 		{
@@ -185,9 +219,22 @@ public abstract class ActivityStreamUIEntry extends Composite
 		
 		// Remove the presence control from the presence panel.
 		m_presencePanel.clear();
+		
+		// Hide the reply ui if we have one.
+		if ( m_replyWidget != null )
+			m_replyWidget.close();
 	}
 
 
+	/**
+	 * If your class has comments, override this method and create a panel for the comments to live in.
+	 */
+	public FlowPanel createCommentsPanel()
+	{
+		return null;
+	}
+	
+	
 	/**
 	 * Create the panel that holds the author's name, entry's date and a 2 line description.
 	 */
@@ -373,6 +420,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public abstract String getAvatarImageStyleName();
 
+	
+	/**
+	 * Return the panel that holds the comments.
+	 */
+	public FlowPanel getCommentsPanel()
+	{
+		return m_commentsPanel;
+	}
+	
 	
 	/**
 	 * Return the name of the style used with the content panel.
@@ -570,6 +626,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 			viewEntry();
 	}
 
+	/**
+	 * Insert the given reply as the first reply to the top entry.
+	 */
+	abstract public void insertReply( ActivityStreamEntry reply );
+	
 	
 	/**
 	 * 
@@ -584,6 +645,20 @@ public abstract class ActivityStreamUIEntry extends Composite
 		{
 			// Show the Actions popup menu.
 			popupMenu.showActionsMenu( this, x, y );
+		}
+	}
+	
+	/**
+	 * Show the Reply ui
+	 */
+	public void invokeReplyUI()
+	{
+		if ( m_replyWidget != null )
+		{
+			String title;
+			
+			title = GwtTeaming.getMessages().defaultReplyTitle( getEntryTitle() );
+			m_replyWidget.show( title );
 		}
 	}
 	
@@ -758,6 +833,44 @@ public abstract class ActivityStreamUIEntry extends Composite
 		}
 	}
 
+	
+	/**
+	 * Reply to this entry with the given text
+	 */
+	private void replyToEntry( String title, String desc )
+	{
+		HttpRequestInfo ri;
+		AsyncCallback<ActivityStreamEntry> callback;
+		
+		callback = new AsyncCallback<ActivityStreamEntry>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_ReplyToEntry(),
+						m_entryId );
+			}
+
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( ActivityStreamEntry asEntry )
+			{
+				// Add the reply to the top entry.
+				insertReply( asEntry );
+			}
+			
+		};
+		
+		// Issue an ajax request to add a reply to this entry.
+		ri = HttpRequestInfo.createHttpRequestInfo();
+		GwtTeaming.getRpcService().replyToEntry( ri, getEntryId(), title, desc, callback );
+	}
 	
 	/**
 	 * Set the data this we should display from the given ActivityStreamEntry

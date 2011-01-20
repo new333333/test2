@@ -304,6 +304,64 @@
 	margin-right: 5px;
 }
 
+.activityStreamReply
+{
+	background-color: #F6F6F6;
+	border: 1px solid #C4C4C4;
+	left: 50px;
+	margin-bottom: 10px;
+	margin-top: .5em;
+	padding: 5px;
+	position: relative;
+	width: 450px;
+}
+
+.activityStreamReplyTitlePanel
+{
+	padding-bottom: 5px;
+}
+
+.activityStreamReplyTitleTextBox
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	width: 440px;
+}
+
+.activityStreamReplyTextArea
+{
+	background-color: transparent;
+	border: 0 none;
+	color: #353838;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 14px;
+	height: 100px;
+	padding: 5px;
+	width: 440px;
+}
+
+.activityStreamReplyFooter
+{
+	margin-bottom: 5px;
+	margin-top: .5em;
+	text-align: right;
+	width: 450px;
+}
+
+.activityStreamReplyBtn
+{
+	background: #949494 none repeat scroll 0 0;
+	color: #FFFFFF;
+	cursor: pointer;
+	font-size: 12px;
+	margin-right: 3px;
+	padding: 2px 10px;
+}
+
 .unreadEntry
 {
 	font-weight: bold;

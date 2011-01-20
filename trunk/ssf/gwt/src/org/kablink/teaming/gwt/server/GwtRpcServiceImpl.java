@@ -97,6 +97,7 @@ import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -155,7 +156,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
-	
+
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
@@ -2814,6 +2815,31 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		// it.
 		return tmi;
 	}//end getTeamManagementInfo()
+	
+	/**
+	 * Add a reply to the given entry.  Return an object that can be used by the What's New page.
+	 */
+	public ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException
+	{
+		ActivityStreamEntry asEntry;
+		
+		try
+		{
+			FolderEntry entry;
+
+			// Add the reply to the given entry.
+			entry = GwtServerHelper.addReply( this, entryId, title, desc );
+			
+			// Get an ActivityStreamEntry from the reply's FolderEntry.
+			asEntry = GwtActivityStreamHelper.getActivityStreamEntry( getRequest( ri ), this, entry );
+		}
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		return asEntry;
+	}
 	
 	/**
 	 * Save the given branding data to the given binder.

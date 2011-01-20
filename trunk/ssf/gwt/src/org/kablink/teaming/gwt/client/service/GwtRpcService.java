@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -256,4 +257,7 @@ public interface GwtRpcService extends RemoteService
 	public Boolean setSeen(   HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
 	public Boolean setUnseen( HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;
 	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException;
+	
+	// Add a reply to the given entry
+	public ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException;
 }// end GwtRpcService

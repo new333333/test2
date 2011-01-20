@@ -114,8 +114,10 @@ import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -125,6 +127,7 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -430,6 +433,54 @@ public class GwtServerHelper {
 			community = true;
 		
 		fm.setTag( null, entryId, tagName, community );
+	}
+	
+
+	/**
+	 * Add a reply to the given entry.
+	 */
+	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
+		throws WriteEntryDataException, WriteFilesException
+	{
+		FolderModule folderModule;
+		FolderEntry entry;
+		FolderEntry replyEntry;
+		Long entryIdL;
+		Long binderIdL;
+		String entryDefId;
+		Map fileMap;
+		Map<String, String> inputMap;
+		MapInputData inputData;
+
+		folderModule = bs.getFolderModule();
+		entryIdL = new Long( entryId );
+		
+		// Get the id of the binder the given entry lives in.
+		entry = folderModule.getEntry( null, entryIdL );
+		binderIdL = entry.getParentBinder().getId();
+		
+		// Get the entry's definition id.
+		entryDefId = entry.getEntryDefId();
+		
+		// Create an empty file map.
+		fileMap = new HashMap();
+
+		inputMap = new HashMap<String, String>();
+		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+		inputData = new MapInputData( inputMap );
+
+    	replyEntry = folderModule.addReply( binderIdL, entryIdL, entryDefId, inputData, fileMap, null );
+
+		// Are we supposed to update the timestamp on top level
+		// entries when a reply is posted?
+    	if ( GwtUIHelper.isModifyTopEntryOnReply() )
+    	{
+			// Yes!  Update the top entry's timestamp.
+    		folderModule.updateModificationStamp( binderIdL, replyEntry.getTopEntry().getId() );
+    	}
+    	
+    	return replyEntry;
 	}
 	
 	

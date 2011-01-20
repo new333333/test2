@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 
 import com.google.gwt.user.client.ui.FlowPanel;
 
@@ -42,12 +43,16 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class ActivityStreamComment extends ActivityStreamUIEntry
 {
+	private ActivityStreamTopEntry m_topEntry;	// The entry this comment belongs to.
+	
 	/**
 	 * 
 	 */
-	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActionHandler actionHandler )
+	public ActivityStreamComment( ActivityStreamCtrl activityStreamCtrl, ActionHandler actionHandler, ActivityStreamTopEntry topEntry )
 	{
 		super( activityStreamCtrl, actionHandler );
+		
+		m_topEntry = topEntry;
 	}
 
 
@@ -111,5 +116,15 @@ public class ActivityStreamComment extends ActivityStreamUIEntry
 	public String getTitleStyleName()
 	{
 		return "activityStreamCommentTitle";
+	}
+	
+	/**
+	 * Insert the given reply into the top entry's list of replies
+	 */
+	public void insertReply( ActivityStreamEntry reply )
+	{
+		// Add this reply to the top entry.
+		if ( m_topEntry != null )
+			m_topEntry.insertReply( reply );
 	}
 }
