@@ -162,6 +162,7 @@ public interface GwtTeamingMessages extends Messages
 	String ok();
 	String oneMomentPlease();
 	String percent();
+	String send();
 	String showBorder();
 	String showTitle();
 	String title();
@@ -271,6 +272,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
+	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
@@ -711,6 +713,11 @@ public interface GwtTeamingMessages extends Messages
 	String showUnreadEntries();
 	String whatsNew();
 	String whatsNewWithName( String name );
+	
+	// The following strings are used in the activity stream "reply to entry" ui
+	String defaultReplyTitle( String title );
+	String noReplyText();
+	String replyToEntryLabel();
 	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.

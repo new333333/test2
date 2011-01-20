@@ -71,6 +71,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	private String m_parentBinderId;			// Id of the binder this entry comes from.
 	private String m_parentBinderPermalink;
 	private Image m_breadSpaceImg;
+	private int m_numComments;
 	
 	/**
 	 * 
@@ -167,28 +168,18 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	/**
 	 * 
 	 */
-	private void addComment( ActivityStreamEntry activityStreamEntry, int commentNum )
+	private void addComment( ActivityStreamEntry activityStreamEntry )
 	{
-		FlowPanel mainPanel;
+		FlowPanel commentsPanel;
 		ActivityStreamComment commentUI;
 
-		// We recycle ActivityStreamComment objects.
-		// Do we have an old one we can use?
-		commentUI = null;
-		if ( commentNum < m_comments.size() )
-			commentUI = m_comments.get( commentNum );
-		if ( commentUI == null )
-		{
-			// No, create a new one.
-			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), m_actionHandler );
-			m_comments.add( commentUI );
-		}
-		
+		// Get an ActivityStreamComment object.
+		commentUI = getActivityStreamCommentObject();
 		commentUI.setData( activityStreamEntry );
 		
-		// Add this ui widget to our widget.
-		mainPanel = getMainPanel();
-		mainPanel.add( commentUI );
+		// Add this ui widget to panel that holds all comments
+		commentsPanel = getCommentsPanel();
+		commentsPanel.add( commentUI );
 	}
 	
 	
@@ -208,6 +199,7 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 			nextComment.removeFromParent();
 		}
 		
+		m_numComments = 0;
 		m_numCommentsLabel.setText( "" );
 		m_parentBinderName.setText( "" );
 		m_parentBinderName.setTitle( "" );
@@ -218,6 +210,45 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		m_breadSpaceImg.setVisible( false );
 	}
 	
+	
+	/**
+	 * Create the panel that all comments will live in.
+	 */
+	public FlowPanel createCommentsPanel()
+	{
+		return new FlowPanel();
+	}
+	
+	/**
+	 * Find an unused ActivityStreamComment object and return it.  If we don't have an unused one
+	 * create a new one.
+	 */
+	private ActivityStreamComment getActivityStreamCommentObject()
+	{
+		FlowPanel commentsPanel;
+		ActivityStreamComment commentUI = null;
+		int numberOfComments;
+		
+		// Get the panel that holds all the comments.
+		commentsPanel = getCommentsPanel();
+		
+		// Do we have an ActivityStreamComment available?
+		numberOfComments = commentsPanel.getWidgetCount();
+		if ( numberOfComments < m_comments.size() )
+		{
+			// Yes, use an existing one.
+			commentUI = m_comments.get( numberOfComments );
+		}
+		
+		if ( commentUI == null )
+		{
+			// Create a new one.
+			commentUI = new ActivityStreamComment( getActivityStreamCtrl(), m_actionHandler, this );
+			m_comments.add( commentUI );
+		}
+		
+		return commentUI;
+	}
 	
 	/**
 	 * 
@@ -340,6 +371,31 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 
 	
 	/**
+	 * Insert the given reply as the first reply to this entry.
+	 */
+	public void insertReply( ActivityStreamEntry reply )
+	{
+		FlowPanel commentsPanel;
+		ActivityStreamComment commentUI;
+
+		// Get an ActivityStreamComment object.
+		commentUI = getActivityStreamCommentObject();
+		commentUI.setData( reply );
+		
+		// Add this ui widget to panel that holds all comments
+		commentsPanel = getCommentsPanel();
+		if ( commentsPanel.getWidgetCount() > 0 )
+			commentsPanel.insert( commentUI, 0 );
+		else
+			commentsPanel.add( commentUI );
+		
+		// Update the number of comments on this top entry.
+		++m_numComments;
+		updateCommentsLabel();
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public void setBinderId( String binderId )
@@ -364,25 +420,12 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	{
 		List<ActivityStreamEntry> comments = null;
 		String parentBinderName;
-		int numComments;
 		int i;
 		
 		super.setData( entryItem );
 		
-		numComments = entryItem.getEntryComments();
-		if ( numComments > 0 )
-		{
-			String text;
-			
-			if ( numComments == 1 )
-				text = GwtTeaming.getMessages().oneComment();
-			else
-				text = GwtTeaming.getMessages().multipleComments( numComments );
-			m_numCommentsLabel.setText( text );
-			m_numCommentsLabel.setVisible( true );
-		}
-		else
-			m_numCommentsLabel.setVisible( false );
+		m_numComments = entryItem.getEntryComments();
+		updateCommentsLabel();
 		
 		parentBinderName = entryItem.getParentBinderName(); 
 		setBinderName( parentBinderName );
@@ -413,8 +456,28 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				nextComment = comments.get( i );
 				
 				// Add this comment to our entry.
-				addComment( nextComment, i );
+				addComment( nextComment );
 			}
 		}
+	}
+	
+	/**
+	 * Update the label that displays the number of comments there are on this entry.
+	 */
+	private void updateCommentsLabel()
+	{
+		if ( m_numComments > 0 )
+		{
+			String text;
+			
+			if ( m_numComments == 1 )
+				text = GwtTeaming.getMessages().oneComment();
+			else
+				text = GwtTeaming.getMessages().multipleComments( m_numComments );
+			m_numCommentsLabel.setText( text );
+			m_numCommentsLabel.setVisible( true );
+		}
+		else
+			m_numCommentsLabel.setVisible( false );
 	}
 }

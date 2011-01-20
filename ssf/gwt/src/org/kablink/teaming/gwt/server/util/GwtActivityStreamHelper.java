@@ -47,6 +47,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
@@ -1982,5 +1983,102 @@ public class GwtActivityStreamHelper {
 			// ...and write it to the log.
 			m_logger.debug(userId + s);
 		}
+	}
+	
+	
+	/**
+	 * Create an ActivityStreamEntry from the given FolderEntry object.
+	 */
+	public static ActivityStreamEntry getActivityStreamEntry( HttpServletRequest request, AllModulesInjected bs, FolderEntry folderEntry )
+	{
+		ActivityStreamEntry asEntry;
+		
+		asEntry = new ActivityStreamEntry();
+
+		// Gather the information from the FolderEntry and return an ActivityStreamEntry
+		if ( folderEntry != null )
+		{
+			Binder parentBinder;
+			
+			// Initialize the author information
+			{
+				ASAuthorInfo authorInfo;
+				User author;
+				
+				author = (User) folderEntry.getCreation().getPrincipal();
+				
+				authorInfo = ASAuthorInfo.buildAuthorInfo(
+													request,
+													bs,
+													GwtServerHelper.isPresenceEnabled(),
+													Utils.canUserOnlySeeCommonGroupMembers(),
+													folderEntry.getOwnerId(),
+													author,
+													author.getTitle() );
+
+				asEntry.setAuthorPresence( authorInfo.m_authorPresence );
+				asEntry.setAuthorAvatarUrl( authorInfo.m_authorAvatarUrl);
+				asEntry.setAuthorId( authorInfo.m_authorId );
+				asEntry.setAuthorName( authorInfo.m_authorTitle );
+				asEntry.setAuthorWorkspaceId( authorInfo.m_authorWsId );
+				asEntry.setAuthorLogin( author.getName() );
+			}
+			
+			// Initialize parent binder information.
+			parentBinder = folderEntry.getParentBinder();
+			if ( parentBinder != null )
+			{
+				asEntry.setParentBinderId( String.valueOf( parentBinder.getId() ) );
+				asEntry.setParentBinderHover( parentBinder.getPathName() );
+				asEntry.setParentBinderName( parentBinder.getTitle() );
+			}
+			
+			// Initialize the entry information
+			{
+				String entryId;
+				SeenMap seenMap;
+				
+				entryId = String.valueOf( folderEntry.getId() );
+				asEntry.setEntryId( entryId );
+				asEntry.setEntryComments( 0 );
+				asEntry.setEntryDescription( folderEntry.getDescription().getText() );	
+				asEntry.setEntryDocNum( folderEntry.getDocNumber() );
+				asEntry.setEntryTitle( folderEntry.getTitle() );
+				asEntry.setEntryType( folderEntry.getEntityType().name() );
+				
+				// Set the modification date
+				{
+					Date date;
+					String dateStr;
+					
+					date = folderEntry.getLastActivity();
+					dateStr = getDateTimeString( date );
+					asEntry.setEntryModificationDate( dateStr );
+				}
+				
+				// Set the top entry.
+				{
+					FolderEntry topEntry;
+
+					topEntry = folderEntry.getParentEntry();
+					while ( topEntry.getParentEntry() != null )
+					{
+						topEntry = topEntry.getParentEntry();
+					}
+					
+					if ( topEntry != null )
+						asEntry.setEntryTopEntryId( String.valueOf( topEntry.getId() ) );
+					
+				}
+
+				// Set whether this entry has been seen.
+				{
+					seenMap = bs.getProfileModule().getUserSeenMap( null );
+					asEntry.setEntrySeen( seenMap.checkIfSeen( folderEntry ) );
+				}
+			}
+		}
+	
+		return asEntry;
 	}
 }

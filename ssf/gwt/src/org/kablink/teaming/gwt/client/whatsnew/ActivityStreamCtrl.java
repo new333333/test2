@@ -930,6 +930,13 @@ public class ActivityStreamCtrl extends Composite
 				switch ( action )
 				{
 				case REPLY:
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						// Tell the entry to display the reply ui.
+						((ActivityStreamUIEntry) actionData ).invokeReplyUI();
+					}
+					break;
+					
 				case SHARE:
 					Window.alert( action.getUnlocalizedDesc() );
 					break;
