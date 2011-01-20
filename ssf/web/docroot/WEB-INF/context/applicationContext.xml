@@ -582,7 +582,7 @@
 		<property name="coreDao"><ref bean="coreDao"/></property>
 		<property name="folderDao"><ref bean="folderDao"/></property>
 		<property name="profileDao"><ref bean="profileDao"/></property>
-		<property name="securityDao"><ref bean="profileDao"/></property>
+		<property name="securityDao"><ref bean="securityDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 		<property name="aclManager"><ref bean="aclManager"/></property>
