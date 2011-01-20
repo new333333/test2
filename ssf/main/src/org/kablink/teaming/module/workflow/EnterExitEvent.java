@@ -40,6 +40,7 @@ package org.kablink.teaming.module.workflow;
  * @author Janet McCann
  *
  */
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,6 +82,8 @@ import org.kablink.teaming.jobs.WorkflowProcess;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
+import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
@@ -446,6 +449,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 		String msgHtml = "";
 		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_VIEW);
 		StringBuffer tMsg = new StringBuffer();
+		StringWriter writer = new StringWriter();
+		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.TEXT, "workflow_notification_header.vm");
+		tMsg.append(writer.toString());
 		tMsg.append(permaLink);
 		tMsg.append("\n\n");
 		
@@ -456,6 +462,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			tMsg.append(Html.stripHtml(msgHtml));
 			tMsg.append("\n");
 		}
+		writer = new StringWriter();
+		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.TEXT, "workflow_notification_footer.vm");
+		tMsg.append(writer.toString());
 		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
 		
 		//Get the body text and turn it into html
@@ -466,6 +475,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 		String bodyTextHtml = textToHtml.toString();
 
 		StringBuffer hMsg = new StringBuffer();
+		writer = new StringWriter();
+		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.HTML, "workflow_notification_header.vm");
+		hMsg.append(writer.toString());
 		hMsg.append("<a href=\"");
 		hMsg.append(permaLink);
 		hMsg.append("\">");
@@ -490,6 +502,9 @@ public class EnterExitEvent extends AbstractActionHandler {
 			}
 			details.put(MailModule.FROM, ia);
 		} catch  (Exception useDefault) {}
+		writer = new StringWriter();
+		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.HTML, "workflow_notification_footer.vm");
+		hMsg.append(writer.toString());
 		details.put(MailModule.LOG_TYPE, EmailLog.EmailLogType.workflowNotification);
 		EmailUtil.putHTML(details, MailModule.HTML_MSG, hMsg.toString());
 		try {

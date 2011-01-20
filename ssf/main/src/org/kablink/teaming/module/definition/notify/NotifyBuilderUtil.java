@@ -116,6 +116,31 @@ public class NotifyBuilderUtil implements InitializingBean {
 	private static NotifyBuilderUtil getInstance() {
 		return instance;
 	}
+    public static void addVelocityTemplate(DefinableEntity entity, Notify notifyDef, Writer writer, 
+    		NotifyVisitor.WriterType writerType, Map params, String template) {
+		if (entity.getEntryDefId() == null) return ;
+    	VelocityContext ctx = getVelocityContext(params);
+ 		ctx.put("ssEntity", entity);
+ 		NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, null, writer, writerType, params);
+		try {
+			visitor.processTemplate(template, ctx);
+		} catch (Exception ex) {
+			NotifyBuilderUtil.logger.error("Error processing template", ex);
+		}
+    }
+
+    public static void addVelocityTemplate(DefinableEntity entity, Map params, Writer writer, 
+    		NotifyVisitor.WriterType writerType, String template) {
+    	VelocityContext ctx = getVelocityContext(params);
+ 		ctx.put("ssEntity", entity);
+ 		NotifyVisitor visitor = new NotifyVisitor(entity, null, null, writer, writerType, params);
+		try {
+			visitor.processTemplate(template, ctx);
+		} catch (Exception ex) {
+			NotifyBuilderUtil.logger.error("Error processing template", ex);
+		}
+    }
+
     public static void buildElements(DefinableEntity entity, Notify notifyDef, Writer writer, NotifyVisitor.WriterType writerType, Map params) {
 		if (entity.getEntryDefId() == null) return ;
 		Document definitionTree = entity.getEntryDefDoc();
