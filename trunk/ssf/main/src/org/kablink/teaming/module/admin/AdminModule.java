@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -70,7 +71,8 @@ public interface AdminModule {
 		manageFunctionMembership,
 		manageErrorLogs,
 		manageExtensions,
-		manageIndex
+		manageIndex,
+		manageFunctionCondition
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -265,4 +267,13 @@ public interface AdminModule {
 	public void modifyExtension(ExtensionInfo extension);
 	
 	public void optimizeIndex(String[] nodeNames) throws ManageIndexException, AccessControlException;
+	
+	public void addFunctionCondition(Condition functionCondition);
+	
+	public void modifyFunctionCondition(Condition functionCondition);
+	
+	public void deleteFunctionCondition(String functionConditionId);
+	
+	public List<Condition> getFunctionConditions();
+	
  }

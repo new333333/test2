@@ -32,19 +32,69 @@
  */
 package org.kablink.teaming.security.function;
 
-public class SimpleRemoteAddrCondition extends Condition {
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
-	public SimpleRemoteAddrCondition(String expression) {
-		
+import org.kablink.util.StringUtil;
+
+public class RemoteAddrCondition extends Condition {
+
+	private static final String DELIMITER = ",";
+	private static ConcurrentHashMap<String, Pattern> patternCache;
+	
+	private String[] remoteAddressExpressions;
+	
+	// For use by Hibernate only.
+	protected RemoteAddrCondition() {
 	}
 	
-	/* (non-Javadoc)
+	// Applications use this constructor.
+	public RemoteAddrCondition(String title, String[] remoteAddressExpressions) {
+		setTitle(title);
+		setRemoteAddressExpressions(remoteAddressExpressions);
+	}
+	
+	public String[] getRemoteAddressExpressions() {
+		if(remoteAddressExpressions == null) {
+			if(getEncodedSpec() != null) {
+				remoteAddressExpressions = StringUtil.split(getEncodedSpec(), DELIMITER);
+			}
+		}
+		return remoteAddressExpressions;
+	}
+
+	public void setRemoteAddressExpressions(String[] remoteAddressExpressions) {
+		setEncodedSpec(StringUtil.merge(remoteAddressExpressions, DELIMITER));
+		this.remoteAddressExpressions = remoteAddressExpressions;
+	}
+
+	/* This method expects a single argument of String type, where the value 
+	 * represents a remote IP address of a client.
 	 * @see org.kablink.teaming.security.function.Condition#evaluate(java.lang.Object[])
 	 */
 	@Override
-	public boolean evaluate(Object... obj) {
-		// TODO Auto-generated method stub
+	public boolean evaluate(Object... args) {
+		if(args == null || args.length == 0)
+			throw new IllegalArgumentException("Input is required");
+		String remoteAddr = (String) args[0];
+		String[] exprs = getRemoteAddressExpressions();
+		if(exprs == null)
+			return false;
+		for(String exp:exprs) {
+			if(getPattern(exp).matcher(remoteAddr).matches())
+				return true;
+		}
 		return false;
+	}
+
+	private Pattern getPattern(String exp) {
+		// Cache pattern objects since pattern compilation is expensive.
+		Pattern pattern = patternCache.get(exp);
+		if(pattern == null) {
+			pattern = Pattern.compile(exp);
+			patternCache.put(exp, pattern);
+		}
+		return pattern;
 	}
 
 }

@@ -32,26 +32,44 @@
  */
 package org.kablink.teaming.security.function;
 
-public abstract class Condition {
+import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.ZonedObject;
+import org.kablink.util.Validator;
 
-	private String expression;
+public abstract class Condition extends ZonedObject {
 
-	// For use by Hibernate only.
+	private String title;
+	private Description description;
+	private String encodedSpec; // encoded specification stored in the database
+
 	protected Condition() {
 	}
 	
-	// Applications use this constructor.
-	public Condition(String expression) {
-		this.expression = expression;
-	}
-	
-	public String getExpression() {
-		return expression;
+	protected String getEncodedSpec() {
+		return encodedSpec;
 	}
 
-	public void setExpression(String expression) {
-		this.expression = expression;
+	protected void setEncodedSpec(String encodedSpec) {
+		this.encodedSpec = encodedSpec;
+	}
+
+	public String getTitle() {
+		return title;
 	}
 	
-	public abstract boolean evaluate(Object... obj);
+	public void setTitle(String title) {
+		if (Validator.isNull(title)) 
+			throw new IllegalArgumentException("null title");
+	    this.title = title;
+	}
+
+	public Description getDescription() {
+		return description;
+	}
+
+	public void setDescription(Description description) {
+		this.description = description;
+	}
+
+	public abstract boolean evaluate(Object... args);
 }

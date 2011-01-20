@@ -40,6 +40,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
+import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 
@@ -60,6 +61,10 @@ public interface SecurityDao {
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException;
     	    	     
     public List findFunctions(Long zoneId);
+    
+    public Condition loadFunctionCondition(Long zoneId, String functionConditionId) throws NoObjectByTheIdException;
+    
+    public List<Condition> findFunctionConditions(Long zoneId);
 
     /**
      * Returns specified <code>WorkAreaFunctionMembership</code>.

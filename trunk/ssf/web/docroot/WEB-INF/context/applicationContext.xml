@@ -582,6 +582,7 @@
 		<property name="coreDao"><ref bean="coreDao"/></property>
 		<property name="folderDao"><ref bean="folderDao"/></property>
 		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="securityDao"><ref bean="profileDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 		<property name="aclManager"><ref bean="aclManager"/></property>
@@ -627,6 +628,7 @@
 				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addFunction">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addFunctionCondition">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="updateDefaultDefinitions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMailConfigAndSchedules">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
