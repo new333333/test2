@@ -663,7 +663,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		return result;
 	}
 	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
+		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
+		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer, NotifyVisitor.WriterType type) {
 		try {
@@ -697,10 +699,14 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		if (Notify.NotifyType.interactive.equals(notify.getType())) {
 			params.put("org.kablink.teaming.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
 
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "header.vm");
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.HTML, params);
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "footer.vm");
 			EmailUtil.putHTML(result, EmailFormatter.HTML, writer.toString());
 			writer = new StringWriter();
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "header.vm");
 			NotifyBuilderUtil.buildElements(entry, notify, writer, NotifyVisitor.WriterType.TEXT, params);
+			NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, NotifyVisitor.WriterType.HTML, params, "footer.vm");
 			EmailUtil.putText(result, EmailFormatter.TEXT, writer.toString());
 			
 		} else {
@@ -720,7 +726,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		if (entry == null) return;
 		//handle direct ancestors of the changed entry first
 		doEntry(entry.getParentEntry(), notify, writer, type, params); 
+		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
+		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}
 	
 	/**
