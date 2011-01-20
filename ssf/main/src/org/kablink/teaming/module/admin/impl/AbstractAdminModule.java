@@ -103,6 +103,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
+import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
 import org.kablink.teaming.security.function.WorkArea;
@@ -1191,4 +1192,31 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			luceneSession.close();
 		}
 	}
+	
+	public void addFunctionCondition(Condition functionCondition) {
+		checkAccess(AdminOperation.manageFunctionCondition);
+		getSecurityDao().save(functionCondition);
+	}
+	
+	public void modifyFunctionCondition(Condition functionCondition) {
+		checkAccess(AdminOperation.manageFunctionCondition);
+		getSecurityDao().update(functionCondition);
+	}
+	
+	public void deleteFunctionCondition(String functionConditionId) {
+		checkAccess(AdminOperation.manageFunctionCondition);
+		try {
+			Condition functionCondition = getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
+			getSecurityDao().delete(functionCondition);
+		}
+		catch(NoObjectByTheIdException e) {
+			// already gone - no problem
+		}
+	}
+	
+	public List<Condition> getFunctionConditions() {
+		// let anyone read them - is this right?
+		return getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
+	}
+
 }
