@@ -42,32 +42,62 @@ public class RemoteAddrCondition extends Condition {
 	private static final String DELIMITER = ",";
 	private static ConcurrentHashMap<String, Pattern> patternCache;
 	
-	private String[] remoteAddressExpressions;
+	private String[] includeAddressExpressions;
+	private String[] excludeAddressExpressions;
+	private boolean dirty = false;
 	
 	// For use by Hibernate only.
 	protected RemoteAddrCondition() {
 	}
-	
-	// Applications use this constructor.
-	public RemoteAddrCondition(String title, String[] remoteAddressExpressions) {
-		setTitle(title);
-		setRemoteAddressExpressions(remoteAddressExpressions);
-	}
-	
-	public String[] getRemoteAddressExpressions() {
-		if(remoteAddressExpressions == null) {
-			if(getEncodedSpec() != null) {
-				remoteAddressExpressions = StringUtil.split(getEncodedSpec(), DELIMITER);
-			}
+
+	@Override
+	protected String getEncodedSpec() {
+		if(dirty) {
+			toEncodedSpec();
+			dirty = false;
 		}
-		return remoteAddressExpressions;
+		return super.getEncodedSpec();
 	}
 
-	public void setRemoteAddressExpressions(String[] remoteAddressExpressions) {
-		setEncodedSpec(StringUtil.merge(remoteAddressExpressions, DELIMITER));
-		this.remoteAddressExpressions = remoteAddressExpressions;
+	@Override
+	protected void setEncodedSpec(String encodedSpec) {
+		super.setEncodedSpec(encodedSpec);
+		toExpressions();
 	}
 
+	// Applications use this constructor.
+	public RemoteAddrCondition(String title, String[] includeAddressExpressions, String[] excludeAddressExpressions) {
+		setTitle(title);
+		setIncludeAddressExpressions(includeAddressExpressions);
+		setExcludeAddressExpressions(excludeAddressExpressions);
+	}
+	
+	public String[] getIncludeAddressExpressions() {
+		if(includeAddressExpressions == null)
+			includeAddressExpressions = new String[0];
+		return includeAddressExpressions; // This is always up-to-date
+	}
+
+	public void setIncludeAddressExpressions(String[] includeAddressExpressions) {
+		if(includeAddressExpressions == null)
+			includeAddressExpressions = new String[0];
+		this.includeAddressExpressions = includeAddressExpressions;
+		this.dirty = true;
+	}
+
+	public String[] getExcludeAddressExpressions() {
+		if(excludeAddressExpressions == null)
+			excludeAddressExpressions = new String[0];
+		return excludeAddressExpressions; // This is always up-to-date
+	}
+
+	public void setExcludeAddressExpressions(String[] excludeAddressExpressions) {
+		if(excludeAddressExpressions == null)
+			excludeAddressExpressions = new String[0];
+		this.excludeAddressExpressions = excludeAddressExpressions;
+		this.dirty = true;
+	}
+	
 	/* This method expects a single argument of String type, where the value 
 	 * represents a remote IP address of a client.
 	 * @see org.kablink.teaming.security.function.Condition#evaluate(java.lang.Object[])
@@ -77,14 +107,33 @@ public class RemoteAddrCondition extends Condition {
 		if(args == null || args.length == 0)
 			throw new IllegalArgumentException("Input is required");
 		String remoteAddr = (String) args[0];
-		String[] exprs = getRemoteAddressExpressions();
-		if(exprs == null)
-			return false;
-		for(String exp:exprs) {
-			if(getPattern(exp).matcher(remoteAddr).matches())
-				return true;
+		String[] includes = getIncludeAddressExpressions();
+		String[] excludes = getExcludeAddressExpressions();
+		boolean included = false;
+		// Check inclusion rules
+		for(String include : includes) {
+			if(getPattern(include).matcher(remoteAddr).matches()) {
+				// A inclusion rule matched. Skip the rest of the inclusion rules, and
+				// go check the exclusion rules.  
+				included = true;
+				break;
+			}
 		}
-		return false;
+		if(included) {
+			// Check exclusion rules
+			for(String exclude : excludes) {
+				if(getPattern(exclude).matcher(remoteAddr).matches()) {
+					// A exclusion rule matched. Reject it.
+					return false;
+				}
+			}
+			// No exclusion rule matched (or no exclusion rule existed). 
+			return true;
+		}
+		else {
+			// None of the inclusion rule matched (or no inclusion rule existed).
+			return false;
+		}
 	}
 
 	private Pattern getPattern(String exp) {
@@ -97,4 +146,23 @@ public class RemoteAddrCondition extends Condition {
 		return pattern;
 	}
 
+	private void toEncodedSpec() {
+		String[] includes = getIncludeAddressExpressions();
+		String[] excludes = getExcludeAddressExpressions();
+		StringBuilder sb = new StringBuilder();
+		sb.append("includes=")
+		.append(StringUtil.merge(includes, DELIMITER))
+		.append(" excludes=")
+		.append(StringUtil.merge(excludes, DELIMITER));
+		setEncodedSpec(sb.toString());
+	}
+	
+	private void toExpressions() {
+		String str = getEncodedSpec();
+		int excludesIndex = str.indexOf("excludes=");
+		String includesStr = str.substring(9, excludesIndex-1);
+		String excludesStr = str.substring(excludesIndex+9);
+		this.includeAddressExpressions = StringUtil.split(includesStr, DELIMITER);
+		this.excludeAddressExpressions = StringUtil.split(excludesStr, DELIMITER);
+	}
 }
