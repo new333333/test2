@@ -93,7 +93,12 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.jobs.DefaultFolderNotification;
+import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.FolderDelete;
+import org.kablink.teaming.jobs.FolderNotification;
+import org.kablink.teaming.jobs.MirroredFolderSynchronization;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -201,7 +206,22 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		}
    		return (FolderDelete)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFolderDelete.class);
   	}
- 	//called on zone delete
+
+	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId) {
+  		return getNotificationScheduleObject().getScheduleInfo(zoneId, folderId);
+	}
+	
+	public void setNotificationSchedule(ScheduleInfo config, Long folderId) {
+    	checkAccess(getFolder(folderId),FolderOperation.manageEmail);
+        //data is stored with job
+        getNotificationScheduleObject().setScheduleInfo(config, folderId);
+    }    
+
+	private FolderNotification getNotificationScheduleObject() {
+		return new DefaultFolderNotification();
+    }    
+
+	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
 		FolderDelete job = getDeleteProcessor(zone);
 		job.remove(zone.getId());
@@ -235,6 +255,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
+			case manageEmail:
 			case scheduleSynchronization:
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);

@@ -665,7 +665,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, NotifyVisitor.WriterType type, Map params) {
 		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
 		NotifyBuilderUtil.buildElements(entry, notify, writer, type, params);
-		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "header.vm");
+		NotifyBuilderUtil.addVelocityTemplate(entry, notify, writer, type, params, "footer.vm");
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer, NotifyVisitor.WriterType type) {
 		try {

@@ -41,12 +41,17 @@ public class ScheduleInfo {
 	private Schedule schedule;
 	protected Map details;
 	private boolean enabled;
+	private Long folderId;
 	private Long zoneId;
 	
 	public ScheduleInfo(Long zoneId) {
 		this.zoneId = zoneId;
 	}
 	public ScheduleInfo(Map details) {
+		this.details = details;
+	}
+	public ScheduleInfo(Long folderId, Map details) {
+		this.folderId = folderId;
 		this.details = details;
 	}
 	public Schedule getSchedule() {
@@ -65,6 +70,12 @@ public class ScheduleInfo {
 	}
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
+	}
+	public void setFolderId(Long folderId) {
+		this.folderId = folderId;
+	}
+	public Long getFolderId() {
+		return folderId;
 	}
 	public void setZoneId(Long zoneId) {
 		this.zoneId = zoneId;

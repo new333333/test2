@@ -84,6 +84,7 @@ public interface FolderModule {
 	   restoreEntry,
 	   deleteEntry,
 	   deleteEntryWorkflow,
+	   manageEmail,
 	   manageTag,
 	   modifyEntry,
 	   modifyEntryFields,
@@ -648,6 +649,9 @@ public interface FolderModule {
 	
 	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
+	
+	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
+	public void setNotificationSchedule(ScheduleInfo config, Long folderId);
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 }
