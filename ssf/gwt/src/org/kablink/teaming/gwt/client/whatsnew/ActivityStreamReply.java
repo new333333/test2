@@ -156,6 +156,14 @@ public class ActivityStreamReply extends Composite
 	}
 	
 	/**
+	 * Return the text the user has entered for the description.
+	 */
+	public String getDesc()
+	{
+		return m_descTextArea.getText();
+	}
+	
+	/**
 	 * This gets called when the user clicks on the Send button.
 	 */
 	private void handleClickOnSendBtn()
