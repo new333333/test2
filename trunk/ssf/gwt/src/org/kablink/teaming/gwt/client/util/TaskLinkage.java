@@ -212,6 +212,58 @@ public class TaskLinkage implements IsSerializable {
 	}
 
 	/**
+	 * Returns true if the given task can be moved down from where
+	 * its at.
+	 * 
+	 * @param taskId
+	 * 
+	 * @return
+	 */
+	public boolean canMoveTaskDown(Long taskId) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
+	/**
+	 * Returns true if the given task can be moved left from where
+	 * its at.
+	 * 
+	 * @param taskId
+	 * 
+	 * @return
+	 */
+	public boolean canMoveTaskLeft(Long taskId) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
+	/**
+	 * Returns true if the given task can be moved right from where
+	 * its at.
+	 * 
+	 * @param taskId
+	 * 
+	 * @return
+	 */
+	public boolean canMoveTaskRight(Long taskId) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
+	/**
+	 * Returns true if the given task can be moved up from where
+	 * its at.
+	 * 
+	 * @param taskId
+	 * 
+	 * @return
+	 */
+	public boolean canMoveTaskUp(Long taskId) {
+//!		...this needs to be implemented...
+		return true;
+	}
+	
+	/**
 	 * Returns the TaskLink with the given ID from this TaskLinkage.
 	 * 
 	 * @param id

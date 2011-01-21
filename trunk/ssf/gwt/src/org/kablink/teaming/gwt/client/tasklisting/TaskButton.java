@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
@@ -42,6 +45,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -164,15 +168,13 @@ public class TaskButton extends Anchor {
 		m_buttonImage.addStyleName("gwtTaskToolsButton_WidgetImage");
 		m_buttonImage.getElement().setAttribute("align", "absmiddle");
 		
-		// ...tie things together...
-		getElement().appendChild(m_buttonImage.getElement());
-		PassThroughEventsPanel eventsPanel = new PassThroughEventsPanel(getElement());
-		eventsPanel.addClickHandler(new ButtonSelector());
-		
-		// ...add mouse over handling...
-		ButtonHover hover = new ButtonHover(m_buttonImage);
-		eventsPanel.addMouseOverHandler(hover);
-		eventsPanel.addMouseOutHandler( hover);
+		// ...tie things together, including the various event
+		// ...handlers.
+		getElement().appendChild(m_buttonImage.getElement());		
+		List<EventHandler> ehs = new ArrayList<EventHandler>();
+		ehs.add(new ButtonSelector());
+		ehs.add(new ButtonHover(m_buttonImage));
+		PassThroughEventsPanel.addHandlers(this, ehs);
 	}
 	
 	public TaskButton(ActionTrigger actionTrigger, ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingAction action) {
@@ -213,15 +215,13 @@ public class TaskButton extends Anchor {
 			m_buttonLabel.addStyleName("gwtTaskToolsButton_WidgetTextDisabled");
 		}
 		
-		// ...tie things together...
+		// ...tie things together, including the various event
+		// ...handlers.
 		getElement().appendChild(m_buttonLabel.getElement());
-		PassThroughEventsPanel eventsPanel = new PassThroughEventsPanel(getElement());
-		eventsPanel.addClickHandler(new ButtonSelector());
-		
-		// ...add mouse over handling...
-		ButtonHover hover = new ButtonHover(m_buttonLabel);
-		eventsPanel.addMouseOverHandler(hover);
-		eventsPanel.addMouseOutHandler( hover);
+		List<EventHandler> ehs = new ArrayList<EventHandler>();
+		ehs.add(new ButtonSelector());
+		ehs.add(new ButtonHover(m_buttonLabel));
+		PassThroughEventsPanel.addHandlers(this, ehs);
 	}
 	
 	public TaskButton(ActionTrigger actionTrigger, String buttonText, String buttonTitle, boolean enabled, TeamingAction action) {
