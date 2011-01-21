@@ -126,6 +126,7 @@ public class TaskListing implements ActionHandler, ActionTrigger {
 		m_moveLeftButton  = new TaskButton(this, m_images.arrowLeft(),  m_images.arrowLeftDisabled(),  m_images.arrowLeftMouseOver(),  false, m_messages.taskAltMoveLeft(),  TeamingAction.TASK_MOVE_LEFT);
 		m_moveRightButton = new TaskButton(this, m_images.arrowRight(), m_images.arrowRightDisabled(), m_images.arrowRightMouseOver(), false, m_messages.taskAltMoveRight(), TeamingAction.TASK_MOVE_RIGHT);
 		il = new InlineLabel(m_messages.taskLabelSubtask());
+		il.addStyleName("mediumtext");
 		il.addStyleName("gwtTaskTools_Span");
 		il.getElement().appendChild(m_moveLeftButton.getElement());
 		il.getElement().appendChild(m_moveRightButton.getElement());
