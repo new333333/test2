@@ -77,6 +77,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -394,8 +395,13 @@ public class ActivityStreamCtrl extends Composite
 				{
 					if ( haveChanges )
 					{
-						// Refresh the activity stream.
-						refreshActivityStream();
+						// Is the user composing a reply?
+						if ( isReplyInProgress() == false )
+						{
+							// No
+							// Refresh the activity stream.
+							refreshActivityStream();
+						}
 					}
 				}// end onSuccess()
 			};
@@ -1148,6 +1154,36 @@ public class ActivityStreamCtrl extends Composite
 		return ActivityStream.FOLLOWED_PERSON == m_activityStreamInfo.getActivityStream();
 	}
 	
+	
+	/**
+	 * Go through all the entries and see if the user has the "Reply to Entry" widget open.
+	 */
+	private boolean isReplyInProgress()
+	{
+		boolean replyInProgress;
+		int numEntries;
+		int i;
+		
+		replyInProgress = false;
+		
+		// Go through each entry on the page and see if the user has the "Reply to entry" widget open.
+		numEntries = m_searchResultsPanel.getWidgetCount();
+		for (i = 0; i < numEntries && replyInProgress == false; ++i)
+		{
+			Widget nextWidget;
+			
+			nextWidget = m_searchResultsPanel.getWidget( i );
+			if ( nextWidget instanceof ActivityStreamTopEntry )
+			{
+				ActivityStreamTopEntry topEntry;
+				
+				topEntry = (ActivityStreamTopEntry) nextWidget;
+				replyInProgress = topEntry.checkForReplyInProgress();
+			}
+		}
+		
+		return replyInProgress;
+	}
 	
 	/**
 	 * This method gets called when the user clicks on the "previous" or "next" image in the search results window.

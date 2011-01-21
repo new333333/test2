@@ -672,6 +672,23 @@ public abstract class ActivityStreamUIEntry extends Composite
 		return m_unreadImg.isVisible();
 	}
 	
+	/**
+	 * Return true if the "reply to entry" widget is open and the user has entered text into it.
+	 */
+	public boolean isReplyInProgress()
+	{
+		if ( m_replyWidget.isVisible() )
+		{
+			String desc;
+			
+			desc = m_replyWidget.getDesc();
+			if ( desc != null && desc.length() > 0 )
+				return true;
+		}
+
+		return false;
+	}
+	
 	
 	/**
 	 * Mark this entry as being read.

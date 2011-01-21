@@ -58,6 +58,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Widget;
 
 
 /**
@@ -180,6 +181,42 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		// Add this ui widget to panel that holds all comments
 		commentsPanel = getCommentsPanel();
 		commentsPanel.add( commentUI );
+	}
+	
+	
+	/**
+	 * Return true if the "reply to entry" widget is open and the user has entered text in it.
+	 */
+	public boolean checkForReplyInProgress()
+	{
+		boolean replyInProgress;
+		FlowPanel commentsPanel;
+		int i;
+		int numComments;
+		
+		replyInProgress = false;
+		
+		if ( isReplyInProgress() )
+			return true;
+		
+		// Check each comment to see if the "reply to entry" widget is open and the user has entered text in it.
+		commentsPanel = getCommentsPanel();
+		numComments = commentsPanel.getWidgetCount();
+		for (i = 0; i < numComments && replyInProgress == false ; ++i)
+		{
+			Widget nextWidget;
+			
+			nextWidget = commentsPanel.getWidget( i );
+			if ( nextWidget instanceof ActivityStreamComment )
+			{
+				ActivityStreamComment comment;
+				
+				comment = (ActivityStreamComment) nextWidget;
+				replyInProgress = comment.isReplyInProgress();
+			}
+		}
+
+		return replyInProgress;
 	}
 	
 	
@@ -393,7 +430,6 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 		++m_numComments;
 		updateCommentsLabel();
 	}
-	
 	
 	/**
 	 * 
