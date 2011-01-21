@@ -33,6 +33,9 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -43,8 +46,10 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Provides a panel than can be instantiated by code in the outer frame
@@ -72,5 +77,33 @@ public class PassThroughEventsPanel extends AbsolutePanel implements HasClickHan
 	@Override
 	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
 		return addDomHandler(handler, MouseOutEvent.getType());
-	}	
+	}
+
+	/**
+	 * Adds the EventHandler's from a List<EventHandler> to a Widget
+	 * via a PassThroughEventsPanel.
+	 * 
+	 * @param w
+	 * @param handlers
+	 */
+	public static void addHandler(Widget w, List<EventHandler> handlers) {
+		PassThroughEventsPanel p = new PassThroughEventsPanel(w.getElement());
+		for (EventHandler eh:  handlers) {
+			if (eh instanceof ClickHandler)     p.addClickHandler(    (ClickHandler)     eh); 
+			if (eh instanceof MouseOverHandler) p.addMouseOverHandler((MouseOverHandler) eh); 
+			if (eh instanceof MouseOutHandler)  p.addMouseOutHandler( (MouseOutHandler)  eh); 
+		}
+	}
+
+	/**
+	 * Adds a ClickHandler to a Widget via a PassThroughEventsPanel.
+	 * 
+	 * @param w
+	 * @param ch
+	 */
+	public static void addHandler(Widget w, ClickHandler ch) {
+		List<EventHandler> ehList = new ArrayList<EventHandler>();
+		ehList.add(ch);
+		addHandler(w, ehList);
+	}
 }

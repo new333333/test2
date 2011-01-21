@@ -35,10 +35,7 @@ package org.kablink.teaming.gwt.client.tasklisting;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
@@ -54,7 +51,7 @@ public class TaskSorter {
 	/**
 	 * Inner class used to compare two tasks by their assignee.
 	 */
-	public static class TaskAssignedComparator implements Comparator<TaskListItem> {
+	public static class AssignedToComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -62,7 +59,7 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskAssignedComparator(boolean ascending) {
+		public AssignedToComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -93,9 +90,9 @@ public class TaskSorter {
 		 * purposes.
 		 */
 		private static String getAssignee(TaskInfo task) {
-			for (AssignmentInfo assignee:  task.getAssignments())      return assignee.getTitle();
-			for (AssignmentInfo assignee:  task.getAssignmentGroups()) return assignee.getTitle();
-			for (AssignmentInfo assignee:  task.getAssignmentTeams())  return assignee.getTitle();
+			for (AssignmentInfo assignee:  task.getAssignments())      return getNonNullString(assignee.getTitle());
+			for (AssignmentInfo assignee:  task.getAssignmentGroups()) return getNonNullString(assignee.getTitle());
+			for (AssignmentInfo assignee:  task.getAssignmentTeams())  return getNonNullString(assignee.getTitle());
 			
 			return "";
 		}
@@ -103,9 +100,9 @@ public class TaskSorter {
 	
 	/**
 	 * Inner class used to compare two tasks by their closed date or
-	 * % done if they haven't been marked completed yet.
+	 * their % done value if they haven't been marked completed yet.
 	 */
-	public static class TaskClosedCompletedComparator implements Comparator<TaskListItem> {
+	public static class ClosedPercentDoneComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -113,12 +110,13 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskClosedCompletedComparator(boolean ascending) {
+		public ClosedPercentDoneComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
 		/**
-		 * Compares two TaskListItem's by their closed date.
+		 * Compares two TaskListItem's by their closed date or their
+		 * % done value if they haven'tbeen marked completed yet.
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
@@ -129,8 +127,8 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String c1 = tli1.getTask().getCompleted();
-			String c2 = tli2.getTask().getCompleted();
+			String c1 = getNonNullString(tli1.getTask().getCompleted(), "c000");
+			String c2 = getNonNullString(tli2.getTask().getCompleted(), "c000");
 
 			int reply;
 			if (m_ascending)
@@ -143,7 +141,7 @@ public class TaskSorter {
 	/**
 	 * Inner class used to compare two tasks by their due date.
 	 */
-	public static class TaskDueComparator implements Comparator<TaskListItem> {
+	public static class DueDateComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -151,7 +149,7 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskDueComparator(boolean ascending) {
+		public DueDateComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -167,9 +165,9 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			Date d1 = tli1.getTask().getEvent().getLogicalEnd();
-			Date d2 = tli2.getTask().getEvent().getLogicalEnd();
-
+			Date d1 = getNonNullDate(tli1.getTask().getEvent().getLogicalEnd());
+			Date d2 = getNonNullDate(tli2.getTask().getEvent().getLogicalEnd());
+			
 			int reply;
 			if (m_ascending)
 			     reply = d1.compareTo(d2);
@@ -179,47 +177,9 @@ public class TaskSorter {
 	}
 	
 	/**
-	 * Inner class used to compare two tasks by their IDs.
-	 */
-	public static class TaskIdComparator implements Comparator<TaskListItem> {
-		private boolean m_ascending;	//
-
-		/**
-		 * Class constructor.
-		 * 
-		 * @param ascending
-		 */
-		public TaskIdComparator(boolean ascending) {
-			m_ascending = ascending;
-		}
-
-		/**
-		 * Compares two TaskListItem's by their IDs.
-		 * 
-		 * Implements the Comparator.compare() method.
-		 * 
-		 * @param tli1
-		 * @param tli2
-		 * 
-		 * @return
-		 */
-		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			Long id1 = tli1.getTask().getTaskId();
-			Long id2 = tli2.getTask().getTaskId();
-
-			int reply;
-			if (m_ascending)
-			     reply = id1.compareTo(id2);
-			else reply = id2.compareTo(id1);
-			return reply;
-		}
-	}
-	
-	/**
 	 * Inner class used to compare two tasks by their name.
 	 */
-	public static class TaskNameComparator implements Comparator<TaskListItem> {
+	public static class NameComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -227,7 +187,7 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskNameComparator(boolean ascending) {
+		public NameComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -243,8 +203,8 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String name1 = tli1.getTask().getTitle();
-			String name2 = tli2.getTask().getTitle();
+			String name1 = getNonNullString(tli1.getTask().getTitle());
+			String name2 = getNonNullString(tli2.getTask().getTitle());
 
 			int reply;
 			if (m_ascending)
@@ -255,9 +215,9 @@ public class TaskSorter {
 	}
 	
 	/**
-	 * Inner class used to compare two tasks by their priority.
+	 * Inner class used to compare two tasks by their order number.
 	 */
-	public static class TaskPriorityComparator implements Comparator<TaskListItem> {
+	public static class OrderComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -265,7 +225,45 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskPriorityComparator(boolean ascending) {
+		public OrderComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two TaskListItem's by their order number.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param tli1
+		 * @param tli2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(TaskListItem tli1, TaskListItem tli2) {
+			Integer id1 = TaskTable.getTaskOrder(tli1);
+			Integer id2 = TaskTable.getTaskOrder(tli2);
+
+			int reply;
+			if (m_ascending)
+			     reply = id1.compareTo(id2);
+			else reply = id2.compareTo(id1);
+			return reply;
+		}
+	}
+	
+	/**
+	 * Inner class used to compare two tasks by their priority.
+	 */
+	public static class PriorityComparator implements Comparator<TaskListItem> {
+		private boolean m_ascending;	//
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public PriorityComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -281,8 +279,8 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String p1 = tli1.getTask().getPriority();
-			String p2 = tli2.getTask().getPriority();
+			String p1 = getNonNullString(tli1.getTask().getPriority(), "p0");
+			String p2 = getNonNullString(tli2.getTask().getPriority(), "p0");
 
 			int reply;
 			if (m_ascending)
@@ -295,7 +293,7 @@ public class TaskSorter {
 	/**
 	 * Inner class used to compare two tasks by their status.
 	 */
-	public static class TaskStatusComparator implements Comparator<TaskListItem> {
+	public static class StatusComparator implements Comparator<TaskListItem> {
 		private boolean m_ascending;	//
 
 		/**
@@ -303,7 +301,7 @@ public class TaskSorter {
 		 * 
 		 * @param ascending
 		 */
-		public TaskStatusComparator(boolean ascending) {
+		public StatusComparator(boolean ascending) {
 			m_ascending = ascending;
 		}
 
@@ -319,8 +317,8 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String s1 = tli1.getTask().getStatus();
-			String s2 = tli2.getTask().getStatus();
+			String s1 = getNonNullString(tli1.getTask().getStatus(), "s0");
+			String s2 = getNonNullString(tli2.getTask().getStatus(), "s0");
 
 			int reply;
 			if (m_ascending)
@@ -331,20 +329,29 @@ public class TaskSorter {
 	}
 	
 	/**
-	 * Sorts the Map<Long, TaskListItem> via the comparator.
+	 * Class constructor that prevents this class from being
+	 * instantiated.
+	 */
+	private TaskSorter() {
+		// Nothing to do.
+	}
+		
+	/**
+	 * Sorts the List<TaskListItem> via the comparator provided.
 	 * 
 	 * @param map
 	 * @param comparator
-	 * 
-	 * @return
 	 */
-	public Map<Long, TaskListItem> sort(Map<Long, TaskListItem> map, Comparator<TaskListItem> comparator) {
-		List<TaskListItem> list = new LinkedList<TaskListItem>(map.values());
-		Collections.sort(list, comparator);
-		Map<Long, TaskListItem> reply = new LinkedHashMap<Long, TaskListItem>(list.size());
-		for (TaskListItem task:  list) {
-			reply.put(task.getTask().getTaskId(), task);
-		}
-		return reply;
+	public static void sort(List<TaskListItem> tasks, Comparator<TaskListItem> comparator) {
+		Collections.sort(tasks, comparator);
 	}
+
+	/*
+	 * Helper methods used to guard against comparing null values.
+	 */
+	private static Date getNonNullDate(Date d, Date defDate) {return ((null == d) ? defDate : d);   }	
+	private static Date getNonNullDate(Date d)               {return getNonNullDate(d, new Date(0));}
+	
+	private static String getNonNullString(String s, String defString) {return ((null == s) ? defString : s);}	
+	private static String getNonNullString(String s)                   {return getNonNullString(s, "");      }
 }

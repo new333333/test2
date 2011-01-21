@@ -51,6 +51,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class TaskListItem implements IsSerializable {
 	private List<TaskListItem>	m_subtasks = new ArrayList<TaskListItem>();
 	private TaskInfo			m_task     = new TaskInfo();
+	
+	private transient Object	m_uiData;	// Used to store information for the managing this in the user interface.
 
 	/**
 	 * Inner class used to model assignment information for a task.
@@ -338,6 +340,7 @@ public class TaskListItem implements IsSerializable {
 	 */
 	public List<TaskListItem> getSubtasks() {return m_subtasks;}
 	public TaskInfo           getTask()     {return m_task;    }
+	public Object             getUIData()   {return m_uiData;  }
 	
 	/**
 	 * Set'er methods.
@@ -345,5 +348,6 @@ public class TaskListItem implements IsSerializable {
 	 * @return
 	 */
 	public void setSubtasks(List<TaskListItem> subtasks) {m_subtasks = subtasks;}
-	public void setTask(    TaskInfo           task)     {m_task     = task;    }
+	public void setTask(    TaskInfo           task    ) {m_task     = task;    }
+	public void setUIData(  Object             uiData  ) {m_uiData   = uiData;  }
 }
