@@ -83,6 +83,9 @@
 										<c:if test="${ssScheduleInfo.enabled}">
 											<c:set var="scheduleStringOnly" value="true"/>
 											<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
+											<c:if test="${!empty ssNotification_ScheduleInfo && ssNotification_ScheduleInfo.enabled}">
+											  <c:set var="schedule" value="${ssNotification_ScheduleInfo.schedule}"/>
+											</c:if>
 											<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 										</c:if>
 										<c:if test="${!ssScheduleInfo.enabled}">
@@ -136,8 +139,46 @@
 					</td>
 				</tr>
 			</table>
-			<hr/>
+
+			<div style="padding-top:20px;">
+				<c:if test="${ssScheduleInfo.enabled && ssNotification_ScheduleInfo.enabled}">
+					<div style="padding-bottom:16px;">
+						<span class="ss_bold"><ssf:nlt tag="notify.alternateScheduleEnabled"/></span>
+					</div>
+				</c:if>
+				<c:if test="${ssScheduleInfo.enabled && !ssNotification_ScheduleInfo.enabled}">
+					<div>
+						<div>
+						  <span class="ss_bold"><ssf:nlt tag="schedule.siteSchedule"/></span>
+						</div>
+						<div style="padding-left:20px;">
+							<c:set var="scheduleStringOnly" value="true"/>
+							<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
+							<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+						</div>
+						<div style="padding-top:16px;">
+						<a href="javascript: ;" onClick="ss_toggleShowDiv('digestScheduleDiv');return false;">
+						  <ssf:nlt tag="schedule.setLocalSchedule"/>
+						</a>
+						</div>
+					</div>
+				</c:if>
+				<div id="digestScheduleDiv" 
+				  style='<c:if test="${!ssNotification_ScheduleInfo.enabled}">display:none;</c:if> padding-left:30px;'
+				>
+					<div>
+					  <input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssNotification_ScheduleInfo.enabled}">checked</c:if> />
+					  <span class="ss_labelRight"><ssf:nlt tag="notify.schedule.add"/> </span>
+					  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/sync_schedule"/>
+					</div>
+					<c:set var="schedule" value="${ssNotification_ScheduleInfo.schedule}"/>
+					<c:set var="schedPrefix" value="notify"/>
+					<c:set var="scheduleStringOnly" value="false"/>
+					<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+				</div>
+			</div>
 		</c:if>
+
 		<c:if test="${!empty ssScheduleInfo2}">
 			<table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="100%">
 				<tr>

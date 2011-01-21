@@ -82,9 +82,11 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.jobs.FillEmailSubscription;
+import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.SendEmail;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.definition.notify.Notify;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.ConnectionCallback;
@@ -167,6 +169,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+	private FolderModule folderModule;
+	public FolderModule getFolderModule() {
+		return folderModule;
+	}
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+
 	public String getMailRootDir() {
 		return mailRootDir;
 	}
@@ -718,6 +728,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
 		Date last = (Date)mailSender.send(new ConnectionCallback() {
 			public Object doWithConnection(Transport transport) throws MailException {
+				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
 				Date end = new Date();
 				values.put("p1", end);
@@ -731,9 +742,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				//Will be sorted by owningBinderkey
 				List<NotifyStatus> uStatus;
 				if (binder.isRoot()) {
-					uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+					uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, zoneId);
 				} else {
-					uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
+					uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, zoneId);				
 				}
 				while (!uStatus.isEmpty()) {
 					//get Ids to log folderEntries
@@ -742,6 +753,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					uStatus.remove(0);
 					currentFolder = (Folder)coreDao.loadBinder(current.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
 					currentFolder = currentFolder.getRootFolder();
+					//If doing global notification, make sure this binder doesn't have its own schedule
+					if (binder.isRoot()) {
+						//Skip any folders that have their own schedule
+						ScheduleInfo config = getFolderModule().getNotificationSchedule(zoneId, currentFolder.getId());
+						if (config != null && config.isEnabled() && config.getSchedule() != null) {
+							//This folder has its own schedule, so leave its entries un-notified during global notifications
+							continue;
+						}
+					}
 					//find other entries for same folder tree.  Ordered by owingBinderKey
 					List<NotifyStatus>currentStatus = new ArrayList();
 					currentStatus.add(current);

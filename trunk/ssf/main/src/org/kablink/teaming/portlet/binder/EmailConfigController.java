@@ -43,6 +43,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.MailConfig;
@@ -79,6 +80,13 @@ public class EmailConfigController extends  AbstractBinderController  {
 				if (formData.containsKey("groups")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 				getBinderModule().modifyNotification(folderId, userList, getNotifyData(request));
 			}
+			//See if there is a notification schedule for this folder
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			ScheduleInfo config = getFolderModule().getNotificationSchedule(zoneId, folderId);			
+			config.setSchedule(ScheduleHelper.getSchedule(request, "notify"));
+			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
+			getFolderModule().setNotificationSchedule(config, folderId);			
+
 			if (formData.containsKey("alias")) {
 				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
 				String password = PortletRequestUtils.getStringParameter(request, "password", null);
@@ -97,17 +105,23 @@ public class EmailConfigController extends  AbstractBinderController  {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		
 		Folder folder = getFolderModule().getFolder(folderId);
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.DEFINITION_ENTRY, folder);
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
+		
 		//	Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, folder, model, new MailTreeHelper());
 		//get top level schedule
 
 		if (folder.isTop()) {
-			ScheduleInfo config = getAdminModule().getNotificationSchedule();
+			ScheduleInfo config = getFolderModule().getNotificationSchedule(zoneId, folderId);		
+			model.put(WebKeys.NOTIFICATION_SCHEDULE_INFO, config);
+			
+			config = getAdminModule().getNotificationSchedule();
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();

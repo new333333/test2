@@ -1042,6 +1042,8 @@ public class WebKeys {
     public static final String NEXT_PAGE="ss_nextPage";
     public static final String NEXT_PREV_URL="ss_nextPrevUrl";
     public static final String NLT_VALUE="value";
+    public static final String NOTIFICATION_SCHEDULE="ssNotificationSchedule";
+    public static final String NOTIFICATION_SCHEDULE_INFO="ssNotification_ScheduleInfo";
     public static final String OPERATION="ssOperation";
     public static final String OPERATION_MAP="ssOperationMap";
     public static final String OWNER="ssOwner";
