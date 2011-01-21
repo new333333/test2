@@ -128,7 +128,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	} else if ("appendTitle".equals(name)) {
 		    		n.appendTitle = GetterUtil.getBoolean(value, false);
 		    	} else if ("bodyText".equals(name)) {
-		    		n.body = value;
+		    		n.body = prop.getText();
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
 		    	} else if ("emailAddrs".equals(name)) {
