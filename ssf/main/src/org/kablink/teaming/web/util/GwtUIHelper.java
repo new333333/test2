@@ -80,12 +80,9 @@ import org.springframework.web.portlet.ModelAndView;
 public class GwtUIHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtUIHelper.class);
 	
-	// Used to write a flag to the session cache regarding the state
-	// of the GWT UI.
-	private final static String GWT_UI_ENABLED_FLAG = "gwtUIEnabled";
-	
 	// ssf*.properties settings that affect various aspects of the GWT
 	// based UI.
+	private final static boolean IS_ACTIVITY_STREAMS_ENABLED  =           SPropsUtil.getBoolean("enable.activity.streams",   true );
 	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN =           SPropsUtil.getBoolean("activity.stream.on.login",  true );
 	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = false; // SPropsUtil.getBoolean("modify.top.entry.on.reply", false);
 	
@@ -539,6 +536,32 @@ public class GwtUIHelper {
 		}
 	}
 
+	/**
+	 * Builds the GWT UI toolbar for a binder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param user
+	 * @param binder
+	 * @param model
+	 * @param qualifiers
+	 * @param gwtUIToolbar
+	 */
+	@SuppressWarnings("unchecked")
+	public static void buildGwtUIToolbar(AllModulesInjected bs, RenderRequest request, User user, Binder binder, Map model, Toolbar gwtUIToolbar) {
+		// If the GWT UI is enabled and we're not in captive mode...
+		if (isGwtUIEnabled() && (!(MiscUtil.isCaptive(request)))) {
+			// ...add the GWT UI button to the menu bar.
+			String title = "Activate the Durango UI";
+			Map qualifiers = new HashMap();
+			qualifiers.put("title", title);
+			qualifiers.put("icon", "gwt.png");
+			qualifiers.put("iconGwtUI", "true");
+			qualifiers.put("onClick", "ss_toggleGwtUI(true);return false;");
+			gwtUIToolbar.addToolbarMenu("1_gwtUI", title, "javascript: //;", qualifiers);
+		}
+	}
+
 	/*
 	 * Generates the appropriate resource key for the given binder.
 	 * 
@@ -856,33 +879,6 @@ public class GwtUIHelper {
 		return reply;
 	}
 
-	/*
-	 * Returns the referrer URL from the request.
-	 * 
-	 * Note that this method must NEVER return null.
-	 */
-	private static String getRefererUrl(PortletRequest pRequest) {
-		String reply;		
-		if (null == pRequest) {
-			reply = "";
-		}
-		else {
-			reply = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_REFERER_URL, "");
-			if (null == reply) {
-				reply = "";
-			}
-		}
-		return reply;
-	}
-
-	/*
-	 * Returns true if the request has a referrer URL and false
-	 * otherwise.
-	 */
-	private static boolean hasRefererUrl(PortletRequest pRequest) {
-		return (0 < getRefererUrl(pRequest).length());
-	}
-	
 	/**
 	 * Returns s User from it's ID guarding against any exceptions.  If
 	 * an exception is caught, null is returned.
@@ -922,6 +918,15 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Returns true if activity streams are enabled and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isActivityStreamsEnabled() {
+		return IS_ACTIVITY_STREAMS_ENABLED;
+	}
+	
+	/**
 	 * Returns true if a Binder is preDeleted and false otherwise.
 	 * 
 	 * @param binder
@@ -958,6 +963,36 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Returns true if the GWT UI should be default UI and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIDefault() {
+		return new GwtUIDefaults().isGwtUIDefault();
+	}
+
+	/**
+	 * Returns true if the GWT UI should be available and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIEnabled() {
+		return new GwtUIDefaults().isGwtUIEnabled();
+	}
+
+	/**
+	 * Returns true if once in GWT UI mode, we should disallow
+	 * returning to the traditional UI and false otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isGwtUIExclusive() {
+		return new GwtUIDefaults().isGwtUIExclusive();
+	}
+
+	/**
 	 * Returns true if the GWT UI should be active and false otherwise.
 	 * 
 	 * @param pRequest
@@ -981,15 +1016,18 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isGwtUIActive(HttpServletRequest hRequest) {
-		boolean reply = (null != hRequest);
+		boolean reply = isGwtUIEnabled();
 		if (reply) {
-			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-			Object gwtUI = hSession.getAttribute(GWT_UI_ENABLED_FLAG);
-			if (null == gwtUI) {
-				reply = Boolean.TRUE;
-			}
-			else {
-				reply = ((gwtUI instanceof Boolean) && ((Boolean) gwtUI).booleanValue());
+			reply = (null != hRequest);
+			if (reply) {
+				HttpSession hSession = WebHelper.getRequiredSession(hRequest);
+				Object durangoUI = hSession.getAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG);
+				if (null == durangoUI) {
+					reply = new Boolean(isGwtUIDefault());
+				}
+				else {
+					reply = ((durangoUI instanceof Boolean) && ((Boolean) durangoUI).booleanValue());
+				}
 			}
 		}
 		return reply;
@@ -1018,50 +1056,43 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static boolean isSessionCaptive(PortletRequest pRequest) {
-		// If this is the root request into Vibe...
-		if (isVibeRootRequest(pRequest)) {
-			// ...we ignore it as we'll process what we need with the
-			// ...URL that gets redirected to.
-			return false;
-		}
-
-		// If we don't have access to the session...
+		// Do we have access to the session?
+		boolean reply = false;
 		PortletSession session = WebHelper.getRequiredPortletSession(pRequest);;
-		if (null == session) {
-			// ...we can't do anything.
-			m_logger.error("GwtUIHelper.isSessionCaptive():  Can't access session cache.");
-			return false;
-		}
-				
-		// Yes!  Do we have a session captive flag stored?
-		Boolean sessionCaptive = ((Boolean) session.getAttribute(WebKeys.SESSION_CAPTIVE));
-		if (null == sessionCaptive) {
-			// No!  Store a session captive flag based on there
-			// being a 'captive=true' setting in the request.
-			String captive = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_CAPTIVE, "false");
-			sessionCaptive = ((MiscUtil.hasString(captive) && "true".equalsIgnoreCase(captive)) ? Boolean.TRUE : Boolean.FALSE);
-			if (!(hasRefererUrl(pRequest))) {
-				session.setAttribute(WebKeys.SESSION_CAPTIVE, sessionCaptive);
+		if (null != session) {
+			// Yes!  Do we have a session captive flag stored?
+			Boolean isCaptive = ((Boolean) session.getAttribute(WebKeys.SESSION_CAPTIVE));
+			if (null == isCaptive) {
+				// No!  Is the request a Vibe root URL or does it refer
+				// to a Vibe root URL?
+				if (!(isVibeRoot(pRequest))) {
+					// No!  Store a session captive flag based on there
+					// being a 'captive=true' setting in the request.
+					String captive = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_CAPTIVE, "false");
+					isCaptive = ((MiscUtil.hasString(captive) && "true".equalsIgnoreCase(captive)) ? Boolean.TRUE : Boolean.FALSE);
+					session.setAttribute(WebKeys.SESSION_CAPTIVE, isCaptive);
+				}
 			}
+			reply = ((null != isCaptive) && isCaptive.booleanValue());			
 		}
 		
-		// If we get here, sessionCaptive is true if we're in session
-		// captive mode and false otherwise.  Return it.
-		return sessionCaptive.booleanValue();
+		// If we get here, reply is true if we're in session captive
+		// mode and false otherwise.  Return it.
+		return reply;
 	}
 
 	/*
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
 	 */
-	private static boolean isVibeRootRequest(PortletRequest pRequest) {
+	private static boolean isVibeRoot(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
-		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_VIBEONPREM_ROOT_FLAG, "");
+		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebUrlUtil.VIBEONPREM_ROOT_FLAG, "");
 		boolean reply = MiscUtil.hasString(urlParam);
 		if (!(reply)) {
 			// No!  Does the request refer to a Vibe root URL?
-			urlParam = getRefererUrl(pRequest);
-			reply = (0 < urlParam.indexOf(WebKeys.URL_VIBEONPREM_ROOT_FLAG));
+			urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_REFERER_URL, "");
+			reply = MiscUtil.hasString(urlParam) && (0 < urlParam.indexOf(WebUrlUtil.VIBEONPREM_ROOT_FLAG));
 		}
 		
 		// If we get here, reply is true if the request is a Vibe root
@@ -1102,7 +1133,7 @@ public class GwtUIHelper {
 	public static void setGwtUIActive(HttpServletRequest hRequest, boolean gwtUIActive) {
 		if (null != hRequest) {
 			HttpSession hSession = WebHelper.getRequiredSession(hRequest);
-			hSession.setAttribute(GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive));
+			hSession.setAttribute(GwtUIDefaults.GWT_UI_ENABLED_FLAG, new Boolean(gwtUIActive && isGwtUIEnabled()));
 		}
 	}
 
@@ -1120,80 +1151,15 @@ public class GwtUIHelper {
 	 * Based on information in the request, returns the product Vibe is
 	 * running as.
 	 * 
-	 * @param pRequest
+	 * @param request
 	 * 
 	 * @return
 	 */
-	public static int getVibeProduct(PortletRequest pRequest) {
-		// If this is the root request into Vibe...
-		if (isVibeRootRequest(pRequest)) {
-			// ...we ignore it as we'll process what we need with the
-			// ...URL that it gets redirected to.
-			return VIBE_PRODUCT_OTHER;
-		}
-		
-		// If we don't have access to the session...
-		PortletSession session = WebHelper.getRequiredPortletSession(pRequest);;
-		if (null == session) {
-			// ...we can't do anything.
-			m_logger.error("GwtUIHelper.getVibeProduct():  Can't access session cache.");
-			return VIBE_PRODUCT_OTHER;
-		}
-				
-
-		// If there's a product stored in the session cache...
-		String sessionProduct = ((String) session.getAttribute(WebKeys.SESSION_PRODUCT));
-		if (MiscUtil.hasString(sessionProduct)) {
-			// ...simply return it as an integer.
-			return Integer.parseInt(sessionProduct);
-		}
-
-		// Is there a 'product=...' setting in the request?
+	public static int getVibeProduct(PortletRequest request) {
 		int reply;
-		boolean hasRefererUrl = hasRefererUrl(pRequest);
-		boolean isKablink = (!(ReleaseInfo.isLicenseRequiredEdition())); 
-		String product = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_PRODUCT, "");
-		if (MiscUtil.hasString(product)) {
-			// Yes!  Do we recognize?
-			if      (WebKeys.URL_PRODUCT_GW.equalsIgnoreCase(     product) && (!isKablink)) reply = VIBE_PRODUCT_GW;
-			else if (WebKeys.URL_PRODUCT_KABLINK.equalsIgnoreCase(product) &&   isKablink ) reply = VIBE_PRODUCT_KABLINK;
-			else if (WebKeys.URL_PRODUCT_NOVELL.equalsIgnoreCase( product) && (!isKablink)) reply = VIBE_PRODUCT_NOVELL;
-			else                                                                            reply = VIBE_PRODUCT_OTHER;			
-			if (VIBE_PRODUCT_OTHER != reply) {
-				// Yes!  If this URL isn't going someplace else...
-				if (!hasRefererUrl) {
-					// ...store the product in the session cache...
-					session.setAttribute(WebKeys.SESSION_PRODUCT, String.valueOf(reply));
-					
-					// ...and use it to determine the the captive state
-					// ...and store that in the session cache.
-					Boolean sessionCaptive = Boolean.valueOf(VIBE_PRODUCT_GW == reply);
-					session.setAttribute(WebKeys.SESSION_CAPTIVE, sessionCaptive);
-				}
-				
-				// If we get here, reply refers to the Vibe product
-				// that we're running as.  Return it.
-				return reply;
-			}
-		}
-
-		// If we get here, there wasn't a 'product=...' setting in the
-		// request or we didn't recognize it.  Use other factors to
-		// determine the product.
-		if      ((!isKablink) && isSessionCaptive(pRequest)) reply = VIBE_PRODUCT_GW;
-		else if ( !isKablink)                                reply = VIBE_PRODUCT_NOVELL;
-		else if (  isKablink)                                reply = VIBE_PRODUCT_KABLINK;
-		else                                                 reply = VIBE_PRODUCT_OTHER;
-
-		// If we have a known product and this URL isn't going
-		// someplace else...
-		if ((VIBE_PRODUCT_OTHER != reply) && (!hasRefererUrl)) {
-			// ...store the product in the session cache.
-			session.setAttribute(WebKeys.SESSION_PRODUCT, String.valueOf(reply));			
-		}
-		
-		// If we get here, reply refers to the Vibe product that we're
-		// running as.  Return it.
+		if      (isSessionCaptive(request))              reply = VIBE_PRODUCT_GW;
+		else if (ReleaseInfo.isLicenseRequiredEdition()) reply = VIBE_PRODUCT_NOVELL;
+		else                                             reply = VIBE_PRODUCT_KABLINK;		
 		return reply;
 	}
 	
@@ -1208,6 +1174,7 @@ public class GwtUIHelper {
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
+	 * - activityStreamsEnabled
 	 * - showWhatsNew
 	 * 
 	 * @param request
@@ -1215,12 +1182,6 @@ public class GwtUIHelper {
 	 * @param model
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
-		// Put out the flag indicating which product we're running as.
-		// Note that we do this first as it has the side affect of
-		// setting the session captive flag products that require it.
-		int vp = getVibeProduct(request);
-		model.put(WebKeys.VIBE_PRODUCT, String.valueOf(vp));
-
 		// Put out the session captive flag.
 		model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(isSessionCaptive(request)));
 		
@@ -1228,6 +1189,10 @@ public class GwtUIHelper {
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
 		model.put( "isNovellTeaming", isNovellTeaming );
+
+		// Put out the flag indicating which product we're running as.
+		int vp = getVibeProduct(request);
+		model.put(WebKeys.VIBE_PRODUCT, String.valueOf(vp));
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
@@ -1243,8 +1208,13 @@ public class GwtUIHelper {
 		
 		// Put out a true/false indicator as to the state of the
 		// activity streams based user interface.
-		String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
-		boolean showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		boolean isASEnabled, showWhatsNew;
+		isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
+		model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
+		if (isASEnabled) {
+			String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+			showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+		}
 		model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));		
 	}
 }

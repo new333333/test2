@@ -59,7 +59,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
@@ -76,13 +75,11 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
-import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
@@ -96,7 +93,6 @@ import org.kablink.teaming.security.acl.AclControlled;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
@@ -945,7 +941,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
     }
  
-    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
 		if (!(entry instanceof WorkflowSupport)) return;
  		WorkflowSupport wEntry = (WorkflowSupport)entry;
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -953,12 +949,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  		WorkflowState ws = wEntry.getWorkflowState(stateId);
 		Definition def = ws.getDefinition();
 		boolean changes = false;
-		Map questions = WorkflowUtils.getQuestions(def, ws);
+		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
 		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			String question = (String)me.getKey();
 			if (!inputData.exists(question)) continue;
-
 			String response = inputData.getSingleValue(question);
 			Map qData = (Map)me.getValue();
 			Map rData = (Map)qData.get(ObjectKeys.WORKFLOW_QUESTION_RESPONSES);
@@ -978,48 +973,42 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 					break;
 				}			
 			}
-			if ((!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(wEntry, ws, question) && canModifyEntry) || 
-					BinderHelper.checkIfWorkflowResponseAllowed(wEntry, ws, question) || 
-	    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(wEntry, ws, question) &&
-	    			canModifyEntry)) {
-				if (found) {
-					if (!response.equals(wr.getResponse())) {
-						//if no changes have been made update timestamp
-						if (!changes) {
-							entry.setModification(new HistoryStamp(user));
-							entry.incrLogVersion();	
-							changes = true;
-						}
-						wr.setResponse(response);
-						wr.setResponseDate(entry.getModification().getDate());
-					}
-				} else {
+			if (found) {
+				if (!response.equals(wr.getResponse())) {
 					//if no changes have been made update timestamp
 					if (!changes) {
 						entry.setModification(new HistoryStamp(user));
-						entry.incrLogVersion();				
+						entry.incrLogVersion();	
 						changes = true;
 					}
-					wr = new WorkflowResponse();
-					wr.setResponderId(user.getId());
-					wr.setResponseDate(entry.getModification().getDate());
-					wr.setDefinitionId(def.getId());
-					wr.setName(question);
 					wr.setResponse(response);
-					wr.setOwner(entry);
-					getCoreDao().save(wr);
-					wEntry.addWorkflowResponse(wr);
+					wr.setResponseDate(entry.getModification().getDate());
 				}
+			} else {
+				//if no changes have been made update timestamp
+				if (!changes) {
+					entry.setModification(new HistoryStamp(user));
+					entry.incrLogVersion();				
+					changes = true;
+				}
+				wr = new WorkflowResponse();
+				wr.setResponderId(user.getId());
+				wr.setResponseDate(entry.getModification().getDate());
+				wr.setDefinitionId(def.getId());
+				wr.setName(question);
+				wr.setResponse(response);
+				wr.setOwner(entry);
+				getCoreDao().save(wr);
+				wEntry.addWorkflowResponse(wr);
 			}
 		}
-		if (changes) {
-			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
-			entry.incrLogVersion();
-			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
-	    	getReportModule().addAuditTrail(AuditType.modify, entry);
-			indexEntry(entry);
-		}
-     }
+		getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
+		entry.incrLogVersion();
+		processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+    	getReportModule().addAuditTrail(AuditType.modify, entry);
+		indexEntry(entry);
+    	
+    }
 
     //***********************************************************************************************************
     /**
@@ -1250,7 +1239,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());

@@ -121,7 +121,7 @@
 			<td>
 				<ul id="added_${prefix}">
 					<c:forEach var="item" items="${ssFindUserList}">
-						<li id="<c:out value="${item.id}"/>" >${item.title}
+						<li id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
 							<a href="javascript: ;" 
 								onclick="window['findMultiple${prefix}'].removeValueByElement(this, '${item.id}', '<ssf:escapeJavaScript value="${item.title}"/>'); return false;"
 								><img <ssf:alt tag="alt.delete"/> 

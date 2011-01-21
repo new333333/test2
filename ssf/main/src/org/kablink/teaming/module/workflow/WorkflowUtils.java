@@ -31,10 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.workflow;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +40,7 @@ import java.util.Set;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.WorkflowResponse;
-import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.Validator;
@@ -61,7 +53,7 @@ import org.kablink.util.Validator;
  */
 public class WorkflowUtils {
         
-    public static Map<String, Map> getManualTransitions(Definition wfDef, String stateName) {
+    public static Map<String, String> getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -71,9 +63,7 @@ public class WorkflowUtils {
 			List transitions = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionManual']");
 			if (transitions != null) {
 				for (int j = 0; j < transitions.size(); j++) {
-					Element transitionEle = (Element)transitions.get(j);
-					Element transitionAccessEle = (Element) transitionEle.selectSingleNode("./item[@name='transitionManualAccess']");
-					String toStateValue = DefinitionUtils.getPropertyValue(transitionEle, "toState");
+					String toStateValue = DefinitionUtils.getPropertyValue((Element)transitions.get(j), "toState");
 					String toStateCaption = "";
 					if (!Validator.isNull(toStateValue)) {
 						//We have a transition. get the caption;
@@ -83,10 +73,7 @@ public class WorkflowUtils {
 						}
 						if (Validator.isNull(toStateCaption)) toStateCaption = toStateValue;
 						//Ok, add this transition to the map
-						Map data = new HashMap();
-						data.put("toStateCaption", toStateCaption);
-						data.put("transitionAccessElement", transitionAccessEle);
-						transitionData.put(toStateValue, data);
+						transitionData.put(toStateValue, toStateCaption);
 					}
 				}
 			}
@@ -136,13 +123,7 @@ public class WorkflowUtils {
 		wfDef.setDefinition(wfDoc);
 	}
     
-   public static Map<String, Map> getQuestions(Definition wfDef, WorkflowState ws) {
-	    String stateName = ws.getState();
-	    DefinableEntity entry = ws.getOwner().getEntity();
-		//now see if responses to this question exist
-		Set<WorkflowResponse> respondersResponses = new HashSet<WorkflowResponse>();
-		if (entry instanceof WorkflowSupport) respondersResponses = ((WorkflowSupport) entry).getWorkflowResponses();
-
+   public static Map<String, Map> getQuestions(Definition wfDef, String stateName) {
 		Map questionsData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -166,30 +147,6 @@ public class WorkflowUtils {
 							responseData.put(responseName, responseText);
 						}
 					}
-					//Build a list of the responders to each response and count the number of responses
-					Integer totalResponses = 0;
-					List<Long> totalResponders = new ArrayList<Long>();
-					Map<String,List> responseResponders = new HashMap<String,List>();
-					questionData.put(ObjectKeys.WORKFLOW_QUESTION_RESPONSE_RESPONDERS, responseResponders);
-					for (WorkflowResponse wr : respondersResponses) {
-						if (wfDef.getId().equals(wr.getDefinitionId()) && 
-								questionName.equals(wr.getName())) {
-							if (!responseResponders.containsKey(wr.getResponse())) {
-								responseResponders.put(wr.getResponse(), new ArrayList<Long>());
-							}
-							List responders = (List)responseResponders.get(wr.getResponse());
-							if (!responders.contains(wr.getResponderId())) {
-								responders.add(wr.getResponderId());
-							}
-							responseResponders.put(wr.getResponse(), responders);
-							totalResponders.add(wr.getResponderId());
-						}
-					}
-					questionData.put(ObjectKeys.WORKFLOW_QUESTION_RESPONDERS, totalResponders);
-					questionData.put(ObjectKeys.WORKFLOW_QUESTION_RESPONSE_COUNT, totalResponses);
-					questionData.put(ObjectKeys.WORKFLOW_QUESTION_EVERYONE_MUST_RESPOND, 
-							WorkflowProcessUtils.checkIfEveryoneMustRespondToQuestion((WorkflowSupport)entry, ws, questionName));
-					
 					//Ok, add this question to the map
 					questionsData.put(questionName, questionData);
 				}
@@ -248,4 +205,7 @@ public class WorkflowUtils {
     	}
     	return threadCaption;
     }
+
+
+ 
 }

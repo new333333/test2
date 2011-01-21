@@ -59,9 +59,37 @@
  </c:if>
 </ssf:ifLoggedIn>
 
-<c:set var="gwtPage" value="profile" scope="request"/>	
-<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
-	
+<script type="text/javascript" language="javascript">
+	 //Save away information such as the binder id and the adapted url for the request we are working with.
+	 //Through an overlay we will access profileRequestInfo from java.
+	 var profileRequestInfo = { binderId:'${ssBinder.id}',
+			 	currentUserWorkspaceId : '${ssUser.workspaceId}',
+			 	userId : '${ssUser.id}',
+				userLoginId : '${ssUser.name}',
+				profileUserName : '<ssf:escapeJavaScript><ssf:userTitle user="${ssProfileConfigEntry}"/></ssf:escapeJavaScript>',
+				adaptedUrl : '<ssf:url crawlable="true"
+					adapter="true" portletName="ss_forum"
+						folderId="${ssBinder.id}" 
+							 action="view_ws_listing" ><ssf:param name="profile" value="0" /></ssf:url>',
+				imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+				jsPath : '<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
+				myWSUrl : '<ssf:url crawlable="true"
+					adapter="true" portletName="ss_forum"
+						folderId="${ssUser.workspaceId}" 
+							 action="view_ws_listing" ><ssf:param 
+							name="profile" value="1" /></ssf:url>',
+				quotasUserMaximum : '${ssDiskQuota}',
+				quotasDiskSpacedUsed : '${ssDiskSpaceUsed}',
+				quotasDiskMessage : '${ss_quotaMessage}',
+	            modifyUrl : '${ss_modifyEntryAdapter}',
+				isQuotasEnabled : ${ss_quotasEnabled},
+				isQuotasDiskQuotaExceeded : ${ss_diskQuotaExceeded},
+				isDiskQuotaHighWaterMarkExceeded: ${ss_diskQuotaHighWaterMarkExceeded},
+	            isModifyAllowed : ${ss_modifyEntryAllowed},
+				isBinderAdmin : ${ss_isBinderAdmin},
+				deleteUserUrl : '${ss_deleteEntryAdapter}' };
+</script>	
+
 <script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <div id="gwtProfileDiv">
 	<div id="profilePhoto" style="display:none;">

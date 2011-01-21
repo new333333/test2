@@ -255,7 +255,7 @@ function ss_getSelectedBinders(url) {
 	if (obj !== undefined && obj != null && obj.checked) {
 		//get current folder
 		obj = document.getElementById('search_dashboardFolders');
-		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value);
+		return 	" searchFolders_" + obj.value;
 	}
 	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
 	if (obj !== undefined && obj != null) value = obj.value;

@@ -50,8 +50,4 @@ public class DeleteVersionException extends UncheckedCodedException {
 	public DeleteVersionException(VersionAttachment va) {
         super(DeleteVersionException_ErrorCode, new Object[]{va.getVersionNumber(), va.getFileItem().getName()});
     }
-	
-    public int getHttpStatusCode() {
-    	return 403; // Forbidden
-    }
 }

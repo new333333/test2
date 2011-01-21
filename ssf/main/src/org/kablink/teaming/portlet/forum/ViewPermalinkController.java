@@ -537,10 +537,9 @@ public class ViewPermalinkController  extends SAbstractController {
 			httpServletResponse.setDateHeader( "Expires", 0 );
 		}
 
-		// Force the Vibe product that's running to be determined.
-		// This will set the session captive state, ... into the
-		// session cache as appropriate.
-		GwtUIHelper.getVibeProduct(request);
+		// Force the session captive state to be saved into the session
+		// cache as appropriate.
+		GwtUIHelper.isSessionCaptive(request);
 		
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");

@@ -268,19 +268,6 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 										}
 										propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
 										propertyValuesMap.put("property_"+propertyName, "");
-									} else if (propertyConfigType.equals("workflowStatesList")) {
-										//get all items with same name
-										Element statesProperty = (Element) nextItem.selectSingleNode("properties/property[@name='states']");
-										if (statesProperty == null) continue;
-										//There might be multiple values so build a list
-										List propertyValues = new ArrayList();
-										for (Element stateEle : (List<Element>)statesProperty.selectNodes("./workflowState")) {
-											String state = NLT.getDef(stateEle.attributeValue("name", ""));
-											if (Validator.isNotNull(state)) propertyValues.add(state);
-											
-										}
-										propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
-										propertyValuesMap.put("property_"+propertyName, statesProperty.attributeValue("workflowDefinitionId"));
 									} else {
 										Element selItem = (Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
 										if (selItem == null) selItem=property;

@@ -32,11 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.Element" %>
-<%@ page import="org.kablink.teaming.util.ResolveIds" %>
-<%@ page import="org.kablink.teaming.domain.Principal" %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="ss_useExplicitFileVersionNumbers" value="true" scope="request" />
 <ssf:ifadapter>
@@ -334,9 +331,7 @@ function ss_resizeIframeArea() {
 		</tr>
 	
 		<c:forEach var="change" items="${ss_changeLogList}" varStatus="status">
-		  <c:set var="changeLog" value="${change.changeLog}"/>
-		  <jsp:useBean id="changeLog" type="org.kablink.teaming.domain.ChangeLog" />
-		  <tr class="ss_tab_table_row">
+		<tr class="ss_tab_table_row">
 			<td>
 			  <input type="checkbox" id="compare${change.folderEntry.attributes.logVersion}"
 			  onChange="ss_updateCompareButton('${fn:length(ss_changeLogList)}')"
@@ -372,8 +367,8 @@ function ss_resizeIframeArea() {
 				><ssf:nlt tag="entry.revert"/></a>
 			</c:if>
 			</td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			 <td colspan="7">
 			   <c:if test="${!empty change.changeLogEntry}">
 				<c:set var="changeLogEntry" value="${change.changeLogEntry}"/>
@@ -395,48 +390,6 @@ function ss_resizeIframeArea() {
 						configJspStyle="view" 
 						entry="${changeLogEntry}" 
 						processThisItem="true" />
-
-						<c:if test="${!empty change.folderEntry.workflowState}">
-						  <div style="padding-top:10px;">
-						  	<span class="ss_bold"><ssf:nlt tag="entry.workflowStates"/></span>
-						  </div>
-						  <table cellspacing="5">
-						   <tr>
-						     <th><ssf:nlt tag="entry.processName"/></th>
-						     <th><ssf:nlt tag="entry.thread"/></th>
-						     <th><ssf:nlt tag="entry.stateName"/></th>
-						   </tr>
-							<c:forEach var="workflow" items="${change.folderEntry.workflowState}">
-							  <tr>
-							    <td valign="top">
-									  <c:if test="${!empty workflow.value.attributes.process}">
-									    ${workflow.value.attributes.process}
-									  </c:if>
-									  <c:if test="${empty workflow.value.attributes.process}">
-									    ???
-									  </c:if>
-							    </td>
-							    <td valign="top">
-									  <c:if test="${!empty workflow.value.attributes.threadCaption}">
-									    ${workflow.value.attributes.threadCaption}&nbsp
-									  </c:if>
-									  <c:if test="${empty workflow.value.attributes.threadCaption}">
-									    ${workflow.value.attributes.thread}&nbsp
-									  </c:if>
-								</td>
-								<td valign="top">
-									  <c:if test="${!empty workflow.value.attributes.stateCaption}">
-									    ${workflow.value.attributes.stateCaption}&nbsp
-									  </c:if>
-									  <c:if test="${empty workflow.value.attributes.stateCaption}">
-									    ${workflow.value.attributes.name}&nbsp
-									  </c:if>
-							     </td>
-							   </tr>
-							</c:forEach>
-						  </table>
-						</c:if>
-
 					  <c:set var="ssBinder" value="${ssBinderOriginalFromDescriptionHistory}" scope="request"/>
 					  <c:set var="ssEntry" value="${ssEntryOriginalFromDescriptionHistory}" scope="request"/>
 					</c:if>
@@ -451,7 +404,7 @@ function ss_resizeIframeArea() {
 				<ssf:markup entity="${changeLogEntry}">${change.folderEntry.attribute.description.value}</ssf:markup>
 			  </div>
 			 </td>
-		  </tr>
+		</tr>
 		</c:forEach>
 	</table>
 	

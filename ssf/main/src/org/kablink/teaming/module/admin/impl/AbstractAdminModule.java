@@ -76,7 +76,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
-import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
@@ -103,7 +102,6 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
 import org.kablink.teaming.security.function.WorkArea;
@@ -973,7 +971,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  		message.put(MailModule.TO, emailSet);
  		message.put(MailModule.CC, getEmail(ccIds, errors));
 		message.put(MailModule.BCC, getEmail(bccIds, errors));
-		message.put(MailModule.LOG_TYPE, EmailLogType.sendMail);
  		MailSentStatus results;
  		if (entry != null) {
  			results = getMailModule().sendMail(entry, message, Utils.getUserTitle(user) + " email", sendAttachments);    		
@@ -1072,10 +1069,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   List<ChangeLog> entryChangeLogs = new ArrayList<ChangeLog>();
 	   for (ChangeLog log: changeLogs) {
 		   if(log.getOperation().equals(ChangeLog.ADDENTRY)
-	               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
-               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATE)
-               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATEONREPLY)
-               || log.getOperation().equals(ChangeLog.ADDWORKFLOWRESPONSE)
+               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
 			   || log.getOperation().equals(ChangeLog.FILEADD)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION)
@@ -1192,31 +1186,4 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			luceneSession.close();
 		}
 	}
-	
-	public void addFunctionCondition(Condition functionCondition) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		getSecurityDao().save(functionCondition);
-	}
-	
-	public void modifyFunctionCondition(Condition functionCondition) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		getSecurityDao().update(functionCondition);
-	}
-	
-	public void deleteFunctionCondition(String functionConditionId) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		try {
-			Condition functionCondition = getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
-			getSecurityDao().delete(functionCondition);
-		}
-		catch(NoObjectByTheIdException e) {
-			// already gone - no problem
-		}
-	}
-	
-	public List<Condition> getFunctionConditions() {
-		// let anyone read them - is this right?
-		return getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
-	}
-
 }

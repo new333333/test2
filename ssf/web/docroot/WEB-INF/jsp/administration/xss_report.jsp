@@ -124,29 +124,11 @@ function addXssReportDataToPage( entry )
 	if (title.length > 80) {
 		title = title.substr(0,79) + "...";
 	}
-	title = ss_replaceSubStrAll(title, "\"", "&quot;");
-	title = ss_replaceSubStrAll(title, "<", "&lt;")
-	title = ss_replaceSubStrAll(title, ">", "&gt;")
 	updateElementsTextNode( span, title );
 	anchor.appendChild( span );
 	td.appendChild( anchor );
-	if (entry.creatorName != null && entry.creatorName != "") {
-		br = document.createElement( 'br' );
-		span = document.createElement( 'span' );
-		span.className = 'ss_fineprint';
-		span.style.paddingLeft = "20px";
-		updateElementsTextNode( span, entry.creatorName );
-		td.appendChild( br );
-		td.appendChild( span );
-	}
 	if (entry.path != null && entry.path != "") {
-		anchor = document.createElement( 'a' );
-		anchor.style.cursor = 'pointer';
-		anchor.onclick =	function()
-							{
-								// Invoke the View operation for this path
-								invokeXssPath( tr.n_entry );
-							}
+		br = document.createElement( 'br' );
 		span = document.createElement( 'span' );
 		span.className = 'ss_fineprint';
 		span.style.paddingLeft = "20px";
@@ -159,10 +141,8 @@ function addXssReportDataToPage( entry )
 			path = "..." + path.substr(path.length-120, path.length);
 		}
 		updateElementsTextNode( span, path );
-		anchor.appendChild( span );
-		br = document.createElement( 'br' );
 		td.appendChild( br );
-		td.appendChild( anchor );
+		td.appendChild( span );
 	}
 
 	// Add the entry's type to the table.
@@ -212,9 +192,6 @@ function getXssReport()
 	var url;
 	var obj;
 
-	// Remove any previous access data from the page.
-	removeXssReportDataFromPage();
-	
 	// Display the wait indicator.
 	showWaitIndicator();
 	
@@ -329,23 +306,11 @@ function invokeXssPage( entry ) {
 
 	// Invoke the entity page.
 	if (confirm("<ssf:nlt tag='administration.report.xss.warnOnView' 
-			text='Caution: Viewing an XSS infected item could trigger the XSS attack. \\n\\nViewing these items as an administrator is not recommended.\\n\\nProceed?'/>")) {
+			text='Caution: Viewing an XSS infected item could trigger the XSS attack. \n\nViewing these items as an administrator is not recommended.\n\nProceed?'/>")) {
 		ss_openUrlInPortlet( url, true, "", "");
 	}
  
 }// end invokeXssPage()
-
-/**
- * Invoke the view operation for this page
- */
-function invokeXssPath( entry ) {
-	var url = m_viewPermalinkUrl + "&entityType=folder";
-	url += "&binderId=" + entry.pathId;
-
-	// Invoke the entity page.
-	ss_openUrlInPortlet( url, true, "", "");
- 
-}// end invokeXssPath()
 
 /**
  * Invoke the view operation for this page
@@ -381,13 +346,13 @@ function onLoadEventHandler()
 	m_unknownEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.unknownEntryType" /></ssf:escapeJavaScript>';
 	m_workspaceEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.workspaceEntryType" /></ssf:escapeJavaScript>';
 	m_folderEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryType" /></ssf:escapeJavaScript>';
-	m_folderEntryEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.folderEntryEntryType" text="Entry" /></ssf:escapeJavaScript>';
-	m_userEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.userEntryType" text="User" /></ssf:escapeJavaScript>';
+	m_folderEntryEntryType = 'Entry';
+	m_userEntryType = 'User';
 	m_profilesEntryType = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.profilesEntryType" /></ssf:escapeJavaScript>';
 	m_cantInvokeAccessControl = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.userAccess.cantInvokeAccessControl" /></ssf:escapeJavaScript>';
-	m_noProblemsFound = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.noProblems" text="No XSS problems found." /></ssf:escapeJavaScript>';
+	m_noProblemsFound = '<ssf:escapeJavaScript>No XSS problems found.</ssf:escapeJavaScript>';
 
-	m_modify = '<ssf:escapeJavaScript><ssf:nlt tag="administration.report.xss.modify" text="Modify" /></ssf:escapeJavaScript>';
+	m_modify = '<ssf:escapeJavaScript>Modify</ssf:escapeJavaScript>';
 
 	// Get the url we need to invoke the page.
 	m_viewPermalinkUrl = "<ssf:url action="view_permalink" />";
@@ -462,13 +427,11 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					<div style="margin-top: 2em;">
 					    <div style="padding-bottom:20px;">
 					      <span style="margin-right: 1em;">
-					        <ssf:nlt tag="administration.report.xss.desc1" 
-					        text="This report scans the binders and entries in each 
-					        selected binder looking for potential XSS (Cross-Site Scripting) issues. 
-					        If a threat is located, it can usually be remedied by clicking 'Modify' 
-					        followed by clicking 'Ok' on the offending item. This procedure removes 
-					        the potential XSS threat usually without any noticeable effect. The scan 
-					        takes about 1 minute for every 1000 entries." />
+					        This report scans the binders and entries in each selected binder looking for 
+					        potential XSS (Cross-Site Scripting) issues. If a threat is located, it can
+					        usually be remedied by clicking "Modify" followed by clicking "Ok" 
+					        on the offending item. This procedure removes the potential XSS threat usually 
+					        without any noticeable effect. The scan takes about 1 minute for every 1000 entries.
 					      </span>
 					    </div>
 						<span style="margin-right: 1em;">

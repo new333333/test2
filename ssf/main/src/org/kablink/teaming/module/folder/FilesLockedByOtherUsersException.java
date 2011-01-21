@@ -61,8 +61,4 @@ public class FilesLockedByOtherUsersException extends UncheckedCodedException {
 	public List<FileLockInfo> getFileLockInfos() {
 		return fileLockInfos;
 	}	
-
-    public int getHttpStatusCode() {
-    	return 403; // Forbidden
-    }
 }

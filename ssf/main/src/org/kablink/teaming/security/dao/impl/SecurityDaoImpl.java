@@ -56,7 +56,6 @@ import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
 import org.kablink.teaming.security.dao.SecurityDao;
-import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -90,7 +89,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		long begin = System.currentTimeMillis();
 		try {
 	        Function f = (Function)getHibernateTemplate().get(Function.class, id);
-	        if (f != null && zoneId.equals(f.getZoneId())) return f;
+	        if (zoneId.equals(f.getZoneId())) return f;
 	        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
     	}
     	finally {
@@ -126,39 +125,6 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}
     }
 
-    public Condition loadFunctionCondition(Long zoneId, String functionConditionId) throws NoObjectByTheIdException {
-		long begin = System.currentTimeMillis();
-		try {
-	        Condition c = (Condition)getHibernateTemplate().get(Condition.class, functionConditionId);
-	        if (c != null && zoneId.equals(c.getZoneId())) 
-	        	return c;
-	        else 
-	        	throw new NoObjectByTheIdException("errorcode.no.condition.by.the.id", functionConditionId);
-    	}
-    	finally {
-    		end(begin, "loadFunctionCondition(Long,String)");
-    	}	        
-    }
-    
-    public List<Condition> findFunctionConditions(final Long zoneId) {
-		long begin = System.currentTimeMillis();
-		try {
-	        return (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                        return session.createCriteria(Condition.class)
-	                        	.add(Expression.eq(ZONE_ID, zoneId))
-	                        	//.setCacheable(true)
-	                        	.addOrder(Order.asc("title"))
-	                        	.list();
-	                    }
-	                }
-	            );
-    	}
-    	finally {
-    		end(begin, "findFunctionConditions(Long)");
-    	}	
-    }
 
 	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final Long zoneId, 
 			final Long workAreaId, final String workAreaType, final Long functionId) {

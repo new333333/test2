@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
-	<classpathentry kind="src" path="rest/src"/>
-	<classpathentry kind="src" path="rest-shared/src"/>
 	<classpathentry kind="src" path="as-shared/src"/>
 	<classpathentry kind="src" path="as-common/src"/>
 	<classpathentry kind="src" path="tomcat/src"/>
@@ -150,10 +148,5 @@
 	<classpathentry exported="true" kind="lib" path="lib/org.springframework.web.servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet-api-2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ehcache-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsr311-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jersey-client.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jersey-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jersey-json.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>

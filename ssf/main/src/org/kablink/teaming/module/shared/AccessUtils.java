@@ -53,7 +53,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
-import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.acl.AclAccessControlException;
@@ -429,13 +428,12 @@ public class AccessUtils  {
 	}
     
 	private static void operationCheck(User user, Binder binder, WorkflowSupport entry, WorkAreaOperation operation) {
-		WfAcl.AccessType accessType = null;
+		WfAcl.AccessType accessType = WfAcl.AccessType.delete;
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
 		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete; 
- 		if (accessType == null || !entry.hasAclSet()) {
-			//This entry does not have a workflow ACL set or this check is not covered by workflow access checks, 
- 			//  so just go check for entry level access
+ 		if (!entry.hasAclSet()) {
+			//This entry does not have a workflow ACL set, so just go check for entry level access
  			operationCheck(user, binder, (Entry)entry, operation);
 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
  			//"Widening" is allowed, we need to only check workflow ACL
@@ -444,8 +442,7 @@ public class AccessUtils  {
  				checkAccess(user, binder, entry, accessType);
  			} catch (AccessControlException ex) {
  				if (entry.isWorkAreaAccess(accessType)) { 		
- 					//The workflow ACL did not allow this operation but the acl specifies "forum default", 
- 					//  so now see if the entry affords this operation
+ 					//The workflow ACL did not allow this operation, so now see if the entry affords this operation
  					operationCheck(user, binder, (Entry)entry, operation);
  				} else throw ex;
  			}
@@ -453,7 +450,8 @@ public class AccessUtils  {
  		} else {
  			//"Widening" is not allowed, so we must also have READ access to binder
  			if (entry.isWorkAreaAccess(accessType)) {
- 				//The workflow specifies "forum default" for this access. So, just do the regular check. If that fails check the workflow acl.
+ 				//optimization: if pass modify binder check, don't need to do read binder check
+ 				// all done if binder access is enough
  				try {
  					operationCheck(user, binder, (Entry)entry, operation);
 					return;
@@ -555,23 +553,11 @@ public class AccessUtils  {
     	 if (!(entry instanceof WorkflowSupport)) return;
     	 checkTransitionAcl(binder, (WorkflowSupport)entry, ws, WfAcl.AccessType.transitionOut);
      }
- 	 public static void checkManualTransitionAccess(Binder binder, WorkflowSupport entry, WorkflowState state, 
-			Element accessEle) throws AccessControlException {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		WfAcl acl = WorkflowProcessUtils.getAcl(accessEle, (DefinableEntity)entry, WfAcl.AccessType.manualTransition);
-		checkTransitionAcl(binder, entry, acl);
-	 }
-
      private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WorkflowState state, WfAcl.AccessType type)  
       	throws AccessControlException {
-		WfAcl acl = state.getAcl(type);
-		checkTransitionAcl(binder, entry, acl);
-     }
-     
-     private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WfAcl acl) 
-   			throws AccessControlException {     
-       	User user = RequestContextHolder.getRequestContext().getUser();
+      	User user = RequestContextHolder.getRequestContext().getUser();
         if (user.isSuper()) return;
+		WfAcl acl = state.getAcl(type);
 		if (acl == null) {
 			operationCheck(user, binder, (Entry)entry, WorkAreaOperation.MODIFY_ENTRIES);
 			return;
@@ -586,7 +572,7 @@ public class AccessUtils  {
  			
  			if (acl.isUseDefault()) { 		
  				operationCheck(user, binder, (Entry)entry, WorkAreaOperation.MODIFY_ENTRIES);
- 			} else throw new AclAccessControlException(user.getName(), acl.getType().toString());
+ 			} else throw new AclAccessControlException(user.getName(), type.toString());
 
  			
  		} else {
@@ -606,10 +592,11 @@ public class AccessUtils  {
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
         	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
  			if (testAccess(user, allowedIds)) return;
- 			throw new AclAccessControlException(user.getName(), acl.getType().toString());
+ 			 throw new AclAccessControlException(user.getName(), type.toString());
    		}
      }
-          
+     
+     
   	public static boolean checkIfAllOperationsAllowed(Long functionId, WorkArea workArea) {
       	User user = RequestContextHolder.getRequestContext().getUser();
   		Function f = getInstance().functionManager.getFunction(user.getZoneId(), functionId);

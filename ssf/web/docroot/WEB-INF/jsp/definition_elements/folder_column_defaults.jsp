@@ -35,17 +35,11 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
   <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
-	Map ssFolderColumnTitles = (Map) ssUserFolderProperties.get("userFolderColumnTitles");
-	String ssFolderColumnSort = (String) ssUserFolderProperties.get("userFolderColumnSortOrder");
   %>
 <c:choose>
 <c:when test="${ss_folderViewColumnsType == 'file'}">
   <%
-	if (ssFolderColumns == null) {
-		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
-		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
-	}
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 		ssFolderColumns.put("title", "title");
@@ -57,18 +51,12 @@
 		ssFolderColumns.put("author", "author");
 		ssFolderColumns.put("date", "date");
 	}
-	if (ssFolderColumnTitles == null) ssFolderColumnTitles = new java.util.HashMap();
-	if (ssFolderColumnSort == null) ssFolderColumnSort = "title|comments|size|download|html|state|author|date";
   %>
 </c:when>
 
 <c:when test="${ss_folderViewColumnsType == 'folder'}">
   <%
-	if (ssFolderColumns == null) {
-		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
-		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
-	}
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 		ssFolderColumns.put("number", "number");
@@ -79,54 +67,19 @@
 		ssFolderColumns.put("date", "date");
 		ssFolderColumns.put("rating", "rating");
 	}
-	if (ssFolderColumnTitles == null) ssFolderColumnTitles = new java.util.HashMap();
-	if (ssFolderColumnSort == null) ssFolderColumnSort = "number|title|comments|state|author|date|rating";
   %>
+  <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 </c:when>
 
 <c:otherwise>
   <%
-	if (ssFolderColumns == null) {
-		ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
-		ssFolderColumnTitles = (Map)ssBinder.getProperty("folderColumnTitles");
-		ssFolderColumnSort = (String)ssBinder.getProperty("folderColumnSortOrder");
-	}
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 	}
-	if (ssFolderColumnTitles == null) ssFolderColumnTitles = new java.util.HashMap();
-	if (ssFolderColumnSort == null) ssFolderColumnSort = "";
   %>
 </c:otherwise>
 
 </c:choose>
 
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
-<c:set var="ssFolderColumnTitles" value="<%= ssFolderColumnTitles %>" scope="request"/>
-<%
-	List ssFolderColumnSortOrder = new ArrayList();
-	String[] sortOrder = ssFolderColumnSort.split("\\|");
-	for (int i=0; i < sortOrder.length; i++) {
-		if (!sortOrder[i].equals("")) ssFolderColumnSortOrder.add(sortOrder[i]);
-	}
-%>
-  <c:forEach var="column" items="${ssFolderColumns}">
-    <c:set var="columnName" value="${column.key}"/>
-	<jsp:useBean id="columnName" type="java.lang.String" scope="page"/>
-    <c:choose>
-      <c:when test="${!empty column.value}">
-	  <%
-		//Handle settings from older releases that might not be in the sort list yet
-		if (!ssFolderColumnSortOrder.contains(columnName)) ssFolderColumnSortOrder.add(columnName);
-	  %>
-      </c:when>
-      <c:when test='<%= columnName.contains(",") %>'>
-	  <%
-		//Handle settings from older releases that might not be in the sort list yet
-		if (!ssFolderColumnSortOrder.contains(columnName)) ssFolderColumnSortOrder.add(columnName);
-	  %>
-      </c:when>
-    </c:choose>
-  </c:forEach>
-
-<c:set var="ssFolderColumnsSortOrder" value="<%= ssFolderColumnSortOrder %>" scope="request"/>

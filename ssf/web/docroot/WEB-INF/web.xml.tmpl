@@ -90,7 +90,6 @@
 	</filter-mapping>
 
 @@LOGIN_FILTER@@
-
 	<filter-mapping>
 		<filter-name>CompressionFilter</filter-name>
 		<url-pattern>/s/viewCss</url-pattern>
@@ -176,18 +175,12 @@
 		<listener-class>org.kablink.teaming.spring.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
-	<!-- This servlet context listener must be loaded BEFORE Spring's context loader listener -->
-	<listener>
-		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListenerPreSpring</listener-class>
-	</listener>
-
 	<listener>
 		<listener-class>org.kablink.teaming.spring.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
-	<!-- This servlet context listener must be loaded AFTER Spring's context loader listener -->
 	<listener>
-		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring</listener-class>
+		<listener-class>org.kablink.teaming.web.servlet.listener.ContextListener</listener-class>
 	</listener>
 
     <listener>
@@ -204,11 +197,6 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	
-	<servlet-mapping>
-		<servlet-name>viewRendererServlet</servlet-name>
-		<url-pattern>/WEB-INF/servlet/view</url-pattern>
-	</servlet-mapping>
-
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -218,11 +206,6 @@
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>dispatcher</servlet-name>
-		<url-pattern>/s/*</url-pattern>		
-	</servlet-mapping>
 
 	<servlet>
 		<servlet-name>portletAdapter</servlet-name>
@@ -234,21 +217,11 @@
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 
-	<servlet-mapping>
-		<servlet-name>portletAdapter</servlet-name>
-		<url-pattern>/a/*</url-pattern>		
-	</servlet-mapping>
-	
 	<servlet>
 		<servlet-name>axis</servlet-name>
 		<servlet-class>org.kablink.teaming.remoting.ws.servlet.WSSAxisServlet</servlet-class>
 		<load-on-startup>4</load-on-startup>
 	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>axis</servlet-name>
-		<url-pattern>/ws/*</url-pattern>		
-	</servlet-mapping>	
 
 	<servlet>
 		<servlet-name>rss</servlet-name>
@@ -260,16 +233,6 @@
 		<load-on-startup>5</load-on-startup>
 	</servlet>
 	
-	<servlet-mapping>
-		<servlet-name>rss</servlet-name>
-		<url-pattern>/rss/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>rss</servlet-name>
-		<url-pattern>/atom/*</url-pattern>
-	</servlet-mapping>
-	
 	<servlet>
 		<servlet-name>ical</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -280,11 +243,6 @@
 		<load-on-startup>6</load-on-startup>
 	</servlet>	
 	
-	<servlet-mapping>
-		<servlet-name>ical</servlet-name>
-		<url-pattern>/ical/*</url-pattern>
-	</servlet-mapping>	
-
 	<servlet>
 		<servlet-name>portalCCDispatcher</servlet-name>
 		<servlet-class>org.kablink.teaming.portal.servlet.DispatchServer</servlet-class>
@@ -325,11 +283,6 @@
 		</init-param>
 	</servlet>
 
-	<servlet-mapping>
-		<servlet-name>Kaptcha</servlet-name>
-		<url-pattern>/a/Kaptcha.jpg</url-pattern>
-	</servlet-mapping>
-
     <servlet>
         <servlet-name>gwtRpc</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -340,44 +293,61 @@
         <load-on-startup>9</load-on-startup>
     </servlet>
 
-    <servlet-mapping>
-        <servlet-name>gwtRpc</servlet-name>
-        <url-pattern>*.rpc</url-pattern>
-    </servlet-mapping>
-
 	<servlet>
 		<servlet-name>redirectServlet</servlet-name>
 		<servlet-class>org.kablink.teaming.web.servlet.RedirectServlet</servlet-class>
 		<load-on-startup>10</load-on-startup>
 	</servlet>
 
+    <servlet-mapping>
+        <servlet-name>gwtRpc</servlet-name>
+        <url-pattern>*.rpc</url-pattern>
+    </servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>Kaptcha</servlet-name>
+		<url-pattern>/a/Kaptcha.jpg</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>viewRendererServlet</servlet-name>
+		<url-pattern>/WEB-INF/servlet/view</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/s/*</url-pattern>		
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>portletAdapter</servlet-name>
+		<url-pattern>/a/*</url-pattern>		
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>axis</servlet-name>
+		<url-pattern>/ws/*</url-pattern>		
+	</servlet-mapping>	
+
+	<servlet-mapping>
+		<servlet-name>rss</servlet-name>
+		<url-pattern>/rss/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>rss</servlet-name>
+		<url-pattern>/atom/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>ical</servlet-name>
+		<url-pattern>/ical/*</url-pattern>
+	</servlet-mapping>	
+
 	<servlet-mapping>
 		<servlet-name>redirectServlet</servlet-name>
 		<url-pattern>/redirect/*</url-pattern>
 	</servlet-mapping>	
-
-	<!--<servlet>
-		<servlet-name>jerseyServlet</servlet-name>
-		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-		<init-param>
-			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>org.kablink.teaming.remoting.rest.resource;org.kablink.teaming.remoting.rest.provider</param-value>
-		</init-param>
-		<init-param>
-			<param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-			<param-value>org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter</param-value>
-		</init-param>
-		<init-param>
-			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-			<param-value>org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter</param-value>
-		</init-param>
-     	<load-on-startup>11</load-on-startup>		
-	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>jerseyServlet</servlet-name>
-		<url-pattern>/rest/*</url-pattern>
-	</servlet-mapping>-->
 
 	<session-config>
 		<session-timeout>250</session-timeout>

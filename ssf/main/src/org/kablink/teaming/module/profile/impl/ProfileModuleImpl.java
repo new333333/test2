@@ -676,11 +676,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
    
-   // This returns a list of all disabled user account ids 
-   public List<Long> getDisabledUserAccounts() {
-	   return getProfileDao().getDisabledUserAccounts(RequestContextHolder.getRequestContext().getZoneId());
-   }
-   
    // this returns non-zero quotas (any quota which has been set by the admin)
    public List getNonDefaultQuotas(String type) {
 	   return getProfileDao().getNonDefaultQuotas(type,

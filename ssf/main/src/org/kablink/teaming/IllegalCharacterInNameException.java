@@ -48,10 +48,7 @@ public class IllegalCharacterInNameException extends UncheckedCodedException {
         super(errorCode, errorArgs, message, cause);
     }
     public IllegalCharacterInNameException(String errorCode, Object[] errorArgs, Throwable cause) {
-        super(errorCode, errorArgs, cause);	
-    }
-    
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
+        super(errorCode, errorArgs, cause);
+    	
     }
 }

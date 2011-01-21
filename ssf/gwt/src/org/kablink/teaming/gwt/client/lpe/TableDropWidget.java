@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
@@ -50,7 +49,6 @@ import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
  *
  */
 public class TableDropWidget extends DropWidget
-	implements HasDropZone
 {
 	private static TableWidgetDlgBox m_tableDlgBox = null;		// For efficiency sake, we only create one dialog box.
 	private TableProperties	m_properties = null;
@@ -246,53 +244,6 @@ public class TableDropWidget extends DropWidget
 	
 	
 	/**
-	 * Check to see if this widget contains the given DropZone.
-	 */
-	public boolean containsDropZone( DropZone dropZone )
-	{
-		int i;
-		int numColumns;
-
-		numColumns = m_flexTable.getCellCount( 0 );
-
-		// For every cell, check to see if that cell holds the given DropZone
-		for (i = 0; i < numColumns; ++i)
-		{
-			Widget widget;
-
-			// Get the DropZone for this cell.
-			widget = m_flexTable.getWidget( 0, i );
-			
-			// Is this widget a DropZone
-			if ( widget instanceof DropZone )
-			{
-				DropZone nextDropZone;
-				
-				// Yes
-				nextDropZone = (DropZone) widget;
-				
-				// Is this the DropZone we are looking for?
-				if ( dropZone == nextDropZone )
-				{
-					// Yes
-					return true;
-				}
-				
-				// Does this drop zone contain the given drop zone?
-				if ( nextDropZone.containsDropZone( dropZone ) )
-				{
-					// Yes
-					return true;
-				}
-			}
-		}// end for()
-
-		// If we get here, we don't hold the given drop zone.
-		return false;
-	}
-	
-	
-	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
 	public String createConfigString()
@@ -351,21 +302,6 @@ public class TableDropWidget extends DropWidget
 	
 	
 	/**
-	 * Return the drag proxy object that should be displayed when the user drags this item.
-	 */
-	public DragProxy getDragProxy()
-	{
-		if ( m_dragProxy == null )
-		{
-			// Create a drag proxy that will be displayed when the user drags this item.
-			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorTable(), GwtTeaming.getMessages().lpeTable() );
-		}
-		
-		return m_dragProxy;
-	}
-	
-
-	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -401,10 +337,10 @@ public class TableDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			ActionsControl ctrl;
+			EditDeleteControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new ActionsControl( this, this, this );
+			ctrl = new EditDeleteControl( this, this );
 			ctrl.addStyleName( "upperRight" );
 
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
@@ -431,51 +367,16 @@ public class TableDropWidget extends DropWidget
 	
 
 	/**
-	 * Set the DropZone this widget lives in.
-	 */
-	public void setParentDropZone( DropZone dropZone )
-	{
-		int i;
-		int numColumns;
-
-		super.setParentDropZone( dropZone );
-		
-		numColumns = m_flexTable.getCellCount( 0 );
-
-		// For every cell, tell the DropZone in that cell who its parent DropZone is.
-		for (i = 0; i < numColumns; ++i)
-		{
-			Widget widget;
-
-			// Get the DropZone for this cell.
-			widget = m_flexTable.getWidget( 0, i );
-			
-			// Is this widget a DropZone
-			if ( widget instanceof DropZone )
-			{
-				DropZone nextDropZone;
-				
-				// Yes
-				nextDropZone = (DropZone) widget;
-				nextDropZone.setParentDropZone( dropZone );
-				
-			}
-		}// end for()
-	}
-	
-	
-	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( Object props )
+	public void updateWidget( PropertiesObj props )
 	{
 		int i;
 		int numColumns;
 		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
-		if ( props instanceof PropertiesObj )
-			m_properties.copy( (PropertiesObj) props );
+		m_properties.copy( props );
 		
 		numColumns = m_properties.getNumColumnsInt();
 		
@@ -499,7 +400,6 @@ public class TableDropWidget extends DropWidget
 				
 				m_flexTable.addCell( 0 );
 				dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-				dropZone.setParentDropZone( getParentDropZone() );
 				m_flexTable.setWidget( 0, i, dropZone );
 			}
 		}
@@ -524,7 +424,6 @@ public class TableDropWidget extends DropWidget
 					
 					m_flexTable.addCell( 0 );
 					dropZone = new DropZone( m_lpe, "lpeTableDropZone" );
-					dropZone.setParentDropZone( getParentDropZone() );
 					m_flexTable.setWidget( 0, m_flexTable.getCellCount( 0 )-1, dropZone );
 				}
 			}

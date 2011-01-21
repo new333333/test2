@@ -409,9 +409,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
     //inside write transaction
-   public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+   public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
 	   Long version = entry.getLogVersion();
-	   super.setWorkflowResponse(binder, entry, stateId, inputData, canModifyEntry);
+	   super.setWorkflowResponse(binder, entry, stateId, inputData);
 	   if (version != entry.getLogVersion()) {
 		   FolderEntry fEntry = (FolderEntry)entry;
 		   fEntry.updateLastActivity(fEntry.getModification().getDate());

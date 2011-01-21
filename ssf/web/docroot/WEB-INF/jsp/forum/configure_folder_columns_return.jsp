@@ -44,130 +44,87 @@
 
 <c:set var="ss_folderViewColumnsType" value="${ssFolderViewType}" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
-<%
-  List allColumns = new ArrayList();
-%>
-<c:set var="allColumns" value="<%= allColumns %>" />
-<c:forEach var="colName1" items="${ssFolderColumnsSortOrder}" >
-  <c:if test="${!empty ssFolderColumns[colName1]}" >
-    <jsp:useBean id="colName1" type="java.lang.String" scope="page"/>
-    <% 
-      //Build a list of all columns with the selected ones first in the list
-      allColumns.add(colName1); 
-    %> 
+
+<c:set var="folderChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
+<c:set var="numberChecked" value=""/>
+<c:if test="${!empty ssFolderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
+<c:set var="titleChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.title}"><c:set var="titleChecked" value="checked"/></c:if>
+<c:set var="commentsChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.comments}"><c:set var="commentsChecked" value="checked"/></c:if>
+<c:set var="sizeChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.size}"><c:set var="sizeChecked" value="checked"/></c:if>
+<c:set var="downloadChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.download}"><c:set var="downloadChecked" value="checked"/></c:if>
+<c:set var="htmlChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.html}"><c:set var="htmlChecked" value="checked"/></c:if>
+<c:set var="stateChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.state}"><c:set var="stateChecked" value="checked"/></c:if>
+<c:set var="authorChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.author}"><c:set var="authorChecked" value="checked"/></c:if>
+<c:set var="dateChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
+<c:set var="ratingChecked" value=""/>
+<c:if test="${empty ssFolderColumns || !empty ssFolderColumns.rating}"><c:set var="ratingChecked" value="checked"/></c:if>
+
+
+<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width}; height:420px; overflow:scroll;">
+ <tbody>
+  <tr>
+   <td valign="top" width="100%"><div class="ss_popup_top">
+   <div class="ss_popup_title"><ssf:nlt tag="folder.selectColumns"/></div></div>
+      </td>
+  </tr>
+  <tr><td valign="top">
+   <div class="ss_popup_body">
+<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
+<div class="ss_indent_medium">
+  <c:if test="${ssFolderType == 'search'}">
+    <input type="checkbox" name="folder" ${folderChecked}> <ssf:nlt tag="folder.column.Folder"/><br/>
   </c:if>
-</c:forEach>
-<%
-	String[] defaultCols = "number|title|comments|size|download|html|state|author|date|rating".split("\\|");
-	for (int i=0; i < defaultCols.length; i++) {
-		if (!allColumns.contains(defaultCols[i])) allColumns.add(defaultCols[i]);
-	}
-%>
-<c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
+  <input type="checkbox" name="number" ${numberChecked}> <ssf:nlt tag="folder.column.Number"/><br/>
+  <input type="checkbox" name="title" ${titleChecked}> <ssf:nlt tag="folder.column.Title"/><br/>
+  <input type="checkbox" name="author" ${authorChecked}> <ssf:nlt tag="folder.column.Author"/><br/>
+  <input type="checkbox" name="comments" ${commentsChecked}> <ssf:nlt tag="folder.column.CommentsOrReplies"/><br/>
+  <input type="checkbox" name="size" ${sizeChecked}> <ssf:nlt tag="folder.column.Size"/><br/>
+  <input type="checkbox" name="download" ${downloadChecked}> <ssf:nlt tag="folder.column.Download"/><br/>
+  <input type="checkbox" name="html" ${htmlChecked}> <ssf:nlt tag="folder.column.Html"/><br/>
+  <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>
+  <input type="checkbox" name="date" ${dateChecked}> <ssf:nlt tag="folder.column.LastActivity"/><br/>
+  <input type="checkbox" name="rating" ${ratingChecked}> <ssf:nlt tag="folder.column.Rating"/><br/>
+  <br/>
+  
+  <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
+  	
   	<c:forEach var="element" items="${def.value}">
        <c:if test="${element.value.type == 'selectbox' || 
                      element.value.type == 'radio' || 
                      element.value.type == 'checkbox' || 
        				 element.value.type == 'date'  || 
-       				 element.value.type == 'date_time'  || 
-       				 element.value.type == 'event'  || 
        				 element.value.type == 'text'  || 
-       				 element.value.type == 'number'  || 
-       				 element.value.type == 'url'  || 
-       				 element.value.type == 'hidden'  || 
        				 element.value.type == 'user_list' || 
        				 element.value.type == 'userListSelectbox'}">
-		  <c:set var="colName2" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
-		  <jsp:useBean id="colName2" type="java.lang.String" scope="page"/>
-		  <%
-			if (!allColumns.contains(colName2)) allColumns.add(colName2);
-		  %>
-		</c:if>
+		<c:set var="checked" value=""/>
+		<c:set var="colName" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
+		<c:if test="${!empty ssFolderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+         <input type="checkbox" name="customCol_${colName}" ${checked}> 
+         <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
+         <ssf:nlt tag="${element.value.caption}" checkIfTag="true"/><br/>
+       </c:if>
+       <c:if test="${element.value.type == 'entryAttributes'}">
+         <c:forEach var="attributeSetName" items="${ssBinder.customAttributes[element.key].valueSet}">
+			<c:set var="checked" value=""/>
+			<c:set var="colName" value="${def.key},${element.value.type},${element.key}__set__${attributeSetName},${attributeSetName}"/>
+			<c:if test="${!empty ssFolderColumns[colName]}"><c:set var="checked" value="checked"/></c:if>
+	         <input type="checkbox" name="customCol_${colName}" ${checked}> 
+	         <ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"/> / 
+	         <ssf:nlt tag="${element.value.caption}: ${attributeSetName}" checkIfTag="true"/><br/>
+	     </c:forEach>
+       </c:if>
   	</c:forEach>
-</c:forEach>
-
-<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width}; height:420px; overflow:scroll;">
- <tbody>
-  <tr >
-   <td valign="top" width="100%">
-     <div class="ss_popup_top">
-       <div class="ss_popup_title"><ssf:nlt tag="folder.selectColumns"/></div>
-     </div>
-   </td>
-  </tr>
-  <tr><td valign="top">
-   <div class="ss_popup_body">
-	<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);" id="saveColumnsForm" name="saveColumnsForm">
-	<div class="ss_indent_medium">
-	<table>
-	 <tbody>
-	  <tr>
-	   <th colspan="2"><ssf:nlt tag="folder.column.columns"/></th>
-	   <th colspan="1"><ssf:nlt tag="folder.column.title"/></th>
-	   <th colspan="2"><ssf:nlt tag="folder.column.sort"/></th>	   
-	  </tr>
- 
-<c:forEach var="colName" items="${allColumns}">
-  <jsp:useBean id="colName" type="java.lang.String" scope="page"/>
-  <c:set var="thisItemChecked" value=""/>
-  <c:if test="${!empty ssFolderColumns[colName] || (empty ssFolderColumns && 
-  		(colName == 'title' || colName == 'comments' || colName == 'size' || 
-  		colName == 'download' || colName == 'html' || colName == 'state' || 
-  		colName == 'author' || colName == 'date' || colName == 'rating'))}">
-    <c:set var="thisItemChecked" value="checked"/>
-  </c:if>
-
-  <%
-	if (!colName.contains(",")) {
-  %>
-	  <c:set var="colText" value="${ssFolderColumnTitles[colName]}" />
-	  <c:set var="colTextDefault"><ssf:nlt tag="folder.column.${colName}"/></c:set>
-	  <c:set var="colIdName">${colName}</c:set>
-	  <c:set var="colCbName">${colName}</c:set>
-  <%
-    } else if (colName.contains(",")) {
-		String[] temp = colName.split(",");
-		if (temp.length == 4) {
-			String defId = temp[0];
-			String eleType = temp[1];
-			String eleName = temp[2];
-			String eleCaption = temp[3];
-			%>
-			  <c:forEach var="def" items="${ssEntryDefinitionElementDataMap}">
-			  	<c:forEach var="element" items="${def.value}">
-			  	    <c:set var="cn" value="${def.key},${element.value.type},${element.key},${element.value.caption}"/>
-					<c:if test="${colName == cn}">
-					  <c:set var="colIdName">${colName}</c:set>
-					  <c:set var="colCbName">customCol_${colName}</c:set>
-			          <c:set var="colText" value="${ssFolderColumnTitles[colName]}" />
-			          <c:set var="colTextDefault"><ssf:nlt tag="${ssEntryDefinitionMap[def.key].title}" checkIfTag="true"
-			          /> / <ssf:nlt tag="<%= eleCaption %>" checkIfTag="true"/></c:set>
-			        </c:if>
-			  	</c:forEach>
-			  </c:forEach>
-			<%
-		}
-	}
-  %>
-  <c:if test="${!empty ssFolderColumnTitles[colIdName]}">
-    <c:set var="colText">${ssFolderColumnTitles[colIdName]}</c:set>
-  </c:if>
-
-  <tr id="${colIdName}">
-    <td><input type="checkbox" name="${colCbName}" ${thisItemChecked}></td>
-    <td>${colTextDefault}</td>
-    <td>
-      <input type="text" name="ss_col_text_${colName}" style="width:150px;" value="${colText}" />
-    </td>
-	<c:set var="ss_folderColumnId" value="${colIdName}"/>
-	<%@ include file="/WEB-INF/jsp/forum/configure_folder_columns_sort.jsp" %>
-  </tr>
+  </c:forEach>
    
-</c:forEach>
-   
-  </tbody>
-  </table>
-    
 <c:if test="${ss_accessControlMap[ssBinder.id]['modifyBinder'] and ssConfigJspStyle != 'template'}">
   <br/>
   <input type="checkbox" name="setFolderDefaultColumns"/>
@@ -186,7 +143,6 @@
   <input type="submit" name="defaultBtn" value="<ssf:nlt tag="button.restoreDefaults"/>">
   
 </div>
-<input type="hidden" name="columns__order"/>
 </form>
 </div>
 </td></tr></tbody></table>

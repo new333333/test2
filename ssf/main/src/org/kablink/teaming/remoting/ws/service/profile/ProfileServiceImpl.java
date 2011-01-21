@@ -49,7 +49,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFileByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -439,11 +438,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			java.util.Iterator it = favorites.getRootElement().selectNodes("favorite[@type=\"binder\"]").iterator();
 			while(it.hasNext()) {
 				Element e = (Element)it.next();
-				org.kablink.teaming.domain.Binder binder = getBinder(Long.valueOf(e.attributeValue("value")));
+				BinderBrief brief = new BinderBrief();
+				brief.setId(Long.valueOf(e.attributeValue("value")));
+				brief.setTitle(e.attributeValue("name"));
+				org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(brief.getId());
 				if(binder != null){
-					BinderBrief brief = new BinderBrief();
-					brief.setId(Long.valueOf(e.attributeValue("value")));
-					brief.setTitle(e.attributeValue("name"));
 					HistoryStamp hs = null;
 					hs = binder.getCreation();
 					brief.setCreation(new Timestamp(Utils.redactUserPrincipalIfNecessary(hs.getPrincipal()).getName(), hs.getDate()));
@@ -452,8 +451,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 					brief.setPermaLink(PermaLinkUtil.getPermalink(binder));
 					brief.setEntityType(binder.getEntityType().toString());
 					brief.setDefinitionType(binder.getDefinitionType());
-					binders.add(brief);
 				}
+				binders.add(brief);
 			}
 		}
 		
@@ -464,13 +463,5 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 		}
 		return ret;
 	}
-
-	private org.kablink.teaming.domain.Binder getBinder(Long binderId) {
-		try {
-			return getBinderModule().getBinder(binderId);
-		}
-		catch(NoBinderByTheIdException e) {
-			return null;
-		}
-	}
+	
 }

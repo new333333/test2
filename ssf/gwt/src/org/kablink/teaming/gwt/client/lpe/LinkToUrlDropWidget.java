@@ -85,21 +85,6 @@ public class LinkToUrlDropWidget extends DropWidget
 	
 	
 	/**
-	 * Return the drag proxy object that should be displayed when the user drags this item.
-	 */
-	public DragProxy getDragProxy()
-	{
-		if ( m_dragProxy == null )
-		{
-			// Create a drag proxy that will be displayed when the user drags this item.
-			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorLinkUrl(), GwtTeaming.getMessages().lpeLinkURL() );
-		}
-		
-		return m_dragProxy;
-	}
-	
-
-	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
@@ -135,10 +120,10 @@ public class LinkToUrlDropWidget extends DropWidget
 		// Create an Edit/Delete control and position it at the top/right of this widget.
 		// This control allows the user to edit the properties of this widget and to delete this widget.
 		{
-			ActionsControl ctrl;
+			EditDeleteControl ctrl;
 			FlowPanel panel;
 			
-			ctrl = new ActionsControl( this, this, this );
+			ctrl = new EditDeleteControl( this, this );
 			ctrl.addStyleName( "upperRight" );
 			
 			// Wrap the edit/delete control in a panel.  We position the edit/delete control on the right
@@ -193,11 +178,10 @@ public class LinkToUrlDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
-	public void updateWidget( Object props )
+	public void updateWidget( PropertiesObj props )
 	{
 		// Save the properties that were passed to us.
-		if ( props instanceof PropertiesObj )
-			m_properties.copy( (PropertiesObj) props );
+		m_properties.copy( props );
 		
 		// Update the title
 		{

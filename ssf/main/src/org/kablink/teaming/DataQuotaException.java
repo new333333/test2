@@ -39,8 +39,4 @@ public class DataQuotaException extends UncheckedCodedException {
 	public DataQuotaException(String errorCode, Object[] args) {
 		super(errorCode, args);
 	}
-	
-    public int getHttpStatusCode() {
-    	return 403; // Forbidden
-    }
 }

@@ -67,9 +67,5 @@ public class PasswordMismatchException extends UncheckedCodedException {
         synchronized (s) {
             s.println(toString());
         }	
-
     }    
-    public int getHttpStatusCode() {
-    	return 401; // Unauthorized
-    }
 }

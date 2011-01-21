@@ -74,6 +74,9 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIP_SINGLE_ARG_LENGTH = 6;
 	public static final int FILE_URL_ZIP_SINGLE_FILE_ID = 5;
 	
+	public static final String VIBEONPREM_ROOT_FLAG = "vibeonprem_root";
+	public static final String VIBEONPREM_URL_FLAG  = "vibeonprem_url";
+	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
 	private static final int WEB_PROTOCOL_CONTEXT_HTTP	= 1;

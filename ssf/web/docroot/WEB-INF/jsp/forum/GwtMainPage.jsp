@@ -43,11 +43,44 @@
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
 	<script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-
-	<c:set var="gwtPage" value="main" scope="request"/>	
-	<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
 	
 	<script type="text/javascript" language="javascript">
+		// Save away information such as the binder id and the adapted url for the request we are working with.
+		// Through an overlay we will access m_requestInfo from java.
+		var m_requestInfo = {
+			sessionCaptive : ${sessionCaptive},
+			activityStreamsEnabled : ${activityStreamsEnabled},
+			showWhatsNewOnLogin : ${showWhatsNew},
+			binderId : '${binderId}',
+			currentUserWorkspaceId : '${ssUser.workspaceId}',
+			userName : '<ssf:escapeJavaScript>${userFullName}</ssf:escapeJavaScript>',
+			userId : '${ssUser.id}',
+			userLoginId : '${ssUser.name}',
+			adaptedUrl : '${adaptedUrl}',
+			imagesPath : '<ssf:escapeJavaScript><html:imagesPath/></ssf:escapeJavaScript>',
+			jsPath : '<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
+			myWSUrl : '${myWorkspaceUrl}',
+			errMsg : '<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
+			vibeProduct : '${vibeProduct}',
+			isNovellTeaming : ${isNovellTeaming},
+			productName : '${productName}',
+			language : '${ssUser.locale.language}',
+			loginRefererUrl : '${loginRefererUrl}',
+			loginPostUrl : '<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
+			isUserLoggedIn : ${isUserLoggedIn},
+			promptForLogin : ${promptForLogin},
+			forceSidebarReload : false,
+			loginError : '<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',
+			contentCss : '<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>',
+			simpleSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="quickSearch" value="true"/><ssf:param name="operation" value="ss_searchResults"/></ssf:url></ssf:escapeJavaScript>',
+			advancedSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true" windowState="maximized"><ssf:param name="action" value="advancedSearch"/><ssf:param name="tabTitle" value="SEARCH FORM"/><ssf:param name="newTab" value="0"/></ssf:url></ssf:escapeJavaScript>',
+			teamingFeedUrl : '<ssf:escapeJavaScript><ssf:url adapter="true" portletName="ss_forum" action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" /></ssf:escapeJavaScript>',
+			savedSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="operation" value="ss_savedQuery"/></ssf:url></ssf:escapeJavaScript>',
+			recentPlaceSearchUrl: '<ssf:escapeJavaScript><ssf:url action="advanced_search" actionUrl="true"><ssf:param name="operation" value="viewPage"/></ssf:url></ssf:escapeJavaScript>',
+			helpUrl: '<ssf:escapeJavaScript>${ss_helpUrl}</ssf:escapeJavaScript>',
+			topWSId: '${topWSId}'
+		};
+
 		// Initialize tinyMCE.  This must be done here so that tinyMCE can bring in the other
 		// necessary js files.
 		tinyMCE.init(

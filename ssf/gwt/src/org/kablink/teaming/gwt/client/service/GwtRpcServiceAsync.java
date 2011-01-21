@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -61,20 +61,12 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -102,10 +94,6 @@ public interface GwtRpcServiceAsync
 
 	// Return a permalink that can be used to view the given entry.
 	public void getEntryPermalink( HttpRequestInfo ri, String entryId, String zoneUUID, AsyncCallback<String> callback );
-	
-	// Return a base view folder entry URL that can be used directly in
-	// the content panel.
-	public void getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId, AsyncCallback<String> callback );
 	
 	// Return a list of the names of the files that are attachments of the given binder.
 	public void getFileAttachments( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<String>> callback );
@@ -136,6 +124,11 @@ public interface GwtRpcServiceAsync
 	// Returns a permalink to the currently logged in user's workspace.
 	public void getUserWorkspacePermalink( HttpRequestInfo ri, AsyncCallback<String> callback );
 	
+	// The following are used to interact with the GWT UI defaults.
+	public void getGwtUIDefault(   HttpRequestInfo ri, AsyncCallback<Boolean> callback );
+	public void getGwtUIEnabled(   HttpRequestInfo ri, AsyncCallback<Boolean> callback );
+	public void getGwtUIExclusive( HttpRequestInfo ri, AsyncCallback<Boolean> callback );
+	
 	// The following are used in the implementation of the various
 	// forms of the WorkspaceTreeControl.
 	public void expandHorizontalBucket(         HttpRequestInfo ri, List<Long> bucketList, AsyncCallback<TreeInfo>       callback );
@@ -154,6 +147,11 @@ public interface GwtRpcServiceAsync
 	public void addFavorite(                  HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
 	public void removeFavorite(               HttpRequestInfo ri, String favoriteId,                                 AsyncCallback<Boolean>               callback );
 	public void updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList, AsyncCallback<Boolean>               callback );
+	public void getBinderTags(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<List<TagInfo>>         callback );
+	public void canManagePublicBinderTags(    HttpRequestInfo ri, String binderId,                                   AsyncCallback<Boolean>               callback );
+	public void addBinderTag(                 HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<TagInfo>               callback );
+	public void removeBinderTag(              HttpRequestInfo ri, String binderId, TagInfo            binderTag,     AsyncCallback<Boolean>               callback );
+	public void updateBinderTags(             HttpRequestInfo ri, String binderId, List<TagInfo>      binderTags,    AsyncCallback<Boolean>               callback );
 	public void getBinderInfo(                HttpRequestInfo ri, String binderId,                                   AsyncCallback<BinderInfo>            callback );
 	public void getDefaultFolderDefinitionId( HttpRequestInfo ri, String binderId,                                   AsyncCallback<String>                callback );
 	public void getFavorites(                 HttpRequestInfo ri,                                                    AsyncCallback<List<FavoriteInfo>>    callback );
@@ -166,14 +164,6 @@ public interface GwtRpcServiceAsync
 	public void getTopRanked(                 HttpRequestInfo ri,                                                    AsyncCallback<List<TopRankedInfo>>   callback );
 	public void removeSavedSearch(            HttpRequestInfo ri,                     SavedSearchInfo ssi,           AsyncCallback<Boolean>               callback );
 	public void saveSearch(                   HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi,           AsyncCallback<SavedSearchInfo>       callback );
-
-	// The following methods are used to manage tags on a binder/entry.
-	public void canManagePublicBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
-	public void canManagePublicEntryTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
-	public void getEntryTags( HttpRequestInfo ri, String entryId, AsyncCallback<ArrayList<TagInfo>> callback );
-	public void getBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<TagInfo>> callback );
-	public void updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded, AsyncCallback<Boolean> callback );
-	public void updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded, AsyncCallback<Boolean> callback );
 
 	// The following are used to manage the tracking of information.
 	public void getTrackedPeople( HttpRequestInfo ri,                  AsyncCallback<List<String>> callback );
@@ -218,39 +208,10 @@ public interface GwtRpcServiceAsync
 	public void getDiskUsageInfo( HttpRequestInfo ri, String binderId, AsyncCallback<DiskUsageInfo> callback );
 
 	// Activity Stream servicing APIs.
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd,                              AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                                             AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                ActivityStreamDataType asdt, AsyncCallback<ActivityStreamData>   callback );
-	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                                               AsyncCallback<ActivityStreamParams> callback );
-	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                                                       AsyncCallback<ActivityStreamInfo>   callback );
-	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );	
-	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                                             AsyncCallback<Boolean>              callback );
-	public void saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting, AsyncCallback<Boolean> callback );
-	
-	// Validate the given TeamingActions for the given entry id.
-	public void validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId, AsyncCallback<ArrayList<ActionValidation>> callback );
-
-	// Get subscription information for the given entry id.
-	public void getSubscriptionData( HttpRequestInfo ri, String entryId, AsyncCallback<SubscriptionData> callback );
-	
-	// Save the given subscription data for the given entry id.
-	public void saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData, AsyncCallback<Boolean> callback );
-
-	// Task servicing APIs.
-	public void getTaskList(       HttpRequestInfo ri, Long binderId, String      filterType, String modeType, AsyncCallback<List<TaskListItem>> callback );
-	public void getTaskBundle(     HttpRequestInfo ri, Long binderId, String      filterType, String modeType, AsyncCallback<TaskBundle>         callback );
-	public void getTaskLinkage(    HttpRequestInfo ri, Long binderId,                                          AsyncCallback<TaskLinkage>        callback );
-	public void removeTaskLinkage( HttpRequestInfo ri, Long binderId,                                          AsyncCallback<Boolean>            callback );
-	public void saveTaskLinkage(   HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage,                 AsyncCallback<Boolean>            callback );
-	
-	// SeenMap servicing APIs.
-	public void isSeen(    HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setSeen(   HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setSeen(   HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
-	public void setUnseen( HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
-	public void setUnseen( HttpRequestInfo ri, List<Long> entryIds, AsyncCallback<Boolean> callback );
-	
-	// Add a reply to the given entry
-	public void replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc, AsyncCallback<ActivityStreamEntry> callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamData(          HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi,                AsyncCallback<ActivityStreamData>   callback );
+	public void getActivityStreamParams(        HttpRequestInfo ri,                                                                  AsyncCallback<ActivityStreamParams> callback );
+	public void getDefaultActivityStream(       HttpRequestInfo ri, String currentBinderId,                                          AsyncCallback<ActivityStreamInfo>   callback );
+	public void hasActivityStreamChanged(       HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );	
+	public void persistActivityStreamSelection( HttpRequestInfo ri,                           ActivityStreamInfo asi,                AsyncCallback<Boolean>              callback );
 }// end GwtRpcServiceAsync

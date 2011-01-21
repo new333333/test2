@@ -3,7 +3,7 @@ addressing 1.0 (WS-Addressing implementation; required by WSS4J)
 Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
-ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
+ASM 3.1.0 (from spring distribution, needed by cglib)
 Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
 backport-concurrent.jar 2.1 Concurrent(Backport)
@@ -35,7 +35,7 @@ Ehcache 2.2.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.7.4
-gwt 2.1.1 (Google Web Toolkit)
+gwt 2.0.4 (Google Web Toolkit)
 Hibernate 3.6.0.Final
 ical4j 1.0-rc1
 icu4j 4.0.1 (needed by jasypt.jar)
@@ -44,14 +44,12 @@ Jackrabbit JCR Commons 1.4.2
 Jackrabbit Core 1.4.5
 Jackrabbit SPI 1.4
 Jackrabbit SPI Commons 1.4
-Jackson 1.5.8 (high-performance JSON processor needed by Jersey)
 Jakarta Taglibs Standard 1.1
 Jasypt 1.7
 JavaMail 1.4.1 (Sun's reference implementation)
 java_uno.jar (from OpenOffice 2.0)
 java_uno_accessbridge.jar (from OpenOffice 2.0)
 javassist 3.12.0.GA (from Hibernate distribution, needed by Hibernate)
-JAXB implementation 2.1.12 (An implementation of JAXB 2.1 specification needed by Jersey)
 Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
@@ -60,8 +58,7 @@ JBoss Portal 2.6.1.GA portal-identity-lib.jar
 JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
-Jersey 1.4 (JAX-RS JSR311 reference implementation; This includes client, core, json, and server libraries)
-Jettison 1.1 (A JSON Streaming API for XML (StAX) implementation needed by Jersey)
+Jersey 1.4 (JAX-RS JSR311 reference implementation)
 Joda-Time 1.6
 JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)
 jQuery 1.2.6 (Javascript library)

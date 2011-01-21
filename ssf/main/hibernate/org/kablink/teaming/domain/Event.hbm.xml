@@ -31,16 +31,10 @@
     </component>
     <property name="name" length="64"/>
     <property name="HDtStart">
-      <column name="dtStart"/>
-    </property>
-    <property name="HDtCalcStart">
-      <column name="dtCalcStart"/>
+      <column name="dtStart" not-null="true"/>
     </property>
     <property name="HDtEnd">
       <column name="dtEnd"/>
-    </property>
-    <property name="HDtCalcEnd">
-      <column name="dtCalcEnd"/>
     </property>
     <property name="frequency"/>
     <property name="interval">
@@ -62,7 +56,7 @@
     <property name="minutes" length="100"/>
     <property name="hours" length="100"/>
     <property name="HDuration">
-      <column name="duration" length="32"/>
+      <column name="duration" length="32" not-null="true"/>
     </property>
     <component name="creation" class="org.kablink.teaming.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>

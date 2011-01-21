@@ -50,9 +50,4 @@ public class ReservedByAnotherUserException extends UncheckedCodedException {
 	public Reservable getReservable() {
 		return reservable;
 	}
-	
-    public int getHttpStatusCode() {
-    	return 409; // Conflict
-    }
-
 }

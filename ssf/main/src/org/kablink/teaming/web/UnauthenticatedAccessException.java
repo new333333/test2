@@ -46,8 +46,4 @@ public class UnauthenticatedAccessException extends UncheckedCodedException {
 		super(UnauthenticatedAccessException_ErrorCode, new Object[] {}, cause);
 	}
 
-    public int getHttpStatusCode() {
-    	return 401; // Unauthorized
-    }
-
 }

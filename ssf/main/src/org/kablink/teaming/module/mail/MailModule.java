@@ -73,7 +73,6 @@ public interface MailModule {
 	public static final String ATTACHMENTS="attachments"; //fileattachments
 	public static final String ICALENDARS="icalendars"; //Collection of net.fortuna.ical4j.model.Calendar
 	public static final String FROM="FROM"; 	//InternetAddress
-	public static final String LOG_TYPE="LOG_TYPE"; 	//EmailLogType
 
 	public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
 	public static final String HEADER_CONTENT_TRANSFER_ENCODING_8BIT = "8bit";

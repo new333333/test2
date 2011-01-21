@@ -1153,17 +1153,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								}
 							}
 							newPropertyEle.addAttribute("value", value);
-						} else if (type.equals("workflowStatesList")) {
-							//Workflow states list typically has 2 bits of data to capture:
-							//  the workflow id and the state names
-							newPropertyEle.addAttribute("workflowDefinitionId", value);
-							String[] workflowStateNames = (String[]) inputData.getValues("workflowStateNames");
-							for (int j=0; j<workflowStateNames.length; ++j) {
-								if (Validator.isNull(workflowStateNames[j])) continue;
-								Element workflowCondition = newPropertyEle.addElement("workflowState");
-								workflowCondition.addAttribute("name", workflowStateNames[j].trim());
-							}
 						}
+
 					}
 				} else if (type.equals("workflowCondition")) {
 					//Workflow conditions typically have 4 bits of data to capture:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -47,7 +45,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ActivityStreamEntry implements IsSerializable {
-	private GwtPresenceInfo             m_authorPresence;           //
 	private List<ActivityStreamEntry>	m_comments;					// Comments, up to maximum number configured.
 	private String						m_authorAvatarUrl;			//
 	private String						m_authorId;					//
@@ -59,7 +56,6 @@ public class ActivityStreamEntry implements IsSerializable {
 	private String						m_entryDocNum;				//
 	private String						m_entryId;					//
 	private String						m_entryModificationDate;	//
-	private boolean						m_entrySeen;				//
 	private String						m_entryTitle;				//
 	private String						m_entryTopEntryId;			//
 	private String						m_entryType;				//
@@ -98,31 +94,28 @@ public class ActivityStreamEntry implements IsSerializable {
 		}
 		return m_comments;
 	}
-	
 
 	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public GwtPresenceInfo getAuthorPresence()        {return m_authorPresence;       }
-	public String          getAuthorAvatarUrl()       {return m_authorAvatarUrl;      }
-	public String          getAuthorId()              {return m_authorId;             }
-	public String          getAuthorLogin()           {return m_authorLogin;          }
-	public String          getAuthorName()            {return m_authorName;           }
-	public String          getAuthorWorkspaceId()     {return m_authorWSId;           }
-	public int             getEntryComments()         {return m_entryComments;        }	
-	public String          getEntryDescription()      {return m_entryDescription;     }	
-	public String          getEntryDocNum()           {return m_entryDocNum;          }	
-	public String          getEntryId()               {return m_entryId;              }	
-	public String          getEntryModificationDate() {return m_entryModificationDate;}
-	public boolean         getEntrySeen()             {return m_entrySeen;            }	
-	public String          getEntryTitle()            {return m_entryTitle;           }	
-	public String          getEntryTopEntryId()       {return m_entryTopEntryId;      }	
-	public String          getEntryType()             {return m_entryType;            }	
-	public String          getParentBinderHover()     {return m_parentBinderHover;    }	
-	public String          getParentBinderId()        {return m_parentBinderId;       }	
-	public String          getParentBinderName()      {return m_parentBinderName;     }
+	public String getAuthorAvatarUrl()       {return m_authorAvatarUrl;      }
+	public String getAuthorId()              {return m_authorId;             }
+	public String getAuthorLogin()           {return m_authorLogin;          }
+	public String getAuthorName()            {return m_authorName;           }
+	public String getAuthorWorkspaceId()     {return m_authorWSId;           }
+	public int    getEntryComments()         {return m_entryComments;        }	
+	public String getEntryDescription()      {return m_entryDescription;     }	
+	public String getEntryDocNum()           {return m_entryDocNum;          }	
+	public String getEntryId()               {return m_entryId;              }	
+	public String getEntryModificationDate() {return m_entryModificationDate;}
+	public String getEntryTitle()            {return m_entryTitle;           }	
+	public String getEntryTopEntryId()       {return m_entryTopEntryId;      }	
+	public String getEntryType()             {return m_entryType;            }	
+	public String getParentBinderHover()     {return m_parentBinderHover;    }	
+	public String getParentBinderId()        {return m_parentBinderId;       }	
+	public String getParentBinderName()      {return m_parentBinderName;     }
 	
 	/**
 	 * Stores a new List<ActivityStreamEntry> as the comments on this
@@ -139,22 +132,20 @@ public class ActivityStreamEntry implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public void setAuthorPresence(       GwtPresenceInfo authorPresence)        {m_authorPresence        = authorPresence;       }
-	public void setAuthorAvatarUrl(      String          authorAvatarUrl)       {m_authorAvatarUrl       = authorAvatarUrl;      }
-	public void setAuthorId(             String          authorId)              {m_authorId              = authorId;             }
-	public void setAuthorLogin(          String          authorLogin)           {m_authorLogin           = authorLogin;          }
-	public void setAuthorName(           String          authorName)            {m_authorName            = authorName;           }
-	public void setAuthorWorkspaceId(    String          authorWSId)            {m_authorWSId            = authorWSId;           }
-	public void setEntryComments(        int             entryComments)         {m_entryComments         = entryComments;        }	
-	public void setEntryDescription(     String          entryDescription)      {m_entryDescription      = entryDescription;     }	
-	public void setEntryDocNum(          String          entryDocNum)           {m_entryDocNum           = entryDocNum;          }	
-	public void setEntryId(              String          entryId)               {m_entryId               = entryId;              }
-	public void setEntryModificationDate(String          entryModificationDate) {m_entryModificationDate = entryModificationDate;}
-	public void setEntrySeen(            boolean         entrySeen)             {m_entrySeen             = entrySeen;            }
-	public void setEntryTitle(           String          entryTitle)            {m_entryTitle            = entryTitle;           }
-	public void setEntryTopEntryId(      String          entryTopEntryId)       {m_entryTopEntryId       = entryTopEntryId;      }
-	public void setEntryType(            String          entryType)             {m_entryType             = entryType;            }
-	public void setParentBinderHover(    String          parentBinderHover)     {m_parentBinderHover     = parentBinderHover;    }
-	public void setParentBinderId(       String          parentBinderId)        {m_parentBinderId        = parentBinderId;       }
-	public void setParentBinderName(     String          parentBinderName)      {m_parentBinderName      = parentBinderName;     }
+	public void setAuthorAvatarUrl(      String authorAvatarUrl)       {m_authorAvatarUrl       = authorAvatarUrl;      }
+	public void setAuthorId(             String authorId)              {m_authorId              = authorId;             }
+	public void setAuthorLogin(          String authorLogin)           {m_authorLogin           = authorLogin;          }
+	public void setAuthorName(           String authorName)            {m_authorName            = authorName;           }
+	public void setAuthorWorkspaceId(    String authorWSId)            {m_authorWSId            = authorWSId;           }
+	public void setEntryComments(        int    entryComments)         {m_entryComments         = entryComments;        }	
+	public void setEntryDescription(     String entryDescription)      {m_entryDescription      = entryDescription;     }	
+	public void setEntryDocNum(          String entryDocNum)           {m_entryDocNum           = entryDocNum;          }	
+	public void setEntryId(              String entryId)               {m_entryId               = entryId;              }
+	public void setEntryModificationDate(String entryModificationDate) {m_entryModificationDate = entryModificationDate;}
+	public void setEntryTitle(           String entryTitle)            {m_entryTitle            = entryTitle;           }
+	public void setEntryTopEntryId(      String entryTopEntryId)       {m_entryTopEntryId       = entryTopEntryId;      }
+	public void setEntryType(            String entryType)             {m_entryType             = entryType;            }
+	public void setParentBinderHover(    String parentBinderHover)     {m_parentBinderHover     = parentBinderHover;    }
+	public void setParentBinderId(       String parentBinderId)        {m_parentBinderId        = parentBinderId;       }
+	public void setParentBinderName(     String parentBinderName)      {m_parentBinderName      = parentBinderName;     }
 }

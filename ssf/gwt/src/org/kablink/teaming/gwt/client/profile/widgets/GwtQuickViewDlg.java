@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,7 +54,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -62,6 +61,8 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -382,7 +383,7 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		closeA.addStyleName("qViewClose");
 
 		Image cancelImage = new Image(GwtTeaming.getMainMenuImageBundle()
-				.closeXMouseOver());
+				.closeCircle16());
 		closeA.getElement().appendChild(cancelImage.getElement());
 
 		// GwtTeaming.getMessages().cancel()
@@ -688,17 +689,20 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		// We need to set the focus after the dialog has been shown.  That is why we use a timer. 
 		if ( m_focusWidget != null )
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			Command cmd;
+			
+			cmd = new Command()
 			{
-				public void execute()
-				{
-					if ( m_focusWidget != null )
-						m_focusWidget.setFocus( true );
-				}
+			     	/**
+			     	 * 
+			     	 */
+			      public void execute()
+			      {
+						if ( m_focusWidget != null )
+							m_focusWidget.setFocus( true );
+			      }
 			};
-			Scheduler.get().scheduleDeferred( cmd );
+			DeferredCommand.addCommand( cmd );
 		}
 	}// end show()
 	

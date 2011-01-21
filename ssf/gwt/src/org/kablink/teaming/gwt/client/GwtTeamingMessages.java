@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,10 +37,9 @@ import com.google.gwt.i18n.client.Messages;
 
 
 /**
- * This interface is used to retrieve strings from the file
- * GwtTeamingMessages*.properties.
- * 
+ * This interface is used to retrieve strings from the file GwtTeamingMessages*.properties
  * @author jwootton
+ *
  */
 public interface GwtTeamingMessages extends Messages
 {
@@ -73,10 +72,6 @@ public interface GwtTeamingMessages extends Messages
 	String showFolderDesc();
 	String showTitleBar();
 	
-	// Strings used with the Googld Gadget widget in the landing page editor
-	String googleGadgetCodeLabel();
-	String googleGadgetProperties();
-	
 	// Strings used with the Graphic widget in the landing page editor.
 	String graphicLabel();
 	String graphicProperties();
@@ -87,9 +82,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltCustomJsp();
 	String lpeAltEntry();
 	String lpeAltFolder();
-	String lpeAltGoogleGadget();
 	String lpeAltGraphic();
-	String lpeAltHtml();
 	String lpeAltLinkEntry();
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
@@ -98,13 +91,10 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltUtilityElement();
 	String lpeCustomJSP();
 	String lpeDeleteWidget();
-	String lpeEditHtml();
 	String lpeEntry();
 	String lpeFolder();
-	String lpeGoogleGadget();
 	String lpeGraphic();
 	String lpeHint();
-	String lpeHtml();
 	String lpeLinkEntry();
 	String lpeLinkFolderWS();
 	String lpeLinkURL();
@@ -162,7 +152,6 @@ public interface GwtTeamingMessages extends Messages
 	String ok();
 	String oneMomentPlease();
 	String percent();
-	String send();
 	String showBorder();
 	String showTitle();
 	String title();
@@ -216,7 +205,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AccessToFolderDenied();
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_AddFavorite();
-	String rpcFailure_CanManagePublicTags();
+	String rpcFailure_CanManagePublicBinderTags();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_ExpandBucket();
@@ -227,6 +216,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetAdminActions();
 	String rpcFailure_GetBinderInfo();
 	String rpcFailure_GetBinderPermalink();
+	String rpcFailure_GetBinderTags();
 	String rpcFailure_GetBranding();
 	String rpcFailure_GetDefaultActivityStream();
 	String rpcFailure_GetEntryPermalink();
@@ -251,9 +241,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetSelfRegInfo();
 	String rpcFailure_GetSiteAdminUrl();
 	String rpcFailure_GetStatus();
-	String rpcFailure_GetSubscriptionData();
-	String rpcFailure_GetTags();
-	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetToolbarItems();
@@ -264,7 +251,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUpgradeInfo();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceUrl();
-	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -272,16 +258,10 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
 	String rpcFailure_RemoveSavedSearch();
-	String rpcFailure_ReplyToEntry();
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
-	String rpcFailure_SaveSubscriptionData();
-	String rpcFailure_SaveTags();
-	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
-	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
-	String rpcFailure_SetUnseen();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
@@ -690,7 +670,6 @@ public interface GwtTeamingMessages extends Messages
 	String autoRefreshIsPaused();
 	String followedPeople();
 	String followedPlaces();
-	String markEntryAsReadHint();
 	String myFavorites();
 	String myTeams();
 	String multipleComments( int numComments );
@@ -705,19 +684,8 @@ public interface GwtTeamingMessages extends Messages
 	String pauseActivityStream( int refreshRate );
 	String refresh();
 	String resumeActivityStream();
-	String selectEntryDisplayStyle();
 	String siteWide();
-	String showAll();
-	String showAllEntries();
-	String showUnread();
-	String showUnreadEntries();
 	String whatsNew();
-	String whatsNewWithName( String name );
-	
-	// The following strings are used in the activity stream "reply to entry" ui
-	String defaultReplyTitle( String title );
-	String noReplyText();
-	String replyToEntryLabel();
 	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.
@@ -747,61 +715,5 @@ public interface GwtTeamingMessages extends Messages
 	String hoverWorkspaceTeamRoot();
 	String hoverWorkspaceTop();
 	String hoverWorkspaceTrash();
-
-	// The following strings are used in the "Actions" popup menu.
-	String markRead();
-	String markUnread();
-	String reply();
-	String share();
-	String subscribe();
-	String tag();
 	
-	// The following strings are used in the "Subscribe to Entry" dialog.
-	String cantSubscribeNoEmailAddresses();
-	String sendEmailTo();
-	String sendEmailWithoutAttachmentsTo();
-	String sendTextTo();
-	String subscribeToEntryDlgHeader();
-	String subscribeToEntryHeader();
-
-	// The following strings are used with the "Tag This" dialog.
-	String addTag();
-	String community();
-	String deleteTagHint();
-	String noTags();
-	String personal();
-	String tagHeader();
-	String tagName();
-	String tagThisEntry();
-	String tagType();
-	String unknownTagType();
-	
-	// The following are used for task folder listing.
-	String taskAltDelete();
-	String taskAltMoveDown();
-	String taskAltMoveLeft();
-	String taskAltMoveRight();
-	String taskAltMoveUp();
-	String taskAltTaskClosed();
-	String taskAltTaskUnread();
-	String taskColumn_assignedTo();
-	String taskColumn_closedPercentDone();
-	String taskColumn_dueDate();
-	String taskColumn_name();
-	String taskColumn_priority();
-	String taskColumn_status();
-	String taskLabelDelete();
-	String taskLabelOrder();
-	String taskLabelSubtask();
-	String taskNoTasks();
-	String taskPriority_p1();
-	String taskPriority_p2();
-	String taskPriority_p3();
-	String taskPriority_p4();
-	String taskPriority_p5();
-	String taskStatus_cancelled();
-	String taskStatus_completed();
-	String taskStatus_inProcess();
-	String taskStatus_needsAction();
-	String taskUnread();
 }// end GwtTeamingMessages

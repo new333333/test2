@@ -114,10 +114,8 @@ public class Eventtext extends TagSupport {
 			}
 
 
-			String startString = "";
-			if (startDate != null) startString = dateFormat.format(startDate.getTime());
-			String endString = "";
-			if (endDate != null) endString = dateFormat.format(endDate.getTime());
+			String startString = dateFormat.format(startDate.getTime());
+			String endString = dateFormat.format(endDate.getTime());
 
 			String repeatString = EventsViewHelper.eventToRepeatHumanReadableString(event, user.getLocale());
 

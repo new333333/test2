@@ -214,7 +214,7 @@ public class EntityIndexUtils {
       	}
       	
       	// Add the preDeleted flag itself.
-    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.UN_TOKENIZED);
+    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.TOKENIZED);
     	doc.add(field);
     	
     	// Is entry preDeleted?
@@ -222,7 +222,7 @@ public class EntityIndexUtils {
     		// Yes!  If we know who it was deleted by by...
         	if (null != preDeletedBy) {
         		// ...add both their ID and title to the index.
-        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.TOKENIZED);
         		doc.add(field);
         		
             	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -261,7 +261,7 @@ public class EntityIndexUtils {
     }
     
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.TOKENIZED);
        	doc.add(eField);
     }
     public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {

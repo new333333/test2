@@ -133,8 +133,6 @@ public class ListFolderController extends  SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new LinkedHashMap();
-				Map columnsText = new LinkedHashMap();
-				String columnOrder = PortletRequestUtils.getStringParameter(request, "columns__order", "");
 				String[] columnNames;
 				if (showTrash) {
 					columnNames = TrashHelper.trashColumns;
@@ -144,7 +142,6 @@ public class ListFolderController extends  SAbstractController {
 				}
 				for (int i = 0; i < columnNames.length; i++) {
 					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
-					columnsText.put(columnNames[i], PortletRequestUtils.getStringParameter(request, "ss_col_text_"+columnNames[i], null));
 				}
 				Iterator itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
@@ -152,7 +149,6 @@ public class ListFolderController extends  SAbstractController {
 					if (me.getKey().toString().startsWith("customCol_", 0)) {
 						String colName = me.getKey().toString().substring(10, me.getKey().toString().length());
 						columns.put(colName, "on");
-						columnsText.put(colName, PortletRequestUtils.getStringParameter(request, "ss_col_text_"+colName, null));
 					}
 				}
 				
@@ -161,15 +157,11 @@ public class ListFolderController extends  SAbstractController {
 					Binder binder = getBinderModule().getBinder(binderId);
 					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
 						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, columns);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 					}
 				}
 				
 				Map values = new HashMap();
 				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, columnOrder);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES, columnsText);
 				//Reset the column positions to the default
 			   	values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
@@ -177,24 +169,12 @@ public class ListFolderController extends  SAbstractController {
 			} else if (formData.containsKey("defaultBtn")) {
 				Map values = new HashMap();
 				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
-				values.put(ObjectKeys.USER_PROPERTY_FOLDER_COLUMN_TITLES, null);
 				//Reset the column positions to the default
 				values.put(WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				//Reset the Sort Order information in the User Properties
 				values.put(ObjectKeys.SEARCH_SORT_BY, "");
 				values.put(ObjectKeys.SEARCH_SORT_DESCEND, "");
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
-
-				//See if this request was to set the folder default
-				if (formData.containsKey("setFolderDefaultColumns")) {
-					Binder binder = getBinderModule().getBinder(binderId);
-					if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMNS, null);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER, null);
-						getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FOLDER_COLUMN_TITLES, null);
-					}
-				}
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {

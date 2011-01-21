@@ -43,9 +43,4 @@ public class ManageIndexException extends UncheckedCodedException {
 	public ManageIndexException(String errorCode, Object[] errorArgs, Throwable cause) {
 		super(errorCode, errorArgs, cause);
 	}
-	
-    public int getHttpStatusCode() {
-    	return 500; // Internal Server Error
-    }
-
 }

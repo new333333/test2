@@ -42,11 +42,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,7 +76,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -111,8 +108,6 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.WorkflowControlledEntry;
-import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
@@ -128,7 +123,6 @@ import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
-import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
@@ -348,8 +342,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 				return new ModelAndView("definition_builder/get_condition_element", model);
-			} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
-				return new ModelAndView("definition_builder/get_entry_workflow_states", model);
 			} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
@@ -489,8 +481,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_WORKFLOW_STATES)) {
-			return ajaxGetEntryWorkflowStates(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL) ||
 					op.equals(WebKeys.OPERATION_SHOW_BUSINESS_CARD) ||
@@ -547,14 +537,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			// Get a user access report.
 			return ajaxGetUserAccessReport( request, response );
 		}
-		else if ( op.equals( WebKeys.OPERATION_GET_EMAIL_REPORT ) )
-		{
-			// Get email report.
-			return ajaxGetEmailReport( request, response );
-		}
 		else if ( op.equals( WebKeys.OPERATION_GET_XSS_REPORT ) )
 		{
-			// Get the XSS report.
+			// Get a user access report.
 			return ajaxGetXssReport( request, response );
 		}
 		else if (op.equals(WebKeys.OPERATION_TRASH_PURGE)     ||
@@ -882,43 +867,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/user_access_report", model);
 	}// end ajaxGetUserAccessReport()
 
-	/**
-	 * 
-	 * @param request
-	 * @param response
-	 * @throws Exception
-	 */
-	private ModelAndView ajaxGetEmailReport( RenderRequest request, RenderResponse response ) throws Exception
-	{
-		Map model;
-		List<Map<String, Object>> report = null;
-		
-		String reportType = PortletRequestUtils.getStringParameter(request, "reportType", 
-				ReportModule.EMAIL_REPORT_TYPE_SEND);
-		
-		model = new HashMap();
-		
-		Map formData = request.getParameterMap();
-		MapInputData inputData = new MapInputData(formData);
-		GregorianCalendar cal = new GregorianCalendar();
-		Date startDate = inputData.getDateValue(WebKeys.URL_START_DATE);
-		Date endDate = inputData.getDateValue(WebKeys.URL_END_DATE);
-		
-		if(endDate != null) {
-			cal.setTime(endDate);
-			cal.add(Calendar.DATE, 1);
-			endDate = cal.getTime();
-		}
-        report = getReportModule().generateEmailReport( startDate, endDate, reportType );
-
-        // Add the access report to the response.
-        model.put( "emailReport", report );
-
-		response.setContentType( "text/json" );
-		return new ModelAndView("forum/json/email_report_json", model);
-	}// end ajaxGetXssReport()
-	
-	
 	/**
 	 * 
 	 * @param request
@@ -1557,33 +1505,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else {
 			return new ModelAndView("definition_builder/get_condition_entry_element_value", model);
 		}
-	}
-	
-	private ModelAndView ajaxGetEntryWorkflowStates(RenderRequest request, 
-				RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String propertyId = PortletRequestUtils.getStringParameter(request,WebKeys.PROPERTY_ID, "");
-		if (Validator.isNotNull(propertyId)) {
-			String defId = PortletRequestUtils.getStringParameter(request, "propertyId_" + propertyId, "");
-			if (Validator.isNotNull(defId)) {
-				model.put(WebKeys.WORKFLOW_DEFINITION_ID, defId);
-				model.put(WebKeys.PROPERTY_ID, propertyId);
-				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
-				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
-				model.put("previous_workflowDefinitionId", PortletRequestUtils.getStringParameter(request,"previous_workflowDefinitionId", ""));
-				String[] previousStates = PortletRequestUtils.getStringParameters(request, "previous_workflowState");
-				Map previousStatesList = new HashMap();
-				if (previousStates != null) {
-					for (int i = 0; i < previousStates.length; i++) {
-						previousStatesList.put(previousStates[i], true);
-					}
-				}
-				model.put("previous_workflowStates", previousStatesList);
-			}
-		}
-		
-		response.setContentType("text/xml");
-		return new ModelAndView("definition_builder/get_entry_workflow_states", model);
 	}
 	
 	private ModelAndView ajaxGetWorkspaceTree(RenderRequest request, 
@@ -2986,10 +2907,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (fileAtt != null) {
 				bs.getFileModule().modifyFileStatus(entity, fileAtt, fileStatus);
 				BinderHelper.indexEntity(bs, entity);
-				if (entity instanceof WorkflowControlledEntry) {
-					//This is a workflow entity, so see if anything needs to be triggered on modify
-					getWorkflowModule().modifyWorkflowStateOnUpdate((WorkflowSupport) entity);
-				}
 			}
 		}
 	}

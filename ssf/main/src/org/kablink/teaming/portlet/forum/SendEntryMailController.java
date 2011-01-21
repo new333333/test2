@@ -74,7 +74,6 @@ public class SendEntryMailController extends SAbstractController {
 	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
@@ -86,14 +85,6 @@ public class SendEntryMailController extends SAbstractController {
 			Set emailAddress = new HashSet();
 			for (int i=0; i<to.length; ++i) {
 				emailAddress.add(to[i]);				
-			}
-			//See if this user wants to be BCC'd on all mail sent out
-			String bccEmailAddress = user.getBccEmailAddress();
-			if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
-				if (!emailAddress.contains(bccEmailAddress.trim())) {
-					//Add the user's chosen bcc email address
-					emailAddress.add(bccEmailAddress.trim());
-				}
 			}
 			boolean self = PortletRequestUtils.getBooleanParameter(request, "self", false);
 			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");

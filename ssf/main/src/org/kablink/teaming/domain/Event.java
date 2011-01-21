@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -123,7 +123,6 @@ import org.kablink.util.cal.Duration;
  * Changed to reduce cloning and persist with hibernate
  * 
  */
-@SuppressWarnings("deprecation")
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {
 
 	public enum FreeBusyType {
@@ -189,15 +188,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @see #setStart
 	 */
 	protected Calendar dtStart;
-	protected Calendar dtCalcStart;
-
-	/**
-	 * Internal end variable.
-	 * @see #getEnd
-	 * @see #setEnd
-	 */
-	protected Calendar dtEnd;
-	protected Calendar dtCalcEnd;
 
 	/**
 	 * Internal duration variable.
@@ -314,129 +304,89 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
      * at time = 0, duration 0.
 	 */
 	public Event() {
-		this(null, null, new Duration(), NO_RECURRENCE);
+		this(null, new Duration(), NO_RECURRENCE);
 	}
 
 	/**
 	 * Allocate a new Recurrence, with no recurrence frequency.
 	 * 
 	 * @param start The start time, as a broken-down time. (Only the calendar
-	 *              fields are used.  Use {@link #setWeekStart} rather
-	 *              than {@link Calendar#setFirstDayOfWeek} to set the
-	 *              first day of the week.)
-	 *              
-	 * @param dur  The duration.
-	 * 
+   *              fields are used.  Use {@link #setWeekStart} rather
+   *              than {@link Calendar#setFirstDayOfWeek} to set the
+   *              first day of the week.)
+   * @param dur  The duration.
 	 * @see #setWeekStart
 	 */
 	public Event(Calendar start, Duration dur) {
-		this(start, null, dur, NO_RECURRENCE);
-	}
-	
-	public Event(Calendar start, Calendar end) {
-		this(start, end, buildDuration(start, end), NO_RECURRENCE);
+		this(start, dur, NO_RECURRENCE);
 	}
 
-	public Event(Duration dur, int freq) {
-		this(null, null, dur, freq);
-	}
-	
-	public Event(Calendar start, Duration dur, int freq) {
-		this(start, buildEnd(start, dur), dur, freq);
-	}
-	
-	/*
-	 * Constructs a Duration object from a start and end Calendar
-	 * object.
-	 */
-	private static Duration buildDuration(Calendar start, Calendar end) {
-		Duration dur = new Duration();
-		setDurationInterval(dur, start, end);
-		return dur;
-	}
-	
-	private static void setDurationInterval(Duration dur, Calendar start, Calendar end) {
-		long interval = (end.getTime().getTime() - start.getTime().getTime());
-		dur.setInterval(interval);
-	}
-	
-	private static Calendar buildEnd(Calendar start, Duration dur) {
-		Calendar end = ((Calendar) start.clone());
-	    end.setTime(new Date(start.getTime().getTime() + dur.getInterval()));
-		return end;
-	}
-	
 	/**
 	 * Allocate a new Recurrence, with the specified frequency.
 	 * 
-	 * @param start The start time, as a broken-down time.  (Only the calendar
-	 *              fields are used.  Use {@link #setWeekStart} rather
-	 *              than {@link Calendar#setFirstDayOfWeek} to set the
-	 *              first day of the week.)
-	 * @param dur   The duration.
-	 * @param freq  The recurrence frequency (one of
-	 *        {@link Recurrence#DAILY}, {@link Recurrence#WEEKLY},
-	 *        {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
-	 *        or {@link Recurrence#NO_RECURRENCE}).
-	 *         
+   * @param start The start time, as a broken-down time.  (Only the calendar
+   *              fields are used.  Use {@link #setWeekStart} rather
+   *              than {@link Calendar#setFirstDayOfWeek} to set the
+   *              first day of the week.)
+   * @param dur   The duration.
+   * @param freq  The recurrence frequency (one of
+   *        {@link Recurrence#DAILY}, {@link Recurrence#WEEKLY},
+   *        {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
+   *        or {@link Recurrence#NO_RECURRENCE}). 
 	 * @see #setWeekStart
 	 */
-	public Event(Calendar start, Calendar end, Duration dur, int freq) {
-		duration = ((Duration) dur.clone());
+	public Event(Calendar start, Duration dur, int freq) {
+		setDtStart(start);
+
+		duration = (Duration) dur.clone();
 		frequency = freq;
+
 		interval = 1;
-		
-		if (start != null) setDtStart(start);
-		if (end   != null) setDtEnd(end);
-				
 		// Everything else gets initialized to 0 or null, which is what we want.
 	}
 	
-	public Event(
-			Calendar			dtStart,
-			Calendar			dtEnd,
-			Duration			duration,
-			Integer				frequency,
-			Integer				interval,
-			Calendar			until,
-			Integer				count,
-			Integer				weekStart,
-			Boolean				timeZoneSensitive,
-			TimeZone			timeZone,
-			String				uid,
-			FreeBusyType		freeBusy,
-			int[]				bySecond,
-			int[]				byMinute,
-			int[]				byHour,
-			DayAndPosition[]	byDay,
-			int[]				byMonthDay,
-			int[]				byYearDay,
-			int[]				byWeekNo,
-			int[]				byMonth) {
-		// It is important to call this base constructor, since it sets up some default.
-		this(); 
-		
-		if (dtStart           != null) setDtStart(dtStart);
-		if (dtEnd             != null) setDtEnd(dtEnd);
-		if (duration          != null) setDuration(duration);
-		if (frequency         != null) setFrequency(frequency.intValue());
-		if (interval          != null) setInterval(interval.intValue());
-		if (until             != null) setUntil(until);
-		if (count             != null) setCount(count.intValue());
-		if (weekStart         != null) setWeekStart(weekStart.intValue());
+	public Event(Calendar dtStart,
+			Calendar dtEnd,
+			Duration duration,
+			Integer frequency,
+			Integer interval,
+			Calendar until,
+			Integer count,
+			Integer weekStart,
+			Boolean timeZoneSensitive,
+			TimeZone timeZone,
+			String uid,
+			FreeBusyType freeBusy,
+			int[] bySecond,
+			int[] byMinute,
+			int[] byHour,
+			DayAndPosition[] byDay,
+			int[] byMonthDay,
+			int[] byYearDay,
+			int[] byWeekNo,
+			int[] byMonth) {
+		this(); // It is important to call this base constructor, since it sets up some default.
+		if(dtStart != null) setDtStart(dtStart);
+		if(dtEnd != null) setDtEnd(dtEnd);
+		if(duration != null) setDuration(duration);
+		if(frequency != null) setFrequency(frequency.intValue());
+		if(interval != null) setInterval(interval.intValue());
+		if(until != null) setUntil(until);
+		if(count != null) setCount(count.intValue());
+		if(weekStart != null) setWeekStart(weekStart.intValue());
 		// Due to some stupidity in earlier implementation and resulting backward compatibility issue, this needs to be negated.
-		if (timeZoneSensitive != null) setTimeZoneSensitive(timeZoneSensitive.booleanValue()); 
-		if (timeZone          != null) setTimeZone(timeZone);
-		if (uid               != null) setUid(uid);
-		if (freeBusy          != null) setFreeBusy(freeBusy);
-		if (bySecond          != null) setBySecond(bySecond);
-		if (byMinute          != null) setByMinute(byMinute);
-		if (byHour            != null) setByHour(byHour);
-		if (byDay             != null) setByDay(byDay);
-		if (byMonthDay        != null) setByMonthDay(byMonthDay);
-		if (byYearDay         != null) setByYearDay(byYearDay);
-		if (byWeekNo          != null) setByWeekNo(byWeekNo);
-		if (byMonth           != null) setByMonth(byMonth);
+		if(timeZoneSensitive != null) setTimeZoneSensitive(timeZoneSensitive.booleanValue()); 
+		if(timeZone != null) setTimeZone(timeZone);
+		if(uid != null) setUid(uid);
+		if(freeBusy != null) setFreeBusy(freeBusy);
+		if(bySecond != null) setBySecond(bySecond);
+		if(byMinute != null) setByMinute(byMinute);
+		if(byHour != null) setByHour(byHour);
+		if(byDay != null) setByDay(byDay);
+		if(byMonthDay != null) setByMonthDay(byMonthDay);
+		if(byYearDay != null) setByYearDay(byYearDay);
+		if(byWeekNo != null) setByWeekNo(byWeekNo);
+		if(byMonth != null) setByMonth(byMonth);
 	}
 	
 	/**
@@ -476,16 +426,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return generateDateTimeString(getDtStart());
 	}
 
-	public String getDtCalcStartString() {
-		return generateDateTimeString(getDtCalcStart());
-	}
-	
-	public String getLogicalStartString() {
-		Calendar start = getLogicalStart();
-		String reply = ((null == start) ? "" : generateDateTimeString(start));
-		return reply;
-	}
-
 	/**
    * Internal routines for hibernate.  Since all features of calendar are
    * not saved in the sql column, comparisons fail on dirty check.  So,
@@ -494,27 +434,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.column name="dtStart" not-null="true"
 	 */
 	protected Date getHDtStart() {
-		return ((null == dtStart) ? null : dtStart.getTime());
-	}
-
-	protected Date getHDtCalcStart() {
-		return ((null == dtCalcStart) ? null : dtCalcStart.getTime());
+		return dtStart.getTime();
 	}
 
 	protected void setHDtStart(Date start) {
-		if (null != start) {
-			Calendar newD = new GregorianCalendar();
-			newD.setTime(start);
-			setDtStart(newD);
-		}
-	}
-
-	protected void setHDtCalcStart(Date start) {
-		if (null != start) {
-			Calendar newD = new GregorianCalendar();
-			newD.setTime(start);
-			setDtCalcStart(newD);
-		}
+		Calendar newD = new GregorianCalendar();
+		newD.setTime(start);
+		setDtStart(newD);
 	}
 
 	/**
@@ -523,18 +449,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 */
 	public Calendar getDtStart() {
 		return dtStart;
-	}
-
-	public Calendar getDtCalcStart() {
-		return dtCalcStart;
-	}
-	
-	public Calendar getLogicalStart() {
-		Calendar start = getDtStart();
-		if (null == start) {
-			start = getDtCalcStart();
-		}
-		return start;
 	}
 
 	/**
@@ -546,25 +460,23 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @see #setWeekStart
 	 */
 	public void setDtStart(Calendar start) {
-		if (null == start) {
-			dtStart = null;
+		int oldStart;
+		if (dtStart != null) {
+			oldStart = dtStart.getFirstDayOfWeek();
+	    }
+	    else {
+			oldStart = Calendar.MONDAY;
 		}
-		else {
-			int oldStart = ((null == dtStart) ? Calendar.MONDAY : dtStart.getFirstDayOfWeek());
+
+		if (start == null) {
+			dtStart = new GregorianCalendar();
+			dtStart.setTime(new Date(0L));
+    	}
+	    else {
 			dtStart = start;
-			setCalendarWeekStart(dtStart, oldStart);
 		}
-	}
-	
-	public void setDtCalcStart(Calendar calcStart) {
-		if (null == calcStart) {
-			dtCalcStart = null;
-		}
-		else {
-			int oldCalcStart = ((null == dtCalcStart) ? Calendar.MONDAY : dtCalcStart.getFirstDayOfWeek());
-			dtCalcStart = calcStart;
-			setCalendarWeekStart(dtCalcStart, oldCalcStart);
-		}
+
+		setCalendarWeekStart(dtStart, oldStart);
 	}
 
 	/**
@@ -575,10 +487,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 */
 	public void setDtStart(String start) {
 		setDtStart(parseDateTime(start));
-	}
-
-	public void setDtCalcStart(String calcStart) {
-		setDtCalcStart(parseDateTime(calcStart));
 	}
 
 	/**
@@ -593,13 +501,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Has event any duration?
 	 */
 	public boolean hasDuration() {
-		return ((null != duration) && (0 != duration.getInterval()));
+		return duration.getInterval() != 0;
 	}
 
 	/**
 	 * Set the duration of the recurrence.
-	 * 
-	 * @param d The duration.
+   * @param d The duration.
 	 */
 	public void setDuration(Duration d) {
 		duration = d;
@@ -607,11 +514,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the duration of the recurrence.
-	 * 
-	 * @param str A string representing the duration.
-	 * 
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *                          a valid Duration.
+   * @param str A string representing the duration.
+   * @throws IllegalArgumentException If the given string does not describe
+   *                          a valid Duration.
 	 */
 	public void setDuration(String str) {
 		Duration d = new Duration(str);
@@ -619,66 +524,33 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Internal routines for hibernate.  Since all features of calendar are
-	 * not saved in the sql column, comparisons fail on dirty check.  So,
-	 * use internal setup to persist only fields that can be compared.
-	 * 
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
 	 * @hibernate.property
 	 * @hibernate.column name="dtEnd"
 	 */
 	protected Date getHDtEnd() {
-		Calendar end = getDtEnd();
-		return ((null == end) ? null : end.getTime());
-	}
-
-	protected Date getHDtCalcEnd() {
-		Calendar calcEnd = getDtCalcEnd();
-		return ((null == calcEnd) ? null : calcEnd.getTime());
+		return getDtEnd().getTime();
 	}
 
 	protected void setHDtEnd(Date end) {
-		if (null != end) {
-			Calendar newDtEnd = new GregorianCalendar();
-			newDtEnd.setTime(end);
-			setDtEnd(newDtEnd);
-		}
-		else {
-			dtEnd = null;
-		}
-	}
-	
-	protected void setHDtCalcEnd(Date calcEnd) {
-		if (null != calcEnd) {
-			Calendar newDtCalcEnd = new GregorianCalendar();
-			newDtCalcEnd.setTime(calcEnd);
-			setDtCalcEnd(newDtCalcEnd);
-		}
-		else {
-			dtCalcEnd = null;
-		}
+		// don't really use it. It is calculated and perisisted only for lookups
 	}
 
 	/**
-	 * Get the end time of the recurrence.
-	 * The broken-down time of the returned dtEnd will be correct, though
-	 * its time in milliseconds may not be.
-	 * 
+   * Get the end time of the recurrence.
+   * The broken-down time of the returned dtEnd will be correct, though
+   * its time in milliseconds may not be.
 	 * @return The end time.
 	 */
 	public Calendar getDtEnd() {
-		return dtEnd;
-	}
-	
-	public Calendar getDtCalcEnd() {
-		return dtCalcEnd;
-	}
-	
-	public Calendar getLogicalEnd() {
-		Calendar end = getDtEnd();
-		if (null == end) {
-			end = getDtCalcEnd();
-		}
-		return end;
+    	/* Make dtEnd a cloned dtStart, so non-time fields of the Calendar
+	     * are accurate. */
+		Calendar tempEnd = (Calendar) dtStart.clone();
+	    tempEnd.setTime(new Date(dtStart.getTime().getTime() +
+                             duration.getInterval()));
+		return tempEnd;
 	}
 
 	/**
@@ -689,32 +561,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return generateDateTimeString(getDtEnd());
 	}
 
-	public String getDtCalcEndString() {
-		return generateDateTimeString(getDtCalcEnd());
-	}
-	
-	public String getLogicalEndString() {
-		Calendar end = getLogicalEnd();
-		String reply = ((null == end) ? "" : generateDateTimeString(end));
-		return reply;
-	}
-
 	/**
 	 * Set the end time of the recurrence.
    * @param end The end time.
 	 */
 	public void setDtEnd(Calendar end) {
-		dtEnd = end;
-		if ((null != dtStart) && (null != dtEnd)) {
-			setDurationInterval(duration, dtStart, dtEnd);
-		}
-	}
-
-	public void setDtCalcEnd(Calendar end) {
-		dtCalcEnd = end;
-		if ((null != dtStart) && (null != dtCalcEnd)) {
-			setDurationInterval(duration, dtStart, dtCalcEnd);
-		}
+     	duration.setInterval(end.getTime().getTime() -
+                         dtStart.getTime().getTime());
 	}
 
 	/**
@@ -723,8 +576,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    * @throws IllegalArgumentException If the given string does not describe
    *                          a valid Date-Time.
 	 */
-	public void setDtCalcEnd(String end) {
-		setDtCalcEnd(parseDateTime(end));
+	public void setDtEnd(String end) {
+		setDtEnd(parseDateTime(end));
 	}
 
 	/**
@@ -993,12 +846,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property
 	 * @hibernate.column name="repeatCount"
 	 */
-	@SuppressWarnings("unused")
 	private int getHCount() {
 		return count;
 	}
 
-	@SuppressWarnings("unused")
 	private void setHCount(int count) {
 		this.count = count;
 	}
@@ -1344,7 +1195,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    *         support the <code>Cloneable</code> interface.
    * @throws IllegalArgumentException if the passed argument is not an array.
 	 */
-	@SuppressWarnings("unchecked")
 	private Object arrayclone(Object src) throws CloneNotSupportedException {
     if (src == null) return null;
 
@@ -2741,7 +2591,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    * @throws IllegalArgumentException If the given string does not describe
    *         a valid list of integers complying with the above requirements
 	 */
-	@SuppressWarnings("unchecked")
 	protected static int[] parseIntSet(String str, String name, int min,
 			int max, boolean neg_ok) {
 		if (str == null) {
@@ -2819,7 +2668,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    * @throws IllegalArgumentException If the given string does not describe
    *         a valid list of day-and-positions
 	 */
-	@SuppressWarnings("unchecked")
 	protected DayAndPosition[] parseDaySet(String str) {
 		if (str == null) {
 			return null;
@@ -2856,10 +2704,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @return A string representation of the calendar.
 	 */
 	public String generateDateTimeString(Calendar cal) {
-		if (null == cal) {
-			return "";
-		}
-		
 		DecimalFormat twoDigit = new DecimalFormat("00");
 		DecimalFormat fourDigit = new DecimalFormat("0000");
 
@@ -2938,17 +2782,16 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		try {
 			Event other = (Event) super.clone();
 			other.name = name;
-			other.dtStart      = (dtStart      != null ? (Calendar) dtStart.clone()      : null);
-			other.dtCalcStart  = (dtCalcStart  != null ? (Calendar) dtCalcStart.clone()  : null);
-			other.dtEnd        = (dtEnd        != null ? (Calendar) dtEnd.clone()        : null);
-			other.dtCalcEnd    = (dtCalcEnd    != null ? (Calendar) dtCalcEnd.clone()    : null);
-			other.duration     = (duration     != null ? (Duration) duration.clone()     : null);
+			other.dtStart = (dtStart != null ? (Calendar) dtStart.clone()
+					: null);
+			other.duration = (duration != null ? (Duration) duration.clone()
+					: null);
 			other.frequency = frequency;
 			other.interval = interval;
 			other.until = (until != null ? (Calendar) until.clone() : null);
 			other.count = count;
 			if (timeZone != null) {
-				other.timeZone = (TimeZone)timeZone.clone();
+			other.timeZone = (TimeZone)timeZone.clone();
 			}
 
 			other.bySecond = (int[]) arrayclone(bySecond);
@@ -2982,12 +2825,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		buffer.append(getClass().getName());
 		buffer.append("[dtStart=");
 		buffer.append(dtStart != null ? dtStart.toString() : "null");
-		buffer.append(",dtCalcStart=");
-		buffer.append(dtCalcStart != null ? dtCalcStart.toString() : "null");
-		buffer.append(",dtEnd=");
-		buffer.append(dtEnd != null ? dtEnd.toString() : "null");
-		buffer.append(",dtCalcEnd=");
-		buffer.append(dtCalcEnd != null ? dtCalcEnd.toString() : "null");
 		buffer.append(",duration=");
 		buffer.append(duration != null ? duration.toString() : "null");
 		buffer.append(",frequency=");
@@ -3105,12 +2942,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getDays() {
 		return getByDayString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setDays(String byDay) {
 		setByDay(byDay);
 	}
@@ -3119,12 +2954,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getMonthDay() {
 		return getByMonthDayString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setMonthDay(String byMonthDay) {
 		setByMonthDay(byMonthDay);
 	}
@@ -3133,12 +2966,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getYearDay() {
 		return getByYearDayString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setYearDay(String byYearDay) {
 		setByYearDay(byYearDay);
 	}
@@ -3147,12 +2978,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getWeekNo() {
 		return getByWeekNoString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setWeekNo(String byWeekNo) {
 		setByWeekNo(byWeekNo);
 	}
@@ -3161,12 +2990,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getMonths() {
 		return getByMonthString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setMonths(String byMonth) {
 		setByMonth(byMonth);
 	}
@@ -3175,12 +3002,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getMinutes() {
 		return getByMinuteString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setMinutes(String byMinute) {
 		setByMinute(byMinute);
 	}
@@ -3189,12 +3014,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @hibernate.property length="100"
 	 * @return
 	 */
-	@SuppressWarnings("unused")
 	private String getHours() {
 		return getByHourString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setHours(String byHour) {
 		setByHour(byHour);
 	}
@@ -3205,56 +3028,31 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Get the duration of the recurrence, represented as a string.
 	 * @return A string representing the duration.
 	 */
-	@SuppressWarnings("unused")
 	private String getHDuration() {
 		return getDuration().getString();
 	}
 
-	@SuppressWarnings("unused")
 	private void setHDuration(String durationString) {
 		setDuration(new Duration(durationString));
 	}
 
-	/**
-	 * Implements UpdateAttributeSupport.update() interface.
-	 * 
-	 * @param obj
-	 * 
-	 * @return
-	 */
 	public boolean update(Object obj) {
-		Event newEvent = ((Event) obj);
+		Event newEvent = (Event) obj;
 		boolean changed = false;
-		
-		if (!areDtCalendarsEqual(getDtStart(), newEvent.getDtStart())) {
+		if (!getDtStart().equals(newEvent.getDtStart())) {
 			changed = true;
 			setDtStart(newEvent.getDtStart());
-		}
-		if (!areDtCalendarsEqual(getDtCalcStart(), newEvent.getDtCalcStart())) {
-			changed = true;
-			setDtCalcStart(newEvent.getDtCalcStart());
-		}
-		
-		if (!areDtCalendarsEqual(getDtEnd(), newEvent.getDtEnd())) {
-			changed = true;
-			setDtEnd(newEvent.getDtEnd());
-		}
-		if (!areDtCalendarsEqual(getDtCalcEnd(), newEvent.getDtCalcEnd())) {
-			changed = true;
-			setDtCalcEnd(newEvent.getDtCalcEnd());
 		}
 		if (!getDuration().equals(newEvent.getDuration())) {
 			changed = true;
 			setDuration(newEvent.getDuration());
 		}
-		
+		// -1 implies have until
 		if (newEvent.getCount() == -1) {
-			// -1 implies have until's.  See if they match.
+			// see if untils match
 			if (getCount() == -1) {
 				if (!getUntil().equals(newEvent.getUntil())) {
-					// getCount() == -1 means count == -1 or
-					// count == 0, reset it.
-					setCount(0);
+					setCount(0);// getCount() == -1 means count == -1 OR count == 0, reset it
 					setUntil(newEvent.getUntil());
 					changed = true;
 				}
@@ -3279,33 +3077,28 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setInterval(newEvent.getInterval());
 			changed = true;
 		}
-		
 		if (isTimeZoneSensitive() != newEvent.isTimeZoneSensitive()) {
 			setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
 			changed = true;
 		}
-		
 		if ((getUid() == null && newEvent.getUid() != null) || 
 				(getUid() != null && newEvent.getUid() == null) ||
 				(getUid() != null && newEvent.getUid() != null && !getUid().equals(newEvent.getUid()))) {
 			setUid(newEvent.getUid());
 			changed = true;
 		}
-		
 		if ((getFreeBusy() == null && newEvent.getFreeBusy() != null) || 
 				(getFreeBusy() != null && newEvent.getFreeBusy() == null) ||
 				(getFreeBusy() != null && newEvent.getFreeBusy() != null && !getFreeBusy().equals(newEvent.getFreeBusy()))) {
 			setFreeBusy(newEvent.getFreeBusy());
 			changed = true;
 		}
-		
 		if ((getTimeZone() == null && newEvent.getTimeZone() != null) || 
 				(getTimeZone() != null && newEvent.getTimeZone() == null) ||
 				(getTimeZone() != null && newEvent.getTimeZone() != null && !getTimeZone().equals(newEvent.getTimeZone()))) {
 			setTimeZone(newEvent.getTimeZone());
 			changed = true;
 		}
-		
 		int[] val = newEvent.getBySecond();
 		if ((bySecond != val) && hasDiffs(bySecond, val)) {
 			setBySecond(val);
@@ -3350,29 +3143,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setByMonth(val);
 			changed = true;
 		}
-		
 		return changed;
-	}
-
-	/*
-	 * Returns true if to Calendar values are equal and false
-	 * otherwise.
-	 */
-	private static boolean areDtCalendarsEqual(Calendar dt1, Calendar dt2) {
-		// If both are null...
-		if (dt1 == dt2) {
-			// ...they're equal.
-			return true;
-		}
-
-		// If one or the other is null, but not both...
-		if ((null == dt1) || (null == dt2)) {
-			// ...they're not equal.
-			return false;
-		}
-
-		// Otherwise, just compare them.
-		return dt1.equals(dt2);
 	}
 
 	private boolean hasDiffs(int[] curVal, int[] newVal) {
@@ -3393,8 +3164,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		element.addAttribute("name", getName());
 
 		XmlUtils.addProperty(element, "start", getDtStartString());
-		XmlUtils.addProperty(element, "calcStart", getDtCalcStartString());
-		XmlUtils.addProperty(element, "duration", getDuration().getString());
+		XmlUtils.addProperty(element, "duration", getDuration()
+				.getString());
 
 		if (getCount() > 0) {
 			XmlUtils.addProperty(element, "count", getCountString());
@@ -3456,7 +3227,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @return "all" recurrences list. each list element is a 2-element long table, first table element is start date, 
 	 * 				second one is end date
 	 */
-	@SuppressWarnings("unchecked")
 	public List getAllRecurrenceDates() {
 		List result = new ArrayList();
 
@@ -3569,7 +3339,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return reply;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static List getAllDatesBetween(Calendar start, Calendar end) {
 		List result = new ArrayList();
 		
@@ -3597,7 +3366,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return (start).equals(end);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static List getEventDaysFromRecurrencesDates(List recurencesDates) {
 		List result = new ArrayList();
 		

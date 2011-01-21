@@ -51,8 +51,4 @@ public class ConfigurationException extends UncheckedCodedException {
     public ConfigurationException(String errorCode, Object[] errorArgs) {
         super(errorCode, errorArgs);
     }
-    
-    public int getHttpStatusCode() {
-    	return 500; // Internal Server Error
-    }
 }

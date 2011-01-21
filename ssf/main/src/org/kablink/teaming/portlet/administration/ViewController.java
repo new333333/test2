@@ -392,23 +392,6 @@ public class ViewController extends  SAbstractController {
 			}
 		} catch(AccessControlException e) {}
 	
-		//Manage user accounts
-		try {
-			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
-				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				element.addAttribute("title", NLT.get("administration.manage.userAccounts"));
-				element.addAttribute("image", "bullet");
-				element.addAttribute("id", String.valueOf(nextId++));
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_ACCOUNTS);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				element.addAttribute("url", url.toString());
-				elements.put(element.attributeValue("title"), element);
-			}
-		} catch(AccessControlException e) {}
-	
 		//Manage quotas
 		try {
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
@@ -483,18 +466,6 @@ public class ViewController extends  SAbstractController {
 
 		//Login report
 		if (getAdminModule().testAccess(AdminOperation.report)) {
-			//Email report
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.report.title.email"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_EMAIL_REPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			reports.put(element.attributeValue("title"), element);
-
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.report.title.login"));
 			element.addAttribute("image", "bullet");

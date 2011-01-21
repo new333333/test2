@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
+import java.util.ArrayList;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.Window;
 
 
 /**
@@ -52,29 +54,11 @@ public class LandingPageConfig extends JavaScriptObject
 
 	
 	/**
-	 * Return the id of the binder we are editing.
-	 */
-	public final native String getBinderId() /*-{ return this.binderId; }-*/;
-	
-	
-	/**
 	 * Return the string that holds the landing page configuration.  This class is an
 	 * Overlay on the JavaScript object called m_landingPageConfig.
 	 */
 	public final native String getConfigStr() /*-{ return this.configData; }-*/;
-	
-	
-	/**
-	 * Return the url to the content css
-	 */
-	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
 
-	
-	/**
-	 * Return the language we are running in.
-	 */
-	public final native String getLanguage() /*-{ return this.language; }-*/;
-	
 	
 	/**
 	 * Return the string that holds the landing page mashup property name.  This class is an

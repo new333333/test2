@@ -37,10 +37,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -54,9 +52,7 @@ import org.apache.commons.logging.Log;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -89,7 +85,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	boolean sendVTODO;
 	IcalModule icalModule;
 	Notify notify;
-	EmailLog emailLog;
 	
 	/**
 	 * Class constructor.
@@ -143,15 +138,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	 */
 	public void setEntry(Entry entry) {
 		this.entry = entry;		
-	}
-	
-	/**
-	 * Stores the email log object that is being built for this.
-	 * 
-	 * @param entry
-	 */
-	public void setEmailLog(EmailLog emailLog) {
-		this.emailLog = emailLog;		
 	}
 	
 	/**
@@ -347,7 +333,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				helper);
 			if (sendAttachments) {
 				prepareAttachments(notify.getAttachments(), helper);
-				logFileAttachments(notify.getAttachments());
 			}
 			notify.clearAttachments();
 			prepareICalendars(helper);
@@ -406,13 +391,5 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		}
 		
 		notify.clearEvents();
-	}
-	
-	private void logFileAttachments(Set<FileAttachment> fileAttachments) {
-		List<String> fileNames = new ArrayList<String>();
-		for (FileAttachment fAtt: fileAttachments) {
-			fileNames.add(fAtt.getFileItem().getName());
-		}
-		emailLog.setFileAttachments(fileNames);
 	}
 }

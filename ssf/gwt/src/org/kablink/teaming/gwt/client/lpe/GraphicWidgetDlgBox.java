@@ -54,6 +54,38 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class GraphicWidgetDlgBox extends DlgBox
 {
+	/**
+	 * This class wraps a JavaScript object that holds the list of file attachments for this landing page.
+	 * @author jwootton
+	 *
+	 */
+	public static class FileAttachments extends JavaScriptObject
+	{
+		/**
+		 * Overlay types always have a protected, zero-arg constructors.
+		 */
+		protected FileAttachments()
+		{
+		}// end FileAttachments()
+
+		
+		/**
+		 * Return the file id for the given file attachment
+		 */
+		public final native String getFileId( int index )/*-{ return this[index].fileId; }-*/;
+		
+		
+		/**
+		 * Return the file name for the given file attachment
+		 */
+		public final native String getFileName( int index )/*-{ return this[index].fileName; }-*/;
+		
+		/**
+		 * Return the number of file attachments.
+		 */
+		public final native int getNumAttachments()/*-{ return this.length; }-*/;
+	}// end FileAttachments
+
 	private CheckBox m_showBorderCkBox = null;
 	private ListBox m_graphicListBox = null;
 	
@@ -98,7 +130,7 @@ public class GraphicWidgetDlgBox extends DlgBox
 		table.setCellSpacing( 2 );
 
 		// Get the number of file attachments.
-		fileAttachments = LandingPageEditor.getFileAttachments();
+		fileAttachments = getFileAttachments();
 		numAttachments = fileAttachments.getNumAttachments();
 		
 		// Do we have any file attachments?
@@ -169,6 +201,15 @@ public class GraphicWidgetDlgBox extends DlgBox
 		return properties;
 	}// end getDataFromDlg()
 
+	
+	/**
+	 * Use JSNI to grab the JavaScript object that holds the list of file attachments.
+	 */
+	private native FileAttachments getFileAttachments() /*-{
+		// Return a reference to the JavaScript variable called, m_fileAttachments.
+		return $wnd.m_fileAttachments;
+	}-*/;
+	
 	
 	/**
 	 * Return the id of the selected graphic.

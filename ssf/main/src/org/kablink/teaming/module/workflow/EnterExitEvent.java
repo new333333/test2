@@ -40,7 +40,6 @@ package org.kablink.teaming.module.workflow;
  * @author Janet McCann
  *
  */
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,7 +65,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
@@ -82,8 +80,6 @@ import org.kablink.teaming.jobs.WorkflowProcess;
 import org.kablink.teaming.modelprocessor.ProcessorManager;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
-import org.kablink.teaming.module.definition.notify.NotifyVisitor;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
@@ -96,7 +92,6 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
@@ -443,48 +438,28 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (notify.isAppendTitle()) {
 			s = s + " " + entry.getTitle();
 		}
-		s = MarkupUtil.markupStringReplacement(null, null, null, null, entry, s, WebKeys.MARKUP_VIEW_TEXT);
 		details.put(MailModule.SUBJECT, s);
 		String permaLink = PermaLinkUtil.getPermalink(entry);
 		String msgHtml = "";
-		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_VIEW);
+		if (entry.getDescription() != null) msgHtml = MarkupUtil.markupStringReplacement(null, null, null, null, entry, entry.getDescription().getText(), WebKeys.MARKUP_EXPORT);
 		StringBuffer tMsg = new StringBuffer();
-		StringWriter writer = new StringWriter();
-		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.TEXT, "workflow_notification_header.vm");
-		tMsg.append(writer.toString());
 		tMsg.append(permaLink);
 		tMsg.append("\n\n");
-		
-		String bodyText = MarkupUtil.markupStringReplacement(null, null, null, null, entry, notify.getBody(), WebKeys.MARKUP_VIEW);
-		tMsg.append(Html.stripHtml(bodyText));
+		tMsg.append(notify.getBody());
 		if (notify.isAppendBody()) {
 			tMsg.append("\n");
-			tMsg.append(Html.stripHtml(msgHtml));
+			tMsg.append(Html.stripHtml((msgHtml)));
 			tMsg.append("\n");
 		}
-		writer = new StringWriter();
-		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.TEXT, "workflow_notification_footer.vm");
-		tMsg.append(writer.toString());
 		EmailUtil.putText(details, MailModule.TEXT_MSG, tMsg.toString());
-		
-		//Get the body text and turn it into html
-		TextToHtml textToHtml = new TextToHtml();
-		textToHtml.setBreakOnLines(true);
-		textToHtml.setStripHtml(false);
-		textToHtml.parseText(bodyText);
-		String bodyTextHtml = textToHtml.toString();
-
 		StringBuffer hMsg = new StringBuffer();
-		writer = new StringWriter();
-		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.HTML, "workflow_notification_header.vm");
-		hMsg.append(writer.toString());
 		hMsg.append("<a href=\"");
 		hMsg.append(permaLink);
 		hMsg.append("\">");
 		hMsg.append(entry.getTitle());
 		hMsg.append("</a>");
 		hMsg.append("<br /><br />");
-		hMsg.append(bodyTextHtml);
+		hMsg.append(notify.getBody());
 		if (notify.isAppendBody()) {
 			hMsg.append("<p>");
 			hMsg.append(msgHtml);
@@ -502,10 +477,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			}
 			details.put(MailModule.FROM, ia);
 		} catch  (Exception useDefault) {}
-		writer = new StringWriter();
-		NotifyBuilderUtil.addVelocityTemplate(entry, new HashMap(), writer, NotifyVisitor.WriterType.HTML, "workflow_notification_footer.vm");
-		hMsg.append(writer.toString());
-		details.put(MailModule.LOG_TYPE, EmailLog.EmailLogType.workflowNotification);
+		
 		EmailUtil.putHTML(details, MailModule.HTML_MSG, hMsg.toString());
 		try {
 			//to keep transaction small, schedule it

@@ -1009,7 +1009,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		SearchObject so = qb.buildQuery(qTree);   	
    	
     	// create Lucene query    	
-    	Query soQuery = so.getLuceneQuery();
+    	Query soQuery = so.getQuery();
     	    	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + qTree.asXML());

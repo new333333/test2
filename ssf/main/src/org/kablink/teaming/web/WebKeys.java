@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,7 +59,6 @@ public class WebKeys {
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
 	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
-	public static final String TASK_CAN_MODIFY_LINKAGE = "ssCanModifyTaskLinkage";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
 	public static final String FOLDER_MODE_TYPE = "ssFolderModeType";
 	public static final String FOLDER_CURRENT_MODE_TYPE = "ssCurrentFolderModeType";
@@ -91,7 +90,6 @@ public class WebKeys {
     public static final String THEME_IC_COOL_GREEN = "iccg";
     public static final String THEME_IC_WINTRY_GRAY = "icwg";
     public static final String SESSION_CAPTIVE = "sessionCaptive";
-    public static final String SESSION_PRODUCT = "sessionProduct";
     public static final String VIBE_PRODUCT = "vibeProduct";
     
     //URL parameters
@@ -111,6 +109,7 @@ public class WebKeys {
     public static final String URL_ADD_FOLDER = "ss_addFolderUrl";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
+    public static final String URL_ACTIVITY_STREAMS_ENABLED = "activityStreamsEnabled";
     public static final String URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE = "showWhatsNew";
     public static final String URL_BINDER_ID="binderId";
     public static final String URL_ZONE_UUID="zoneUUID";
@@ -130,12 +129,6 @@ public class WebKeys {
     public static final String URL_BY_TEAM_MEMBERS="ss_byTeamMembers";
     public static final String URL_BY_ALL_USERS="ss_byAllUsers";
 	public static final String URL_CAPTIVE="captive";
-	public static final String URL_PRODUCT="product";
-	public static final String URL_PRODUCT_GW="gw";
-	public static final String URL_PRODUCT_KABLINK="kablink";
-	public static final String URL_PRODUCT_NOVELL="novell";
-	public static final String URL_VIBEONPREM_ROOT_FLAG="vibeonprem_root";
-	public static final String URL_VIBEONPREM_URL_FLAG="vibeonprem_url";	
 	public static final String URL_CONTEXT="context";
 	public static final String URL_CSS_SHEET="sheet";
 	public static final String URL_CSS_THEME="theme";
@@ -343,7 +336,6 @@ public class WebKeys {
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_AJAX_FIND = "__ajax_find";
-	public static final String ACTION_EMAIL_REPORT="email_report";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_LICENSE_REPORT="license_report";
 	public static final String ACTION_LOGIN_REPORT="login_report";
@@ -365,7 +357,6 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_EXTENSIONS="manage_extensions";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_QUOTAS="manage_quotas";
-	public static final String ACTION_MANAGE_USER_ACCOUNTS="manage_user_accounts";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
@@ -487,7 +478,6 @@ public class WebKeys {
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
 	public static final String OPERATION_GET_ENTRY_ELEMENTS = "get_entry_elements";
-	public static final String OPERATION_GET_ENTRY_WORKFLOW_STATES = "get_entry_workflow_states";
 	public static final String OPERATION_GET_ELEMENT_VALUES = "get_element_values";
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
@@ -554,7 +544,6 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
-	public static final String OPERATION_GET_EMAIL_REPORT = "getEmailReport";
 	public static final String OPERATION_GET_LDAP_SYNC_RESULTS = "getLdapSyncResults";
 	public static final String OPERATION_GET_USER_ACCESS_REPORT = "getUserAccessReport";
 	public static final String OPERATION_GET_XSS_REPORT = "getXssReport";
@@ -784,8 +773,6 @@ public class WebKeys {
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DELETE_ENTRY_ADAPTER = "ss_deleteEntryAdapter";
     public static final String DIRECTION="ss_direction";
-    public static final String ACTIVE_USER_ACCOUNTS="ss_activeUserAccounts";
-    public static final String DISABLED_USER_ACCOUNTS="ss_disabledUserAccounts";
     public static final String DISKQUOTA="diskQuota";
     public static final String DISK_QUOTA_EXCEEDED="ss_diskQuotaExceeded";
     public static final String DISK_QUOTA_HIGH_WATER_MARK_EXCEEDED="ss_diskQuotaHighWaterMarkExceeded";
@@ -854,7 +841,6 @@ public class WebKeys {
     public static final String ENTRY_HAS_META_HIT="_entryHasMetaHit";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
-    public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String TRASH_VIEW_TOOLBAR="ssTrashViewToolbar";
     public static final String FOLDER_VIEWS_TOOLBAR="ssFolderViewsToolbar";
@@ -991,7 +977,6 @@ public class WebKeys {
     public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_VIEW="view";
-    public static final String MARKUP_VIEW_TEXT="view_text";
     public static final String MARKUP_EXPORT="export";
     public static final String MASHUP_BINDERS="ss_mashupBinders"; 
     public static final String MASHUP_BINDER_ENTRIES="ss_mashupBinderEntries"; 
@@ -1042,8 +1027,6 @@ public class WebKeys {
     public static final String NEXT_PAGE="ss_nextPage";
     public static final String NEXT_PREV_URL="ss_nextPrevUrl";
     public static final String NLT_VALUE="value";
-    public static final String NOTIFICATION_SCHEDULE="ssNotificationSchedule";
-    public static final String NOTIFICATION_SCHEDULE_INFO="ssNotification_ScheduleInfo";
     public static final String OPERATION="ssOperation";
     public static final String OPERATION_MAP="ssOperationMap";
     public static final String OWNER="ssOwner";
@@ -1090,7 +1073,6 @@ public class WebKeys {
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
     public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
-    public static final String PROPERTY_ID="ssPropertyId";
     public static final String QUOTAS_ENABLED="ss_quotasEnabled";
     public static final String QUOTAS_DEFAULT="ss_quotasDefault";
     public static final String QUOTAS_GROUPS="ss_quotasGroups";
@@ -1252,7 +1234,6 @@ public class WebKeys {
     public static final String SHOW_USER_SHOW_HINT="ss_showUserShowHint";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_PROFILE_ENTRY="ss_showUserProfileEntry";
-    public static final String SHOW_USER_INACTIVE_ACCOUNTS="ss_showUserInactiveAccounts";
     public static final String SHOW_USER_WORKSPACE_PREDELETED="ss_showUserWorkspacePredeleted";
     public static final String SHOW_USER_TARGET="ss_showUserTarget";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
@@ -1367,7 +1348,6 @@ public class WebKeys {
     public static final String WORKFLOW_DEFINITION_ID="ssWorkflowDefinitionId";
     public static final String WORKFLOW_DESCRIPTIONS="ssWorkflowDescriptions";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
-    public static final String WORKFLOW_QUESTION_RESPONDERS="ssWorkflowQuestionResponders";
     public static final String WORKFLOW_TRANSITIONS="ssWorkflowTransitions";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";
@@ -1435,7 +1415,6 @@ public class WebKeys {
     public static final String VIEW_ADMIN_MANAGE_EXTENSIONS="administration/manage_extensions";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_QUOTAS="administration/manage_quotas";
-    public static final String VIEW_ADMIN_MANAGE_USER_ACCOUNTS="administration/manage_user_accounts";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ADMIN_RELOAD_OPENER="administration/reload_opener";
@@ -1459,7 +1438,6 @@ public class WebKeys {
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_CONFIRM_DELETE_MIRRRED_BINDER="binder/confirm_delete_mirrored_binder";
     public static final String VIEW_FORUM_EDIT="forum/edit";
-    public static final String VIEW_EMAIL_REPORT="administration/email_report";
     public static final String VIEW_ENTERPRISE_ONLY="enterpriseOnly";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_ENTRY_ACL_REPORT="binder/view_entry_acl_report";

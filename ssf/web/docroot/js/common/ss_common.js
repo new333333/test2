@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0
  * (the "CPAL"); you may not use this file except in compliance with the CPAL.
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information: Attribution Copyright Notice: Copyright (c)
- * 1998-2011 Novell, Inc. All Rights Reserved. Attribution Phrase (not exceeding
+ * 1998-2010 Novell, Inc. All Rights Reserved. Attribution Phrase (not exceeding
  * 10 words): [Powered by Kablink] Attribution URL: [www.kablink.org] Graphic
  * Image as provided in the Covered Code
  * [ssf/images/pics/powered_by_icecore.png]. Display of Attribution Information
@@ -778,7 +778,7 @@ function ss_reloadOpener(fallBackUrl) {
 				setTimeout('self.window.close();', 200)
 			} else {
 				if (ss_isGwtUIActive) {
-					self.opener.top.m_requestInfo.forceSidebarReload = "true";
+					self.opener.top.m_requestInfo.forceSidebarReload = true;
 					self.opener.top.gwtContentIframe.location.href = fallBackUrl;
 				}
 				else {
@@ -9062,22 +9062,6 @@ function ss_deleteAttribute(obj, id) {
 	if (rowObj != null) rowObj.parentNode.removeChild(rowObj);
 	return true;
 }
-
-//Function used in ordering folder columns
-function ss_saveColumnOrder(obj, name) {
-	var formObj = ss_getContainingForm(obj);
-	var hiddenObj = formObj[name];
-	hiddenObj.value = "";
-	var tableNode = ss_findOwningElement(obj, 'tbody')
-	for (var i = 0; i < tableNode.childNodes.length; i++) {
-		var node = tableNode.childNodes[i]
-		if (node.tagName && node.tagName.toLowerCase() == 'tr') {
-			if (hiddenObj.value != '') hiddenObj.value += '|';
-			hiddenObj.value += node.id;
-		}
-	}
-}
-
 
 /**
  * This function will update the given element's text node with the given text.

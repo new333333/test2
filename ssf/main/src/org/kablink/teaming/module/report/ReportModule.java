@@ -42,7 +42,6 @@ import java.util.Set;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.LicenseStats;
@@ -63,9 +62,7 @@ public interface ReportModule {
 	public static final String ENTITY_ID = "entity_id";
 	public static final String ENTITY_TYPE = "entity_type";
 	public static final String ENTITY_PATH = "entity_path";
-	public static final String ENTITY_PATH_ID = "entity_path_id";
 	public static final String ENTITY_TITLE = "entity_title";
-	public static final String ENTITY_CREATOR_ID = "entity_creator_id";
 	public static final String FILE_ID = "file_id";
 	public static final String FOLDER = "folder";
 	public static final String HAS_ENTRY_ACL = "hasEntryAcl";
@@ -113,29 +110,6 @@ public interface ReportModule {
 	public static final String LOGIN_COUNT_SORT = "login_count_sort";
 	public static final String LOGIN_DATE_SORT = "login_date_sort";
 	
-	//Email Log Report
-	public static final String EMAIL_LOG_SEND_DATE = "sendDate";
-	public static final String EMAIL_LOG_FROM_ADDRESS = "from";
-	public static final String EMAIL_LOG_SUBJECT = "subj";
-	public static final String EMAIL_LOG_COMMENT = "comment";
-	public static final String EMAIL_LOG_TYPE = "type";
-	public static final String EMAIL_LOG_STATUS = "status";
-	public static final String EMAIL_LOG_TO_ADDRESSES = "to_addresses";
-	public static final String EMAIL_LOG_ATTACHED_FILES = "attached_files";
-	
-	public static final Integer EMAIL_LOG_SEND_DATE_INDEX = 0;
-	public static final Integer EMAIL_LOG_FROM_ADDRESS_INDEX = 1;
-	public static final Integer EMAIL_LOG_SUBJECT_INDEX = 2;
-	public static final Integer EMAIL_LOG_COMMENT_INDEX = 3;
-	public static final Integer EMAIL_LOG_TYPE_INDEX = 4;
-	public static final Integer EMAIL_LOG_STATUS_INDEX = 5;
-	public static final Integer EMAIL_LOG_TO_ADDRESSES_INDEX = 6;
-	public static final Integer EMAIL_LOG_ATTACHED_FILES_INDEX = 7;
-	
-	public static final String EMAIL_REPORT_TYPE_SEND = "send";
-	public static final String EMAIL_REPORT_TYPE_RECEIVE = "receive";
-	public static final String EMAIL_REPORT_TYPE_ERRORS = "errors";
-	
 	public static class ActivityInfo
 	{
 		DefinableEntity whoOrWhat;
@@ -164,7 +138,6 @@ public interface ReportModule {
 	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
 	public void addTokenInfo(User requester, User requestee, Long applicationId);
-	public void addEmailLog(EmailLog emailLog);
 
 	public void addLicenseStats(LicenseStats stats);
 	public LicenseStats getLicenseHighWaterMark(Calendar startDate, Calendar endDate);
@@ -181,7 +154,6 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateExceededHighWaterDiskQuotaReport();
 	public List<Map<String, Object>> generateUserDiskUsageReport(UserQuotaOption option);
 	public List<Map<String, Object>> generateAccessReportByUser(final Long userId, final Date startDate, final Date endDate, final String reportType);
-	public List<Map<String, Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType);
 	public List<Map<String, Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, final String reportType);
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);

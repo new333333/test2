@@ -54,8 +54,4 @@ public class DefinitionInvalidException extends UncheckedCodedException {
     public DefinitionInvalidException(String errorCode, Object[] errorArgs, Throwable cause) {
         super(errorCode, errorArgs, cause);
     }
-    
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }

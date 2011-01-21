@@ -1,12 +1,7 @@
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:context="http://www.springframework.org/schema/context"
-    xmlns:aop="http://www.springframework.org/schema/aop"
-    xmlns:security="http://www.springframework.org/schema/security"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
-    http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-2.0.4.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
 
 	<!-- =========================== Basic Infrastructural Beans ========================== -->
 
@@ -582,7 +577,6 @@
 		<property name="coreDao"><ref bean="coreDao"/></property>
 		<property name="folderDao"><ref bean="folderDao"/></property>
 		<property name="profileDao"><ref bean="profileDao"/></property>
-		<property name="securityDao"><ref bean="securityDao"/></property>
 		<property name="functionManager"><ref bean="functionManager"/></property>	
 		<property name="accessControlManager"><ref bean="accessControlManager"/></property>
 		<property name="aclManager"><ref bean="aclManager"/></property>
@@ -628,7 +622,6 @@
 				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addFunction">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="addFunctionCondition">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="addPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="updateDefaultDefinitions">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMailConfigAndSchedules">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -837,7 +830,6 @@
 	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.mail.impl.DefaultEmailPoster">
 		<property name="folderModule"><ref bean="folderModule"/></property>
 		<property name="icalModule"><ref bean="icalModule"/></property>
-		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
 	<bean id="fileModule" parent="moduleNonTransactionProxy">
@@ -876,11 +868,6 @@
 				<property name="binderModule"><ref bean="binderModule"/></property>
 				<property name="folderModule"><ref bean="folderModule"/></property>
 			</bean>
-		</property>
-		<property name="transactionAttributes">
-			<props>
-				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			</props>
 		</property>
 	</bean>			
 
@@ -1048,9 +1035,7 @@ text/calendar											  ics
 				<property name="jndiAccessor"><ref bean="mailJndiAccessor"/></property>
 				<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
 				<property name="icalModule"><ref bean="icalModule"/></property>
-				<property name="folderModule"><ref bean="folderModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
-				<property name="reportModule"><ref bean="reportModule"/></property>
 			</bean>	
 		</property>
 		<!--<property name="proxyInterfaces">

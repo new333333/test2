@@ -46,8 +46,4 @@ public class NotSupportedException extends UncheckedCodedException {
     public NotSupportedException(String errorCode, Object[] errorArgs) {
         super(errorCode, errorArgs);
     }
-    
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }

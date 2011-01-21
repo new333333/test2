@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ public class Constants {
 
 	public static final String FIELD_NAME_ATTRIBUTE = "fieldname";
 	public static final String EXACT_PHRASE_ATTRIBUTE = "exactphrase";
+	public static final String NEAR_ATTRIBUTE = "near";
 	public static final String INCLUSIVE_ATTRIBUTE = "inclusive";
 	public static final String DISTANCE_ATTRIBUTE = "distance";
 	public static final String ASCENDING_ATTRIBUTE = "ascending";
@@ -56,8 +57,8 @@ public class Constants {
 	public static final String ASCENDING_TRUE = "TRUE";
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
-	public static final String TRUE = "true";
-	public static final String FALSE = "false";
+	public static final String TRUE = "TRUE";
+	public static final String FALSE = "FALSE";
 	public static final String TAG_ELEMENT = "TAG";
 	public static final String SORT_FIELD_PREFIX = "_sort_";
 	public static final String UID_FIELD = "_uid";
@@ -139,26 +140,15 @@ public class Constants {
 	public static final String DESC_FORMAT_FIELD = "_desc_format";
 	public static final String EVENT_FIELD = "_event";
 	public static final String EVENT_FIELD_START_DATE = "StartDate";
-	public static final String EVENT_FIELD_START_END = "start_end";
-	public static final String EVENT_FIELD_CALC_START_DATE = "CalcStartDate";
-	public static final String EVENT_FIELD_LOGICAL_START_DATE = "LogicalStartDate";
 	public static final String EVENT_FIELD_TIME_ZONE_ID = "TimeZoneID";
 	public static final String EVENT_FIELD_TIME_ZONE_SENSITIVE = "TimeZoneSensitive";
 	public static final String EVENT_FIELD_FREE_BUSY = "FreeBusy";
 	public static final String EVENT_FIELD_END_DATE = "EndDate";
-	public static final String EVENT_FIELD_CALC_END_DATE = "CalcEndDate";
-	public static final String EVENT_FIELD_LOGICAL_END_DATE = "LogicalEndDate";
 	public static final String EVENT_COUNT_FIELD = "_eventCount";
 	public static final String EVENT_DATES_FIELD = "_eventDates";
 	public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
 	public static final String EVENT_ID = "ID";
 	public static final String EVENT_DATES = "EventDates";
-	public static final String EVENT_FIELD_DURATION   = "Duration";
-	public static final String DURATION_FIELD_SECONDS = "S";
-	public static final String DURATION_FIELD_MINUTES = "M";
-	public static final String DURATION_FIELD_HOURS   = "H";
-	public static final String DURATION_FIELD_DAYS    = "D";
-	public static final String DURATION_FIELD_WEEKS   = "W";
 	public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
 	public static final String WORKFLOW_STATE_FIELD = "_workflowState";
 	public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";

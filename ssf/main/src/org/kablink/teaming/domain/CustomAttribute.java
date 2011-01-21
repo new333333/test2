@@ -558,7 +558,6 @@ public class CustomAttribute extends ZonedObject {
 		
 	}
 	public int hashCode() {
-		if (getValue() == null) return 0;
     	return getValue().hashCode();
     }
     public boolean equals(Object obj) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,26 +44,20 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
@@ -83,7 +77,6 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Restrictions;
 
 /**
  * Helper methods for the GWT UI server code that services activity
@@ -115,13 +108,10 @@ public class GwtActivityStreamHelper {
 		m_activityStreamParams.setLookback(              cacheLookback);
 		m_activityStreamParams.setClientRefresh(         clientRefresh);
 		m_activityStreamParams.setCacheRefresh(          cacheRefresh);
-		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments",   2));
-		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words",  (-1)));
-		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",            25));
-		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",        1000));
-		m_activityStreamParams.setReadEntryDays(         SPropsUtil.getInt("activity.stream.read.entry.days",  30));
-		m_activityStreamParams.setReadEntryMax(          SPropsUtil.getInt("activity.stream.read.entry.max", 1000));
-		m_activityStreamParams.setShowSetting( ShowSetting.SHOW_ALL );
+		m_activityStreamParams.setActiveComments(        SPropsUtil.getInt("activity.stream.active.comments", 2));
+		m_activityStreamParams.setDisplayWords(          SPropsUtil.getInt("activity.stream.display.words", (-1)));
+		m_activityStreamParams.setEntriesPerPage(        SPropsUtil.getInt("folder.records.listed",          25));
+		m_activityStreamParams.setMaxHits(               SPropsUtil.getInt("activity.stream.maxhits",      1000));
 	};
 	
 	/*
@@ -132,17 +122,15 @@ public class GwtActivityStreamHelper {
 	 * don't have to repeatedly read the same information.
 	 */
 	private static class ASAuthorInfo {
-		private GwtPresenceInfo m_authorPresence;	// The author's presence information.
-		private String          m_authorAvatarUrl;	// The author's avatar URL.
-		private String          m_authorId;			// The author's ID.
-		private String          m_authorWsId;		// The author's workspace ID.
-		private String          m_authorTitle;		// The author's title, given visibility by the current user.
+		private String m_authorAvatarUrl;	// The author's avatar URL.
+		private String m_authorId;			// The author's ID.
+		private String m_authorWsId;		// The author's workspace ID.
+		private String m_authorTitle;		// The author's title, given visibility by the current user.
 
 		/*
 		 * Class constructor.
 		 */
 		private ASAuthorInfo() {
-			m_authorPresence  = GwtServerHelper.getPresenceInfoDefault();
 			m_authorAvatarUrl =
 			m_authorId        =
 			m_authorWsId      =
@@ -153,14 +141,14 @@ public class GwtActivityStreamHelper {
 		 * Constructs an ASAuthorInfo object based on its author ID.
 		 */
 		@SuppressWarnings("unchecked")
-		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, Long authorId, User authorUser, String authorTitle) {
+		private static ASAuthorInfo buildAuthorInfo(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, User authorUser, String authorTitle) {
 			// Construct a new ASAuthorInfo object.
 			ASAuthorInfo reply = new ASAuthorInfo();
-			reply.m_authorId = String.valueOf(authorId);
+			reply.m_authorId = String.valueOf(authorUser.getId());
 			reply.m_authorAvatarUrl = "";
 			
 			// Do we have their workspace ID?
-			Long authorWsId = ((null == authorUser) ? null : authorUser.getWorkspaceId());
+			Long authorWsId = authorUser.getWorkspaceId();
 			if (null != authorWsId) {
 				// Yes!  Can we access any avatars for the author?
 				reply.m_authorWsId = String.valueOf(authorWsId);
@@ -179,12 +167,6 @@ public class GwtActivityStreamHelper {
 				// Store something as the author's URL so that we don't
 				// try to look it up again.
 				reply.m_authorAvatarUrl = ((null == paUrl) ? "" : paUrl);
-			}
-
-			// If the presence service is enabled...
-			if (isPresenceEnabled) {
-				// ...obtain the author's presence information.
-				reply.m_authorPresence = GwtServerHelper.getPresenceInfo(authorUser);
 			}
 
 			// Finally, store the title for the author based on the
@@ -319,7 +301,7 @@ public class GwtActivityStreamHelper {
 		 * Returns a List<ASEntryData> corresponding to what should be
 		 * displayed for a given List<Map> of entry search results.
 		 */
-		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
+		private static List<ASEntryData> buildEntryDataList(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamParams asp, List<Map> searchEntries) {
 			// If we weren't given any search results...
 			List<ASEntryData> reply = new ArrayList<ASEntryData>();			
 			if ((null == searchEntries) || searchEntries.isEmpty()) {
@@ -358,8 +340,8 @@ public class GwtActivityStreamHelper {
 				Map<Long, Binder> binderMap = readBinders(bs, userMap, reply);
 				
 				// ...and complete their binder and author data.
-				completeBinderData(         bs, binderMap,                                               reply);
-				completeAuthorData(request, bs, userMap, isPresenceEnabled, isOtherUserAccessRestricted, reply);
+				completeBinderData(         bs, binderMap,                            reply);
+				completeAuthorData(request, bs, userMap, isOtherUserAccessRestricted, reply);
 			}
 
 			// If we get here, reply refers to a List<ASEntryData> of
@@ -372,7 +354,13 @@ public class GwtActivityStreamHelper {
 		 * Uses a Map<Long, User> to complete the author information in
 		 * a List<ASEntryData>.
 		 */
-		private static void completeAuthorData(HttpServletRequest request, AllModulesInjected bs, Map<Long, User> userMap, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, List<ASEntryData> entryDataList) {
+		private static void completeAuthorData(HttpServletRequest request, AllModulesInjected bs, Map<Long, User> userMap, boolean isOtherUserAccessRestricted, List<ASEntryData> entryDataList) {
+			// If we don't have any authors...
+			if (userMap.isEmpty()) {
+				// ...we don't have anything else to complete.
+				return;
+			}
+
 			// Scan the List<ASEntryData>.
 			Map<Long, ASAuthorInfo> authorInfoMap = new HashMap<Long, ASAuthorInfo>();
 			for (ASEntryData entryData:  entryDataList) {
@@ -383,7 +371,7 @@ public class GwtActivityStreamHelper {
 				if (null == authorInfo) {
 					// No!  Construct one and cache it now.  
 					User authorUser = userMap.get(authorId);
-					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isPresenceEnabled, isOtherUserAccessRestricted, authorId, authorUser, entryData.getAuthorTitle());
+					authorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, entryData.getAuthorTitle());
 					authorInfoMap.put(authorId, authorInfo);
 				}
 				
@@ -399,7 +387,7 @@ public class GwtActivityStreamHelper {
 					if (null == commentAuthorInfo) {
 						// No!  Construct one and cache it now.
 						User authorUser = userMap.get(commentAuthorId);
-						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isPresenceEnabled, isOtherUserAccessRestricted, commentAuthorId, authorUser, commentEntryData.getAuthorTitle());
+						commentAuthorInfo = ASAuthorInfo.buildAuthorInfo(request, bs, isOtherUserAccessRestricted, authorUser, entryData.getAuthorTitle());
 						authorInfoMap.put(commentAuthorId, commentAuthorInfo);
 					}
 
@@ -607,24 +595,6 @@ public class GwtActivityStreamHelper {
 			// being requested.  Return it.
 			return reply;
 		}		
-	}
-
-	/*
-	 * Inner class used to wrap the data returned from an activity
-	 * stream data search.
-	 */
-	@SuppressWarnings("unchecked")
-	private static class ASSearchResults {
-		private int m_totalRecords;
-		private List<Map> m_searchEntries;
-		
-		private ASSearchResults(List<Map> searchEntries, int totalRecords) {
-			m_searchEntries = searchEntries;
-			m_totalRecords = totalRecords;
-		}
-		
-		private int       getTotalRecords()  {return m_totalRecords; }
-		private List<Map> getSearchEntries() {return m_searchEntries;}
 	}
 	
 	/*
@@ -860,13 +830,12 @@ public class GwtActivityStreamHelper {
 	 * object.
 	 */
 	@SuppressWarnings("unchecked")
-	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, SeenMap sm, ASEntryData entryData) {
+	private static ActivityStreamEntry buildASEFromED(HttpServletRequest request, ASEntryData entryData) {
 		ActivityStreamEntry reply = new ActivityStreamEntry();
 
 		// First, initialize the author information.
 		Map em = entryData.getEntryMap();
 		ASAuthorInfo authorInfo = entryData.getAuthorInfo();
-		reply.setAuthorPresence(   authorInfo.m_authorPresence );
 		reply.setAuthorAvatarUrl(  authorInfo.m_authorAvatarUrl);
 		reply.setAuthorId(         authorInfo.m_authorId       );
 		reply.setAuthorName(       authorInfo.m_authorTitle    );
@@ -892,7 +861,6 @@ public class GwtActivityStreamHelper {
 		reply.setEntryTitle(           getSFromEM(        em, Constants.TITLE_FIELD             ));
 		reply.setEntryTopEntryId(      getSFromEM(        em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
 		reply.setEntryType(            getSFromEM(        em, Constants.ENTRY_TYPE_FIELD        ));
-		reply.setEntrySeen(            sm.checkIfSeen(    em                                    ));
 
 		// Finally, scan the comment ASEntryData...
 		List<ActivityStreamEntry> commentsASEList = reply.getComments();
@@ -900,7 +868,7 @@ public class GwtActivityStreamHelper {
 			// ...adding an ActivityStreamEntry for each to the
 			// ...ActivityStreamEntry's List<ActivityStreamEntry> of
 			// ...comments.
-			commentsASEList.add(buildASEFromED(request, sm, commentEntryData));
+			commentsASEList.add(buildASEFromED(request, commentEntryData));
 		}
 		
 		// If we get here, reply refers to the ActivityStreamEntry that
@@ -960,20 +928,6 @@ public class GwtActivityStreamHelper {
 		return reply;
 	}
 
-	/*
-	 * Constructs and returns the base Criteria object for performing
-	 * the search for activity stream data.
-	 */
-	private static Criteria buildBaseCriteria(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL) {
-		return 
-			SearchUtils.entriesForTrackedPlacesAndPeople(
-				bs,
-				trackedPlacesAL,
-				trackedUsersAL,
-				true,	// true -> Entries only (no replies.)
-				Constants.LASTACTIVITY_FIELD);
-	}
-	
 	/*
 	 * Searches the activity stream information objects in a tree
 	 * information object and returns the one that matches the given
@@ -1065,11 +1019,10 @@ public class GwtActivityStreamHelper {
 	 * @param asp
 	 * @param asi
 	 * @param pagingData - null -> Start fresh at page 0.
-	 * @param asdt
 	 * 
 	 * @return
 	 */
-	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd, ActivityStreamDataType asdt) {
+	public static ActivityStreamData getActivityStreamData(HttpServletRequest request, AllModulesInjected bs, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pd) {
 		GwtServerProfiler profiler = GwtServerHelper.GwtServerProfiler.start(
 			m_logger,
 			"GwtActivityStreamHelper.getActivityStreamData()");
@@ -1096,13 +1049,10 @@ public class GwtActivityStreamHelper {
 				populateASD(
 					request,
 					bs,
-					bs.getProfileModule().getUserSeenMap(null),
-					GwtServerHelper.isPresenceEnabled(),
 					Utils.canUserOnlySeeCommonGroupMembers(),
 					reply,
 					asp,
-					asi,
-					asdt);		
+					asi);		
 			}
 			catch (Exception e) {
 				m_logger.error("GwtActivityStreamHelper.getActivityStreamData( EXCEPTION ):  ", e);
@@ -1128,21 +1078,11 @@ public class GwtActivityStreamHelper {
 		ActivityStreamParams reply = m_activityStreamParams.copyBaseASP();
 
 		try {
-			UserProperties userProperties;
-			ShowSetting showSetting;
-			
-			// Get the user's properties
-			userProperties = bs.getProfileModule().getUserProperties( null );
-			
 			// Read the user's entries per page setting and store it in
 			// the ActivityStreamParams.
-			String eppS = MiscUtil.entriesPerPage( userProperties );
+			String eppS = MiscUtil.entriesPerPage(bs.getProfileModule().getUserProperties(null));
 			int epp = Integer.parseInt(eppS);
 			reply.setEntriesPerPage(epp);
-			
-			// Read the user's show setting for the what's new page.
-			showSetting = GwtServerHelper.getWhatsNewShowSetting( userProperties );
-			reply.setShowSetting( showSetting );
 		}
 		catch (Exception ex) {
 			// Ignore.  With any error, will just use the default from
@@ -1740,105 +1680,13 @@ public class GwtActivityStreamHelper {
 	public static boolean isDebugLoggingEnabled() {
 		return m_logger.isDebugEnabled();
 	}
-
-	/*
-	 * Returns an ASSearchResults object containing the search results
-	 * from performing an activity stream search for all entries in the
-	 * tracked places and users lists. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static ASSearchResults performASSearch_All(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage) {
-		// Perform the search...
-		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			searchCriteria,
-			pageStart,
-			entriesPerPage);
-
-		// ...and return an appropriate ASSearchResults.
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		return new ASSearchResults(searchEntries, totalRecords);
-	}
-	
-	/*
-	 * Returns an ASSearchResults object containing the search results
-	 * from performing an activity stream search for the read or unread
-	 * entries in the tracked places and users lists. 
-	 */
-	@SuppressWarnings("unchecked")
-	private static ASSearchResults performASSearch_ReadUnread(AllModulesInjected bs, List<String> trackedPlacesAL, List<String> trackedUsersAL, int pageStart, int entriesPerPage, boolean read, ActivityStreamParams asp) {
-	    // Return up to the maximum number entries that have had
-		// activity within last n days.
-		Date activityDate = new Date();
-		activityDate.setTime(activityDate.getTime() - (((long) asp.getReadEntryDays()) * 24L * 60L * 60L * 1000L));
-		String startDate = DateTools.dateToString(activityDate, DateTools.Resolution.SECOND);
-		String now       = DateTools.dateToString(new Date(),   DateTools.Resolution.SECOND);
-		
-		Criteria searchCriteria = buildBaseCriteria(bs, trackedPlacesAL, trackedUsersAL);
-		searchCriteria.add(
-			Restrictions.between(
-				Constants.LASTACTIVITY_FIELD,
-				startDate,
-				now));
-		
-		Map searchResults = bs.getBinderModule().executeSearchQuery(
-			searchCriteria,
-			pageStart,
-			asp.getReadEntryMax());
-
-		// Get the user's seen map...
-		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
-		
-		// ...and scan the entries we read.
-		List<Map> targetEntries = new ArrayList<Map>();
-		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
-		int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
-		boolean   readSatisfied = false;
-		for (Map searchEntry: searchEntries) {
-			// If the user has seen this entry and we're looking for
-			// read entries or the user has not seen it and we're
-			// looking for unread entries...
-			boolean hasSeen = seen.checkIfSeen(searchEntry);
-			if (hasSeen == read) {
-				// ...and we haven't satisfied the number of records
-				// ...requested...
-				if (!readSatisfied) {
-					// ...keep track of it until we've got all the entries
-					// ...we need.
-					targetEntries.add(searchEntry);
-					readSatisfied = (targetEntries.size() >= (pageStart + entriesPerPage));
-				}
-			}
-			
-			else {
-				// Otherwise, this is read when were looking for unread
-				// or unread while we're looking for read!  In either
-				// case, we don't want to include it in the total
-				// record count.
-				totalRecords -= 1;
-			}
-		}
-
-		// Ensure that we've only got the entries we need from the
-		// list...
-		if (targetEntries.size() > pageStart && targetEntries.size() >= pageStart + entriesPerPage) {
-			targetEntries = targetEntries.subList(pageStart, pageStart + entriesPerPage);
-		}		
-		else if (targetEntries.size() > pageStart) {
-			targetEntries = targetEntries.subList(pageStart, targetEntries.size());
-		}
-				
-		// ...and return an appropriate ASSearchResults.
-		return new ASSearchResults(targetEntries, totalRecords);
-	}
 	
 	/*
 	 * Reads the activity stream data based on an activity stream
 	 * information object and the current paging data.
 	 */
 	@SuppressWarnings("unchecked")
-	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, SeenMap sm, boolean isPresenceEnabled, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt) {		
+	private static void populateASD(HttpServletRequest request, AllModulesInjected bs, boolean isOtherUserAccessRestricted, ActivityStreamData asd, ActivityStreamParams asp, ActivityStreamInfo asi) {		
 		// Setup some int's for the controlling the search.
 		PagingData pd				= asd.getPagingData();
 		int        entriesPerPage	= pd.getEntriesPerPage();
@@ -1887,16 +1735,15 @@ public class GwtActivityStreamHelper {
 		sATosL(trackedPlaces, trackedPlacesAL);
 
 		// Perform the search and extract the results.
-		ASSearchResults searchResults;
-		switch (asdt) {
-		default:
-		case ALL:     searchResults = performASSearch_All(       bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage            ); break;
-		case READ:    searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, true,  asp); break;
-		case UNREAD:  searchResults = performASSearch_ReadUnread(bs, trackedPlacesAL, trackedUsersAL, pageStart, entriesPerPage, false, asp); break;
-		}
-		
-		List<Map> searchEntries  = searchResults.getSearchEntries();
-		int  totalRecords        = searchResults.getTotalRecords();
+		Criteria searchCriteria = SearchUtils.entriesForTrackedPlacesAndPeople(
+			bs,
+			trackedPlacesAL,
+			trackedUsersAL,
+			true,	// true -> Entries only (no replies.)
+			Constants.LASTACTIVITY_FIELD);
+		Map       searchResults  = bs.getBinderModule().executeSearchQuery(searchCriteria, pageStart, entriesPerPage);
+		List<Map> searchEntries  = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
+		int  totalRecords        = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 
 		// Update the paging data in the activity stream data.
     	pd.setTotalRecords(totalRecords);
@@ -1909,12 +1756,10 @@ public class GwtActivityStreamHelper {
     		// object.
 			populateASDFromED(
 				request,
-				sm,
 				asd,
 				ASEntryData.buildEntryDataList(
 					request,
 					bs,
-					isPresenceEnabled,
 					isOtherUserAccessRestricted,
 					asp,
 					searchEntries));
@@ -1934,13 +1779,13 @@ public class GwtActivityStreamHelper {
 	 * Populates an ActivityStreamData object from the information
 	 * contained in a List<ASEntryData>.
 	 */
-	private static void populateASDFromED(HttpServletRequest request, SeenMap sm, ActivityStreamData asd, List<ASEntryData> entryDataList) {
+	private static void populateASDFromED(HttpServletRequest request, ActivityStreamData asd, List<ASEntryData> entryDataList) {
 		// Scan the List<ASEntryData>...
     	List<ActivityStreamEntry> aseList = asd.getEntries();
     	for (ASEntryData entryData:  entryDataList) {
     		// ...and add an ActivtyStreamEntry for each to the
 			// ...List<ActivityStreamEntry> in the ActivityStreamData.
-   			aseList.add(buildASEFromED(request, sm, entryData));
+   			aseList.add(buildASEFromED(request, entryData));
     	}
 	}
 	
@@ -1983,102 +1828,5 @@ public class GwtActivityStreamHelper {
 			// ...and write it to the log.
 			m_logger.debug(userId + s);
 		}
-	}
-	
-	
-	/**
-	 * Create an ActivityStreamEntry from the given FolderEntry object.
-	 */
-	public static ActivityStreamEntry getActivityStreamEntry( HttpServletRequest request, AllModulesInjected bs, FolderEntry folderEntry )
-	{
-		ActivityStreamEntry asEntry;
-		
-		asEntry = new ActivityStreamEntry();
-
-		// Gather the information from the FolderEntry and return an ActivityStreamEntry
-		if ( folderEntry != null )
-		{
-			Binder parentBinder;
-			
-			// Initialize the author information
-			{
-				ASAuthorInfo authorInfo;
-				User author;
-				
-				author = (User) folderEntry.getCreation().getPrincipal();
-				
-				authorInfo = ASAuthorInfo.buildAuthorInfo(
-													request,
-													bs,
-													GwtServerHelper.isPresenceEnabled(),
-													Utils.canUserOnlySeeCommonGroupMembers(),
-													folderEntry.getOwnerId(),
-													author,
-													author.getTitle() );
-
-				asEntry.setAuthorPresence( authorInfo.m_authorPresence );
-				asEntry.setAuthorAvatarUrl( authorInfo.m_authorAvatarUrl);
-				asEntry.setAuthorId( authorInfo.m_authorId );
-				asEntry.setAuthorName( authorInfo.m_authorTitle );
-				asEntry.setAuthorWorkspaceId( authorInfo.m_authorWsId );
-				asEntry.setAuthorLogin( author.getName() );
-			}
-			
-			// Initialize parent binder information.
-			parentBinder = folderEntry.getParentBinder();
-			if ( parentBinder != null )
-			{
-				asEntry.setParentBinderId( String.valueOf( parentBinder.getId() ) );
-				asEntry.setParentBinderHover( parentBinder.getPathName() );
-				asEntry.setParentBinderName( parentBinder.getTitle() );
-			}
-			
-			// Initialize the entry information
-			{
-				String entryId;
-				SeenMap seenMap;
-				
-				entryId = String.valueOf( folderEntry.getId() );
-				asEntry.setEntryId( entryId );
-				asEntry.setEntryComments( 0 );
-				asEntry.setEntryDescription( folderEntry.getDescription().getText() );	
-				asEntry.setEntryDocNum( folderEntry.getDocNumber() );
-				asEntry.setEntryTitle( folderEntry.getTitle() );
-				asEntry.setEntryType( folderEntry.getEntityType().name() );
-				
-				// Set the modification date
-				{
-					Date date;
-					String dateStr;
-					
-					date = folderEntry.getLastActivity();
-					dateStr = getDateTimeString( date );
-					asEntry.setEntryModificationDate( dateStr );
-				}
-				
-				// Set the top entry.
-				{
-					FolderEntry topEntry;
-
-					topEntry = folderEntry.getParentEntry();
-					while ( topEntry.getParentEntry() != null )
-					{
-						topEntry = topEntry.getParentEntry();
-					}
-					
-					if ( topEntry != null )
-						asEntry.setEntryTopEntryId( String.valueOf( topEntry.getId() ) );
-					
-				}
-
-				// Set whether this entry has been seen.
-				{
-					seenMap = bs.getProfileModule().getUserSeenMap( null );
-					asEntry.setEntrySeen( seenMap.checkIfSeen( folderEntry ) );
-				}
-			}
-		}
-	
-		return asEntry;
 	}
 }

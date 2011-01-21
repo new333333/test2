@@ -91,7 +91,6 @@
 		
 		<ant dir="util" target="clean" inheritAll="false"/>
 		<ant dir="util-search" target="clean" inheritAll="false"/>
-		<ant dir="rest-shared" target="clean" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="clean" inheritAll="false"/>
 		<ant dir="lucene-contrib" target="clean" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="clean" inheritAll="false"/>
@@ -129,13 +128,11 @@
 		<ant dir="ssr" target="clean" inheritAll="false"/>
 		<ant dir="simple-url" target="clean" inheritAll="false"/>		
 		<ant dir="mobile" target="clean" inheritAll="false"/>		
-		<ant dir="rest" target="clean" inheritAll="false"/>		
 	</target>
 
 	<target name="compile" depends="init">
 		<ant dir="util" target="compile" inheritall="false"/>
 		<ant dir="util-search" target="compile" inheritall="false"/>
-		<ant dir="rest-shared" target="compile" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="compile" inheritall="false"/>
 		<ant dir="lucene-contrib" target="compile" inheritall="false"/>
 		<ant dir="indexer-lucene" target="compile" inheritall="false"/>			
@@ -167,8 +164,6 @@
 
 		<ant dir="mobile" target="compile" inheritall="false"/>
 
-		<ant dir="rest" target="compile" inheritall="false"/>
-
 		<ant dir="tools" target="compile" inheritall="false"/>
 		
 		<ant dir="samples" target="compile" inheritall="false"/>
@@ -177,7 +172,6 @@
 	<target name="jar" depends="init">
 		<ant dir="util" target="jar" inheritall="false"/>
 		<ant dir="util-search" target="jar" inheritall="false"/>
-		<ant dir="rest-shared" target="jar" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="jar" inheritall="false"/>
 		<ant dir="lucene-contrib" target="jar" inheritall="false"/>
 		<ant dir="indexer-lucene" target="jar" inheritall="false"/>
@@ -216,14 +210,11 @@
 		<ant dir="simple-url" target="war" inheritall="false"/>
 		
 		<ant dir="mobile" target="war" inheritall="false"/>
-
-		<ant dir="rest" target="war" inheritall="false"/>
 	</target>
 
 	<target name="deploy" depends="init">
 		<ant dir="util" target="deploy" inheritall="false"/>
 		<ant dir="util-search" target="deploy" inheritall="false"/>
-		<ant dir="rest-shared" target="deploy" inheritall="false"/>
 		<ant dir="commons-httpclient-contrib" target="deploy" inheritall="false"/>
 		<ant dir="lucene-contrib" target="deploy" inheritall="false"/>
 		<ant dir="indexer-lucene" target="deploy" inheritall="false"/>
@@ -259,8 +250,6 @@
 		<ant dir="simple-url" target="deploy" inheritall="false"/>
 		
 		<ant dir="mobile" target="deploy" inheritall="false"/>
-		
-		<ant dir="rest" target="deploy" inheritall="false"/>
 	</target>
 
 	<target name="java2html" depends="init">
@@ -268,7 +257,6 @@
 
 		<ant dir="util" target="java2html" inheritAll="false"/>
 		<ant dir="util-search" target="java2html" inheritAll="false"/>
-		<ant dir="rest-shared" target="java2html" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="lucene-contrib" target="java2html" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="java2html" inheritAll="false"/>
@@ -295,7 +283,6 @@
 		<ant dir="tools" target="java2html" inheritAll="false"/>
 		<ant dir="simple-url" target="java2html" inheritAll="false"/>
 		<ant dir="mobile" target="java2html" inheritAll="false"/>
-		<ant dir="rest" target="java2html" inheritAll="false"/>
 	</target>
 
 	<target name="javadoc" depends="init">
@@ -303,7 +290,6 @@
 
 		<ant dir="util" target="javadoc" inheritAll="false"/>
 		<ant dir="util-search" target="javadoc" inheritAll="false"/>
-		<ant dir="rest-shared" target="javadoc" inheritAll="false"/>
 		<ant dir="commons-httpclient-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="lucene-contrib" target="javadoc" inheritAll="false"/>
 		<ant dir="indexer-lucene" target="javadoc" inheritAll="false"/>
@@ -330,7 +316,6 @@
 		<ant dir="tools" target="javadoc" inheritAll="false"/>
 		<ant dir="simple-url" target="javadoc" inheritAll="false"/>
 		<ant dir="mobile" target="javadoc" inheritAll="false"/>
-		<ant dir="rest" target="javadoc" inheritAll="false"/>
 	</target>
 
 

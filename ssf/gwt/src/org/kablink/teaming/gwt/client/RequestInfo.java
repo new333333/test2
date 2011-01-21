@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,16 +39,14 @@ import com.google.gwt.core.client.JavaScriptObject;
 
 
 /**
- * This class wraps a JavaScript object that holds information about
- * the request we are working with.
- * 
+ * This class wraps a JavaScript object that holds information about the request we are working with.
  * @author jwootton
+ *
  */
 public class RequestInfo extends JavaScriptObject
 {
 	/**
-	 * Overlay types always have a protected, zero argument
-	 * constructor.
+	 * Overlay types always have a protected, zero-arg constructors.
 	 */
 	protected RequestInfo()
 	{
@@ -58,218 +56,131 @@ public class RequestInfo extends JavaScriptObject
 	/**
 	 * Return the the session captive state.
 	 */
-	public final native boolean isSessionCaptive()
-	/*-{
-		return this.getBFromS( this.sessionCaptive );
-	}-*/;
+	public final native boolean isSessionCaptive() /*-{ return this.sessionCaptive; }-*/;
 
 
 	/**
-	 * Return the adapted URL.
+	 * Return the adapted url.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getAdaptedUrl()
-	/*-{
-		return this.adaptedUrl;
-	}-*/;
+	public final native String getAdaptedUrl() /*-{ return this.adaptedUrl; }-*/;
 
 
 	/**
-	 * Return the binder ID.
+	 * Return the binder id.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getBinderId()
-	/*-{
-		return this.binderId;
-	}-*/;
+	public final native String getBinderId() /*-{ return this.binderId; }-*/;
 	
 	
 	/**
 	 * Return the get the current user's workspaceId
 	 */
-	public final native String getCurrentUserWorkspaceId()
-	/*-{
-		return this.currentUserWorkspaceId;
-	}-*/;
+	public final native String getCurrentUserWorkspaceId() /*-{ return this.currentUserWorkspaceId; }-*/;
 	
 	
 	/**
-	 * Return the URL for the CSS used with the tinyMCE editor.
+	 * Return the url for the css used with the tinyMCE editor.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getContentCss()
-	/*-{
-		return this.contentCss;
-	}-*/;
+	public final native String getContentCss() /*-{ return this.contentCss; }-*/;
 	
 	
 	/**
-	 * Return the error message we should display.
+	 * Return the error message we should display.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getErrMsg()
-	/*-{
-		return this.errMsg;
-	}-*/;
+	public final native String getErrMsg() /*-{ return this.errMsg; }-*/;
 	
 	
 	/**
-	 * Return the URL used for simple searches.
+	 * Return the url used for simple searches.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getSimpleSearchUrl()
-	/*-{
-		return this.simpleSearchUrl;
-	}-*/;
+	public final native String getSimpleSearchUrl() /*-{ return this.simpleSearchUrl; }-*/;
 	
 	
 	/**
-	 * Return the URL used for advanced searches.
+	 * Return the url used for advanced searches.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getAdvancedSearchUrl()
-	/*-{
-		return this.advancedSearchUrl;
-	}-*/;
+	public final native String getAdvancedSearchUrl() /*-{ return this.advancedSearchUrl; }-*/;
 	
 	
 	/**
-	 * Return the URL used for saved searches.
+	 * Return the url used for saved searches.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getSavedSearchUrl()
-	/*-{
-		return this.savedSearchUrl;
-	}-*/;
+	public final native String getSavedSearchUrl() /*-{ return this.savedSearchUrl; }-*/;
 	
 	
 	/**
-	 * Return the URL used for recent place searches.
+	 * Return the url used for recent place searches.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getRecentPlaceSearchUrl()
-	/*-{
-		return this.recentPlaceSearchUrl;
-	}-*/;
+	public final native String getRecentPlaceSearchUrl() /*-{ return this.recentPlaceSearchUrl; }-*/;
 	
 	
 	/**
 	 * Return the URL used for the help system.
 	 */
-	public final native String getHelpUrl()
-	/*-{
-		return this.helpUrl;
-	}-*/;
+	public final native String getHelpUrl() /*-{ return this.helpUrl; }-*/;
 	
 	
 	/**
-	 * Return the path to Teaming's images.
+	 * Return the path to Teaming's images.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getImagesPath()
-	/*-{
-		return this.imagesPath;
-	}-*/;
+	public final native String getImagesPath() /*-{ return this.imagesPath; }-*/;
 
 	/**
-	 * Return the path to Teaming's JavaScript.
+	 * Return the path to Teaming's JavaScript.  This class is an overlay on the JavaScript object called profileRequestInfo.
 	 */
-	public final native String getJSPath()
-	/*-{
-		return this.jsPath;
-	}-*/;
+	public final native String getJSPath() /*-{ return this.jsPath; }-*/;
+	
+	/**
+	 * Return the user's language.  This class is an overlay on the JavaScript object called m_requestInfo.
+	 */
+	public final native String getLanguage() /*-{ return this.language; }-*/;
 
 	
 	/**
-	 * Return the user's language.
+	 * Return the error message from the last login.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getLanguage()
-	/*-{
-		return this.language;
-	}-*/;
-
-	
-	/**
-	 * Return the user's locale.
-	 */
-	public final native String getLocale()
-	/*-{
-		return this.locale;
-	}-*/;
-
-	
-	/**
-	 * Return the user's time zone.
-	 */
-	public final native String getTimeSone()
-	/*-{
-		return this.timeZone;
-	}-*/;
-
-	
-	/**
-	 * Return the error message from the last login.
-	 */
-	public final native String getLoginError()
-	/*-{
-		return this.loginError;
-	}-*/;
+	public final native String getLoginError() /*-{ return this.loginError; }-*/;
 	
 	
 	/**
-	 * Return the referrer URL that was passed as part of the login
-	 * info.
+	 * Return the referer url that was passed as part of the login info.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getLoginRefererUrl()
-	/*-{
-		return this.loginRefererUrl;
-	}-*/;
+	public final native String getLoginRefererUrl() /*-{ return this.loginRefererUrl; }-*/;
 	
 	
 	/**
-	 * Return the URL we should use when we are trying to log in.
+	 * Return the url we should use when we are trying to log in.
 	 */
-	public final native String getLoginUrl()
-	/*-{
-		return this.loginPostUrl;
-	}-*/;
+	public final native String getLoginUrl() /*-{ return this.loginPostUrl; }-*/;
 
 
 	/**
-	 * Return the My Workspace URL.
+	 * Return the "my workspace" url.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getMyWorkspaceUrl()
-	/*-{
-		return this.myWSUrl;
-	}-*/;
+	public final native String getMyWorkspaceUrl() /*-{ return this.myWSUrl; }-*/;
 
 	
 	/**
-	 * Return the user's id.
+	 * Return the user's id.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getUserId()
-	/*-{
-		return this.userId;
-	}-*/;
+	public final native String getUserId() /*-{ return this.userId; }-*/;
 
 
 	/**
-	 * Return the user's login id.
+	 * Return the user's login id.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getUserLoginId()
-	/*-{
-		return this.userLoginId;
-	}-*/;
+	public final native String getUserLoginId() /*-{ return this.userLoginId; }-*/;
 
 
 	/**
-	 * Return the user's name.
+	 * Return the user's name.  This class is an overlay on the JavaScript object called m_requestInfo.
 	 */
-	public final native String getUserName()
-	/*-{
-		return this.userName;
-	}-*/;
+	public final native String getUserName() /*-{ return this.userName; }-*/;
 
 
 	/**
 	 * Return the flag that tells us what product we're running.
 	 */
-	public final native String      getVibeProductString()
-	/*-{
-		return this.vibeProduct;
-	}-*/;
-	
+	public final native String      getVibeProductString() /*-{ return this.vibeProduct; }-*/;
 	public final        VibeProduct getVibeProduct() {
 		VibeProduct reply = VibeProduct.OTHER;
 		String vp = getVibeProductString();
@@ -283,46 +194,31 @@ public class RequestInfo extends JavaScriptObject
 	/**
 	 * Return the flag that tells us if we are running Novell Teaming.
 	 */
-	public final native boolean isNovellTeaming()
-	/*-{
-		return this.getBFromS( this.isNovellTeaming );
-	}-*/;
+	public final native boolean isNovellTeaming() /*-{ return this.isNovellTeaming; }-*/;
 
 
 	/**
 	 * Return the name (Novell vs. Kablink) of the version of Teaming
 	 * that's running.
 	 */
-	public final native String getProductName()
-	/*-{
-		return this.productName;
-	}-*/;
+	public final native String getProductName() /*-{ return this.productName; }-*/;
 
 
 	/**
 	 * Return the flag that tells us if the user is logged in.
 	 */
-	public final native boolean isUserLoggedIn()
-	/*-{
-		return this.getBFromS( this.isUserLoggedIn );
-	}-*/;
+	public final native boolean isUserLoggedIn() /*-{ return this.isUserLoggedIn; }-*/;
 
 
 	/**
 	 * Return the flag that tells us if we should prompt for login
 	 */
-	public final native boolean promptForLogin()
-	/*-{
-		return this.getBFromS( this.promptForLogin );
-	}-*/;
+	public final native boolean promptForLogin() /*-{ return this.promptForLogin; }-*/;
 
 	/**
-	 * Return the URL needed to invoke the Teaming Feed page.
+	 * Return the url needed to invoke the "Teaming Feed" page.
 	 */
-	public final native String getTeamingFeedUrl()
-	/*-{
-		return this.teamingFeedUrl;
-	}-*/;
+	public final native String getTeamingFeedUrl() /*-{ return this.teamingFeedUrl; }-*/;
 
 	/**
 	 * Returns true if we should false the sidebar to reload regardless
@@ -330,112 +226,30 @@ public class RequestInfo extends JavaScriptObject
 	 * 
 	 * @return
 	 */
-	public final native boolean forceSidebarReload()
-	/*-{
-		return this.getBFromS( this.forceSidebarReload );
-	}-*/;
-	
-	public final native void    clearSidebarReload()
-	/*-{
-		this.forceSidebarReload = 'false';
-	}-*/;
-	
-	public final native void    setSidebarReload()
-	/*-{
-		this.forceSidebarReload = 'true';
-	}-*/;
+	public final native boolean forceSidebarReload() /*-{ return this.forceSidebarReload;  }-*/;
+	public final native void    clearSidebarReload() /*-{ this.forceSidebarReload = false; }-*/;
+	public final native void    setSidebarReload()   /*-{ this.forceSidebarReload = true;  }-*/;
 
 	/**
 	 * Returns the ID of the top workspace.
 	 * 
 	 * @return
 	 */
-	public final native String getTopWSId()
-	/*-{
-		return this.topWSId;
-	}-*/;
+	public final native String getTopWSId() /*-{ return this.topWSId; }-*/;
 
 	/**
-	 * Returns true if we should be showing the site wide activity
-	 * stream and false otherwise.
+	 * Returns true if activity streams are enabled and false otherwise.
 	 * 
 	 * @return
 	 */
-	public final native boolean isShowWhatsNewOnLogin()
-	/*-{
-		return this.getBFromS( this.showWhatsNewOnLogin );
-	}-*/;
-	
-	public final native void clearShowWhatsNewOnLogin()
-	/*-{
-		this.showWhatsNewOnLogin = 'false';
-	}-*/;
-	
-	public final native boolean isBinderAdmin()
-	/*-{
-		return this.getBFromS( this.isBinderAdmin );
-	}-*/;
-	
-	public final native boolean isQuotasEnabled()
-	/*-{
-		return this.getBFromS( this.isQuotasEnabled );
-	}-*/;
-	
-	public final native String getQuotasUserMaximum()
-	/*-{
-		return this.quotasUserMaximum;
-	}-*/;
-	
-	public final native String getQuotasDiskSpacedUsed()
-	/*-{
-		return this.quotasDiskSpacedUsed;
-	}-*/;
-	
-	public final native boolean isDiskQuotaExceeded()
-	/*-{
-		return this.getBFromS( this.isQuotasDiskQuotaExceeded );
-	}-*/;
-	
-	public final native boolean isModifyAllowed()
-	/*-{
-		return this.getBFromS( this.isModifyAllowed );
-	}-*/;
-	
-	public final native String getModifyUrl()
-	/*-{
-		return this.modifyUrl;
-	}-*/;
-	
-	public final native boolean isDiskQuotaHighWaterMarkExceeded()
-	/*-{
-		return this.getBFromS( this.isDiskQuotaHighWaterMarkExceeded );
-	}-*/;
+	public final native boolean isActivityStreamsEnabled() /*-{ return this.activityStreamsEnabled; }-*/;
 
-	public final native String getDeleteUserUrl()
-	/*-{
-		return this.deleteUserUrl;
-	}-*/;
-
-	public final native String getQuotaMessage()
-	/*-{
-		return this.quotasDiskMessage;
-	}-*/;
-	public final native String getUserDescription()
-	/*-{
-		return this.userDescription;
-	}-*/;	
-	
 	/**
-	 * Is the workspace being referenced owned by the current user.
+	 * Returns true if we should be showing the site wide activity stream
+	 * and false otherwise.
 	 * 
 	 * @return
 	 */
-	public final boolean isOwner()
-	{
-		if ( getCurrentUserWorkspaceId() == getBinderId() )
-		{
-			return true;
-		} 
-		return false;
-	}// end isOwner()
+	public final native boolean isShowWhatsNewOnLogin()    /*-{ return this.showWhatsNewOnLogin;  }-*/;
+	public final native void    clearShowWhatsNewOnLogin() /*-{ this.showWhatsNewOnLogin = false; }-*/;
 }// end RequestInfo

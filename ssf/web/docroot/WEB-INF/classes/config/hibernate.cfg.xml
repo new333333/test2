@@ -72,7 +72,6 @@
 	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Extensions.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SchemaInfo.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
 	    <!-- hql queries and type defs -->

@@ -51,8 +51,4 @@ public class StringCheckException extends UncheckedCodedException {
 	public StringCheckException(String errorCode, Object[] args) {
 		super(errorCode, args);
 	}
-	
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }
