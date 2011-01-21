@@ -2070,6 +2070,12 @@ body, table td, select
 	padding-top: 8px;
 }
 
+/* Style used to add padding-top: 10px; */
+.paddingTop10px
+{
+	padding-top: 10px;
+}
+
 /* */
 .paddingLeft1em
 {
