@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -43,7 +41,6 @@ import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.dom.client.Element;
@@ -119,6 +116,7 @@ public class TaskListing implements ActionHandler, ActionTrigger {
 		m_moveDownButton = new TaskButton(this, m_images.arrowDown(), m_images.arrowDownDisabled(), m_images.arrowDownMouseOver(), false, m_messages.taskAltMoveDown(), TeamingAction.TASK_MOVE_DOWN);
 		m_moveUpButton   = new TaskButton(this, m_images.arrowUp(),   m_images.arrowUpDisabled(),   m_images.arrowUpMouseOver(),   false, m_messages.taskAltMoveUp(),   TeamingAction.TASK_MOVE_UP);
 		InlineLabel il   = new InlineLabel(m_messages.taskLabelOrder());
+		il.addStyleName("mediumtext");
 		il.addStyleName("gwtTaskTools_Span");
 		il.getElement().appendChild(m_moveUpButton.getElement());
 		il.getElement().appendChild(m_moveDownButton.getElement());		
@@ -190,10 +188,10 @@ public class TaskListing implements ActionHandler, ActionTrigger {
 	/*
 	 * Renders a List<TaskListItem> into the task listing DIV.
 	 */
-	private void render(List<TaskListItem> taskItemList) {
+	private void render() {
 		boolean newTaskTable = (null == m_taskTable);
 		if (newTaskTable) m_taskTable = new TaskTable(this);
-		m_taskTable.showTasks(taskItemList);
+		m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.appendChild(m_taskTable.getElement());
 	}
 
@@ -220,7 +218,7 @@ public class TaskListing implements ActionHandler, ActionTrigger {
 				// task list.
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
 				m_taskBundle = result;
-				render(result.getTasks());
+				render();
 			}			
 		});		
 	}

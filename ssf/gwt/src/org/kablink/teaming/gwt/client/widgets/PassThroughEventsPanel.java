@@ -37,8 +37,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasChangeHandlers;
 import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
@@ -58,10 +61,15 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public class PassThroughEventsPanel extends AbsolutePanel implements HasClickHandlers, HasMouseOutHandlers, HasMouseOverHandlers {
+public class PassThroughEventsPanel extends AbsolutePanel implements HasChangeHandlers, HasClickHandlers, HasMouseOutHandlers, HasMouseOverHandlers {
 	public PassThroughEventsPanel(Element elem) {
 		super(elem.<com.google.gwt.user.client.Element> cast());
 		onAttach();
+	}
+	
+	@Override
+	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
+		return addDomHandler(handler, ChangeEvent.getType());
 	}
 	
 	@Override
@@ -86,9 +94,12 @@ public class PassThroughEventsPanel extends AbsolutePanel implements HasClickHan
 	 * @param w
 	 * @param handlers
 	 */
-	public static void addHandler(Widget w, List<EventHandler> handlers) {
+	public static void addHandlers(Widget w, List<EventHandler> handlers) {
 		PassThroughEventsPanel p = new PassThroughEventsPanel(w.getElement());
 		for (EventHandler eh:  handlers) {
+			// Note that we don't 'else if' these since an EventHandler
+			// could conceivably handle multiple event types.
+			if (eh instanceof ChangeHandler)    p.addChangeHandler(   (ChangeHandler)    eh); 
 			if (eh instanceof ClickHandler)     p.addClickHandler(    (ClickHandler)     eh); 
 			if (eh instanceof MouseOverHandler) p.addMouseOverHandler((MouseOverHandler) eh); 
 			if (eh instanceof MouseOutHandler)  p.addMouseOutHandler( (MouseOutHandler)  eh); 
@@ -96,14 +107,14 @@ public class PassThroughEventsPanel extends AbsolutePanel implements HasClickHan
 	}
 
 	/**
-	 * Adds a ClickHandler to a Widget via a PassThroughEventsPanel.
+	 * Adds an EventHandler to a Widget via a PassThroughEventsPanel.
 	 * 
 	 * @param w
 	 * @param ch
 	 */
-	public static void addHandler(Widget w, ClickHandler ch) {
+	public static void addHandler(Widget w, EventHandler ch) {
 		List<EventHandler> ehList = new ArrayList<EventHandler>();
 		ehList.add(ch);
-		addHandler(w, ehList);
-	}
+		addHandlers(w, ehList);
+	}	
 }
