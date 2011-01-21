@@ -32,25 +32,40 @@
  */
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
+import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
 
-import com.google.gwt.gen2.table.client.AbstractScrollTable.SortPolicy;
-import com.google.gwt.gen2.table.client.CachedTableModel;
-import com.google.gwt.gen2.table.client.DefaultRowRenderer;
-import com.google.gwt.gen2.table.client.DefaultTableDefinition;
-import com.google.gwt.gen2.table.client.FixedWidthGridBulkRenderer;
-import com.google.gwt.gen2.table.client.PagingOptions;
-import com.google.gwt.gen2.table.client.PagingScrollTable;
-import com.google.gwt.gen2.table.client.ScrollTable;
-import com.google.gwt.gen2.table.override.client.FlexTable;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.Anchor;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Class that implements the Composite that contains the task folder
@@ -58,209 +73,379 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class TaskTable extends Composite {
-	private CachedTableModel<TaskListItem>			m_cachedTableModel;		//
-	private DefaultTableDefinition<TaskListItem>	m_tableDefinition;		//
-	private int										m_taskCount;			//
-	private Label									m_noTasksLabel;			//
-	private PagingOptions							m_pagingOptions;		//
-	private PagingScrollTable<TaskListItem>			m_pagingScrollTable;	//
-	private TaskTableModel							m_tableModel;			//
+	private FlexTable	m_flexTable;	//
+	private int			m_taskCount;	//
+	private TaskListing	m_taskListing;	//
 	
-	private FlexTable			m_flexTable = new FlexTable();				//
-	private GwtTeamingMessages	m_messages  = GwtTeaming.getMessages();		//
-	private VerticalPanel		m_vPanel    = new VerticalPanel();			//
+	private final GwtRpcServiceAsync				m_rpcService = GwtTeaming.getRpcService();				// 
+	private final GwtTeamingMessages				m_messages   = GwtTeaming.getMessages();				//
+	private final GwtTeamingTaskListingImageBundle	m_images     = GwtTeaming.getTaskListingImageBundle();	//
+
+	/*
+	 * Inner class to used to track information that's attached to a
+	 * TaskListItem for managing the user interface. 
+	 */
+	private static class UIData {
+		public CheckBox	m_cb;				//
+		public int		m_taskDepth;		//
+		public int 		m_taskOrder = (-1);	//
 		
+		/**
+		 * Class constructor.
+		 */
+		UIData() {
+			// Nothing to do.
+		}
+	}
+	
 	/**
 	 * Class constructor.
 	 */
-	public TaskTable() {
+	public TaskTable(TaskListing taskListing) {
+		// Initialize the super class..
 		super();
 		
-		m_pagingScrollTable = createScrollTable();
-		m_pagingScrollTable.setHeight("400px");	//! ...need to calculate this on resizes...		
-		m_pagingOptions = new PagingOptions(m_pagingScrollTable);
-		
-		m_flexTable.setWidget(0, 0, m_pagingScrollTable);
-		m_flexTable.getFlexCellFormatter().setColSpan(0, 0, 2);
-		m_flexTable.setWidget(1, 0, m_pagingOptions);
-		
-		m_noTasksLabel = new Label(m_messages.taskNoTasks());
-		m_noTasksLabel.addStyleName("wiki-noentries-panel");
-		
-		m_vPanel.add(m_noTasksLabel);
-		m_vPanel.add(m_flexTable   );
-		
-		m_vPanel.setWidth(   "100%");
-		m_flexTable.setWidth("100%");
-		
-		super.initWidget(m_vPanel);
-	}
-	
-	/*
-	 * Creates the CachedTableModel.
-	 */
-	private CachedTableModel<TaskListItem> createCachedTableModel(TaskTableModel tableModel) {
-		CachedTableModel<TaskListItem> tm = new CachedTableModel<TaskListItem>(tableModel);
-		
-		tm.setPreCachedRowCount( Integer.MAX_VALUE);
-		tm.setPostCachedRowCount(Integer.MAX_VALUE);
-		tm.setRowCount(          Integer.MAX_VALUE);
-		
-		return tm;
-	}
-	
-	/*
-	 * Creates the PagingScrolTable.
-	 */
-	private PagingScrollTable<TaskListItem> createScrollTable() {
-		// Create our own table model...
-		m_tableModel = new TaskTableModel();
-		
-		// ...add it to the cached table model...
-		m_cachedTableModel = createCachedTableModel(m_tableModel);
-		
-		// ...create the table's definition...
-		m_tableDefinition = createTableDefinition();
-		
-		// ...create the PagingScrollTable itself...
-		PagingScrollTable<TaskListItem> pagingScrollTable = new PagingScrollTable<TaskListItem>(m_cachedTableModel, m_tableDefinition);
-		pagingScrollTable.setPageSize(25);	//! ...get TaskBundle via preferences...
-		pagingScrollTable.setEmptyTableWidget(new HTML(m_messages.taskNoTasks()));
-//		pagingScrollTable.getDataTable().setSelectionPolicy(SelectionPolicy.CHECKBOX);
-		
-		// ...setup the bulk renderer...
-		FixedWidthGridBulkRenderer<TaskListItem> bulkRenderer = new FixedWidthGridBulkRenderer<TaskListItem>(pagingScrollTable.getDataTable(), pagingScrollTable);
-		pagingScrollTable.setBulkRenderer(bulkRenderer);
-		
-		// ...and setup the formatting.
-		pagingScrollTable.setCellPadding(3);
-		pagingScrollTable.setCellSpacing(0);
-		pagingScrollTable.setResizePolicy(ScrollTable.ResizePolicy.FILL_WIDTH);		
-		pagingScrollTable.setSortPolicy(SortPolicy.SINGLE_CELL);
+		// ...store the parameters...
+		m_taskListing = taskListing;
 
-		// If we get here, pagingScrollTable is null or refers to the
-		// PagingScrollTable created.  Return it.
-		return pagingScrollTable;
-	}
-	
-	/*
-	 * Creates the 'Assigned To' column definition.
-	 */
-	private TaskAssignedColumnDefinition buildColumn_Assigned() {
-		TaskAssignedColumnDefinition col = new TaskAssignedColumnDefinition();
-		
-		col.setColumnSortable(   true);
-		col.setColumnTruncatable(true);
-		col.setHeader(           0, new HTML(m_messages.taskColumn_assignedTo()));
-		col.setHeaderCount(      1);
-		col.setHeaderTruncatable(false);
-		
-		return col;
-	}
-	
-	/*
-	 * Creates the 'Closed - % Done' column definition.
-	 */
-	private TaskClosedCompletedColumnDefinition buildColumn_ClosedCompleted() {
-		TaskClosedCompletedColumnDefinition col = new TaskClosedCompletedColumnDefinition();
-		
-		col.setColumnSortable(   true);
-		col.setColumnTruncatable(true);
-		col.setHeader(           0, new HTML(m_messages.taskColumn_closedCompleted()));
-		col.setHeaderCount(      1);
-		col.setHeaderTruncatable(false);
-		
-		return col;
-	}
-	
-	/*
-	 * Creates the 'Due Date' column definition.
-	 */
-	private TaskDueColumnDefinition buildColumn_Due() {
-		TaskDueColumnDefinition col = new TaskDueColumnDefinition();
-		
-		col.setColumnSortable(   true);
-		col.setColumnTruncatable(true);
-		col.setHeader(           0, new HTML(m_messages.taskColumn_dueDate()));
-		col.setHeaderCount(      1);
-		col.setHeaderTruncatable(false);
-		
-		return col;
-	}
-	
-	/*
-	 * Creates the 'Task Name' column definition.
-	 */
-	private TaskNameColumnDefinition buildColumn_Name() {
-		TaskNameColumnDefinition col = new TaskNameColumnDefinition();
-		
-		col.setColumnSortable(      true);
-		col.setColumnTruncatable(   false);
-		col.setPreferredColumnWidth(80);
-		col.setHeader(              0, new HTML(m_messages.taskColumn_name()));
-		col.setHeaderCount(         1);
-		col.setHeaderTruncatable(   false);
-		
-		return col;
-	}
-	
-	/*
-	 * Creates the 'Priority' column definition.
-	 */
-	private TaskPriorityColumnDefinition buildColumn_Priority() {
-		TaskPriorityColumnDefinition col = new TaskPriorityColumnDefinition();
-		
-		col.setColumnSortable(   true);
-		col.setColumnTruncatable(false);
-		col.setHeader(           0, new HTML(m_messages.taskColumn_priority()));
-		col.setHeaderCount(      1);
-		col.setHeaderTruncatable(false);
-		
-		return col;
-	}
-	
-	/*
-	 * Creates the 'Status' column definition.
-	 */
-	private TaskStatusColumnDefinition buildColumn_Status() {
-		TaskStatusColumnDefinition col = new TaskStatusColumnDefinition();
-		
-		col.setColumnSortable(   true);
-		col.setColumnTruncatable(false);
-		col.setHeader(           0, new HTML(m_messages.taskColumn_status()));
-		col.setHeaderCount(      1);
-		col.setHeaderTruncatable(false);
-		
-		return col;
+		// ...create the FlexTable that's to hold everything...
+		m_flexTable = new FlexTable();
+		m_flexTable.addStyleName("gwtTaskList_objlist2");
+		m_flexTable.setCellPadding(0);
+		m_flexTable.setCellSpacing(0);
+
+		// ...and use it to initialize the TaskTable Composite.
+		super.initWidget(m_flexTable);
 	}
 
 	/*
-	 * Creates the definition used for the PagingScrollTable.
+	 * Defines the header row in the TaskTable.
 	 */
-	private DefaultTableDefinition<TaskListItem> createTableDefinition() {
-		// Create the table...
-		DefaultTableDefinition<TaskListItem> tableDefinition = new DefaultTableDefinition<TaskListItem>();
-		
-		// ...set the row renderer...
-		String[] rowColors = new String[]{"#FFFFDD", "#EEEEEE"};
-		tableDefinition.setRowRenderer(new DefaultRowRenderer<TaskListItem>(rowColors));
-		
-		// ...and define the columns.
-		tableDefinition.addColumnDefinition(buildColumn_Name());
-		tableDefinition.addColumnDefinition(buildColumn_Priority());
-		tableDefinition.addColumnDefinition(buildColumn_Due());
-		tableDefinition.addColumnDefinition(buildColumn_Status());
-		tableDefinition.addColumnDefinition(buildColumn_Assigned());
-		tableDefinition.addColumnDefinition(buildColumn_ClosedCompleted());
+	private void addHeaderRow() {
+		// Add the style to the header row.
+		m_flexTable.getRowFormatter().addStyleName(0, "columnhead");
 
-		// If we get here, tableDefinition refers to the table
-		// definition created.  Return it.
-		return tableDefinition;
+		// Extract the table's CellFormatter.  We'll need it repeatedly
+		// while generating the task.
+		CellFormatter cf = m_flexTable.getCellFormatter();
+		
+		// Column 0:  Select all checkbox.
+		final CheckBox cb = new CheckBox();
+		cb.addStyleName("gwtTaskList_ckbox");
+		PassThroughEventsPanel.addHandler(cb, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleSelectAll(cb.getValue());}			
+		});
+		cf.setAlignment(0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+		m_flexTable.setWidget(0, 0, cb);
+
+		// Column 1:  Order.
+		Anchor a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML("#");
+		markAsSortKey(a, 1);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(1);}			
+		});
+		cf.setHorizontalAlignment(0, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		m_flexTable.setWidget(0, 1, a);
+		
+		// Column 2:  Name.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_name());
+		markAsSortKey(a, 2);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(2);}			
+		});
+		m_flexTable.setWidget(0, 2, a);
+		
+		// Column 3:  Priority.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
+		markAsSortKey(a, 3);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(3);}			
+		});
+		m_flexTable.setWidget(0, 3, a);
+		
+		// Column 4:  Due Date.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
+		markAsSortKey(a, 4);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(4);}			
+		});
+		m_flexTable.setWidget(0, 4, a);
+		
+		// Column 5:  Status.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_status());
+		markAsSortKey(a, 5);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(5);}			
+		});
+		m_flexTable.setWidget(0, 5, a);
+		
+		// Column 6:  Assigned To.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
+		markAsSortKey(a, 6);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(6);}			
+		});
+		m_flexTable.setWidget(0, 6, a);
+		
+		// Column 7:  Completed - % Done.
+		a = new Anchor();
+		a.addStyleName("sort-column");
+		a.addStyleName("cursorPointer");
+		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
+		markAsSortKey(a, 7);
+		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTableResort(7);}			
+		});
+		m_flexTable.setWidget(0, 7, a);		
+	}
+	
+	/*
+	 * Called to clear the contents of the TaskTable.
+	 */
+	public void clearTaskTable() {
+		m_flexTable.removeAllRows();
+		addHeaderRow();
+	}
+
+	/*
+	 * Returns a string that represents the HTML of a Spacer image.
+	 */
+	private Image getSpacer() {
+		Image reply = new Image(m_images.spacer());
+		reply.setHeight("16px");
+		reply.setWidth( "16px");
+		return reply;
+	}
+	
+	/**
+	 * Returns the order number from the given TaskListItem.
+	 * 
+	 * @param tli
+	 * 
+	 * @return
+	 */
+	public static int getTaskOrder(TaskListItem tli) {
+		return getUIData(tli).m_taskOrder;
+	}
+
+	/*
+	 * Returns the UIData from the TaskListItem.
+	 */
+	private static UIData getUIData(TaskListItem tli) {
+		UIData reply = ((UIData) tli.getUIData());
+		if (null == reply) {
+			reply = new UIData();
+			tli.setUIData(reply);
+		}
+		return reply;
+	}
+
+	/*
+	 * Called when the user clicks the select all checkbox.
+	 */
+	private void handleSelectAll(boolean checked) {
+//!		...this needs to be implemented...
+		Window.alert("handleSelectAll( " + checked + " ):  ...this needs to be implemented...");
+	}
+
+	/*
+	 * Called to resort the TaskTable by the specified column.
+	 */
+	private static void handleTableResort(int column) {
+//!		...this needs to be implemented...
+		Window.alert("handleTableResort( " + column + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user clicks the expand/collapse on a task.
+	 */
+	private void handleTaskExpander(TaskListItem task) {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskExpander( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user clicks the checkbox on a task.
+	 */
+	private void handleTaskSelect(TaskListItem task) {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskSelect( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user clicks the seen sun burst on a task.
+	 */
+	private void handleTaskSeen(TaskListItem task) {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskSeen( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called to run the entry viewer on the given task.
+	 */
+	private void handleTaskView(final TaskInfo task) {
+		m_rpcService.getViewFolderEntryUrl(HttpRequestInfo.createHttpRequestInfo(), task.getBinderId(), task.getTaskId(), new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+					String.valueOf(task.getTaskId()));
+			}
+			
+			@Override
+			public void onSuccess(String viewFolderEntryUrl) {
+				m_taskListing.handleAction(
+					TeamingAction.SHOW_FORUM_ENTRY,
+					viewFolderEntryUrl);
+			}
+		});
+	}
+	
+	/*
+	 * If the TaskTable is sorted by the specified column, add the
+	 * appropriate 'sorted by' indicator. 
+	 */
+	private void markAsSortKey(Anchor a, int col) {
+//!		...this needs to be implemented...
+		if (1 != col) {
+			return;
+		}
+		
+		Image i = new Image(m_taskListing.getSortDescend() ? m_images.sortZA() : m_images.sortAZ());
+		Element ie = i.getElement();
+		ie.setAttribute("align", "absmiddle");
+		a.getElement().appendChild(ie);
+	}
+	
+	/*
+	 * Renders a TaskListItem into the TaskTable.
+	 */
+	private void renderTaskItem(final TaskListItem task) {
+		// Extract the UIData from this task.
+		UIData uid = getUIData(task);
+		
+		// Extract the table's CellFormatter.  We'll need it repeatedly
+		// while generating the task.
+		CellFormatter cf = m_flexTable.getCellFormatter();
+		
+		// Add the style to the header row.
+		int row = m_flexTable.getRowCount();
+		m_flexTable.getRowFormatter().addStyleName(0, "regrow");
+				
+		// Column 0:  Select checkbox.
+		FlowPanel fp = new FlowPanel();
+		final CheckBox cb = new CheckBox();
+		uid.m_cb = cb;
+		cb.addStyleName("gwtTaskList_ckbox");
+		PassThroughEventsPanel.addHandler(cb, new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {handleTaskSelect(task);}			
+		});
+		fp.add(cb);
+		if (0 < task.getSubtasks().size()) {
+			Anchor a = new Anchor();
+			a.addStyleName("cursorPointer");
+			Image i = new Image(m_images.task_closer());
+			a.getElement().appendChild(i.getElement());
+			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {handleTaskExpander(task);}				
+			});
+			fp.add(a);
+		}
+		else {
+			fp.add(getSpacer());
+		}
+		cf.setWordWrap(row, 0, false);
+		cf.setAlignment(row, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+		m_flexTable.setWidget(row, 0, fp);
+		
+		// Column 1:  Order.
+		String orderHTML = ((0 == uid.m_taskDepth) ? String.valueOf(uid.m_taskOrder) : "");
+		m_flexTable.setHTML(row, 1, orderHTML);
+		cf.setHorizontalAlignment(row, 1, HasHorizontalAlignment.ALIGN_CENTER);
+		cf.setWidth(row, 1, "16px");
+
+//!		...this needs to be implemented...
+		
+		// Column 2:  Task Name.
+		fp = new FlowPanel();
+		TaskInfo ti = task.getTask();
+		boolean isSeen      = ti.getSeen();
+		boolean isCompleted = (ti.getCompleted().equals("c100") || ti.getStatus().equals("s4"));
+		Widget marker;
+		if (isCompleted) {
+			fp.addStyleName("gwtTaskList_task-strike");
+			Image i = new Image(m_images.completed());
+			i.setTitle(m_messages.taskAltTaskClosed());
+			marker = i;
+		}
+		else if (isSeen) {
+			final Anchor a = new Anchor();
+			a.addStyleName("cursorPointer");
+			Image i = new Image(m_images.unread());
+			i.setTitle(m_messages.taskAltTaskUnread());
+			a.getElement().appendChild(i.getElement());
+			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {handleTaskSeen(task);}
+			});
+			marker = a;
+		}
+		else {
+			marker = getSpacer();
+		}
+		marker.addStyleName("gwtTaskList_task-icon");
+		fp.add(marker);
+		Anchor ta = new Anchor();
+		ta.addStyleName("reg-entry1-a");
+		ta.addStyleName("cursorPointer");
+		PassThroughEventsPanel eventsPanel = new PassThroughEventsPanel(ta.getElement());
+		eventsPanel.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {handleTaskView(task.getTask());}});
+		ta.getElement().setInnerHTML(task.getTask().getTitle());
+		fp.add(ta);
+		m_flexTable.setWidget(row, 2, fp);
+		
+		// Column 3:  Priority.
+		m_flexTable.getFlexCellFormatter().setColSpan(row, 3, 5);
+		m_flexTable.setWidget(row, 3, new InlineLabel("...this needs to be implemented..."));
 	}
 
 	/**
 	 * Shows the tasks in the List<TaskListItem>.
+	 * 
+	 * Returns the time, in milliseconds, that it takes to show the tasks.
 	 * 
 	 * @param tasks
 	 * 
@@ -269,23 +454,56 @@ public class TaskTable extends Composite {
 	public long showTasks(List<TaskListItem> tasks) {
 		// Save when we start.
 		long start = System.currentTimeMillis();
-		
-		// Reset the table model data..
-		m_tableModel.setData(tasks);
-		m_taskCount = m_tableModel.getTaskCount();
-		
-		// ...reset the cached model...
-		m_cachedTableModel.clearCache();		
-		m_cachedTableModel.setRowCount(m_taskCount);
-		
-		// ...hide/show the 'No Tasks' label as appropriate ...
-		m_noTasksLabel.setVisible(0 == m_taskCount);
-		
-		// ...and force to page zero with a reload.
-		m_pagingScrollTable.gotoPage(0, true);
+
+		clearTaskTable();
+		showTasksImpl(tasks, 0);		
 
 		// Finally, return how long we took to show the tasks.
 		long end = System.currentTimeMillis();
 		return (end - start);
 	}
+
+	/*
+	 * Shows the tasks in the List<TaskListItem> as being at a specific
+	 * depth in the listing.
+	 */
+	private void showTasksImpl(List<TaskListItem> tasks, int taskDepth) {
+		int taskOrder = 1;
+		boolean baseTask = (0 == taskDepth);
+		int subtaskDepth = (taskDepth + 1);
+		for (TaskListItem task:  tasks) {
+			// Construct and add a UIData object to the TaskListItem...
+			UIData uid = new UIData();
+			uid.m_taskDepth = taskDepth;
+			if (baseTask) {
+				uid.m_taskOrder = taskOrder;
+				taskOrder += 1;
+			}
+			task.setUIData(uid);
+
+			// ...render the task...
+			renderTaskItem(task);
+
+			// ...and render any subtasks.
+			showTasksImpl(task.getSubtasks(), subtaskDepth);
+		}
+	}
+
+	/*
+	 * Sorts the List<TaskListItem> by column in the specified order.
+	 */
+	private void sortByColumn(List<TaskListItem> tasks, int col, boolean ascending) {
+		Comparator<TaskListItem> comparator;
+		switch(col) {
+		default:
+		case 1:  comparator = new TaskSorter.OrderComparator(            ascending); break;
+		case 2:  comparator = new TaskSorter.NameComparator(             ascending); break;
+		case 3:  comparator = new TaskSorter.PriorityComparator(         ascending); break;
+		case 4:  comparator = new TaskSorter.DueDateComparator(          ascending); break;
+		case 5:  comparator = new TaskSorter.StatusComparator(           ascending); break;
+		case 6:  comparator = new TaskSorter.AssignedToComparator(       ascending); break;
+		case 7:  comparator = new TaskSorter.ClosedPercentDoneComparator(ascending); break;		
+		}
+		TaskSorter.sort(tasks, comparator);
+	}	
 }
