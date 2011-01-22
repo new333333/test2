@@ -420,21 +420,20 @@ public class TagThisDlg extends DlgBox
 			m_table = new FlexTable();
 			m_table.addStyleName( "paddingTop8px" );
 			m_table.setCellSpacing( 0 );
-			m_table.setWidth( "100%" );
 
 			// Add the column headers.
 			{
 				m_table.setText( 0, 0, GwtTeaming.getMessages().tagName() );
 				m_table.setText( 0, 1, GwtTeaming.getMessages().tagType() );
-				m_table.setText( 0, 2, "" );	// The delete image will go in this column.
+				m_table.setText( 0, 2, " " );	// The delete image will go in this column.
 				
 				rowFormatter = m_table.getRowFormatter();
 				rowFormatter.addStyleName( 0, "oltHeader" );
 
 				// Set the width of each column to 50%
 				m_cellFormatter = m_table.getFlexCellFormatter();
-				m_cellFormatter.setWidth( 0, 0, "50%" );
-				m_cellFormatter.setWidth( 0, 1, "50%" );
+				m_cellFormatter.setWidth( 0, 0, "48%" );
+				m_cellFormatter.setWidth( 0, 1, "48%" );
 				m_cellFormatter.setWidth( 0, 2, "*" );
 				
 				m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
