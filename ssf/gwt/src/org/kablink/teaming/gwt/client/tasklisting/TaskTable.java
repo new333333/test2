@@ -53,7 +53,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -76,12 +76,15 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TaskTable extends Composite {
-	private FlexCellFormatter	m_flexTableCF;	//
-	private FlexTable			m_flexTable;	//
-	private int					m_taskCount;	//
-	private RowFormatter		m_flexTableRF;	//
-	private TaskBundle			m_taskBundle;	//
-	private TaskListing			m_taskListing;	//
+	private FlexCellFormatter	m_flexTableCF;		//
+	private FlexTable			m_flexTable;		//
+	private int					m_taskCount;		//
+	private RowFormatter		m_flexTableRF;		//
+	private TaskBundle			m_taskBundle;		//
+	private TaskListing			m_taskListing;		//
+	private TaskPopupMenu		m_percentDoneMenu;	//
+	private TaskPopupMenu		m_priorityMenu;		//
+	private TaskPopupMenu		m_statusMenu;		//
 	
 	private final GwtRpcServiceAsync				m_rpcService = GwtTeaming.getRpcService();				// 
 	private final GwtTeamingMessages				m_messages   = GwtTeaming.getMessages();				//
@@ -101,15 +104,15 @@ public class TaskTable extends Composite {
 		ASSIGNED_TO,
 		CLOSED_PERCENT_DONE,
 	}
-	
+
 	/*
-	 * Inner class to used to track information that's attached to a
+	 * Inner class to used to track information attached to a
 	 * TaskListItem for managing the user interface. 
 	 */
 	private static class UIData {
-		public int		m_taskDepth;		//
-		public int 		m_taskOrder = (-1);	//
-		public String	m_taskSelectCBId;	//
+		private CheckBox	m_taskSelectorCB;	//
+		private int			m_taskDepth;		//
+		private int 		m_taskOrder = (-1);	//
 		
 		/**
 		 * Class constructor.
@@ -119,14 +122,29 @@ public class TaskTable extends Composite {
 		}
 
 		/**
+		 * Get'er / Set'er methods.
+		 * 
+		 * @param
+		 * 
+		 * @return
+		 */
+		public CheckBox getTaskSelectorCB() {return m_taskSelectorCB;}
+		public int      getTaskDepth()      {return m_taskDepth;     }
+		public int      getTaskOrder()      {return m_taskOrder;     }
+		
+		public void setTaskSelectorCB(CheckBox taskSelectorCB) {m_taskSelectorCB = taskSelectorCB;}
+		public void setTaskDepth(     int      taskDepth)      {m_taskDepth      = taskDepth;     }
+		public void setTaskOrder(     int      taskOrder)      {m_taskOrder      = taskOrder;     }
+		
+		/**
 		 * Returns true if the task corresponding to this UIData is
 		 * selected (i.e., its checkbox is checked) and false
 		 * otherwise.
 		 * 
 		 * @return
 		 */
-		boolean isTaskSelected() {
-			return jsIsCBChecked(m_taskSelectCBId);
+		public boolean isTaskSelected() {
+			return jsIsCBChecked(getTaskSelectorCB().getElement().getId());
 		}
 		
 		/**
@@ -134,8 +152,8 @@ public class TaskTable extends Composite {
 		 * 
 		 * @param selected
 		 */
-		void setTaskSelected(boolean selected) {
-			jsSetCBCheck(m_taskSelectCBId, selected);
+		public void setTaskSelected(boolean selected) {
+			jsSetCBCheck(getTaskSelectorCB().getElement().getId(), selected);
 		}
 	}
 	
@@ -148,6 +166,36 @@ public class TaskTable extends Composite {
 		
 		// ...store the parameter...
 		m_taskListing = taskListing;
+		
+		// ...create the popup menus we'll need for the TaskTable.
+		List<TaskMenuOption> pOpts = new ArrayList<TaskMenuOption>();
+		pOpts.add(new TaskMenuOption("p1", m_images.p1(), m_messages.taskPriority_p1()));
+		pOpts.add(new TaskMenuOption("p2", m_images.p2(), m_messages.taskPriority_p2()));
+		pOpts.add(new TaskMenuOption("p3", m_images.p3(), m_messages.taskPriority_p3()));
+		pOpts.add(new TaskMenuOption("p4", m_images.p4(), m_messages.taskPriority_p4()));
+		pOpts.add(new TaskMenuOption("p5", m_images.p5(), m_messages.taskPriority_p5()));
+		m_priorityMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PRIORITY, pOpts);
+
+		List<TaskMenuOption> sOpts = new ArrayList<TaskMenuOption>();
+		sOpts.add(new TaskMenuOption("s3", m_images.completed(),   m_messages.taskStatus_completed()));
+		sOpts.add(new TaskMenuOption("s2", m_images.inProcess(),   m_messages.taskStatus_inProcess()));
+		sOpts.add(new TaskMenuOption("s1", m_images.needsAction(), m_messages.taskStatus_needsAction()));
+		sOpts.add(new TaskMenuOption("s4", m_images.cancelled(),   m_messages.taskStatus_cancelled()));
+		m_statusMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_STATUS, sOpts);
+
+		List<TaskMenuOption> pdOpts = new ArrayList<TaskMenuOption>();
+		pdOpts.add(new TaskMenuOption("c000", m_images.c0(),   m_messages.taskCompleted_c0()));
+		pdOpts.add(new TaskMenuOption("c010", m_images.c10(),  m_messages.taskCompleted_c10()));
+		pdOpts.add(new TaskMenuOption("c020", m_images.c20(),  m_messages.taskCompleted_c20()));
+		pdOpts.add(new TaskMenuOption("c030", m_images.c30(),  m_messages.taskCompleted_c30()));
+		pdOpts.add(new TaskMenuOption("c040", m_images.c40(),  m_messages.taskCompleted_c40()));
+		pdOpts.add(new TaskMenuOption("c050", m_images.c50(),  m_messages.taskCompleted_c50()));
+		pdOpts.add(new TaskMenuOption("c060", m_images.c60(),  m_messages.taskCompleted_c60()));
+		pdOpts.add(new TaskMenuOption("c070", m_images.c70(),  m_messages.taskCompleted_c70()));
+		pdOpts.add(new TaskMenuOption("c080", m_images.c80(),  m_messages.taskCompleted_c80()));
+		pdOpts.add(new TaskMenuOption("c090", m_images.c90(),  m_messages.taskCompleted_c90()));
+		pdOpts.add(new TaskMenuOption("c100", m_images.c100(), m_messages.taskCompleted_c100()));
+		m_percentDoneMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PERCENT_DONE, pdOpts);
 
 		// ...create the FlexTable that's to hold everything...
 		m_flexTable   = new FlexTable();
@@ -274,6 +322,58 @@ public class TaskTable extends Composite {
 	private Anchor buildAnchor() {
 		return buildAnchor("cursorPointer");
 	}
+
+	/*
+	 * Returns a base Image widget.
+	 */
+	private Image buildImage(ImageResource res, String title) {
+		Image reply = new Image(res);
+		reply.getElement().setAttribute("align", "absmiddle");
+		if (GwtClientHelper.hasString(title)) {
+			reply.setTitle(title);
+		}
+		return reply;
+	}
+	
+	private Image buildImage(ImageResource res) {
+		return buildImage(res, null);
+	}
+	
+	/*
+	 * Build a column that contains a TaskPopupMenu <SELECT> widget. 
+	 */
+	private Anchor buildOptionColumnAnchor(final TaskListItem task, final TaskPopupMenu taskMenu, String optionValue, String anchorStyle) {
+		// What image do we display for this task?
+		List<TaskMenuOption> taskOptions = taskMenu.getMenuOptions();
+		TaskMenuOption selectedOption = null;
+		for (TaskMenuOption taskOption:  taskOptions) {
+			if (taskOption.getMenu().equals(optionValue)) {
+				selectedOption = taskOption;
+				break;
+			}
+		}
+		if (null == selectedOption) {
+			selectedOption = taskOptions.get(0);
+		}
+		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
+
+		// Generate the Anchor for this option.
+		Anchor reply = buildAnchor(anchorStyle);
+		reply.getElement().appendChild(img.getElement());
+		reply.getElement().appendChild(buildImage(m_images.menu()).getElement());
+		PassThroughEventsPanel.addHandler(reply, new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				int x = event.getClientX();
+				int y = event.getClientY();
+				taskMenu.showTaskPopupMenu(task, x, y);
+			}
+		});
+
+		// If we get here, reply refers to the Anchor for this option
+		// column.  Return it.
+		return reply;
+	}
 	
 	/*
 	 * Returns a spacer Image.
@@ -335,6 +435,19 @@ public class TaskTable extends Composite {
 		return reply;
 	}
 
+	/**
+	 * Called by TaskPopupMenu when a selection has been made in one of
+	 * the task's option menus.
+	 * 
+	 * @param task
+	 * @param taskAction
+	 * @param optionValue
+	 */
+	public void setTaskOption(TaskListItem task, TeamingAction taskAction, String optionValue) {
+//!		...this needs to be implemented...
+		Window.alert("setTaskOption( " + taskAction + ":" + task.getTask().getTitle() + ":" + optionValue + " )");
+	}
+	
 	/*
 	 * Called when the user clicks the select all checkbox.
 	 */
@@ -426,10 +539,8 @@ public class TaskTable extends Composite {
 			return;
 		}
 		
-		Image i = new Image(m_taskListing.getSortDescend() ? m_images.sortZA() : m_images.sortAZ());
-		Element ie = i.getElement();
-		ie.setAttribute("align", "absmiddle");
-		a.getElement().appendChild(ie);
+		Image i = buildImage(m_taskListing.getSortDescend() ? m_images.sortZA() : m_images.sortAZ());
+		a.getElement().appendChild(i.getElement());
 	}
 	
 	/*
@@ -437,13 +548,32 @@ public class TaskTable extends Composite {
 	 */
 	private void renderColumnAssignedTo(final TaskListItem task, int row, Column col) {
 //!		...this needs to be implemented...
+		m_flexTable.setWidget(row, col.ordinal(), new InlineLabel("...to do..."));
 	}
 	
 	/*
 	 * Renders the 'Closed - % Done' column.
 	 */
 	private void renderColumnClosedPercentDone(final TaskListItem task, int row, Column col) {
-//!		...this needs to be implemented...
+		// What's the current priority of this task?
+		String percentDone = task.getTask().getCompleted();
+		if (!(GwtClientHelper.hasString(percentDone))) {
+			percentDone = "c000";
+		}
+		
+		else if (percentDone.equals("c100")) {
+//!			...this needs to be implemented...
+		}
+		
+		// Add an Anchor for it to the TaskTable.
+		m_flexTable.setWidget(
+			row,
+			col.ordinal(),
+			buildOptionColumnAnchor(
+				task,
+				m_percentDoneMenu,
+				percentDone,
+				"percent-done"));
 	}
 	
 	/*
@@ -451,6 +581,7 @@ public class TaskTable extends Composite {
 	 */
 	private void renderColumnDueDate(final TaskListItem task, int row, Column col) {
 //!		...this needs to be implemented...
+		m_flexTable.setWidget(row, col.ordinal(), new InlineLabel("...to do..."));
 	}
 	
 	/*
@@ -460,7 +591,7 @@ public class TaskTable extends Composite {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
-		String orderHTML = ((0 == uid.m_taskDepth) ? String.valueOf(uid.m_taskOrder) : "");
+		String orderHTML = ((0 == uid.getTaskDepth()) ? String.valueOf(uid.getTaskOrder()) : "");
 		m_flexTable.setHTML(row, col.ordinal(), orderHTML);
 		m_flexTableCF.setHorizontalAlignment(row, col.ordinal(), HasHorizontalAlignment.ALIGN_CENTER);
 		m_flexTableCF.setWidth(row, col.ordinal(), "16px");
@@ -470,9 +601,21 @@ public class TaskTable extends Composite {
 	 * Renders the 'Priority' column.
 	 */
 	private void renderColumnPriority(final TaskListItem task, int row, Column col) {
-//!		...this needs to be implemented...
-		m_flexTableCF.setColSpan(row, col.ordinal(), 5);
-		m_flexTable.setWidget(row, col.ordinal(), new InlineLabel("...this needs to be implemented..."));
+		// What's the current priority of this task?
+		String priority = task.getTask().getPriority();
+		if (!(GwtClientHelper.hasString(priority))) {
+			priority = "p1";
+		}
+		
+		// Add an Anchor for it to the TaskTable.
+		m_flexTable.setWidget(
+			row,
+			col.ordinal(),
+			buildOptionColumnAnchor(
+				task,
+				m_priorityMenu,
+				priority,
+				"priority-icon"));
 	}
 	
 	/*
@@ -483,8 +626,8 @@ public class TaskTable extends Composite {
 		UIData uid = getUIData(task);
 		
 		CheckBox cb = new CheckBox();
-		uid.m_taskSelectCBId = ("gwtTaskList_taskSelect_" + task.getTask().getTaskId());
-		cb.getElement().setId(uid.m_taskSelectCBId);
+		uid.setTaskSelectorCB(cb);
+		cb.getElement().setId("gwtTaskList_taskSelect_" + task.getTask().getTaskId());
 		cb.addStyleName("gwtTaskList_ckbox");
 		PassThroughEventsPanel.addHandler(cb, new ChangeHandler(){
 			@Override
@@ -494,7 +637,7 @@ public class TaskTable extends Composite {
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
 			Anchor a = buildAnchor();
-			Image  i = new Image(m_images.task_closer());
+			Image  i = buildImage(m_images.task_closer());
 			a.getElement().appendChild(i.getElement());
 			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
 				@Override
@@ -514,7 +657,21 @@ public class TaskTable extends Composite {
 	 * Renders the 'Status' column.
 	 */
 	private void renderColumnStatus(final TaskListItem task, int row, Column col) {
-//!		...this needs to be implemented...
+		// What's the current priority of this task?
+		String status = task.getTask().getStatus();
+		if (!(GwtClientHelper.hasString(status))) {
+			status = "s1";
+		}
+		
+		// Add an Anchor for it to the TaskTable.
+		m_flexTable.setWidget(
+			row,
+			col.ordinal(),
+			buildOptionColumnAnchor(
+				task,
+				m_statusMenu,
+				status,
+				"status-icon"));
 	}
 	
 	/*
@@ -534,14 +691,12 @@ public class TaskTable extends Composite {
 		Widget marker;
 		if (isClosed) {
 			fp.addStyleName("gwtTaskList_task-strike");
-			Image i = new Image(m_images.completed());
-			i.setTitle(m_messages.taskAltTaskClosed());
+			Image i = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
 			marker = i;
 		}
 		else if (isUnseen) {
 			final Anchor a = buildAnchor();
-			Image i = new Image(m_images.unread());
-			i.setTitle(m_messages.taskAltTaskUnread());
+			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			a.getElement().appendChild(i.getElement());
 			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
 				@Override
@@ -652,13 +807,13 @@ public class TaskTable extends Composite {
 		for (TaskListItem task:  tasks) {
 			// Construct and add a UIData object to the TaskListItem...
 			UIData uid = getUIData(task);
-			uid.m_taskDepth = taskDepth;
+			uid.setTaskDepth(taskDepth);
 			if (baseTask) {
-				uid.m_taskOrder = taskOrder;
+				uid.setTaskOrder(taskOrder);
 				taskOrder += 1;
 			}
 			else {
-				uid.m_taskOrder = (-1);
+				uid.setTaskOrder(-1);
 			}
 			task.setUIData(uid);
 
