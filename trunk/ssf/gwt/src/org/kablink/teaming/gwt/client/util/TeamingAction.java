@@ -95,6 +95,9 @@ public enum TeamingAction implements IsSerializable
 	TASK_MOVE_LEFT( "Move the Selected Task Left (i.e., Decrease its Subtask Level.)" ),
 	TASK_MOVE_RIGHT( "Move the Selected Task Right (i.e., Increase its Subtask Level.)" ),
 	TASK_DELETE( "Delete the Selected Tasks." ),
+	TASK_SET_PERCENT_DONE( "Sets a Task's Percentage Done." ),
+	TASK_SET_PRIORITY( "Sets a Task's Priority." ),
+	TASK_SET_STATUS( "Sets a Task's Status." ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

@@ -790,6 +790,17 @@ public interface GwtTeamingMessages extends Messages
 	String taskColumn_name();
 	String taskColumn_priority();
 	String taskColumn_status();
+	String taskCompleted_c0();
+	String taskCompleted_c10();
+	String taskCompleted_c20();
+	String taskCompleted_c30();
+	String taskCompleted_c40();
+	String taskCompleted_c50();
+	String taskCompleted_c60();
+	String taskCompleted_c70();
+	String taskCompleted_c80();
+	String taskCompleted_c90();
+	String taskCompleted_c100();
 	String taskLabelDelete();
 	String taskLabelOrder();
 	String taskLabelSubtask();
