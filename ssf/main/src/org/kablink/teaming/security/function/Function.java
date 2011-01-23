@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.security.function;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -63,6 +65,7 @@ public class Function extends ZonedObject {
     private String internalId;
     private String scope; //Used to segment roles between zone, binder and entry
     private boolean zoneWide=false;
+    private List<ConditionalClause> conditionalClauses;
 	/**
 	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null"
 	 */    
@@ -250,4 +253,16 @@ public class Function extends ZonedObject {
     	hash = 31*hash + zoneId.hashCode();
     	return hash;
     }
+    
+	public List<ConditionalClause> getConditionalClauses() {
+		if(conditionalClauses == null)
+			return null;
+		// return a copy of the list to keep the caller from making direct changes to the original list.
+		return new ArrayList<ConditionalClause>(conditionalClauses);
+	}
+	
+	public void setConditionalClauses(List<ConditionalClause> conditionalClauses) {
+		this.conditionalClauses = conditionalClauses;
+	}
+    
 }

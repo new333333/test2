@@ -13,14 +13,27 @@
     <property name="internalId" length="32"/>
 	<property name="zoneWide"/>
     <property name="scope" length="16" access="field"/>
-<properties name="functionNameKey" unique="true" update="false" insert="false">
-<property name="zoneId" update="false" insert="false"/>
-<property name="name" update="false" insert="false"/>
-</properties>
-    <set cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">
+	<properties name="functionNameKey" unique="true" update="false" insert="false">
+		<property name="zoneId" update="false" insert="false"/>
+		<property name="name" update="false" insert="false"/>
+	</properties>
+    <set inverse="false" cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">
       <cache usage="nonstrict-read-write"/>
       <key column="functionId"/>
       <element not-null="true" type="string" column="operationName" length="128"/>
     </set>
+    <bag inverse="false" cascade="all" lazy="false" table="SS_FunctionConditionMap" name="conditionalClauses">
+      <cache usage="nonstrict-read-write"/>
+      <key column="functionId"/>
+      <!--<many-to-many fetch="join" class="org.kablink.teaming.security.function.Condition">
+        <column name="condition" sql-type="char(32)"/>
+      </many-to-many>-->
+      <composite-element class="org.kablink.teaming.security.function.ConditionalClause">
+        <property name="meetStr" column="meet" length="16"/>
+        <many-to-one name="condition" class="org.kablink.teaming.security.function.Condition">
+          <column name="conditionId" sql-type="char(32)"/>
+        </many-to-one>
+      </composite-element>
+    </bag>
   </class>
 </hibernate-mapping>

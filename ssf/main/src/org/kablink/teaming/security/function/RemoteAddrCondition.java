@@ -35,12 +35,13 @@ package org.kablink.teaming.security.function;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.util.StringUtil;
 
 public class RemoteAddrCondition extends Condition {
 
 	private static final String DELIMITER = ",";
-	private static ConcurrentHashMap<String, Pattern> patternCache;
+	private static ConcurrentHashMap<String, Pattern> patternCache = new ConcurrentHashMap<String, Pattern>();
 	
 	private String[] includeAddressExpressions;
 	private String[] excludeAddressExpressions;
@@ -103,10 +104,8 @@ public class RemoteAddrCondition extends Condition {
 	 * @see org.kablink.teaming.security.function.Condition#evaluate(java.lang.Object[])
 	 */
 	@Override
-	public boolean evaluate(Object... args) {
-		if(args == null || args.length == 0)
-			throw new IllegalArgumentException("Input is required");
-		String remoteAddr = (String) args[0];
+	public boolean evaluate() {
+		String remoteAddr = ZoneContextHolder.getClientAddr();
 		String[] includes = getIncludeAddressExpressions();
 		String[] excludes = getExcludeAddressExpressions();
 		boolean included = false;
@@ -154,11 +153,11 @@ public class RemoteAddrCondition extends Condition {
 		.append(StringUtil.merge(includes, DELIMITER))
 		.append(" excludes=")
 		.append(StringUtil.merge(excludes, DELIMITER));
-		setEncodedSpec(sb.toString());
+		super.setEncodedSpec(sb.toString());
 	}
 	
 	private void toExpressions() {
-		String str = getEncodedSpec();
+		String str = super.getEncodedSpec();
 		int excludesIndex = str.indexOf("excludes=");
 		String includesStr = str.substring(9, excludesIndex-1);
 		String excludesStr = str.substring(excludesIndex+9);

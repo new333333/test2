@@ -38,6 +38,7 @@ import org.kablink.util.Validator;
 
 public abstract class Condition extends ZonedObject {
 
+	private String id;
 	private String title;
 	private Description description;
 	private String encodedSpec; // encoded specification stored in the database
@@ -51,6 +52,14 @@ public abstract class Condition extends ZonedObject {
 
 	protected void setEncodedSpec(String encodedSpec) {
 		this.encodedSpec = encodedSpec;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	protected void setId(String id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -71,5 +80,5 @@ public abstract class Condition extends ZonedObject {
 		this.description = description;
 	}
 
-	public abstract boolean evaluate(Object... args);
+	public abstract boolean evaluate();
 }

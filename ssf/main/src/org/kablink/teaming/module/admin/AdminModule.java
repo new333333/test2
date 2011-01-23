@@ -96,7 +96,7 @@ public interface AdminModule {
 	 * @param operations
 	 * @throws AccessControlException
 	 */
-	public void addFunction(String name, Set<WorkAreaOperation>operations, String scope) throws AccessControlException;
+	public Function addFunction(String name, Set<WorkAreaOperation>operations, String scope) throws AccessControlException;
 	/**
 	 * Add a posting definition, used to receive incoming mail
 	 * @param updates
@@ -149,6 +149,7 @@ public interface AdminModule {
      * Get system functions
      * @return
      */
+    public Function getFunction(Long functionId);
     public List<Function> getFunctions();
     public List<Function> getFunctions(String scope);
     /**
@@ -171,7 +172,7 @@ public interface AdminModule {
     public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
  
-    public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
+    public Function modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
     
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl);
@@ -273,6 +274,8 @@ public interface AdminModule {
 	public void modifyFunctionCondition(Condition functionCondition);
 	
 	public void deleteFunctionCondition(String functionConditionId);
+	
+	public Condition getFunctionCondition(String functionConditionId);
 	
 	public List<Condition> getFunctionConditions();
 	
