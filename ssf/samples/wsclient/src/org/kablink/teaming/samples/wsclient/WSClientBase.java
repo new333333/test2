@@ -61,6 +61,7 @@ import org.kablink.teaming.client.ws.model.FileVersion;
 import org.kablink.teaming.client.ws.model.FileVersions;
 import org.kablink.teaming.client.ws.model.FolderBrief;
 import org.kablink.teaming.client.ws.model.FolderCollection;
+import org.kablink.teaming.client.ws.model.FolderEntry;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
@@ -463,6 +464,9 @@ public abstract class WSClientBase {
 			}
 			if(entity instanceof User) {
 				System.out.println("User permaLink: " + ((User)entity).getPermaLink());
+			}
+			if(entity instanceof FolderEntry) {
+				System.out.println("Folder entry href: " + ((FolderEntry)entity).getHref());
 			}
 		}
 		else {
