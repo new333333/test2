@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.security.dao.SecurityDao;
+import org.kablink.teaming.security.function.ConditionalClause;
+import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
@@ -131,9 +133,54 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     
     public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup) {
-        return getSecurityDao().checkWorkAreaFunctionMembership
+        List<Long> functionIds = getSecurityDao().checkWorkAreaFunctionMembership
         	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
+        // If a function has conditional clauses associated with it, the conditions must
+        // evaluate to true in order for the role to be effective. As long as at least
+        // one of the roles meet the requirement, the access check is successful.
+        for(Long functionId : functionIds) {
+        	Function function = getSecurityDao().loadFunction(zoneId, functionId);
+        	if (evaluateFunctionClauses(function.getConditionalClauses()))
+        		return true;
+        }
+        return false;
     }
 
+    private boolean evaluateFunctionClauses(List<ConditionalClause> conditionalClauses) {
+    	if(conditionalClauses == null || conditionalClauses.size() == 0) {
+    		// There is no conditional clause associated with this function. So, this always passes.
+    		return true;
+    	}
+    	else {
+    		int metMustClauses = 0;
+    		// Pass 1 - Evaluate all clauses that MUST be met.
+    		for(ConditionalClause conditionalClause : conditionalClauses) {
+    			if(conditionalClause.getMeet().equals(ConditionalClause.Meet.MUST)) {
+    				if(conditionalClause.getCondition().evaluate())
+    					metMustClauses++;
+    				else
+    					return false;
+    			}
+    		}
+    		if(metMustClauses > 0) {
+    			// There were at least one clause of MUST type, and all of the clauses of MUST type were met. 
+    			// In this case, it doesn't matter whether the clauses of SHOULD type meet the condition or not.
+    			// This evaluates to true.
+    			return true;
+    		}
+    		else {
+    			// There were no clause of MUST type. In this case, at least one of the clauses of SHOULD type
+    			// must be met. 
+    			for(ConditionalClause conditionalClause : conditionalClauses) {
+        			if(conditionalClause.getMeet().equals(ConditionalClause.Meet.SHOULD)) {
+        				if(conditionalClause.getCondition().evaluate())
+        					return true;
+        			}
+    			}
+        		// If still here, it means that none of the clauses of SHOULD type was met.
+    			return false;
+    		}
+    	}
+    }
 }

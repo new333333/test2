@@ -263,12 +263,12 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
         return disjunction;
     }
 
-    public boolean checkWorkAreaFunctionMembership(final Long zoneId,
+    public List<Long> checkWorkAreaFunctionMembership(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
 		long begin = System.currentTimeMillis();
 		try {
-	    	List matches = (List) getHibernateTemplate().execute(
+	    	return (List) getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        // The following query performs 4 table joins in a single SQL query.
@@ -283,17 +283,13 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                        	.setString(WORK_AREA_TYPE, workAreaType)
 	                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
 	                        	.setParameterList(PRINCIPAL_IDS, membersToLookup)
-	                        	.setMaxResults(1) // Fetching the first matching row is enough for us
+	                        	// 1/22/2011 - We need to get back the ids of ALL functions that matched the query.
+	                        	//.setMaxResults(1) // Fetching the first matching row is enough for us
 	                         	.setCacheable(true)
 	                         	.list();
 	                    }
 	                }
 	            );
-	        
-	        if(matches.size() > 0)
-	            return true;
-	        else
-	            return false;
     	}
     	finally {
     		end(begin, "checkWorkAreaFunctionMembership(Long,Long,String,String,Set)");

@@ -91,7 +91,7 @@ public interface SecurityDao {
      * @param membersToLookup	a set of Long
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(Long zoneId, Long workAreaId, 
+    public List<Long> checkWorkAreaFunctionMembership(Long zoneId, Long workAreaId, 
             String workAreaType, String workAreaOperationName, Set membersToLookup);
     public List findWorkAreaFunctionMembershipsByOperation(Long zoneId,
             Long workAreaId, String workAreaType, 
