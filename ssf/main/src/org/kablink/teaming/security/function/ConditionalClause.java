@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.security.function;
 
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.util.Parameter;
-
 public class ConditionalClause {
 
 	/* This enum is used to specify how conditions are to be met in access checking. */
