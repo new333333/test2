@@ -33,6 +33,7 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
@@ -233,7 +235,7 @@ public class GwtTaskHelper {
 	 * Returns true if the current user can modify a task and false
 	 * otherwise.
 	 */
-	private static boolean canModfyTask(AllModulesInjected bs, Long binderId, Long taskId) {
+	private static boolean canModifyTask(AllModulesInjected bs, Long binderId, Long taskId) {
 		boolean reply = false;
 		try {
 			FolderModule fm = bs.getFolderModule();
@@ -520,9 +522,46 @@ public class GwtTaskHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static Date getDateFromMap(Map m, String key) {
-		return ((Date) m.get(key));
+		Date reply;
+		
+		Object data = m.get(key);
+		if (data instanceof Date) {
+			reply = ((Date) data);
+		}
+		else if (data instanceof String) {
+			try {
+				reply = DateTools.stringToDate((String) data);
+			}
+			catch (ParseException pe) {
+				reply = null;
+			}
+		}
+		else {
+			reply = null;;
+		}
+		return reply;
 	}
 
+	/*
+	 * Returns the String representation for the given date, formatted
+	 * based on the current user's locale and time zone.
+	 */
+	private static String getDateTimeString(Date date) {
+		String reply;
+		if (null == date) {
+			reply = "";
+		}
+		else {
+			User user = GwtServerHelper.getCurrentUser();
+			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());
+			
+			reply = df.format(date);
+		}
+		return reply;
+	}
+	
 	/*
 	 * Reads an event from a map.
 	 */
@@ -530,9 +569,15 @@ public class GwtTaskHelper {
 	private static TaskEvent getEventFromMap(Map m) {
 		TaskEvent reply = new TaskEvent();
 		
-		// Extract the event's start/end dates from the Map... 
-		reply.setLogicalEnd(  getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  )));
-		reply.setLogicalStart(getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE)));
+		// Extract the event's end...
+		Date logicalEnd = getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE));
+		reply.setLogicalEnd(                         logicalEnd);
+		reply.setLogicalEndDisplay(getDateTimeString(logicalEnd));
+		
+		// ...and start dates from the Map...
+		Date logicalStart = getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE));
+		reply.setLogicalStart(                         logicalStart);
+		reply.setLogicalStartDisplay(getDateTimeString(logicalStart));
 
 		// ...extract the event's 'All Day Event' flag from the Map...
 		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
@@ -699,7 +744,11 @@ public class GwtTaskHelper {
 			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
 			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
 			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
-			ti.setCanModify(       canModfyTask(bs, binderId, ti.getTaskId()));
+			ti.setCanModify(       canModifyTask(bs, binderId, ti.getTaskId()));
+			
+			Date completedDate = getDateFromMap( taskEntry, Constants.TASK_COMPLETED_DATE_FIELD);
+			ti.setCompletedDate(                         completedDate);
+			ti.setCompletedDateDisplay(getDateTimeString(completedDate));
 			
 			reply.add(ti);
 		}

@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.tasklisting;
 
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.Image;
 
 /**
  * Class used to model the contents of various task menu <SELECT>
@@ -53,6 +54,18 @@ public class TaskMenuOption  {
 		m_menu         = menu;
 		m_menuImageRes = menuImageRes;
 		m_menuAlt      = menuAlt;
+	}
+
+	/**
+	 * Returns an Image Widget for the TaskMenuOption.
+	 * 
+	 * @return
+	 */
+	public Image buildImage() {
+		Image reply = new Image(getMenuImageRes());
+		reply.addStyleName("margin-right-5");
+		reply.getElement().setAttribute("align", "absmiddle");
+		return reply;
 	}
 	
 	/**

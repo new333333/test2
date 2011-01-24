@@ -562,7 +562,13 @@ public class TaskTable extends Composite {
 		}
 		
 		else if (percentDone.equals("c100")) {
-//!			...this needs to be implemented...
+			String completedDateDisplay = task.getTask().getCompletedDateDisplay();
+			if (GwtClientHelper.hasString(completedDateDisplay)) {
+				InlineLabel il = new InlineLabel(completedDateDisplay);
+				il.setWordWrap(false);
+				m_flexTable.setWidget(row, col.ordinal(), il);				
+				return;
+			}
 		}
 		
 		// Add an Anchor for it to the TaskTable.
@@ -580,8 +586,9 @@ public class TaskTable extends Composite {
 	 * Renders the 'Due Date' column.
 	 */
 	private void renderColumnDueDate(final TaskListItem task, int row, Column col) {
-//!		...this needs to be implemented...
-		m_flexTable.setWidget(row, col.ordinal(), new InlineLabel("...to do..."));
+		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEndDisplay());
+		il.setWordWrap(false);
+		m_flexTable.setWidget(row, col.ordinal(), il);
 	}
 	
 	/*

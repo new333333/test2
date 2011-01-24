@@ -33,6 +33,7 @@
 package org.kablink.teaming.task;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -67,6 +68,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.ListFolderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
@@ -88,6 +90,7 @@ public class TaskHelper {
 	public static final String TASK_ASSIGNED_TO								= "assignedTo";
 	public static final String TASK_ASSIGNED_TO_GROUPS						= "assignedToGroups";
 	public static final String TASK_ASSIGNED_TO_TEAMS						= "assignedToTeams";	
+	public static final String TASK_COMPLETED_DATE_ATTRIBUTE 				= "task_completed";
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME		= "start_end";
 	
 	public enum FilterType {
@@ -663,5 +666,44 @@ public class TaskHelper {
     	}
 		
 		return folderEntries;
-	}	
+	}
+
+	/**
+	 * Called when a task is modified or created to process the
+	 * completion date.
+	 * 
+	 * @param task
+	 * @param inputData
+	 */
+	public static void processTaskCompletion(Entry task, String completeS) {
+		// Do we have a 'complete' setting for the entry?
+		if (!(MiscUtil.hasString(completeS))) {
+			// No!  Nothing to do.
+			return;
+		}
+		
+		// Is the completion value for the task changing?
+		boolean complete     = completeS.equals("c100");
+		String  wasCompleteS = getTaskCompletedValue(task);
+		boolean wasComplete  = (MiscUtil.hasString(wasCompleteS) && wasCompleteS.equals("c100"));		
+		if (complete == wasComplete) {
+			// No!  Nothing to do.
+			return;
+		}
+
+		// If we already have a completed date stored for the task...
+		CustomAttribute completedDateAttr = task.getCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE);
+		Date completedDate = ((null == completedDateAttr) ? null : ((Date) completedDateAttr.getValue()));		
+		boolean hasCompletedDate = (null != completedDate);
+		if (hasCompletedDate) {
+			// ...remove it.
+			task.removeCustomAttribute(completedDateAttr);
+		}
+		
+		// If the task is now being marked completed...
+		if (complete) {
+			// ...write the current date/time as the completion date.
+			task.addCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE, new Date());
+		}		
+	}
 }

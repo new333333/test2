@@ -68,15 +68,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String assigned1 = getAssignee(tli1.getTask());
-			String assigned2 = getAssignee(tli2.getTask());
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String assigned1 = getAssignee(task1.getTask());
+			String assigned2 = getAssignee(task2.getTask());
 
 			int reply;
 			if (m_ascending)
@@ -120,20 +120,38 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String c1 = getNonNullString(tli1.getTask().getCompleted(), "c000");
-			String c2 = getNonNullString(tli2.getTask().getCompleted(), "c000");
-
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String c1 = getSortString(task1, getNonNullString(task1.getTask().getCompleted(), "c000"));
+			String c2 = getSortString(task2, getNonNullString(task2.getTask().getCompleted(), "c000"));
+			
 			int reply;
 			if (m_ascending)
 			     reply = GwtClientHelper.safeSColatedCompare(c1, c2);
 			else reply = GwtClientHelper.safeSColatedCompare(c2, c1);
+			return reply;
+		}
+
+		/*
+		 * Returns the string to use for sorting 'Closed % Done'
+		 * values.
+		 * 
+		 * Forces tasks that are closed with a completion date to
+		 * sort after those without a completion date.
+		 */
+		private static String getSortString(TaskListItem task, String completed) {
+			String reply = completed;
+			if (reply.equals("c100")) {
+				String completedDateDisplay = task.getTask().getCompletedDateDisplay();
+				if (GwtClientHelper.hasString(completedDateDisplay)) {
+					reply = ("c101:" + completedDateDisplay);
+				}
+			}
 			return reply;
 		}
 	}
@@ -158,15 +176,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			Date d1 = getNonNullDate(tli1.getTask().getEvent().getLogicalEnd());
-			Date d2 = getNonNullDate(tli2.getTask().getEvent().getLogicalEnd());
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			Date d1 = getNonNullDate(task1.getTask().getEvent().getLogicalEnd());
+			Date d2 = getNonNullDate(task2.getTask().getEvent().getLogicalEnd());
 			
 			int reply;
 			if (m_ascending)
@@ -196,15 +214,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String name1 = getNonNullString(tli1.getTask().getTitle());
-			String name2 = getNonNullString(tli2.getTask().getTitle());
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String name1 = getNonNullString(task1.getTask().getTitle());
+			String name2 = getNonNullString(task2.getTask().getTitle());
 
 			int reply;
 			if (m_ascending)
@@ -234,15 +252,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			Integer id1 = TaskTable.getTaskOrder(tli1);
-			Integer id2 = TaskTable.getTaskOrder(tli2);
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			Integer id1 = TaskTable.getTaskOrder(task1);
+			Integer id2 = TaskTable.getTaskOrder(task2);
 
 			int reply;
 			if (m_ascending)
@@ -272,15 +290,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String p1 = getNonNullString(tli1.getTask().getPriority(), "p0");
-			String p2 = getNonNullString(tli2.getTask().getPriority(), "p0");
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String p1 = getNonNullString(task1.getTask().getPriority(), "p0");
+			String p2 = getNonNullString(task2.getTask().getPriority(), "p0");
 
 			int reply;
 			if (m_ascending)
@@ -310,15 +328,15 @@ public class TaskSorter {
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param tli1
-		 * @param tli2
+		 * @param task1
+		 * @param task2
 		 * 
 		 * @return
 		 */
 		@Override
-		public int compare(TaskListItem tli1, TaskListItem tli2) {
-			String s1 = getNonNullString(tli1.getTask().getStatus(), "s0");
-			String s2 = getNonNullString(tli2.getTask().getStatus(), "s0");
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String s1 = getNonNullString(task1.getTask().getStatus(), "s0");
+			String s2 = getNonNullString(task2.getTask().getStatus(), "s0");
 
 			int reply;
 			if (m_ascending)

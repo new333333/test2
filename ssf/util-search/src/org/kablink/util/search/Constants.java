@@ -211,6 +211,7 @@ public class Constants {
 	public static final String UNIQUE_PREFIX = "X_Z_YY_Z";
 	public static final String PERSONFLAG_FIELD = "_isPerson";
 	public static final String IS_LIBRARY_FIELD = "_isLibrary";
+	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 
 	public Constants() {
 		super();

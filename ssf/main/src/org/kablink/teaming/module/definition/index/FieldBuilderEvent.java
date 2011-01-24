@@ -98,8 +98,8 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 				new Field(
 					makeFieldName(dataElemName, fieldName),
 					DateTools.dateToString(date.getTime(), DateTools.Resolution.SECOND),
-				Field.Store.YES,
-				Field.Index.NOT_ANALYZED));
+					Field.Store.YES,
+					Field.Index.NOT_ANALYZED));
 		}
 	}
 

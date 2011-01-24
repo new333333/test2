@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Element;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
@@ -96,8 +95,7 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 					this,
 					m_taskAction,
 					po.getMenu(),
-					new Image(
-						po.getMenuImageRes()),
+					po.buildImage(),
 					po.getMenuAlt()));
 		}
 	}
