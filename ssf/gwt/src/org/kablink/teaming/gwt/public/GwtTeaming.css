@@ -2535,6 +2535,14 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	color        #FFFFFF                                              !important;
 }
 
+.gwtTaskList_popupGlass
+{
+	background-color: #000;
+	filter: alpha(opacity=0);
+	opacity: 0.0;
+	z-index: 350;
+}
+
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
 .gwtTaskList_objlist2  /*   apply to the object list table tag <table class="objlist">  */ 
 	{ 
