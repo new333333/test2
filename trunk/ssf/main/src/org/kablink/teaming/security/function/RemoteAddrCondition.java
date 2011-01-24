@@ -34,14 +34,21 @@ package org.kablink.teaming.security.function;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.util.StringUtil;
 
 public class RemoteAddrCondition extends Condition {
 
+	private static Log logger = LogFactory.getLog(RemoteAddrCondition.class);
+		
 	private static final String DELIMITER = ",";
-	private static ConcurrentHashMap<String, Pattern> patternCache = new ConcurrentHashMap<String, Pattern>();
+	private static ConcurrentHashMap<String, Object> patternCache = new ConcurrentHashMap<String, Object>();
+	
+	private static final Object IGNORE = new Object();
 	
 	private String[] includeAddressExpressions;
 	private String[] excludeAddressExpressions;
@@ -111,6 +118,8 @@ public class RemoteAddrCondition extends Condition {
 		boolean included = false;
 		// Check inclusion rules
 		for(String include : includes) {
+			if(getPattern(include) == null)
+				continue; // Treat this situation as if the particular rule didn't exist in the first place.
 			if(getPattern(include).matcher(remoteAddr).matches()) {
 				// A inclusion rule matched. Skip the rest of the inclusion rules, and
 				// go check the exclusion rules.  
@@ -121,6 +130,8 @@ public class RemoteAddrCondition extends Condition {
 		if(included) {
 			// Check exclusion rules
 			for(String exclude : excludes) {
+				if(getPattern(exclude) == null)
+					continue; // Treat this situation as if the particular rule didn't exist in the first place.
 				if(getPattern(exclude).matcher(remoteAddr).matches()) {
 					// A exclusion rule matched. Reject it.
 					return false;
@@ -137,12 +148,21 @@ public class RemoteAddrCondition extends Condition {
 
 	private Pattern getPattern(String exp) {
 		// Cache pattern objects since pattern compilation is expensive.
-		Pattern pattern = patternCache.get(exp);
+		Object pattern = patternCache.get(exp);
 		if(pattern == null) {
-			pattern = Pattern.compile(exp);
+			try {
+				pattern = Pattern.compile(exp);
+			}
+			catch (PatternSyntaxException e) {
+				logger.error("'" + exp + "' is not a valid regular expression. It will be ignored: " + e.toString());
+				pattern = IGNORE;
+			}
 			patternCache.put(exp, pattern);
 		}
-		return pattern;
+		if(pattern == IGNORE)
+			return null;
+		else
+			return (Pattern) pattern;
 	}
 
 	private void toEncodedSpec() {
