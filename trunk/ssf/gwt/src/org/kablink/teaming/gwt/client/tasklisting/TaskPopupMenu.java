@@ -38,10 +38,15 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This popup menu is used to display menus of for the various task
@@ -50,6 +55,7 @@ import com.google.gwt.user.client.ui.Image;
  * @author drfoster@novell.com
  */
 public class TaskPopupMenu extends PopupMenu implements ActionHandler {
+	private Element					m_menuPartner;	//
 	private List<PopupMenuItem>		m_menuItems;	//
 	private List<TaskMenuOption>	m_menuOptions;	//
 	private TaskListItem			m_task;			//
@@ -69,6 +75,18 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 		m_taskTable   = taskTable;
 		m_taskAction  = taskAction;
 		m_menuOptions = menuOptions;
+		
+		// ...finish initializing the popup...
+		setGlassEnabled(true);
+		setGlassStyleName("gwtTaskList_popupGlass");
+
+		// Add a close handler to the popup so that it can restore the
+		// controlling Widget's styles when the popup menu is closed.
+		addCloseHandler(new CloseHandler<PopupPanel>(){
+			@Override
+			public void onClose(CloseEvent<PopupPanel> event) {
+				removeAutoHidePartner(m_menuPartner);
+			}});
 		
 		// ...and add the menu items.
 		m_menuItems = new ArrayList<PopupMenuItem>();
@@ -108,26 +126,29 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 		// TaskTable to handle it.
 		m_taskTable.setTaskOption(m_task, m_taskAction, ((String) obj)); 
 	}
-	
+
 	/**
 	 * Called to show the TaskPopupMenu.
 	 */
-	public void showTaskPopupMenu(TaskListItem task, final int x, final int y) {
-		// Remember the task we are dealing with...
-		m_task = task;
+	public void showTaskPopupMenu(TaskListItem task, Element menuPartner) {
+		// Remember the task and menu partner that we are dealing
+		// with...
+		m_task        = task;
+		m_menuPartner = menuPartner;
 		
 		// ...make sure all the menu items are visible...
 		for (PopupMenuItem mi:  m_menuItems) {
 			setMenuItemVisibility(mi, true);
 		}
 
-		// ...and show the popup.
-		PositionCallback posCallback = new PositionCallback() {
-			@Override
-			public void setPosition(int offsetWidth, int offsetHeight) {
-				setPopupPosition(x - offsetWidth, y);
-			}
-		};
-		setPopupPositionAndShow(posCallback);
+		// ...and allow the popup to be closed if the parter item is
+		// ...clicked on again...
+		addAutoHidePartner(m_menuPartner);
+		
+		// ...and position and show the popup.
+		int popupLeft = (m_menuPartner.getAbsoluteLeft()   + GwtClientHelper.jsGetContentIFrameLeft());
+		int popupTop  = (m_menuPartner.getAbsoluteBottom() + GwtClientHelper.jsGetContentIFrameTop());
+		setPopupPosition(popupLeft, popupTop);
+		show();
 	}
 }

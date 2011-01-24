@@ -54,6 +54,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -356,17 +357,16 @@ public class TaskTable extends Composite {
 			selectedOption = taskOptions.get(0);
 		}
 		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
+		final Element imgElement = img.getElement();
 
 		// Generate the Anchor for this option.
 		Anchor reply = buildAnchor(anchorStyle);
-		reply.getElement().appendChild(img.getElement());
+		reply.getElement().appendChild(imgElement);
 		reply.getElement().appendChild(buildImage(m_images.menu()).getElement());
 		PassThroughEventsPanel.addHandler(reply, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				int x = event.getClientX();
-				int y = event.getClientY();
-				taskMenu.showTaskPopupMenu(task, x, y);
+				taskMenu.showTaskPopupMenu(task, imgElement);
 			}
 		});
 

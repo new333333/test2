@@ -148,7 +148,7 @@ public class TaskListing implements ActionHandler, ActionTrigger {
 	 * @return
 	 */
 	public ActionHandler getActoinHandler()   {return m_actionHandler;  }
-	public boolean       getSortDescend()     {return m_sortDescend;    } 
+	public boolean       getSortDescend()     {return m_sortDescend;    }
 	public Long          getBinderId()        {return m_binderId;       }
 	public String        getFilterType()      {return m_filterType;     }
 	public String        getMode()            {return m_mode;           }

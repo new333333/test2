@@ -349,6 +349,26 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Returns the left position of the content <IFRAME>'s <DIV>.
+	 * 
+	 * @return
+	 */
+	public static native int jsGetContentIFrameLeft() /*-{
+		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
+		return $wnd.top.ss_getObjectLeft(iFrameDIV);
+	}-*/;
+
+	/**
+	 * Returns the top position of the content <IFRAME>'s <DIV>.
+	 * 
+	 * @return
+	 */
+	public static native int jsGetContentIFrameTop() /*-{
+		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
+		return $wnd.top.ss_getObjectTop(iFrameDIV);
+	}-*/;
+	
+	/**
 	 * Hides the popup entry iframe div if one exists.
 	 */
 	public static native void jsHideEntryPopupDiv() /*-{
