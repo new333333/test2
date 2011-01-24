@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -74,13 +75,16 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
+import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
 
 
@@ -392,6 +396,7 @@ public class GwtTaskHelper {
 			buf.append(buildDumpString("\n\t\tAssignmentTeams",  ti.getAssignmentTeams(),  true ));
 			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getBinderId()               ));
 			buf.append(buildDumpString("\n\t\tCompleted",        ti.getCompleted()              ));
+			buf.append(buildDumpString("\n\t\t\tDate",           ti.getCompletedDate()          ));
 			buf.append(buildDumpString("\n\t\tEntityType",       ti.getEntityType()             ));
 			buf.append(buildDumpString("\n\t\tPriority",         ti.getPriority()               ));
 			buf.append(buildDumpString("\n\t\tTitle",            ti.getTitle()                  ));
@@ -843,17 +848,17 @@ public class GwtTaskHelper {
 	 * @param request
 	 * @param bs
 	 * @param binder
-	 * @param filterType
-	 * @param modeType
+	 * @param filterTypeParam
+	 * @param modeTypeParam
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		// Read the task linkage and tasks...
-		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                   );
-		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterType, modeType);
+		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                             );
+		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterTypeParam, modeTypeParam);
 
 		// ...and use that to create a TaskBundle. 
 		TaskBundle reply = new TaskBundle();
@@ -863,11 +868,26 @@ public class GwtTaskHelper {
 		// Set the Binder based rights...
 		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage( request, bs, binder ));
 
-		// ...and the Folder base rights on the TaskBundle.
+		// ...and the Folder based rights on the TaskBundle...
 		FolderModule fm = bs.getFolderModule();
 		reply.setCanModifyEntry(fm.testAccess(((Folder) binder), FolderOperation.modifyEntry   ));
 		reply.setCanPurgeEntry( fm.testAccess(((Folder) binder), FolderOperation.deleteEntry   ));
 		reply.setCanTrashEntry( fm.testAccess(((Folder) binder), FolderOperation.preDeleteEntry));
+		
+		// Set whether the list is being filtered...
+		FilterType filterType = ((null == filterTypeParam) ? FilterType.ALL : FilterType.valueOf(filterTypeParam));
+		boolean isFiltered = (FilterType.ALL != filterType);
+		if (!isFiltered) {
+			User user = GwtServerHelper.getCurrentUser();
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
+			isFiltered = (null != BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+		}
+		reply.setIsFiltered(isFiltered);
+
+		// ...and showing the tasks from the folder (vs. those assigned
+		// ...to the current user) on the TaskBundle.
+		ModeType modeType = ((null == modeTypeParam) ? ModeType.PHYSICAL : ModeType.valueOf(modeTypeParam));
+		reply.setIsFromFolder(ModeType.PHYSICAL == modeType);
 
 		// If we get here, reply refers to the request TaskBundle.
 		// Return it.

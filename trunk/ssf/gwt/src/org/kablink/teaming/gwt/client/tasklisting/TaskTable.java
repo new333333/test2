@@ -535,7 +535,7 @@ public class TaskTable extends Composite {
 	 */
 	private void markAsSortKey(Anchor a, Column col) {
 //!		...this needs to be implemented...
-		if (Column.NAME != col) {
+		if (Column.SELECTOR != col) {
 			return;
 		}
 		
@@ -863,9 +863,21 @@ public class TaskTable extends Composite {
 		boolean enableMoveRight;
 		boolean enableMoveUp;
 
-		// The movement buttons can only be enabled if there's one and
-		// only one task checked.  Is there only one?
-		if (1 == tasksCheckedCount) {
+		// Validate the the base criteria about whether the movement
+		// buttons are enabled.  Is one and only one task selected?
+		boolean allowMovement = (1 == tasksCheckedCount);
+		if (allowMovement) {
+			// Yes!  Is this list an non-filtered list of the tasks
+			// from the folder?
+			allowMovement = ((!(m_taskBundle.getIsFiltered())) && m_taskBundle.getIsFromFolder());
+			if (allowMovement) {
+				// Yes!  Are we sorted on the order column?
+//!				...this needs to be implemented...
+			}
+		}			
+
+		// Is the base criteria for movement satisfied?
+		if (allowMovement) {
 			// Yes!  Furthermore, the allowed movement is based on the
 			// selected task's current position in the linkage.
 			Long        taskId = tasksChecked.get(0).getTask().getTaskId();
@@ -876,8 +888,8 @@ public class TaskTable extends Composite {
 			enableMoveUp    = tl.canMoveTaskUp(   taskId);
 		}
 		else {
-			// No, there's other than one checked.  All the movement
-			// buttons are disabled.
+			// No, the base criteria is not satisfied!  All the
+			// movement buttons are disabled.
 			enableMoveDown  =
 			enableMoveLeft  =
 			enableMoveRight =
