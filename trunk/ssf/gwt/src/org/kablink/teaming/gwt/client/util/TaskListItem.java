@@ -214,10 +214,12 @@ public class TaskListItem implements IsSerializable {
 	 * compatible with GWT RPC calls 
 	 */
 	public static class TaskEvent implements IsSerializable {
-		private boolean      m_allDayEvent;
-		private Date         m_logicalEnd;
-		private Date         m_logicalStart;
-		private TaskDuration m_duration;
+		private boolean			m_allDayEvent;
+		private Date			m_logicalEnd;
+		private Date			m_logicalStart;
+		private String			m_logicalEndDisplay;
+		private String			m_logicalStartDisplay;
+		private TaskDuration	m_duration;
 		
 		/**
 		 * Constructor method.
@@ -233,20 +235,24 @@ public class TaskListItem implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public boolean      getAllDayEvent()  {return m_allDayEvent; }
-		public Date         getLogicalEnd()   {return m_logicalEnd;  }
-		public Date         getLogicalStart() {return m_logicalStart;}
-		public TaskDuration getDuration()     {return m_duration;    }
+		public boolean      getAllDayEvent()         {return m_allDayEvent;        }
+		public Date         getLogicalEnd()          {return m_logicalEnd;         }
+		public Date         getLogicalStart()        {return m_logicalStart;       }
+		public String		getLogicalEndDisplay()   {return m_logicalEndDisplay;  }
+		public String		getLogicalStartDisplay() {return m_logicalStartDisplay;}
+		public TaskDuration getDuration()            {return m_duration;           }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setAllDayEvent( boolean      allDayEvent)  {m_allDayEvent  = allDayEvent; }
-		public void setLogicalEnd(  Date         logicalEnd)   {m_logicalEnd   = logicalEnd;  }
-		public void setLogicalStart(Date         logicalStart) {m_logicalStart = logicalStart;}
-		public void setDuration(    TaskDuration duration)     {m_duration     = duration;    }
+		public void setAllDayEvent(        boolean      allDayEvent)         {m_allDayEvent         = allDayEvent;        }
+		public void setLogicalEnd(         Date         logicalEnd)          {m_logicalEnd          = logicalEnd;         }
+		public void setLogicalStart(       Date         logicalStart)        {m_logicalStart        = logicalStart;       }
+		public void setLogicalEndDisplay(  String       logicalEndDisplay)   {m_logicalEndDisplay   = logicalEndDisplay;  }
+		public void setLogicalStartDisplay(String       logicalStartDisplay) {m_logicalStartDisplay = logicalStartDisplay;}
+		public void setDuration(           TaskDuration duration)            {m_duration            = duration;           }
 	}
 	
 	/**
@@ -262,16 +268,18 @@ public class TaskListItem implements IsSerializable {
 		private boolean					m_canModify;
 		private boolean					m_overdue;	
 		private boolean					m_seen;	
+		private Date					m_completedDate;	
 		private List<AssignmentInfo>	m_assignments      = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentGroups = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentTeams  = new ArrayList<AssignmentInfo>();
 		private Long					m_binderId;	
 		private Long					m_taskId;	
-		private String					m_completed  = "";	
-		private String					m_entityType = "";
-		private String					m_priority   = "";
-		private String					m_title      = "";
-		private String					m_status     = "";
+		private String					m_completed            = "";	
+		private String					m_completedDateDisplay = "";	
+		private String					m_entityType           = "";
+		private String					m_priority             = "";
+		private String					m_title                = "";
+		private String					m_status               = "";
 		private TaskEvent				m_event   = new TaskEvent();
 		
 		/**
@@ -288,40 +296,44 @@ public class TaskListItem implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public boolean              getCanModify()        {return m_canModify;       }
-		public boolean              getOverdue()          {return m_overdue;         }
-		public boolean              getSeen()             {return m_seen;            }
-		public List<AssignmentInfo> getAssignments()      {return m_assignments;     }
-		public List<AssignmentInfo> getAssignmentGroups() {return m_assignmentGroups;}
-		public List<AssignmentInfo> getAssignmentTeams()  {return m_assignmentTeams; }
-		public Long                 getBinderId()         {return m_binderId;        }
-		public Long                 getTaskId()           {return m_taskId;          }
-		public String               getCompleted()        {return m_completed;       }
-		public String               getEntityType()       {return m_entityType;      }
-		public String               getPriority()         {return m_priority;        }
-		public String               getTitle()            {return m_title;           }
-		public String               getStatus()           {return m_status;          }
-		public TaskEvent            getEvent()            {return m_event;           }
+		public boolean              getCanModify()            {return m_canModify;           }
+		public boolean              getOverdue()              {return m_overdue;             }
+		public boolean              getSeen()                 {return m_seen;                }
+		public Date                 getCompletedDate()        {return m_completedDate;       }
+		public List<AssignmentInfo> getAssignments()          {return m_assignments;         }
+		public List<AssignmentInfo> getAssignmentGroups()     {return m_assignmentGroups;    }
+		public List<AssignmentInfo> getAssignmentTeams()      {return m_assignmentTeams;     }
+		public Long                 getBinderId()             {return m_binderId;            }
+		public Long                 getTaskId()               {return m_taskId;              }
+		public String               getCompleted()            {return m_completed;           }
+		public String               getCompletedDateDisplay() {return m_completedDateDisplay;}
+		public String               getEntityType()           {return m_entityType;          }
+		public String               getPriority()             {return m_priority;            }
+		public String               getTitle()                {return m_title;               }
+		public String               getStatus()               {return m_status;              }
+		public TaskEvent            getEvent()                {return m_event;               }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @return
 		 */
-		public void setCanModify(       boolean              canModify)        {m_canModify        = canModify;       }
-		public void setOverdue(         boolean              overdue)          {m_overdue          = overdue;         }
-		public void setSeen(            boolean              seen)             {m_seen             = seen;            }
-		public void setAssignments(     List<AssignmentInfo> assignments)      {m_assignments      = assignments;     }
-		public void setAssignmentGroups(List<AssignmentInfo> assignmentGroups) {m_assignmentGroups = assignmentGroups;}
-		public void setAssignmentTeams( List<AssignmentInfo> assignmentTeams)  {m_assignmentTeams  = assignmentTeams; }
-		public void setBinderId(        Long                 binderId)         {m_binderId         = binderId;        }
-		public void setTaskId(          Long                 taskId)           {m_taskId           = taskId;          }
-		public void setCompleted(       String               completed)        {m_completed        = completed;       }
-		public void setEntityType(      String               entityType)       {m_entityType       = entityType;      }
-		public void setPriority(        String               priority)         {m_priority         = priority;        }
-		public void setTitle(           String               title)            {m_title            = title;           }
-		public void setStatus(          String               status)           {m_status           = status;          }
-		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
+		public void setCanModify(           boolean              canModify)            {m_canModify            = canModify;           }
+		public void setOverdue(             boolean              overdue)              {m_overdue              = overdue;             }
+		public void setSeen(                boolean              seen)                 {m_seen                 = seen;                }
+		public void setCompletedDate(       Date                 completedDate)        {m_completedDate        = completedDate;       }
+		public void setAssignments(         List<AssignmentInfo> assignments)          {m_assignments          = assignments;         }
+		public void setAssignmentGroups(    List<AssignmentInfo> assignmentGroups)     {m_assignmentGroups     = assignmentGroups;    }
+		public void setAssignmentTeams(     List<AssignmentInfo> assignmentTeams)      {m_assignmentTeams      = assignmentTeams;     }
+		public void setBinderId(            Long                 binderId)             {m_binderId             = binderId;            }
+		public void setTaskId(              Long                 taskId)               {m_taskId               = taskId;              }
+		public void setCompleted(           String               completed)            {m_completed            = completed;           }
+		public void setCompletedDateDisplay(String               completedDateDisplay) {m_completedDateDisplay = completedDateDisplay;}
+		public void setEntityType(          String               entityType)           {m_entityType           = entityType;          }
+		public void setPriority(            String               priority)             {m_priority             = priority;            }
+		public void setTitle(               String               title)                {m_title                = title;               }
+		public void setStatus(              String               status)               {m_status               = status;              }
+		public void setEvent(               TaskEvent            event)                {m_event                = event;               }
 	}
 	
 	/**
