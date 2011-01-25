@@ -541,7 +541,7 @@ public class GwtMainPage extends Composite
 	 */
 	private void handleTaskAction( TeamingAction taskAction, Object obj )
 	{
-		Window.alert(GwtTeaming.getMessages().taskUnexpectedAction(taskAction.toString()));
+		Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedAction(taskAction.toString()));
 	}// end handleTaskAction()
 	
 	/*

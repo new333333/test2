@@ -451,6 +451,7 @@ public class GwtTaskHelper {
 			buf.append(buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups(), true ));
 			buf.append(buildDumpString("\n\t\tAssignmentTeams",  ti.getAssignmentTeams(),  true ));
 			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getBinderId()               ));
+			buf.append(buildDumpString("\n\t\tLocation",         ti.getLocation()               ));
 			buf.append(buildDumpString("\n\t\tCompleted",        ti.getCompleted()              ));
 			buf.append(buildDumpString("\n\t\t\tDate",           ti.getCompletedDate()          ));
 			buf.append(buildDumpString("\n\t\tEntityType",       ti.getEntityType()             ));

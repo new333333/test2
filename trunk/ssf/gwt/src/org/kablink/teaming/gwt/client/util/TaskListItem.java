@@ -368,4 +368,12 @@ public class TaskListItem implements IsSerializable {
 	public void setSubtasks(List<TaskListItem> subtasks) {m_subtasks = subtasks;}
 	public void setTask(    TaskInfo           task    ) {m_task     = task;    }
 	public void setUIData(  Object             uiData  ) {m_uiData   = uiData;  }
+
+	/**
+	 * Appends a TaskListItem as a subtask.
+	 * @param task
+	 */
+	public void appendSubtask(TaskListItem task) {
+		m_subtasks.add(task);
+	}
 }

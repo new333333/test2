@@ -48,7 +48,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
+import org.kablink.teaming.gwt.client.util.TaskLinkageHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
@@ -126,6 +126,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * TaskListItem for managing the user interface. 
 	 */
 	private static class UIData {
+		private boolean		m_taskWasChecked;	//
 		private CheckBox	m_taskSelectorCB;	//
 		private int			m_taskDepth;		//
 		private int 		m_taskOrder = (-1);	//
@@ -144,10 +145,12 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * 
 		 * @return
 		 */
+		public boolean  getTaskWasChecked() {return m_taskWasChecked;}
 		public CheckBox getTaskSelectorCB() {return m_taskSelectorCB;}
 		public int      getTaskDepth()      {return m_taskDepth;     }
 		public int      getTaskOrder()      {return m_taskOrder;     }
-		
+
+		public void setTaskWasChecked(boolean  taskWasChecked) {m_taskWasChecked = taskWasChecked;}
 		public void setTaskSelectorCB(CheckBox taskSelectorCB) {m_taskSelectorCB = taskSelectorCB;}
 		public void setTaskDepth(     int      taskDepth)      {m_taskDepth      = taskDepth;     }
 		public void setTaskOrder(     int      taskOrder)      {m_taskOrder      = taskOrder;     }
@@ -356,8 +359,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Builds a FlowPanel for an AssignmentInfo.
 	 */
 	private FlowPanel buildAssigneePanel(final AssignmentInfo ai) {
+		List<EventHandler> eventHandlers;
 		FlowPanel reply = new FlowPanel();
-
+		
 		// Is this an individual assignee?
 		GwtPresenceInfo presence = ai.getPresence();
 		if (null != presence) {
@@ -383,27 +387,27 @@ public class TaskTable extends Composite implements ActionHandler {
 			reply.add(assignee);
 			
 			// ...and add the event handlers for it.
-			List<EventHandler> handlers = new ArrayList<EventHandler>();
-			handlers.add(new MouseOverHandler() {
+			eventHandlers = new ArrayList<EventHandler>();
+			eventHandlers.add(new MouseOverHandler() {
 				@Override
 				public void onMouseOver(MouseOverEvent event) {
 					assignee.addStyleName("gwtTaskList_assigneeHover");
 				}
 			});
-			handlers.add(new MouseOutHandler() {
+			eventHandlers.add(new MouseOutHandler() {
 				@Override
 				public void onMouseOut(MouseOutEvent event) {
 					assignee.removeStyleName("gwtTaskList_assigneeHover");
 				}
 			});
-			handlers.add(new ClickHandler() {
+			eventHandlers.add(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					assignee.removeStyleName("gwtTaskList_assigneeHover");
 					handlePresenceSelect(ai, assignee.getElement());
 				}
 			});
-			PassThroughEventsPanel.addHandlers(assignee, handlers);
+			PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
 		}
 		
 		else {
@@ -413,10 +417,39 @@ public class TaskTable extends Composite implements ActionHandler {
 			assigneeImg.setUrl(m_gwtMainPage.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 			assigneeImg.getElement().setAttribute("align", "absmiddle");
 			reply.add(assigneeImg);
-			
-			Label assignee = new Label(ai.getTitle() + " " + m_messages.taskMemberCount(String.valueOf(ai.getMembers())));
+
+			int    members       = ai.getMembers();
+			String membersString = m_messages.taskMemberCount(String.valueOf(members));
+			String assigneeLabel = (ai.getTitle() + " " + membersString);
+			final Label assignee = new Label(assigneeLabel);
 			assignee.addStyleName("gwtTaskList_assignee");
 			reply.add(assignee);
+			
+			// Does the group/team have any members?
+			if (0 < members) {
+				// Yes!  Add event handlers so the user can see them.
+				eventHandlers = new ArrayList<EventHandler>();
+				eventHandlers.add(new MouseOverHandler() {
+					@Override
+					public void onMouseOver(MouseOverEvent event) {
+						assignee.addStyleName("gwtTaskList_assigneeHover");
+					}
+				});
+				eventHandlers.add(new MouseOutHandler() {
+					@Override
+					public void onMouseOut(MouseOutEvent event) {
+						assignee.removeStyleName("gwtTaskList_assigneeHover");
+					}
+				});
+				eventHandlers.add(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						assignee.removeStyleName("gwtTaskList_assigneeHover");
+						handleMembershipSelect(ai);
+					}
+				});
+				PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
+			}
 		}
 
 		// If we get here, reply refers to a FlowPanel containing the
@@ -540,12 +573,19 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * the task's option menus.
 	 * 
 	 * @param task
-	 * @param taskAction
+	 * @param action
 	 * @param optionValue
 	 */
-	public void setTaskOption(TaskListItem task, TeamingAction taskAction, String optionValue) {
-//!		...this needs to be implemented...
-		Window.alert("setTaskOption( " + taskAction + ":" + task.getTask().getTitle() + ":" + optionValue + " )");
+	public void setTaskOption(TaskListItem task, TeamingAction action, String optionValue) {
+		switch (action) {
+		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
+		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
+		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
+			
+		default:
+			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
+			break;
+		}
 	}
 
 	/**
@@ -566,9 +606,18 @@ public class TaskTable extends Composite implements ActionHandler {
 		case TASK_MOVE_UP:     handleTaskMoveUp();    break;
 
 		default:
-			Window.alert(m_messages.taskUnexpectedAction(action.toString()));
+			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
 			break;
 		}
+	}
+
+	/*
+	 * Called when the user clicks on a link to show a group or team's
+	 * membership.
+	 */
+	private void handleMembershipSelect(AssignmentInfo ai) {
+//!		...this needs to be implemented...
+		Window.alert("handleMembershipSelect():  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -622,8 +671,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * tool bar.
 	 */
 	private void handleTaskMoveDown() {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskMoveDown():  ...this needs to be implemented...");
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		int tasksCheckedCount = tasksChecked.size();
+		if (1 == tasksCheckedCount) {
+			TaskListItem task = tasksChecked.get(0);
+			TaskLinkageHelper.moveTaskDown(m_taskBundle, task.getTask().getTaskId());
+			handleTaskPostMove(task);
+		}
 	}
 	
 	/*
@@ -640,8 +694,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * tool bar.
 	 */
 	private void handleTaskMoveRight() {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskMoveRight():  ...this needs to be implemented...");
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		int tasksCheckedCount = tasksChecked.size();
+		if (1 == tasksCheckedCount) {
+			TaskListItem task = tasksChecked.get(0);
+			TaskLinkageHelper.moveTaskRight(m_taskBundle, task.getTask().getTaskId());
+			handleTaskPostMove(task);
+		}
 	}
 	
 	/*
@@ -649,8 +708,32 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * bar.
 	 */
 	private void handleTaskMoveUp() {
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		int tasksCheckedCount = tasksChecked.size();
+		if (1 == tasksCheckedCount) {
+			TaskListItem task = tasksChecked.get(0);
+			TaskLinkageHelper.moveTaskUp(m_taskBundle, task.getTask().getTaskId());
+			handleTaskPostMove(task);
+		}
+	}
+
+	/*
+	 * Does what's necessary after a task is moved to put the change
+	 * into affect.
+	 */
+	private void handleTaskPostMove(TaskListItem task) {	
+		getUIData(task).setTaskWasChecked(true);
+		showTasks(m_taskBundle);
+		validateTaskTools();
+		persistLinkageChange(task.getTask().getBinderId());
+	}
+
+	/*
+	 * Called when the user clicks the seen sun burst on a task.
+	 */
+	private void handleTaskSeen(TaskListItem task) {
 //!		... this needs to be implemented...
-		Window.alert("handleTaskMoveUp():  ...this needs to be implemented...");
+		Window.alert("handleTaskSeen( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -662,11 +745,27 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	/*
-	 * Called when the user clicks the seen sun burst on a task.
+	 * Called when the user changes the percent done value on the task.
 	 */
-	private void handleTaskSeen(TaskListItem task) {
+	private void handleTaskSetPercentDone(TaskListItem task, String percentDone) {
 //!		... this needs to be implemented...
-		Window.alert("handleTaskSeen( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+		Window.alert("handleTaskSetPercentDone( " + task.getTask().getTitle() + ", " + percentDone + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user changes the priority value on the task.
+	 */
+	private void handleTaskSetPriority(TaskListItem task, String priority) {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskSetPriority( " + task.getTask().getTitle() + ", " + priority + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user changes the status value on the task.
+	 */
+	private void handleTaskSetStatus(TaskListItem task, String status) {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskSetStatus( " + task.getTask().getTitle() + ", " + status + " ):  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -758,7 +857,38 @@ public class TaskTable extends Composite implements ActionHandler {
 			m_flexTable.setWidget(row, col.ordinal(), vp);
 		}
 	}
-	
+
+	/*
+	 * Called to write the change in linkage to the folder preferences.
+	 */
+	private void persistLinkageChange(final Long binderId) {
+		// If the list is filtered or in virtual mode...
+		if (m_taskBundle.getIsFiltered() || (!(m_taskBundle.getIsFromFolder()))) {
+			// ...this should never be called.
+			Window.alert(m_messages.taskInternalError_FilteredOrVirtual("Persist Linkage"));
+			return;
+		}
+
+		// Update the TaskLinkage in the TaskBundle...
+		m_taskBundle.updateLinkage();
+		
+		// ...and write it to the current user's folder preferences.
+		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveTaskLinkage(),
+					String.valueOf(binderId));
+			}
+			
+			@Override
+			public void onSuccess(Boolean result) {
+				// Nothing to do.
+			}
+		});
+	}
+
 	/*
 	 * Renders the 'Closed - % Done' column.
 	 */
@@ -859,6 +989,10 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onChange(ChangeEvent event) {handleTaskSelect(task);}			
 		});
+		if (uid.getTaskWasChecked()) {
+			cb.setValue(true);
+			uid.setTaskWasChecked(false);
+		}
 		FlowPanel fp = new FlowPanel();
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
@@ -1106,12 +1240,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (allowMovement) {
 			// Yes!  Furthermore, the allowed movement is based on the
 			// selected task's current position in the linkage.
-			Long        taskId = tasksChecked.get(0).getTask().getTaskId();
-			TaskLinkage tl     = m_taskBundle.getTaskLinkage();
-			enableMoveDown  = tl.canMoveTaskDown( taskId);
-			enableMoveLeft  = tl.canMoveTaskLeft( taskId);
-			enableMoveRight = tl.canMoveTaskRight(taskId);
-			enableMoveUp    = tl.canMoveTaskUp(   taskId);
+			Long taskId = tasksChecked.get(0).getTask().getTaskId();
+			enableMoveDown  = TaskLinkageHelper.canMoveTaskDown( m_taskBundle, taskId);
+			enableMoveLeft  = TaskLinkageHelper.canMoveTaskLeft( m_taskBundle, taskId);
+			enableMoveRight = TaskLinkageHelper.canMoveTaskRight(m_taskBundle, taskId);
+			enableMoveUp    = TaskLinkageHelper.canMoveTaskUp(   m_taskBundle, taskId);
 		}
 		else {
 			// No, the base criteria is not satisfied!  All the

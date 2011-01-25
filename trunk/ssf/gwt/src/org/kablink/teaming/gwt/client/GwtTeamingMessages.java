@@ -277,6 +277,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
+	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
 	String rpcFailure_SetSeen();
@@ -802,6 +803,8 @@ public interface GwtTeamingMessages extends Messages
 	String taskCompleted_c80();
 	String taskCompleted_c90();
 	String taskCompleted_c100();
+	String taskInternalError_FilteredOrVirtual(String operation);
+	String taskInternalError_UnexpectedAction(String action);
 	String taskLabelDelete();
 	String taskLabelOrder();
 	String taskLabelSubtask();
@@ -816,6 +819,5 @@ public interface GwtTeamingMessages extends Messages
 	String taskStatus_completed();
 	String taskStatus_inProcess();
 	String taskStatus_needsAction();
-	String taskUnexpectedAction(String action);
 	String taskUnread();
 }// end GwtTeamingMessages
