@@ -251,6 +251,55 @@ public class GwtTaskHelper {
 		}
 		return reply;
 	}
+
+	/*
+	 * Scan the List<TaskInfo> and stores a location string in each
+	 * TaskInfo.
+	 */
+	private static void completeBinderLocations(AllModulesInjected bs, List<TaskInfo> tasks) {
+		// If we don't have any TaskInfo's to complete...
+		if ((null == tasks) || tasks.isEmpty()) {
+			// ..bail.
+			return;
+		}
+		
+		// Generate an List<Long> of the unique binder IDs.
+		List<Long> binderIds = new ArrayList<Long>();		
+		for (TaskInfo ti:  tasks) {
+			addLToLLIfUnique(binderIds, ti.getBinderId());
+		}
+
+		// Do we have any binder IDs?
+		Map<Long, String> binderLocationMap = new HashMap<Long, String>();
+		if (!(binderIds.isEmpty())) {
+			try {
+				// Yes!  Can we read the binders?
+				SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
+				if ((null != binders) && (!(binders.isEmpty()))) {
+					// Yes!  Scan the binders...
+					for (Binder binder:  binders) {
+						// ...storing the location for each in the Map.
+						String location = binder.getTitle();
+						try {
+							Binder parentBinder = ((Binder) binder.getParentWorkArea());
+							location = (location + " (" + parentBinder.getTitle() + ")");
+						}
+						catch (Exception ex) {}
+						binderLocationMap.put(binder.getId(), location);					
+					}
+				}
+			}
+			catch (Exception ex) {}
+		}
+
+		// Scan the List<TaskInfo> again...
+		for (TaskInfo task:  tasks) {
+			// ...this time, storing the location for each binder in
+			// ...the TaskInfo's.
+			String location = binderLocationMap.get(task.getBinderId());
+			task.setLocation((null == location) ? "" : location);
+		}
+	}
 	
 	/*
 	 * When initially build, the AssignmentInfo's in the List<TaskInfo>
@@ -304,6 +353,7 @@ public class GwtTaskHelper {
 		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
 		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
 		Map<Long, GwtPresenceInfo> userPresence      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
 		boolean                    isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
 		if (hasPrincipals) {
 			List principals = null;
@@ -313,12 +363,17 @@ public class GwtTaskHelper {
 				for (Object o:  principals) {
 					Principal p = ((Principal) o);
 					Long pId = p.getId();
+					boolean isUser = (p instanceof UserPrincipal);
 					principalTitles.put(pId, p.getTitle());					
 					if (p instanceof GroupPrincipal) {
 						groupCounts.put(pId, getGroupCount((GroupPrincipal) p));						
 					}
-					else if (isPresenceEnabled && (p instanceof UserPrincipal)) {
-						userPresence.put(pId, GwtServerHelper.getPresenceInfo((User) p));
+					else if (isUser) {
+						User user = ((User) p);
+						presenceUserWSIds.put(pId, user.getWorkspaceId());
+						if (isPresenceEnabled) {
+							userPresence.put(pId, GwtServerHelper.getPresenceInfo(user));
+						}
 					}
 				}
 			}
@@ -346,8 +401,9 @@ public class GwtTaskHelper {
 			// Scan this TaskInfo's individual assignees again...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...setting each one's title.
-				setAITitle(   ai, principalTitles);
-				setAIPresence(ai, userPresence   );
+				setAITitle(           ai, principalTitles  );
+				setAIPresence(        ai, userPresence     );
+				setAIPresenceUserWSId(ai, presenceUserWSIds);
 			}
 			
 			// Scan this TaskInfo's group assignees again...
@@ -758,6 +814,11 @@ public class GwtTaskHelper {
 			reply.add(ti);
 		}
 
+		// At this point, the TaskInfo's in the List<TaskInfo> do not
+		// contain a location string.  We need to fill those in so that
+		// they can be displayed, as necessary.
+		completeBinderLocations(bs, reply);
+		
 		// At this point, the AssignmentInfo's in the List<TaskInfo>
 		// that we're going to return only contain the assignee IDs.
 		// We need to complete them with the title of each assignee. 
@@ -1067,6 +1128,15 @@ public class GwtTaskHelper {
 		if (null == pi) pi = GwtServerHelper.getPresenceInfoDefault();
 		ai.setPresence(pi);
 		ai.setPresenceDude(GwtServerHelper.getPresenceDude(pi));
+	}
+
+	/*
+	 * Stores a user's workspace ID of an AssignmentInfo based on a Map
+	 * lookup using its ID.
+	 */
+	private static void setAIPresenceUserWSId(AssignmentInfo ai, Map<Long, Long> presenceUserWSIdsMap) {
+		Long presenceUserWSId = presenceUserWSIdsMap.get(ai.getId());
+		ai.setPresenceUserWSId(presenceUserWSId);
 	}
 
 	/**

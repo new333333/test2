@@ -195,6 +195,44 @@ public class TaskSorter {
 	}
 	
 	/**
+	 * Inner class used to compare two tasks by their location.
+	 */
+	public static class LocationComparator implements Comparator<TaskListItem> {
+		private boolean m_ascending;	//
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public LocationComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two TaskListItem's by their locations.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param task1
+		 * @param task2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(TaskListItem task1, TaskListItem task2) {
+			String loc1 = getNonNullString(task1.getTask().getLocation());
+			String loc2 = getNonNullString(task2.getTask().getLocation());
+
+			int reply;
+			if (m_ascending)
+			     reply = GwtClientHelper.safeSColatedCompare(loc1, loc2);
+			else reply = GwtClientHelper.safeSColatedCompare(loc2, loc1);
+			return reply;
+		}
+	}
+	
+	/**
 	 * Inner class used to compare two tasks by their name.
 	 */
 	public static class NameComparator implements Comparator<TaskListItem> {

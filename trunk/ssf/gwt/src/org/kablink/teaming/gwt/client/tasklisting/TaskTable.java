@@ -36,15 +36,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
+import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
+import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
@@ -53,6 +59,11 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
@@ -68,6 +79,8 @@ import com.google.gwt.user.client.ui.HTMLTable.RowFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -76,7 +89,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public class TaskTable extends Composite {
+public class TaskTable extends Composite implements ActionHandler {
 	private FlexCellFormatter	m_flexTableCF;		//
 	private FlexTable			m_flexTable;		//
 	private int					m_taskCount;		//
@@ -87,9 +100,10 @@ public class TaskTable extends Composite {
 	private TaskPopupMenu		m_priorityMenu;		//
 	private TaskPopupMenu		m_statusMenu;		//
 	
-	private final GwtRpcServiceAsync				m_rpcService = GwtTeaming.getRpcService();				// 
-	private final GwtTeamingMessages				m_messages   = GwtTeaming.getMessages();				//
-	private final GwtTeamingTaskListingImageBundle	m_images     = GwtTeaming.getTaskListingImageBundle();	//
+	private final GwtMainPage						m_gwtMainPage = GwtTeaming.getMainPage();				// 
+	private final GwtRpcServiceAsync				m_rpcService  = GwtTeaming.getRpcService();				// 
+	private final GwtTeamingMessages				m_messages    = GwtTeaming.getMessages();				//
+	private final GwtTeamingTaskListingImageBundle	m_images      = GwtTeaming.getTaskListingImageBundle();	//
 
 	/*
 	 * Enumeration value used to represent the order of the columns in
@@ -104,6 +118,7 @@ public class TaskTable extends Composite {
 		STATUS,
 		ASSIGNED_TO,
 		CLOSED_PERCENT_DONE,
+		LOCATION,
 	}
 
 	/*
@@ -297,7 +312,20 @@ public class TaskTable extends Composite {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.CLOSED_PERCENT_DONE);}			
 		});
-		m_flexTable.setWidget(0, Column.CLOSED_PERCENT_DONE.ordinal(), a);		
+		m_flexTable.setWidget(0, Column.CLOSED_PERCENT_DONE.ordinal(), a);
+
+		// Are we displaying tasks assigned to the current user?
+		if (!(m_taskBundle.getIsFromFolder())) {
+			// Yes!  Add column 8:  Location.
+			a = buildAnchor("sort-column");
+			a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
+			markAsSortKey(a, Column.LOCATION);
+			PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent event) {handleTableResort(Column.LOCATION);}			
+			});
+			m_flexTable.setWidget(0, Column.LOCATION.ordinal(), a);
+		}
 	}
 
 	/*
@@ -325,6 +353,78 @@ public class TaskTable extends Composite {
 	}
 
 	/*
+	 * Builds a FlowPanel for an AssignmentInfo.
+	 */
+	private FlowPanel buildAssigneePanel(final AssignmentInfo ai) {
+		FlowPanel reply = new FlowPanel();
+
+		// Is this an individual assignee?
+		GwtPresenceInfo presence = ai.getPresence();
+		if (null != presence) {
+			// Yes!  Generate a PresenceControl...
+			PresenceControl pc = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
+			pc.setImageAlignment("top");
+			pc.addStyleName("displayInline");
+			pc.addStyleName("verticalAlignTop");
+			pc.setAnchorStyleName("cursorPointer");
+			reply.add(pc);			
+			PassThroughEventsPanel.addHandler(pc, new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					Widget w;					
+					w = ((Widget) event.getSource());
+					handlePresenceSelect(ai, w.getElement());
+				}				
+			});
+
+			// ...and a name link for it...
+			final Label assignee = new Label(ai.getTitle());
+			assignee.addStyleName("gwtTaskList_assignee");
+			reply.add(assignee);
+			
+			// ...and add the event handlers for it.
+			List<EventHandler> handlers = new ArrayList<EventHandler>();
+			handlers.add(new MouseOverHandler() {
+				@Override
+				public void onMouseOver(MouseOverEvent event) {
+					assignee.addStyleName("gwtTaskList_assigneeHover");
+				}
+			});
+			handlers.add(new MouseOutHandler() {
+				@Override
+				public void onMouseOut(MouseOutEvent event) {
+					assignee.removeStyleName("gwtTaskList_assigneeHover");
+				}
+			});
+			handlers.add(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					assignee.removeStyleName("gwtTaskList_assigneeHover");
+					handlePresenceSelect(ai, assignee.getElement());
+				}
+			});
+			PassThroughEventsPanel.addHandlers(assignee, handlers);
+		}
+		
+		else {
+			// No, this isn't an individual assignee!  It must be a
+			// group or team assignee.
+			Image assigneeImg = new Image();
+			assigneeImg.setUrl(m_gwtMainPage.getRequestInfo().getImagesPath() + ai.getPresenceDude());
+			assigneeImg.getElement().setAttribute("align", "absmiddle");
+			reply.add(assigneeImg);
+			
+			Label assignee = new Label(ai.getTitle() + " " + m_messages.taskMemberCount(String.valueOf(ai.getMembers())));
+			assignee.addStyleName("gwtTaskList_assignee");
+			reply.add(assignee);
+		}
+
+		// If we get here, reply refers to a FlowPanel containing the
+		// Widget's for the assignee.  Return it.
+		return reply;
+	}
+
+	/*
 	 * Returns a base Image widget.
 	 */
 	private Image buildImage(ImageResource res, String title) {
@@ -339,7 +439,7 @@ public class TaskTable extends Composite {
 	private Image buildImage(ImageResource res) {
 		return buildImage(res, null);
 	}
-	
+
 	/*
 	 * Build a column that contains a TaskPopupMenu <SELECT> widget. 
 	 */
@@ -447,7 +547,42 @@ public class TaskTable extends Composite {
 //!		...this needs to be implemented...
 		Window.alert("setTaskOption( " + taskAction + ":" + task.getTask().getTitle() + ":" + optionValue + " )");
 	}
+
+	/**
+	 * Called handle one of the task TeamingActions.
+	 * 
+	 * Implements the ActionHandler.handleAction() method.
+	 * 
+	 * @param action
+	 * @param obj
+	 */
+	@Override
+	public void handleAction(TeamingAction action, Object obj) {
+		switch (action) {
+		case TASK_DELETE:      handleTaskDelete();    break;
+		case TASK_MOVE_DOWN:   handleTaskMoveDown();  break;
+		case TASK_MOVE_LEFT:   handleTaskMoveLeft();  break;
+		case TASK_MOVE_RIGHT:  handleTaskMoveRight(); break;
+		case TASK_MOVE_UP:     handleTaskMoveUp();    break;
+
+		default:
+			Window.alert(m_messages.taskUnexpectedAction(action.toString()));
+			break;
+		}
+	}
 	
+	/*
+	 * This method gets invoked when the user clicks on an individual
+	 * assignment's presence dude.
+	 */
+	private void handlePresenceSelect(AssignmentInfo ai, Element element) {
+		SimpleProfileParams params;
+		
+		// Invoke the Simple Profile dialog.
+		params = new SimpleProfileParams(element, String.valueOf(ai.getPresenceUserWSId()), ai.getTitle());
+		m_gwtMainPage.handleAction(TeamingAction.INVOKE_SIMPLE_PROFILE, params);
+	}
+		
 	/*
 	 * Called when the user clicks the select all checkbox.
 	 */
@@ -464,6 +599,15 @@ public class TaskTable extends Composite {
 //!		...this needs to be implemented...
 		Window.alert("handleTableResort( " + col.ordinal() + " ):  ...this needs to be implemented...");
 	}
+
+	/*
+	 * Called when the user presses the delete button on the task tool
+	 * bar.
+	 */
+	private void handleTaskDelete() {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskDelete():  ...this needs to be implemented...");
+	}
 	
 	/*
 	 * Called when the user clicks the expand/collapse on a task.
@@ -471,6 +615,42 @@ public class TaskTable extends Composite {
 	private void handleTaskExpander(TaskListItem task) {
 //!		... this needs to be implemented...
 		Window.alert("handleTaskExpander( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user presses the move down button on the task
+	 * tool bar.
+	 */
+	private void handleTaskMoveDown() {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskMoveDown():  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user presses the move left button on the task
+	 * tool bar.
+	 */
+	private void handleTaskMoveLeft() {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskMoveLeft():  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user presses the move right button on the task
+	 * tool bar.
+	 */
+	private void handleTaskMoveRight() {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskMoveRight():  ...this needs to be implemented...");
+	}
+	
+	/*
+	 * Called when the user presses the move up button on the task tool
+	 * bar.
+	 */
+	private void handleTaskMoveUp() {
+//!		... this needs to be implemented...
+		Window.alert("handleTaskMoveUp():  ...this needs to be implemented...");
 	}
 	
 	/*
@@ -505,7 +685,7 @@ public class TaskTable extends Composite {
 			
 			@Override
 			public void onSuccess(String viewFolderEntryUrl) {
-				m_taskListing.handleAction(
+				m_gwtMainPage.handleAction(
 					TeamingAction.SHOW_FORUM_ENTRY,
 					viewFolderEntryUrl);
 			}
@@ -547,8 +727,36 @@ public class TaskTable extends Composite {
 	 * Renders the 'Assigned To' column.
 	 */
 	private void renderColumnAssignedTo(final TaskListItem task, int row, Column col) {
-//!		...this needs to be implemented...
-		m_flexTable.setWidget(row, col.ordinal(), new InlineLabel("...to do..."));
+		int assignments = 0;
+		VerticalPanel vp = new VerticalPanel();
+		vp.addStyleName("gwtTaskList_assigneesList");
+
+		// Scan the individual assignees...
+		for (final AssignmentInfo ai:  task.getTask().getAssignments()) {
+			// ...adding a PresenceControl for each.
+			assignments += 1;
+			vp.add(buildAssigneePanel(ai));
+		}
+
+		// Scan the group assignees...
+		for (AssignmentInfo ai:  task.getTask().getAssignmentGroups()) {
+			// ...adding a FlowPanel display for each.
+			assignments += 1;
+			vp.add(buildAssigneePanel(ai));
+		}
+		
+		// Scan the team assignees...
+		for (AssignmentInfo ai:  task.getTask().getAssignmentTeams()) {			
+			// ...adding a FlowPanel display for each.
+			assignments += 1;
+			vp.add(buildAssigneePanel(ai));
+		}
+
+		// If there were any assignees...
+		if (0 < assignments) {
+			// ...add the VerticalPanel to the TaskTable.
+			m_flexTable.setWidget(row, col.ordinal(), vp);
+		}
 	}
 	
 	/*
@@ -592,7 +800,18 @@ public class TaskTable extends Composite {
 	}
 	
 	/*
-	 * Renders the 'Order'.
+	 * Renders the 'Location' column.
+	 */
+	private void renderColumnLocation(final TaskListItem task, int row, Column col) {
+		String location = task.getTask().getLocation();
+		if (null == location) {
+			return;
+		}
+		m_flexTable.setHTML(row, col.ordinal(), location);
+	}
+
+	/*
+	 * Renders the 'Order' column.
 	 */
 	private void renderColumnOrder(final TaskListItem task, int row, Column col) {
 		// Extract the UIData from this task.
@@ -748,7 +967,13 @@ public class TaskTable extends Composite {
 		renderColumnDueDate(          task, row, Column.DUE_DATE           );		
 		renderColumnStatus(           task, row, Column.STATUS             );		
 		renderColumnAssignedTo(       task, row, Column.ASSIGNED_TO        );		
-		renderColumnClosedPercentDone(task, row, Column.CLOSED_PERCENT_DONE);		
+		renderColumnClosedPercentDone(task, row, Column.CLOSED_PERCENT_DONE);
+		
+		// Are we displaying tasks assigned to the current user?
+		if (!(m_taskBundle.getIsFromFolder())) {
+			// Yes!  Render the location column too.
+			renderColumnLocation(task, row, Column.LOCATION);
+		}
 	}
 
 	/*
@@ -779,8 +1004,8 @@ public class TaskTable extends Composite {
 		long start = System.currentTimeMillis();
 
 		// ...and render the TaskTable.
-		clearTaskTable();
 		m_taskBundle = taskBundle;
+		clearTaskTable();
 		List<TaskListItem> tasks = taskBundle.getTasks();
 		
 		// Are there any tasks to show?
@@ -844,6 +1069,7 @@ public class TaskTable extends Composite {
 		case STATUS:               comparator = new TaskSorter.StatusComparator(           sortAscending); break;
 		case ASSIGNED_TO:          comparator = new TaskSorter.AssignedToComparator(       sortAscending); break;
 		case CLOSED_PERCENT_DONE:  comparator = new TaskSorter.ClosedPercentDoneComparator(sortAscending); break;		
+		case LOCATION:             comparator = new TaskSorter.LocationComparator(         sortAscending); break;		
 		}
 		TaskSorter.sort(tasks, comparator);
 	}

@@ -787,6 +787,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskColumn_assignedTo();
 	String taskColumn_closedPercentDone();
 	String taskColumn_dueDate();
+	String taskColumn_location();
 	String taskColumn_name();
 	String taskColumn_priority();
 	String taskColumn_status();
@@ -804,6 +805,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskLabelDelete();
 	String taskLabelOrder();
 	String taskLabelSubtask();
+	String taskMemberCount(String count);
 	String taskNoTasks();
 	String taskPriority_p1();
 	String taskPriority_p2();
@@ -814,5 +816,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskStatus_completed();
 	String taskStatus_inProcess();
 	String taskStatus_needsAction();
+	String taskUnexpectedAction(String action);
 	String taskUnread();
 }// end GwtTeamingMessages

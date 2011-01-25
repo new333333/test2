@@ -332,11 +332,6 @@ public class GwtMainPage extends Composite
 			var taskToolsDIV   = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskToolsDIV"  );
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
 		}//end ss_initTaskListing()
-		
-		$wnd.ss_handleTaskAction = function( action )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handleTaskAction(Ljava/lang/String;)( taskAction );
-		}// end ss_handleTaskAction()
 	}-*/;
 
 	/*
@@ -539,28 +534,27 @@ public class GwtMainPage extends Composite
 		// ...and show it.
 		m_taskListing.show();
 	}// end initTaskListing();
-	
+
+	/*
+	 * Called to handle TeamingAction's directed to the GWT task folder
+	 * listing.
+	 */
 	private void handleTaskAction( TeamingAction taskAction, Object obj )
 	{
-		if (null != m_taskListing)
-		{
-			m_taskListing.handleAction( taskAction, obj );
+		Window.alert(GwtTeaming.getMessages().taskUnexpectedAction(taskAction.toString()));
+	}// end handleTaskAction()
+	
+	/*
+	 * Called to tell the task folder listing to resize itself based on
+	 * the current size of the content frame.
+	 */
+	private void resizeTaskListing() {
+		// If we're connected to a TaskListing...
+		if (null != m_taskListing) {
+			// ...tell it to resize.
+			m_taskListing.resize();
 		}
-		else
-			Window.alert( "in handleTaskAction() and there's no TaskListing to handle it" );
-	}// end handleTaskAction()
-	
-	private void handleTaskAction( TeamingAction taskAction )
-	{
-		// Always use the initial form of the method.
-		handleTaskAction( taskAction, null );
-	}// end handleTaskAction()
-	
-	private void handleTaskAction( String taskAction )
-	{
-		// Always use the initial form of the method.
-		handleTaskAction( TeamingAction.valueOf( taskAction ), null );
-	}// end handleTaskAction()
+	}
 	
 	/*
 	 * Invoke the "Edit Branding" dialog.
@@ -1173,11 +1167,14 @@ public class GwtMainPage extends Composite
 			}
 			break;
 
-		case TASK_MOVE_UP:
+		case TASK_DELETE:
 		case TASK_MOVE_DOWN:
 		case TASK_MOVE_LEFT:
 		case TASK_MOVE_RIGHT:
-		case TASK_DELETE:
+		case TASK_MOVE_UP:
+		case TASK_SET_PERCENT_DONE:
+		case TASK_SET_PRIORITY:
+		case TASK_SET_STATUS:
 			handleTaskAction( action, obj );
 			break;
 
@@ -1887,6 +1884,10 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_contentCtrl.setDimensions( width, height );
+			
+			// Allow the task folder listing to resize to the content,
+			// as necessary.
+			resizeTaskListing();
 			
 			// Tell the activity stream control to relayout.
 			if ( m_activityStreamCtrl != null )
