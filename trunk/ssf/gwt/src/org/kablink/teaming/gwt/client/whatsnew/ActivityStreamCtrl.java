@@ -1089,8 +1089,6 @@ public class ActivityStreamCtrl extends Composite
 	 */
 	private void invokeTagThisDlg( final ActivityStreamUIEntry entry )
 	{
-		PopupPanel.PositionCallback posCallback;
-		
 		if ( m_tagThisDlg == null )
 		{
 			//!!! Pass in an ActionTrigger
@@ -1099,24 +1097,7 @@ public class ActivityStreamCtrl extends Composite
 		
 		m_tagThisDlg.init( null, entry.getEntryId() );
 
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
-			{
-				int x;
-				int y;
-				
-				x = Window.getClientWidth() - offsetWidth - 75;
-				y = entry.getAbsoluteTop();
-				
-				m_tagThisDlg.setPopupPosition( x, y );
-			}
-		};
-		m_tagThisDlg.setPopupPositionAndShow( posCallback );
-		
+		m_tagThisDlg.showDlg( true, Window.getClientWidth() - 75, entry.getAbsoluteTop() );
 	}
 	
 	

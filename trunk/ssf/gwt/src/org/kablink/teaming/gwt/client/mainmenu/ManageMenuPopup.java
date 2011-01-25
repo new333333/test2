@@ -551,7 +551,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				}
 				
 				m_tagThisDlg.init( m_currentBinder.getBinderId(), null );
-				m_tagThisDlg.show();
+				m_tagThisDlg.showDlg();
 
 			}
 		});
