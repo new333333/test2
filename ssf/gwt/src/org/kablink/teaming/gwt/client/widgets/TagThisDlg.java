@@ -54,6 +54,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -61,6 +62,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -425,16 +427,16 @@ public class TagThisDlg extends DlgBox
 			{
 				m_table.setText( 0, 0, GwtTeaming.getMessages().tagName() );
 				m_table.setText( 0, 1, GwtTeaming.getMessages().tagType() );
-				m_table.setText( 0, 2, " " );	// The delete image will go in this column.
+				m_table.setHTML( 0, 2, "&nbsp;" );	// The delete image will go in this column.
 				
 				rowFormatter = m_table.getRowFormatter();
 				rowFormatter.addStyleName( 0, "oltHeader" );
 
-				// Set the width of each column to 50%
 				m_cellFormatter = m_table.getFlexCellFormatter();
-				m_cellFormatter.setWidth( 0, 0, "48%" );
-				m_cellFormatter.setWidth( 0, 1, "48%" );
-				m_cellFormatter.setWidth( 0, 2, "*" );
+				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
+				// That is why we are calling DOM.setElementAttribute(...) instead.
+				//!!!m_cellFormatter.setWidth( 0, 2, "*" );
+				DOM.setElementAttribute( m_cellFormatter.getElement( 0, 2 ), "width", "*" );
 				
 				m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
 				m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
@@ -766,6 +768,7 @@ public class TagThisDlg extends DlgBox
 		m_entryId = entryId;
 		m_isPublicTagManager = false;
 		m_findCtrl.setInitialSearchString( "" );
+		m_personalRB.setValue( Boolean.TRUE );
 
 		if ( m_readTagsCallback == null )
 		{
@@ -895,6 +898,52 @@ public class TagThisDlg extends DlgBox
 
 			++i;
 		}
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void showDlg()
+	{
+		showDlg( false, -1, -1 );
+	}
+	
+	
+	/**
+	 * 
+	 */
+	public void showDlg( final boolean setPosition, final int right, final int top )
+	{
+		PopupPanel.PositionCallback posCallback;
+		
+		posCallback = new PopupPanel.PositionCallback()
+		{
+			/**
+			 * 
+			 */
+			public void setPosition( int offsetWidth, int offsetHeight )
+			{
+				int width;
+				int x;
+				
+				// Set the width of the table that holds the tags.
+				width = m_findCtrl.getOffsetWidth();
+				width += (width/2);
+				m_table.setWidth( String.valueOf( width ) + "px" );
+				
+				if ( setPosition )
+				{
+					if ( width > offsetWidth )
+						x = right - width;
+					else
+						x = right - offsetWidth;
+					
+					setPopupPosition( x, top );
+				}
+			}
+		};
+		setPopupPositionAndShow( posCallback );
 	}
 	
 	
