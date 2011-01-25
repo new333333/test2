@@ -90,7 +90,7 @@ public class TaskHelper {
 	public static final String TASK_ASSIGNED_TO								= "assignedTo";
 	public static final String TASK_ASSIGNED_TO_GROUPS						= "assignedToGroups";
 	public static final String TASK_ASSIGNED_TO_TEAMS						= "assignedToTeams";	
-	public static final String TASK_COMPLETED_DATE_ATTRIBUTE 				= "task_completed";
+	public static final String TASK_COMPLETED_DATE_ATTRIBUTE 				= "completedDate";
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME		= "start_end";
 	
 	public enum FilterType {
@@ -676,8 +676,8 @@ public class TaskHelper {
 	 * @param inputData
 	 */
 	public static void processTaskCompletion(Entry task, String completeS) {
-		// Do we have a 'complete' setting for the entry?
-		if (!(MiscUtil.hasString(completeS))) {
+		// Do we have a 'complete' setting for a FolderEntry?
+		if ((!(MiscUtil.hasString(completeS))) || (!(task instanceof FolderEntry))) {
 			// No!  Nothing to do.
 			return;
 		}
