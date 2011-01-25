@@ -126,7 +126,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}
     }
 
-    public Condition loadFunctionCondition(Long zoneId, String functionConditionId) throws NoObjectByTheIdException {
+    public Condition loadFunctionCondition(Long zoneId, Long functionConditionId) throws NoObjectByTheIdException {
 		long begin = System.currentTimeMillis();
 		try {
 	        Condition c = (Condition)getHibernateTemplate().get(Condition.class, functionConditionId);

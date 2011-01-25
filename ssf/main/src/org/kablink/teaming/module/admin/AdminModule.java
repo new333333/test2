@@ -273,9 +273,9 @@ public interface AdminModule {
 	
 	public void modifyFunctionCondition(Condition functionCondition);
 	
-	public void deleteFunctionCondition(String functionConditionId);
+	public void deleteFunctionCondition(Long functionConditionId);
 	
-	public Condition getFunctionCondition(String functionConditionId);
+	public Condition getFunctionCondition(Long functionConditionId);
 	
 	public List<Condition> getFunctionConditions();
 	

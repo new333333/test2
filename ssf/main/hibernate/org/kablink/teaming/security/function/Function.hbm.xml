@@ -25,13 +25,10 @@
     <bag inverse="false" cascade="all" lazy="false" table="SS_FunctionConditionMap" name="conditionalClauses">
       <cache usage="nonstrict-read-write"/>
       <key column="functionId"/>
-      <!--<many-to-many fetch="join" class="org.kablink.teaming.security.function.Condition">
-        <column name="condition" sql-type="char(32)"/>
-      </many-to-many>-->
       <composite-element class="org.kablink.teaming.security.function.ConditionalClause">
         <property name="meetStr" column="meet" length="16"/>
         <many-to-one name="condition" class="org.kablink.teaming.security.function.Condition">
-          <column name="conditionId" sql-type="char(32)"/>
+          <column name="conditionId"/>
         </many-to-one>
       </composite-element>
     </bag>

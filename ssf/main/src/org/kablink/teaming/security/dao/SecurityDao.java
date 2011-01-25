@@ -62,7 +62,7 @@ public interface SecurityDao {
     	    	     
     public List findFunctions(Long zoneId);
     
-    public Condition loadFunctionCondition(Long zoneId, String functionConditionId) throws NoObjectByTheIdException;
+    public Condition loadFunctionCondition(Long zoneId, Long functionConditionId) throws NoObjectByTheIdException;
     
     public List<Condition> findFunctionConditions(Long zoneId);
 
