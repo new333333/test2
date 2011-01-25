@@ -5,7 +5,7 @@ ALTER TABLE SS_Events add dtCalcEnd datetime null;
 create table SS_EmailLog (id char(32) not null, zoneId numeric(19,0) null, sendDate datetime not null, fromField nvarchar(255) null, subj nvarchar(255) null, comment ntext null, status varchar(16) not null, type varchar(32) not null, toEmailAddresses ntext null, fileAttachments ntext null, primary key (id));
 create index index_emaillog on SS_EmailLog (sendDate, status, type);
 create table SS_FunctionConditionMap (functionId numeric(19,0) not null, meet varchar(16) null, conditionId char(32) null);
-create table SS_FunctionConditions (id char(32) not null, type varchar(32) not null, zoneId numeric(19,0) not null, encodedSpec text null, title varchar(255) not null, description_text text null, description_format int null, primary key (id));
+create table SS_FunctionConditions (id numeric(19,0) identity not null, type varchar(32) not null, zoneId numeric(19,0) not null, encodedSpec ntext null, title nvarchar(255) not null, description_text ntext null, description_format int null, primary key (id));
 alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions;
 alter table SS_FunctionConditionMap add constraint FK945D2AD868DAC30E foreign key (conditionId) references SS_FunctionConditions;
 INSERT INTO SS_SchemaInfo values (16);

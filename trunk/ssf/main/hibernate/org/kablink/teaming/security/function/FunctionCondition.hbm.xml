@@ -4,9 +4,8 @@
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="false" table="SS_FunctionConditions" name="org.kablink.teaming.security.function.Condition">
     <cache usage="nonstrict-read-write"/>
-    <id unsaved-value="null" name="id">
-      <column name="id" sql-type="char(32)"/>
-      <generator class="uuid.hex"/>
+    <id unsaved-value="null" name="id" type="long">
+      <generator class="native"/>
     </id>
     <discriminator type="string" column="type" length="32"/>
     <property name="zoneId" not-null="true" access="field"/>

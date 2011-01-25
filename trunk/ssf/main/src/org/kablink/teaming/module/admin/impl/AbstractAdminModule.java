@@ -1212,7 +1212,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		getSecurityDao().update(functionCondition);
 	}
 	
-	public void deleteFunctionCondition(String functionConditionId) {
+	public void deleteFunctionCondition(Long functionConditionId) {
 		checkAccess(AdminOperation.manageFunctionCondition);
 		try {
 			Condition functionCondition = getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
@@ -1223,7 +1223,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 	}
 	
-	public Condition getFunctionCondition(String functionConditionId) {
+	public Condition getFunctionCondition(Long functionConditionId) {
 		// let anyone read it?
 		return getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
 	}
@@ -1251,7 +1251,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 		else if(i == 3) {
 			// Delete condition
-			String functionConditionId = ""; // set this
+			Long functionConditionId = new Long(0); // set this
 			am.deleteFunctionCondition(functionConditionId);
 		}
 		
