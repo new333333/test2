@@ -61,6 +61,7 @@ public class TaskListItem implements IsSerializable {
 		private GwtPresenceInfo m_presence;			// Only used for individual assignees.
 		private int             m_members = (-1);	// Only used for group and team assignees.
 		private Long            m_id;
+		private Long			m_presenceUserWSId;	// Only used for individual assignees.
 		private String			m_presenceDude;		// Used for all assignees.
 		private String          m_title;
 		
@@ -78,22 +79,24 @@ public class TaskListItem implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public GwtPresenceInfo getPresence()     {return m_presence;    }
-		public int             getMembers()      {return m_members;     }
-		public Long            getId()           {return m_id;          }
-		public String          getPresenceDude() {return m_presenceDude;}
-		public String          getTitle()        {return m_title;       }
+		public GwtPresenceInfo getPresence()         {return m_presence;        }
+		public int             getMembers()          {return m_members;         }
+		public Long            getId()               {return m_id;              }
+		public Long            getPresenceUserWSId() {return m_presenceUserWSId;}
+		public String          getPresenceDude()     {return m_presenceDude;    }
+		public String          getTitle()            {return m_title;           }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setPresence(    GwtPresenceInfo presence)     {m_presence     = presence;    }
-		public void setMembers(     int             members)      {m_members      = members;     }
-		public void setId(          Long            id)           {m_id           = id;          }
-		public void setPresenceDude(String          presenceDude) {m_presenceDude = presenceDude;}
-		public void setTitle(       String          title)        {m_title        = title;       }
+		public void setPresence(        GwtPresenceInfo presence)         {m_presence         = presence;        }
+		public void setMembers(         int             members)          {m_members          = members;         }
+		public void setId(              Long            id)               {m_id               = id;              }
+		public void setPresenceUserWSId(Long            presenceUserWSId) {m_presenceUserWSId = presenceUserWSId;}
+		public void setPresenceDude(    String          presenceDude)     {m_presenceDude     = presenceDude;    }
+		public void setTitle(           String          title)            {m_title            = title;           }
 		
 		/**
 		 * Constructs an AssignmentInfo from the parameters.
@@ -277,6 +280,7 @@ public class TaskListItem implements IsSerializable {
 		private String					m_completed            = "";	
 		private String					m_completedDateDisplay = "";	
 		private String					m_entityType           = "";
+		private String					m_location             = "";
 		private String					m_priority             = "";
 		private String					m_title                = "";
 		private String					m_status               = "";
@@ -308,6 +312,7 @@ public class TaskListItem implements IsSerializable {
 		public String               getCompleted()            {return m_completed;           }
 		public String               getCompletedDateDisplay() {return m_completedDateDisplay;}
 		public String               getEntityType()           {return m_entityType;          }
+		public String               getLocation()             {return m_location;            }
 		public String               getPriority()             {return m_priority;            }
 		public String               getTitle()                {return m_title;               }
 		public String               getStatus()               {return m_status;              }
@@ -330,6 +335,7 @@ public class TaskListItem implements IsSerializable {
 		public void setCompleted(           String               completed)            {m_completed            = completed;           }
 		public void setCompletedDateDisplay(String               completedDateDisplay) {m_completedDateDisplay = completedDateDisplay;}
 		public void setEntityType(          String               entityType)           {m_entityType           = entityType;          }
+		public void setLocation(            String               location)             {m_location             = location;            }
 		public void setPriority(            String               priority)             {m_priority             = priority;            }
 		public void setTitle(               String               title)                {m_title                = title;               }
 		public void setStatus(              String               status)               {m_status               = status;              }

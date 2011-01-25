@@ -64,7 +64,6 @@ public class TaskButton extends Anchor {
 	private ImageResource	m_disabledImgRes;	// For image buttons, the disabled   image resource.
 	private ImageResource	m_overImgRes;		// For image buttons, the mouse over image resource.
 	private InlineLabel		m_buttonLabel;		// For text  buttons, the InlineLabel widget that displays the text.
-	private Object			m_actionObject;		// The Object to send with the TeamingAction.
 	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
 	
 	/*
@@ -127,7 +126,7 @@ public class TaskButton extends Anchor {
 			// If the button is enabled...
 			if (m_enabled) {
 				// ...fire the action.
-				m_actionTrigger.triggerAction(m_action, m_actionObject);
+				m_actionTrigger.triggerAction(m_action, null);
 			}
 		}
 	}
@@ -142,16 +141,14 @@ public class TaskButton extends Anchor {
 	 * @param enabled
 	 * @param imgTitle
 	 * @param action
-	 * @param actionObject
 	 */
-	public TaskButton(ActionTrigger actionTrigger, ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingAction action, Object actionObject) {
+	public TaskButton(ActionTrigger actionTrigger, ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingAction action) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
 		m_actionTrigger	 = actionTrigger;
 		m_action		 = action;
-		m_actionObject	 = actionObject;
 		m_enabled        = enabled;
 		m_baseImgRes     = baseImgRes;
 		m_disabledImgRes = disabledImgRes;
@@ -177,11 +174,6 @@ public class TaskButton extends Anchor {
 		PassThroughEventsPanel.addHandlers(this, ehs);
 	}
 	
-	public TaskButton(ActionTrigger actionTrigger, ImageResource baseImgRes, ImageResource disabledImgRes, ImageResource overImgRes, boolean enabled, String imgTitle, TeamingAction action) {
-		// Always use the initial form of the constructor.
-		this(actionTrigger, baseImgRes, disabledImgRes, overImgRes, enabled, imgTitle, action, null);
-	}
-	
 	/**
 	 * Class constructor for text buttons.
 	 * 
@@ -190,16 +182,14 @@ public class TaskButton extends Anchor {
 	 * @param buttonTitle
 	 * @param enabled
 	 * @param action
-	 * @param actionObject
 	 */
-	public TaskButton(ActionTrigger actionTrigger, String buttonText, String buttonTitle, boolean enabled, TeamingAction action, Object actionObject) {
+	public TaskButton(ActionTrigger actionTrigger, String buttonText, String buttonTitle, boolean enabled, TeamingAction action) {
 		// Initialize the super class...
 		super();
 		
 		// ...store the parameters...
 		m_actionTrigger	 = actionTrigger;
 		m_action		 = action;
-		m_actionObject	 = actionObject;
 		m_enabled        = enabled;
 		
 		// ..initialize the Anchor...
@@ -224,21 +214,6 @@ public class TaskButton extends Anchor {
 		PassThroughEventsPanel.addHandlers(this, ehs);
 	}
 	
-	public TaskButton(ActionTrigger actionTrigger, String buttonText, String buttonTitle, boolean enabled, TeamingAction action) {
-		// Always use the initial form of the constructor.
-		this(actionTrigger, buttonText, buttonTitle, enabled, action, null);
-	}
-	
-	/**
-	 * Sets an Object for the teaming action.
-	 * 
-	 * @param actionObject
-	 */
-	public void setActionObject(Object actionObject) {
-		// Simply store the parameter.
-		m_actionObject = actionObject;
-	}
-
 	/**
 	 * Enables/disables the button.
 	 * 

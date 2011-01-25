@@ -2485,11 +2485,6 @@ top:100px;
 
 
 /* Start:  GWT Task Folder Listing styles. */
-.gwtTaskListing
-{
-	width: 100%;
-	font-size: 1.4em; 
-}
 .gwtTaskTools
 {
 	display: block;
@@ -2535,6 +2530,35 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	color        #FFFFFF                                              !important;
 }
 
+.gwtTaskListing
+{
+	width: 100%;
+	font-size: 1.35em; 
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.gwtTaskList_assigneesList tr td
+{
+	border-bottom: 0px !important;
+	font-size: 1.35em;
+	padding: 0 !important;
+	margin: 0 !important; 
+}
+.gwtTaskList_assignee
+{
+	color: #353838;
+	display: inline;
+	font-weight: bold;
+	padding-left: 2px !important;
+}
+.gwtTaskList_assigneeHover
+{
+	cursor: pointer;
+	background: url(images/H_bg_blend_teal_light.png) repeat-x scroll center bottom;
+	background-position:center;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
+}
 .gwtTaskList_popupGlass
 {
 	background-color: #000;
