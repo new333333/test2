@@ -33,6 +33,8 @@
 package org.kablink.teaming.security.function;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -255,14 +257,32 @@ public class Function extends ZonedObject {
     }
     
 	public List<ConditionalClause> getConditionalClauses() {
+		// We have no requirement that this list be stored sorted in the database. 
+		// We only need to make sure that the caller always gets this list sorted.
 		if(conditionalClauses == null)
 			return null;
-		// return a copy of the list to keep the caller from making direct changes to the original list.
-		return new ArrayList<ConditionalClause>(conditionalClauses);
+		// Return a copy of the list to keep the caller from making direct changes to the original list.
+		// The returned copy must have the members sorted in ascending order of the IDs of the conditions.
+		return sortByConditionId(new ArrayList<ConditionalClause>(conditionalClauses));
 	}
 	
 	public void setConditionalClauses(List<ConditionalClause> conditionalClauses) {
 		this.conditionalClauses = conditionalClauses;
 	}
     
+	private List<ConditionalClause> sortByConditionId(List<ConditionalClause> list) {
+		Collections.sort(list, 
+				new Comparator<ConditionalClause>() {
+			public int compare(ConditionalClause cc1, ConditionalClause cc2) {
+				Long id1 = cc1.getCondition().getId();
+				Long id2 = cc2.getCondition().getId();
+				if(id1 == null)
+					return -1;
+				if(id2 == null)
+					return 1;
+				return id1.compareTo(id2);
+			}
+		});
+		return list;
+	}
 }
