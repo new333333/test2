@@ -180,14 +180,17 @@
 <br/>
 
 <ssf:expandableArea title='<%= NLT.get("administration.configure_roleConditionIpAddress.add") %>'>
-<form class="ss_style ss_form" method="post" 
+<form class="ss_style ss_form" method="post" onSubmit="return ss_onSubmit(this, false);"
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
 	<div id="ss_conditionsForm" style="padding:10px 0px 6px 20px;">
 	<fieldset>
 	<div >
-	  <span class="ss_bold"><ssf:nlt tag="administration.configure_roleCondition.title"/></span><br/>
-	  <input type="text" name="title" style="width:400px;">
+	  <span class="ss_bold ss_required" id="ss_required_title" 
+	    title="<ssf:nlt tag="administration.configure_roleCondition.titleRequired"/>">
+	    <ssf:nlt tag="administration.configure_roleCondition.title"/>
+	  </span><br/>
+	  <input type="text" name="title" id="title" style="width:400px;" >
 	</div>
 	
 	<div style="padding:10px 0px 0px 0px;">
@@ -261,14 +264,17 @@
 <tr>
 <td colspan="4">
 	<div id="modifyConditionDiv${condition.id}" style="display:none;">
-<form class="ss_style ss_form" method="post" 
+<form class="ss_style ss_form" method="post" onSubmit="return ss_onSubmit(this, false);"
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
 		
 	<div id="ss_conditionsForm" style="padding:10px 0px 6px 6px;">
 	<fieldset>
 	<div >
-	  <span class="ss_bold"><ssf:nlt tag="administration.configure_roleCondition.title"/></span><br/>
-	  <input type="text" name="title" style="width:400px;" value="${condition.title}">
+	  <span class="ss_bold ss_required" id="ss_required_title" 
+	    title="<ssf:nlt tag="administration.configure_roleCondition.titleRequired"/>">
+	    <ssf:nlt tag="administration.configure_roleCondition.title"/>
+	  </span><br/>
+	  <input type="text" name="title" id="title" style="width:400px;" value="${condition.title}">
 	</div>
 	
 	<div style="padding:10px 0px 0px 0px;">
