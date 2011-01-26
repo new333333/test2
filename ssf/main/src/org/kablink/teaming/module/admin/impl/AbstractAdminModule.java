@@ -76,7 +76,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
-import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
@@ -103,11 +102,8 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.search.LuceneWriteSession;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.function.Condition;
-import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
-import org.kablink.teaming.security.function.RemoteAddrCondition;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -318,7 +314,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
 			case manageFunction:
-			case manageFunctionCondition:
 			case manageMail:
 			case manageTemplate:
 			case manageErrorLogs:
@@ -577,15 +572,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
-	public Function addFunction(String name, Set<WorkAreaOperation> operations, String scope, 
-			List<ConditionalClause> conditions) {
+	public void addFunction(String name, Set<WorkAreaOperation> operations, String scope) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = new Function();
 		function.setName(name);
 		function.setScope(scope);
 		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		function.setOperations(operations);
-		function.setConditionalClauses(conditions);
 		
 		List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
 		if (zoneFunctions.contains(function)) {
@@ -593,13 +586,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			throw new FunctionExistsException(function.getName());
 		}
 		functionManager.addFunction(function);
-		return function;
+	 
     }
-    public Function modifyFunction(Long id, Map updates) {
+    public void modifyFunction(Long id, Map updates) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
 		if (function.isReserved()) throw new NotSupportedException("errorcode.role.reserved", new Object[]{function.getName()});       	
-		if (updates.containsKey("name") && !function.getName().equals(updates.get("name"))) {
+		if (updates.containsKey("name") && function.getName() != updates.get("name")) {
 			List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
 			//make sure unqiue - do after find or hibernate will update
 			zoneFunctions.remove(function);
@@ -611,10 +604,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			
 		}
 		ObjectBuilder.updateObject(function, updates);
-		functionManager.updateFunction(function);	
-		return function;
+		functionManager.updateFunction(function);			
     }
-    
     public List deleteFunction(Long id) {
 		checkAccess(AdminOperation.manageFunction);
 		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
@@ -627,10 +618,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
 		else
 			return null;
-    }
-    public Function getFunction(Long functionId) {
-    	// let anyone read it
-    	return functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), functionId);
     }
     public List<Function> getFunctions() {
 		//let anyone read them			
@@ -984,7 +971,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  		message.put(MailModule.TO, emailSet);
  		message.put(MailModule.CC, getEmail(ccIds, errors));
 		message.put(MailModule.BCC, getEmail(bccIds, errors));
-		message.put(MailModule.LOG_TYPE, EmailLogType.sendMail);
  		MailSentStatus results;
  		if (entry != null) {
  			results = getMailModule().sendMail(entry, message, Utils.getUserTitle(user) + " email", sendAttachments);    		
@@ -1083,10 +1069,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	   List<ChangeLog> entryChangeLogs = new ArrayList<ChangeLog>();
 	   for (ChangeLog log: changeLogs) {
 		   if(log.getOperation().equals(ChangeLog.ADDENTRY)
-	               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
-               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATE)
-               || log.getOperation().equals(ChangeLog.MODIFYWORKFLOWSTATEONREPLY)
-               || log.getOperation().equals(ChangeLog.ADDWORKFLOWRESPONSE)
+               || log.getOperation().equals(ChangeLog.MODIFYENTRY)
 			   || log.getOperation().equals(ChangeLog.FILEADD)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY)
 			   || log.getOperation().equals(ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION)
@@ -1201,102 +1184,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			throw new ManageIndexException("errorcode.optimize.index", null, e);
 		} finally {
 			luceneSession.close();
-		}
-	}
-	
-	public void addFunctionCondition(Condition functionCondition) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		getSecurityDao().save(functionCondition);
-	}
-	
-	public void modifyFunctionCondition(Condition functionCondition) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		getSecurityDao().update(functionCondition);
-	}
-	
-	public void deleteFunctionCondition(Long functionConditionId) {
-		checkAccess(AdminOperation.manageFunctionCondition);
-		try {
-			Condition functionCondition = getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
-			getSecurityDao().delete(functionCondition);
-		}
-		catch(NoObjectByTheIdException e) {
-			// already gone - no problem
-		}
-	}
-	
-	public Condition getFunctionCondition(Long functionConditionId) {
-		// let anyone read it?
-		return getSecurityDao().loadFunctionCondition(RequestContextHolder.getRequestContext().getZoneId(), functionConditionId);
-	}
-	
-	public List<Condition> getFunctionConditions() {
-		// let anyone read them - is this right?
-		return getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
-	}
-
-	private void testFunctionCondition() {
-		AdminModule am = (AdminModule) SpringContextUtil.getBean("adminModule");
-		int i = 0;
-		if(i == 1) {
-			// Add conditions
-			am.addFunctionCondition(new RemoteAddrCondition("First condition", new String[] {"127.0.0.1", "127.0.0.2"}, new String[] {"127.0.0.3"}));
-			am.addFunctionCondition(new RemoteAddrCondition("Second condition", new String[] {"192.168.0.*"}, new String[] {"192.168.0.1", "192.168.0.2"}));
-		}
-		else if(i == 2) {
-			// Modify conditions
-			List<Condition> conditions = am.getFunctionConditions();
-			for(Condition cond:conditions) {
-				cond.setTitle(cond.getTitle() + " - modified");
-				am.modifyFunctionCondition(cond);
-			}
-		}
-		else if(i == 3) {
-			// Delete condition
-			Long functionConditionId = new Long(0); // set this
-			am.deleteFunctionCondition(functionConditionId);
-		}
-		
-		if(i == 4) {
-			// Add function
-			Set<WorkAreaOperation> operations = new HashSet<WorkAreaOperation>();
-			operations.add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
-			operations.add(WorkAreaOperation.ADD_REPLIES);
-			Function f = am.addFunction("jong_function", operations, ObjectKeys.ROLE_TYPE_BINDER, new ArrayList());
-		}
-		else if(i == 5) {
-			// Add conditions to function
-			List<Function> functions = am.getFunctions(ObjectKeys.ROLE_TYPE_BINDER);
-			String name = "jong_function"; // set this properly
-			for(Function function:functions) {
-				if(function.getName().equals(name)) {
-					List<ConditionalClause> cc = new ArrayList<ConditionalClause>();
-					List<Condition> conditions = am.getFunctionConditions();
-					for(Condition condition:conditions) {
-						cc.add(new ConditionalClause(condition, ConditionalClause.Meet.MUST));
-					}
-					Map updates = new HashMap();
-					updates.put("conditionalClauses", cc);
-					am.modifyFunction(function.getId(), updates);
-				}
-			}
-		}
-		else if(i == 6) {
-			// Modify conditions in function
-			long functionId = 0; // set this properly
-			Function function = am.getFunction(functionId);
-			List<ConditionalClause> cc = function.getConditionalClauses();
-			cc.get(0).setMeet(ConditionalClause.Meet.SHOULD);
-			cc.remove(1);
-			Map updates = new HashMap();
-			updates.put("conditionalClauses", cc);
-			am.modifyFunction(functionId, updates);
-		}
-		else if(i == 7) {
-			// Delete function
-			long functionId = 0; // set this properly
-			Function function = am.getFunction(functionId);
-			am.deleteFunction(function.getId());
 		}
 	}
 }

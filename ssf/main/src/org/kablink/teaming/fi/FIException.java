@@ -59,8 +59,4 @@ public class FIException extends UncheckedCodedException {
     	super(errorCode, new Object[]{arg1,arg2});
     }
 
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
-
 }

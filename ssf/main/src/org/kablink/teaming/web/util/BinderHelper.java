@@ -112,7 +112,6 @@ import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -126,7 +125,6 @@ import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.portlet.forum.ViewController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -2877,7 +2875,6 @@ public class BinderHelper {
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
 		MapInputData inputData = new MapInputData(request.getParameterMap());
 		Set<Long> idList       = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList"));
 		Set<Long> idListGroups = LongIdUtil.getIdsAsLongSet(getInputValues(inputData,"_sendMail_toList_groups"));
@@ -2911,16 +2908,7 @@ public class BinderHelper {
 					String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
 					String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 					boolean incAtt = (!includeAttachments.equals(""));
-					Set emailAddress = new HashSet();
-					//See if this user wants to be BCC'd on all mail sent out
-					String bccEmailAddress = user.getBccEmailAddress();
-					if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
-						if (!emailAddress.contains(bccEmailAddress.trim())) {
-							//Add the user's chosen bcc email address
-							emailAddress.add(bccEmailAddress.trim());
-						}
-					}
-					bs.getAdminModule().sendMail(entry, recipients, emailAddress, null, null, null, subject, 
+					bs.getAdminModule().sendMail(entry, recipients, null, null, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
@@ -4081,7 +4069,6 @@ public class BinderHelper {
 		Map captionMap = new HashMap();
 		Map threadMap = new HashMap();
 		Map questionsMap = new HashMap();
-		Map questionRespondersMap = new HashMap();
 		Map transitionMap = new HashMap();
 		Map descriptionMap = new HashMap();
 		for (int i=0; i<entryList.size(); i++) {
@@ -4105,12 +4092,7 @@ public class BinderHelper {
 				}
 					
 				if (!entry.isPreDeleted()) {
-					Map<String,Map> qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
-					//Get the responders for each question
-					for (String q : qMap.keySet()) {
-						Map<Long,User> qResponders = WorkflowProcessUtils.getQuestionResponderPrincipals(entry, ws, q);
-						questionRespondersMap.put(q, qResponders);
-					}
+					Map qMap = bs.getFolderModule().getWorkflowQuestions(entry, ws.getTokenId());
 					questionsMap.put(ws.getTokenId(), qMap);
 				}
 			}
@@ -4118,27 +4100,10 @@ public class BinderHelper {
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
 		model.put(WebKeys.WORKFLOW_THREAD_CAPTIONS, threadMap);
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
-		model.put(WebKeys.WORKFLOW_QUESTION_RESPONDERS, questionRespondersMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		model.put(WebKeys.WORKFLOW_DESCRIPTIONS, descriptionMap);
 	}
-
-    public static boolean checkIfWorkflowResponseAllowed(WorkflowSupport entry, WorkflowState ws, String questionName) {
-     	User user = RequestContextHolder.getRequestContext().getUser();
-     	boolean response = true;
- 		//Check to make sure this is allowed
- 		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, questionName)) {
- 			//Build a list of the people who can respond
- 			Set<Long> responders = WorkflowProcessUtils.getQuestionResponders(entry, ws, questionName);
- 			if (!responders.contains(user.getId())) {
- 				//This user is not on the responder list. Just ignore the request
- 				response = false;
- 			}
- 		}
- 		return response;
-     }
-     
-
+	
 	public static List getAllApplications(AllModulesInjected bs) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);

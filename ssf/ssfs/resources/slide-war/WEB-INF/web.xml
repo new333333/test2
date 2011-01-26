@@ -122,10 +122,6 @@
 		<listener-class>org.kablink.teaming.spring.web.util.Log4jConfigListener</listener-class>
 	</listener>
     
-    <listener>
-     	<listener-class>org.kablink.teaming.ssfs.web.servlet.listener.SessionListener</listener-class>
-    </listener>
-    
     <!-- Definition and configuration of Slide's WebDAV servlet. -->
     <servlet>
         <servlet-name>webdav</servlet-name>

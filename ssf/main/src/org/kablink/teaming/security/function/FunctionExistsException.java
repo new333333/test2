@@ -52,9 +52,4 @@ public class FunctionExistsException extends UncheckedCodedException {
 		public FunctionExistsException(Throwable cause) {
 			super(FunctionExistsException_ErrorCode, new Object[]{cause});
 		}
-		
-	    public int getHttpStatusCode() {
-	    	return 409; // Conflict
-	    }
-
 }

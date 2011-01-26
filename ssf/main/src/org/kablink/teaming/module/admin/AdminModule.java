@@ -51,8 +51,6 @@ import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Condition;
-import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -72,8 +70,7 @@ public interface AdminModule {
 		manageFunctionMembership,
 		manageErrorLogs,
 		manageExtensions,
-		manageIndex,
-		manageFunctionCondition
+		manageIndex
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -97,8 +94,7 @@ public interface AdminModule {
 	 * @param operations
 	 * @throws AccessControlException
 	 */
-	public Function addFunction(String name, Set<WorkAreaOperation>operations, 
-			String scope, List<ConditionalClause> conditions) throws AccessControlException;
+	public void addFunction(String name, Set<WorkAreaOperation>operations, String scope) throws AccessControlException;
 	/**
 	 * Add a posting definition, used to receive incoming mail
 	 * @param updates
@@ -151,7 +147,6 @@ public interface AdminModule {
      * Get system functions
      * @return
      */
-    public Function getFunction(Long functionId);
     public List<Function> getFunctions();
     public List<Function> getFunctions(String scope);
     /**
@@ -174,7 +169,7 @@ public interface AdminModule {
     public List<WorkAreaFunctionMembership> getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List<WorkAreaFunctionMembership> getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
  
-    public Function modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
+    public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
     
     public void setEntryHasAcl(final WorkArea workArea, final Boolean hasAcl, final Boolean checkFolderAcl);
@@ -270,15 +265,4 @@ public interface AdminModule {
 	public void modifyExtension(ExtensionInfo extension);
 	
 	public void optimizeIndex(String[] nodeNames) throws ManageIndexException, AccessControlException;
-	
-	public void addFunctionCondition(Condition functionCondition);
-	
-	public void modifyFunctionCondition(Condition functionCondition);
-	
-	public void deleteFunctionCondition(Long functionConditionId);
-	
-	public Condition getFunctionCondition(Long functionConditionId);
-	
-	public List<Condition> getFunctionConditions();
-	
  }

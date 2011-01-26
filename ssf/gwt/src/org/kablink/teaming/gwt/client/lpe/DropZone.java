@@ -62,10 +62,6 @@ public class DropZone extends Composite
 	private FlowPanel m_dropIndicator;	// Horizontal bar that shows the user where a dropped widget will be inserted.
 	private LandingPageEditor	m_lpe	= null;
 	private DropWidget m_dropBeforeWidget = null;	// When a widget gets dropped on this drop zone we will insert it before this widget.
-	private DropZone m_parentDropZone = null;		// The DropZone this DropZone lives in.
-	private String m_debugName = "";				// This is used for debug purposes only.
-	private String m_id;
-	private static int m_baseId = 0;
 	
 	/**
 	 * 
@@ -74,9 +70,6 @@ public class DropZone extends Composite
 	{
 		m_panel = new FlowPanel();
 		m_panel.setStylePrimaryName( styleName );
-		m_id = "dropZone" + m_baseId;
-		++m_baseId;
-		m_panel.getElement().setId( m_id );
 
 		// Create a visual indicator that show the user where a dropped widget will be inserted.
 		m_dropIndicator = new FlowPanel();
@@ -87,15 +80,9 @@ public class DropZone extends Composite
 		// Register for mouse-over and mouse-out events.
 		addMouseOverHandler( this );
 		addMouseOutHandler( this );
-
+		
 		// Remember the Landing Page Editor this drop zone is a part of.
 		m_lpe = lpe;
-		
-		// Tell the Landing Page Editor to cache is DropZone.
-		m_lpe.cacheDropZone( this );
-		
-		if ( styleName != null )
-			m_debugName += styleName;
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_panel );
@@ -137,9 +124,6 @@ public class DropZone extends Composite
 			// Yes, insert the dropped widget at the appropriate location.
 			m_panel.insert( dropWidget, m_panel.getWidgetIndex( m_dropBeforeWidget ) );
 		}
-		
-		// Tell the widget which DropZone he lives in.
-		dropWidget.setParentDropZone( this );
 	}// end addWidgetToDropZone()
 	
 	
@@ -184,52 +168,6 @@ public class DropZone extends Composite
 		// Get the adjusted height of this drop zone.
 		return getOffsetHeight();
 	}// end adjustHeightOfAllTableWidgets()
-	
-
-	/**
-	 * Check to see if this DropZone contains the given DropZone.
-	 */
-	public boolean containsDropZone( DropZone dropZone )
-	{
-		ArrayList<DropWidget> childWidgets;
-		DropWidget nextWidget;
-		int i;
-
-		// Get the list of widgets that are children of this DropZone.
-		childWidgets = getWidgets();
-		
-		// Spin through the list of child widgets and see if they contain the given DropZone
-		if ( childWidgets != null )
-		{
-			for (i = 0; i < childWidgets.size(); ++i)
-			{
-				nextWidget = childWidgets.get( i );
-				
-				// Does this widget have DropZones?
-				if ( nextWidget instanceof HasDropZone )
-				{
-					// Yes, does this widget hold the given DropZone
-					if ( ((HasDropZone) nextWidget).containsDropZone( dropZone ) )
-					{
-						// Yes
-						return true;
-					}
-				}
-			}
-		}
-
-		// If we get here, we don't hold the given drop zone.
-		return false;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getDebugName()
-	{
-		return m_debugName;
-	}
 	
 	
 	/**
@@ -337,24 +275,6 @@ public class DropZone extends Composite
 	
 	
 	/**
-	 * 
-	 */
-	public String getId()
-	{
-		return m_id;
-	}
-	
-	
-	/**
-	 * Return the DropZone this widget lives in.
-	 */
-	public DropZone getParentDropZone()
-	{
-		return m_parentDropZone;
-	}
-	
-
-	/**
 	 * Return how much this drop zone has been scrolled vertically.
 	 */
 	public int getScrollY()
@@ -442,8 +362,8 @@ public class DropZone extends Composite
 	 */
 	public void onMouseOut( MouseOutEvent event )
 	{
-		// Is the user currently dragging an item?
-		if ( m_lpe != null && m_lpe.isDragInProgress() )
+		// Is the user currently dragging an item from the palette?
+		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor that the cursor is no longer over this drop zone.
 			m_lpe.leavingDropZone( this, event.getClientX(), event.getClientY() );
@@ -456,13 +376,8 @@ public class DropZone extends Composite
 	 */
 	public void onMouseOver( MouseOverEvent event )
 	{
-		// Because of a problem with IE we need to handle the on-mouse-over event in the
-		// LandingPageEditor.onPreviewNativeEvent().  That is why we just return.
-		if ( event != null || event == null )
-			return;
-		
-		// Is the user currently dragging an item?
-		if ( m_lpe != null && m_lpe.isDragInProgress() )
+		// Is the user currently dragging an item from the palette?
+		if ( m_lpe != null && m_lpe.isPaletteItemDragInProgress() )
 		{
 			// Yes, tell the landing page editor what drop zone the cursor is over.
 			m_lpe.enteringDropZone( this, event.getClientX(), event.getClientY() );
@@ -490,15 +405,6 @@ public class DropZone extends Composite
 		element = m_panel.getElement();
 		DOM.setStyleAttribute( element, "height", cssHeight );
 	}// end setHeight()
-	
-	
-	/**
-	 * Set the DropZone this DropZone lives in.
-	 */
-	public void setParentDropZone( DropZone dropZone )
-	{
-		m_parentDropZone = dropZone;
-	}
 	
 	
 	/**

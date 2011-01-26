@@ -36,9 +36,5 @@ public class UserExistsException extends UncheckedCodedException {
 	        synchronized (s) {
 	            s.println(toString());
 	        }	
-	    }
-	    
-	    public int getHttpStatusCode() {
-	    	return 409; // Conflict
-	    }
+	    }    
 }

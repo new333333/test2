@@ -39,7 +39,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -70,7 +69,6 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
@@ -81,14 +79,11 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowCondition;
-import org.kablink.teaming.security.function.WorkArea;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
@@ -133,7 +128,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	} else if ("appendTitle".equals(name)) {
 		    		n.appendTitle = GetterUtil.getBoolean(value, false);
 		    	} else if ("bodyText".equals(name)) {
-		    		n.body = prop.getText();
+		    		n.body = value;
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
 		    	} else if ("emailAddrs".equals(name)) {
@@ -343,111 +338,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		}
 		if (conditions == null) conditions = new ArrayList();
 		return conditions;
-    }
-    
-    public static boolean checkIfQuestionRespondersSpecified(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Definition wfDef = ws.getDefinition();
-    	boolean response = false;
-		Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
-		if (stateEle == null) return response;
-		Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
-		if (questionEle != null) {
-			Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
-			if (questionRespondersEle != null) {
-				response = true;
-			}
-		}
-		return response;
-    }
-    public static boolean checkIfQuestionRespondersIncludeForumDefault(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Definition wfDef = ws.getDefinition();
-    	boolean response = false;
-		Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
-		if (stateEle != null) {
-			Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
-			if (questionEle != null) {
-				Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
-				if (questionRespondersEle != null) {
-					String forumDefault = DefinitionUtils.getPropertyValue(questionRespondersEle, "folderDefault");
-					if ("true".equals(forumDefault)) {
-						response = true;
-					}
-				} else {
-					//If there is no specific responder list, then the responders must be the folder default
-					response = true;
-				}
-			}
-		}
-		return response;
-    }
-    public static boolean checkIfEveryoneMustRespondToQuestion(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Definition wfDef = ws.getDefinition();
-    	boolean response = false;
-		Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
-		if (stateEle == null) return response;
-		List<Element> transitionsOnResponse = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionOnResponse']");
-		for (Element tor : transitionsOnResponse) {
-			if ("true".equals(DefinitionUtils.getPropertyValue(tor, "everyone"))) {
-				//Found one transition where everyone must respond
-				response = true;
-				break;
-			}
-		}
-		return response;
-    }
-    public static Map<Long,User> getQuestionResponderPrincipals(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Set<Long> ids = getQuestionResponders(entry, ws, question);
-    	List<User> users = getInstance().profileDao.loadUsers(ids, RequestContextHolder.getRequestContext().getZoneId());
-    	Map<Long,User> userMap = new HashMap<Long,User>();
-    	for (User user : users) userMap.put(user.getId(), user);
-    	return userMap;
-    }
-    public static Set<Long> getQuestionResponders(WorkflowSupport entry, WorkflowState ws, String question) {
-    	Definition wfDef = ws.getDefinition();
-    	Set<Long> responders = new HashSet();
-		Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", ws.getState());
-		if (stateEle != null) {
-			Element questionEle = DefinitionUtils.getItemByPropertyName(stateEle, "workflowQuestion", question);
-			if (questionEle != null) {
-				Element questionRespondersEle = (Element) questionEle.selectSingleNode("./item[@name='workflowQuestionResponders']");
-				if (questionRespondersEle != null) {
-					WfAcl acl = getAcl(questionRespondersEle, (DefinableEntity)entry, WfAcl.AccessType.modify);
-					if (acl != null) {
-						responders.addAll(acl.getPrincipalIds());
-						responders = getInstance().profileDao.explodeGroups(responders, 
-			 					RequestContextHolder.getRequestContext().getZoneId(), false);
-					}
-				}
-			}
-		}
-		//See if this question allows folder default
-		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
-			//Yes, add in those users who can modify the entry
-			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	        Set modifyEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.MODIFY_ENTRIES);
-	        if (modifyEntries.remove(ObjectKeys.OWNER_USER_ID)) modifyEntries.add(entry.getOwnerId());
-	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
-	   		//See if this includes All Users
-	        Long allUsersId = Utils.getAllUsersGroupId();
-	        if (allUsersId != null && modifyEntries.contains(allUsersId)) {
-	        	//We ignore the All Users group
-	        	modifyEntries.remove(allUsersId);
-	        }
-	        Set<Long> defaultResponders = getInstance().profileDao.explodeGroups(modifyEntries, zoneId, false);
-	        responders.addAll(defaultResponders);
-		}
-
-		return responders;
-    }
-
+    }    
     public static Set<String> getQuestionNames(Definition wfDef, String stateName) {
     	Set<String> qNames = new HashSet();
     	Document wfDoc = wfDef.getDefinition();
@@ -694,60 +585,17 @@ public static void resumeTimers(WorkflowSupport entry) {
 				} else if (type.equals("transitionOnResponse")) {
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
-					boolean everyoneMustRespond = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone"));
-					boolean everyoneMustRespondThis = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone_this"));
-					Set<Long> responders = new HashSet();
-					if (everyoneMustRespond) {
-						//Build a list of the people who must respond
-						responders = getQuestionResponders(entry, state, question);
-					}
-					Set<Long> respondersFound = new HashSet();
-					boolean doTransition = false;
-					boolean anotherResponseSeen = false;
 					if (!Validator.isNull(question) && !Validator.isNull(response)) {
 						Set responses = entry.getWorkflowResponses();
 						for (Iterator iter=responses.iterator(); iter.hasNext(); ) {
 							WorkflowResponse wr = (WorkflowResponse)iter.next();
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
-									question.equals(wr.getName())) {
-								if (response.equals(wr.getResponse()) && !everyoneMustRespond && !everyoneMustRespondThis) {
-									//Transition as soon as one person gives this response.
-									doTransition = true;
-									break;
-								} else if (response.equals(wr.getResponse()) && (everyoneMustRespond || everyoneMustRespondThis)) {
-									//We have to wait until we see if all responders answered
-									if (responders.contains(wr.getResponderId())) {
-										respondersFound.add(wr.getResponderId());
-									}
-									if (responders.size() == respondersFound.size() && everyoneMustRespondThis && !anotherResponseSeen) {
-										//all of the responders have responded with exactly this value
-										doTransition = true;
-										break;
-									} else if (responders.size() == respondersFound.size() && !everyoneMustRespondThis) {
-										//all of the responders have responded
-										doTransition = true;
-										break;
-									}
-								} else if (!response.equals(wr.getResponse()) && everyoneMustRespond && !everyoneMustRespondThis) {
-									//Someone has responded with another value
-									anotherResponseSeen = true;
-									//See if all responders answered
-									if (responders.contains(wr.getResponderId())) {
-										respondersFound.add(wr.getResponderId());
-									}
-									if (responders.size() == respondersFound.size()) {
-										//all of the responders have responded 
-										doTransition = true;
-										break;
-									}
-								}
-							} 
+									question.equals(wr.getName()) && response.equals(wr.getResponse())) {
+								setVariables(condition, executionContext, entry, state);
+								if (debugEnabled) logger.debug("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
+								return toState;
+							}
 						}
-					}
-					if (doTransition) {
-						setVariables(condition, executionContext, entry, state);
-						if (debugEnabled) logger.debug("Take conditional transition(" + type + ") " + state.getState() + "." + toState);
-						return toState;
 					}
 				} else if (type.equals("transitionOnEntryData")) {
 					Object currentVal=null;
@@ -1071,7 +919,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 		return acl;
 	}
 
-	public static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
+	private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
 		if (aclElement == null) return null;
 		List<Element>props = aclElement.selectNodes("./properties/property");
 		String name, value;

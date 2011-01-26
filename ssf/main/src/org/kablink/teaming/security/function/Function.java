@@ -32,12 +32,8 @@
  */
 package org.kablink.teaming.security.function;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +63,6 @@ public class Function extends ZonedObject {
     private String internalId;
     private String scope; //Used to segment roles between zone, binder and entry
     private boolean zoneWide=false;
-    private List<ConditionalClause> conditionalClauses;
 	/**
 	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null"
 	 */    
@@ -149,6 +144,17 @@ public class Function extends ZonedObject {
         this.scope = scope;
     }
 
+    /**
+     * @hibernate.version type="long" 
+     */
+    private long getLockVersion() {
+        return this.lockVersion;
+    }
+    private void setLockVersion(long lockVersion) {
+        this.lockVersion = lockVersion;
+    }
+    
+    
     public Set getOperations() {
         if(operations == null)
             computeOperations();
@@ -173,91 +179,6 @@ public class Function extends ZonedObject {
         computeOperationNames();
    }
     
-    public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
-
-        //objects can be proxied so don't compare classes.
-        if (obj == null)
-            return false;
-      
-        Function o = (Function) obj;
-        //assume object not persisted yet
-        if (!o.getName().equals(name)) return false;
-        if (!o.getZoneId().equals(zoneId)) return false;               
-        return true;
-    }
-    public int hashCode() {
-       	int hash = 7;
-    	hash = 31*hash + name.hashCode();
-    	hash = 31*hash + zoneId.hashCode();
-    	return hash;
-    }
-    
-    /*
-     * Returns a list of <code>ConditionalClause</code> ordered by condition ids.
-     */
-	public List<ConditionalClause> getConditionalClauses() {
-		// We have no requirement that this list be stored sorted in the database. 
-		// We only need to make sure that the caller always gets this list sorted.
-		if(conditionalClauses == null)
-			return new ArrayList<ConditionalClause>();
-		// Return a copy of the list to keep the caller from making direct changes to the original list.
-		// The returned copy must have the members sorted in ascending order of the IDs of the conditions.
-		return sortByConditionId(new ArrayList<ConditionalClause>(conditionalClauses));
-	}
-	
-	public void setConditionalClauses(List<ConditionalClause> conditionalClauses) {
-		this.conditionalClauses = conditionalClauses;
-	}
-	
-	/*
-	 * Returns a list of <code>ConditionalClause</code> of specified type ordered by condition ids.
-	 */
-	public List<ConditionalClause> getConditionalClauses(ConditionalClause.Meet meet) {
-		if(conditionalClauses == null)
-			return new ArrayList<ConditionalClause>();
-		List<ConditionalClause> list = new ArrayList<ConditionalClause>();
-		for(ConditionalClause cc : conditionalClauses) {
-			if(cc.getMeet() == meet)
-				list.add(cc);
-		}
-		return sortByConditionId(list);
-	}
-
-	/*
-	 * Returns a sorted list of IDs of the conditions of specified type.
-	 */
-	public List<Long> getConditionIds(ConditionalClause.Meet meet) {
-		if(conditionalClauses == null)
-			return new ArrayList<Long>();
-		List<Long> list = new ArrayList<Long>();
-		for(ConditionalClause cc : conditionalClauses) {
-			if(cc.getMeet() == meet)
-				list.add(cc.getCondition().getId());
-		}
-		Collections.sort(list);
-		return list;
-	}
-
-	
-	public boolean isConditional() {
-		if(conditionalClauses != null && conditionalClauses.size() > 0)
-			return true;
-		else
-			return false;
-	}
-
-    /**
-     * @hibernate.version type="long" 
-     */
-    private long getLockVersion() {
-        return this.lockVersion;
-    }
-    private void setLockVersion(long lockVersion) {
-        this.lockVersion = lockVersion;
-    }
-
     /**
      * @hibernate.set lazy="false" table="SS_FunctionOperations" cascade="all"
      * @hibernate.key column="functionId"
@@ -309,21 +230,24 @@ public class Function extends ZonedObject {
         }
         
     }
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
 
-	private List<ConditionalClause> sortByConditionId(List<ConditionalClause> list) {
-		Collections.sort(list, 
-				new Comparator<ConditionalClause>() {
-			public int compare(ConditionalClause cc1, ConditionalClause cc2) {
-				Long id1 = cc1.getCondition().getId();
-				Long id2 = cc2.getCondition().getId();
-				if(id1 == null)
-					return -1;
-				if(id2 == null)
-					return 1;
-				return id1.compareTo(id2);
-			}
-		});
-		return list;
-	}
-
+        //objects can be proxied so don't compare classes.
+        if (obj == null)
+            return false;
+      
+        Function o = (Function) obj;
+        //assume object not persisted yet
+        if (!o.getName().equals(name)) return false;
+        if (!o.getZoneId().equals(zoneId)) return false;               
+        return true;
+    }
+    public int hashCode() {
+       	int hash = 7;
+    	hash = 31*hash + name.hashCode();
+    	hash = 31*hash + zoneId.hashCode();
+    	return hash;
+    }
 }

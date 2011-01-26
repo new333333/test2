@@ -131,14 +131,14 @@
 	  </c:if>
 
 		<jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_actions_edit_button.jsp" />
-
+		
 		<div class="ss_inline_menu">
 		  <a target="_blank" style="text-decoration: none;" 
 		    href="<ssf:fileUrl zipUrl="true" entity="${ssDefinitionEntry}" fileId="${ss_attachedFile.id}" />" 
 	       ><span><ssf:nlt tag="file.downloadAsZip" /></span></a>
 		</div>
 		
-      <c:if test="${!ss_pseudoEntity && !ss_attachedFileIsVersion}">
+      <c:if test="${!ss_attachedFileIsVersion}">
 		<div class="ss_inline_menu">
 			<a class="ss_nowrap" 
 			  title="<ssf:nlt tag="entry.DownloadAllAttachmentsAsZip"/>" 
@@ -147,7 +147,7 @@
 		</div>
 	  </c:if>
 		
-		<c:if test="${!ss_pseudoEntity && ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
+		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
@@ -163,7 +163,7 @@
 		  </div>
 		</c:if>
 
-		<c:if test="${!ss_pseudoEntity && !ss_attachedFileIsVersion}">
+		<c:if test="${!ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
@@ -181,7 +181,7 @@
 		</c:if>
 		</c:if>
 		
-		<c:if test="${!ss_pseudoEntity && ss_attachedFileIsVersion}">
+		<c:if test="${ss_attachedFileIsVersion}">
 		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
@@ -199,7 +199,7 @@
 		</c:if>
 		</c:if>
 
-		<c:if test="${!ss_pseudoEntity && ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
+		<c:if test="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:url
 			    adapter="true" 
@@ -215,7 +215,7 @@
 		  </div>
 		</c:if>
 
-		<c:if test="${!ss_pseudoEntity && !ss_attachedFileIsVersion}">
+		<c:if test="${!ss_attachedFileIsVersion}">
 		  <div class="ss_inline_menu">
 		    <a href="<ssf:ssfsInternalAttachmentUrl 
 						binder="${ssDefinitionEntry.parentBinder}"

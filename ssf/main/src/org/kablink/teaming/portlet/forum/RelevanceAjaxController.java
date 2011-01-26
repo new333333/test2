@@ -171,7 +171,6 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	private void ajaxSaveShareThisBinder(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		//TODO Add more code to store the share request
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
@@ -197,31 +196,18 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 
 		getProfileModule().setShares(entity, ids, teams);
 		String title;
-		String shortTitle;
 		if (entity instanceof Principal) {
 			title = Utils.getUserTitle((Principal)entity);
 		} else {
 			title = entity.getTitle();
 		}
-		shortTitle = title;
 		if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
 		String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 		// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 		Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalink((ActionRequest) null, entity) +
 				"\">" + title + "</a><br/><br/>" + addedComments);
 		try {
-			String mailTitle = NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())});
-			mailTitle += " (" + shortTitle +")";
-			Set emailAddress = new HashSet();
-			//See if this user wants to be BCC'd on all mail sent out
-			String bccEmailAddress = user.getBccEmailAddress();
-			if (bccEmailAddress != null && !bccEmailAddress.equals("")) {
-				if (!emailAddress.contains(bccEmailAddress.trim())) {
-					//Add the user's chosen bcc email address
-					emailAddress.add(bccEmailAddress.trim());
-				}
-			}
-			Map status = getAdminModule().sendMail(ids, teams, emailAddress, null, null, mailTitle, body);
+			Map status = getAdminModule().sendMail(ids, teams, null, null, null, NLT.get("relevance.mailShared", new Object[]{Utils.getUserTitle(RequestContextHolder.getRequestContext().getUser())}), body);
 			Set totalIds = new HashSet();
 			totalIds.addAll(ids);
 			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);

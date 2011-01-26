@@ -5,13 +5,11 @@ ss_changelogs userName xmlString
 ss_customattributes stringValue description_text xmlValue
 ss_definitions name title
 ss_emailaddresses address
-ss_emaillog fromField subj comment toEmailAddresses fileAttachments
 ss_events calUid
 ss_folderentries postedBy description_text title normalTitle
 ss_forums name pathName branding brandingExt resourcePath description_text title normalTitle searchTitle templateTitle tDescription_text notify_email notify_fromAddress notify_subject
 ss_functions name
 ss_functionoperation operationName
-ss_functionconditions encodedSpec title description_text 
 ss_libraryentries name
 ss_postings emailAddress
 ss_principals name foreignName description_text title normalTitle firstName lastName middleName organization zonName postUrl status skypeId twitterId

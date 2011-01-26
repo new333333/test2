@@ -1983,44 +1983,4 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getNonDefaultQuotas(String,long)");
     	}	        
 	}
-
-	// This returns a list of all disabled user accounts
-	public List<Long> getDisabledUserAccounts(final long zoneId) {
-		long begin = System.currentTimeMillis();
-		try {
-			final String principalType = ObjectKeys.PRINCIPAL_TYPE_USER;
-			List<Long> userList = new ArrayList<Long>();
-			List results = null;
-			results = (List) getHibernateTemplate().execute(
-					new HibernateCallback() {
-						public Object doInHibernate(Session session)
-								throws HibernateException {
-							
-							String sql = "Select w.id "
-								+ " FROM org.kablink.teaming.domain.UserPrincipal w "
-								+ " WHERE w.disabled = true "
-								+ " AND w.deleted = false "
-								+ " AND w.type = :principalType" 
-								+ " AND w.zoneId = :zoneId";
-	
-							Query query = session.createQuery(sql)
-		                   	.setString("principalType", principalType)
-		                   	.setLong("zoneId", zoneId);
-							
-							List l = null;
-							l = query.list();
-							return l;
-						}
-					});
-	
-			for (int i = 0; i < results.size(); i++) {
-				userList.add((Long) results.get(i));
-			}
-	
-			return userList;
-    	}
-    	finally {
-    		end(begin, "getDisabledUserAccounts(long)");
-    	}	        
-	}
 }

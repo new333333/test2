@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,60 +44,43 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum TeamingAction implements IsSerializable
 {
-	ACTIVITY_STREAM( "Loads an Activity Stream" ),
 	ADMINISTRATION( "Invoke Administration Page" ),
-	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
-	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
 	CLOSE_ADMINISTRATION( "Close Administration Page" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),
 	EDIT_SITE_BRANDING ("Edit Site Branding" ),
-	ENTER_ACTIVITY_STREAM_MODE( "Enters Activity Streams in the Sidebar and Content Panel" ),
-	EXIT_ACTIVITY_STREAM_MODE( "Exits Activity Streams Mode" ),
-	GOTO_CONTENT_URL( "Changes the Current Context to a non-Permalink URL" ),
-	GOTO_PERMALINK_URL( "Changes the Current Context to a Permalink URL" ),
+	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
 	HELP( "Help" ),
 	HIDE_LEFT_NAVIGATION( "Hide the Left Navigation Panel" ),
 	HIDE_MASTHEAD( "Hide the Header" ),
 	HIERARCHY_BROWSER_CLOSED( "Teaming's Hierarchy Browser Has Been Closed" ),
-	INVOKE_SIMPLE_PROFILE( "Invoke the Simple Profile dialog" ),
 	LOGIN( "Login" ),
 	LOGOUT( "Logout" ),
-	MARK_ENTRY_READ( "Mark the entry as read" ),
-	MARK_ENTRY_UNREAD( "Mark the entry as unread" ),
 	MY_WORKSPACE( "My Workspace" ),
-	PRE_CONTEXT_SWITCH( "Tells the UI That a Context Switch is About to Take Place" ),
-	RECENT_PLACE_SEARCH( "Executes a Recent Place Search" ),
-	RELOAD_LEFT_NAVIGATION( "Tells the Left Navigation Panel To Reload Itself"),
-	REPLY( "Invoke the 'reply to entry' ui" ),
-	SAVED_SEARCH( "Executes a Saved Search Using a String as the Name" ),
 	SELECTION_CHANGED( "The User Changed a Selection Somewhere" ),
-	SHARE( "Invoke the 'share this entry' ui" ),
-	SHOW_ALL_ENTRIES( "Show all entries" ),
 	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
 	SHOW_MASTHEAD( "Show the Header" ),
-	SHOW_UNREAD_ENTRIES( "Show unread entries" ),
-	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),
-	SUBSCRIBE( "Invoke the 'subscribe to this entry' ui" ),
-	TAG( "Invoke the 'tag this entry' ui" ),
-	TAG_SEARCH( "Executes a Search Using a String as a tag Name" ),
-	TEAMING_FEED( "Open the Teaming Feed window" ),
 	TOGGLE_GWT_UI( "Toggles the State of the GWT UI" ),
 	TRACK_BINDER( "Tracks the Current Binder" ),
 	UNTRACK_BINDER( "Untracks the Current Binder" ),
 	UNTRACK_PERSON( "Untracks the Current Person" ),
-	VIEW_FOLDER_ENTRY( "Open an entry for viewing" ),
 	VIEW_TEAM_MEMBERS( "View Team Membership of Current Binder" ),
-	SHOW_FORUM_ENTRY( "Open an entry for viewing" ),
-	TASK_MOVE_UP( "Move the Selected Task Up in the Ordering." ),
-	TASK_MOVE_DOWN( "Move the Selected Task Down in the Ordering." ),
-	TASK_MOVE_LEFT( "Move the Selected Task Left (i.e., Decrease its Subtask Level.)" ),
-	TASK_MOVE_RIGHT( "Move the Selected Task Right (i.e., Increase its Subtask Level.)" ),
-	TASK_DELETE( "Delete the Selected Tasks." ),
-	TASK_SET_PERCENT_DONE( "Sets a Task's Percentage Done." ),
-	TASK_SET_PRIORITY( "Sets a Task's Priority." ),
-	TASK_SET_STATUS( "Sets a Task's Status." ),
+	GOTO_CONTENT_URL( "Changes the Current Context to a non-Permalink URL" ),
+	GOTO_PERMALINK_URL( "Changes the Current Context to a Permalink URL" ),
+	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
+	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
+	SAVED_SEARCH( "Executes a Saved Search Using a String as the Name" ),
+	TAG_SEARCH( "Executes a Search Using a String as a tag Name" ),
+	TEAMING_FEED( "Open the Teaming Feed window" ),
+	RECENT_PLACE_SEARCH( "Executes a Recent Place Search" ),
+	PRE_CONTEXT_SWITCH( "Tells the UI That a Context Switch is About to Take Place" ),
+	RELOAD_LEFT_NAVIGATION( "Tells the Left Navigation Panel To Reload Itself"),
+	ACTIVITY_STREAM( "Loads an Activity Stream" ),
+	ENTER_ACTIVITY_STREAM_MODE( "Enters Activity Streams in the Sidebar and Content Panel" ),
+	EXIT_ACTIVITY_STREAM_MODE( "Exits Activity Streams Mode" ),
+	INVOKE_SIMPLE_PROFILE( "Invoke the Simple Profile dialog" ),
+	VIEW_FOLDER_ENTRY( "Open an entry for viewing" ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

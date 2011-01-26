@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.exception;
 
-import javax.ws.rs.core.Response;
-
 import org.kablink.teaming.util.NLT;
 
 /**
@@ -72,8 +70,6 @@ public abstract class UncheckedCodedException extends RuntimeException implement
         setErrorArgs(errorArgs);
     }
 
-    public abstract int getHttpStatusCode();
-    
     public String getLocalizedMessage() {
     	try {
     		String str = NLT.get(getErrorCode(), getErrorArgs());

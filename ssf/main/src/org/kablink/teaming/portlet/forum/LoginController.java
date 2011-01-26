@@ -47,6 +47,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -82,10 +83,7 @@ public class LoginController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		// Force the Vibe product that's running to be determined.
-		// This will set the session captive state, ... into the
-		// session cache as appropriate.
-		GwtUIHelper.getVibeProduct(request);
+		boolean sessionCaptive = GwtUIHelper.isSessionCaptive(request);
 
 		// This controller is used to display the sign-in form used for login. 
 		// If form-based login is disallowed, this controller shouldn't display
@@ -149,9 +147,25 @@ public class LoginController  extends SAbstractControllerRetry {
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
 		if ( durangoUI )
 		{
-			// Store the common GWT UI request info data.
-			GwtUIHelper.setCommonRequestInfoData( request, this, model );
-
+			boolean isASEnabled;
+			boolean showWhatsNew;
+			String isNovellTeaming;
+			String productName;
+		   
+			// Put out information for the RequestInfo object.
+			model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(sessionCaptive));
+			model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
+			
+			// Put out a true/false indicator as to the state of the
+			// new activity streams based user interface.
+			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
+			if (isASEnabled) {
+				String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+				showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+			}
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
+			
 			// Add the binder id to the response.
 			model.put( WebKeys.URL_BINDER_ID, binderId );
 
@@ -172,6 +186,19 @@ public class LoginController  extends SAbstractControllerRetry {
 				model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1/captive/true") );
 			}
 			
+			// Add the ID of the top workspace.
+			String topWSId = GwtUIHelper.getTopWSIdSafely( this );
+			model.put( "topWSId", topWSId );
+			
+			// Add a flag that tells us if we are running Novell or Kablink Teaming.
+			isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
+			model.put( "isNovellTeaming", isNovellTeaming );
+				
+			// Store the name of the product (Novell or Kablink
+			// Teaming) that's running.
+			productName = ReleaseInfo.getName();
+			model.put( "productName", productName );
+				
 			return new ModelAndView( "forum/GwtMainPage", model );
 		}
 		

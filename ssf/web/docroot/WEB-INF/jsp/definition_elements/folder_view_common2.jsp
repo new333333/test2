@@ -35,8 +35,6 @@
 <% // Folder listing %>
 <%@ page import="org.kablink.teaming.relevance.util.RelevanceUtils" %>
 <%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="java.text.SimpleDateFormat" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <script type="text/javascript">
@@ -117,12 +115,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
       </ssf:slidingTableColumn>
 	</c:if>
 
-  	<c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
-  	<c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.number") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['number']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['number']}</c:set>
-	</c:if>
+  	<c:if test="${!empty ssFolderColumns['number']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="6%">
 
       <a href="<ssf:url binderId="${ssBinder.id}" action="${action}" actionUrl="true"><ssf:param 
@@ -135,34 +128,30 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Number") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Number") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
-    	${ss_colHeaderText}
+    	<ssf:nlt tag="folder.column.Number"/>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.Number") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.Number") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'title' && !empty ssFolderColumns['title']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.title") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['title']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['title']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['title']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="28%">
     
     <a href="<ssf:url binderId="${ssBinder.id}" action="${action}" actionUrl="true"><ssf:param 
@@ -175,35 +164,31 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Title") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>	
 	 >
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
     	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
       
     </ssf:slidingTableColumn>
   </c:if>
   
-  <c:if test="${columnName == 'author' && !empty ssFolderColumns['author']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.author") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['author']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['author']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['author']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="24%">
 
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -217,49 +202,39 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Author") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
-		${ss_colHeaderText}
+		<ssf:nlt tag="folder.column.Author"/>
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.Author") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'comments' && !empty ssFolderColumns['comments']}">
-    <c:if test="${ss_folderViewStyle == 'folder'}">
-      <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Replies"/></c:set>
-    </c:if>
-    <c:if test="${ss_folderViewStyle != 'folder'}">
-      <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Comments"/></c:set>
-    </c:if>
-  	<c:if test="${!empty ssFolderColumnTitles['comments']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['comments']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['comments']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
+      <div class="ss_title_menu">
+        <c:if test="${ss_folderViewStyle == 'folder'}"><ssf:nlt tag="folder.column.Replies"/></c:if>
+        <c:if test="${ss_folderViewStyle != 'folder'}"><ssf:nlt tag="folder.column.Comments"/></c:if>
+      </div>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'size' && !empty ssFolderColumns['size']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.size") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['size']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['size']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['size']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
 
     <a href="<ssf:url binderId="${ssBinder.id}" action="${action}" actionUrl="true"><ssf:param 
@@ -267,58 +242,32 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	    	name="ssFolderSortBy" value="_fileSize"/><c:choose><c:when 
 	    	test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}"><ssf:param 
 	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
-	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>"
-		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
-		  	<ssf:title tag="title.sort.by.column.asc">
-		  		<ssf:param name="value" value="${ss_colHeaderText}" />
-		  	</ssf:title>
-		  </c:when>
-		  <c:otherwise>
-		  	<ssf:title tag="title.sort.by.column.desc">
-		  		<ssf:param name="value" value="${ss_colHeaderText}" />
-		  	</ssf:title>
-		  </c:otherwise>
-		</c:choose>
-	>
-	    ${ss_colHeaderText}
+	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>">
+	    <ssf:nlt tag="folder.column.Size"/>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+	    
+			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'download' && !empty ssFolderColumns['download']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.download") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['download']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['download']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['download']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'html' && !empty ssFolderColumns['html']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.html") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['html']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['html']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['html']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="10%">
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Html"/> </div>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.state") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['state']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['state']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['state']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
 
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -332,34 +281,30 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.State") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.State") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
-    	${ss_colHeaderText}
+    	<ssf:nlt tag="folder.column.State"/>
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.State") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.State") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
 
-  <c:if test="${columnName == 'date' && !empty ssFolderColumns['date']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.date") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['date']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['date']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['date']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
     
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -373,32 +318,31 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.LastActivity") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
 	>
-		${ss_colHeaderText}
+		<ssf:nlt tag="folder.column.LastActivity"/>
 	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.LastActivity") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
   
   <c:forEach var="column" items="${ssFolderColumns}">
-   <c:set var="colName" value="${column.key}"/>
-   <c:if test="${columnName == colName}">
+    <c:set var="colName" value="${column.key}"/>
     <c:set var="defId" value=""/>
     <c:set var="eleType" value=""/>
     <c:set var="eleName" value=""/>
@@ -426,16 +370,11 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleSortName" value="${eleName}"/>
 	  <c:if test="${eleType == 'selectbox' || eleType == 'radio'}"><c:set var="eleSortName" value="_caption_${eleName}"/></c:if>
 	  <c:if test="${eleType == 'text' || eleType == 'hidden'}"><c:set var="eleSortName" value="_sort_${eleName}"/></c:if>
-	  <c:if test="${eleType == 'event'}"><c:set var="eleSortName" value="${eleName}#StartDate"/></c:if>
-  	  <c:set var="ss_colHeaderText">${eleCaption}</c:set>
-  	  <c:if test="${!empty ssFolderColumnTitles[colName]}">
-  	    <c:set var="ss_colHeaderText">${ssFolderColumnTitles[colName]}</c:set>
-	  </c:if>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="20%">
-	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'hidden' && eleType != 'checkbox' && eleType != 'date' && eleType != 'date_time' && eleType != 'event' && eleType != 'number' && eleType != 'url'}">
-	      <div class="ss_title_menu">${ss_colHeaderText}</div>
+	    <c:if test="${eleType != 'selectbox' && eleType != 'radio' && eleType != 'text' && eleType != 'hidden' && eleType != 'checkbox' && eleType != 'date' && eleType != 'datetime'}">
+	      <div class="ss_title_menu">${eleCaption}</div>
 	    </c:if>
-	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'hidden' || eleType == 'checkbox' || eleType == 'date' || eleType == 'date_time' || eleType == 'event' || eleType == 'number' || eleType == 'url'}">
+	    <c:if test="${eleType == 'selectbox' || eleType == 'radio' || eleType == 'text' || eleType == 'hidden' || eleType == 'checkbox' || eleType == 'date' || eleType == 'datetime'}">
 		    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 		    	name="operation" value="save_folder_sort_info"/><ssf:param 
 		    	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -445,27 +384,26 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 			
 			<c:choose>
-			  <c:when test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true' ||
-			  		ssFolderSortBy != eleSortName}">
+			  <c:when test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true'}">
 			  	<ssf:title tag="title.sort.by.column.asc">
-			  		<ssf:param name="value" value='${ss_colHeaderText}' />
+			  		<ssf:param name="value" value='${eleCaption}' />
 			  	</ssf:title>
 			  </c:when>
 			  <c:otherwise>
 			  	<ssf:title tag="title.sort.by.column.desc">
-			  		<ssf:param name="value" value='${ss_colHeaderText}' />
+			  		<ssf:param name="value" value='${eleCaption}' />
 			  	</ssf:title>
 			  </c:otherwise>
 			</c:choose>
 			>
-				${ss_colHeaderText}
+				${eleCaption}
 			    <c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true'}">
 					<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-					value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+					value="${eleCaption}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 				</c:if>
 				<c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'false'}">
 					<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-					value='${ss_colHeaderText}' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+					value='${eleCaption}' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 				</c:if>
 		    </a>
 	    </c:if>
@@ -473,14 +411,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	}
 %>
-   </c:if>
   </c:forEach>
   
-  <c:if test="${columnName == 'rating' && !empty ssFolderColumns['rating']}">
-  	<c:set var="ss_colHeaderText"><%= NLT.get("folder.column.rating") %></c:set>
-  	<c:if test="${!empty ssFolderColumnTitles['rating']}">
-  	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['rating']}</c:set>
-	</c:if>
+  <c:if test="${!empty ssFolderColumns['rating']}">
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="10%">
     <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -493,29 +426,28 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
 	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
 	  	</ssf:title>
 	  </c:when>
 	  <c:otherwise>
 	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="${ss_colHeaderText}" />
+	  		<ssf:param name="value" value='<%= NLT.get("folder.column.Rating") %>' />
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
-	>${ss_colHeaderText}
+	><ssf:nlt tag="folder.column.Rating"/>
 	    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+			value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+			value='<%= NLT.get("folder.column.Rating") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     </a>
     </ssf:slidingTableColumn>
   </c:if>
 
-  </c:forEach>
 </ssf:slidingTableRow>
 
   <% // Beginning of Rows %>
@@ -588,8 +520,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
 
- <c:forEach var="columnName" items="${ssFolderColumnsSortOrder}" >
- <c:if test="${columnName == 'number' && !empty ssFolderColumns['number']}">
+ <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
@@ -609,7 +540,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${columnName == 'title' && !empty ssFolderColumns['title']}">
+ <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn style="${slidingTableColStyle}">
   <!-- to keep sunburst in line -->
     <c:if test="${!empty seenStyleburst}">
@@ -682,19 +613,19 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
-  <c:if test="${columnName == 'author' && !empty ssFolderColumns['author']}">
+  <c:if test="${!empty ssFolderColumns['author']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
 	<ssf:showUser user='<%=(User)entry1.get("_principal")%>' titleStyle="<%= seenStyleAuthor %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
  
- <c:if test="${columnName == 'comments' && !empty ssFolderColumns['comments']}">
+ <c:if test="${!empty ssFolderColumns['comments']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
       <span <%= seenStyle %>>${entry1._totalReplyCount}</span>
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${columnName == 'size' && !empty ssFolderColumns['size']}">
+ <c:if test="${!empty ssFolderColumns['size']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileSize}">
       <%
@@ -709,7 +640,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${columnName == 'download' && !empty ssFolderColumns['download']}">
+ <c:if test="${!empty ssFolderColumns['download']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 <%
@@ -744,7 +675,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${columnName == 'html' && !empty ssFolderColumns['html']}">
+ <c:if test="${!empty ssFolderColumns['html']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${hasFile2 && oneFile2}">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${entry1._fileName}" browserType="<%=strBrowserType%>">
@@ -763,7 +694,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </ssf:slidingTableColumn>
  </c:if>
   
-<c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
+<c:if test="${!empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
@@ -786,7 +717,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
  </c:if>
   
 
- <c:if test="${columnName == 'date' && !empty ssFolderColumns['date']}">
+ <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
   	<% if (MiscUtil.isEntryReserved(e1BinderId, e1DocId)) { %><img
 		style="margin-right: 1px;"
@@ -812,8 +743,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <jsp:useBean id="eleCaption2" type="java.lang.String"/>
   <c:forEach var="column" items="${ssFolderColumns}">
 	<jsp:useBean id="column" type="java.util.Map.Entry"/>
-	<c:set var="colName2" value="${column.key}"/>
-	<c:if test="${columnName == colName2}">
 <%
 	String[] temp = new String[] {};
 	colName2 = column.getKey().toString();
@@ -842,157 +771,42 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <jsp:useBean id="entryDef" type="org.kablink.teaming.domain.Definition"/>
 	  <ssf:slidingTableColumn  style="${slidingTableColStyle}">
          <span <%= seenStyle %>>
-         <c:if test="${!empty eleName2 && !empty entry1[eleName2] || !empty eleName2 && eleType2 == 'event'}">
-	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes' || eleType2 == 'hidden'}">
+         <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
+	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text' || eleType2 == 'entryAttributes'}">
 	         <%
 	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>
 	         <%= eleValues %>
 	       </c:if>
-	       
-	       <c:if test="${eleType2 == 'number'}">
-	         <%
-	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
-	         %>
-	         <span style="white-space:nowrap;"><%= eleValues %></span>
-	       </c:if>
-	       
-	       <c:if test="${eleType2 == 'url'}">
-	         <%
-	         	String eleValues = org.kablink.teaming.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
-	         	Element ele = (Element)org.kablink.teaming.web.util.DefinitionHelper.findAttribute(eleName2, entryDef.getDefinition());
-	         	String linkText = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "linkText");
-	         	String target = org.kablink.teaming.web.util.DefinitionHelper.getItemProperty(ele, "target");
-	         	if (linkText == null || linkText.equals("")) linkText = eleValues;
-	         	if (target == null || target.equals("false")) target = "";
-	         	if (target != null && target.equals("true")) target = "_blank";
-	         %>
-	         <a target="<%= target %>" href="<%= eleValues %>"><%= linkText %></a>
-	       </c:if>
-	       
 	       <c:if test="${eleType2 == 'date'}">
 	       	 <c:if test="${!empty entry1[eleName2]}">
-				<%
-					try {
-						java.text.SimpleDateFormat formatter;
-						java.util.Date date;
-						String tdStamp = ((String) entry1.get(eleName2));
-					    String year  = tdStamp.substring(0, 4);
-						String month = tdStamp.substring(4, 6);
-						String day   = tdStamp.substring(6, 8);
-						if (8 < tdStamp.length()) {
-							String time = tdStamp.substring(8);
-							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
-							date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
-							%>
-								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" type="date" dateStyle="short" />
-							<%
-						}
-						else {
-							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-							date = formatter.parse(year + "-" + month + "-" + day);
-							%>
-								<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
-							<%
-						}
-					} catch(Exception e) {}
-				%>
+<%
+	try {
+		java.text.SimpleDateFormat formatter;
+		java.util.Date date;
+		String tdStamp = ((String) entry1.get(eleName2));
+	    String year  = tdStamp.substring(0, 4);
+		String month = tdStamp.substring(4, 6);
+		String day   = tdStamp.substring(6, 8);
+		if (8 < tdStamp.length()) {
+			String time = tdStamp.substring(8);
+			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
+			date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
+			%>
+				<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" type="date" dateStyle="short" />
+			<%
+		}
+		else {
+			formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
+			date = formatter.parse(year + "-" + month + "-" + day);
+			%>
+				<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
+			<%
+		}
+	} catch(Exception e) {}
+%>
 	       	 </c:if>
 	       </c:if>
-	       
-	       <c:if test="${eleType2 == 'date_time'}">
-	       	 <c:if test="${!empty entry1[eleName2]}">
-				<%
-					try {
-						java.text.SimpleDateFormat formatter;
-						java.util.Date date;
-						String tdStamp = ((String) entry1.get(eleName2));
-					    String year  = tdStamp.substring(0, 4);
-						String month = tdStamp.substring(4, 6);
-						String day   = tdStamp.substring(6, 8);
-						if (8 < tdStamp.length()) {
-							String time = tdStamp.substring(8);
-							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd:HHmm");
-							date = formatter.parse(year + "-" + month + "-" + day + ":" + time);
-							%>
-								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= date %>" 
-								  type="both" dateStyle="short" timeStyle="short" />
-							<%
-						}
-						else {
-							formatter = new java.text.SimpleDateFormat("yyyy-MM-dd");
-							date = formatter.parse(year + "-" + month + "-" + day);
-							%>
-								<fmt:formatDate timeZone="GMT" value="<%= date %>" type="date" dateStyle="short" />
-							<%
-						}
-					} catch(Exception e) {}
-				%>
-	       	 </c:if>
-	       </c:if>
-	       
-	       <c:if test="${eleType2 == 'event'}">
-				<%
-					String eventTimeZoneId = (String) entry1.get(eleName2 + "#TimeZoneID");
-					try {
-						boolean showTime = false;
-						Date startDate = (Date) entry1.get(eleName2 + "#StartDate");
-						Date endDate = (Date) entry1.get(eleName2 + "#EndDate");
-						if (startDate != null && endDate != null) {
-							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-							if (sdf.format(startDate).equals(sdf.format(endDate))) {
-								//The two dates are the same, so show the time field
-								showTime = true;
-							}
-						}
-						if (eventTimeZoneId != null) {
-							//Regular event
-							if (startDate != null) {
-								%>
-									<span style="white-space:nowrap;">
-									<ssf:nlt tag="folder.column.event.startAbbreviation" text="S"/>
-									  <% if (showTime) { %>
-									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
-									      type="both" dateStyle="short" timeStyle="short" />
-									  <% } else { %>
-									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= startDate %>" 
-									      type="date" dateStyle="short" />
-									  <% } %>
-									</span>
-								<%
-							}
-							if (startDate != null && endDate != null) {
-								%><br/><%
-							}
-							if (endDate != null) {
-								%>
-									<span style="white-space:nowrap;">
-									  <ssf:nlt tag="folder.column.event.endAbbreviation" text="E"/>
-									  <% if (showTime) { %>
-									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
-									      type="both" dateStyle="short" timeStyle="short" />
-									  <% } else { %>
-									    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= endDate %>" 
-									      type="date" dateStyle="short" />
-									  <% } %>
-									</span>
-								<%
-							}
-						} else {
-							//All day event
-							if (startDate != null) {
-								%>
-									<span style="white-space:nowrap;">
-									    <fmt:formatDate timeZone="GMT" value="<%= startDate %>" 
-									      type="date" dateStyle="short" />
-									</span>
-								<%
-							}
-						}
-					} catch(Exception e) {}
-				%>
-	       </c:if>
-	       
 	       <c:if test="${eleType2 == 'user_list' || 
 	       				 eleType2 == 'userListSelectbox'}">
           	<c:set var="separator" value=""/>
@@ -1016,10 +830,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	}
 %>
-    </c:if>
   </c:forEach>
 
- <c:if test="${columnName == 'rating' && !empty ssFolderColumns['rating']}">
+ <c:if test="${!empty ssFolderColumns['rating']}">
    <ssf:slidingTableColumn  style="${slidingTableColStyle}">
      <c:if test="${!empty entry1._rating}">
 		<span class = "ss_nowrap">
@@ -1050,7 +863,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
    </ssf:slidingTableColumn>
  </c:if>
   
- </c:forEach>
 </ssf:slidingTableRow>
 <%
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,9 +55,10 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -96,27 +97,18 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
-import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
-import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
-import org.kablink.teaming.gwt.client.util.TaskBundle;
-import org.kablink.teaming.gwt.client.util.TaskLinkage;
-import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerHelper;
-import org.kablink.teaming.gwt.server.util.GwtTaskHelper;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -130,6 +122,7 @@ import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -148,6 +141,8 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.search.Constants;
 
+
+
 /**
  * 
  * @author jwootton
@@ -156,7 +151,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
-
+	
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
@@ -520,31 +515,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @param asp
 	 * @param asi
 	 * @param pagingData
-	 * @param asdt
 	 * 
 	 * @return
 	 */
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData, ActivityStreamDataType asdt )
-	{
-		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData, asdt );
-	}// end getActivityStreamData()
-	
 	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, PagingData pagingData )
 	{
-		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, pagingData, ActivityStreamDataType.ALL );
+		return GwtActivityStreamHelper.getActivityStreamData( getRequest( ri ), this, asp, asi, pagingData );
 	}// end getActivityStreamData()
 	
 	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi )
 	{
 		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, null, ActivityStreamDataType.ALL );
-	}// end getActivityStreamData()
-	
-	public ActivityStreamData getActivityStreamData( HttpRequestInfo ri, ActivityStreamParams asp, ActivityStreamInfo asi, ActivityStreamDataType asdt )
-	{
-		// Always use the initial form of the method.
-		return getActivityStreamData( ri, asp, asi, null, asdt );
+		return getActivityStreamData(ri, asp, asi, null);
 	}// end getActivityStreamData()
 	
 	/**
@@ -612,7 +594,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	@SuppressWarnings("unused")
 	public ArrayList<GwtAdminCategory> getAdminActions( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		try
@@ -641,9 +622,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return adminActions;
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 	}// end getAdminActions()
@@ -697,9 +698,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				baseUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, binder, "" );
 			}
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 		return baseUrl;
@@ -775,9 +796,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				folderEntry.setViewEntryUrl( url );
 			}
 		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 		
@@ -839,47 +880,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}
 	
-	/**
-	 * Return a base view folder entry URL that can be used directly in the
-	 * content panel.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param entryId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public String getViewFolderEntryUrl( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		try {
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL( getRequest( ri ), "ss_forum", true );
-			adapterUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY );
-			if ( binderId == null )
-			{
-				FolderEntry entry;
-				
-				entry = getFolderModule().getEntry( null, entryId );
-				binderId = entry.getParentBinder().getId();
-			}
-			adapterUrl.setParameter( WebKeys.URL_BINDER_ID, String.valueOf( binderId ) );
-			adapterUrl.setParameter( WebKeys.URL_ENTRY_ID,  String.valueOf( entryId  ) );			
-			return adapterUrl.toString();
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}		
-	}
-	
-	/**
-	 * Return a list of tags associated with the given entry.
-	 */
-	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId )
-	{
-		return GwtServerHelper.getEntryTags( this, entryId );
-	}
-	
 	
 	/**
 	 * Return a list of the names of the files that are attachments for the given binder
@@ -921,9 +921,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				fileNames.add( fileName );
 			}// end for()
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 
         return fileNames;
@@ -999,9 +1019,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				folder.setViewFolderUrl( url );
 			}
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 		return folder;
@@ -1099,9 +1139,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				}
 			}
 		}
+		catch ( AccessControlException acEx )
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch ( Exception e )
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 	
 		return reply;
@@ -1286,7 +1338,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		GwtTeamingException ex;
 		
-		ex = GwtServerHelper.getGwtTeamingException();
+		ex = new GwtTeamingException();
 		ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
 		throw ex;
 	}// end getSiteAdministrationUrl()
@@ -1361,91 +1413,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 		return brandingData;
 	}// end getSiteBrandingData()
-
-	/**
-	 * Reads the task information from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException 
-	 */
-	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
-	{
-		return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
-	}// end getTaskList()
-
-	/**
-	 * Returns a TaskBundle object for the specified binder.
-	 *
-	 * @param request
-	 * @param ri
-	 * @param binderId
-	 * @param filterType
-	 * @param modeType
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
-	{
-		return
-			GwtTaskHelper.getTaskBundle(
-				getRequest( ri ),
-				this,
-				GwtTaskHelper.getTaskBinder( this, binderId ),
-				filterType,
-				modeType );
-	}// end getTaskBundle()
-
-	/**
-	 * Returns a TaskLinkage object for the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
-	{
-		return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
-	}// end getTaskLinkage()
-
-	/**
-	 * Removes the TaskLinkage object from the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
-		return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
-	}// end saveTaskLinkage()
 	
-	/**
-	 * Stores a TaskLinkage object on the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * @param taskLinkage
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
-	}// end saveTaskLinkage()
 	
 	/**
 	 * Returns a List<String> of the user ID's of the people the
@@ -1736,6 +1704,44 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return PermaLinkUtil.getPermalink( getRequest( ri ), userWS );
 	}// end getUserWorkspacePermalink()
 	
+	/**
+	 * Returns true if the GWT UI is the default UI at login and false
+	 * otherwise.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 */
+	public Boolean getGwtUIDefault( HttpRequestInfo ri )
+	{
+		return new Boolean( GwtUIHelper.isGwtUIDefault() );
+	}// end getGwtUI()
+	
+	/**
+	 * Returns true if the GWT UI is the enabled and false otherwise.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 */
+	public Boolean getGwtUIEnabled( HttpRequestInfo ri )
+	{
+		return new Boolean( GwtUIHelper.isGwtUIEnabled() );
+	}// end getGwtUI()
+	
+	/**
+	 * Returns true if there should be no UI exposed to exit the GWT UI
+	 * and false otherwise.
+	 * 
+	 * @param ri
+	 * 
+	 * @return
+	 */
+	public Boolean getGwtUIExclusive( HttpRequestInfo ri )
+	{
+		return new Boolean( GwtUIHelper.isGwtUIExclusive() );
+	}// end getGwtUI()
+
 	/**
 	 * Returns a TreeInfo containing the display information for the
 	 * Binder hierarchy referred to by a List<Long> of Binder IDs
@@ -2130,7 +2136,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
+	public List<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId )
 	{
 		return GwtServerHelper.getBinderTags( this, binderId );
 	}//end getBinderTags()
@@ -2150,20 +2156,47 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return new Boolean(getBinderModule().testAccess(binder, BinderOperation.manageTag));
 	}//end canManagePublicBinderTags()
 	
-
 	/**
-	 * Returns true if the user can manage public tags on the given entry
-	 * and false otherwise.
+	 * Adds a tag to those defined on a binder.
 	 *
 	 * @param ri
 	 * @param binderId
+	 * @param binderTag
 	 * 
 	 * @return
 	 */
-	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId )
+	public TagInfo addBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
 	{
-		return GwtServerHelper.canManagePublicEntryTags( this, entryId );
-	}
+		return GwtServerHelper.addBinderTag( this, binderId, binderTag );
+	}//end addBinderTag()
+	
+	/**
+	 * Removes a tag from those defined on a binder.
+	 *
+	 * @param ri
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public Boolean removeBinderTag( HttpRequestInfo ri, String binderId, TagInfo binderTag )
+	{
+		return GwtServerHelper.removeBinderTag( this, binderId, binderTag );
+	}//end removeBinderTag()
+	
+	/**
+	 * Updates the list of tags defined on a binder.
+	 *
+	 * @param ri
+	 * @param binderId
+	 * @param binderTags
+	 * 
+	 * @return
+	 */
+	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, List<TagInfo> binderTags )
+	{
+		return GwtServerHelper.updateBinderTags( this, binderId, binderTags );
+	}//end updateBinderTags()
 	
 	/**
 	 * Returns a BinderInfo describing a binder.
@@ -2264,19 +2297,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 			GwtTeamingException ex;
 			
-			ex = GwtServerHelper.getGwtTeamingException();
+			ex = new GwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
-		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
 		} 
 		
 	}// end getSiteAdministrationUrl()
 	
 	/**
-	 * Return true if the presence service is enabled and false
-	 * otherwise.
+	 * Return the URL needed to start an Instant Message with the user.
 	 * 
 	 * @param ri
 	 * 
@@ -2284,7 +2320,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
  	 */
 	public Boolean isPresenceEnabled( HttpRequestInfo ri )
 	{
-		return GwtServerHelper.isPresenceEnabled();
+		PresenceManager presenceService = (PresenceManager)SpringContextUtil.getBean("presenceService");
+		if (presenceService != null)
+		{
+			return presenceService.isEnabled();
+		}
+		else
+		{
+			return Boolean.FALSE;
+		}
 	}
 
 	/**
@@ -2339,12 +2383,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			GwtTeamingException ex;
 
-			ex = GwtServerHelper.getGwtTeamingException();
+			ex = new GwtTeamingException();
 			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
 			throw ex;
 			
-		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
 		} 
 	}// end getImUrl
 
@@ -2438,8 +2486,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 
 			return gwtPresence;
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+	
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
 		} catch (Exception e) {
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+	
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
 		}
 	}// end getPresenceInfo
 
@@ -2569,18 +2627,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public SavedSearchInfo saveSearch( HttpRequestInfo ri, String searchTabId, SavedSearchInfo ssi ) {
 		return GwtServerHelper.saveSearch( this, searchTabId, ssi );
 	}// end saveSearch()
-	
-	
-	/**
-	 * Save the given subscription data for the given entry id.
-	 * @throws GwtTeamingException 
-	 */
-	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData )
-		throws GwtTeamingException
-	{
-		return GwtServerHelper.saveSubscriptionData( this, entryId, subscriptionData );
-	}
-	
 	
 	/**
 	 * Called to mark that the current user is tracking the specified
@@ -2728,18 +2774,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 
 	/**
-	 * Get the subscription data for the given entry id.
-	 */
-	public SubscriptionData getSubscriptionData( HttpRequestInfo ri, String entryId )
-	{
-		SubscriptionData subscriptionData;
-		
-		subscriptionData = GwtServerHelper.getSubscriptionData( this, entryId );
-		
-		return subscriptionData;
-	}
-	
-	/**
 	 * Returns a TeamManagementInfo object regarding the current user's
 	 * team management capabilities.
 	 * 
@@ -2817,31 +2851,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end getTeamManagementInfo()
 	
 	/**
-	 * Add a reply to the given entry.  Return an object that can be used by the What's New page.
-	 */
-	public ActivityStreamEntry replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc ) throws GwtTeamingException
-	{
-		ActivityStreamEntry asEntry;
-		
-		try
-		{
-			FolderEntry entry;
-
-			// Add the reply to the given entry.
-			entry = GwtServerHelper.addReply( this, entryId, title, desc );
-			
-			// Get an ActivityStreamEntry from the reply's FolderEntry.
-			asEntry = GwtActivityStreamHelper.getActivityStreamEntry( getRequest( ri ), this, entry );
-		}
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
-		
-		return asEntry;
-	}
-	
-	/**
 	 * Save the given branding data to the given binder.
 	 *
 	 * @param ri
@@ -2891,9 +2900,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				binderModule.modifyBinder( binderIdL, dataMap, null, null, null );
 			}
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 		return Boolean.TRUE;
@@ -2971,12 +3000,26 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				m_logger.warn( "GwtRpcServiceImpl.getPersonalPreferences(), user is guest." );
 			}
 		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			
+			// Nothing to do
+			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			if (e instanceof AccessControlException)
-				 m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() AccessControlException" );
-			else m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+
+			m_logger.warn( "GwtRpcServiceImpl.savePersonalPreferences() unknown exception" );
+			throw ex;
 		}
 		
 		return Boolean.TRUE;
@@ -3000,9 +3043,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ProfileInfo profile = GwtProfileHelper.buildProfileInfo(getRequest( ri ), this, Long.valueOf(binderId));
 			return profile;
 		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 	}
 	
@@ -3027,9 +3090,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return profile;
 		} 
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 	}
 	
@@ -3058,8 +3141,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			return GwtServerHelper.getGroups( getRequest( ri ), this, userId );
-		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
 		} 
 		
 	}// end getMyGroups()
@@ -3089,8 +3176,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			return GwtServerHelper.getTeams( getRequest( ri ), this, userId );
-		} catch (Exception ex) {
-			throw GwtServerHelper.getGwtTeamingException( ex );
+		} catch (OperationAccessControlExceptionNoName oae) {
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
 		} 
 		
 	}// end getMyTeams()
@@ -3113,7 +3204,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
 		
 		return Boolean.TRUE;
@@ -3174,14 +3269,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ProfileStats stats = GwtProfileHelper.getStats(getRequest(ri), this, String.valueOf(binderCreator.getId()));
 			return stats;
 		}
+		catch (AccessControlException e)
+		{
+			GwtTeamingException ex = new GwtTeamingException();
+
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
+		catch (NoUserByTheIdException nex)
+		{
+			GwtTeamingException ex;
+
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
 		catch ( Exception e )
 		{
-			if ( ( e instanceof AccessControlException ) ||
-				 ( e instanceof NoUserByTheIdException ) )
-			{
-				throw GwtServerHelper.getGwtTeamingException( e );
-			}
-			
 			//Log other errors
 			logger.error("Error getting stats for user with binderId "+userId, e);
 		}
@@ -3224,133 +3328,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			return diskUsageInfo;
 		} 
+		catch (NoBinderByTheIdException nbEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION );
+			throw ex;
+		}
+		catch (AccessControlException acEx)
+		{
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.ACCESS_CONTROL_EXCEPTION );
+			throw ex;
+		}
 		catch (Exception e)
 		{
-			throw GwtServerHelper.getGwtTeamingException( e );
+			GwtTeamingException ex;
+			
+			ex = new GwtTeamingException();
+			ex.setExceptionType( ExceptionType.UNKNOWN );
+			throw ex;
 		}
-	}
-	
-	
-	/**
-	 * Update the tags for the given binder.
-	 */
-	public Boolean updateBinderTags( HttpRequestInfo ri, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
-	{
-		return GwtServerHelper.updateBinderTags( this, binderId, tagsToBeDeleted, tagsToBeAdded );
-	}
-
-
-	/**
-	 * Update the tags for the given entry.
-	 */
-	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
-	{
-		return GwtServerHelper.updateEntryTags( this, entryId, tagsToBeDeleted, tagsToBeAdded );
-	}
-
-
-	/**
-	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
-	 * for the given entry id. 
-	 * @param ri
-	 * @param teamingActions
-	 * @param entryId
-	 */
-	public ArrayList<ActionValidation> validateEntryActions( HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
-	{
-		// Validate the given actions.
-		GwtServerHelper.validateEntryActions( this, ri, actionValidations, entryId );
-		
-		return actionValidations;
-	}
-
-	/**
-	 * Return true if an entry has been seen and false otherwise.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public Boolean isSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
-	{
-		try
-		{
-			SeenMap seenMap = getProfileModule().getUserSeenMap( null );
-			FolderEntry fe = getFolderModule().getEntry( null, entryId );
-			return seenMap.checkIfSeen( fe );
-		}
-		
-		catch ( Exception ex )
-		{
-			throw GwtServerHelper.getGwtTeamingException( ex );
-		}
-	}//end isSeen()
-	
-	/**
-	 * Save the given show setting (show all, show unread) for the What's New page
-	 * to the user's properties.
-	 */
-	public Boolean saveWhatsNewShowSetting( HttpRequestInfo ri, ShowSetting showSetting )
-	{
-		return GwtServerHelper.saveWhatsNewShowSetting( this, showSetting );
-	}
-	
-	/**
-	 * Marks an entry as having been seen.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public Boolean setSeen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
-	{
-		List<Long> entryIds = new ArrayList<Long>();
-		entryIds.add( entryId );
-		return setSeen(ri, entryIds);
-	}//end setSeen()
-	
-	/**
-	 * Marks a list of entries as having been seen.
-	 * 
-	 * @param ri
-	 * @param entryIds
-	 * 
-	 * @return
-	 */
-	public Boolean setSeen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
-	{
-		getProfileModule().setSeenIds( GwtServerHelper.getCurrentUser().getId(), entryIds );
-		return Boolean.TRUE;
-	}//end setSeen()
-	
-	/**
-	 * Marks an entry as having been unseen.
-	 * 
-	 * @param ri
-	 * @param entryId
-	 * 
-	 * @return
-	 */
-	public Boolean setUnseen( HttpRequestInfo ri, Long entryId ) throws GwtTeamingException
-	{
-		List<Long> entryIds = new ArrayList<Long>();
-		entryIds.add( entryId );
-		return setUnseen( ri, entryIds );
-	}//end setUnseen()
-	
-	/**
-	 * Marks a list of entries as having been unseen.
-	 * 
-	 * @param ri
-	 * @param entryIds
-	 * 
-	 * @return
-	 */
-	public Boolean setUnseen( HttpRequestInfo ri, List<Long> entryIds ) throws GwtTeamingException
-	{
-		getProfileModule().setUnseen( GwtServerHelper.getCurrentUser().getId(), entryIds );
-		return Boolean.TRUE;
-	}//end setUnseen()
+	}	
 }// end GwtRpcServiceImpl

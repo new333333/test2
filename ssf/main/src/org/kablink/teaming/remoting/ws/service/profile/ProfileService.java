@@ -52,7 +52,7 @@ public interface ProfileService {
 	 * 
 	 * @param accessToken
 	 * @param emailAddress email address to match on, required
-	 * @param emailType optional email type - could be one of the following values - "_primary", "_mobile", "_text", "_bcc"
+	 * @param emailType optional email type - could be one of the following values - "_primary", "_mobile", or "_text"
 	 * If empty string or null, the match will be performed on all email types, that is, regardless of email type 
 	 * @return
 	 */

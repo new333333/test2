@@ -52,8 +52,4 @@ public class ObjectExistsException extends UncheckedCodedException {
 	    	
 	    }
 
-	    public int getHttpStatusCode() {
-	    	return 409; // Conflict
-	    }
-
 }

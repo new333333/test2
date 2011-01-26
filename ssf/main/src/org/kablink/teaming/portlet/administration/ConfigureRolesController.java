@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.portlet.administration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,12 +46,8 @@ import javax.portlet.RenderResponse;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.security.function.Condition;
-import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionExistsException;
-import org.kablink.teaming.security.function.RemoteAddrCondition;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
@@ -70,7 +65,6 @@ public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		response.setRenderParameters(formData);
 		if ((formData.containsKey("addBtn") && formData.containsKey("roleName")) && WebHelper.isMethodPost(request)) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Set operations = new HashSet();
@@ -81,29 +75,13 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
-			//Build the list of any additional conditions
-			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
-			//Currently, we only allow one condition to be selected
-			String roleCondition = PortletRequestUtils.getStringParameter(request, "roleCondition", "");
-			if (!roleCondition.equals("")) {
-				try {
-					Long roleConditionId = Long.valueOf(roleCondition);
-					Condition condition = getAdminModule().getFunctionCondition(roleConditionId);
-					if (condition != null) {
-						//Since only one condition can be added, make it a "MUST"
-						ConditionalClause cc = new ConditionalClause(condition, ConditionalClause.Meet.MUST);
-						conditions.add(cc);
-					}
-				} catch(Exception e) {}
-			}
-			
 			String roleName = "";
 			String roleScope = ObjectKeys.ROLE_TYPE_BINDER;
 			try {
 				roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
 				roleScope = PortletRequestUtils.getStringParameter(request, "roleScope").trim();
 				if (!roleName.equals(""))
-					getAdminModule().addFunction(roleName, operations, roleScope, conditions);
+					getAdminModule().addFunction(roleName, operations, roleScope);
 				else
 					throw new IllegalArgumentException(NLT.get("errorcode.role.mustHaveName"));
 			} catch (FunctionExistsException ns) {
@@ -176,105 +154,20 @@ public class ConfigureRolesController extends  SAbstractController {
 				}
 				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
 			}
-		} else if (formData.containsKey("addCondition") && WebHelper.isMethodPost(request)) {
-			//Define a new condition
-			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
-			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
-			List<String> includeAddressExpressions = new ArrayList<String>();
-			List<String> excludeAddressExpressions = new ArrayList<String>();
-			Iterator itFormData = formData.keySet().iterator();
-			while (itFormData.hasNext()) {
-				String key = (String) itFormData.next();
-				if (key.startsWith("ipAddressCondition")) {
-					String conditionId = key.substring("ipAddressCondition".length());
-					if (formData.containsKey("ipAddressAccessCondition"+conditionId)) {
-						String expression = PortletRequestUtils.getStringParameter(request, "ipAddressCondition"+conditionId, "");
-						String allowDeny = PortletRequestUtils.getStringParameter(request, "ipAddressAccessCondition"+conditionId, "");
-						if (!expression.equals("")) {
-							if (allowDeny.equals("deny")) {
-								excludeAddressExpressions.add(expression);
-							} else {
-								includeAddressExpressions.add(expression);
-							}
-						}
-					}
-				}
-			}
-			String[] includeExp = new String[includeAddressExpressions.size()];
-			String[] excludeExp = new String[excludeAddressExpressions.size()];			
-			RemoteAddrCondition rac = new RemoteAddrCondition(title, includeAddressExpressions.toArray(includeExp), 
-					excludeAddressExpressions.toArray(excludeExp));
-			rac.setDescription(new Description(description));
-			getAdminModule().addFunctionCondition(rac);
-			
-		} else if (formData.containsKey("modifyCondition") && WebHelper.isMethodPost(request)) {
-			//Define a new condition
-			Long id = PortletRequestUtils.getRequiredLongParameter(request, "id");
-			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
-			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
-			List<String> includeAddressExpressions = new ArrayList<String>();
-			List<String> excludeAddressExpressions = new ArrayList<String>();
-			Iterator itFormData = formData.keySet().iterator();
-			while (itFormData.hasNext()) {
-				String key = (String) itFormData.next();
-				if (key.startsWith("ipAddressCondition")) {
-					String conditionId = key.substring("ipAddressCondition".length());
-					if (formData.containsKey("ipAddressAccessCondition"+conditionId)) {
-						String expression = PortletRequestUtils.getStringParameter(request, "ipAddressCondition"+conditionId, "");
-						String allowDeny = PortletRequestUtils.getStringParameter(request, "ipAddressAccessCondition"+conditionId, "");
-						if (!expression.equals("")) {
-							if (allowDeny.equals("deny")) {
-								excludeAddressExpressions.add(expression);
-							} else {
-								includeAddressExpressions.add(expression);
-							}
-						}
-					}
-				}
-			}
-			String[] includeExp = new String[includeAddressExpressions.size()];
-			String[] excludeExp = new String[excludeAddressExpressions.size()];
-			Condition cond = getAdminModule().getFunctionCondition(id);
-			if (cond instanceof RemoteAddrCondition) {
-				RemoteAddrCondition rac = (RemoteAddrCondition) cond;
-				rac.setTitle(title);
-				rac.setDescription(new Description(description));
-				rac.setIncludeAddressExpressions(includeAddressExpressions.toArray(includeExp));
-				rac.setExcludeAddressExpressions(excludeAddressExpressions.toArray(excludeExp));
-				getAdminModule().modifyFunctionCondition(rac);
-			}
-			
-		} else if (formData.containsKey("deleteCondition") && WebHelper.isMethodPost(request)) {
-			//Delete a condition
-			Long id = PortletRequestUtils.getLongParameter(request, "conditionIdToBeDeleted");
-			if (id != null) {
-				getAdminModule().deleteFunctionCondition(id);
-			}
-			
-		} else {
+		} else
 			response.setRenderParameters(formData);
-		}
 	}
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map formData = request.getParameterMap();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map model = new HashMap();
+		model.put(WebKeys.ROLE_USERS, request.getParameter(WebKeys.ROLE_USERS));
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		
-		if (op.equals("defineConditions") || formData.containsKey("addCondition") || 
-				formData.containsKey("modifyCondition") || formData.containsKey("deleteCondition")) {
-			WorkAreaHelper.buildRoleConditionBeans(this, model);
-			return new ModelAndView("administration/configureRoleCondition", model);
-		} else {
-			model.put(WebKeys.ROLE_USERS, request.getParameter(WebKeys.ROLE_USERS));
-			model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
-			//Set up the role beans
-			WorkAreaHelper.buildAccessControlRoleBeans(this, model, false);
-			return new ModelAndView("administration/configureRoles", model);
-		}
+		//Set up the role beans
+		WorkAreaHelper.buildAccessControlRoleBeans(this, model, false);
+		
+		return new ModelAndView("administration/configureRoles", model);
 		
 	}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,7 @@ import com.google.gwt.resources.client.ImageResource.RepeatStyle;
  */
 public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/close_x.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/breadcrumb_close.png")
 	public ImageResource breadcrumb_close();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -106,7 +106,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource folder_workspace();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/close_x_over.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/modal-dialog-close.png")
 	public ImageResource modal_dialog_close();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -118,15 +118,15 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource rangeArrows();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/spacer_1px.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/spacer_1px.png")
 	public ImageResource spacer_1px();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/collapser.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_closer.png")
 	public ImageResource tree_closer();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/expander.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/tree_opener.png")
 	public ImageResource tree_opener();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

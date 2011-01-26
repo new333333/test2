@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -63,19 +63,14 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
-import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -89,16 +84,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.ShowSetting;
-import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagType;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo.TopRankedType;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -107,19 +97,13 @@ import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
-import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
-import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapModule.LdapOperation;
 import org.kablink.teaming.module.license.LicenseChecker;
@@ -127,22 +111,17 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.presence.PresenceInfo;
-import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -204,7 +183,7 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
-
+	
 	/**
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
@@ -246,64 +225,6 @@ public class GwtServerHelper {
 		}// end compare()
 	}// end GwtAdminActionComparator	   
 	   
-	/**
-	 * Inner class used within the GWT server code to dump profiling
-	 * information to the system log.
-	 */
-	public static class GwtServerProfiler {
-		private boolean m_debugEnabled;	// true m_debugLogger has debugging enabled.  false -> It doesn't.
-		private Log     m_debugLogger;	// The Log that profiling information is written to.
-		private long    m_debugBegin;	// If m_debugEnabled is true, contains the system time in MS that start() was called.
-		private String  m_debugFrom;	// Contains information about where the profile is being used from.
-
-		/*
-		 * Class constructor.
-		 */
-		private GwtServerProfiler(Log logger) {
-			m_debugLogger  = logger;
-			m_debugEnabled = m_debugLogger.isDebugEnabled();
-		}
-		
-		/**
-		 * If the logger has debugging enabled, dumps a message
-		 * to the log regarding how long an operation took.
-		 */
-		public void end() {
-			if (m_debugEnabled) {
-				long diff = System.currentTimeMillis() - m_debugBegin;
-				m_debugLogger.debug(m_debugFrom + ":  Ended in " + diff + "ms");
-			}
-		}
-		
-		/**
-		 * Creates a GwtServerProfiler object based on a Log and called
-		 * from string.  If the logger has debugging enabled, dumps a
-		 * message to the log regarding the profiling being started.
-		 * 
-		 * @param logger
-		 * @param from
-		 * 
-		 * @return
-		 */
-		public static GwtServerProfiler start(Log logger, String from) {
-			GwtServerProfiler reply = new GwtServerProfiler(logger);
-			
-			if (reply.m_debugEnabled) {
-				reply.m_debugFrom = from;
-				reply.m_debugBegin = System.currentTimeMillis();
-				
-				reply.m_debugLogger.debug(from + ":  Starting...");
-			}
-			
-			return reply;
-		}
-		
-		public static GwtServerProfiler start(String from) {
-			// Always use the initial form of the method.
-			return start(m_logger, from);
-		}
-	}
-	
 	/**
 	 * Inner class used compare two SavedSearchInfo objects.
 	 */
@@ -402,87 +323,36 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Add a tag to the given binder.
+	 * Adds a tag to those defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
 	 */
-	public static void addBinderTag( BinderModule bm, Binder binder, TagInfo tagInfo )
-	{
-		boolean community;
-		Long binderId;
-		String tagName;
-
+	public static TagInfo addBinderTag(AllModulesInjected bs, String binderIdS, TagInfo binderTag) {
 		// Define the new tag.
-		community = tagInfo.isCommunityTag();
-		binderId = binder.getId();
-		tagName = tagInfo.getTagName();
-		bm.setTag( binderId, tagName, community );
+		boolean community = binderTag.isCommunityTag();
+		BinderModule bm = bs.getBinderModule();
+		Long binderId = Long.parseLong(binderIdS);
+		String binderTagName = binderTag.getTagName();
+		bm.setTag(binderId, binderTagName, community);
+
+		// Find the new tag in those attached to the binder...
+		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(bm.getBinder(binderId)));
+		Set<Tag> tags = tagsMap.get(community ? ObjectKeys.COMMUNITY_ENTITY_TAGS : ObjectKeys.PERSONAL_ENTITY_TAGS);
+		for (Iterator<Tag> tagsIT = tags.iterator(); tagsIT.hasNext(); ) {
+			Tag tag = tagsIT.next();
+			if (tag.getName().equalsIgnoreCase(binderTagName)) {
+				// ...and return a new TagInfo for it. 
+				return buildTIFromTag(binderTag.getTagType(), tag);
+			}
+		}
+
+		// If we get here, something about creating the tag failed.
+		return null;
 	}
-	
-	/**
-	 * Add a tag to the given entry
-	 */
-	public static void addEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )
-	{
-		String tagName;
-		TagType tagType;
-		boolean community;
-		
-		tagName = tagInfo.getTagName();
-		tagType = tagInfo.getTagType();
-		community = false;
-		if ( tagType == TagType.COMMUNITY )
-			community = true;
-		
-		fm.setTag( null, entryId, tagName, community );
-	}
-	
-
-	/**
-	 * Add a reply to the given entry.
-	 */
-	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
-		throws WriteEntryDataException, WriteFilesException
-	{
-		FolderModule folderModule;
-		FolderEntry entry;
-		FolderEntry replyEntry;
-		Long entryIdL;
-		Long binderIdL;
-		String entryDefId;
-		Map fileMap;
-		Map<String, String> inputMap;
-		MapInputData inputData;
-
-		folderModule = bs.getFolderModule();
-		entryIdL = new Long( entryId );
-		
-		// Get the id of the binder the given entry lives in.
-		entry = folderModule.getEntry( null, entryIdL );
-		binderIdL = entry.getParentBinder().getId();
-		
-		// Get the entry's definition id.
-		entryDefId = entry.getEntryDefId();
-		
-		// Create an empty file map.
-		fileMap = new HashMap();
-
-		inputMap = new HashMap<String, String>();
-		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-		inputData = new MapInputData( inputMap );
-
-    	replyEntry = folderModule.addReply( binderIdL, entryIdL, entryDefId, inputData, fileMap, null );
-
-		// Are we supposed to update the timestamp on top level
-		// entries when a reply is posted?
-    	if ( GwtUIHelper.isModifyTopEntryOnReply() )
-    	{
-			// Yes!  Update the top entry's timestamp.
-    		folderModule.updateModificationStamp( binderIdL, replyEntry.getTopEntry().getId() );
-    	}
-    	
-    	return replyEntry;
-	}
-	
 	
 	/**
 	 * Adds a Trash folder to the TreeInfo.
@@ -741,71 +611,61 @@ public class GwtServerHelper {
 		// we were given.  Return it.
 		return reply;
 	}
-
 	
-	/**
-	 * See if the user has rights to manage public tags on the given entry.
+	/*
+	 * Scans the tags in newTags and any that aren't defined in oldTags
+	 * are defined on the binder.
 	 */
-	public static Boolean canManagePublicEntryTags( AllModulesInjected bs, String entryId )
-	{
-		try
-		{
-			FolderModule folderModule;
-			FolderEntry folderEntry;
-			Long entryIdL;
-			
-			folderModule = bs.getFolderModule();
-			entryIdL = new Long( entryId );
+	private static void defineNewTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags, boolean community) {
+		// Scan the new tags...
+		for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
+			// ...scan the old tags looking for this new tag... 
+			TagInfo ti = newTagsIT.next();
+			boolean found = false;
+			for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
+				Tag tag = oldTagsIT.next();
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+					// ...and break out of the old tag scan loop if we
+					// ...find the new tag.
+					found = true;
+					break;
+				}
+			}
 
-			folderEntry = folderModule.getEntry( null, entryIdL );
-	        
-			// Check to see if the user can manage public tags on this entry.
-			folderModule.checkAccess( folderEntry, FolderOperation.manageTag );
-
-			// If we get here the action is valid.
-			return Boolean.TRUE;
-		}
-		catch (NoFolderEntryByTheIdException nbEx)
-		{
-		}
-		catch (AccessControlException acEx)
-		{
-		}
-		catch (Exception e)
-		{
-		}
-		
-		// If we get here the user does not have rights to manage public tags on the entry.
-		return Boolean.FALSE;
-	}
-	
-	/**
-	 * Delete the given tag from the given entry.
-	 */
-	public static void deleteEntryTag( FolderModule fm, Long entryId, TagInfo tagInfo )
-	{
-		String tagId;
-		
-		// Does this tag already exist?
-		tagId = tagInfo.getTagId();
-		if ( tagId != null && tagId.length() > 0 )
-		{
-			// Yes, delete it from the given entry.
-			fm.deleteTag( null, entryId, tagId );
+			// If we didn't find the new tag in the old tag list...
+			if (!found) {
+				// ...define it.
+				bm.setTag(binderId, ti.getTagName(), community);				
+			}
 		}
 	}
 	
 	/*
-	 * Remove the given tag from the given binder.
+	 * Scans the tags in oldTags and any that aren't defined in newTags
 	 * are deleted from the binder.
 	 */
-	private static void deleteBinderTag( BinderModule bm, Binder binder, TagInfo tag )
-	{
-		String tagId;
-		
-		tagId = tag.getTagId();
-		if ( tagId != null && tagId.length() > 0 )
-			bm.deleteTag( binder.getId(), tagId );
+	private static void deleteMissingTags(BinderModule bm, Long binderId, List<TagInfo> newTags, Set<Tag> oldTags) {
+		// Scan the old tags...
+		for (Iterator<Tag> oldTagsIT = oldTags.iterator(); oldTagsIT.hasNext(); ) {
+			// ...scan the new tags looking for this old tag...
+			Tag tag = oldTagsIT.next();
+			boolean found = false;
+			for (Iterator<TagInfo> newTagsIT = newTags.iterator(); newTagsIT.hasNext(); ) {
+				TagInfo ti = newTagsIT.next();
+				if (tag.getName().equalsIgnoreCase(ti.getTagName())) {
+					// ...and break out of the new tag scan loop if we
+					// ...find the old tag.
+					found = true;
+					break;
+				}
+			}
+
+			// If we didn't find the old tag in the new tag list...
+			if (!found) {
+				// ...delete it.
+				bm.deleteTag(binderId, tag.getId());
+			}
+		}
 	}
 	
 	/**
@@ -1078,27 +938,6 @@ public class GwtServerHelper {
 			}
 			catch( AccessControlException e ) {}
 
-			// Does the user have rights to "Manage user accounts"?
-			try
-			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.userAccounts" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_ACCOUNTS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_USER_ACCOUNTS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch( AccessControlException e ) {}
-
 			// Does the user have rights to "Manage quotas"?
 			try
 			{
@@ -1245,21 +1084,6 @@ public class GwtServerHelper {
 		if ( adminModule.testAccess( AdminOperation.report ) )
 		{
 			// Yes
-			// Create an "email report"
-			{
-				title = NLT.get( "administration.report.title.email" );
-
-				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_EMAIL_REPORT );
-				url = adaptedUrl.toString();
-				
-				adminAction = new GwtAdminAction();
-				adminAction.init( title, url, AdminAction.REPORT_EMAIL );
-				
-				// Add this action to the "reports" category
-				reportsCategory.addAdminOption( adminAction );
-			}
-			
 			// Create a "login report"
 			{
 				title = NLT.get( "administration.report.title.login" );
@@ -2063,14 +1887,14 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static ArrayList<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
+	public static List<TagInfo> getBinderTags(AllModulesInjected bs, String binderId) {
 		BinderModule bm = bs.getBinderModule();
 		return getBinderTags(bm, bm.getBinder(Long.parseLong(binderId)));
 	}
 	
-	public static ArrayList<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
+	public static List<TagInfo> getBinderTags(BinderModule bm, Binder binder) {
 		// Allocate an ArrayList to return the TagInfo's in...
-		ArrayList<TagInfo> reply = new ArrayList<TagInfo>();
+		List<TagInfo> reply = new ArrayList<TagInfo>();
 
 		// ...read the Tag's from the Binder...
 		Map<String, SortedSet<Tag>> tagsMap = TagUtil.uniqueTags(bm.getTags(binder));
@@ -2174,56 +1998,6 @@ public class GwtServerHelper {
 		return reply;
 	}
 
-	/**
-	 * Return a list of tags associated with the given entry.
-	 */
-	public static ArrayList<TagInfo> getEntryTags( AllModulesInjected bs, String entryId )
-	{
-		FolderEntry entry;
-		Long entryIdL;
-		Map<String, SortedSet<Tag>> tagsMap;
-		ArrayList<TagInfo> tags;
-		
-		tags = new ArrayList<TagInfo>();
-		
-		entryIdL = new Long( entryId );
-		entry = bs.getFolderModule().getEntry( null, entryIdL );
-		tagsMap = TagUtil.uniqueTags( bs.getFolderModule().getTags( entry ) );
-		
-		if ( tagsMap != null )
-		{
-			Set<Tag> communityTagsSet;
-			Set<Tag> personalTagsSet;
-			Iterator<Tag> tagsIT;
-
-			communityTagsSet = tagsMap.get( ObjectKeys.COMMUNITY_ENTITY_TAGS );
-			personalTagsSet  = tagsMap.get( ObjectKeys.PERSONAL_ENTITY_TAGS );
-
-			// ...iterate through the community tags...
-			if ( communityTagsSet != null )
-			{
-				for ( tagsIT = communityTagsSet.iterator(); tagsIT.hasNext(); )
-				{
-					// ...adding each to the reply list...
-					tags.add( buildTIFromTag( TagType.COMMUNITY, tagsIT.next() ) );
-				}
-			}
-
-			// ...iterate through the personal tags...
-			if ( personalTagsSet != null )
-			{
-				for ( tagsIT = personalTagsSet.iterator(); tagsIT.hasNext(); )
-				{
-					// ...adding each to the reply list...
-					tags.add( buildTIFromTag( TagType.PERSONAL, tagsIT.next() ) );
-				}
-			}
-		}
-		
-		return tags;
-	}
-	
-	
 	/*
 	 * Returns a cloned copy of the expanded Binder's list from the
 	 * UserProperties.
@@ -2371,63 +2145,9 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns a GwtTeamingException from a generic Exception.
-	 * 
-	 * Note:  The mappings between an instance of an exception and the
-	 *    exception type of the GwtTeamingException returned was based
-	 *    on the code originally constructing these in
-	 *    GwtRpcServiceImpl.
-	 * 
-	 * @param ex
-	 * 
-	 * @return
-	 */
-	public static GwtTeamingException getGwtTeamingException(Exception ex) {
-		// If we were given a GwtTeamingException...
-		GwtTeamingException reply;
-		if ((null != ex) && (ex instanceof GwtTeamingException)) {
-			// ...simply return it.
-			reply = ((GwtTeamingException) ex);
-		}
-		
-		else {
-			// Otherwise, construct an appropriate GwtTeamingException.
-			reply = new GwtTeamingException();
-			if (null != ex) {
-				ExceptionType exType;
-				
-				if      (ex instanceof AccessControlException               ) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else if (ex instanceof NoBinderByTheIdException             ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoFolderEntryByTheIdException        ) exType = ExceptionType.NO_FOLDER_ENTRY_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof NoUserByTheIdException               ) exType = ExceptionType.NO_BINDER_BY_THE_ID_EXCEPTION;
-				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
-				else                                                          exType = ExceptionType.UNKNOWN;
-				
-				reply.setExceptionType( exType );
-			}
-		}
-
-		// If debug logging is enabled...
-		if (m_logger.isDebugEnabled()) {
-			// ...log the exception that get us here.
-			if (null == ex)
-			     m_logger.debug("GwtServerHelper.getGwtTeamingException( EXCEPTION ):  ",         ex   );
-			else m_logger.debug("GwtServerHelper.getGwtTeamingException( DEFAULT EXCEPTION ):  ", reply);
-		}
-
-		// If we get here, reply refers to the GwtTeamingException that
-		// was requested.  Return it.
-		return reply;
-	}
-	
-	public static GwtTeamingException getGwtTeamingException() {
-		// Always use the initial form of the method.
-		return getGwtTeamingException(null);
-	}
-	
-	/**
 	 * Return login information such as self registration and auto complete.
 	 */
+	@SuppressWarnings("unchecked")
 	public static GwtLoginInfo getLoginInfo( HttpServletRequest request, AllModulesInjected ami )
 	{
 		GwtLoginInfo loginInfo;
@@ -2466,107 +2186,6 @@ public class GwtServerHelper {
 	public static List<TeamInfo> getMyTeams(HttpServletRequest request, AllModulesInjected bs) {
 		User user = getCurrentUser();
 		return getTeams(request, bs, user.getId());
-	}
-
-	/**
-	 * Returns a GwtPresenceInfo object for a User.
-	 * 
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static GwtPresenceInfo getPresenceInfo(User user)
-	{
-		GwtPresenceInfo gwtPresence = new GwtPresenceInfo();
-		
-		try {
-			// Guest user can't get presence information.
-			User userAsking = GwtServerHelper.getCurrentUser();
-			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(userAsking.getInternalId()))) {
-				PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
-				if (null != presenceService) {
-					PresenceInfo pi = null;
-					int userStatus = PresenceInfo.STATUS_UNKNOWN;
-
-					CustomAttribute attr = user.getCustomAttribute("presenceID");
-					String userID = ((null != attr) ? ((String) attr.getValue()) : null);
-					  
-					attr = userAsking.getCustomAttribute("presenceID");
-					String userIDAsking = ((null != attr) ? ((String) attr.getValue()) : null);
-
-					if (MiscUtil.hasString(userID) && MiscUtil.hasString(userIDAsking)) {
-						pi = presenceService.getPresenceInfo(userIDAsking, userID);
-						if (null != pi) {
-							gwtPresence.setStatusText(pi.getStatusText());
-							userStatus = pi.getStatus();
-						}	
-					}
-					
-					switch (userStatus) {
-					case PresenceInfo.STATUS_AVAILABLE:  gwtPresence.setStatus(GwtPresenceInfo.STATUS_AVAILABLE); break;
-					case PresenceInfo.STATUS_AWAY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_AWAY);      break;
-					case PresenceInfo.STATUS_IDLE:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_IDLE);      break;
-					case PresenceInfo.STATUS_BUSY:       gwtPresence.setStatus(GwtPresenceInfo.STATUS_BUSY);      break;
-					case PresenceInfo.STATUS_OFFLINE:    gwtPresence.setStatus(GwtPresenceInfo.STATUS_OFFLINE);   break;
-					default:                             gwtPresence.setStatus(GwtPresenceInfo.STATUS_UNKNOWN);   break;
-					}
-				}
-			}
-		}
-		catch (Exception e) {}
-		return gwtPresence;
-	}
-
-	/**
-	 * Returns a default GwtPresence info object that contains a
-	 * localized status text string.
-	 * 
-	 * @return
-	 */
-	public static GwtPresenceInfo getPresenceInfoDefault() {
-		GwtPresenceInfo reply = new GwtPresenceInfo();		
-		setPresenceText(reply);
-		return reply;
-	}
-
-	/**
-	 * Returns the image for the presence dude to display for a
-	 * GwtPresenceInfo.
-	 * 
-	 * @param pi
-	 * 
-	 * @return
-	 */
-	public static String getPresenceDude(GwtPresenceInfo pi) {
-		String dudeGif;
-		switch (pi.getStatus()) {
-		case PresenceInfo.STATUS_AVAILABLE:  dudeGif = "pics/sym_s_green_dude.gif";  break;
-		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/sym_s_yellow_dude.gif"; break;
-		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/sym_s_yellow_dude.gif"; break;
-		case PresenceInfo.STATUS_BUSY:       dudeGif = "pics/sym_s_red_dude.gif";    break;
-		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/sym_s_gray_dude.gif";   break;
-		default:                             dudeGif = "pics/sym_s_white_dude.gif";  break;
-		}
-		return dudeGif;
-	}
-
-	/**
-	 * Stores a localized status text in a GwtPresenceInfo base on its
-	 * status.
-	 * 
-	 * @param pi
-	 */
-	public static void setPresenceText(GwtPresenceInfo pi) {
-		String statusText;
-		switch (pi.getStatus()) {
-		case PresenceInfo.STATUS_AVAILABLE:  statusText = NLT.get("presence.online");  break;
-		case PresenceInfo.STATUS_AWAY:       statusText = NLT.get("presence.away");    break;
-		case PresenceInfo.STATUS_IDLE:       statusText = NLT.get("presence.idle");    break;
-		case PresenceInfo.STATUS_BUSY:       statusText = NLT.get("presence.busy");    break;
-		case PresenceInfo.STATUS_OFFLINE:    statusText = NLT.get("presence.offline"); break;
-		default:                             statusText = NLT.get("presence.none");    break;
-		}
-		pi.setStatusText(statusText);
 	}
 
 	/**
@@ -2803,71 +2422,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Return subscription data for the given entry id.
-	 */
-	public static SubscriptionData getSubscriptionData( AllModulesInjected bs, String entryId )
-	{
-		SubscriptionData subscriptionData;
-		User user;
-		String address;
-		
-		subscriptionData = new SubscriptionData();
-
-		user = GwtServerHelper.getCurrentUser();
-		
-		// Get the user's primary email address.
-		address = user.getEmailAddress( Principal.PRIMARY_EMAIL );
-		subscriptionData.setPrimaryEmailAddress( address );
-		
-		// Get the user's mobile email address.
-		address = user.getEmailAddress( Principal.MOBILE_EMAIL );
-		subscriptionData.setMobileEmailAddress( address );
-		
-		// Get the user's text message address
-		address = user.getEmailAddress( Principal.TEXT_EMAIL );
-		subscriptionData.setTextMessagingAddress( address );
-
-		// Get the user's subscription data for the given entry.
-		{
-			FolderEntry entry;
-			Subscription sub;
-			FolderModule folderModule;
-			Long entryIdL;
-			
-			// Get the subscription data for the given entry.
-			entryIdL = new Long( entryId );
-			folderModule = bs.getFolderModule();
-			entry = folderModule.getEntry( null, entryIdL );
-			sub = folderModule.getSubscription( entry );			
-			
-			if ( sub != null )
-			{
-				Map<Integer,String[]> subMap;
-				String[] values;
-
-				// Get the map that holds the subscription data.  The following is an example of what the data may look like.
-				// 2:_primary:3:_primary,_text:5:_primary,_text,_mobile:
-				subMap = sub.getStyles();
-				
-				// Get the subscription values for which address should be sent an email.
-				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION );
-				subscriptionData.setSendEmailTo( values );
-				
-				// Get the subscription values for which address should be sent an email without an attachment.
-				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION );
-				subscriptionData.setSendEmailToWithoutAttachment( values );
-				
-				// Get the subscription values for which address should be sent a text.
-				values = (String[]) subMap.get( Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION );
-				subscriptionData.setSendTextTo( values );
-			}
-		}
-		
-		return subscriptionData;
-	}
-	
-	
-	/**
 	 * Returns information about the teams of a specific user
 	 * @param bs
 	 * @param userId 
@@ -3053,37 +2607,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Return the "show setting" (show all or show unread) for the "What's new" page.
-	 */
-	public static ShowSetting getWhatsNewShowSetting( UserProperties userProperties )
-	{
-		ShowSetting showSetting;
-		
-		showSetting = ShowSetting.SHOW_ALL;
-		
-		// Do we have a user properties?
-		if ( userProperties != null )
-		{
-			Integer property;
-			
-			property = (Integer) userProperties.getProperty( ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING );
-			if ( property != null )
-			{
-				int value;
-				
-				value = property.intValue();
-				
-				if ( value == ShowSetting.SHOW_ALL.ordinal() )
-					showSetting = ShowSetting.SHOW_ALL;
-				else if ( value == ShowSetting.SHOW_UNREAD.ordinal() )
-					showSetting = ShowSetting.SHOW_UNREAD;
-			}
-		}
-		
-		return showSetting;
-	}
-
-	/**
 	 * Returns the WorkspaceType of a binder.
 	 * 
 	 * @param bs
@@ -3159,19 +2682,6 @@ public class GwtServerHelper {
 		return false;
 	}
 	
-	/**
-	 * Return true if the presence service is enabled and false
-	 * otherwise.
-	 * 
-	 * @param
- 	 */
-	public static boolean isPresenceEnabled()
-	{
-		PresenceManager presenceService = ((PresenceManager) SpringContextUtil.getBean("presenceService"));
-		boolean reply = ((null != presenceService) ? presenceService.isEnabled() : false);
-		return reply;
-	}
-
 	/*
 	 * Returns true if two List<Long>'s contain different values and
 	 * false otherwise.
@@ -3327,6 +2837,20 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Removes a tag from those defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTag
+	 * 
+	 * @return
+	 */
+	public static Boolean removeBinderTag(AllModulesInjected bs, String binderId, TagInfo binderTag) {
+		bs.getBinderModule().deleteTag(Long.parseLong(binderId), binderTag.getTagId());
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * Removes a search based on its SavedSearchInfo.
 	 *
 	 * @param bs
@@ -3413,91 +2937,6 @@ public class GwtServerHelper {
 		reply.setName(ssi.getName());
 		return reply;
 	}
-
-	/**
-	 * Save the given subscription data for the given entry id.
-	 */
-	@SuppressWarnings("unused")
-	public static Boolean saveSubscriptionData( AllModulesInjected bs, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException
-	{
-		try
-		{
-			FolderEntry entry;
-			FolderModule folderModule;
-			Long entryIdL;
-			Map<Integer, String[]> subscriptionSettings;
-			int sendEmailTo;
-			int sendEmailToWithoutAttachment;
-			int sendTextTo;
-			
-			entryIdL = new Long( entryId );
-			folderModule = bs.getFolderModule();
-			entry = folderModule.getEntry( null, entryIdL );
-			
-			subscriptionSettings = new HashMap<Integer, String[]>();
-			
-			// Get the 3 notification settings.
-			sendEmailTo = subscriptionData.getSendEmailTo();
-			sendEmailToWithoutAttachment = subscriptionData.getSendEmailToWithoutAttachment();
-			sendTextTo = subscriptionData.getSendTextTo();
-			
-			// Are all notifications turned off?
-			if ( sendEmailTo == SubscriptionData.SEND_TO_NONE && sendEmailToWithoutAttachment == SubscriptionData.SEND_TO_NONE && sendTextTo == SubscriptionData.SEND_TO_NONE )
-			{
-				// Yes
-				subscriptionSettings.put( Subscription.DISABLE_ALL_NOTIFICATIONS, null );
-			}
-			else
-			{
-				String[] setting;
-				
-				// Get the setting for "send email to"
-				setting = subscriptionData.getSendEmailToAsString();
-				if ( setting != null && setting.length > 0 )
-					subscriptionSettings.put( Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION, setting );
-				
-				// Get the setting for "send email to without an attachment"
-				setting = subscriptionData.getSendEmailToWithoutAttachmentAsString();
-				if ( setting != null && setting.length > 0 )
-					subscriptionSettings.put( Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, setting );
-				
-				// Get the setting for "send text to"
-				setting = subscriptionData.getSendTextToAsString();
-				if ( setting != null && setting.length > 0 )
-					subscriptionSettings.put( Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION, setting );
-			}
-			
-			// Save the subscription settings to the db.
-			folderModule.setSubscription( null, entryIdL, subscriptionSettings );
-		}
-		catch (Exception e)
-		{
-			if (e instanceof AccessControlException)
-			     m_logger.warn( "GwtSeverHelper.saveSubscriptionData() AccessControlException" );
-			else m_logger.warn( "GwtServerHelper.saveSubscriptionData() unknown exception"     );
-			
-			throw getGwtTeamingException( e );
-		}
-		
-		return Boolean.TRUE;
-	}
-
-	/**
-	 * Save the show setting (show all or show unread) for the What's New page to
-	 * the user's properties.
-	 */
-	public static Boolean saveWhatsNewShowSetting( AllModulesInjected bs, ShowSetting showSetting )
-	{
-		ProfileModule profileModule;
-		Integer setting;
-		
-		// Save the show setting to the user's properties.
-		profileModule = bs.getProfileModule();
-		setting = new Integer( showSetting.ordinal() );
-		profileModule.setUserProperty( null, ObjectKeys.USER_PROPERTY_WHATS_NEW_SHOW_SETTING , setting );
-		
-		return Boolean.TRUE;
-	}
 	
 	/*
 	 * Stores the expanded Binder's List in a UserProperties.
@@ -3535,56 +2974,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Update the tags for the given binder.
+	 * Updates the tags defined on a binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param binderTags
+	 * 
+	 * @return
 	 */
-	public static Boolean updateBinderTags( AllModulesInjected bs, String binderId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
-	{
-		BinderModule bm;
-		Binder binder;
-
-		bm = bs.getBinderModule();
-		binder = bm.getBinder( Long.parseLong( binderId ) );
-		
-		// Go through the list of tags to be deleted and delete them.
-		for ( TagInfo nextTag : tagsToBeDeleted )
-		{
-			deleteBinderTag( bm, binder, nextTag );
-		}
-		
-		// Go through the list of tags to be added and add them.
-		for ( TagInfo nextTag : tagsToBeAdded )
-		{
-			addBinderTag( bm, binder, nextTag );
-		}
-		
-		// If we get here, everything worked.
-		return Boolean.TRUE;
+	public static Boolean updateBinderTags(AllModulesInjected bs, String binderId, List<TagInfo> binderTags) {
+		BinderModule bm = bs.getBinderModule();
+		return updateBinderTags(bm, bm.getBinder(Long.parseLong(binderId)), binderTags);
 	}
 	
-	/**
-	 * Update the tags for the given entry.
-	 */
-	public static Boolean updateEntryTags( AllModulesInjected bs, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded )
-	{
-		FolderModule fm;
-		Long entryIdL;
-		
-		fm = bs.getFolderModule();
-		entryIdL = Long.parseLong( entryId );
-		
-		// Go through the list of tags to be deleted and delete them.
-		for ( TagInfo nextTag : tagsToBeDeleted )
-		{
-			deleteEntryTag( fm, entryIdL, nextTag );
-		}
-		
-		// Go through the list of tags to be added and add them.
-		for ( TagInfo nextTag : tagsToBeAdded )
-		{
-			addEntryTag( fm, entryIdL, nextTag );
+	public static Boolean updateBinderTags(BinderModule bm, Binder binder, List<TagInfo> binderTags) {
+		// Split the tags between community tags and personal tags.
+		List<TagInfo> newCommunityTags = new ArrayList<TagInfo>();
+		List<TagInfo> newPersonalTags  = new ArrayList<TagInfo>();
+		for (Iterator<TagInfo> tagsIT = binderTags.iterator(); tagsIT.hasNext(); ) {
+			TagInfo ti = tagsIT.next();
+			if (ti.isCommunityTag()) newCommunityTags.add(ti);
+			else                     newPersonalTags.add(ti);
 		}
 
-		// If we get here, everything worked.
+		// Read the currently defined tags from the binder.
+		Map<String, SortedSet<Tag>> oldTags = TagUtil.uniqueTags(bm.getTags(binder));
+		Set<Tag> oldCommunityTags = oldTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
+		Set<Tag> oldPersonalTags  = oldTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
+
+		// Delete any existing tags that aren't part of the new list...
+		Long binderId = binder.getId();
+		deleteMissingTags(bm, binderId, newCommunityTags, oldCommunityTags);
+		deleteMissingTags(bm, binderId, newPersonalTags,  oldPersonalTags);
+
+		// ...and define and new tags that aren't part of the existing
+		// ...list.
+		defineNewTags(bm, binderId, newCommunityTags, oldCommunityTags, true);
+		defineNewTags(bm, binderId, newPersonalTags,  oldPersonalTags,  false);
+
+		// If we get here, the update was successful.  Return true.
 		return Boolean.TRUE;
 	}
 	
@@ -3674,66 +3102,5 @@ public class GwtServerHelper {
 		// Return true if we should use search titles and false
 		// otherwise.
 		return (1 == TREE_TITLE_FORMAT);
-	}
-	
-
-	/**
-	 * Validate the list of TeamingActions to see if the user has rights to perform the actions
-	 */
-	public static void validateEntryActions( AllModulesInjected bs, HttpRequestInfo ri, ArrayList<ActionValidation> actionValidations, String entryId )
-	{
-		// Initialize all actions as invalid.
-		for ( ActionValidation nextValidation : actionValidations )
-		{
-			// Validate this action.
-			nextValidation.setIsValid( false );
-		}
-
-		try
-		{
-			FolderModule folderModule;
-			FolderEntry folderEntry;
-			Long entryIdL;
-			
-			folderModule = bs.getFolderModule();
-			entryIdL = new Long( entryId );
-
-			folderEntry = folderModule.getEntry( null, entryIdL );
-	        
-			for ( ActionValidation nextValidation : actionValidations )
-			{
-				int teamingAction;
-				
-				// Validate the next action.
-				try
-				{
-					teamingAction = nextValidation.getAction();
-					
-					if ( teamingAction == TeamingAction.REPLY.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
-					else if ( teamingAction == TeamingAction.TAG.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
-					else if ( teamingAction == TeamingAction.SHARE.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
-					else if ( teamingAction == TeamingAction.SUBSCRIBE.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
-
-					// If we get here the action is valid.
-					nextValidation.setIsValid( true );
-				}
-				catch (AccessControlException acEx)
-				{
-				}
-			}
-		}
-		catch (NoFolderEntryByTheIdException nbEx)
-		{
-		}
-		catch (AccessControlException acEx)
-		{
-		}
-		catch (Exception e)
-		{
-		}
 	}
 }

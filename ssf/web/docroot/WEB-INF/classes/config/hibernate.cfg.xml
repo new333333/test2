@@ -1,6 +1,6 @@
 <!DOCTYPE hibernate-configuration PUBLIC
 	"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-	"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 
 <hibernate-configuration>
 	<session-factory name="ssf">
@@ -37,7 +37,6 @@
 		<!-- Sitescape Mappings -->
 		<mapping resource="org/kablink/teaming/security/accesstoken/impl/TokenInfo.hbm.xml"/>
 		<mapping resource="org/kablink/teaming/security/function/Function.hbm.xml"/>
-		<mapping resource="org/kablink/teaming/security/function/FunctionCondition.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Attachment.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/AuditTrail.hbm.xml"/>
@@ -73,7 +72,6 @@
 	    <mapping resource="org/kablink/teaming/domain/ZoneInfo.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Extensions.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/SchemaInfo.hbm.xml"/>
-	    <mapping resource="org/kablink/teaming/domain/EmailLog.hbm.xml"/>
 	    <!-- jbpms -->
 	    <mapping resource="org/jbpm/graph/action/Script.hbm.xml"/>
 	    <!-- hql queries and type defs -->

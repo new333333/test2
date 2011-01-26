@@ -65,9 +65,20 @@ public class HttpRequestInfo implements IsSerializable {
 	public static HttpRequestInfo createHttpRequestInfo()
 	{
 		String userLoginId;
-		if      (null != GwtMainPage.m_requestInfo)         userLoginId = GwtMainPage.m_requestInfo.getUserLoginId();
-		else if (null != GwtProfilePage.profileRequestInfo) userLoginId = GwtProfilePage.profileRequestInfo.getUserLoginId();
-		else                                                userLoginId = null;
+		try {
+			// Can we access the user's login ID from GwtMainPage?
+			userLoginId = GwtMainPage.m_requestInfo.getUserLoginId();
+		}
+		catch (Exception eMain) {
+			try {
+				// No!  Can we access it from GwtProfilePage?
+				userLoginId = GwtProfilePage.profileRequestInfo.getUserLoginId();
+			}
+			catch (Exception eProfile) {
+				// No!  Then we don't know where to get it.
+				userLoginId = null;
+			}
+		}
 
 		// Construct, initialize and return an HttpRequestInfo object
 		HttpRequestInfo reply = new HttpRequestInfo();

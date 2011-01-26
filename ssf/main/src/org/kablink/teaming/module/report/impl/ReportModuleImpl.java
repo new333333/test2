@@ -68,7 +68,6 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -83,8 +82,6 @@ import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
-import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
-import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -240,10 +237,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		AuditTrail audit = new AuditTrail(AuditTrail.AuditType.token, requester, requestee);
 		audit.setApplicationId(applicationId);
 		addAuditTrail(audit);
-	}
-	
-	public void addEmailLog(EmailLog emailLog) {
-		getCoreDao().save(emailLog);
 	}
 	
 	public void addLicenseStats(LicenseStats stats) {
@@ -669,7 +662,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateActivityReportByUser(final Set<Long> userIdsToReport,
 			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().checkAccess(AdminOperation.report);
+        getAdminModule().testAccess(AdminOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -707,7 +700,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public List<Map<String,Object>> generateAccessReportByUser(final Long userId,
 			final Date startDate, final Date endDate, final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().checkAccess(AdminOperation.report);
+        getAdminModule().testAccess(AdminOperation.report);
 
         int returnCount = 1000000;
         
@@ -757,56 +750,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<Map<String,Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType) {
-        final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().checkAccess(AdminOperation.report);
-
-		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				List emailLog = null;
-				try {
-					ProjectionList proj = Projections.projectionList()
-								.add(Projections.property("sendDate"))
-								.add(Projections.property("from"))
-								.add(Projections.property("subj"))
-								.add(Projections.property("comment"))
-								.add(Projections.property("typeStr"))
-								.add(Projections.property("statusStr"))
-								.add(Projections.property("toEmailAddressesStr"))
-								.add(Projections.property("fileAttachmentsStr"));
-					Criteria crit = session.createCriteria(EmailLog.class)
-						.setProjection(proj)
-						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()));
-					
-					if (ReportModule.EMAIL_REPORT_TYPE_SEND.equals(reportType)) {
-						crit.add(Restrictions.in("typeStr", new Object[] {EmailLogType.binderNotification.name(), 
-																	EmailLogType.sendMail.name(), 
-																	EmailLogType.retry.name(), 
-																	EmailLogType.workflowNotification.name(), 
-																	EmailLogType.unknown.name()}));
-					} else if (ReportModule.EMAIL_REPORT_TYPE_RECEIVE.equals(reportType)) {
-						crit.add(Restrictions.in("typeStr", new Object[] {EmailLogType.emailPosting.name()}));
-					} else if (ReportModule.EMAIL_REPORT_TYPE_ERRORS.equals(reportType)) {
-						crit.add(Restrictions.in("statusStr", new Object[] {EmailLogStatus.error.name()}));
-					}
-					crit.add(Restrictions.ge("sendDate", startDate))
-						.add(Restrictions.lt("sendDate", endDate));
-					crit.addOrder(Order.desc("sendDate"));
-					emailLog = crit.list();
-				} catch(Exception e) {
-				}
-				return emailLog;
-
-			}});
-		
-		return generateEmailReportList(result, reportType);
-	}
-
 	public List<Map<String,Object>> generateXssReport(final List binderIds, final Date startDate, final Date endDate, 
 			final String reportType) {
         final User user = RequestContextHolder.getRequestContext().getUser();
-        getAdminModule().checkAccess(AdminOperation.report);
+        getAdminModule().testAccess(AdminOperation.report);
 
         int returnCount = 10000;
         int page = 0;
@@ -853,9 +800,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				Long entityId = Long.valueOf((String)item.get(Constants.DOCID_FIELD));
 				String entityType = (String)item.get(Constants.ENTITY_FIELD);
 				String entityPath = (String)item.get(Constants.ENTITY_PATH);
-				Long entityPathId = null;
 				String entityTitle = (String)item.get(Constants.TITLE_FIELD);
-				Long entityCreatorId = Long.valueOf((String)item.get(Constants.CREATORID_FIELD));
 				if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
 						EntityIdentifier.EntityType.folder.name().equals(entityType)) {
 					//Do the binders by loading them from the database
@@ -866,29 +811,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					StringCheckUtil.check(item, true);
 				} catch(StringCheckException e) {
 					//Yes, this entity is tainted. Add it to the report
-					if (EntityType.folderEntry.name().equals(entityType)) {
-				    	FolderEntry fe = null;
-				    	fe = (FolderEntry) coreDao.load(FolderEntry.class, Long.valueOf(entityId));
-				    	if (fe != null && fe.getParentFolder() != null) {
-				    		entityPath = fe.getParentFolder().getPathName() + "/" + fe.getParentFolder().getTitle();
-				    		entityPathId = fe.getParentFolder().getId();
-				    	}
-					} else if (EntityType.workspace.name().equals(entityType) || EntityType.folder.name().equals(entityType)) {
-				    	Binder b = null;
-				    	b = (Binder) coreDao.load(Binder.class, Long.valueOf(entityId));
-				    	if (b != null && b.getParentBinder() != null) {
-				    		entityPath = b.getPathName();
-				    		entityPathId = b.getParentBinder().getId();
-				    	}
-					}
 					Map<String, Object> row = new HashMap<String, Object>();
 					report.add(row);
 					row.put(ReportModule.ENTITY_ID, entityId);
 					row.put(ReportModule.ENTITY_TYPE, entityType);
 					row.put(ReportModule.ENTITY_PATH, entityPath);
-					row.put(ReportModule.ENTITY_PATH_ID, entityPathId);
 					row.put(ReportModule.ENTITY_TITLE, entityTitle);
-					row.put(ReportModule.ENTITY_CREATOR_ID, entityCreatorId);
 					if (EntityIdentifier.EntityType.workspace.name().equals(entityType) ||
 							EntityIdentifier.EntityType.folder.name().equals(entityType)) {
 						//Do the binders by loading them from the database
@@ -921,9 +849,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						row.put(ReportModule.ENTITY_ID, binder.getId());
 						row.put(ReportModule.ENTITY_TYPE, binder.getEntityType().name());
 						row.put(ReportModule.ENTITY_PATH, binder.getPathName());
-						row.put(ReportModule.ENTITY_PATH_ID, binder.getParentBinder().getId());
 						row.put(ReportModule.ENTITY_TITLE, binder.getTitle());
-						row.put(ReportModule.ENTITY_CREATOR_ID, binder.getOwnerId());
 					} 
 				}
 			}
@@ -1171,32 +1097,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				sortedresult.put(cols[index], cols);	
 		}
 		return sortedresult.values();
-	}
-	
-	private LinkedList<Map<String,Object>> generateEmailReportList(List emailLogs, String reportType) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, user.getLocale());
-		df.setTimeZone(user.getTimeZone());
-		
-		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		if (emailLogs == null || emailLogs.isEmpty()) return report;
-		
-		for(Object o : emailLogs) {
-			Object[] cols = (Object[]) o;
-			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			Timestamp sendDate = ((Timestamp) cols[ReportModule.EMAIL_LOG_SEND_DATE_INDEX]);
-			
-			row.put(ReportModule.EMAIL_LOG_SEND_DATE, df.format(sendDate.getTime()));
-			row.put(ReportModule.EMAIL_LOG_FROM_ADDRESS, cols[ReportModule.EMAIL_LOG_FROM_ADDRESS_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_SUBJECT, cols[ReportModule.EMAIL_LOG_SUBJECT_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_COMMENT, cols[ReportModule.EMAIL_LOG_COMMENT_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_TYPE, cols[ReportModule.EMAIL_LOG_TYPE_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_STATUS, cols[ReportModule.EMAIL_LOG_STATUS_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_TO_ADDRESSES, cols[ReportModule.EMAIL_LOG_TO_ADDRESSES_INDEX]);
-			row.put(ReportModule.EMAIL_LOG_ATTACHED_FILES, cols[ReportModule.EMAIL_LOG_ATTACHED_FILES_INDEX]);
-		}
-		return report;
 	}
 	
 	private LinkedList<Map<String,Object>> generateShortLoginReportList(List logins) {

@@ -417,10 +417,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				if (replyId == null) replyId = entryId;
 		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
 				String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
-				//Check if this user is allowed to do this manual transition
-				if (getFolderModule().checkIfManualTransitionAllowed(folderId, replyId, tokenId, toState)) {
-					getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
-				}
+				getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
 			}
 		}
 	}

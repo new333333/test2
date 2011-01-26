@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -46,9 +45,8 @@ import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.widgets.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
@@ -59,9 +57,10 @@ import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -95,7 +94,6 @@ public class GwtMainPage extends Composite
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
-	private TaskListing m_taskListing;
 	private TeamingPopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
@@ -114,10 +112,6 @@ public class GwtMainPage extends Composite
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
-		
-		// Initialize the GWT based task listing UI.  This is called
-		// when a task folder is loaded in the content panel.
-		initTaskListingJS(this);
 		
 		// Initialize the pre context switch handler used by the
 		// traditional UI to tell the GWT UI that a context switch is
@@ -177,11 +171,9 @@ public class GwtMainPage extends Composite
 		final String errMsg = m_requestInfo.getErrMsg();
 		if ( GwtClientHelper.hasString( errMsg ) )
 		{
-			Scheduler.ScheduledCommand cmd;
-
 			// Yes
 			// Execute a deferred command the will display it.
-			cmd = new Scheduler.ScheduledCommand()
+			DeferredCommand.addCommand( new Command()
 			{
 				public void execute()
 				{
@@ -198,8 +190,7 @@ public class GwtMainPage extends Composite
 					// message box is displayed.
 					Window.alert( errMsg );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 		
 		// Add the main menu to the page.
@@ -247,7 +238,7 @@ public class GwtMainPage extends Composite
 			// Should we invoke the login dialog?
 			if ( m_requestInfo.promptForLogin() == true )
 			{
-				Scheduler.ScheduledCommand cmd;
+				Command cmd;
 				
 				// Yes
 				// Hide the workspace tree control and the menu bar.
@@ -255,23 +246,25 @@ public class GwtMainPage extends Composite
 				m_mainMenuCtrl.setVisible( false );
 				
 				// invoke the login dialog.
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
+		        cmd = new Command()
+		        {
+		        	/**
+		        	 * 
+		        	 */
+		            public void execute()
+		            {
 						invokeLoginDlg( false );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+		            }
+		        };
+		        DeferredCommand.addCommand( cmd );
 			}
 		}
 				
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_teamingRootPanel );
 
-		// If we're running GroupWise integrations or otherwise require
-		// session captive mode...
-		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
+		// If we're in session captive mode...
+		if (m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
 			handleAction(TeamingAction.HIDE_MASTHEAD, null);
@@ -319,19 +312,6 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch, searchTabId );
 		}//end ss_contextLoaded()
-	}-*/;
-
-	/*
-	 * Called to create a JavaScript method that will be invoked from
-	 * task.jsp when a task listing is loaded.
-	 */
-	private native void initTaskListingJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend )
-		{
-			var taskListingDIV = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskListingDIV");
-			var taskToolsDIV   = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskToolsDIV"  );
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
-		}//end ss_initTaskListing()
 	}-*/;
 
 	/*
@@ -412,6 +392,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will close the administration content panel.
 	 */
+	@SuppressWarnings("unused")
 	private void closeAdministrationContentPanel()
 	{
 		if ( m_adminControl != null )
@@ -423,6 +404,7 @@ public class GwtMainPage extends Composite
 	/*
 	 * Puts a context change from the traditional UI into effect.
 	 */
+	@SuppressWarnings("unused")
 	private void contextLoaded( String binderId, String inSearch, String searchTabId ) {
 		contextLoaded(
 			binderId,
@@ -515,48 +497,7 @@ public class GwtMainPage extends Composite
 		});
 	}// end contextLoaded()
 
-	/*
-	 * Called when the GWT task listing UI is loading.
-	 */
-	private void initTaskListing( Element taskToolsDIV, Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend )
-	{
-		// Create a TaskListing object...
-		m_taskListing = new TaskListing(
-			taskToolsDIV,
-			taskListingDIV,
-			this,
-			Long.parseLong( binderId ),
-			filterType,
-			mode,
-			sortBy,
-			(GwtClientHelper.hasString( sortDescend ) ? Boolean.parseBoolean(sortDescend) : false) );
-		
-		// ...and show it.
-		m_taskListing.show();
-	}// end initTaskListing();
-
-	/*
-	 * Called to handle TeamingAction's directed to the GWT task folder
-	 * listing.
-	 */
-	private void handleTaskAction( TeamingAction taskAction, Object obj )
-	{
-		Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedAction(taskAction.toString()));
-	}// end handleTaskAction()
-	
-	/*
-	 * Called to tell the task folder listing to resize itself based on
-	 * the current size of the content frame.
-	 */
-	private void resizeTaskListing() {
-		// If we're connected to a TaskListing...
-		if (null != m_taskListing) {
-			// ...tell it to resize.
-			m_taskListing.resize();
-		}
-	}
-	
-	/*
+	/**
 	 * Invoke the "Edit Branding" dialog.
 	 */
 	private void editBranding( GwtBrandingData brandingData )
@@ -879,7 +820,7 @@ public class GwtMainPage extends Composite
 			break;
 		
 		case CLOSE_ADMINISTRATION:
-			Scheduler.ScheduledCommand cmd;
+			Command cmd;
 			
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
@@ -900,23 +841,23 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.hideAdministrationMenubar();
 
 			// Restore the ui state to what it was before we opened the site administration.
-			cmd = new Scheduler.ScheduledCommand()
+			cmd = new Command()
 			{
 				public void execute()
 				{
 					restoreUIState();
 				}
 			};
-			Scheduler.get().scheduleDeferred( cmd );
+			DeferredCommand.addCommand( cmd );
 			
-			cmd = new Scheduler.ScheduledCommand()
+			cmd = new Command()
 			{
 				public void execute()
 				{
 					relayoutPage( true );
 				}
 			};
-			Scheduler.get().scheduleDeferred( cmd );
+			DeferredCommand.addCommand( cmd );
 			break;
 			
 		case EDIT_BRANDING:
@@ -1156,28 +1097,6 @@ public class GwtMainPage extends Composite
 			}
 			break;
 			
-		case SHOW_FORUM_ENTRY:
-			if ( obj instanceof String )
-			{
-				GwtClientHelper.jsShowForumEntry( (String) obj );
-			}
-			else
-			{
-				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
-			}
-			break;
-
-		case TASK_DELETE:
-		case TASK_MOVE_DOWN:
-		case TASK_MOVE_LEFT:
-		case TASK_MOVE_RIGHT:
-		case TASK_MOVE_UP:
-		case TASK_SET_PERCENT_DONE:
-		case TASK_SET_PRIORITY:
-		case TASK_SET_STATUS:
-			handleTaskAction( action, obj );
-			break;
-
 		case UNDEFINED:
 		default:
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
@@ -1189,6 +1108,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the landing page options such as "hide the masthead", "hide the sidebar", etc.
 	 */
+	@SuppressWarnings("unused")
 	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
 	{
 		boolean showMasthead;
@@ -1219,6 +1139,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method will handle the given page ui in gwt instead of having the jsp page do the work.
 	 */
+	@SuppressWarnings("unused")
 	private void handlePageWithGWT( String pageName )
 	{
 		if ( pageName != null && pageName.length() > 0 )
@@ -1778,11 +1699,8 @@ public class GwtMainPage extends Composite
 			// Yes!  Restore the UI state (i.e., sidebar, ...)
 			restoreUIState();
 
-			// Put the activity stream text in the tab...
+			// Load the activity stream control...
 			final ActivityStreamInfo asi = ((ActivityStreamInfo) obj);
-			GwtClientHelper.jsSetMainTitle( GwtTeaming.getMessages().whatsNewWithName( asi.getTitle() ) );
-			
-			// ...load the activity stream control...
 			m_activityStreamCtrl.setActivityStream( asi );
 			m_activityStreamCtrl.show();
 			
@@ -1885,10 +1803,6 @@ public class GwtMainPage extends Composite
 			
 			m_contentCtrl.setDimensions( width, height );
 			
-			// Allow the task folder listing to resize to the content,
-			// as necessary.
-			resizeTaskListing();
-			
 			// Tell the activity stream control to relayout.
 			if ( m_activityStreamCtrl != null )
 				m_activityStreamCtrl.setSize( width, height );
@@ -1912,16 +1826,19 @@ public class GwtMainPage extends Composite
 		}
 		else
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
+			Command cmd;
+			
+	        cmd = new Command()
+	        {
+	        	/**
+	        	 * 
+	        	 */
+	            public void execute()
+	            {
 					relayoutPage( true );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+	            }
+	        };
+	        DeferredCommand.addCommand( cmd );
 		}
 	}// end relayoutPage()
 

@@ -52,7 +52,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
@@ -64,6 +63,8 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -645,16 +646,19 @@ public class AdminControl extends Composite
 
 			// Issue a deferred command to get the administration actions the user has rights to run.
 			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
+				Command cmd;
+				
+		        cmd = new Command()
+		        {
+		        	/**
+		        	 * 
+		        	 */
+		            public void execute()
+		            {
 						getAdminActionsFromServer();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+		            }
+		        };
+		        DeferredCommand.addCommand( cmd );
 			}
 			
 			initWidget( mainPanel );
@@ -784,7 +788,7 @@ public class AdminControl extends Composite
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
 			{
-				Scheduler.ScheduledCommand cmd;
+				Command cmd;
 
 				// Clear the iframe's content 
 				m_contentControl.clear();
@@ -792,14 +796,14 @@ public class AdminControl extends Composite
 				// Set the iframe's content to the selected administration page.
 				m_contentControl.setUrl( url );
 				
-				cmd = new Scheduler.ScheduledCommand()
+				cmd = new Command()
 				{
 					public void execute()
 					{
 						showContentPanel();
 					}
 				};
-				Scheduler.get().scheduleDeferred( cmd );
+				DeferredCommand.addCommand( cmd );
 			}
 		}
 	}// end adminActionSelected()
@@ -865,16 +869,16 @@ public class AdminControl extends Composite
 	 */
 	public void relayoutPage()
 	{
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
+		Command cmd;
+		
+		cmd = new Command()
 		{
 			public void execute()
 			{
 				relayoutPageNow();
 			}
 		};
-		Scheduler.get().scheduleDeferred( cmd );
+		DeferredCommand.addCommand( cmd );
 	}// end relayoutPage()
 	
 	
@@ -959,41 +963,47 @@ public class AdminControl extends Composite
 	 */
 	public void showControl()
 	{
-		Scheduler.ScheduledCommand cmd;
-
+		Command cmd;
+		
 		// Set the position of the content control.
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
-				Scheduler.ScheduledCommand cmd2;
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
+            	Command cmd2;
             	
 				relayoutPage();
 				
-				cmd2 = new Scheduler.ScheduledCommand()
+				cmd2 = new Command()
 				{
 					public void execute()
 					{
 						setVisible( true );
 					}
 				};
-				Scheduler.get().scheduleDeferred( cmd2 );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+				DeferredCommand.addCommand( cmd2 );
+            }
+        };
+        DeferredCommand.addCommand( cmd );		
 
 		// Issue an ajax request to get the upgrade information from the server.
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
             	// When we get the upgrade info from the server our callback will check to
             	// see if upgrade tasks exists.  If they do, the callback will invoke the
             	// AdminInfoDlg which will show the user the tasks they need to do.
 				getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+            }
+        };
+        DeferredCommand.addCommand( cmd );		
 	}// end showControl()
 	
 	/**

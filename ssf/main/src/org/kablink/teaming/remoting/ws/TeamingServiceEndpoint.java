@@ -262,10 +262,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getBinderService().binder_testOperation(accessToken, binderOperationName, binderIds);
 	}
 
-	public long binder_getTopWorkspaceId(String accessToken) {
-		return getBinderService().binder_getTopWorkspaceId(accessToken);
-	}
-	
 	/// Folder Service
 
 	public FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {

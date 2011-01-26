@@ -75,8 +75,4 @@ public class NoObjectByTheIdException extends UncheckedCodedException {
     public NoObjectByTheIdException(String errorCode, Object[] ids, Throwable cause) {
         super(errorCode, ids, cause);
     }
-    
-    public int getHttpStatusCode() {
-    	return 404; // Not Found
-    }
  }

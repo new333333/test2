@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.http.client.URL;
+
 
 /**
  * This class holds all of the properties needed to define a list widget in a landing page.

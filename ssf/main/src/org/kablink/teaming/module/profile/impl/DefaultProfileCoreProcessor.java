@@ -804,7 +804,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.TEXT_EMAIL));
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.MOBILE_EMAIL));
-			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL_BCC, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.BCC_EMAIL));
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_SKYPEID, ObjectKeys.XTAG_TYPE_STRING, user.getSkypeId());

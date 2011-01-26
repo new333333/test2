@@ -38,13 +38,10 @@ import org.kablink.teaming.gwt.client.EditHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 
@@ -54,7 +51,7 @@ import com.google.gwt.user.client.ui.PopupPanel;
  *
  */
 public abstract class DropWidget extends Composite
-	implements EditSuccessfulHandler, EditCanceledHandler, EditHandler, DeleteHandler, MouseDownHandler
+	implements EditSuccessfulHandler, EditCanceledHandler, EditHandler, DeleteHandler
 {
 	private DlgBox					m_dlgBox = null;
 	private EditSuccessfulHandler	m_editSuccessfulHandler = null;
@@ -62,8 +59,6 @@ public abstract class DropWidget extends Composite
 	private PopupPanel.PositionCallback m_popupCallback = null;
 	private int m_dlgX;
 	private int m_dlgY;
-	private DropZone m_parentDropZone = null;	// The DropZone this widget lives in.
-	protected DragProxy m_dragProxy = null;
 	protected LandingPageEditor	m_lpe = null;
 
 
@@ -182,8 +177,6 @@ public abstract class DropWidget extends Composite
 					{
 						// Adjust the x position so the right edge of the dialog does not extend past the right edge of the canvas.
 						m_dlgX -= overlap;
-						if ( m_dlgX < 0 )
-							m_dlgX = m_lpe.getCanvasLeft();
 					}
 					
 					canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();
@@ -196,8 +189,6 @@ public abstract class DropWidget extends Composite
 					{
 						// Adjust the y position so the bottom of the dialog does not extend pas the bottom of the canvas.
 						m_dlgY -= overlap;
-						if ( m_dlgY < 0 )
-							m_dlgY = 50;
 					}
 					
 					m_dlgBox.setPopupPosition( m_dlgX, m_dlgY );
@@ -219,7 +210,7 @@ public abstract class DropWidget extends Composite
 		boolean retVal = true;
 		
 		// Layout the controls on this widget according to the values found in the properties object.
-		updateWidget( propertiesObj );
+		updateWidget( (PropertiesObj) propertiesObj );
 
 		// Do we have a handler we are supposed to call?
 		if ( m_editSuccessfulHandler != null )
@@ -239,21 +230,6 @@ public abstract class DropWidget extends Composite
 	}// end editSuccessful()
 
 	
-	/**
-	 * Return the drag proxy object that should be displayed when the user drags this item.
-	 */
-	public abstract DragProxy getDragProxy();
-	
-	
-	/**
-	 * Return the DropZone this widget lives in.
-	 */
-	public DropZone getParentDropZone()
-	{
-		return m_parentDropZone;
-	}
-	
-
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
@@ -331,53 +307,8 @@ public abstract class DropWidget extends Composite
 	
 	
 	/**
-	 * Handles the MouseDownEvent.  This will initiate the dragging of this item.
-	 */
-	public void onMouseDown( MouseDownEvent event )
-	{
-		Object	eventSender;
-		
-		// Is the object that sent this event a PaletteItem object?
-		eventSender = event.getSource();
-		if ( eventSender instanceof Image )
-		{
-			final int x;
-			final int y;
-			final DropWidget dropWidget;
-			Scheduler.ScheduledCommand cmd;
-			
-			dropWidget = this;
-			x = event.getClientX();
-			y = event.getClientY();
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					// Yes
-					m_lpe.startDragExistingItem( dropWidget, x, y );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-
-			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
-			event.getNativeEvent().preventDefault();
-		}
-	}// end onMouseDown()
-	
-	
-	/**
-	 * Set the DropZone this widget lives in.
-	 */
-	public void setParentDropZone( DropZone dropZone )
-	{
-		m_parentDropZone = dropZone;
-	}
-	
-	
-	/**
 	 * Layout the widget according to the values found in the properties object.
 	 */
-	public abstract void updateWidget( Object props );
+	public abstract void updateWidget( PropertiesObj props );
 	
 }// end DropWidget

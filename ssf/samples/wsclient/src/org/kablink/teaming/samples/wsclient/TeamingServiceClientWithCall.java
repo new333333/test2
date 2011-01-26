@@ -52,8 +52,6 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		try {
 			if(args[0].equals("getWorkspaceTree")) {
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
-			} else if(args[0].equals("getTopWorkspaceId")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTopWorkspaceId", new Object[] {null});
 			} else if(args[0].equals("getUser")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUserByName")) {
@@ -125,8 +123,6 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintXML("TeamingServiceV1", "search_search", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("addUserToGroup")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
-			} else if(args[0].equals("getFavorites")) {
-				wsClient.fetchAndPrintBBArray("TeamingServiceV1", "profile_getFavorites", new Object[] {null});
 			} else if(args[0].equals("getFolderTitle")) {
 				wsClient.fetchAndPrintString("TeamingServiceV1", "folder_getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addZone")) {
@@ -150,7 +146,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getDefinitions")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "definition_getDefinitions", new Object[] {null});
 			} else if(args[0].equals("getTemplates")) {
-				wsClient.fetchAndPrintTC("TeamingServiceV1", "template_getTemplates", new Object[] {null});
+				wsClient.fetchAndPrintACK("TeamingServiceV1", "template_getTemplates", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = split(args[2]);
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
@@ -292,7 +288,6 @@ public class TeamingServiceClientWithCall extends WSClientBase
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
-		System.out.println("getTopWorkspaceId");
 		System.out.println("getUser  <user id>  <includeAttachments>");
 		System.out.println("getUserByName  <user name>  <includeAttachments>");
 		System.out.println("getUsersByEmail  <email address>  [<email type>]");
@@ -322,7 +317,6 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
-		System.out.println("getFavorites");
 		System.out.println("-- BEGIN: The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getFolderTitle <folder id>");
 		System.out.println("-- END:");

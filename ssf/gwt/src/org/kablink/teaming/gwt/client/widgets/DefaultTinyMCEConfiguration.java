@@ -45,23 +45,4 @@ public class DefaultTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	public void addLanguagePacks()
 	{
 	}// end addLanguagePacks()
-	
-	
-	/**
-	 * Stub
-	 */
-	public void setContentCss()
-	{
-		
-	}
-	
-	
-	/**
-	 * Stub
-	 */
-	public void setLanguage()
-	{
-		
-	}
-	
 }// end DefaultTinyMCEConfiguration

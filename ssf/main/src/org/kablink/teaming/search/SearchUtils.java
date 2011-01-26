@@ -89,7 +89,7 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entryReplies(String[] entryIds, boolean topEntryReplies)
+	public static Criteria entryReplies(String entryId, boolean topEntryReplies)
 	{
 		String entryReplyType;
 		if (topEntryReplies)
@@ -98,27 +98,15 @@ public class SearchUtils {
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
-			.add(in(entryReplyType, entryIds));
+			.add(in(entryReplyType,new String[] {entryId}));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
-	}
-	
-	public static Criteria entryReplies(String entryId, boolean topEntryReplies)
-	{
-		// Always use the initial form of the method.
-		return entryReplies(new String[]{entryId}, topEntryReplies);
-	}
-	
-	public static Criteria entryReplies(String[] entryIds)
-	{
-		// Always use the initial form of the method.
-		return entryReplies(entryIds, false);
 	}
 	
 	public static Criteria entryReplies(String entryId)
 	{
 		// Always use the initial form of the method.
-		return entryReplies(new String[]{entryId}, false);
+		return entryReplies(entryId, false);
 	}
 	
 	public static Criteria entries(List<Long> entryIds)
@@ -366,14 +354,12 @@ public class SearchUtils {
 	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Long userId) {
 		List<String> sIdList = new ArrayList<String>();
 		UserProperties userProperties = getUserProperties(bs, userId);
-		if (userProperties != null) {
-			Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
-			if (relevanceMap != null) {
-				List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
-				if (trackedPeople != null) {
-					for (Long id: trackedPeople) {
-						sIdList.add(String.valueOf(id));
-					}
+		Map relevanceMap = ((Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP));
+		if (relevanceMap != null) {
+			List<Long> trackedPeople = (List<Long>) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			if (trackedPeople != null) {
+				for (Long id: trackedPeople) {
+					sIdList.add(String.valueOf(id));
 				}
 			}
 		}
@@ -482,12 +468,10 @@ public class SearchUtils {
 
 		// Access and return the user's properties, using their
 		// workspace ID if available.
-		UserProperties reply = null;
-		try {
-			if (null == wsId)
-			     reply = bs.getProfileModule().getUserProperties(userId);
-			else reply = bs.getProfileModule().getUserProperties(userId, wsId);
-		} catch(Exception e) {}
+		UserProperties reply;
+		if (null == wsId)
+		     reply = bs.getProfileModule().getUserProperties(userId);
+		else reply = bs.getProfileModule().getUserProperties(userId, wsId);
 		return reply;
 	}
 	

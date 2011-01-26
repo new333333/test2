@@ -57,7 +57,4 @@ public class FolderHierarchyException extends UncheckedCodedException {
     public FolderHierarchyException(Long docshareId, Throwable cause) {
         super(DocshareHierarchyException_ErrorCode, new Object[] {docshareId}, cause);
    }
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
 }

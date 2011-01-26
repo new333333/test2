@@ -55,15 +55,11 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.model.Attachment;
 import org.kablink.teaming.client.ws.model.AttachmentsField;
-import org.kablink.teaming.client.ws.model.BinderBrief;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
 import org.kablink.teaming.client.ws.model.FileVersion;
 import org.kablink.teaming.client.ws.model.FileVersions;
 import org.kablink.teaming.client.ws.model.FolderBrief;
 import org.kablink.teaming.client.ws.model.FolderCollection;
-import org.kablink.teaming.client.ws.model.FolderEntry;
-import org.kablink.teaming.client.ws.model.TemplateBrief;
-import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
 import org.kablink.teaming.client.ws.model.ReleaseInfo;
 
@@ -116,8 +112,7 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
 			org.kablink.teaming.client.ws.model.FileVersions.class,
 			org.kablink.teaming.client.ws.model.FileVersion.class,
-			org.kablink.teaming.client.ws.model.ReleaseInfo.class,
-			org.kablink.teaming.client.ws.model.BinderBrief.class
+			org.kablink.teaming.client.ws.model.ReleaseInfo.class
 	};
 
 	protected String host; // optional - default to localhost
@@ -398,12 +393,6 @@ public abstract class WSClientBase {
 		printDefinableEntityArray(deArray);
 	}
 
-	void fetchAndPrintBBArray(String serviceName, String operation, Object[] args) throws Exception {
-		Object bbArray = fetch(serviceName, operation, args);
-
-		printBinderBriefArray((BinderBrief[]) bbArray);
-	}
-
 	void fetchAndPrintPrimitiveArray(String serviceName, String operation, Object[] args) throws Exception {
 		Object deArray = fetch(serviceName, operation, args);
 
@@ -419,16 +408,9 @@ public abstract class WSClientBase {
 		printFolderCollection(fc);
 	}
 	
-	void fetchAndPrintTC(String serviceName, String operation, Object[] args) throws Exception {
-		TemplateCollection tc = (TemplateCollection) fetch(serviceName, operation, args);
-		printTemplateCollection(tc);
-	}
-	
 	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
 		Object object = fetch(serviceName, operation, args, filename);
 		System.out.println("Successfully executed " + operation + " on " + serviceName);
-		System.out.println("Return type: " + object.getClass().toString());
-		System.out.println("Return value: " + object.toString());
 	}
 	
 	void fetchAndPrintReleaseInfo(String serviceName, String operation, Object[] args) throws Exception {
@@ -465,9 +447,6 @@ public abstract class WSClientBase {
 			if(entity instanceof User) {
 				System.out.println("User permaLink: " + ((User)entity).getPermaLink());
 			}
-			if(entity instanceof FolderEntry) {
-				System.out.println("Folder entry href: " + ((FolderEntry)entity).getHref());
-			}
 		}
 		else {
 			System.out.println("No entity returned");
@@ -501,20 +480,6 @@ public abstract class WSClientBase {
 		}
 	}
 	
-	void printTemplateCollection(TemplateCollection tc) {
-		TemplateBrief[] fb = tc.getTemplates();
-		System.out.println("Number of templates: " + fb.length);
-		for(int i = 0; i < fb.length; i++) {
-			System.out.println();
-			System.out.println("Template " + i + " id: " + fb[i].getId());
-			System.out.println("Template " + i + " title: " + fb[i].getTitle());
-			System.out.println("Template " + i + " family: " + fb[i].getFamily());
-			System.out.println("Template " + i + " name: " + fb[i].getName());
-			System.out.println("Template " + i + " internalId: " + fb[i].getInternalId());
-			System.out.println("Template " + i + " definitionType: " + fb[i].getDefinitionType());
-		}
-	}
-	
 	void printDefinableEntityArray(Object array) {
 		if(array != null) {
 			if(array instanceof User[]) {
@@ -530,21 +495,6 @@ public abstract class WSClientBase {
 		else {
 			System.out.println("Null array");
 		}
-	}
-	
-	void printBinderBriefArray(BinderBrief[] array) {
-		if(array != null) {
-			System.out.println("BinderBrief array size: " + array.length);
-			for(BinderBrief ff:array)
-				printBinderBrief(ff);
-		}
-		else {
-			System.out.println("Null array");
-		}
-	}
-	
-	void printBinderBrief(BinderBrief bb) {
-		System.out.println(bb.getId() + ", " + bb.getTitle());
 	}
 	
 	void printPrimitiveArray(Object array) {

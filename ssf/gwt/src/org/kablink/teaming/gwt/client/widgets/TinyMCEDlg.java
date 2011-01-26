@@ -34,9 +34,11 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
@@ -137,10 +139,6 @@ public class TinyMCEDlg extends DlgBox
 	 */
 	public void init( Object props )
 	{
-		if ( props instanceof String )
-			setText( (String) props );
-		else
-			setText( null );
 	}// end init()
 	
 	
@@ -161,7 +159,7 @@ public class TinyMCEDlg extends DlgBox
 	 */
 	public void show()
 	{
-		Scheduler.ScheduledCommand cmd;
+        Command cmd;
 
         // Show this dialog.
 		super.show();
@@ -169,13 +167,16 @@ public class TinyMCEDlg extends DlgBox
 		// Give the focus to the tinyMCE editor.
 		// Use a deferred command so the dialog is completely visible before giving
 		// the focus to the tinyMCE editor.
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
             	m_tinyMCE.setFocus();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+            }
+        };
+        DeferredCommand.addCommand( cmd );
 	}// end show()
 }// end TinyMCEDlg

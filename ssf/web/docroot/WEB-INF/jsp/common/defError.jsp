@@ -58,14 +58,7 @@
 
 <p>
 ${exception.class}<br/>
-<%
-	Exception exception = (Exception)request.getAttribute("exception");
-	String message = exception.getLocalizedMessage() == null ? exception.toString() : exception.getLocalizedMessage();
-	if (message != null) {
-		message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
-	}
-%>
-<%= message.toString() %>
+${exception.localizedMessage == null ? exception : exception.localizedMessage }
 </p>
 
 <c:if test="${ssUser.super}">
@@ -74,11 +67,7 @@ ${exception.class}<br/>
 	<input type="button" id="ss_hide" value="<ssf:nlt tag="button.hideDetails"/>" 
 	  onclick="document.getElementById('ss_details').style.display='none'; document.getElementById('ss_show').style.display='inline'; this.style.display='none'" style="display:none;"/>
 	<div id="ss_details" style="display:none;">
-	<c:set var="stackTrace">
 	<%((Exception)request.getAttribute("exception")).printStackTrace(new PrintWriter(out)); %>
-	</c:set>
-	<jsp:useBean id="stackTrace" type="String" />
-	<%= org.kablink.teaming.util.stringcheck.StringCheckUtil.check(stackTrace) %>
 	</div>
 </c:if>
 

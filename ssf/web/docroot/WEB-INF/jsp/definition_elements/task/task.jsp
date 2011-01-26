@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,42 +32,22 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% // Task Folder Listing View %>
+<% // Task view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="java.util.Date"                                         %>
-<%@ page import="org.kablink.teaming.util.SPropsUtil"                    %>
-<%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
-<jsp:useBean id="ssSeenMap"               type="org.kablink.teaming.domain.SeenMap"                     scope="request" />
-<jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
-<jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
-<%
-	// Is the GWT based subtasks feature enabled?
-	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
-	if (subtasksEnabled) {
-		// Yes!  Are we viewing the task list as 'Entries from Folder'?
-		subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
-		if (subtasksEnabled) {
-			// Yes!  Is the number of items that we're working with
-			// within our supported limits?
-			subtasksEnabled =
-				((ss_searchTotalHits != null) &&
-				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", 1000)));
-		}
-	}
-%>
+<%@ page import="java.util.Date" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
-	var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
+var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 </script>
 <c:if test="${ ssCurrentFolderModeType != 'VIRTUAL' }">
 	<table class="ss_statisticTable"><tr>
 	<c:set var="colCount" value="0"/>
 	<c:if test="${!empty ssBinder &&
-	              !empty ssBinder.customAttributes['statistics'] && 
-	              !empty ssBinder.customAttributes['statistics'].value && 
-	              !empty ssBinder.customAttributes['statistics'].value.value}">		
+					!empty ssBinder.customAttributes['statistics'] && 
+					!empty ssBinder.customAttributes['statistics'].value && 
+					!empty ssBinder.customAttributes['statistics'].value.value}">		
 		<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
 			<c:if test="${!empty definition.value}">
 				<c:if test="${!empty definition.value.priority}">
@@ -94,49 +74,24 @@
 	</table>
 </c:if>
 
+
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 <div class="ss_folder_border">
-	<% // Add the toolbar with the navigation widgets, commands and filter %>
-	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
-		<ssHelpSpot 
-			helpId="workspaces_folders/menus_toolbars/folder_toolbar"
-			offsetX="0"
-			offsetY="0" 
-		  	title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
-		<% // Entry toolbar %>
-		<c:if test="${!empty ssEntryToolbar}">
-			<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
-		 </c:if>
-	</ssf:toolbar>
-	<div class="ss_clear"></div>
+<% // Add the toolbar with the navigation widgets, commands and filter %>
+<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
+<ssHelpSpot 
+  		helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="0" offsetY="0" 
+  		title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>
+ <% // Entry toolbar %>
+ <c:if test="${!empty ssEntryToolbar}">
+  <ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
+ </c:if>
+</ssf:toolbar>
+<div class="ss_clear"></div>
 </div>
-
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<% if (subtasksEnabled) { %>
-	<div class="gwtTaskTools" id="ss_gwtTaskToolsDIV"></div>
-<% } else {%>
-	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
-<% } %>
-
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <div class="ss_folder" id="ss_task_folder_div">
-	<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
-	<% if (subtasksEnabled) { %>
-		<% // Generate the GWT UI. %>
-		<div class="gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
-		<script type="text/javascript">
-			function ss_initGwtTaskListing() {
-				if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
-						(window.name == "gwtContentIframe")) {
-					window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}");
-				}
-				else {
-					alert("*Internal Error* - The GWT Task UI code is missing!!!");
-				}
-			}
-			ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
-		</script>
-	<% } else { %>
-		<% // Generate the old. JSP based UI. %>
-		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
-	<% } %>
+<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
 </div>

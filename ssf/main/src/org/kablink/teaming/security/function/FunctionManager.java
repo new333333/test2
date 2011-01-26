@@ -35,6 +35,8 @@ package org.kablink.teaming.security.function;
 import java.util.List;
 
 import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.NotSupportedException;
+
 
 /**
  *
@@ -54,11 +56,4 @@ public interface FunctionManager {
     public List findFunctions(Long zoneId);
     
     public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation);
-    
-    /**
-     * Evaluate the conditional clauses (if any) associated with the function against the 
-     * current runtime context, and return an object encapsulating the result of the evaluation.
-     */
-    public ConditionEvaluationResult evaluateConditionalClauses(Function function);
-
 }

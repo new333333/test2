@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -89,16 +88,10 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Visits;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.jobs.DefaultFolderNotification;
-import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.FolderDelete;
-import org.kablink.teaming.jobs.FolderNotification;
-import org.kablink.teaming.jobs.MirroredFolderSynchronization;
-import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -110,7 +103,6 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FileLockInfo;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.AccessUtils;
@@ -132,7 +124,6 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
@@ -206,22 +197,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		}
    		return (FolderDelete)ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultFolderDelete.class);
   	}
-
-	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId) {
-  		return getNotificationScheduleObject().getScheduleInfo(zoneId, folderId);
-	}
-	
-	public void setNotificationSchedule(ScheduleInfo config, Long folderId) {
-    	checkAccess(getFolder(folderId),FolderOperation.manageEmail);
-        //data is stored with job
-        getNotificationScheduleObject().setScheduleInfo(config, folderId);
-    }    
-
-	private FolderNotification getNotificationScheduleObject() {
-		return new DefaultFolderNotification();
-    }    
-
-	//called on zone delete
+ 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
 		FolderDelete job = getDeleteProcessor(zone);
 		job.remove(zone.getId());
@@ -255,7 +231,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
-			case manageEmail:
 			case scheduleSynchronization:
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
@@ -666,11 +641,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(crit.toQuery());
     	
+    	if(logger.isDebugEnabled())
+    		logger.debug("Query is: " + so.getQueryString());
+    	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
         
         try {
-        	results = luceneSession.search(so.getLuceneQuery(),so.getSortBy(),0,0);
+        	results = luceneSession.search(so.getQuery(),so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());
@@ -1224,26 +1202,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
     }
-    public boolean testIfWorkflowResponseAllowed(FolderEntry entry, Long stateId, String question) {
-    	WorkflowState ws = entry.getWorkflowState(stateId);
-    	if (!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question) &&
-				testAccess(entry, FolderOperation.modifyEntry)) {
-    		try {
-    			//No explicit responders is listed and this user can modify the entry.
-    			//Also test if the user is allowed to transition out of this state
-    			checkTransitionOutStateAllowed(entry, stateId);
-    		} catch(AccessControlException e) {
-    			return false;
-    		}
-    		return true;
-    	} else if (BinderHelper.checkIfWorkflowResponseAllowed(entry, ws, question) ||
-    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(entry, ws, question) &&
-    	    	testAccess((FolderEntry)entry, FolderOperation.modifyEntry))) {
-    		//The user was explicitly given the right to respond
-    		return true;
-    	}
-    	return false;
-    }
     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
     	//start a workflow on an entry
     	FolderEntry entry = loadEntry(folderId, entryId);
@@ -1265,20 +1223,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         processor.deleteEntryWorkflow(entry.getParentBinder(), entry, def);
 
     }
-    public boolean checkIfManualTransitionAllowed(Long folderId, Long entryId, Long workflowTokenId, String toState) throws AccessControlException {
-        boolean result = false;
-        FolderEntry entry = loadEntry(folderId, entryId);
-		Set states = entry.getWorkflowStates();
-		for (Iterator iter=states.iterator(); iter.hasNext();) {
-			WorkflowState ws = (WorkflowState)iter.next();
-			if (ws.getTokenId().equals(workflowTokenId)) {
-				Map transitions = getManualTransitions(entry, ws.getId());
-				//See if the toState is in this list
-				if (transitions.containsKey(toState)) result = true;
-			}
-		}
-		return result;
-     }
    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
        FolderEntry entry = loadEntry(folderId, entryId);   	
        Folder folder = entry.getParentFolder();
@@ -1290,18 +1234,15 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
 	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
-		Map<String,Map> result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
+		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
 		Map transitionData = new LinkedHashMap();
 		if (testTransitionOutStateAllowed(entry, stateId)) {
 			for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry me = (Map.Entry)iter.next();
-					Map data = (Map)me.getValue();
 					try {
 						//access check
-						Element accessEle = (Element)data.get("transitionAccessElement");
-						AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
-						AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
-						transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
+					AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
+					transitionData.put(me.getKey(), me.getValue());
 					} catch (AccessControlException ac) {};
 			}
 			return transitionData;
@@ -1312,38 +1253,23 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }		
 
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-    	Map<String, Map> qMap = WorkflowUtils.getQuestions(ws.getDefinition(), ws);
-    	//Check if the user is allowed to respond
-    	for (String question : qMap.keySet()) {
-    		if (WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question)) {
-	    		if (!BinderHelper.checkIfWorkflowResponseAllowed((WorkflowSupport)entry, ws, question)) {
-	    			//The user isn't on the list, so check for forum Default
-	    			if (!WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(entry, ws, question) ||
-	    					!testAccess(entry, FolderOperation.modifyEntry)) {
-		    			//This question is not allowed, so remove it
-		    			qMap.remove(question);
-	    			}
-	    		}
-    		} else {
-    			if (!testAccess(entry, FolderOperation.modifyEntry)) {
-	    			//This question is not allowed, so remove it
-	    			qMap.remove(question);
-    			}
-    		}
-    	}
-    	return qMap;
+		if (testTransitionOutStateAllowed(entry, stateId)) {
+			WorkflowState ws = entry.getWorkflowState(stateId);
+        	return  WorkflowUtils.getQuestions(ws.getDefinition(), ws.getState());
+        }
+        return Collections.EMPTY_MAP;
     }		
 
     public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) {
         FolderEntry entry = loadEntry(folderId, entryId);   	
+        checkAccess(entry, FolderOperation.addReply);
+        checkTransitionOutStateAllowed(entry, stateId);
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
-        Boolean canModifyEntry = testAccess(entry, FolderOperation.modifyEntry);
-        processor.setWorkflowResponse(folder, entry, stateId, inputData, canModifyEntry);
+        processor.setWorkflowResponse(folder, entry, stateId, inputData);
     }
     
-   //called by scheduler to complete folder deletions
+    //called by scheduler to complete folder deletions
     //no transaction
     public synchronized void cleanupFolders() {
 		FilterControls fc = new FilterControls();

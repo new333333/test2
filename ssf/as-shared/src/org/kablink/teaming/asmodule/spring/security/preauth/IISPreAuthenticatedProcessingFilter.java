@@ -46,15 +46,12 @@ import org.springframework.security.ui.preauth.AbstractPreAuthenticatedProcessin
 public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest httpRequest) {
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Remote address: " + httpRequest.getRemoteAddr() + 
-    				", Remote host: " + httpRequest.getRemoteHost() + 
-    				", Server name: " + httpRequest.getServerName());    		
-    	}
+    	if(logger.isDebugEnabled())
+    		logger.debug("Remote address: " + httpRequest.getRemoteAddr());
     	
         Object principal = httpRequest.getUserPrincipal() == null ? null : httpRequest.getUserPrincipal().getName();
         if (logger.isDebugEnabled()) {
-            logger.debug("Pre-authenticated IIS principal is [" + principal + "]");
+            logger.debug("PreAuthenticated IIS principal: " + principal);
         }
         if(principal == null) {
         	// CASE: The client is accessing Teaming directly, that is, without going through the IIS.
@@ -65,14 +62,13 @@ public class IISPreAuthenticatedProcessingFilter extends AbstractPreAuthenticate
         else if(principal.equals("")) {
         	// CASE: The client is accessing Teaming through IIS, and the Anonymous Authentication is enabled on the IIS.
         	// In this case, Teaming is responsible for authenticating the user and the IIS is being
-        	// used for purposes other than authentication, for example, as a proxy, as external access 
+        	// used for purposes other than authentication, for example, as a proxy, as external entry 
         	// point (in DMZ configuration, for instance), or as a load balancer in a clustered environment, etc.
         	// Simply return null so that the regular (form-based) authentication pipeline can be invoked.
-        	// Returning an empty string will cause the framework an attempt to validate the identity
-        	// against the LDAP (Active Directory), which will subsequently and inevitably fail resulting in
-        	// undesirable effect. Returning null, instead, will instruct the framework to give up 
-        	// pre-authentication and instead to proceed with the rest of the filter chain which implements
-        	// regular form-based authentication.
+        	// Returning an empty string will cause the framework to attempt an authentication, which will
+        	// subsequently and inevitably fail, which has undesirable side effect. Returning null, instead,
+        	// will cause the framework to simply skip the pertaining part and proceed with the rest of the
+        	// filter chain.
         	return null;
         }
         else {

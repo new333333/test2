@@ -46,7 +46,6 @@ import org.kablink.teaming.search.LuceneSessionFactory;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.security.acl.AclManager;
-import org.kablink.teaming.security.dao.SecurityDao;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.quartz.Scheduler;
@@ -72,7 +71,6 @@ public abstract class CommonDependencyInjection {
 	protected CoreDao coreDao;
 	protected ProfileDao profileDao;
 	protected FolderDao folderDao;
-	protected SecurityDao securityDao;
 	protected FunctionManager functionManager;
 	protected AccessControlManager accessControlManager;
 	protected AclManager aclManager;
@@ -98,9 +96,6 @@ public abstract class CommonDependencyInjection {
 	}
 	public void setFolderDao(FolderDao folderDao) {
 		this.folderDao = folderDao;
-	}
-	public void setSecurityDao(SecurityDao securityDao) {
-		this.securityDao = securityDao;
 	}
 	public void setProfileDao(ProfileDao profileDao) {
 		this.profileDao = profileDao;
@@ -134,9 +129,6 @@ public abstract class CommonDependencyInjection {
 	}
 	public FolderDao getFolderDao() {
 		return folderDao;
-	}
-	public SecurityDao getSecurityDao() {
-		return securityDao;
 	}
 	public ProfileDao getProfileDao() {
 		return profileDao;

@@ -84,7 +84,6 @@ public interface FolderModule {
 	   restoreEntry,
 	   deleteEntry,
 	   deleteEntryWorkflow,
-	   manageEmail,
 	   manageTag,
 	   modifyEntry,
 	   modifyEntryFields,
@@ -495,16 +494,6 @@ public interface FolderModule {
     public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content, Map options)
 		throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException;
     /**
-     * Check if moving an entry workflow from the state identified as stateId to a new state is allowed.
-     * @param folderId
-     * @param entryId
-     * @param stateId
-     * @param toState
-     * @throws AccessControlException
-     */
-    public boolean checkIfManualTransitionAllowed(Long folderId, Long entryId, Long workflowTokenId, String toState);
- 
-    /**
      * Move an entry workflow from the state identified as stateId to a new state.
      * @param folderId
      * @param entryId
@@ -649,9 +638,6 @@ public interface FolderModule {
 	
 	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId);	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
-	
-	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId);	
-	public void setNotificationSchedule(ScheduleInfo config, Long folderId);
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 }

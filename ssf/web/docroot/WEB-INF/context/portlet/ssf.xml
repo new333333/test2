@@ -60,7 +60,6 @@
 	<bean id="activityReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportController" />
 	<bean id="activityReportByUserController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ActivityReportByUserController" />
 	<bean id="userAccessReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.UserAccessReportController" />
-	<bean id="emailReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.EmailReportController" />
 	<bean id="xssReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.XssReportController" />
 	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.QuotaReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.WorkflowReportController" />
@@ -93,7 +92,6 @@
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
-	<bean id="adminManageUserAccountsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageUserAccountsController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageApplicationGroupsController" />
 	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageZonesController" />
@@ -185,7 +183,6 @@
 						<entry key="quota_exceeded_report"><ref bean="quotaReportController"/></entry>
 						<entry key="quota_highwater_exceeded_report"><ref bean="quotaReportController"/></entry>
 						<entry key="user_access_report"><ref bean="userAccessReportController"/></entry>
-						<entry key="email_report"><ref bean="emailReportController"/></entry>
 						<entry key="xss_report"><ref bean="xssReportController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="export_import"><ref bean="adminExportImportController"/></entry>
@@ -201,7 +198,6 @@
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
 						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
-						<entry key="manage_user_accounts"><ref bean="adminManageUserAccountsController"/></entry>
 						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
 						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>

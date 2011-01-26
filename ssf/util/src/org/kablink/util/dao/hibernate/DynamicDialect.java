@@ -40,8 +40,8 @@ import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.DialectFactory;
 import org.hibernate.dialect.Oracle10gDialect;
-import org.hibernate.dialect.resolver.DialectFactory;
 import org.hibernate.exception.SQLExceptionConverter;
 import org.hibernate.exception.ViolatedConstraintNameExtracter;
 import org.hibernate.sql.CaseFragment;
@@ -80,7 +80,7 @@ public class DynamicDialect extends Dialect {
 			else if (dbName.equalsIgnoreCase("frontbase"))
 				_dialect = new FrontBase4Dialect();
 			else
-				_dialect = DialectFactory.buildDialect(new Properties(), con);
+				_dialect = DialectFactory.determineDialect(dbName, dbMajorVersion);
 		}
 		catch (Exception e) {
 			if (dbName != null && dbName.equalsIgnoreCase("Oracle") && dbMajorVersion == 11) {

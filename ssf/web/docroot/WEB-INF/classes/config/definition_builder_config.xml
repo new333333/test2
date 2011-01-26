@@ -239,7 +239,6 @@
 		<options>
 			<option name="entryFormForm" initial="true" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
-			<option_select path="//item[@category='entryLayout']" optionCaption="__layout_options" />
 		</options>
 		
 		<jsps>
@@ -268,7 +267,6 @@
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='entryData']"/>
 			<option_select path="//item[@category='commonEntryData']" />
-			<option_select path="//item[@category='entryLayout']"/>
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
@@ -392,7 +390,6 @@
 			<option name="entryReplies" caption="__entry_replies" />
 			<option_select path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select path="//item[@category='entryLayoutView']"/>
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
 		
@@ -1281,24 +1278,6 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-	<item name="profileBccEmailAddress" caption="__bccEmailAddress" type="data"  dataType="email" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__bccEmailAddressWithHelp"/>
-			<property name="name" caption="__data_name" type="text" value="bccEmailAddress" 
-			  readonly="true" unique="//item[@type='data']"/>
-			<property name="width" caption="__textboxWidth" type="text" default="60"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
-		</jsps>
-		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderEmail" />
-		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
-		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
-	</item>
 	<item name="profileConferencingID" caption="__conferencingID" type="data" dataType="id" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
@@ -2056,7 +2035,6 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
-			<option name="profileBccEmailAddress" initial="true" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
@@ -2123,7 +2101,6 @@
 			<option name="profileEmailAddress" initial="true" />
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
-			<option name="profileBccEmailAddress" initial="false" />
 			<option name="profileSkypeId" initial="false" />
 			<option name="profileTwitterId" initial="false" />
 			<option name="profileInstantMessage" initial="false" />
@@ -3150,41 +3127,6 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
 		</jsps>
 	</item>
-	
-<!-- Entry layout items -->
-	<item name="onlyInState" caption="__only_in_state" category="entryLayout" display="form">
-		<properties>
-			<property name="showWhenNoWorkflow" caption="__showWhenNoWorkflow" type="checkbox"/>
-			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="title" definitionType="1" caption="__title" />
-			<option_select path="//item[@category='commonEntryData']" />
-			<option_select definitionType="1" path="//item[@category='entryData']"  />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/only_in_state.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="onlyInStateView" caption="__only_in_state" category="entryLayoutView" display="view">
-		<properties>
-			<property name="showWhenNoWorkflow" caption="__showWhenNoWorkflow" type="checkbox"/>
-			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/only_in_state.jsp" />
-		</jsps>
-	</item>
-		
 <!-- General layout items -->
 	<item name="box" caption="__box" category="generalLayout" display="form">
 		<properties>
@@ -3590,7 +3532,6 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<help>ihelp.designers.custom_jsp</help>
-		<notify velocity="custom.vm" />
 	</item>
 	<item name="remoteApp" caption="__remoteApp" type="data" dataType="remoteApp" category="entryData" display="form">
 		<properties>
@@ -3712,21 +3653,9 @@
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
-			<option name="transitionManualAccess" caption="__transitionManualAccess" />
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-	
-	<item name="transitionManualAccess" caption="__transitionManualAccess" multipleAllowedInParent="false">
-		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
-			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="team" caption="__team" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
-			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
-		</properties>
-	</item>
-	
 	<item name="transitionImmediate" caption="__transitionImmediate" type="transition" >
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
@@ -3779,14 +3708,11 @@
 			<property name="question" caption="__workflow_question" type="text" />
 			<property name="response" caption="__workflow_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-			<property name="everyone" caption="__workflow_response_everyone" type="checkbox"/>
-			<property name="everyone_this" caption="__workflow_response_everyone_this" type="checkbox"/>
 		</properties>
 		<options>
 			<option name="variable" caption="__workflow_variable_set_on_transition" />
 		</options>
 	</item>
-
 	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition" >
 		<properties>
 			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
@@ -3835,7 +3761,8 @@
 		</properties>
 	</item>
 	
-	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion">
+	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion"
+		>
 		<properties>
 			<property name="question" caption="__workflow_question_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
@@ -3843,7 +3770,6 @@
 				unique="//item[@type='workflowQuestion']" />
 		</properties>
 		<options>
-			<option name="workflowQuestionResponders" caption="__workflow_question_responders" />
 			<option name="workflowResponse" caption="__workflow_response" />
 		</options>
 	</item>
@@ -3854,16 +3780,6 @@
 			<property name="name" caption="__data_name" type="text" 
 				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
 				unique="//item[@type='workflowResponse']" />
-		</properties>
-	</item>
-	
-	<item name="workflowQuestionResponders" caption="__workflow_question_responders" multipleAllowedInParent="false">
-		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
-			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
-			<property name="team" caption="__team" type="checkbox" />
-			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
-			<property name="condition" caption="__workflow_entry_user_list" type="workflowEntryDataUserList" />
 		</properties>
 	</item>
 	

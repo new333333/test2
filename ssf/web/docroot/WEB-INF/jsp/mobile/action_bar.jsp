@@ -39,25 +39,8 @@ function ss_logoff() {
 	var x = '<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 	if (x == null || x == "") {
 		var y = '${ss_logoutUrl}';
-		var logoutForm;
-		
-		// Get the logout form.  We use a form so the logout request can be made with
-		// a "post" instead of a "get".  This prevents logout spoofing.
-		logoutForm = document.getElementById( 'logoutForm' );
-		if ( logoutForm != null )
-		{
-			logoutForm.action = y;
-			logoutForm.submit();
-		}
-		else
-		{
-			// This should never happen.
-			alert( 'Could not find the logout form.' );
-		}
-
-		// This is how it used to be done
 		//alert(y);
-		//self.location.href=y;
+		self.location.href=y;
 	} else {
 		//alert (x);
 		var y = '${ss_logoutUrl}';
@@ -177,8 +160,3 @@ function ss_logoff_from_sso(s) {
 
 <%@ include file="/WEB-INF/jsp/mobile/new_menu.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/actions_menu.jsp" %>
-
-<!-- This form is used for logging out. -->
-<!-- The value of the action attribute will be filled in at runtime. -->
-<form name="logoutForm" id="logoutForm" method="post" action="" >
-</form> 

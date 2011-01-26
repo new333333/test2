@@ -36,10 +36,8 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.util.BootstrapProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
-import org.springframework.util.StringUtils;
 
 public class XmlWebApplicationContext extends org.springframework.web.context.support.XmlWebApplicationContext {
 
@@ -48,10 +46,6 @@ public class XmlWebApplicationContext extends org.springframework.web.context.su
 	private boolean[] optional;
 	
 	public void setConfigLocations(String[] locations) {
-		String bsp = BootstrapProperties.getProperty("spring.context.config.location");
-		if(bsp != null)
-			locations = StringUtils.tokenizeToStringArray(bsp, CONFIG_LOCATION_DELIMITERS);
-		
 		optional = new boolean[locations.length];
 		String[] locs = new String[locations.length];
 		for(int i = 0; i < locations.length; i++) {

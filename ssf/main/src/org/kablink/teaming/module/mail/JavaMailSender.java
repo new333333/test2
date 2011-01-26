@@ -33,8 +33,6 @@
 package org.kablink.teaming.module.mail;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.MimeMessage;
-
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 
@@ -46,6 +44,6 @@ public interface JavaMailSender extends
 	public void setSession(Session session, String userName, String password);
 	public String getName();
 	public void setName(String name);
-	public void send(Transport transport, MimeMessage mimeMessage) throws MailException;
+	public void send(Transport transport, MimeMessagePreparator mimeMessagePreparator) throws MailException;
 	public Object send(ConnectionCallback callback) throws MailException;
 }

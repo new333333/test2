@@ -110,10 +110,16 @@ public class JavaMailSenderImpl extends
 	public String getName() {
 		return name;
 	}
-	public void send(Transport transport, MimeMessage mimeMessage) throws MailException {
+	public void send(Transport transport, MimeMessagePreparator mimeMessagePreparator) throws MailException {
 		validate(transport);
 
 		try {
+			MimeMessage mimeMessage = createMimeMessage();
+			mimeMessagePreparator.prepare(mimeMessage);
+			if (mimeMessage.getSentDate() == null) {
+				mimeMessage.setSentDate(new Date());
+			}
+			mimeMessage.saveChanges();
 			transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
 		}
 		catch (MailException ex) {
@@ -121,6 +127,9 @@ public class JavaMailSenderImpl extends
 		}
 		catch (MessagingException ex) {
 			throw new MailParseException(ex);
+		}
+		catch (IOException ex) {
+			throw new MailPreparationException(ex);
 		}
 		catch (Exception ex) {
 			throw new MailPreparationException(ex);

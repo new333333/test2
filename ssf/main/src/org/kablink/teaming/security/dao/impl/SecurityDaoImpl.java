@@ -56,7 +56,6 @@ import org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoRequest;
 import org.kablink.teaming.security.accesstoken.impl.TokenInfoSession;
 import org.kablink.teaming.security.dao.SecurityDao;
-import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -90,7 +89,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		long begin = System.currentTimeMillis();
 		try {
 	        Function f = (Function)getHibernateTemplate().get(Function.class, id);
-	        if (f != null && zoneId.equals(f.getZoneId())) return f;
+	        if (zoneId.equals(f.getZoneId())) return f;
 	        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
     	}
     	finally {
@@ -126,39 +125,6 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     	}
     }
 
-    public Condition loadFunctionCondition(Long zoneId, Long functionConditionId) throws NoObjectByTheIdException {
-		long begin = System.currentTimeMillis();
-		try {
-	        Condition c = (Condition)getHibernateTemplate().get(Condition.class, functionConditionId);
-	        if (c != null && zoneId.equals(c.getZoneId())) 
-	        	return c;
-	        else 
-	        	throw new NoObjectByTheIdException("errorcode.no.condition.by.the.id", functionConditionId);
-    	}
-    	finally {
-    		end(begin, "loadFunctionCondition(Long,String)");
-    	}	        
-    }
-    
-    public List<Condition> findFunctionConditions(final Long zoneId) {
-		long begin = System.currentTimeMillis();
-		try {
-	        return (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                        return session.createCriteria(Condition.class)
-	                        	.add(Expression.eq(ZONE_ID, zoneId))
-	                        	//.setCacheable(true)
-	                        	.addOrder(Order.asc("title"))
-	                        	.list();
-	                    }
-	                }
-	            );
-    	}
-    	finally {
-    		end(begin, "findFunctionConditions(Long)");
-    	}	
-    }
 
 	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final Long zoneId, 
 			final Long workAreaId, final String workAreaType, final Long functionId) {
@@ -263,12 +229,12 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
         return disjunction;
     }
 
-    public List<Long> checkWorkAreaFunctionMembership(final Long zoneId,
+    public boolean checkWorkAreaFunctionMembership(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
 		long begin = System.currentTimeMillis();
 		try {
-	    	return (List) getHibernateTemplate().execute(
+	    	List matches = (List) getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        // The following query performs 4 table joins in a single SQL query.
@@ -283,13 +249,17 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	                        	.setString(WORK_AREA_TYPE, workAreaType)
 	                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
 	                        	.setParameterList(PRINCIPAL_IDS, membersToLookup)
-	                        	// 1/22/2011 - We need to get back the ids of ALL functions that matched the query.
-	                        	//.setMaxResults(1) // Fetching the first matching row is enough for us
+	                        	.setMaxResults(1) // Fetching the first matching row is enough for us
 	                         	.setCacheable(true)
 	                         	.list();
 	                    }
 	                }
 	            );
+	        
+	        if(matches.size() > 0)
+	            return true;
+	        else
+	            return false;
     	}
     	finally {
     		end(begin, "checkWorkAreaFunctionMembership(Long,Long,String,String,Set)");

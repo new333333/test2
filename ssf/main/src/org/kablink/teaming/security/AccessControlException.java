@@ -62,8 +62,4 @@ public class AccessControlException extends UncheckedCodedException {
     	
     }
 
-    public int getHttpStatusCode() {
-		// In the case of ACL checking failure, return 403 Forbidden, not 401 Unauthorized.
-    	return 403; // Forbidden 
-    }
 }

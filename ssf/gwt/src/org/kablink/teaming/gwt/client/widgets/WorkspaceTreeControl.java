@@ -54,8 +54,9 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -178,16 +179,12 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			});
 			
 			// Set the size of the control.
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-        			relayoutPage();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+	        DeferredCommand.addCommand(
+	        	new Command() {
+	        		public void execute() {
+	        			relayoutPage();
+	        		}
+	        });		
 		}
 		
 		// All composites must call initWidget() in their constructors.
@@ -298,17 +295,13 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		// We only worry about layout if the tree if it's in vertical
 		// mode.  Is it?
 		if (TreeMode.VERTICAL == m_tm) {
-			Scheduler.ScheduledCommand cmd;
-
 			// Yes!  Force it to lay itself out again.
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					relayoutPageImpl();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			DeferredCommand.addCommand(
+				new Command() {
+					public void execute() {
+						relayoutPageImpl();
+					}
+			});
 		}
 	}
 		
@@ -341,7 +334,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @param osbInfo
 	 */
 	public void showBinderBusy(OnSelectBinderInfo osbInfo) {
-		if (null != m_treeDisplay) {
+		if (null != m_treeDisplay) { 
 			m_treeDisplay.showBinderBusy(osbInfo);
 		}
 	}

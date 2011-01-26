@@ -162,11 +162,7 @@ public interface ObjectKeys {
     public static final String FILES_FROM_APPLET_FOR_BINDER="ss_attachFile";
     public static final String FILES_FROM_APPLET_FOLDER_INFO_FOR_BINDER="filesFromAppletFolderInfo";
     public static final String WORKFLOW_QUESTION_TEXT="workflow_questionText";
-    public static final String WORKFLOW_QUESTION_EVERYONE_MUST_RESPOND="workflow_questionEveryoneMustRespond";
     public static final String WORKFLOW_QUESTION_RESPONSES="workflow_questionResponses";
-    public static final String WORKFLOW_QUESTION_RESPONSE_COUNT="workflow_questionResponseCount";
-    public static final String WORKFLOW_QUESTION_RESPONDERS="workflow_questionResponders";
-    public static final String WORKFLOW_QUESTION_RESPONSE_RESPONDERS="workflow_questionReponseResponders";
  
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";
@@ -223,12 +219,9 @@ public interface ObjectKeys {
     
     public static final String BINDER_PROPERTY_FILTERS = "binderFilters";
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
-    public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "folderColumnSortOrder";
-    public static final String BINDER_PROPERTY_FOLDER_COLUMN_TITLES = "folderColumnTitles";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
-    public static final String BINDER_PROPERTY_TASK_LINKAGE = "taskLinkage";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
@@ -322,7 +315,6 @@ public interface ObjectKeys {
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_WIKI = 10000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT = 100000;
-    public static final int SEARCH_MAX_HITS_ALL_USERS = 100000;
     public static final int SEARCH_RESULTS_TO_CREATE_STATISTICS = 200;
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
     public static final String SEARCH_SEARCH_DYNAMIC_FILTER = "searchDynamicFilter";
@@ -390,8 +382,6 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_APPCONFIGS = "userAppConfigs";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
-    public static final String USER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "userFolderColumnSortOrder";
-    public static final String USER_PROPERTY_FOLDER_COLUMN_TITLES = "userFolderColumnTitles";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";
@@ -411,7 +401,6 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
     public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";
-    public static final String USER_PROPERTY_WHATS_NEW_SHOW_SETTING = "whatsNewShowSetting";
     public static final String USER_PROPERTY_EXPANDED_BINDERS_LIST = "expandedBindersList";
     public static final String USER_PROPERTY_DEFAULT_ACTIVITY_STREAM = "defaultActivityStream";
     public static final String USER_THEME_DEFAULT="default";
@@ -488,7 +477,6 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL="emailAddress";
     public static final String FIELD_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
-    public static final String FIELD_USER_EMAIL_BCC="bccEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_MINIBLOGID="miniBlogId";
     public static final String FIELD_USER_DISKQUOTA="diskQuota";
@@ -590,7 +578,6 @@ public interface ObjectKeys {
     public static final String XTAG_USER_EMAIL="emailAddress";
     public static final String XTAG_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String XTAG_USER_EMAIL_MOBILE="mobileEmailAddress";
-    public static final String XTAG_USER_EMAIL_BCC="bccEmailAddress";
     public static final String XTAG_USER_ZONNAME="zonName";
     public static final String XTAG_USER_ORGANIZATION="organization";
     public static final String XTAG_USER_PHONE="phone";

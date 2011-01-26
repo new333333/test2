@@ -61,15 +61,11 @@ public class XSSCheck implements StringCheck {
 	private static final String MODE_TRUSTED_DISALLOW = "trusted.disallow";
 	private static final String MODE_TRUSTED_STRIP = "trusted.strip";
 	
-	//Properly formatted html - these get deleted
 	private static final String PATTERN_STR1 = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
 	private static final String PATTERN_STR1_FILE = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*>|>))";
-	//Improperly closed tags - these get quoted with &lt; and &gt;
-	private static final String PATTERN_STR1a = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*$|$))";
-	private static final String PATTERN_STR1_FILEa = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*$|$))";
 
-	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
-	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]*[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
 	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
 
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>\\s]*style[\\s]*=[\\s]*([\"'])[^>]*\\2|[^>\\s]*style[\\s]*=[^>\\s\"']*)[^>]*>";
@@ -80,8 +76,6 @@ public class XSSCheck implements StringCheck {
 	
 	private Pattern pattern1;
 	private Pattern pattern1file;
-	private Pattern pattern1a;
-	private Pattern pattern1filea;
 	private Pattern pattern2;
 	private Pattern pattern2file;
 	private Pattern pattern2a;
@@ -100,8 +94,6 @@ public class XSSCheck implements StringCheck {
 	public XSSCheck() {
 		pattern1 = Pattern.compile(PATTERN_STR1);
 		pattern1file = Pattern.compile(PATTERN_STR1_FILE);
-		pattern1a = Pattern.compile(PATTERN_STR1a);
-		pattern1filea = Pattern.compile(PATTERN_STR1_FILEa);
 		pattern2 = Pattern.compile(PATTERN_STR2);
 		pattern2file = Pattern.compile(PATTERN_STR2_FILE);
 		pattern2a = Pattern.compile(PATTERN_STR2a);
@@ -170,7 +162,7 @@ public class XSSCheck implements StringCheck {
 		// We can use much faster reference comparison rather than string 
 		// value equality test due to the way we setup above.
 		
-		if (!checkOnly && (mode.equals(MODE_TRUSTED_DISALLOW) || mode.equals(MODE_TRUSTED_STRIP))) {
+		if (mode.equals(MODE_TRUSTED_DISALLOW) || mode.equals(MODE_TRUSTED_STRIP)) {
 			if (RequestContextHolder.getRequestContext() != null) {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				if(getTrustedUserNames(user.getZoneId()).contains(user.getName()))
@@ -238,14 +230,6 @@ public class XSSCheck implements StringCheck {
 		if (type.equals(TYPE_CHECK_FILE)) matcher1 = pattern1file.matcher(sequence);
 		if (matcher1.find()) {
 			sequence = matcher1.replaceAll(StringPool.BLANK);
-			result = false;
-		}
-		//Check for ill formed script, embed, iframe, ...
-		Matcher matcher1a = pattern1a.matcher(sequence);
-		if (type.equals(TYPE_CHECK_FILE)) matcher1a = pattern1filea.matcher(sequence);
-		if (matcher1a.find()) {
-			sequence = sequence.replaceAll("<", "&lt;");
-			sequence = sequence.replaceAll(">", "&gt;");
 			result = false;
 		}
 		//Check files for href="http:..." 

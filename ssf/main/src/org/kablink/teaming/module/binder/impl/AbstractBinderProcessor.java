@@ -96,7 +96,6 @@ import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -165,14 +164,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
-	}
-	
-	private FolderModule folderModule;
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	protected FolderModule getFolderModule() {
-		return folderModule;
 	}
 	
 	private FileModule fileModule;
@@ -260,11 +251,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	entryData.put("title", title);
 	        }
 	        if (Validator.isNull(title)) throw new TitleException("");
-    		if (Validator.containsPathCharacters(title)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{title}){
-    		    public int getHttpStatusCode() {
-    		    	return 400; // Bad Request
-    		    }
-    		};
+    		if (Validator.containsPathCharacters(title)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{title}){};
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
@@ -641,11 +628,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
-	        		if (Validator.containsPathCharacters(newTitle)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{newTitle}){
-	        		    public int getHttpStatusCode() {
-	        		    	return 400; // Bad Request
-	        		    }
-	        		};
+	        		if (Validator.containsPathCharacters(newTitle)) throw new UncheckedCodedException("errorcode.title.pathCharacters", new Object[]{newTitle}){};
 	        		modifyBinder_mirrored(binder, oldTitle, newTitle, inputData);
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
@@ -1370,7 +1353,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + soQuery.toString());
@@ -1537,7 +1520,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		crit.add(conjunction().add(
 				eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER)));
 		Hits hits = luceneSessionn.search(qbb.buildQuery(crit.toQuery(), true)
-				.getLuceneQuery());
+				.getQuery());
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {
 			doc = hits.doc(i);

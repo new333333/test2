@@ -42,7 +42,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-
+import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
  * This class is used as an item in the palette in the landing page editor.
@@ -55,6 +55,46 @@ public abstract class PaletteItem extends Composite
 	private DragProxy m_dragProxy = null;
 	private ImageResource m_imageResource;
 	private String m_text;
+	
+	
+	/**
+	 * The DragProxy class is used to create the object that will be dragged from the palette.
+	 */
+	public static class DragProxy extends PopupPanel
+	{
+		/**
+		 * 
+		 */
+		public DragProxy( 	ImageResource imageResource, String text )
+		{
+			// Turn off the 'auto-hide' behavior.
+			super( false );
+			
+			FlowPanel	panel;
+			InlineLabel	label;
+			Image		img;
+			
+			// Associate this popup with its stylesheet.
+			addStyleName( "lpeDragProxyPopup" );
+			
+			// Create a FlowPanel for the image and text to live in.
+			panel = new FlowPanel();
+
+			// Associate the panel with its stylesheet.
+			panel.addStyleName( "lpeDragProxy" );
+
+			// Add the image to this widget
+			img = new Image(imageResource);
+			img.addStyleName( "lpePaletteItemImg" );
+			panel.add( img );
+			
+			// Add the text to this widget.
+			label = new InlineLabel( text );
+			panel.add( label );
+
+			setWidget( panel );
+		}// end DragProxy()
+	}// end DragProxy
 	
 	
 	/**

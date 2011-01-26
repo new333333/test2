@@ -42,7 +42,7 @@ import com.google.gwt.http.client.URL;
  */
 public class CustomJspConfig extends ConfigItem
 {
-	private CustomJspProperties		m_properties;
+	private CustomJspProperties	m_properties;
 	
 	/**
 	 * 

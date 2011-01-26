@@ -33,9 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!ss_seenTagView}">
 <c:if test="${!ss_pseudoEntity}">
-<c:set var="ss_seenTagView" value="true" scope="request" />
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_tagViewNamespace" value="${ss_namespace}" scope="request"/></c:if>
@@ -68,9 +66,12 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
     <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
 	    <tr>
 		 <td valign="top" style="padding-right:4px;">
-			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+			<div id="tag_button" style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
 				<span>
-					<ssf:nlt tag="tags.tags.colon"/>
+					<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
+			    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+				  	</ssHelpSpot>
+					<ssf:nlt tag="tags.tags"/>:
 				</span>
 			</div>
 		 </td>
@@ -83,7 +84,7 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 	</c:if>
     <tr>
 	 <td valign="top" style="padding-right:4px;">
-		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+		<div id="tag_button" style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
 			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			<ssf:title tag="title.open.tag.menu" />
@@ -144,7 +145,6 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 </div>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 
-</c:if>
 </c:if>
 </c:if>
 </c:if>

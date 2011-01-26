@@ -60,7 +60,6 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -392,12 +391,8 @@ public class RelevanceDashboardHelper {
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		List trackedPlaces = new ArrayList();
-		List<String> trackedPeopleIds = new ArrayList<String>();
-		try {
-			trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
-			trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
-		} catch(NoUserByTheIdException e) {}
+		List trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
+		List<String> trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
 		if (trackedPlaces.size() > 0 || trackedPeopleIds.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
@@ -629,13 +624,11 @@ public class RelevanceDashboardHelper {
 			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 
 			if (!model.containsKey(WebKeys.RELEVANCE_TRACKED_PEOPLE)) {
-				try {
-					UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
-					Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-					if (relevanceMap != null) {
-						trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
-					}
-				} catch(Exception e) {}
+				UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
+				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+				if (relevanceMap != null) {
+					trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+				}
 			}
 			Long[] userIds = new Long[trackedPeople.size()];
 			int count = 0;
@@ -706,12 +699,10 @@ public class RelevanceDashboardHelper {
 
 			GregorianCalendar since = new GregorianCalendar();
 			since.add(Calendar.WEEK_OF_MONTH, -2);
-			try {
-				List<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
-				if (sharedEntities != null && sharedEntities.size() > pageStart) {
-					model.put(WebKeys.RELEVANCE_SHARED_ENTITIES, sharedEntities.subList(pageStart, sharedEntities.size()));
-				}
-			} catch(Exception e) {}
+			List<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
+			if (sharedEntities != null && sharedEntities.size() > pageStart) {
+				model.put(WebKeys.RELEVANCE_SHARED_ENTITIES, sharedEntities.subList(pageStart, sharedEntities.size()));
+			}
 		}
 	}
     

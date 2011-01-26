@@ -34,7 +34,6 @@
 package org.kablink.teaming.module.mail.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,7 +45,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.mail.Address;
@@ -67,11 +65,8 @@ import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NotifyStatus;
@@ -79,14 +74,10 @@ import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
-import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.jobs.FillEmailSubscription;
-import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.SendEmail;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.module.definition.notify.Notify;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mail.ConnectionCallback;
@@ -99,7 +90,6 @@ import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.mail.MimeMapPreparator;
 import org.kablink.teaming.module.mail.MimeMessagePreparator;
 import org.kablink.teaming.module.mail.MimeNotifyPreparator;
-import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.NLT;
@@ -113,7 +103,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.transaction.TransactionStatus;
@@ -161,21 +150,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
-
-	private ReportModule reportModule;
-	public ReportModule getReportModule() {
-		return reportModule;
-	}
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
-	}
-	private FolderModule folderModule;
-	public FolderModule getFolderModule() {
-		return folderModule;
-	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
 
 	public String getMailRootDir() {
 		return mailRootDir;
@@ -652,54 +626,23 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		return last;
 	}
 	
-	private void doSubscription (Transport transport, Folder folder, JavaMailSender mailSender, 
-			MimeNotifyPreparator mHelper, Map<Locale, Collection> results) {
+	private void doSubscription (Transport transport, Folder folder, JavaMailSender mailSender, MimeNotifyPreparator mHelper, 
+			Map<Locale, Collection> results) {
 		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
 			Map.Entry<Locale, Collection> e = (Map.Entry)iter.next();
 			mHelper.setLocale(e.getKey());
-			
-			ArrayList<String> rcpts = new ArrayList<String>(e.getValue());
-			
-	 		//Add an entry into the email log for this request
-	 		Date now = new Date();
-	  		String fromAddress = "";
-			try {
-				fromAddress = mailSender.getDefaultFrom();
-			} catch (Exception e2) {
-				fromAddress = NLT.get("mail.noFromAddress");
-			}
-	  		EmailLogType logType = EmailLogType.binderNotification;
-	  		EmailLog emailLog = new EmailLog(logType, now, rcpts, fromAddress, 
-	  				EmailLogStatus.queued);
-	  		mHelper.setEmailLog(emailLog);
-	  		
-	  		//break to list into pieces if big
+			//break to list into pieces if big
+			ArrayList rcpts = new ArrayList(e.getValue());
 			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
 				try {
 					List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
-					if (SPropsUtil.getBoolean("mail.notifyAsBCC", true)) {
-						mHelper.setBccAddrs(subList);
-					} else {
-						mHelper.setToAddrs( subList);
-					}
-					MimeMessage mimeMessage = mailSender.createMimeMessage();
-					mHelper.prepare(mimeMessage);
-					if (mimeMessage.getSentDate() == null) {
-						mimeMessage.setSentDate(new Date());
-					}
-					mimeMessage.saveChanges();
-			  		try {
-			  			emailLog.setSubj((String)mimeMessage.getSubject());
-					} catch (Exception e1) {
-						emailLog.setSubj(NLT.get("mail.noSubject"));
-					}
-					mailSender.send(transport, mimeMessage);
+					if (SPropsUtil.getBoolean("mail.notifyAsBCC", true)) mHelper.setBccAddrs(subList);
+					else                                                 mHelper.setToAddrs( subList);
+					mailSender.send(transport, mHelper);
 				} catch (MailSendException sx) {
 		    		logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 					logger.debug("EXCEPTION", sx);
-					emailLog.setComment("Error sending mail:" + getMessage(sx));
-					emailLog.setStatus(EmailLogStatus.error);
 		 			Exception[] exceptions = sx.getMessageExceptions();
 		 			if (exceptions != null && exceptions.length > 0) {
 		 				logger.error(sx.toString());
@@ -711,11 +654,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			   		//message gets thrown away here
 		       		logger.error("EXCEPTION:  " + getMessage(ex));
 					logger.debug("EXCEPTION", ex);
-					emailLog.setComment("Error handling subscriptions:" + getMessage(ex));
-					emailLog.setStatus(EmailLogStatus.error);
 		    	}
 			}
-			getReportModule().addEmailLog(emailLog);
 		}
 
 	}
@@ -728,7 +668,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		final JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
 		Date last = (Date)mailSender.send(new ConnectionCallback() {
 			public Object doWithConnection(Transport transport) throws MailException {
-				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 				Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
 				Date end = new Date();
 				values.put("p1", end);
@@ -742,9 +681,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				//Will be sorted by owningBinderkey
 				List<NotifyStatus> uStatus;
 				if (binder.isRoot()) {
-					uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, zoneId);
+					uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
 				} else {
-					uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, zoneId);				
+					uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
 				}
 				while (!uStatus.isEmpty()) {
 					//get Ids to log folderEntries
@@ -753,15 +692,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					uStatus.remove(0);
 					currentFolder = (Folder)coreDao.loadBinder(current.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
 					currentFolder = currentFolder.getRootFolder();
-					//If doing global notification, make sure this binder doesn't have its own schedule
-					if (binder.isRoot()) {
-						//Skip any folders that have their own schedule
-						ScheduleInfo config = getFolderModule().getNotificationSchedule(zoneId, currentFolder.getId());
-						if (config != null && config.isEnabled() && config.getSchedule() != null) {
-							//This folder has its own schedule, so leave its entries un-notified during global notifications
-							continue;
-						}
-					}
 					//find other entries for same folder tree.  Ordered by owingBinderKey
 					List<NotifyStatus>currentStatus = new ArrayList();
 					currentStatus.add(current);
@@ -859,29 +789,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     //used for re-try mail.  MimeMessage has been serialized 
     public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
- 		
-    	//Add an entry into the email log for this request
-  		EmailLog emailLog = new EmailLog(EmailLogType.retry, EmailLogStatus.sent);
-		try {
+    	try {
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
-        	emailLog.fillFromMimeMessage(mailMsg);
-
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
- 			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
- 			emailLog.setStatus(EmailLogStatus.error);
- 			getReportModule().addEmailLog(emailLog);
- 			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
 		}
- 		getReportModule().addEmailLog(emailLog);
     }
     //used for re-try mail.  MimeMessage has been serialized 
     public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
-
-    	//Add an entry into the email log for this request
-  		EmailLog emailLog = new EmailLog(EmailLogType.retry, EmailLogStatus.sent);
-  		try {
+    	try {
     	   	if (Validator.isNotNull(account)) {
     			//need to get our own sender, so the account/password can be changed
 				//need our own sender, so we can change the username/password
@@ -897,36 +815,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	   		mailSender.setSession(session, account, password);
     		}
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
-        	emailLog.fillFromMimeMessage(mailMsg);
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
- 			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
- 			emailLog.setStatus(EmailLogStatus.error);
- 			getReportModule().addEmailLog(emailLog);
 			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
 		}
- 		getReportModule().addEmailLog(emailLog);
     }
    //prepare mail and send it - caller must retry if desired
     public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
 		//Use spring callback to wrap exceptions into something more useful than javas 
-    	//Add an entry into the email log for this request
-  		EmailLog emailLog = new EmailLog(EmailLogType.sendMail, EmailLogStatus.sent);
- 		MimeMessage msg = mailSender.createMimeMessage();
-		try {
-			mHelper.prepare(msg);
-	   	} catch (Exception ex) {
-	   		//message gets thrown away here
-       		logger.error("EXCEPTION:  " + getMessage(ex));
-			logger.debug("EXCEPTION", ex);
-			emailLog.setComment("Error in sendMail:" + getMessage(ex));
-			emailLog.setStatus(EmailLogStatus.error);
-    	}
-		emailLog.fillFromMimeMessage(msg);
-		mailSender.send(msg);
-		getReportModule().addEmailLog(emailLog);
+		mailSender.send(mHelper);
 	}
     //used to send prepared mail now.
     public void sendMail(MimeMessage mailMsg) {
@@ -936,10 +835,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     //used to send prepared mail now.    
     public void sendMail(String mailSenderName, MimeMessage mailMsg) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
-    	//Add an entry into the email log for this request
-  		EmailLog emailLog = new EmailLog(EmailLogType.retry, mailMsg, EmailLogStatus.sent);
 		mailSender.send(mailMsg);
-		getReportModule().addEmailLog(emailLog);
     }
  
     public MailSentStatus sendMail(Binder binder, Map message, String comment) {
@@ -950,13 +846,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if ((addrs == null) || addrs.isEmpty()) {
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
-
-  		//Add an entry into the email log for this request
-		Date now = new Date();
-  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
-  		EmailLogType logType = EmailLogType.sendMail;
-  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
-  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
 
 		MailStatus status = new MailStatus(message);
 		Map currentMessage = new HashMap(message); //make changeable copy
@@ -975,14 +864,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
-				String emailLogComment = emailLog.getComment();
-				if (emailLogComment == null) emailLogComment = "";
-				if (!emailLogComment.equals("")) emailLogComment += "\n";
-				emailLogComment += "Error sending mail:" + getMessage(sx);
-				emailLog.setComment(emailLogComment);
-				emailLog.setStatus(EmailLogStatus.error);
-
-				Exception[] exceptions = sx.getMessageExceptions();
+	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
 	 				//if sent to anyone; or only 1 recipient and couldn't send don't try again
@@ -998,14 +880,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
-				String emailLogComment = emailLog.getComment();
-				if (emailLogComment == null) emailLogComment = "";
-				if (!emailLogComment.equals("")) emailLogComment += "\n";
-				emailLogComment += "Authentication Exception:" + getMessage(ax);
-				emailLog.setComment(emailLogComment);
-				emailLog.setStatus(EmailLogStatus.error);
-
-				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	       		try {
 	       			status.addQueued(helper.getMessage().getAllRecipients());
@@ -1013,7 +888,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} 
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getReportModule().addEmailLog(emailLog);
+		
 		return status;
     }
  
@@ -1026,22 +901,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		if ((addrs == null) || addrs.isEmpty()) throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 
-  		//Add an entry into the email log for this request
-		Date now = new Date();
-  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
-  		EmailLogType logType = EmailLogType.sendMail;
-  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.sent);
-  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
-  		if (sendAttachments) {
-  			SortedSet<FileAttachment> atts = entry.getFileAttachments();
-  			List<String> fileNames = new ArrayList<String>();
-  			for (FileAttachment fa : atts) {
-  				fileNames.add(fa.getFileItem().getName());
-  			}
-  			emailLog.setFileAttachments(fileNames);
-  		}
-
-  		MailStatus status = new MailStatus(message);
+		MailStatus status = new MailStatus(message);
 		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
@@ -1064,13 +924,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
-				String emailLogComment = emailLog.getComment();
-				if (emailLogComment == null) emailLogComment = "";
-				if (!emailLogComment.equals("")) emailLogComment += "\n";
-				emailLogComment += "Error sending mail:" + getMessage(sx);
-				emailLog.setComment(emailLogComment);
-				emailLog.setStatus(EmailLogStatus.error);
-				
 	 			Exception[] exceptions = sx.getMessageExceptions();
 	 			if (exceptions != null && exceptions.length > 0 && exceptions[0] instanceof SendFailedException) {
 	 				SendFailedException sf = (SendFailedException)exceptions[0];
@@ -1086,13 +939,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
-				String emailLogComment = emailLog.getComment();
-				if (emailLogComment == null) emailLogComment = "";
-				if (!emailLogComment.equals("")) emailLogComment += "\n";
-				emailLogComment += "Authentication Exception:" + getMessage(ax);
-				emailLog.setComment(emailLogComment);
-				emailLog.setStatus(EmailLogStatus.error);
-				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
 	       		try {
@@ -1101,10 +947,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		}
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getReportModule().addEmailLog(emailLog);
 		return status;
+
     }
-    
     // schedule mail delivery - 
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
   		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
@@ -1115,14 +960,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  			addrs.addAll((Collection)message.get(MailModule.BCC));
  		}
  		if ((addrs == null) || addrs.isEmpty()) return;
-  		
- 		//Add an entry into the email log for this request
- 		Date now = new Date();
-  		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
-  		EmailLogType logType = (EmailLogType) message.get(MailModule.LOG_TYPE);
-  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
-  		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
-  		
 		//handle large recipient list 
 		ArrayList rcpts = new ArrayList(addrs);
 		Map currentMessage = new HashMap(message);
@@ -1138,7 +975,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
 	 		currentMessage.remove(MailModule.CC);//if these are to long, don't have a solution
 		}
-		getReportModule().addEmailLog(emailLog);
 	}
     class MailStatus implements MailSentStatus {
     	Set<Address> failures;

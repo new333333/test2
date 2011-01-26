@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,11 +38,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.ListBox;
@@ -120,16 +120,11 @@ public class GwtClientHelper {
 	 */
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
+			DeferredCommand.addCommand( new Command() {
+				public void execute() {
 					Window.alert(msg);
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			});
 		}
 	}
 
@@ -254,25 +249,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Open a window with the url that points to the appropriate help documentation.
-	 */
-	public static void invokeHelp( HelpData helpData )
-	{
-		if ( helpData != null )
-		{
-			String url;
-			
-			// Get the url that points to the appropriate help documentation.
-			url = helpData.getUrl();
-			if ( url != null && url.length() > 0 )
-			{
-				Window.open( url, "teaming_help_window", "resizeable,scrollbars" );
-			}
-		}
-	}
-	
-	
-	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
 	 * @param url
@@ -348,26 +324,6 @@ public class GwtClientHelper {
 		window.parent.ss_executeJavascript( htmlElement );
 	}-*/;
 
-	/**
-	 * Returns the left position of the content <IFRAME>'s <DIV>.
-	 * 
-	 * @return
-	 */
-	public static native int jsGetContentIFrameLeft() /*-{
-		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
-		return $wnd.top.ss_getObjectLeft(iFrameDIV);
-	}-*/;
-
-	/**
-	 * Returns the top position of the content <IFRAME>'s <DIV>.
-	 * 
-	 * @return
-	 */
-	public static native int jsGetContentIFrameTop() /*-{
-		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
-		return $wnd.top.ss_getObjectTop(iFrameDIV);
-	}-*/;
-	
 	/**
 	 * Hides the popup entry iframe div if one exists.
 	 */
@@ -480,22 +436,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Sets the text on the main GWT page's <title>.
-	 */
-	public static native void jsSetMainTitle(String title) /*-{
-		$wnd.top.document.title = title;
-	}-*/;
-
-	/**
-	 * Runs an entry view URL in the content frame.
-	 * 
-	 * @param url
-	 */
-	public static native void jsShowForumEntry(String entryUrl) /*-{
-		window.top.gwtContentIframe.ss_showForumEntry(entryUrl);
-	}-*/;
-	
-	/**
 	 * Compares two strings by collation.
 	 * 
 	 * Returns:
@@ -512,24 +452,6 @@ public class GwtClientHelper {
 		return s1.localeCompare(s2);
 	}-*/;
 
-	/**
-	 * Removes all the child Node's from a DOM Element.
-	 *  
-	 * @param e
-	 */
-	public static void removeAllChildren(Element e) {
-		// If we have a DOM Element... 
-		if (null != e) {
-			// ...scan its child Node's...
-			Node child = e.getFirstChild(); 
-			while (null !=child) {
-				// ...removing each from the Element.
-				e.removeChild(child);
-				child = e.getFirstChild();
-			}
-		}
-	}
-	
 	/**
 	 * Sets a TeamingPopupPanel to use roll-down animation to open.
 	 * 

@@ -38,9 +38,6 @@ import java.util.List;
 
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.security.dao.SecurityDao;
-import org.kablink.teaming.security.function.Condition;
-import org.kablink.teaming.security.function.ConditionEvaluationResult;
-import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -108,56 +105,4 @@ public class FunctionManagerImpl implements FunctionManager {
         
         return results;
     }
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.security.function.FunctionManager#evaluateConditionalClause(org.kablink.teaming.security.function.Function)
-	 */
-	@Override
-	public ConditionEvaluationResult evaluateConditionalClauses(
-			Function function) {
-		ConditionEvaluationResult.Status status = ConditionEvaluationResult.Status.NOT_CONDITIONAL;
-		List<Long> metConditionIds = new ArrayList<Long>();
-		
-		List<ConditionalClause> mustConditions = function.getConditionalClauses(ConditionalClause.Meet.MUST);
-		if(mustConditions.size() > 0) {
-			// There are one or more conditions of MUST type.
-    		for(ConditionalClause conditionalClause : mustConditions) {
-    			Condition condition = conditionalClause.getCondition();
-				if(condition.evaluate())
-					metConditionIds.add(condition.getId());
-				else
-					break; // skip the rest of the conditions of MUST type
-    		}
-    		if(mustConditions.size() == metConditionIds.size()) {
-    			// All of the MUST conditions were met.
-    			status = ConditionEvaluationResult.Status.ALL_MUST_MET;
-    		}
-    		else {
-    			// Not all of the MUST conditions were met.
-    			status = ConditionEvaluationResult.Status.NOT_ALL_MUST_MET;
-    			metConditionIds.clear();
-    		}
-		}
-		else {
-			// There is no condition of MUST type. Check SHOULD conditions.
-    		List<ConditionalClause> shouldConditions = function.getConditionalClauses(ConditionalClause.Meet.SHOULD);
-    		if(shouldConditions.size() > 0) {
-    			// There are one or more conditions of SHOULD type.
-    			for(ConditionalClause conditionalClause : shouldConditions) {
-        			Condition condition = conditionalClause.getCondition();
-    				if(condition.evaluate())
-    					metConditionIds.add(condition.getId());
-    				else
-    					continue;	// continue on to the next condition of SHOULD type
-    			}
-    			if(metConditionIds.size() > 0)
-    				status = ConditionEvaluationResult.Status.SOME_SHOULD_MET;
-    			else
-    				status = ConditionEvaluationResult.Status.NO_SHOULD_MET;
-    		}
-    		else {
-    			// There is no condition of SHOULD type. This means that the function is not conditional.
-    		}
-		}
-		return new ConditionEvaluationResult(status, metConditionIds);
-	}
 }

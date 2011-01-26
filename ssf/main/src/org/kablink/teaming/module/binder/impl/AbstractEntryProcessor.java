@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import java.util.Set;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.hibernate.HibernateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -79,7 +80,6 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
-import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.IndexErrors;
@@ -90,11 +90,9 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.acl.AclContainer;
 import org.kablink.teaming.security.acl.AclControlled;
-import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.Validator;
@@ -428,8 +426,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		getCoreDao().save(obj);
         	}
         }
-        
-		TaskHelper.processTaskCompletion(entry, inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME));        
         EntryBuilder.buildEntry(entry, entryData);
         
     }
@@ -712,7 +708,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	}
         }
         
-		TaskHelper.processTaskCompletion(entry, inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME));        
         EntryBuilder.updateEntry(entry, entryData);
  
     }
@@ -946,7 +941,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		}
     }
  
-    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData, Boolean canModifyEntry)  {
+    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
 		if (!(entry instanceof WorkflowSupport)) return;
  		WorkflowSupport wEntry = (WorkflowSupport)entry;
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -954,12 +949,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  		WorkflowState ws = wEntry.getWorkflowState(stateId);
 		Definition def = ws.getDefinition();
 		boolean changes = false;
-		Map questions = WorkflowUtils.getQuestions(def, ws);
+		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
 		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			String question = (String)me.getKey();
 			if (!inputData.exists(question)) continue;
-
 			String response = inputData.getSingleValue(question);
 			Map qData = (Map)me.getValue();
 			Map rData = (Map)qData.get(ObjectKeys.WORKFLOW_QUESTION_RESPONSES);
@@ -979,48 +973,42 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 					break;
 				}			
 			}
-			if ((!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(wEntry, ws, question) && canModifyEntry) || 
-					BinderHelper.checkIfWorkflowResponseAllowed(wEntry, ws, question) || 
-	    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(wEntry, ws, question) &&
-	    			canModifyEntry)) {
-				if (found) {
-					if (!response.equals(wr.getResponse())) {
-						//if no changes have been made update timestamp
-						if (!changes) {
-							entry.setModification(new HistoryStamp(user));
-							entry.incrLogVersion();	
-							changes = true;
-						}
-						wr.setResponse(response);
-						wr.setResponseDate(entry.getModification().getDate());
-					}
-				} else {
+			if (found) {
+				if (!response.equals(wr.getResponse())) {
 					//if no changes have been made update timestamp
 					if (!changes) {
 						entry.setModification(new HistoryStamp(user));
-						entry.incrLogVersion();				
+						entry.incrLogVersion();	
 						changes = true;
 					}
-					wr = new WorkflowResponse();
-					wr.setResponderId(user.getId());
-					wr.setResponseDate(entry.getModification().getDate());
-					wr.setDefinitionId(def.getId());
-					wr.setName(question);
 					wr.setResponse(response);
-					wr.setOwner(entry);
-					getCoreDao().save(wr);
-					wEntry.addWorkflowResponse(wr);
+					wr.setResponseDate(entry.getModification().getDate());
 				}
+			} else {
+				//if no changes have been made update timestamp
+				if (!changes) {
+					entry.setModification(new HistoryStamp(user));
+					entry.incrLogVersion();				
+					changes = true;
+				}
+				wr = new WorkflowResponse();
+				wr.setResponderId(user.getId());
+				wr.setResponseDate(entry.getModification().getDate());
+				wr.setDefinitionId(def.getId());
+				wr.setName(question);
+				wr.setResponse(response);
+				wr.setOwner(entry);
+				getCoreDao().save(wr);
+				wEntry.addWorkflowResponse(wr);
 			}
 		}
-		if (changes) {
-			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
-			entry.incrLogVersion();
-			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
-	    	getReportModule().addAuditTrail(AuditType.modify, entry);
-			indexEntry(entry);
-		}
-     }
+		getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
+		entry.incrLogVersion();
+		processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+    	getReportModule().addAuditTrail(AuditType.modify, entry);
+		indexEntry(entry);
+    	
+    }
 
     //***********************************************************************************************************
     /**
@@ -1251,7 +1239,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
-    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());

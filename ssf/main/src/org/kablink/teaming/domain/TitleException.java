@@ -70,9 +70,5 @@ public class TitleException extends UncheckedCodedException {
     //This is because springs DispatcherPortlet calls the logger.warn method with the exception
     public void printStackTrace(PrintWriter s) {
     	
-    }
-    
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
+    }    
 }

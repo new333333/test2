@@ -65,6 +65,7 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -537,11 +538,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			httpServletResponse.setDateHeader( "Expires", 0 );
 		}
 
-		// Force the Vibe product that's running to be determined.
-		// This will set the session captive state, ... into the
-		// session cache as appropriate.
-		GwtUIHelper.getVibeProduct(request);
-		
+		boolean sessionCaptive = GwtUIHelper.isSessionCaptive(request);
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
@@ -571,18 +568,35 @@ public class ViewPermalinkController  extends SAbstractController {
 		boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
 		if (durangoUI)
 		{
-			// Store the common GWT UI request info data.
-			GwtUIHelper.setCommonRequestInfoData( request, this, model );
+			boolean isASEnabled;
+			boolean showWhatsNew;
+			String param;
 
+			// Put out information for the RequestInfo object.
+			model.put(WebKeys.SESSION_CAPTIVE, String.valueOf(sessionCaptive));
+			model.put(WebKeys.URL_HELPURL, GwtUIHelper.getHelpUrl());
+			
+			// Put out a true/false indicator as to the state of the
+			// new activity streams based user interface.
+			isASEnabled = showWhatsNew = GwtUIHelper.isActivityStreamsEnabled();
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_ENABLED, String.valueOf(isASEnabled));
+			if (isASEnabled) {
+				String  showWhatsNewS = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
+				showWhatsNew  = (MiscUtil.hasString(showWhatsNewS) && showWhatsNewS.equals("1"));
+			}
+			model.put(WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, String.valueOf(showWhatsNew));
+			
 			// If this permalink has already been handled by the GWT page there will be
 			// a "seen_by_gwt" parameter on the url.
 			
 			// Has this permalink already been seen by GWT?
-			String param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
+			param = PortletRequestUtils.getStringParameter( request, "seen_by_gwt", "");
 			if ( param == null || !param.equalsIgnoreCase( "1" ) )
 			{
 				String urlStr;
 			   	String userName;
+			   	String isNovellTeaming;
+			   	String productName;
 			   	String accessException;
 			   	User user;
 			   
@@ -604,6 +618,19 @@ public class ViewPermalinkController  extends SAbstractController {
 					model.put( "myWorkspaceUrl", (myWSUrl + "/seen_by_gwt/1/captive/true") );
 				}
 
+				// Add the ID of the top workspace.
+				String topWSId = GwtUIHelper.getTopWSIdSafely( this );
+				model.put( "topWSId", topWSId );
+				
+				// Add the flag that tells us if we are running Novell or Kablink Teaming to the response.
+				isNovellTeaming = Boolean.toString( ReleaseInfo.isLicenseRequiredEdition() );
+				model.put( "isNovellTeaming", isNovellTeaming );
+				
+				// Store the name of the product (Novell or Kablink
+				// Teaming) that's running.
+				productName = ReleaseInfo.getName();
+				model.put( "productName", productName );
+					
 				// Get the flag that tells us if the user has rights to this permalink.
 				accessException = PortletRequestUtils.getStringParameter( request, "accessException" );
 

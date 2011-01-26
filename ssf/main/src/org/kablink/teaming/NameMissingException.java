@@ -48,11 +48,7 @@ public class NameMissingException extends UncheckedCodedException {
         super(errorCode, errorArgs, message, cause);
     }
     public NameMissingException(String errorCode, Object[] errorArgs, Throwable cause) {
-        super(errorCode, errorArgs, cause); 	
+        super(errorCode, errorArgs, cause);
+    	
     }
-    
-    public int getHttpStatusCode() {
-    	return 400; // Bad Request
-    }
-
 }

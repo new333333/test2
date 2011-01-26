@@ -42,7 +42,6 @@ import java.util.Set;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -120,10 +119,6 @@ public class NullReportModule implements ReportModule {
 		return null;
 	}
 	
-	public List<Map<String, Object>> generateEmailReport(final Date startDate, final Date endDate, final String reportType) {
-		return null;
-	}
-
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate)
 	{
 		return null;
@@ -251,14 +246,5 @@ public class NullReportModule implements ReportModule {
 			Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.kablink.teaming.module.report.ReportModule#addEmailLog(org.kablink.teaming.domain.EmailLog)
-	 */
-	@Override
-	public void addEmailLog(EmailLog emailLog) {
-		// TODO Auto-generated method stub
-		
 	}
 }

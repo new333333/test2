@@ -656,7 +656,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 							FilterControls filter = new FilterControls(
 									new String[] { "owner.owningBinderId",
 											"type" }, new Object[] {
-											binder.getId(), 'f' });
+											binder.getId(), "f" });
 							filter.setZoneCheck(false); // skip zone, binder
 							// good enough
 							ObjectControls objs = new ObjectControls(
@@ -1248,7 +1248,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	private Hits executeLuceneQuery(SearchObject so, int offset, int maxResults) {
 		Hits hits = new Hits(0);
 
-		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
+		Query soQuery = so.getQuery(); // Get the query into a variable to avoid
 		// doing this very slow operation twice
 
 		if (logger.isDebugEnabled()) {
@@ -1287,7 +1287,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 
 		try {
-			tags = luceneSession.getTags(so != null ? so.getLuceneQuery() : null,
+			tags = luceneSession.getTags(so != null ? so.getQuery() : null,
 					wordroot, type);
 		} finally {
 			luceneSession.close();
@@ -1322,7 +1322,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		try {
 			tags = luceneSession.getTagsWithFrequency(so != null ? so
-					.getLuceneQuery() : null, wordroot, type);
+					.getQuery() : null, wordroot, type);
 		} finally {
 			luceneSession.close();
 		}
@@ -1983,7 +1983,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				// Create the Lucene query
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				Query query = searchObject.getLuceneQuery(); // Get the query into a
+				Query query = searchObject.getQuery(); // Get the query into a
 				// variable to avoid
 				// doing this very slow
 				// operation twice
@@ -2005,7 +2005,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 			if (totalHits > skipLength) {
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				Query query = searchObject.getLuceneQuery(); // Get the query into a
+				Query query = searchObject.getQuery(); // Get the query into a
 				// variable to avoid
 				// doing this very slow
 				// operation twice
@@ -2027,7 +2027,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
-				Query query = searchObject.getLuceneQuery(); // Get the query into a
+				Query query = searchObject.getQuery(); // Get the query into a
 				// variable to avoid
 				// doing this very slow
 				// operation twice

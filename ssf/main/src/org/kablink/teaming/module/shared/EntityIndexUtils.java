@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -80,7 +80,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
@@ -215,7 +214,7 @@ public class EntityIndexUtils {
       	}
       	
       	// Add the preDeleted flag itself.
-    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.UN_TOKENIZED);
+    	Field field = new Field(Constants.PRE_DELETED_FIELD, (preDeleted ? Constants.TRUE : Constants.FALSE), Field.Store.NO, Field.Index.TOKENIZED);
     	doc.add(field);
     	
     	// Is entry preDeleted?
@@ -223,7 +222,7 @@ public class EntityIndexUtils {
     		// Yes!  If we know who it was deleted by by...
         	if (null != preDeletedBy) {
         		// ...add both their ID and title to the index.
-        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        		field = new Field(Constants.PRE_DELETED_BY_ID_FIELD, String.valueOf(preDeletedBy.getId().intValue()), Field.Store.YES, Field.Index.TOKENIZED);
         		doc.add(field);
         		
             	field = new Field(Constants.PRE_DELETED_BY_TITLE_FIELD, preDeletedBy.getTitle(), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -262,7 +261,7 @@ public class EntityIndexUtils {
     }
     
     public static void addEntityType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+      	Field eField = new Field(ENTITY_FIELD, entry.getEntityType().name(), Field.Store.YES, Field.Index.TOKENIZED);
        	doc.add(eField);
     }
     public static void addDefinitionType(Document doc, DefinableEntity entry, boolean fieldsOnly) {
@@ -423,13 +422,12 @@ public class EntityIndexUtils {
 	 * @param doc
 	 * @param entry
 	 */
-    @SuppressWarnings("unchecked")
-	public static void addEvents(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+    public static void addEvents(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	int count = 0;
 		Map customAttrs = entry.getCustomAttributes();
 		Set keyset = customAttrs.keySet();
 		Iterator attIt = keyset.iterator();
-		// look through the custom attributes of this entry for any of type EVENT, DATE, or DATE_TIME
+		// look through the custom attrs of this entry for any of type EVENT, DATE, or DATE_TIME
 
 		Set entryEventsDates = new HashSet();
 		while (attIt.hasNext()) {
@@ -449,20 +447,9 @@ public class EntityIndexUtils {
 				}
 				doc.add(getRecurrenceDatesField(event, recurencesDates));
 			} else if (att.getValueType() == CustomAttribute.DATE) {
-				Date dateValue = ((Date)att.getValue());
-				if (att.getName().equals(TaskHelper.TASK_COMPLETED_DATE_ATTRIBUTE)) {
-					doc.add(
-						new Field(
-							TASK_COMPLETED_DATE_FIELD,
-							DateTools.dateToString(dateValue, DateTools.Resolution.SECOND),
-							Field.Store.YES,
-							Field.Index.NOT_ANALYZED));
-				}
-				else {
-					Calendar dateAttr = new GregorianCalendar();
-					dateAttr.setTime(dateValue);
-					entryEventsDates.add(dateAttr);
-				}
+				Calendar dateAttr = new GregorianCalendar();
+				dateAttr.setTime((Date)att.getValue());
+				entryEventsDates.add(dateAttr);
 			}
 		}
 		

@@ -47,12 +47,13 @@ import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.LoadEvent;
 import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -129,18 +130,21 @@ public class BrandingPanel extends Composite
 		 */
 		public void onLoad( LoadEvent event )
 		{
-			Scheduler.ScheduledCommand cmd;
-
 			// Adjust the height of the BrandingPanel to take into consideration this new image
 			// that has been loaded.
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
+			Command cmd;
+			
+	        cmd = new Command()
+	        {
+	        	/**
+	        	 * 
+	        	 */
+	            public void execute()
+	            {
 	    			adjustBrandingPanelHeight();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+	            }
+	        };
+	        DeferredCommand.addCommand( cmd );
 		}// end onLoad()
 		
 		
@@ -318,7 +322,7 @@ public class BrandingPanel extends Composite
 		int browserHeight;
 		int maxHeight;
 		String heightStr;
-		Scheduler.ScheduledCommand cmd;
+		Command cmd;
 		
 		// Set the height of the background image to be equal to the height of the content of the branding panel.
 		// Have a minimum height of 50 pixels.
@@ -381,7 +385,7 @@ public class BrandingPanel extends Composite
 		m_bgPanel.setHeight( heightStr );
 		
 		// Issue a deferred command to notify all OnSizeChangeHandlers.
-		cmd = new Scheduler.ScheduledCommand()
+		cmd = new Command()
 		{
 			public void execute()
 			{
@@ -393,7 +397,7 @@ public class BrandingPanel extends Composite
 				}
 			}
 		};
-		Scheduler.get().scheduleDeferred( cmd );
+		DeferredCommand.addCommand( cmd );
 	}// end adjustBrandingPanelHeight()
 
 	
@@ -414,16 +418,19 @@ public class BrandingPanel extends Composite
 	{
 		// Adjust the height of the branding panel to take into consideration this new image
 		// that has been loaded.
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
+		Command cmd;
+		
+        cmd = new Command()
+        {
+        	/**
+        	 * 
+        	 */
+            public void execute()
+            {
     			adjustBrandingPanelHeight();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+            }
+        };
+        DeferredCommand.addCommand( cmd );
 	}// end onLoad()
 	
 	
@@ -508,18 +515,22 @@ public class BrandingPanel extends Composite
 			m_contentPanel.updatePanel( brandingData ); 
 			
 			// Adjust the height of the branding panel to be equal to the height of the branding content panel.
-			// Do this in as a deferred command so the browser has a chance to render the new content.
+			// Do this in as a DeferredCommand so the browser has a chance to render the new content.
 			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
-					{
+				Command cmd;
+				
+		        cmd = new Command()
+		        {
+		        	/**
+		        	 * 
+		        	 */
+		            public void execute()
+		            {
 		    			adjustBrandingPanelHeight();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+		            }
+		        };
+		        DeferredCommand.addCommand( cmd );
+				
 			}
 		}
 	}// end updateBrandingPanel()

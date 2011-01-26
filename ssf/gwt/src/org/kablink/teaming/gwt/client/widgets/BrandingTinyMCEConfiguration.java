@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -87,9 +86,6 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			}// end onSuccess()
 		};
 
-		setContentCss();
-		setLanguage();
-		
 		// Issue an ajax request to get the document base url for this binder.
 		getDocumentBaseUrlFromServer();
 		
@@ -244,24 +240,6 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			m_binderId = binderId;
 			getDocumentBaseUrlFromServer();
 		}
-	}
-	
-	
-	/**
-	 * Set the content css we should be using.
-	 */
-	public void setContentCss()
-	{
-		contentCss = GwtMainPage.m_requestInfo.getContentCss();
-	}
-	
-	
-	/**
-	 * Set the language we are using.
-	 */
-	public void setLanguage()
-	{
-		language = GwtMainPage.m_requestInfo.getLanguage();
 	}
 	
 	/**

@@ -114,19 +114,6 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
   </div>
   </td>
   </c:if>
-  
-  <c:if test="${empty ss_pseudoEntity}">
-  <td valign="middle" width="1%" nowrap>
-  <div id="viewTags${ss_tabDivCount}Tab" 
-    class="wg-tab roundcornerSM" 
-    onMouseOver="ss_hoverOverTab('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onMouseOut="ss_hoverOverTabStopped('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');"
-    onClick="ss_showTab('viewTags${ss_tabDivCount}', '${ss_tabDivCount}');ss_showHideEntryHistoryDiv${ss_divCounter}('viewTags${ss_tabDivCount}Iframe');return false;">
-    <ssf:nlt tag="tags.tags"/>
-  </div>
-  </td>
-  </c:if>
-  
   <td valign="middle" width="98%" nowrap>&nbsp;</td>
   </tr>
   </table>
@@ -140,12 +127,6 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
   <c:set var="ss_showPrimaryFileAttachmentOnly" value="true" scope="request"/>
   <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachments_tab.jsp" />
 </div>
-
-<c:if test="${empty ss_pseudoEntity}">
-<div id="viewTags${ss_tabDivCount}Div" class="ss_entryContent" style="display:none;" >
-  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view.jsp" />
-</div>
-</c:if>
 
 <c:if test="${empty ss_seenHistoryTab && empty ss_pseudoEntity}">
 <div id="viewEntryHistory${ss_tabDivCount}Div" style="display:none;">
