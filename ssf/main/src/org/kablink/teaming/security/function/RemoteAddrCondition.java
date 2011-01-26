@@ -146,18 +146,18 @@ public class RemoteAddrCondition extends Condition {
 		}
 	}
 
-	private Pattern getPattern(String exp) {
+	private Pattern getPattern(String rawExp) {
 		// Cache pattern objects since pattern compilation is expensive.
-		Object pattern = patternCache.get(exp);
+		Object pattern = patternCache.get(rawExp);
 		if(pattern == null) {
 			try {
-				pattern = Pattern.compile(exp);
+				pattern = Pattern.compile(toRegex(rawExp));
 			}
 			catch (PatternSyntaxException e) {
-				logger.error("'" + exp + "' is not a valid regular expression. It will be ignored: " + e.toString());
+				logger.error("'" + rawExp + "' is not a valid IP address expression. It will be ignored: " + e.toString());
 				pattern = IGNORE;
 			}
-			patternCache.put(exp, pattern);
+			patternCache.put(rawExp, pattern);
 		}
 		if(pattern == IGNORE)
 			return null;
@@ -165,6 +165,13 @@ public class RemoteAddrCondition extends Condition {
 			return (Pattern) pattern;
 	}
 
+	private String toRegex(String rawExp) {
+		String regex = rawExp.replace(".", "\\.");
+		regex = regex.replace("*", "[0-9]*");
+		regex = regex.replace("+", "[0-9]+");
+		return regex;
+	}
+	
 	private void toEncodedSpec() {
 		String[] includes = getIncludeAddressExpressions();
 		String[] excludes = getExcludeAddressExpressions();
@@ -183,5 +190,37 @@ public class RemoteAddrCondition extends Condition {
 		String excludesStr = str.substring(excludesIndex+9);
 		this.includeAddressExpressions = StringUtil.split(includesStr, DELIMITER);
 		this.excludeAddressExpressions = StringUtil.split(excludesStr, DELIMITER);
+	}
+	
+	public static void main(String[] args) {
+		String origExp = "192.168.+.*";
+		String regex = origExp.replace(".", "\\.");
+		regex = regex.replace("*", "[0-9]*");
+		regex = regex.replace("+", "[0-9]+");
+		
+		System.out.println(regex);
+		
+		Pattern pattern = Pattern.compile(regex);
+		String input;
+		input = "192.168";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168.3";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168.3.10";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.167.3.10";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168.3.10.9";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192T168.3.10";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168.A.B";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168..";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168.5.";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "192.168..10";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
 	}
 }
