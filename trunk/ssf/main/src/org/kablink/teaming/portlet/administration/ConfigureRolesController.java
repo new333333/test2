@@ -185,8 +185,8 @@ public class ConfigureRolesController extends  SAbstractController {
 			}
 		} else if (formData.containsKey("addCondition") && WebHelper.isMethodPost(request)) {
 			//Define a new condition
-			String title = PortletRequestUtils.getStringParameter(request, "title").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description").trim();
+			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
+			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
 			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
 			List<String> includeAddressExpressions = new ArrayList<String>();
 			List<String> excludeAddressExpressions = new ArrayList<String>();
@@ -198,10 +198,12 @@ public class ConfigureRolesController extends  SAbstractController {
 					if (formData.containsKey("ipAddressAccessCondition"+conditionId)) {
 						String expression = PortletRequestUtils.getStringParameter(request, "ipAddressCondition"+conditionId, "");
 						String allowDeny = PortletRequestUtils.getStringParameter(request, "ipAddressAccessCondition"+conditionId, "");
-						if (allowDeny.equals("deny")) {
-							excludeAddressExpressions.add(expression);
-						} else {
-							includeAddressExpressions.add(expression);
+						if (!expression.equals("")) {
+							if (allowDeny.equals("deny")) {
+								excludeAddressExpressions.add(expression);
+							} else {
+								includeAddressExpressions.add(expression);
+							}
 						}
 					}
 				}
@@ -216,8 +218,8 @@ public class ConfigureRolesController extends  SAbstractController {
 		} else if (formData.containsKey("modifyCondition") && WebHelper.isMethodPost(request)) {
 			//Define a new condition
 			Long id = PortletRequestUtils.getRequiredLongParameter(request, "id");
-			String title = PortletRequestUtils.getStringParameter(request, "title").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description").trim();
+			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
+			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
 			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
 			List<String> includeAddressExpressions = new ArrayList<String>();
 			List<String> excludeAddressExpressions = new ArrayList<String>();
@@ -229,10 +231,12 @@ public class ConfigureRolesController extends  SAbstractController {
 					if (formData.containsKey("ipAddressAccessCondition"+conditionId)) {
 						String expression = PortletRequestUtils.getStringParameter(request, "ipAddressCondition"+conditionId, "");
 						String allowDeny = PortletRequestUtils.getStringParameter(request, "ipAddressAccessCondition"+conditionId, "");
-						if (allowDeny.equals("deny")) {
-							excludeAddressExpressions.add(expression);
-						} else {
-							includeAddressExpressions.add(expression);
+						if (!expression.equals("")) {
+							if (allowDeny.equals("deny")) {
+								excludeAddressExpressions.add(expression);
+							} else {
+								includeAddressExpressions.add(expression);
+							}
 						}
 					}
 				}
