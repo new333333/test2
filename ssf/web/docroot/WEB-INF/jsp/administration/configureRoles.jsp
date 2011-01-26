@@ -320,6 +320,9 @@
 	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
 </div>
+<div style="padding:10px;">
+  <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.warning"/></span>
+</div>
 </form>
 </fieldset>
 </div>
@@ -404,6 +407,9 @@
 <div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
+</div>
+<div style="padding:10px;">
+  <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.warning"/></span>
 </div>
 </form>
 </fieldset>
