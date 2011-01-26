@@ -1430,7 +1430,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
 		return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
-	}// end saveTaskLinkage()
+	}// end removeTaskLinkage()
+
+	/**
+	 * Stores a completed value on the specified task.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * @param completed
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long taskId, String completed ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskCompleted( this, binderId, taskId, completed );
+	}
 	
 	/**
 	 * Stores a TaskLinkage object on the specified binder.
@@ -1446,6 +1462,54 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	public Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
 		return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
 	}// end saveTaskLinkage()
+
+	/**
+	 * Stores a priority value on the specified task.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * @param priority
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long taskId, String priority ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskPriority( this, binderId, taskId, priority );
+	}
+	
+	/**
+	 * Save a task folder sort options on the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param sortKey
+	 * @param sortAscending
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean saveTaskSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskSort( this, binderId, sortKey, sortAscending );
+	}
+	
+	/**
+	 * Stores a status value on the specified task.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * @param status
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean saveTaskStatus( HttpRequestInfo ri, Long binderId, Long taskId, String status ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskStatus( this, binderId, taskId, status );
+	}
 	
 	/**
 	 * Returns a List<String> of the user ID's of the people the

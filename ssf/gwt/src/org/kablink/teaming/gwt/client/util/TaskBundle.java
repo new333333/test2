@@ -50,6 +50,7 @@ public class TaskBundle implements IsSerializable {
 	private boolean				m_isFiltered;			//
 	private boolean				m_isFromFolder;			//
 	private List<TaskListItem>	m_tasks;
+	private Long				m_binderId;
 	private TaskLinkage			m_taskLinkage;
 
 	/**
@@ -73,6 +74,7 @@ public class TaskBundle implements IsSerializable {
 	public boolean            getIsFiltered()           {return m_isFiltered;          }
 	public boolean            getIsFromFolder()         {return m_isFromFolder;        }
 	public List<TaskListItem> getTasks()                {return m_tasks;               }
+	public Long               getBinderId()             {return m_binderId;            }
 	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
 	
 	/**
@@ -87,5 +89,6 @@ public class TaskBundle implements IsSerializable {
 	public void setIsFiltered(          boolean            isFiltered)           {m_isFiltered           = isFiltered;          }
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
+	public void setBinderId(            Long               binderId)             {m_binderId             = binderId;            }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 }

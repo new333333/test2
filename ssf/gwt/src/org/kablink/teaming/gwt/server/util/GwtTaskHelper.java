@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
@@ -236,72 +237,6 @@ public class GwtTaskHelper {
 	}
 	
 	/*
-	 * Returns true if the current user can modify a task and false
-	 * otherwise.
-	 */
-	private static boolean canModifyTask(AllModulesInjected bs, Long binderId, Long taskId) {
-		boolean reply = false;
-		try {
-			FolderModule fm = bs.getFolderModule();
-			FolderEntry fe = fm.getEntry(binderId, taskId);
-			reply = fm.testAccess(fe, FolderOperation.modifyEntry);
-		}
-		catch (Exception ex) {
-			// Ignore.
-		}
-		return reply;
-	}
-
-	/*
-	 * Scan the List<TaskInfo> and stores a location string in each
-	 * TaskInfo.
-	 */
-	private static void completeBinderLocations(AllModulesInjected bs, List<TaskInfo> tasks) {
-		// If we don't have any TaskInfo's to complete...
-		if ((null == tasks) || tasks.isEmpty()) {
-			// ..bail.
-			return;
-		}
-		
-		// Generate an List<Long> of the unique binder IDs.
-		List<Long> binderIds = new ArrayList<Long>();		
-		for (TaskInfo ti:  tasks) {
-			addLToLLIfUnique(binderIds, ti.getBinderId());
-		}
-
-		// Do we have any binder IDs?
-		Map<Long, String> binderLocationMap = new HashMap<Long, String>();
-		if (!(binderIds.isEmpty())) {
-			try {
-				// Yes!  Can we read the binders?
-				SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
-				if ((null != binders) && (!(binders.isEmpty()))) {
-					// Yes!  Scan the binders...
-					for (Binder binder:  binders) {
-						// ...storing the location for each in the Map.
-						String location = binder.getTitle();
-						try {
-							Binder parentBinder = ((Binder) binder.getParentWorkArea());
-							location = (location + " (" + parentBinder.getTitle() + ")");
-						}
-						catch (Exception ex) {}
-						binderLocationMap.put(binder.getId(), location);					
-					}
-				}
-			}
-			catch (Exception ex) {}
-		}
-
-		// Scan the List<TaskInfo> again...
-		for (TaskInfo task:  tasks) {
-			// ...this time, storing the location for each binder in
-			// ...the TaskInfo's.
-			String location = binderLocationMap.get(task.getBinderId());
-			task.setLocation((null == location) ? "" : location);
-		}
-	}
-	
-	/*
 	 * When initially build, the AssignmentInfo's in the List<TaskInfo>
 	 * only contain the assignee IDs.  We need to complete them with
 	 * each assignee's title.
@@ -425,6 +360,102 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Scan the List<TaskInfo> and stores a location string in each
+	 * TaskInfo.
+	 */
+	private static void completeBinderLocations(AllModulesInjected bs, List<TaskInfo> tasks) {
+		// If we don't have any TaskInfo's to complete...
+		if ((null == tasks) || tasks.isEmpty()) {
+			// ..bail.
+			return;
+		}
+		
+		// Generate an List<Long> of the unique binder IDs.
+		List<Long> binderIds = new ArrayList<Long>();		
+		for (TaskInfo ti:  tasks) {
+			addLToLLIfUnique(binderIds, ti.getBinderId());
+		}
+
+		// Do we have any binder IDs?
+		Map<Long, String> binderLocationMap = new HashMap<Long, String>();
+		if (!(binderIds.isEmpty())) {
+			try {
+				// Yes!  Can we read the binders?
+				SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
+				if ((null != binders) && (!(binders.isEmpty()))) {
+					// Yes!  Scan the binders...
+					for (Binder binder:  binders) {
+						// ...storing the location for each in the Map.
+						String location = binder.getTitle();
+						try {
+							Binder parentBinder = ((Binder) binder.getParentWorkArea());
+							location = (location + " (" + parentBinder.getTitle() + ")");
+						}
+						catch (Exception ex) {}
+						binderLocationMap.put(binder.getId(), location);					
+					}
+				}
+			}
+			catch (Exception ex) {}
+		}
+
+		// Scan the List<TaskInfo> again...
+		for (TaskInfo task:  tasks) {
+			// ...this time, storing the location for each binder in
+			// ...the TaskInfo's.
+			String location = binderLocationMap.get(task.getBinderId());
+			task.setLocation((null == location) ? "" : location);
+		}
+	}
+
+	/*
+	 * Scans the List<TaskInfo> and sets the access rights for the
+	 * current user for each task.
+	 */
+	private static void completeTaskRights(AllModulesInjected bs, List<TaskInfo> tasks) {
+		// If we don't have any TaskInfo's to complete...
+		if ((null == tasks) || tasks.isEmpty()) {
+			// ..bail.
+			return;
+		}
+
+		// Collect the IDs of the tasks from the List<TaskInfo>.
+		List<Long> taskIds = new ArrayList<Long>();
+		for (TaskInfo ti:  tasks) {
+			taskIds.add(ti.getTaskId());
+		}
+		
+		try {
+			// Read the FolderEntry's for the tasks...
+			FolderModule fm = bs.getFolderModule();
+			SortedSet<FolderEntry> taskEntries = fm.getEntries(taskIds);
+			
+			// ...mapping each FolderEntry to its ID.
+			Map<Long, FolderEntry> taskEntryMap = new HashMap<Long, FolderEntry>();
+			for (FolderEntry task: taskEntries) {
+				taskEntryMap.put(task.getId(), task);
+			}
+
+			// Scan the List<TaskInfo> again.
+			for (TaskInfo ti:  tasks) {
+				// Do we have a FolderEntry for this task?
+				FolderEntry task = taskEntryMap.get(ti.getTaskId());
+				if (null != task) {
+					// Yes!  Store the user's rights to that
+					// FolderEntry.
+					ti.setCanModify(   fm.testAccess(task, FolderOperation.modifyEntry   ));
+					ti.setCanPreDelete(fm.testAccess(task, FolderOperation.preDeleteEntry));
+					ti.setCanTrash(    fm.testAccess(task, FolderOperation.deleteEntry   ));
+				}
+			}
+			
+		}
+		catch (Exception ex) {
+			// Ignore.
+		}
+	}
+	
+	/*
 	 * Logs the contents of a List<TaskInfo>.
 	 */
 	private static void dumpTaskInfoList(List<TaskInfo> tasks) {		
@@ -446,6 +477,8 @@ public class GwtTaskHelper {
 		for (TaskInfo ti:  tasks) {
 			StringBuffer buf = new StringBuffer(buildDumpString("\n\tTask ID", ti.getTaskId()));
 			buf.append(buildDumpString("\n\t\tCanModify",        ti.getCanModify()              ));
+			buf.append(buildDumpString("\n\t\tCanPreDelete",     ti.getCanPreDelete()           ));
+			buf.append(buildDumpString("\n\t\tCanTrash",         ti.getCanTrash()               ));
 			buf.append(buildDumpString("\n\t\tSeen",             ti.getSeen()                   ));
 			buf.append(buildDumpString("\n\t\tAssignments",      ti.getAssignments(),      false));
 			buf.append(buildDumpString("\n\t\tAssignmentGroups", ti.getAssignmentGroups(), true ));
@@ -806,7 +839,6 @@ public class GwtTaskHelper {
 			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
 			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
 			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
-			ti.setCanModify(       canModifyTask(bs, binderId, ti.getTaskId()));
 			
 			Date completedDate = getDateFromMap( taskEntry, Constants.TASK_COMPLETED_DATE_FIELD);
 			ti.setCompletedDate(                         completedDate);
@@ -815,15 +847,16 @@ public class GwtTaskHelper {
 			reply.add(ti);
 		}
 
-		// At this point, the TaskInfo's in the List<TaskInfo> do not
-		// contain a location string.  We need to fill those in so that
-		// they can be displayed, as necessary.
+		// At this point, the TaskInfo's in the List<TaskInfo> are not
+		// complete.  They're missing things like the user's rights to
+		// the entries, the location of their binders and details about
+		// the task's assignments.  Complete their content.  Note that
+		// we do this AFTER collecting data from the search index so
+		// that we only have to perform a single DB read for each type
+		// of information we need to complete the TaskInfo details.
+		completeTaskRights(     bs, reply);
 		completeBinderLocations(bs, reply);
-		
-		// At this point, the AssignmentInfo's in the List<TaskInfo>
-		// that we're going to return only contain the assignee IDs.
-		// We need to complete them with the title of each assignee. 
-		completeAIs(bs, reply);
+		completeAIs(            bs, reply);
 				
 		if (m_logger.isDebugEnabled()) {
 			m_logger.debug("GwtTaskHelper.getTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
@@ -924,17 +957,15 @@ public class GwtTaskHelper {
 
 		// ...and use that to create a TaskBundle. 
 		TaskBundle reply = new TaskBundle();
-		reply.setTaskLinkage(taskLinkage);
-		reply.setTasks(      tasks      );
+		reply.setTaskLinkage(taskLinkage   );
+		reply.setTasks(      tasks         );
+		reply.setBinderId(   binder.getId());
 		
 		// Set the Binder based rights...
 		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage( request, bs, binder ));
 
 		// ...and the Folder based rights on the TaskBundle...
-		FolderModule fm = bs.getFolderModule();
-		reply.setCanModifyEntry(fm.testAccess(((Folder) binder), FolderOperation.modifyEntry   ));
-		reply.setCanPurgeEntry( fm.testAccess(((Folder) binder), FolderOperation.deleteEntry   ));
-		reply.setCanTrashEntry( fm.testAccess(((Folder) binder), FolderOperation.preDeleteEntry));
+		setTaskBundleRights(bs, ((Folder) binder), reply);
 		
 		// Set whether the list is being filtered...
 		FilterType filterType = ((null == filterTypeParam) ? FilterType.ALL : FilterType.valueOf(filterTypeParam));
@@ -1064,6 +1095,23 @@ public class GwtTaskHelper {
 	}
 
 	/**
+	 * Stores a new completed value for a task.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param taskId
+	 * @param completed
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static String saveTaskCompleted(AllModulesInjected bs, Long binderId, Long taskId, String completed) {
+//!		...this needs to be implemented...
+		return "*Completed Date*";
+	}
+
+	/**
 	 * Stores the TaskLinkage for a task folder.
 	 * 
 	 * @param bs
@@ -1098,6 +1146,70 @@ public class GwtTaskHelper {
 		catch (Exception ex) {
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
+	}
+
+	/**
+	 * Stores a new priority value for a task.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param taskId
+	 * @param priority
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveTaskPriority(AllModulesInjected bs, Long binderId, Long taskId, String priority) {
+//!		...this needs to be implemented...
+		return Boolean.TRUE;
+	}
+
+	/**
+	 * Save a task folder sort options on the specified binder.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param sortKey
+	 * @param sortAscending
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveTaskSort(AllModulesInjected bs, Long binderId, String sortKey, boolean sortAscending) throws GwtTeamingException {
+		try {
+			Long          userId = GwtServerHelper.getCurrentUser().getId();
+			ProfileModule pm     = bs.getProfileModule();
+			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_BY,                      sortKey       );
+			pm.setUserProperty(userId, binderId, ObjectKeys.SEARCH_SORT_DESCEND, String.valueOf(!sortAscending));
+			
+			if (m_logger.isDebugEnabled()) {
+				m_logger.debug("GwtTaskHelper.saveTaskSort( Stored task sort for binder ):  Binder:  " + binderId.longValue() + ", Sort Key:  '" + sortKey + "', Sort Ascending:  " + sortAscending);
+			}
+			return Boolean.FALSE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
+	/**
+	 * Stores a new status value for a task.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param taskId
+	 * @param status
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveTaskStatus(AllModulesInjected bs, Long binderId, Long taskId, String status) {
+//!		...this needs to be implemented...
+		return Boolean.TRUE;
 	}
 
 	/*
@@ -1140,6 +1252,16 @@ public class GwtTaskHelper {
 		ai.setPresenceUserWSId(presenceUserWSId);
 	}
 
+	/*
+	 * Sets the rights properties on a TaskBundle object.
+	 */
+	private static void setTaskBundleRights(AllModulesInjected bs, Folder taskFolder, TaskBundle tb) {
+		boolean hasAddEntryRights = bs.getFolderModule().testAccess(taskFolder, FolderOperation.addEntry);
+		tb.setCanModifyEntry(hasAddEntryRights);
+		tb.setCanPurgeEntry( hasAddEntryRights);
+		tb.setCanTrashEntry( hasAddEntryRights);
+	}
+	
 	/**
 	 * Validates the task FolderEntry's referenced by a TaskLinkage.
 	 * 

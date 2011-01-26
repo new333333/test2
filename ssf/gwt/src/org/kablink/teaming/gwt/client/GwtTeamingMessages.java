@@ -278,6 +278,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
 	String rpcFailure_SaveTaskLinkage();
+	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
 	String rpcFailure_SetSeen();
@@ -788,6 +789,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskCantMove_Filter();
 	String taskCantMove_Order();
 	String taskCantMove_NotOne(String number);
+	String taskCantMove_Rights();
 	String taskCantMove_Zero();
 	String taskColumn_assignedTo();
 	String taskColumn_closedPercentDone();
