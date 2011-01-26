@@ -149,17 +149,6 @@ public class Function extends ZonedObject {
         this.scope = scope;
     }
 
-    /**
-     * @hibernate.version type="long" 
-     */
-    private long getLockVersion() {
-        return this.lockVersion;
-    }
-    private void setLockVersion(long lockVersion) {
-        this.lockVersion = lockVersion;
-    }
-    
-    
     public Set getOperations() {
         if(operations == null)
             computeOperations();
@@ -184,6 +173,76 @@ public class Function extends ZonedObject {
         computeOperationNames();
    }
     
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        //objects can be proxied so don't compare classes.
+        if (obj == null)
+            return false;
+      
+        Function o = (Function) obj;
+        //assume object not persisted yet
+        if (!o.getName().equals(name)) return false;
+        if (!o.getZoneId().equals(zoneId)) return false;               
+        return true;
+    }
+    public int hashCode() {
+       	int hash = 7;
+    	hash = 31*hash + name.hashCode();
+    	hash = 31*hash + zoneId.hashCode();
+    	return hash;
+    }
+    
+    /*
+     * Returns a list of <code>ConditionalClause</code> ordered by condition ids.
+     */
+	public List<ConditionalClause> getConditionalClauses() {
+		// We have no requirement that this list be stored sorted in the database. 
+		// We only need to make sure that the caller always gets this list sorted.
+		if(conditionalClauses == null)
+			return new ArrayList<ConditionalClause>();
+		// Return a copy of the list to keep the caller from making direct changes to the original list.
+		// The returned copy must have the members sorted in ascending order of the IDs of the conditions.
+		return sortByConditionId(new ArrayList<ConditionalClause>(conditionalClauses));
+	}
+	
+	public void setConditionalClauses(List<ConditionalClause> conditionalClauses) {
+		this.conditionalClauses = conditionalClauses;
+	}
+	
+	/*
+	 * Returns a list of <code>ConditionalClause</code> of specified type ordered by condition ids.
+	 */
+	public List<ConditionalClause> getConditionalClauses(ConditionalClause.Meet meet) {
+		if(conditionalClauses == null)
+			return new ArrayList<ConditionalClause>();
+		List<ConditionalClause> list = new ArrayList<ConditionalClause>();
+		for(ConditionalClause cc : conditionalClauses) {
+			if(cc.getMeet() == meet)
+				list.add(cc);
+		}
+		return sortByConditionId(list);
+	}
+
+    
+	public boolean isConditional() {
+		if(conditionalClauses != null && conditionalClauses.size() > 0)
+			return true;
+		else
+			return false;
+	}
+
+    /**
+     * @hibernate.version type="long" 
+     */
+    private long getLockVersion() {
+        return this.lockVersion;
+    }
+    private void setLockVersion(long lockVersion) {
+        this.lockVersion = lockVersion;
+    }
+
     /**
      * @hibernate.set lazy="false" table="SS_FunctionOperations" cascade="all"
      * @hibernate.key column="functionId"
@@ -235,41 +294,7 @@ public class Function extends ZonedObject {
         }
         
     }
-    public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
 
-        //objects can be proxied so don't compare classes.
-        if (obj == null)
-            return false;
-      
-        Function o = (Function) obj;
-        //assume object not persisted yet
-        if (!o.getName().equals(name)) return false;
-        if (!o.getZoneId().equals(zoneId)) return false;               
-        return true;
-    }
-    public int hashCode() {
-       	int hash = 7;
-    	hash = 31*hash + name.hashCode();
-    	hash = 31*hash + zoneId.hashCode();
-    	return hash;
-    }
-    
-	public List<ConditionalClause> getConditionalClauses() {
-		// We have no requirement that this list be stored sorted in the database. 
-		// We only need to make sure that the caller always gets this list sorted.
-		if(conditionalClauses == null)
-			return null;
-		// Return a copy of the list to keep the caller from making direct changes to the original list.
-		// The returned copy must have the members sorted in ascending order of the IDs of the conditions.
-		return sortByConditionId(new ArrayList<ConditionalClause>(conditionalClauses));
-	}
-	
-	public void setConditionalClauses(List<ConditionalClause> conditionalClauses) {
-		this.conditionalClauses = conditionalClauses;
-	}
-    
 	private List<ConditionalClause> sortByConditionId(List<ConditionalClause> list) {
 		Collections.sort(list, 
 				new Comparator<ConditionalClause>() {
@@ -285,4 +310,5 @@ public class Function extends ZonedObject {
 		});
 		return list;
 	}
+	
 }

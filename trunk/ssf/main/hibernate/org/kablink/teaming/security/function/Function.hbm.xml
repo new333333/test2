@@ -22,7 +22,7 @@
       <key column="functionId"/>
       <element not-null="true" type="string" column="operationName" length="128"/>
     </set>
-    <bag inverse="false" cascade="all" lazy="false" table="SS_FunctionConditionMap" name="conditionalClauses">
+    <bag inverse="false" access="field" cascade="all" lazy="false" table="SS_FunctionConditionMap" name="conditionalClauses">
       <cache usage="nonstrict-read-write"/>
       <key column="functionId"/>
       <composite-element class="org.kablink.teaming.security.function.ConditionalClause">
