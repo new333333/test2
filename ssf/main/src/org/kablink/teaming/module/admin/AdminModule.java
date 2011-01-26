@@ -52,6 +52,7 @@ import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.Condition;
+import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -96,7 +97,8 @@ public interface AdminModule {
 	 * @param operations
 	 * @throws AccessControlException
 	 */
-	public Function addFunction(String name, Set<WorkAreaOperation>operations, String scope) throws AccessControlException;
+	public Function addFunction(String name, Set<WorkAreaOperation>operations, 
+			String scope, List<ConditionalClause> conditions) throws AccessControlException;
 	/**
 	 * Add a posting definition, used to receive incoming mail
 	 * @param updates
