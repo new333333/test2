@@ -455,6 +455,9 @@ public class WorkAreaHelper {
 			operations.put(NLT.get("workarea_operation." + wa.getName()),wa.getName());
 		}
 		model.put(WebKeys.WORKAREA_OPERATIONS, operations);
+		
+		List<Condition> conditions = bs.getAdminModule().getFunctionConditions();
+		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
 	}
 	
 	public static void buildRoleConditionBeans(AllModulesInjected bs, Map model) {
