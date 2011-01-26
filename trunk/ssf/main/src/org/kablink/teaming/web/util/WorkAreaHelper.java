@@ -60,6 +60,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.security.function.Condition;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
@@ -456,5 +457,9 @@ public class WorkAreaHelper {
 		model.put(WebKeys.WORKAREA_OPERATIONS, operations);
 	}
 	
-
+	public static void buildRoleConditionBeans(AllModulesInjected bs, Map model) {
+		List<Condition> conditions = bs.getAdminModule().getFunctionConditions();
+		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
+	}
+	
 }

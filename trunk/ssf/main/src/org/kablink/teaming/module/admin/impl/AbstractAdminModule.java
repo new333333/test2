@@ -577,13 +577,15 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
-	public Function addFunction(String name, Set<WorkAreaOperation> operations, String scope) {
+	public Function addFunction(String name, Set<WorkAreaOperation> operations, String scope, 
+			List<ConditionalClause> conditions) {
 		checkAccess(AdminOperation.manageFunction);
 		Function function = new Function();
 		function.setName(name);
 		function.setScope(scope);
 		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		function.setOperations(operations);
+		function.setConditionalClauses(conditions);
 		
 		List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
 		if (zoneFunctions.contains(function)) {
@@ -1260,7 +1262,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Set<WorkAreaOperation> operations = new HashSet<WorkAreaOperation>();
 			operations.add(WorkAreaOperation.ADD_COMMUNITY_TAGS);
 			operations.add(WorkAreaOperation.ADD_REPLIES);
-			Function f = am.addFunction("jong_function", operations, ObjectKeys.ROLE_TYPE_BINDER);
+			Function f = am.addFunction("jong_function", operations, ObjectKeys.ROLE_TYPE_BINDER, new ArrayList());
 		}
 		else if(i == 5) {
 			// Add conditions to function
