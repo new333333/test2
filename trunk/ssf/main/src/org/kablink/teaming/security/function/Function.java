@@ -225,7 +225,22 @@ public class Function extends ZonedObject {
 		return sortByConditionId(list);
 	}
 
-    
+	/*
+	 * Returns a sorted list of IDs of the conditions of specified type.
+	 */
+	public List<Long> getConditionIds(ConditionalClause.Meet meet) {
+		if(conditionalClauses == null)
+			return new ArrayList<Long>();
+		List<Long> list = new ArrayList<Long>();
+		for(ConditionalClause cc : conditionalClauses) {
+			if(cc.getMeet() == meet)
+				list.add(cc.getCondition().getId());
+		}
+		Collections.sort(list);
+		return list;
+	}
+
+	
 	public boolean isConditional() {
 		if(conditionalClauses != null && conditionalClauses.size() > 0)
 			return true;
@@ -310,5 +325,5 @@ public class Function extends ZonedObject {
 		});
 		return list;
 	}
-	
+
 }
