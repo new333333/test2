@@ -785,6 +785,10 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltMoveUp();
 	String taskAltTaskClosed();
 	String taskAltTaskUnread();
+	String taskCantMove_Filter();
+	String taskCantMove_Order();
+	String taskCantMove_NotOne(String number);
+	String taskCantMove_Zero();
 	String taskColumn_assignedTo();
 	String taskColumn_closedPercentDone();
 	String taskColumn_dueDate();

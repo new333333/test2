@@ -42,7 +42,7 @@
 <jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
 <%
 	// Is the GWT based subtasks feature enabled?
-	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", false);
+	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
 	if (subtasksEnabled) {
 		// Yes!  Are we viewing the task list as 'Entries from Folder'?
 		subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
