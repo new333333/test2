@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_publish_workflow" caption="__publish_workflow" type="2" nextId="10" definitionType="2" databaseId="24e3500720e7bc4a0120e8410bca0298">
+  <item name="workflowProcess" caption="__workflow_process" id="1">
+    <item name="state" caption="__state" type="data" id="2">
+      <properties>
+        <property name="caption" value="__publish_workflow_private"/>
+        <property name="name" value="private"/>
+        <property name="description"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="3">
+        <properties/>
+        <item name="transitionManual" caption="__transitionManual" type="transition" id="6">
+          <properties>
+            <property name="toState" value="publish"/>
+          </properties>
+        </item>
+      </item>
+      <item name="accessControls" caption="__accessControls" unique="./item[@name='accessControls']" multipleAllowedInParent="false" id="7">
+        <item name="readAccess" caption="__readAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="8">
+          <properties>
+            <property name="folderDefault" value="false"/>
+            <property name="entryCreator" value="true"/>
+            <property name="team" value="true"/>
+            <property name="userGroupAccess" value=""/>
+          </properties>
+        </item>
+        <item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" multipleAllowedInParent="false" id="9">
+          <properties>
+            <property name="folderDefault" value="false"/>
+            <property name="entryCreator" value="true"/>
+            <property name="team" value="true"/>
+            <property name="userGroupAccess" value=""/>
+          </properties>
+        </item>
+      </item>
+    </item>
+    <item name="state" caption="__state" type="data" id="4">
+      <properties>
+        <property name="caption" value="__publish_workflow_publish"/>
+        <property name="name" value="publish"/>
+        <property name="description"/>
+      </properties>
+      <item name="transitions" caption="__transitions" id="5">
+        <properties/>
+      </item>
+    </item>
+    <properties>
+      <property name="initialState" value="private"/>
+      <property name="endState" value="publish"/>
+      <property name="runAs" value="binderowner"/>
+    </properties>
+  </item>
+  <properties>
+    <property name="caption" value="__publish_workflow"/>
+    <property name="name" value="_publish_workflow"/>
+  </properties>
+  <export-mappings/>
+</definition>

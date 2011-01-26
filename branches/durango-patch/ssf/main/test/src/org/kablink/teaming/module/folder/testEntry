@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="testEntry" caption="Test entry" type="1" nextId="41" definitionType="1" databaseId="402883c50bb3f11b010bb4050c520003">
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1" canBeDeleted="false" multipleAllowed="false">
+    <jsps>
+      <jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp"/>
+    </jsps>
+    <item name="entryFormForm" caption="__form" id="2">
+      <properties>
+        <property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="form1" setAttribute="formName"/>
+      </properties>
+      <jsps>
+        <jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp"/>
+      </jsps>
+      <item name="title" caption="__title" type="data" id="3">
+        <properties>
+          <property name="name" caption="__data_name" type="text" value="title" readonly="true" unique="//item[@type='data']">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="__title"/>
+          <property name="width" caption="__textboxWidth" type="text" default="60"/>
+          <property name="inline" caption="__inline" type="boolean">
+            <help>__help_mark_as_inline</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp"/>
+          <jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp"/>
+        </jsps>
+      </item>
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="17">
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="singleSelect">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Single Select"/>
+          <property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false" value="false"/>
+          <property name="size" caption="__size" type="text" value="2"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp"/>
+        </jsps>
+        <item name="selectboxSelection" caption="__selection" id="18">
+          <properties>
+            <property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="purple">
+              <help>__help_selection_data_name</help>
+            </property>
+            <property name="caption" caption="__selection_string" type="text" value="Purple">
+              <help>__help_selection_string</help>
+            </property>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp"/>
+          </jsps>
+        </item>
+        <item name="selectboxSelection" caption="__selection" id="19">
+          <properties>
+            <property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="blue">
+              <help>__help_selection_data_name</help>
+            </property>
+            <property name="caption" caption="__selection_string" type="text" value="Blue">
+              <help>__help_selection_string</help>
+            </property>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp"/>
+          </jsps>
+        </item>
+      </item>
+      <item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" id="20">
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="radio">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Radio"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp"/>
+        </jsps>
+        <item name="radioSelection" caption="__radio_button" id="21">
+          <properties>
+            <property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="yes">
+              <help>__help_selection_data_name</help>
+            </property>
+            <property name="caption" caption="__selection_string" type="text" value="Yes">
+              <help>__help_radio_string</help>
+            </property>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp"/>
+          </jsps>
+        </item>
+        <item name="radioSelection" caption="__radio_button" id="22">
+          <properties>
+            <property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="no">
+              <help>__help_selection_data_name</help>
+            </property>
+            <property name="caption" caption="__selection_string" type="text" value="No">
+              <help>__help_radio_string</help>
+            </property>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp"/>
+          </jsps>
+        </item>
+        <item name="radioSelection" caption="__radio_button" id="23">
+          <properties>
+            <property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" value="maybe">
+              <help>__help_selection_data_name</help>
+            </property>
+            <property name="caption" caption="__selection_string" type="text" value="Maybe">
+              <help>__help_radio_string</help>
+            </property>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp"/>
+          </jsps>
+        </item>
+      </item>
+      <item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" id="24">
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="checkBox">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="CheckBox"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp"/>
+        </jsps>
+      </item>
+      <item name="date" caption="__date" type="data" category="commonEntryData" id="28">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="datePassed">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__text" type="text" value="Date Passed"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="date" caption="__date" type="data" category="commonEntryData" id="32">
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="dateBefore">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__text" type="text" value="Date Before"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp"/>
+        </jsps>
+      </item>
+      <item name="date" caption="__date" type="data" category="commonEntryData" id="33">
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="dateAfter">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__text" type="text" value="Date After"/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp"/>
+        </jsps>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="29">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventStarted">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event Started"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="true"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="36">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventEnded">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event Ended"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="true"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="37">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventBeforeStart">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event Before Start"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="true"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="38">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventAfterStart">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event After Start"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="true"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="39">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventBeforeEnd">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event Before End"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="true"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="40">
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp"/>
+        </jsps>
+        <properties>
+          <property name="name" caption="__data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']" value="eventAfterEnd">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" caption="__caption" type="text" value="Event After End"/>
+          <property name="hasDuration" caption="__has_a_duration" type="boolean" default="true" value="false"/>
+          <property name="hasRecurrence" caption="__can_recur" type="boolean" default="true" value="false"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="entryFormButtons" caption="__form_buttons" id="6">
+        <properties>
+          <property name="alignment" caption="__alignment" type="selectbox" default="left">
+            <option name="left" caption="__left"/>
+            <option name="right" caption="__right"/>
+            <help>__help_form_button_alignment</help>
+          </property>
+        </properties>
+        <jsps>
+          <jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp"/>
+          <jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp"/>
+        </jsps>
+        <item name="okButton" caption="__ok_button" id="7">
+          <properties>
+            <property name="caption" caption="__button_text" type="text" value="__ok"/>
+            <property name="onClick" caption="__onclick_routine" type="text"/>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp"/>
+          </jsps>
+        </item>
+        <item name="cancelButton" caption="__cancel_button" id="8">
+          <properties>
+            <property name="caption" caption="__button_text" type="text" value="__cancel"/>
+            <property name="onClick" caption="__onclick_routine" type="text"/>
+          </properties>
+          <jsps>
+            <jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp"/>
+          </jsps>
+        </item>
+      </item>
+    </item>
+  </item>
+  <item name="entryView" caption="__entry_view_definition" id="9" canBeDeleted="false" multipleAllowed="false">
+    <jsps>
+      <jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp"/>
+    </jsps>
+    <item name="titleView" caption="__title" id="10">
+      <properties>
+        <property name="caption" caption="__caption" type="text" value="__title"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryWorkflow" caption="__entry_workflow" type="dataView" id="14">
+      <properties>
+        <property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="25" formItem="selectbox">
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="singleSelect">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Single Select"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="26" formItem="radio">
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="radio">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Radio"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="27" formItem="checkbox">
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="checkBox">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="CheckBox"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="34" formItem="date">
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="datePassed">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Date Passed"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="30" formItem="date">
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="dateBefore">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Date Before"/>
+      </properties>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="35" formItem="date">
+      <properties>
+        <property name="name" caption="__data_item_name" type="selectbox" value="dateAfter">
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" optionCaption="__data_items_from_the_entry_form">
+            <exclude name="title"/>
+            <exclude name="description"/>
+          </option_entry_data>
+        </property>
+        <property name="caption" caption="__caption" type="text" value="Date After"/>
+      </properties>
+      <jsps>
+        <jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp"/>
+      </jsps>
+    </item>
+  </item>
+  <properties>
+    <property name="name" caption="__name" type="text" value="testEntry"/>
+    <property name="caption" caption="__caption" type="text" value="Test entry"/>
+    <property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" default="/icons/page.png" value="/icons/lightning.png"/>
+    <property name="replyStyle" caption="__reply_style" type="replyStyle" value=""/>
+  </properties>
+</definition>
