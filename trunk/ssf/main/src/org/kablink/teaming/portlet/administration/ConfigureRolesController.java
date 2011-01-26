@@ -70,6 +70,7 @@ public class ConfigureRolesController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 		if ((formData.containsKey("addBtn") && formData.containsKey("roleName")) && WebHelper.isMethodPost(request)) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Set operations = new HashSet();
@@ -267,10 +268,12 @@ public class ConfigureRolesController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map model = new HashMap();
 		
-		if (op.equals("defineConditions")) {
+		if (op.equals("defineConditions") || formData.containsKey("addCondition") || 
+				formData.containsKey("modifyCondition") || formData.containsKey("deleteCondition")) {
 			WorkAreaHelper.buildRoleConditionBeans(this, model);
 			return new ModelAndView("administration/configureRoleCondition", model);
 		} else {
