@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.util;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
+
 /**
  * Class containing utility methods for manipulating task linkage from
  * the client.
@@ -58,6 +60,47 @@ public class TaskLinkageHelper {
 	}
 
 	/**
+	 * Uses the current contents of m_tasks to update the contained
+	 * TaskLinkage.
+	 * 
+	 * @param tb
+	 * 
+	 * @return
+	 */
+	public static TaskLinkage buildLinkage(TaskBundle tb) {
+		// Create a new TaskLinkage to hold the updates.
+		TaskLinkage reply = new TaskLinkage();
+		
+		// Scan the current TaskListItem's in m_tasks...
+		for (TaskListItem taskScan:  tb.getTasks()) {
+			// ...adding a new TaskLink to the linkage...
+			TaskLink newTaskLink = new TaskLink();
+			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
+			reply.appendTask(newTaskLink);
+
+			// ...and updating its subtasks.
+			buildSubtaskLinkage(newTaskLink, taskScan);
+		}
+		
+		// If we get here, reply refers to the updated TaskLinkage.
+		// Return it.
+		return reply;
+	}
+	
+	private static void buildSubtaskLinkage(TaskLink taskLink, TaskListItem task) {
+		// Scan the subtasks of the TaskListItem.
+		for (TaskListItem taskScan:  task.getSubtasks()) {
+			// ...adding a new TaskLink to the subtask linkage...
+			TaskLink newTaskLink = new TaskLink();
+			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
+			taskLink.appendSubtask(newTaskLink);
+			
+			// ...and updating its subtasks.
+			buildSubtaskLinkage(newTaskLink, taskScan);
+		}
+	}
+	
+	/**
 	 * Returns true if the given task can be moved down from where
 	 * its at.
 	 * 
@@ -66,14 +109,17 @@ public class TaskLinkageHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean canMoveTaskDown(TaskBundle tb, Long taskId) {
-		TaskListItem       task  = findTask(tb, taskId);
+	public static boolean canMoveTaskDown(TaskBundle tb, TaskListItem task) {
 		List<TaskListItem> tasks = findTaskList(tb, task);
 		
 		int     index = tasks.indexOf(task);
 		boolean reply = (index < (tasks.size() - 1));
 		
 		return reply;
+	}
+	
+	public static boolean canMoveTaskDown(TaskBundle tb, Long taskId) {
+		return canMoveTaskDown(tb, findTask(tb, taskId));
 	}
 	
 	/**
@@ -85,14 +131,17 @@ public class TaskLinkageHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean canMoveTaskLeft(TaskBundle tb, Long taskId) {
-		TaskListItem       task  = findTask(tb, taskId);
+	public static boolean canMoveTaskLeft(TaskBundle tb, TaskListItem task) {
 		List<TaskListItem> tasks = findTaskList(tb, task);
 		
 		int     index = tasks.indexOf(task);
 		boolean reply = ((0 == index) && tasks != tb.getTasks());
 		
 		return reply;
+	}
+	
+	public static boolean canMoveTaskLeft(TaskBundle tb, Long taskId) {
+		return canMoveTaskLeft(tb, findTask(tb, taskId));
 	}
 	
 	/**
@@ -104,14 +153,17 @@ public class TaskLinkageHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean canMoveTaskRight(TaskBundle tb, Long taskId) {
-		TaskListItem       task  = findTask(tb, taskId);
+	public static boolean canMoveTaskRight(TaskBundle tb, TaskListItem task) {
 		List<TaskListItem> tasks = findTaskList(tb, task);
 		
 		int     index = tasks.indexOf(task);
 		boolean reply = (0 < index);
 		
 		return reply;
+	}
+	
+	public static boolean canMoveTaskRight(TaskBundle tb, Long taskId) {
+		return canMoveTaskRight(tb, findTask(tb, taskId));
 	}
 	
 	/**
@@ -123,14 +175,17 @@ public class TaskLinkageHelper {
 	 * 
 	 * @return
 	 */
-	public static boolean canMoveTaskUp(TaskBundle tb, Long taskId) {
-		TaskListItem       task  = findTask(tb, taskId);
+	public static boolean canMoveTaskUp(TaskBundle tb, TaskListItem task) {
 		List<TaskListItem> tasks = findTaskList(tb, task);
 		
 		int     index = tasks.indexOf(task);
 		boolean reply = (0 < index);
 		
 		return reply;
+	}
+	
+	public static boolean canMoveTaskUp(TaskBundle tb, Long taskId) {
+		return canMoveTaskUp(tb, findTask(tb, taskId));
 	}
 	
 	/**
@@ -246,9 +301,9 @@ public class TaskLinkageHelper {
 	}
 
 	/*
-	 * Searches the TaskListItem's in tlList2Search for a TaskListItem contain
-	 * tlList2Find as its subtask list.  If found, that TaskListItem is
-	 * returned.  Otherwise, null is returned.
+	 * Searches the TaskListItem's in tlList2Search for a TaskListItem
+	 * contain tlList2Find as its subtask list.  If found, that
+	 * TaskListItem is returned.  Otherwise, null is returned.
 	 */
 	private static TaskListItem findTaskListItemContainingList(List<TaskListItem> tlList2Search, List<TaskListItem> tlList2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
@@ -264,6 +319,38 @@ public class TaskLinkageHelper {
 			// If the list we're looking for is a subtask of this
 			// TaskListItem's subtasks...
 			TaskListItem reply = findTaskListItemContainingList(subtasks, tlList2Find);
+			if (null != reply) {
+				// ...return that TaskListItem.
+				return reply;
+			}
+		}
+
+		// If we get here, we couldn't find tlList2Find in
+		// tlList2Search.  Return null.
+		return null;
+	}
+
+	/*
+	 * Searches the TaskListItem's in tlList2Search for a TaskListItem
+	 * contain tl2Find as one of its subtasks.  If found, that
+	 * TaskListItem is returned.  Otherwise, null is returned.
+	 */
+	private static TaskListItem findTaskListItemContainingTask(List<TaskListItem> tlList2Search, TaskListItem tl2Find) {
+		// Scan the TaskListItem's in the List<TaskListItem> to search.
+		for (TaskListItem tl:  tlList2Search) {
+			// If this TaskListItem's subtask List<TaskListItem> is the list in
+			// question...
+			List<TaskListItem> subtasks = tl.getSubtasks();
+			for (TaskListItem subtask:  subtasks) {
+				if (subtask == tl2Find) {
+					// ...return the TaskListItem.
+					return tl;
+				}
+			}
+
+			// If the list we're looking for is a subtask of this
+			// TaskListItem's subtasks...
+			TaskListItem reply = findTaskListItemContainingTask(subtasks, tl2Find);
 			if (null != reply) {
 				// ...return that TaskListItem.
 				return reply;
@@ -348,29 +435,27 @@ public class TaskLinkageHelper {
 	 *    however, is not as what's implemented here works the same as
 	 *    GroupWise's Tasklist feature.
 	 */
-	private static boolean moveTaskInDirection(TaskBundle tb, TaskListItem tl, List<TaskListItem> tlList, Direction dir) {
-		int tlIndex;
-		int tlSize = tlList.size();
-		TaskListItem tlScan = null;
-
+	private static boolean moveTaskInDirection(TaskBundle tb, TaskListItem tlMoveThis, List<TaskListItem> tlList, Direction dir) {
 		// Scan the TaskListItem's in the List<TaskListItem>. 
-		for (tlIndex = 0; tlIndex < tlSize; tlIndex += 1) {
+		int tlMoveThisIndex;
+		int tlSize = tlList.size();
+		for (tlMoveThisIndex = 0; tlMoveThisIndex < tlSize; tlMoveThisIndex += 1) {
 			// Is this the TaskListItem we need to move?
-			tlScan = tlList.get(tlIndex);
-			if (tlScan.getTask().getTaskId().equals(tl.getTask().getTaskId())) {
+			TaskListItem tlScan = tlList.get(tlMoveThisIndex);
+			if (tlScan == tlMoveThis) {
 				// Yes!  Break out of the scan loop.
 				break;
 			}
 
 			// Can we perform the move out of this TaskListItem's subtasks?
-			if (moveTaskInDirection(tb, tl, tlScan.getSubtasks(), dir)) {
+			if (moveTaskInDirection(tb, tlMoveThis, tlScan.getSubtasks(), dir)) {
 				// Yes!  Then we're done.
 				return true;
 			}
 		}
 		
 		// If we couldn't find the TaskListItem in question...
-		if (tlIndex == tlSize) {
+		if (tlMoveThisIndex == tlSize) {
 			// ...there's nothing to move.
 			return false;
 		}
@@ -379,21 +464,21 @@ public class TaskLinkageHelper {
 		switch (dir) {
 		case UP:
 			// Up!  If it's not the first task in the list...
-			if (0 < tlIndex) {
+			if (0 < tlMoveThisIndex) {
 				// ...move it up a notch.
-				tlList.remove(tlIndex);
-				tlList.add((tlIndex - 1), tlScan);
+				tlList.remove(tlMoveThisIndex);
+				tlList.add((tlMoveThisIndex - 1), tlMoveThis);
 			}
 
 			break;
 			
 		case DOWN:
 			// Down!  If it's not the last task in the list...
-			if (tlIndex < tlSize) {
+			if (tlMoveThisIndex < tlSize) {
 				// ...move it down a notch.
-				tlList.remove(tlIndex);
-				if (tlIndex == (tlSize - 1)) tlList.add(               tlScan);
-				else                         tlList.add((tlIndex + 1), tlScan);
+				tlList.remove(tlMoveThisIndex);
+				if (tlMoveThisIndex == (tlSize - 1)) tlList.add(               tlMoveThis);
+				else                         tlList.add((tlMoveThisIndex + 1), tlMoveThis);
 			}
 			
 			break;
@@ -404,17 +489,21 @@ public class TaskLinkageHelper {
 			if (tlList != tb.getTasks()) {
 				// ...move all of the peer subtasks below it to be
 				// ...subtasks of it...
-				for (int i = (tlIndex + 1); i < tlSize; tlSize -= 1) {
+				for (int i = (tlMoveThisIndex + 1); i < tlSize; tlSize -= 1) {
 					TaskListItem tl2Move = tlList.get(i);
 					tlList.remove(i);
-					tlScan.appendSubtask(tl2Move);
+					tlMoveThis.appendSubtask(tl2Move);
 				}
 				
 				// ...and make it a peer to the task it's a subtask of,
 				// ...immediately below what was its parent.
-				tlList.remove(tlIndex);
-				TaskListItem tlWithList = findTaskListItemContainingList(tb.getTasks(), tlList);
-				tlWithList.appendSubtask(tlScan);
+				tlList.remove(tlMoveThisIndex);
+				TaskListItem tlWithList          = findTaskListItemContainingList(tb.getTasks(), tlList    );
+				TaskListItem tlWithListContainer = findTaskListItemContainingTask(tb.getTasks(), tlWithList);
+				List<TaskListItem> tlTargetList  = ((null == tlWithListContainer) ? tb.getTasks() : tlWithListContainer.getSubtasks());
+				tlTargetList.add(
+					(tlTargetList.indexOf(tlWithList) + 1),
+					tlMoveThis);
 			}
 			
 			break;
@@ -422,10 +511,10 @@ public class TaskLinkageHelper {
 		case RIGHT:
 			// Right (i.e., increase its subtask level)!  If it's not
 			// the first task in the list...
-			if (0 < tlIndex) {
+			if (0 < tlMoveThisIndex) {
 				// ...make it the last subtask of the one above it.
-				tlList.remove(tlIndex);
-				tlList.get(tlIndex - 1).appendSubtask(tlScan);
+				tlList.remove(tlMoveThisIndex);
+				tlList.get(tlMoveThisIndex - 1).appendSubtask(tlMoveThis);
 			}
 			
 			break;

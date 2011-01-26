@@ -60,6 +60,7 @@ public class TaskListing implements ActionTrigger {
 	private boolean			m_sortDescend;		// true -> Sort is descending.  false -> Sort is ascending. 
 	private Element			m_taskListingDIV;	// The <DIV> in the content pane that's to contain the task listing.
 	private Element			m_taskToolsDIV;		// The <DIV> in the content pane that's to contain the task tool bar.
+	private InlineLabel		m_hintSpan;			// The <SPAN> containing the reason why the movement buttons are disabled.
 	private Long			m_binderId;			// The ID of the binder containing the tasks to be listed.
 	private String			m_filterType;		// The current filtering in affect, if any.
 	private String			m_mode;				// The current mode being displayed (PHYSICAL vs. VITRUAL.)
@@ -137,7 +138,7 @@ public class TaskListing implements ActionTrigger {
 		il.getElement().appendChild(m_moveRightButton.getElement());
 		m_taskToolsDIV.appendChild(il.getElement());
 
-		// ...and create the delete button.
+		// ...create the delete button...
 		m_deleteButton = new TaskButton(
 			this,
 			m_messages.taskLabelDelete(),
@@ -145,6 +146,12 @@ public class TaskListing implements ActionTrigger {
 			false,
 			TeamingAction.TASK_DELETE);
 		m_taskToolsDIV.appendChild(m_deleteButton.getElement());
+
+		// ...and create a span to hold any hints the TaskTable may
+		// ...want to display.
+		m_hintSpan = new InlineLabel();
+		m_hintSpan.addStyleName("gwtTaskTools_HintSpan gwtTaskTools_HintSpan_Hidden");
+		m_taskToolsDIV.appendChild(m_hintSpan.getElement());
 	}
 
 	/**
@@ -154,6 +161,7 @@ public class TaskListing implements ActionTrigger {
 	 */
 	public ActionHandler getActoinHandler()   {return m_actionHandler;  }
 	public boolean       getSortDescend()     {return m_sortDescend;    }
+	public InlineLabel   getHintSpan()        {return m_hintSpan;       }
 	public Long          getBinderId()        {return m_binderId;       }
 	public String        getFilterType()      {return m_filterType;     }
 	public String        getMode()            {return m_mode;           }
@@ -164,6 +172,18 @@ public class TaskListing implements ActionTrigger {
 	public TaskButton    getMoveUpButton()    {return m_moveUpButton;   }
 	public TaskButton    getMoveLeftButton()  {return m_moveLeftButton; }
 	public TaskButton    getMoveRightButton() {return m_moveRightButton;}
+	
+	/**
+	 * Hides the hint <SPAN>, if visible.
+	 */
+	public void hideHint() {
+		// If the hint <SPAN> is visible...
+		if (m_hintSpan.isVisible()) {
+			// ...empty and hide it.
+			m_hintSpan.setText("");
+			m_hintSpan.addStyleName("gwtTaskTools_HintSpan_Hidden");
+		}
+	}
 	
 	/*
 	 * Renders a List<TaskListItem> into the task listing DIV.
@@ -251,6 +271,24 @@ public class TaskListing implements ActionTrigger {
 		});		
 	}
 
+	/**
+	 * Displays a string in the hint <SPAN>.
+	 * 
+	 * @param hint
+	 */
+	public void showHint(String hint) {
+		// If we weren't given a hint to display...
+		if (!(GwtClientHelper.hasString(hint))) {
+			// ...hide the hint <SPAN>...
+			hideHint();
+		}
+		else {
+			// ...otherwise, display it.
+			m_hintSpan.setText(hint);
+			m_hintSpan.removeStyleName("gwtTaskTools_HintSpan_Hidden");
+		}
+	}
+	
 	/**
 	 * Fires a TeamingAction.
 	 * 

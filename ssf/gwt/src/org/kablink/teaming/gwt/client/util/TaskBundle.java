@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client.util;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -90,41 +88,4 @@ public class TaskBundle implements IsSerializable {
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
-
-	/**
-	 * Uses the current contents of m_tasks to update the contained
-	 * TaskLinkage.
-	 */
-	public void updateLinkage() {
-		// Create a new TaskLinkage to hold the updates.
-		TaskLinkage newLinkage = new TaskLinkage();
-		
-		// Scan the current TaskListItem's in m_tasks...
-		for (TaskListItem taskScan:  m_tasks) {
-			// ...adding a new TaskLink to the linkage...
-			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
-			newLinkage.appendTask(newTaskLink);
-
-			// ...and updating its subtasks.
-			updateSubtaskLinkage(newTaskLink, taskScan);
-		}
-		
-		// If we get here, newLinkage refers to the updated
-		// TaskLinkage.  Replace the one currently in the TaskBundle.
-		setTaskLinkage(newLinkage);
-	}
-	
-	private void updateSubtaskLinkage(TaskLink taskLink, TaskListItem task) {
-		// Scan the subtasks of the TaskListItem.
-		for (TaskListItem taskScan:  task.getSubtasks()) {
-			// ...adding a new TaskLink to the subtask linkage...
-			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
-			taskLink.appendSubtask(newTaskLink);
-			
-			// ...and updating its subtasks.
-			updateSubtaskLinkage(newTaskLink, taskScan);
-		}
-	}
 }

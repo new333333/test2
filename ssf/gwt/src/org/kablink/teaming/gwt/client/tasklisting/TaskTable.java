@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkageHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
@@ -55,6 +56,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -90,6 +92,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TaskTable extends Composite implements ActionHandler {
+	private boolean				m_sortAscending;	//
+	private Column				m_sortColumn;		//
 	private FlexCellFormatter	m_flexTableCF;		//
 	private FlexTable			m_flexTable;		//
 	private int					m_taskCount;		//
@@ -100,25 +104,66 @@ public class TaskTable extends Composite implements ActionHandler {
 	private TaskPopupMenu		m_priorityMenu;		//
 	private TaskPopupMenu		m_statusMenu;		//
 	
-	private final GwtMainPage						m_gwtMainPage = GwtTeaming.getMainPage();				// 
-	private final GwtRpcServiceAsync				m_rpcService  = GwtTeaming.getRpcService();				// 
-	private final GwtTeamingMessages				m_messages    = GwtTeaming.getMessages();				//
-	private final GwtTeamingTaskListingImageBundle	m_images      = GwtTeaming.getTaskListingImageBundle();	//
+	private       boolean							m_newTaskTable = true;										//
+	private final GwtMainPage						m_gwtMainPage  = GwtTeaming.getMainPage();					// 
+	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
+	private final GwtTeamingMessages				m_messages     = GwtTeaming.getMessages();					//
+	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
 
 	/*
 	 * Enumeration value used to represent the order of the columns in
 	 * the TaskTable.
 	 */
 	private enum Column {
-		SELECTOR,
-		ORDER,
-		NAME,
-		PRIORITY,
-		DUE_DATE,
-		STATUS,
-		ASSIGNED_TO,
-		CLOSED_PERCENT_DONE,
-		LOCATION,
+		SELECTOR(           "*Unsortable*"),
+		ORDER(              "order"),
+		NAME(               "_sortTitle"),
+		PRIORITY(           "priority"),
+		DUE_DATE(           "start_end#LogicalEndDate"),
+		STATUS(             "status"),
+		ASSIGNED_TO(        "assignment"),
+		CLOSED_PERCENT_DONE("completed"),
+		LOCATION(           "location");
+		
+		private String m_sortKey;	// The sort key sorted on the server for this Column.
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param sortKey
+		 */
+		private Column(String sortKey) {
+			// Simply store the parameter.
+			m_sortKey = sortKey;
+		}
+
+		/**
+		 * Returns the sort key for this Column.
+		 * 
+		 * @return
+		 */
+		String getSortKey() {
+			return m_sortKey;
+		}
+		
+		/**
+		 * Maps a sort key from the server to a Column.
+		 * 
+		 * @param sortKey
+		 * 
+		 * @return
+		 */
+		static Column mapSortKeyToColumn(String sortKey) {
+			Column reply = Column.ORDER;
+			for (Column column:  Column.values()) {
+				String columnKey = column.getSortKey();
+				if (sortKey.equals(columnKey)) {
+					reply = column;
+					break;
+				}
+			}
+			return reply;
+		}
 	}
 
 	/*
@@ -126,7 +171,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * TaskListItem for managing the user interface. 
 	 */
 	private static class UIData {
-		private boolean		m_taskWasChecked;	//
+		private boolean		m_taskSelected;		//
 		private CheckBox	m_taskSelectorCB;	//
 		private int			m_taskDepth;		//
 		private int 		m_taskOrder = (-1);	//
@@ -145,12 +190,12 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * 
 		 * @return
 		 */
-		public boolean  getTaskWasChecked() {return m_taskWasChecked;}
+		public boolean  getTaskSelected()   {return m_taskSelected;  }
 		public CheckBox getTaskSelectorCB() {return m_taskSelectorCB;}
 		public int      getTaskDepth()      {return m_taskDepth;     }
 		public int      getTaskOrder()      {return m_taskOrder;     }
 
-		public void setTaskWasChecked(boolean  taskWasChecked) {m_taskWasChecked = taskWasChecked;}
+		public void setTaskSelected(  boolean  taskSelected)   {m_taskSelected   = taskSelected;}
 		public void setTaskSelectorCB(CheckBox taskSelectorCB) {m_taskSelectorCB = taskSelectorCB;}
 		public void setTaskDepth(     int      taskDepth)      {m_taskDepth      = taskDepth;     }
 		public void setTaskOrder(     int      taskOrder)      {m_taskOrder      = taskOrder;     }
@@ -162,17 +207,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * 
 		 * @return
 		 */
-		public boolean isTaskSelected() {
+		public boolean isTaskCBChecked() {
 			return jsIsCBChecked(getTaskSelectorCB().getElement().getId());
-		}
-		
-		/**
-		 * Selects the task corresponding to this UIData.
-		 * 
-		 * @param selected
-		 */
-		public void setTaskSelected(boolean selected) {
-			jsSetCBCheck(getTaskSelectorCB().getElement().getId(), selected);
 		}
 	}
 	
@@ -182,7 +218,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	public TaskTable(TaskListing taskListing) {
 		// Initialize the super class..
 		super();
-		
+
 		// ...store the parameter...
 		m_taskListing = taskListing;
 		
@@ -511,13 +547,17 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Returns a spacer Image.
 	 */
-	private Image buildSpacer() {
+	private Image buildSpacer(int width) {
 		Image reply = new Image(m_images.spacer());
-		reply.setHeight("16px");
-		reply.setWidth( "16px");
+		reply.setHeight(                     "16px");
+		reply.setWidth(String.valueOf(width) + "px");
 		return reply;
 	}
 	
+	private Image buildSpacer() {
+		return buildSpacer(16);
+	}
+
 	/*
 	 * Called to clear the contents of the TaskTable.
 	 */
@@ -549,7 +589,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	
 	private void getTasksCheckedImpl(List<TaskListItem> tasks, List<TaskListItem> checkedTasks) {
 		for (TaskListItem task:  tasks) {
-			if (getUIData(task).isTaskSelected()) {
+			if (getUIData(task).isTaskCBChecked()) {
 				checkedTasks.add(task);
 			}
 			getTasksCheckedImpl(task.getSubtasks(), checkedTasks);
@@ -568,6 +608,52 @@ public class TaskTable extends Composite implements ActionHandler {
 		return reply;
 	}
 
+	/*
+	 * Processes the information from the server and sets up the
+	 * initial sorting.
+	 */
+	private void initializeSorting() {
+		// Process the sort criteria from the TaskList...
+		m_sortAscending = (!(m_taskListing.getSortDescend()));
+		m_sortColumn    = Column.mapSortKeyToColumn(m_taskListing.getSortBy());
+		if ((Column.LOCATION == m_sortColumn) && m_taskBundle.getIsFromFolder()) {
+			m_sortColumn = Column.ORDER;
+		}
+
+		// ...and apply it, as necessary.
+		if ((Column.ORDER != m_sortColumn) || (!(m_sortAscending))) {
+			sortByColumn(m_taskBundle.getTasks(), m_sortColumn, m_sortAscending);
+		}
+	}
+	
+	/*
+	 * (Re)initializes the UIData objects on the tasks.
+	 */
+	private void initializeUIData() {
+		initializeUIDataImpl(m_taskBundle.getTasks(), 0);
+	}
+	
+	private void initializeUIDataImpl(List<TaskListItem> tasks, int taskDepth) {
+		int     taskOrder    = 1;
+		boolean baseTask     = (0 == taskDepth);
+		int     subtaskDepth = (taskDepth + 1);
+		for (TaskListItem task:  tasks) {
+			// Build a UIData object for this TaskListItem...
+			UIData uid = getUIData(task);
+			uid.setTaskDepth(taskDepth);
+			if (baseTask) {
+				uid.setTaskOrder(taskOrder);
+				taskOrder += 1;
+			}
+			else {
+				uid.setTaskOrder(-1);
+			}
+
+			// ...and build the UIData's for any subtasks.
+			initializeUIDataImpl(task.getSubtasks(), subtaskDepth);
+		}
+	}
+	
 	/**
 	 * Called by TaskPopupMenu when a selection has been made in one of
 	 * the task's option menus.
@@ -644,9 +730,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to resort the TaskTable by the specified column.
 	 */
-	private static void handleTableResort(Column col) {
-//!		...this needs to be implemented...
-		Window.alert("handleTableResort( " + col.ordinal() + " ):  ...this needs to be implemented...");
+	private void handleTableResort(Column col) {
+		// Apply the resort...
+		if (col == m_sortColumn)
+			 m_sortAscending = (!m_sortAscending);
+		else m_sortColumn    = col;		
+		sortByColumn(m_taskBundle.getTasks(), m_sortColumn, m_sortAscending);
+		
+		// ...and redisplay the tasks.
+		showTasks(m_taskBundle);
+		persistSortChange();
 	}
 
 	/*
@@ -675,7 +768,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskDown(m_taskBundle, task.getTask().getTaskId());
+			TaskLinkageHelper.moveTaskDown(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -685,8 +778,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * tool bar.
 	 */
 	private void handleTaskMoveLeft() {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskMoveLeft():  ...this needs to be implemented...");
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		int tasksCheckedCount = tasksChecked.size();
+		if (1 == tasksCheckedCount) {
+			TaskListItem task = tasksChecked.get(0);
+			TaskLinkageHelper.moveTaskLeft(m_taskBundle, task);
+			handleTaskPostMove(task);
+		}
 	}
 	
 	/*
@@ -698,7 +796,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskRight(m_taskBundle, task.getTask().getTaskId());
+			TaskLinkageHelper.moveTaskRight(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -712,7 +810,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskUp(m_taskBundle, task.getTask().getTaskId());
+			TaskLinkageHelper.moveTaskUp(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -722,9 +820,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * into affect.
 	 */
 	private void handleTaskPostMove(TaskListItem task) {	
-		getUIData(task).setTaskWasChecked(true);
+		initializeUIData();	// Forces the order and depths to be reset.
 		showTasks(m_taskBundle);
-		validateTaskTools();
 		persistLinkageChange(task.getTask().getBinderId());
 	}
 
@@ -740,7 +837,11 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called when the user clicks the checkbox on a task.
 	 */
 	private void handleTaskSelect(TaskListItem task) {
-		// Simply validate the TaskListing tools.
+		// Track the state of the task's checkbox...
+		UIData uid = getUIData(task);
+		uid.setTaskSelected(uid.isTaskCBChecked());
+		
+		// ...and validate the TaskListing tools.
 		validateTaskTools();
 	}
 	
@@ -813,15 +914,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * appropriate 'sorted by' indicator. 
 	 */
 	private void markAsSortKey(Anchor a, Column col) {
-//!		...this needs to be implemented...
-		if (Column.SELECTOR != col) {
+		// Is this the column we're sorted on?
+		if (m_sortColumn != col) {
+			// No!  Bail.
 			return;
 		}
 		
-		Image i = buildImage(m_taskListing.getSortDescend() ? m_images.sortZA() : m_images.sortAZ());
+		Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
 		a.getElement().appendChild(i.getElement());
 	}
-	
+
 	/*
 	 * Renders the 'Assigned To' column.
 	 */
@@ -870,7 +972,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Update the TaskLinkage in the TaskBundle...
-		m_taskBundle.updateLinkage();
+		TaskLinkage newLinkage = TaskLinkageHelper.buildLinkage(m_taskBundle);
+		m_taskBundle.setTaskLinkage(newLinkage);
 		
 		// ...and write it to the current user's folder preferences.
 		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
@@ -887,6 +990,15 @@ public class TaskTable extends Composite implements ActionHandler {
 				// Nothing to do.
 			}
 		});
+	}
+	
+	/*
+	 * Called to write a change in the sort criteria to the user's
+	 * preferences.
+	 */
+	private void persistSortChange() {
+//!		...this needs to be implemented...
+		Window.alert("persistSortChange():  ...this needs to be implemented...");
 	}
 
 	/*
@@ -989,9 +1101,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onChange(ChangeEvent event) {handleTaskSelect(task);}			
 		});
-		if (uid.getTaskWasChecked()) {
+		if (uid.getTaskSelected()) {
 			cb.setValue(true);
-			uid.setTaskWasChecked(false);
+			uid.setTaskSelected(true);
 		}
 		FlowPanel fp = new FlowPanel();
 		fp.add(cb);
@@ -1038,6 +1150,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Task Name' column.
 	 */
 	private void renderColumnTaskName(final TaskListItem task, int row, Column col) {
+		// Extract the UIData from this task.
+		UIData uid = getUIData(task);
+		
 		// Is the task unseen, cancelled and/or closed?
 		TaskInfo ti = task.getTask();
 		boolean isUnseen    = (!(ti.getSeen()));
@@ -1046,6 +1161,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		// Define a panel to contain the task name widgets.
 		FlowPanel fp = new FlowPanel();
+
+		// If this is a subtask...
+		int taskDepth = uid.getTaskDepth();
+		if (0 < taskDepth) {
+			// ...add a spacer to indent it proportional to its depth.
+			Image spacer = buildSpacer(16 * taskDepth);
+			spacer.addStyleName("icon-spacer");
+			fp.add(spacer);
+		}
 
 		// Add the closed/unseen marker Widget to the panel.
 		Widget marker;
@@ -1119,17 +1243,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	
 	private void selectAllTasksImpl(List<TaskListItem> tasks, boolean selected) {
 		for (TaskListItem task:  tasks) {
-			getUIData(task).setTaskSelected(selected);
+			getUIData(task).getTaskSelectorCB().setValue(selected);
 			selectAllTasksImpl(task.getSubtasks(), selected);
 		}
 	}
-	
+
 	/**
 	 * Shows the tasks in the List<TaskListItem>.
 	 * 
 	 * Returns the time, in milliseconds, that it took to show them.
 	 * 
 	 * @param taskBundle
+	 * @param applySort
 	 * 
 	 * @return
 	 */
@@ -1137,8 +1262,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Save when we start...
 		long start = System.currentTimeMillis();
 
-		// ...and render the TaskTable.
+		// ...decide how the table should be sorted...
 		m_taskBundle = taskBundle;
+		if (m_newTaskTable) {
+			m_newTaskTable = false;
+			initializeUIData();
+			initializeSorting();
+		}
+				
+		// ...and render the TaskTable.
 		clearTaskTable();
 		List<TaskListItem> tasks = taskBundle.getTasks();
 		
@@ -1154,9 +1286,19 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 		else {
 			// Yes, there any tasks to show!
-			showTasksImpl(tasks, 0);
+			showTasksImpl(tasks);
 		}
 
+		// Validate the task tools for what we've got displayed.
+		Scheduler.ScheduledCommand validateCommand;
+		validateCommand = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				validateTaskTools();
+			}
+		};
+		Scheduler.get().scheduleDeferred(validateCommand);
+		
 		// Finally, return how long we took to show the tasks.
 		long end = System.currentTimeMillis();
 		return (end - start);
@@ -1166,26 +1308,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Shows the tasks in the List<TaskListItem> as being at a specific
 	 * depth in the listing.
 	 */
-	private void showTasksImpl(List<TaskListItem> tasks, int taskDepth) {
-		int taskOrder = 1;
-		boolean baseTask = (0 == taskDepth);
-		int subtaskDepth = (taskDepth + 1);
+	private void showTasksImpl(List<TaskListItem> tasks) {
+		// Scan the tasks in the list...
 		for (TaskListItem task:  tasks) {
-			// Construct and add a UIData object to the TaskListItem...
-			UIData uid = getUIData(task);
-			uid.setTaskDepth(taskDepth);
-			if (baseTask) {
-				uid.setTaskOrder(taskOrder);
-				taskOrder += 1;
-			}
-			else {
-				uid.setTaskOrder(-1);
-			}
-			task.setUIData(uid);
-
-			// ...render the task and any subtasks.
+			// ..rendering each one...
 			renderTaskItem(task);
-			showTasksImpl( task.getSubtasks(), subtaskDepth);
+			
+			// ...and their subtasks.
+			showTasksImpl( task.getSubtasks());
 		}
 	}
 
@@ -1226,25 +1356,43 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Validate the the base criteria about whether the movement
 		// buttons are enabled.  Is one and only one task selected?
 		boolean allowMovement = (1 == tasksCheckedCount);
+		String toolHint = null;
 		if (allowMovement) {
 			// Yes!  Is this list an non-filtered list of the tasks
 			// from the folder?
 			allowMovement = ((!(m_taskBundle.getIsFiltered())) && m_taskBundle.getIsFromFolder());
 			if (allowMovement) {
 				// Yes!  Are we sorted on the order column?
-//!				...this needs to be implemented...
+				allowMovement = ((Column.ORDER == m_sortColumn) && m_sortAscending);
+				if (!allowMovement) {
+					// Disallowed:  Not order/ascending.
+					toolHint = m_messages.taskCantMove_Order();
+				}
+			}
+			else {
+				// Disallowed:  Filters or Virtual.
+				toolHint = m_messages.taskCantMove_Filter();
 			}
 		}			
+		else {
+			// Disallowed:  Other than 1 item checked.
+			if (0 == tasksCheckedCount)
+			     toolHint = m_messages.taskCantMove_Zero();
+			else toolHint = m_messages.taskCantMove_NotOne(String.valueOf(tasksCheckedCount));
+		}
+
+		// Hide/show the task tools hint.
+		m_taskListing.showHint(toolHint);
 
 		// Is the base criteria for movement satisfied?
 		if (allowMovement) {
 			// Yes!  Furthermore, the allowed movement is based on the
 			// selected task's current position in the linkage.
-			Long taskId = tasksChecked.get(0).getTask().getTaskId();
-			enableMoveDown  = TaskLinkageHelper.canMoveTaskDown( m_taskBundle, taskId);
-			enableMoveLeft  = TaskLinkageHelper.canMoveTaskLeft( m_taskBundle, taskId);
-			enableMoveRight = TaskLinkageHelper.canMoveTaskRight(m_taskBundle, taskId);
-			enableMoveUp    = TaskLinkageHelper.canMoveTaskUp(   m_taskBundle, taskId);
+			TaskListItem task = tasksChecked.get(0);
+			enableMoveDown    = TaskLinkageHelper.canMoveTaskDown( m_taskBundle, task);
+			enableMoveLeft    = TaskLinkageHelper.canMoveTaskLeft( m_taskBundle, task);
+			enableMoveRight   = TaskLinkageHelper.canMoveTaskRight(m_taskBundle, task);
+			enableMoveUp      = TaskLinkageHelper.canMoveTaskUp(   m_taskBundle, task);
 		}
 		else {
 			// No, the base criteria is not satisfied!  All the
