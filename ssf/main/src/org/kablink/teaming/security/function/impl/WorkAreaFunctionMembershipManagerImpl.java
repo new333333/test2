@@ -141,27 +141,25 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         // one of the roles meet the requirement, the access check is successful.
         for(Long functionId : functionIds) {
         	Function function = getSecurityDao().loadFunction(zoneId, functionId);
-        	if (evaluateFunctionClauses(function.getConditionalClauses()))
+        	if (evaluateFunctionClauses(function))
         		return true;
         }
         return false;
     }
 
-    private boolean evaluateFunctionClauses(List<ConditionalClause> conditionalClauses) {
-    	if(conditionalClauses == null || conditionalClauses.size() == 0) {
-    		// There is no conditional clause associated with this function. So, this always passes.
+    private boolean evaluateFunctionClauses(Function function) {
+    	if(!function.isConditional()) {
+    		// This function is not conditional. So, this always passes.
     		return true;
     	}
     	else {
     		int metMustClauses = 0;
     		// Pass 1 - Evaluate all clauses that MUST be met.
-    		for(ConditionalClause conditionalClause : conditionalClauses) {
-    			if(conditionalClause.getMeet().equals(ConditionalClause.Meet.MUST)) {
-    				if(conditionalClause.getCondition().evaluate())
-    					metMustClauses++;
-    				else
-    					return false;
-    			}
+    		for(ConditionalClause conditionalClause : function.getConditionalClauses(ConditionalClause.Meet.MUST)) {
+				if(conditionalClause.getCondition().evaluate())
+					metMustClauses++;
+				else
+					return false;
     		}
     		if(metMustClauses > 0) {
     			// There were at least one clause of MUST type, and all of the clauses of MUST type were met. 
@@ -172,11 +170,9 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     		else {
     			// There were no clause of MUST type. In this case, at least one of the clauses of SHOULD type
     			// must be met. 
-    			for(ConditionalClause conditionalClause : conditionalClauses) {
-        			if(conditionalClause.getMeet().equals(ConditionalClause.Meet.SHOULD)) {
-        				if(conditionalClause.getCondition().evaluate())
-        					return true;
-        			}
+    			for(ConditionalClause conditionalClause : function.getConditionalClauses(ConditionalClause.Meet.SHOULD)) {
+    				if(conditionalClause.getCondition().evaluate())
+    					return true;
     			}
         		// If still here, it means that none of the clauses of SHOULD type was met.
     			return false;

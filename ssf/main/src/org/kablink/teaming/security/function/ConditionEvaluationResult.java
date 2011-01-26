@@ -34,31 +34,60 @@ package org.kablink.teaming.security.function;
 
 import java.util.List;
 
-import org.kablink.teaming.NoObjectByTheIdException;
+public class ConditionEvaluationResult {
 
-/**
- *
- * @author Jong Kim
- */
-public interface FunctionManager {
-    
-    public void addFunction(Function function);
-    
-    public void deleteFunctions(Long zoneId);
-    public List deleteFunction(Function function);
-    
-    public void updateFunction(Function function);
-    
-    public Function getFunction(Long zoneId, Long id) throws NoObjectByTheIdException;
-   
-    public List findFunctions(Long zoneId);
-    
-    public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation);
-    
-    /**
-     * Evaluate the conditional clauses (if any) associated with the function against the 
-     * current runtime context, and return an object encapsulating the result of the evaluation.
-     */
-    public ConditionEvaluationResult evaluateConditionalClauses(Function function);
-
+	public enum Status {
+		/*
+		 * There are one or more conditions of MUST type, and all of them were met.
+		 * Under this circumstance, all conditions of SHOULD type, if any, are ignored.
+		 */
+		ALL_MUST_MET,
+		
+		/*
+		 * There are one or more conditions of MUST type, and not all of them were met.
+		 * Under this circumstance, all conditions of SHOULD type, if any, are ignored.
+		 */
+		NOT_ALL_MUST_MET,
+		
+		/*
+		 * There are one or more conditions of SHOULD type, and at least one of them were met.
+		 * This status can not occur if there are one or more conditions of MUST type.
+		 */
+		SOME_SHOULD_MET,
+		
+		/*
+		 * There are one or more conditions of SHOULD type, and none of them were met.
+		 * This status can not occur if there are one or more conditions of MUST type.
+		 */
+		NO_SHOULD_MET,
+		
+		/*
+		 * No evaluation took place because the role/function is not conditional.
+		 */
+		NOT_CONDITIONAL
+	}
+	
+	private Status status;
+	
+	private List<Long> metConditionIds;
+	
+	public ConditionEvaluationResult(Status status, List<Long> metConditionIds) {
+		this.status = status;
+		this.metConditionIds = metConditionIds;
+	}
+	
+	public Status getStatus() {
+		return status;
+	}
+	
+	/*
+	 * This method is relevant/meaningful ONLY IF the <code>status</code> is either 
+	 * <code>ALL_MUST_MET</code> or <code>SOME_SHOULD_MET</code>.
+	 * 
+	 * With the former status, it returns an ordered list of ids of all conditions of MUST type.
+	 * With the latter status, it returns an ordered list of ids of those conditions of SHOULD type that were met.
+	 */
+	public List<Long> getMetConditionIds() {
+		return metConditionIds;
+	}
 }
