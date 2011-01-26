@@ -291,7 +291,11 @@
 	  <select name="roleCondition" id="condition_${function2.name}">
 	    <option value="" selected><ssf:nlt tag="common.select.none"/></option>
 		<c:forEach var="condition" items="${ssConditions}">
-		  <option value="${condition.id}">${condition.title}</option>
+		  <option value="${condition.id}"
+		    <c:forEach var="cc" items="${function2.conditionalClauses}">
+		    	<c:if test="${cc.condition.id == condition.id}"> selected </c:if>
+		    </c:forEach>
+		  >${condition.title}</option>
 		</c:forEach>
 	  </select>
 	</td>
@@ -372,7 +376,11 @@
 	  <select name="roleCondition" id="condition_${function3.name}">
 	    <option value="" selected><ssf:nlt tag="common.select.none"/></option>
 		<c:forEach var="condition" items="${ssConditions}">
-		  <option value="${condition.id}">${condition.title}</option>
+		  <option value="${condition.id}"
+		    <c:forEach var="cc" items="${function3.conditionalClauses}">
+		    	<c:if test="${cc.condition.id == condition.id}"> selected </c:if>
+		    </c:forEach>
+		  >${condition.title}</option>
 		</c:forEach>
 	  </select>
 	</td>
