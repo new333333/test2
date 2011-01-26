@@ -83,27 +83,19 @@ public class ConfigureRolesController extends  SAbstractController {
 			}
 			//Build the list of any additional conditions
 			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
-			List<String> includeAddressExpressions = new ArrayList<String>();
-			List<String> excludeAddressExpressions = new ArrayList<String>();
-			Iterator itFormData = formData.keySet().iterator();
-			while (itFormData.hasNext()) {
-				String key = (String) itFormData.next();
-				if (key.startsWith("ipAddressCondition")) {
-					String conditionId = key.substring("ipAddressCondition".length());
-					boolean allowAccess = true;
-					if (formData.containsKey("ipAddressAccessCondition"+conditionId)) {
-						if (formData.get("ipAddressAccessCondition"+conditionId).equals("deny")) {
-							allowAccess = false;
-						}
+			//Currently, we only allow one condition to be selected
+			String roleCondition = PortletRequestUtils.getStringParameter(request, "roleCondition", "");
+			if (!roleCondition.equals("")) {
+				try {
+					Long roleConditionId = Long.valueOf(roleCondition);
+					Condition condition = getAdminModule().getFunctionCondition(roleConditionId);
+					if (condition != null) {
+						//Since only one condition can be added, make it a "MUST"
+						ConditionalClause cc = new ConditionalClause(condition, ConditionalClause.Meet.MUST);
+						conditions.add(cc);
 					}
-					if (allowAccess) {
-						includeAddressExpressions.add((String)formData.get("ipAddressCondition"+conditionId));
-					} else {
-						excludeAddressExpressions.add((String)formData.get("ipAddressCondition"+conditionId));
-					}
-				}
+				} catch(Exception e) {}
 			}
-			//ConditionalClause cc = new ConditionalClause();
 			
 			String roleName = "";
 			String roleScope = ObjectKeys.ROLE_TYPE_BINDER;

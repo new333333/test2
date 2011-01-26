@@ -175,39 +175,56 @@
 </c:if>
 
 <ssf:expandableArea title='<%= NLT.get("administration.configure_roles.add") %>'>
+<div style="padding:0px 20px;">
+<fieldset>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
-		
-	<label for="roleName"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
-	<input type="text" class="ss_text" size="70" name="roleName" id="roleName" maxlength="64"><br/><br/>
+	<table cellspacing="6" cellpadding="4">
+	<tr>
+	<td valign="middle">
+	  <label for="roleName">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <input type="text" class="ss_text" size="70" name="roleName" id="roleName" maxlength="64">
+	</td>
+	</tr>
 
-	<label for="roleType"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Type"/></span></label>
-	<select name="roleScope" id="roleScope">
-	  <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
-	  <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
-	</select>
-	<br/>
-	<br/>		
+	<tr>
+	<td valign="middle">
+	  <label for="roleType">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Type"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleScope" id="roleScope">
+	    <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	    <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	  </select>
+	</td>
+	</tr>		
 	
-	<div>
-	  <a href="javascript: ;return false;" onClick="ss_toggleShowDiv('ss_conditionsForm');">
+	<tr>
+	<td valign="middle">
+	  <label for="roleCondition">
 	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.conditions"/></span>
-	  </a>
-	</div>
-	<div id="ss_conditionsForm" style="display:none; padding:10px 0px 6px 20px;">
-	<fieldset>
-	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.conditions.ipAddresses"/></span>
-	  <table id="ss_ip_addresses">
-	    <tbody id="ss_ip_addresses_tbody">
-	    </tbody>
-	  </table>
-	<a href="javascript: ;return false;" onClick="addIpAddressConditionRow();">
-	  <span><ssf:nlt tag="administration.configure_roles.conditions.addIpAddresses"/></span>
-	</a>
-	</fieldset>
-	</div>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleCondition" id="roleCondition">
+	    <option value="" selected><ssf:nlt tag="common.select.none"/></option>
+		<c:forEach var="condition" items="${ssConditions}">
+		  <option value="${condition.id}">${condition.title}</option>
+		</c:forEach>
+	  </select>
+	</td>
+	</tr>
+	</table>
+	
 	<br/>
-	<br/>		
+	<br/>
+	
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<input type="checkbox" name="<c:out value="${operation.value}"/>"
 			id="<c:out value="${operation.value}"/>">
@@ -218,6 +235,8 @@
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
+</fieldset>
+</div>
 </ssf:expandableArea>
 
 <br>
@@ -231,16 +250,56 @@
 <jsp:useBean id="function2" type="org.kablink.teaming.security.function.Function" />
 <c:if test="${function2.scope == 'binder'}">
 <ssf:expandableArea title='<%= NLT.getDef(function2.getName()) %>'>
+<div style="padding:0px 20px;">
+<fieldset>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
-	<label for="role_${function2.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
-	<input type="text" class="ss_text" size="70" name="roleName" 
-		id="role_${function2.name}" value="${function2.name}"><br><br>
-	<label for="scope_${function2.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span></label>
-	<select name="roleScope" id="scope_${function2.name}">
-	  <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
-	  <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
-	</select><br><br>
+	<table cellspacing="6" cellpadding="4">
+	<tr>
+	<td valign="middle">
+	  <label for="role_${function2.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <input type="text" class="ss_text" size="70" name="roleName" 
+		id="role_${function2.name}" value="${function2.name}">
+	</td>
+	</tr>
+
+	<tr>
+	<td valign="middle">
+	  <label for="scope_${function2.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleScope" id="scope_${function2.name}">
+	    <option value="binder" selected><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	    <option value="entry"><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	  </select>
+	</td>
+	</tr>		
+	
+	<tr>
+	<td valign="middle">
+	  <label for="condition_${function2.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.conditions"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleCondition" id="condition_${function2.name}">
+	    <option value="" selected><ssf:nlt tag="common.select.none"/></option>
+		<c:forEach var="condition" items="${ssConditions}">
+		  <option value="${condition.id}">${condition.title}</option>
+		</c:forEach>
+	  </select>
+	</td>
+	</tr>
+	</table>
+	<br/>
+	<br/>
+
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function2.operations}">
@@ -258,6 +317,9 @@
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
 </div>
 </form>
+</fieldset>
+</div>
+
 <br/>
 </ssf:expandableArea>
 </c:if>
@@ -269,16 +331,56 @@
 <jsp:useBean id="function3" type="org.kablink.teaming.security.function.Function" />
 <c:if test="${function3.scope == 'entry'}">
 <ssf:expandableArea title='<%= NLT.getDef(function3.getName()) %>'>
+<div style="padding:0px 20px;">
+<fieldset>
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="configure_roles" actionUrl="true"/>">
-	<label for="role_${function3.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span></label>
-	<input type="text" class="ss_text" size="70" name="roleName" 
-		id="role_${function3.name}" value="${function3.name}"><br><br>
-	<label for="scope_${function3.name}"><span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span></label>
-	<select name="roleScope" id="scope_${function3.name}">
-	  <option value="binder"><ssf:nlt tag="administration.configure_role.type.binder"/></option>
-	  <option value="entry" selected><ssf:nlt tag="administration.configure_role.type.entry"/></option>
-	</select><br><br>
+	<table cellspacing="6" cellpadding="4">
+	<tr>
+	<td valign="middle">
+	  <label for="role_${function3.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <input type="text" class="ss_text" size="70" name="roleName" 
+		id="role_${function3.name}" value="${function3.name}">
+	</td>
+	</tr>
+
+	<tr>
+	<td valign="middle">
+	  <label for="scope_${function3.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.scope" text="Scope"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleScope" id="scope_${function3.name}">
+	    <option value="binder"><ssf:nlt tag="administration.configure_role.type.binder"/></option>
+	    <option value="entry" selected><ssf:nlt tag="administration.configure_role.type.entry"/></option>
+	  </select>
+	</td>
+	</tr>		
+	
+	<tr>
+	<td valign="middle">
+	  <label for="condition_${function3.name}">
+	    <span class="ss_bold"><ssf:nlt tag="administration.configure_roles.conditions"/></span>
+	  </label>
+	</td>
+	<td valign="middle">
+	  <select name="roleCondition" id="condition_${function3.name}">
+	    <option value="" selected><ssf:nlt tag="common.select.none"/></option>
+		<c:forEach var="condition" items="${ssConditions}">
+		  <option value="${condition.id}">${condition.title}</option>
+		</c:forEach>
+	  </select>
+	</td>
+	</tr>
+	</table>
+	<br/>
+	<br/>
+
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
 		<c:forEach var="roleOperation" items="${function3.operations}">
@@ -296,6 +398,8 @@
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
 </div>
 </form>
+</fieldset>
+</div>
 <br/>
 </ssf:expandableArea>
 </c:if>
