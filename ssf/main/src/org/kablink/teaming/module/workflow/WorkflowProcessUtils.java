@@ -1112,8 +1112,12 @@ public static void resumeTimers(WorkflowSupport entry) {
 									Set<Long> binderIds = LongIdUtil.getIdsAsLongSet(attr.getValue().toString(), ",");
 									if (binderIds != null) {
 										for (Long binderId : binderIds) {
-											Binder binder =  getInstance().getCoreDao().loadBinder(binderId, user.getZoneId());
-											result.addPrincipalIds(binder.getTeamMemberIds());
+											try {
+												Binder binder =  getInstance().getCoreDao().loadBinder(binderId, user.getZoneId());
+												result.addPrincipalIds(binder.getTeamMemberIds());
+											} catch(Exception e) {
+												//If the team binder no longer exists, just skip adding it to the acl
+											}
 										}
 									}
 								}

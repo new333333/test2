@@ -77,10 +77,15 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		Boolean indexAll = PortletRequestUtils.getBooleanParameter(request, "indexAll", false);
+		Binder topBinder = getWorkspaceModule().getTopWorkspace();
 		if ((formData.containsKey("okBtn") || btnClicked.equals("okBtn")) && WebHelper.isMethodPost(request)) {
 			if (operation.equals("index")) {
 				//Get the binders to be indexed
 				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
+				if (indexAll) {
+					ids.add(topBinder.getId());
+				}
 				
 				String[] nodeNames = null;
 				String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
@@ -112,6 +117,9 @@ public class ManageSearchIndexController extends  SAbstractController {
 					}
 				}
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
+	    		if (ids.contains(topBinder.getId())) {
+	    			topBinder.setProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED, Boolean.TRUE);
+	    		}
 				if (logger.isDebugEnabled()) {
 					logger.debug(SimpleProfiler.toStr());
 					SimpleProfiler.clearProfiler();

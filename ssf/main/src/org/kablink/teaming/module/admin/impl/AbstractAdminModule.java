@@ -658,10 +658,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		//get list of current readers to compare for indexing
 		List<WorkAreaFunctionMembership>wfms = 
 	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
-       	TreeSet<Long> origional = new TreeSet();
+       	TreeSet<Long> original = new TreeSet();
         for (WorkAreaFunctionMembership wfm:wfms) {
-        	origional.addAll(wfm.getMemberIds());
+        	original.addAll(wfm.getMemberIds());
     	}
+      	boolean conditionsExistInOrigianl = checkIfConditionsExist(workArea);
         //first remove any that are not in the new list
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
@@ -725,7 +726,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       		current.addAll(wfm.getMemberIds());
       	}
       	//only re-index if readers were affected.  Do outside transaction
-		if (!origional.equals(current) && (workArea instanceof Binder)) {
+      	boolean conditionsExist = checkIfConditionsExist(workArea);
+		if ((!original.equals(current) || conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true);
 		} else if (workArea instanceof Entry) {
@@ -1298,5 +1300,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			Function function = am.getFunction(functionId);
 			am.deleteFunction(function.getId());
 		}
+	}
+	
+	//Check if a workarea has conditions that affect the read right
+	private boolean checkIfConditionsExist(WorkArea workArea) {
+		List<WorkAreaFunctionMembership> membership;
+		if (workArea.isFunctionMembershipInherited()) {
+			membership = getWorkAreaFunctionMembershipsInherited(workArea);
+		} else {
+			membership = getWorkAreaFunctionMemberships(workArea);
+		}
+		for (WorkAreaFunctionMembership wfm : membership) {
+			//Get the function (aka role)
+			Function f = getFunction(wfm.getFunctionId());
+			if (!f.getConditionalClauses().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -71,6 +71,7 @@ public class ConfigureRolesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
+		Binder topBinder = getWorkspaceModule().getTopWorkspace();
 		if ((formData.containsKey("addBtn") && formData.containsKey("roleName")) && WebHelper.isMethodPost(request)) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Set operations = new HashSet();
@@ -96,25 +97,30 @@ public class ConfigureRolesController extends  SAbstractController {
 					}
 				} catch(Exception e) {}
 			}
-			
-			String roleName = "";
-			String roleScope = ObjectKeys.ROLE_TYPE_BINDER;
-			try {
-				roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
-				roleScope = PortletRequestUtils.getStringParameter(request, "roleScope").trim();
-				if (!roleName.equals(""))
-					getAdminModule().addFunction(roleName, operations, roleScope, conditions);
-				else
-					throw new IllegalArgumentException(NLT.get("errorcode.role.mustHaveName"));
-			} catch (FunctionExistsException ns) {
-				String[] args = new String[1];
-				args[0] = roleName;
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
-			} catch (IllegalArgumentException iae) {
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
-			}
-			catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
+			//if trying to add conditions, make sure the indexing had been done
+			Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
+			if (conditions.isEmpty() || (conditionsInitialized != null && conditionsInitialized)) {
+				String roleName = "";
+				String roleScope = ObjectKeys.ROLE_TYPE_BINDER;
+				try {
+					roleName = PortletRequestUtils.getStringParameter(request, "roleName").trim();
+					roleScope = PortletRequestUtils.getStringParameter(request, "roleScope").trim();
+					if (!roleName.equals(""))
+						getAdminModule().addFunction(roleName, operations, roleScope, conditions);
+					else
+						throw new IllegalArgumentException(NLT.get("errorcode.role.mustHaveName"));
+				} catch (FunctionExistsException ns) {
+					String[] args = new String[1];
+					args[0] = roleName;
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
+				} catch (IllegalArgumentException iae) {
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
+				}
+				catch (PortletRequestBindingException prbe) {
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
+				}
+			} else {
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.conditionsNotInitialized"));
 			}
 		
 		} else if (formData.containsKey("modifyBtn") && formData.containsKey("roleId") && WebHelper.isMethodPost(request)) {
@@ -131,24 +137,46 @@ public class ConfigureRolesController extends  SAbstractController {
 					operations.add(operation);
 				}
 			}
-			String roleName = null;
-			try {
-				roleName = PortletRequestUtils.getStringParameter(request, "roleName");
-			} catch (PortletRequestBindingException prbe) {
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
+			//Build the list of any additional conditions
+			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
+			//Currently, we only allow one condition to be selected
+			String roleCondition = PortletRequestUtils.getStringParameter(request, "roleCondition", "");
+			if (!roleCondition.equals("")) {
+				try {
+					Long roleConditionId = Long.valueOf(roleCondition);
+					Condition condition = getAdminModule().getFunctionCondition(roleConditionId);
+					if (condition != null) {
+						//Since only one condition can be added, make it a "MUST"
+						ConditionalClause cc = new ConditionalClause(condition, ConditionalClause.Meet.MUST);
+						conditions.add(cc);
+					}
+				} catch(Exception e) {}
 			}
-			if (!Validator.isNull(roleName)) {
-				updates.put("name", roleName);
-			}
-			updates.put("operations", operations);
-			try {
-				getAdminModule().modifyFunction(functionId, updates);
-			} catch (FunctionExistsException ns) {
-				String[] args = new String[1];
-				args[0] = roleName;
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
-			} catch (IllegalArgumentException iae) {
-				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
+			//if trying to add conditions, make sure the indexing had been done
+			Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
+			if (conditions.isEmpty() || (conditionsInitialized != null && conditionsInitialized)) {
+				String roleName = null;
+				try {
+					roleName = PortletRequestUtils.getStringParameter(request, "roleName");
+				} catch (PortletRequestBindingException prbe) {
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.mustHaveName"));
+				}
+				if (!Validator.isNull(roleName)) {
+					updates.put("name", roleName);
+				}
+				updates.put("operations", operations);
+				updates.put("conditionalClauses", conditions);
+				try {
+					getAdminModule().modifyFunction(functionId, updates);
+				} catch (FunctionExistsException ns) {
+					String[] args = new String[1];
+					args[0] = roleName;
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.nameAlreadyExists", args));
+				} catch (IllegalArgumentException iae) {
+					response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.illegalCharInName"));
+				}
+			} else {
+				response.setRenderParameter(WebKeys.EXCEPTION, NLT.get("errorcode.role.conditionsNotInitialized"));
 			}
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			//Get the function id from the form
