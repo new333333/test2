@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -171,15 +172,19 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Inner class to used to track information attached to a
 	 * TaskListItem for managing the user interface. 
 	 */
-	@SuppressWarnings("unused")
 	private static class UIData {
-		private boolean		m_taskSelected;		//
-		private Anchor		m_taskUnseenAnchor;	//
-		private CheckBox	m_taskSelectorCB;	//
-		private InlineLabel	m_taskLabel;		//
-		private int			m_taskDepth;		//
-		private int 		m_taskOrder = (-1);	//
-		private int 		m_taskRow;			//
+		private boolean		m_taskSelected;				//
+		private Anchor		m_taskUnseenAnchor;			//
+		private CheckBox	m_taskSelectorCB;			//
+		private Image		m_taskPercentDoneImage;		//
+		private Image		m_taskPriorityImage;		//
+		private Image		m_taskStatusImage;			//
+		private InlineLabel m_taskCompletedLabel;		//
+		private InlineLabel	m_taskLabel;				//
+		private int			m_taskDepth;				//
+		private int 		m_taskOrder = (-1);			//
+		private int 		m_taskRow;					//
+		private Widget      m_taskPercentDoneWidget;	//
 		
 		/**
 		 * Class constructor.
@@ -195,21 +200,31 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * 
 		 * @return
 		 */
-		public boolean     getTaskSelected()     {return m_taskSelected;    }
-		public Anchor      getTaskUnseenAnchor() {return m_taskUnseenAnchor;}
-		public CheckBox    getTaskSelectorCB()   {return m_taskSelectorCB;  }
-		public InlineLabel getTaskLabel()        {return m_taskLabel;       }
-		public int         getTaskDepth()        {return m_taskDepth;       }
-		public int         getTaskOrder()        {return m_taskOrder;       }
-		public int         getTaskRow()          {return m_taskRow;         }
+		public boolean     getTaskSelected()          {return m_taskSelected;         }
+		public Anchor      getTaskUnseenAnchor()      {return m_taskUnseenAnchor;     }
+		public CheckBox    getTaskSelectorCB()        {return m_taskSelectorCB;       }
+		public Image       getTaskPercentDoneImage()  {return m_taskPercentDoneImage; }
+		public Image       getTaskPriorityImage()     {return m_taskPriorityImage;    }
+		public Image       getTaskStatusImage()       {return m_taskStatusImage;      }
+		public InlineLabel getTaskCompletedLabel()    {return m_taskCompletedLabel;   }
+		public InlineLabel getTaskLabel()             {return m_taskLabel;            }
+		public int         getTaskDepth()             {return m_taskDepth;            }
+		public int         getTaskOrder()             {return m_taskOrder;            }
+		public int         getTaskRow()               {return m_taskRow;              }
+		public Widget      getTaskPercentDoneWidget() {return m_taskPercentDoneWidget;}
 
-		public void setTaskSelected(    boolean     taskSelected)     {m_taskSelected     = taskSelected;    }
-		public void setTaskUnseenAnchor(Anchor      taskUnseenAnchor) {m_taskUnseenAnchor = taskUnseenAnchor;}
-		public void setTaskSelectorCB(  CheckBox    taskSelectorCB)   {m_taskSelectorCB   = taskSelectorCB;  }
-		public void setTaskLabel(       InlineLabel taskLabel)        {m_taskLabel        = taskLabel;       }
-		public void setTaskDepth(       int         taskDepth)        {m_taskDepth        = taskDepth;       }
-		public void setTaskOrder(       int         taskOrder)        {m_taskOrder        = taskOrder;       }
-		public void setTaskRow(         int         taskRow)          {m_taskRow          = taskRow;         }
+		public void setTaskSelected(         boolean     taskSelected)          {m_taskSelected          = taskSelected;         }
+		public void setTaskUnseenAnchor(     Anchor      taskUnseenAnchor)      {m_taskUnseenAnchor      = taskUnseenAnchor;     }
+		public void setTaskSelectorCB(       CheckBox    taskSelectorCB)        {m_taskSelectorCB        = taskSelectorCB;       } 
+		public void setTaskPercentDoneImage( Image       taskPercentDoneImage)  {m_taskPercentDoneImage  = taskPercentDoneImage; }
+		public void setTaskPriorityImage(    Image       taskPriorityImage)     {m_taskPriorityImage     = taskPriorityImage;    }
+		public void setTaskStatusImage(      Image       taskStatusImage)       {m_taskStatusImage       = taskStatusImage;      }
+		public void setTaskCompletedLabel(   InlineLabel taskCompletedLabel)    {m_taskCompletedLabel    = taskCompletedLabel;   }
+		public void setTaskLabel(            InlineLabel taskLabel)             {m_taskLabel             = taskLabel;            }
+		public void setTaskDepth(            int         taskDepth)             {m_taskDepth             = taskDepth;            }
+		public void setTaskOrder(            int         taskOrder)             {m_taskOrder             = taskOrder;            }
+		public void setTaskRow(              int         taskRow)               {m_taskRow               = taskRow;              }
+		public void setTaskPercentDoneWidget(Widget      taskPercentDoneWidget) {m_taskPercentDoneWidget = taskPercentDoneWidget;}
 		
 		/**
 		 * Returns true if the task corresponding to this UIData is
@@ -524,8 +539,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Build a column that contains a task option Widget. 
 	 */
 	private Widget buildOptionColumn(final TaskListItem task, final TaskPopupMenu taskMenu, String optionValue, String anchorStyle) {
-		Widget reply;
-		
+		// Extract the UIData from this task.
+		UIData uid = getUIData(task);
+				
 		// What image do we display for this task?
 		List<TaskMenuOption> taskOptions = taskMenu.getMenuOptions();
 		TaskMenuOption selectedOption = null;
@@ -539,9 +555,13 @@ public class TaskTable extends Composite implements ActionHandler {
 			selectedOption = taskOptions.get(0);
 		}
 		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
-		final Element imgElement = img.getElement();
+		final Element imgElement = img.getElement();		
+		if      (taskMenu == m_priorityMenu)    uid.setTaskPriorityImage(   img);
+		else if (taskMenu == m_statusMenu)      uid.setTaskStatusImage(     img);
+		else if (taskMenu == m_percentDoneMenu) uid.setTaskPercentDoneImage(img);
 
 		// Does the user have rights to modify this task?
+		Widget reply;
 		if (task.getTask().getCanModify()) {	
 			// Yes!  Generate the Anchor for this option.
 			Anchor  a  = buildAnchor(anchorStyle);
@@ -606,6 +626,25 @@ public class TaskTable extends Composite implements ActionHandler {
 		return getUIData(task).m_taskOrder;
 	}
 
+	/*
+	 * Returns a List<Long> of the IDs of the tasks in the TaskTable
+	 * that are currently checked.
+	 */
+	private List<Long> getTaskIdsChecked() {
+		List<Long> reply = new ArrayList<Long>();;
+		getTaskIdsCheckedImpl(m_taskBundle.getTasks(), reply);
+		return reply;
+	}
+	
+	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<Long> checkedTaskIds) {
+		for (TaskListItem task:  tasks) {
+			if (getUIData(task).isTaskCBChecked()) {
+				checkedTaskIds.add(task.getTask().getTaskId());
+			}
+			getTaskIdsCheckedImpl(task.getSubtasks(), checkedTaskIds);
+		}
+	}
+	
 	/*
 	 * Returns a List<TaskListItem> of the tasks in the TaskTable that
 	 * are currently checked.
@@ -851,7 +890,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskPostMove(TaskListItem task) {	
 		initializeUIData();	// Forces the order and depths to be reset.
 		showTasks(m_taskBundle);
-		persistLinkageChange(task.getTask().getBinderId());
+		persistLinkageChange(task, true);
 	}
 
 	/*
@@ -900,25 +939,214 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called when the user changes the percent done value on the task.
 	 */
-	private void handleTaskSetPercentDone(TaskListItem task, String percentDone) {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskSetPercentDone( " + task.getTask().getTitle() + ", " + percentDone + " ):  ...this needs to be implemented...");
+	private void handleTaskSetPercentDone(final TaskListItem task, final String percentDone) {
+		// If the selected percent done isn't changing...
+		if (percentDone.equals(task.getTask().getCompleted())) {
+			// ...bail.
+			return;
+		}
+
+		// If we're marking the task 100% complete...
+		if (percentDone.equals("c100")) {
+			// ...simply change its status to complete.  That change
+			// ...will take care of any mucking that has to occur with
+			// ...subtasks, ...
+			handleTaskSetStatus(task, "s3");
+			return;
+		}
+		
+		// Save the new task percent done value.
+		final Long taskId = task.getTask().getTaskId();
+		m_rpcService.saveTaskCompleted(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, percentDone, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveTaskCompleted(),
+					String.valueOf(taskId));
+			}
+			
+			@Override
+			public void onSuccess(String completedDate) {
+				handleTaskSetPercentDoneImpl(task, percentDone);
+			}
+		});
+	}
+	
+	private void handleTaskSetPercentDoneImpl(TaskListItem task, String percentDone) {
+		// Store the new percent done value in the task.
+		TaskInfo ti = task.getTask();
+		ti.setCompleted(percentDone);
+		if (!("c100".equals(percentDone))) {
+			ti.setCompletedDate(       null);
+			ti.setCompletedDateDisplay(""  );
+		}
+		
+		// Update the Image and text displayed on the percentDone.
+		Image img = getUIData(task).getTaskPercentDoneImage();
+		List<TaskMenuOption> pOpts = m_percentDoneMenu.getMenuOptions();
+		for (TaskMenuOption tmo:  pOpts) {
+			if (tmo.getMenu().equals(percentDone)) {
+				img.setTitle(   tmo.getMenuAlt());
+				img.setResource(tmo.getMenuImageRes());
+			}
+		}
 	}
 	
 	/*
 	 * Called when the user changes the priority value on the task.
 	 */
-	private void handleTaskSetPriority(TaskListItem task, String priority) {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskSetPriority( " + task.getTask().getTitle() + ", " + priority + " ):  ...this needs to be implemented...");
+	private void handleTaskSetPriority(final TaskListItem task, final String priority) {
+		// If the selected priority isn't changing...
+		if (priority.equals(task.getTask().getPriority())) {
+			// ...bail.
+			return;
+		}
+
+		// Save the new task priority.
+		final Long taskId = task.getTask().getTaskId();
+		m_rpcService.saveTaskPriority(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, priority, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveTaskPriority(),
+					String.valueOf(taskId));
+			}
+			
+			@Override
+			public void onSuccess(Boolean success) {
+				// Update the Image and text displayed on the priority.
+				Image img = getUIData(task).getTaskPriorityImage();
+				List<TaskMenuOption> pOpts = m_priorityMenu.getMenuOptions();
+				for (TaskMenuOption tmo:  pOpts) {
+					if (tmo.getMenu().equals(priority)) {
+						img.setTitle(   tmo.getMenuAlt());
+						img.setResource(tmo.getMenuImageRes());
+					}
+				}
+			}
+		});
 	}
 	
 	/*
 	 * Called when the user changes the status value on the task.
 	 */
-	private void handleTaskSetStatus(TaskListItem task, String status) {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskSetStatus( " + task.getTask().getTitle() + ", " + status + " ):  ...this needs to be implemented...");
+	private void handleTaskSetStatus(final TaskListItem task, final String status) {
+		// If the selected status isn't changing...
+		if (status.equals(task.getTask().getStatus())) {
+			// ...bail.
+			return;
+		}
+		
+		// Collect the IDs of the tasks this is going to affect.  If
+		// we're marking a task complete or cancelled, it implies
+		// marking its entire subtask hierarchy the same way too.
+		final Long taskId = task.getTask().getTaskId();
+		final List<Long> affectedTaskIds;
+		if (("s3".equals(status)) || ("s4".equals(status))) {
+			affectedTaskIds = TaskLinkageHelper.getTaskIdHierarchy(task);
+		}
+		else {
+			affectedTaskIds = new ArrayList<Long>();
+			affectedTaskIds.add(taskId);
+		}
+
+		// Save the new status on the affected tasks.
+		m_rpcService.saveTaskStatus(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), affectedTaskIds, status, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveTaskStatus(),
+					String.valueOf(taskId));
+			}
+			
+			@Override
+			public void onSuccess(String completedDate) {
+				// Find the selected status option so that we can
+				// update the display.
+				List<TaskMenuOption> sOpts = m_statusMenu.getMenuOptions();
+				for (TaskMenuOption tmo:  sOpts) {
+					if (tmo.getMenu().equals(status)) {
+						// If we're only changing one task, its got to
+						// be the one we were given.  No need to search
+						// for it.
+						if (1 == affectedTaskIds.size()) {
+							handleTaskSetStatusImpl(task, status, tmo, completedDate);
+						}
+						
+						else {
+							// Otherwise, scan the affected task IDs...
+							for (Long taskId:  affectedTaskIds) {
+								// ...updating each task.
+								handleTaskSetStatusImpl(
+									TaskLinkageHelper.findTask(m_taskBundle, taskId),
+									status,
+									tmo,
+									completedDate);
+							}
+						}
+						break;
+					}
+				}
+			}
+		});
+	}
+	
+	/*
+	 * Called to update a task as per a new status menu selection.
+	 */
+	private void handleTaskSetStatusImpl(TaskListItem task, String status, TaskMenuOption tmo, String completedDate) {
+		// Store the new status value in the task.
+		task.getTask().setStatus(status);
+		
+		// Extract the UIData from this task.
+		UIData uid = getUIData(task);
+
+		// Update the status value.
+		Image img = uid.getTaskStatusImage();
+		img.setTitle(   tmo.getMenuAlt());
+		img.setResource(tmo.getMenuImageRes());			
+
+		// If we were given a completed date string, that means that
+		// we're now marking this task completed.  Is that the case?
+		InlineLabel completedLabel    = uid.getTaskCompletedLabel();
+		Widget      percentDoneWidget = uid.getTaskPercentDoneWidget();
+		if (GwtClientHelper.hasString(completedDate)) {
+			// Yes!  Hide the percent done widget...  
+			percentDoneWidget.setVisible(false);
+			
+			// ...update/show the completed widget...
+			completedLabel.setText(   completedDate);
+			completedLabel.setVisible(true         );
+			
+			// ...and update the task.
+			TaskInfo ti = task.getTask();
+			ti.setCompleted(           "c100"       );
+			ti.setCompletedDate(       new Date()   );
+			ti.setCompletedDateDisplay(completedDate);
+		}
+		
+		else {
+			// No, we don't have a completed date string!  Do we need
+			// to change what we're displaying in the 'Closed - % Done'
+			// column?
+			boolean completedWasVisible   = completedLabel.isVisible();
+			boolean percentDoneWasVisible = percentDoneWidget.isVisible();
+			if (completedWasVisible || (!percentDoneWasVisible)) {
+				// Yes!  Hide the completed date widget and show the
+				// percent done widget, now at 90%.
+				completedLabel.setVisible(   false       );
+				percentDoneWidget.setVisible(true        );
+				handleTaskSetPercentDoneImpl(task, "c090");
+			}
+		}
+		
+		// Finally, make sure the row is showing with the correct
+		// styles, ...  We can do that by simply re-rendering the
+		// name column.
+		renderColumnTaskName(task, uid.getTaskRow());
 	}
 	
 	/*
@@ -967,19 +1195,37 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void markAsSortKey(Anchor a, Column col) {
 		// Is this the column we're sorted on?
-		if (m_sortColumn != col) {
-			// No!  Bail.
-			return;
+		if (m_sortColumn == col) {
+			// Yes!  Add the appropriate directional arrow
+			// (i.e., ^/v)...
+			Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			a.getElement().appendChild(i.getElement());
+			
+			// ...and style to the <TD>.
+			m_flexTableCF.addStyleName(0, col.ordinal(), "sortedcol");
 		}
-		
-		Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
-		a.getElement().appendChild(i.getElement());
 	}
 
 	/*
+	 * Renders a task into a row and column in the TaskTable.
+	 */
+	private void renderColumn(TaskListItem task, int row, Column col) {
+		switch(col) {
+		case CLOSED_PERCENT_DONE:  renderColumnClosedPercentDone(task, row); break;
+		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row); break;		
+		case DUE_DATE:             renderColumnDueDate(          task, row); break;		
+		case NAME:                 renderColumnTaskName(         task, row); break;
+		case ORDER:                renderColumnOrder(            task, row); break;
+		case PRIORITY:             renderColumnPriority(         task, row); break;		
+		case SELECTOR:             renderColumnSelectCB(         task, row); break;
+		case STATUS:               renderColumnStatus(           task, row); break;		
+		}
+	}
+	
+	/*
 	 * Renders the 'Assigned To' column.
 	 */
-	private void renderColumnAssignedTo(final TaskListItem task, int row, Column col) {
+	private void renderColumnAssignedTo(final TaskListItem task, int row) {
 		int assignments = 0;
 		VerticalPanel vp = new VerticalPanel();
 		vp.addStyleName("gwtTaskList_assigneesList");
@@ -1008,14 +1254,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		// If there were any assignees...
 		if (0 < assignments) {
 			// ...add the VerticalPanel to the TaskTable.
-			m_flexTable.setWidget(row, col.ordinal(), vp);
+			m_flexTable.setWidget(row, Column.ASSIGNED_TO.ordinal(), vp);
 		}
 	}
 
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
-	private void persistLinkageChange(final Long binderId) {
+	private void persistLinkageChange(final TaskListItem task, final boolean updateCalculatedDates) {
 		// If the list is filtered or in virtual mode...
 		if (m_taskBundle.getIsFiltered() || (!(m_taskBundle.getIsFromFolder()))) {
 			// ...this should never be called.
@@ -1028,6 +1274,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskBundle.setTaskLinkage(newLinkage);
 		
 		// ...and write it to the current user's folder preferences.
+		final Long binderId = task.getTask().getBinderId();
 		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1039,7 +1286,21 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean result) {
-				// Nothing to do.
+				// If we were requested to do so, update the calculated
+				// dates, based on the given task having changed.
+				if (updateCalculatedDates) {
+					Scheduler.ScheduledCommand updater;
+					updater = new Scheduler.ScheduledCommand() {
+						@Override
+						public void execute() {
+							// Note that we run this delayed so that we
+							// don't invoke one RPC method while
+							// processing the results of another.
+							updateCalculatedDates(task);
+						}
+					};
+					Scheduler.get().scheduleDeferred(updater);
+				}
 			}
 		});
 	}
@@ -1067,6 +1328,33 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Call to completely refresh the contents of the TaskTable.
+	 */
+	private void refreshTaskTable() {
+		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode(), new AsyncCallback<TaskBundle>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetTaskList());
+			}
+
+			@Override
+			public void onSuccess(TaskBundle result) {
+				// Preserve the tasks that are currently checked...
+				List<Long> checkedIds = getTaskIdsChecked();
+				
+				// ...store the new TaskBundle in the TaskListing...
+				m_taskListing.setTaskBundle(result);
+				
+				// ...and force the TaskTable to redisplay.
+				m_newTaskTable = true;
+				showTasks(result, checkedIds);
+			}			
+		});		
+	}
+	
+	/*
 	 * Removes all the child Node's from a Widget.
 	 */
 	private void removeAllChildren(Widget w) {
@@ -1082,71 +1370,86 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Closed - % Done' column.
 	 */
-	private void renderColumnClosedPercentDone(final TaskListItem task, int row, Column col) {
+	private void renderColumnClosedPercentDone(final TaskListItem task, int row) {
+		// Extract the UIData from this task.
+		UIData uid = getUIData(task);
+		
+		InlineLabel completedLabel;
+		Widget percentDoneWidget;
+		
 		// What's the current priority of this task?
 		String percentDone = task.getTask().getCompleted();
 		if (!(GwtClientHelper.hasString(percentDone))) {
 			percentDone = "c000";
 		}
+		boolean complete = ("c100".equals(percentDone));
+
+		// Generate a completed date label...
+		String completedDateDisplay = task.getTask().getCompletedDateDisplay();
+		if (null == completedDateDisplay) completedDateDisplay = "";
+		completedLabel = new InlineLabel(completedDateDisplay);
+		completedLabel.setWordWrap(false);
+		uid.setTaskCompletedLabel(completedLabel);
 		
-		else if (percentDone.equals("c100")) {
-			String completedDateDisplay = task.getTask().getCompletedDateDisplay();
-			if (GwtClientHelper.hasString(completedDateDisplay)) {
-				InlineLabel il = new InlineLabel(completedDateDisplay);
-				il.setWordWrap(false);
-				m_flexTable.setWidget(row, col.ordinal(), il);				
-				return;
-			}
-		}
+		// ...generate an Anchor percent done selector...
+		percentDoneWidget = buildOptionColumn(
+			task,
+			m_percentDoneMenu,
+			percentDone,
+			"percent-done");
+		uid.setTaskPercentDoneWidget(percentDoneWidget);
+
+		// ...and hide whichever one we don't need.
+		if (complete)
+		     percentDoneWidget.setVisible(false);
+		else completedLabel.setVisible(     false);
+
+		// Finally, construct a FlowPanel containing both and add that
+		// to the TaskTable.
+		FlowPanel fp = new FlowPanel();
+		fp.add(completedLabel);
+		fp.add(percentDoneWidget);
+		m_flexTable.setWidget(row, Column.CLOSED_PERCENT_DONE.ordinal(), fp);
 		
-		// Add an Anchor for it to the TaskTable.
-		m_flexTable.setWidget(
-			row,
-			col.ordinal(),
-			buildOptionColumn(
-				task,
-				m_percentDoneMenu,
-				percentDone,
-				"percent-done"));
 	}
 	
 	/*
 	 * Renders the 'Due Date' column.
 	 */
-	private void renderColumnDueDate(final TaskListItem task, int row, Column col) {
+	private void renderColumnDueDate(final TaskListItem task, int row) {
 		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEndDisplay());
 		il.setWordWrap(false);
-		m_flexTable.setWidget(row, col.ordinal(), il);
+		m_flexTable.setWidget(row, Column.DUE_DATE.ordinal(), il);
 	}
 	
 	/*
 	 * Renders the 'Location' column.
 	 */
-	private void renderColumnLocation(final TaskListItem task, int row, Column col) {
+	private void renderColumnLocation(final TaskListItem task, int row) {
 		String location = task.getTask().getLocation();
 		if (null == location) {
 			return;
 		}
-		m_flexTable.setHTML(row, col.ordinal(), location);
+		m_flexTable.setHTML(row, Column.LOCATION.ordinal(), location);
 	}
 
 	/*
 	 * Renders the 'Order' column.
 	 */
-	private void renderColumnOrder(final TaskListItem task, int row, Column col) {
+	private void renderColumnOrder(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
 		String orderHTML = ((0 == uid.getTaskDepth()) ? String.valueOf(uid.getTaskOrder()) : "");
-		m_flexTable.setHTML(row, col.ordinal(), orderHTML);
-		m_flexTableCF.setHorizontalAlignment(row, col.ordinal(), HasHorizontalAlignment.ALIGN_CENTER);
-		m_flexTableCF.setWidth(row, col.ordinal(), "16px");
+		m_flexTable.setHTML(row, Column.ORDER.ordinal(), orderHTML);
+		m_flexTableCF.setHorizontalAlignment(row, Column.ORDER.ordinal(), HasHorizontalAlignment.ALIGN_CENTER);
+		m_flexTableCF.setWidth(row, Column.ORDER.ordinal(), "16px");
 	}
 
 	/*
 	 * Renders the 'Priority' column.
 	 */
-	private void renderColumnPriority(final TaskListItem task, int row, Column col) {
+	private void renderColumnPriority(final TaskListItem task, int row) {
 		// What's the current priority of this task?
 		String priority = task.getTask().getPriority();
 		if (!(GwtClientHelper.hasString(priority))) {
@@ -1156,7 +1459,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Add an Anchor for it to the TaskTable.
 		m_flexTable.setWidget(
 			row,
-			col.ordinal(),
+			Column.PRIORITY.ordinal(),
 			buildOptionColumn(
 				task,
 				m_priorityMenu,
@@ -1167,7 +1470,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Select CheckBox' column.
 	 */
-	private void renderColumnSelectCB(final TaskListItem task, int row, Column col) {
+	private void renderColumnSelectCB(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
@@ -1198,15 +1501,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		else {
 			fp.add(buildSpacer());
 		}
-		m_flexTableCF.setWordWrap( row, col.ordinal(), false);
-		m_flexTableCF.setAlignment(row, col.ordinal(), HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-		m_flexTable.setWidget(     row, col.ordinal(), fp);
+		m_flexTableCF.setWordWrap( row, Column.SELECTOR.ordinal(), false);
+		m_flexTableCF.setAlignment(row, Column.SELECTOR.ordinal(), HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
+		m_flexTable.setWidget(     row, Column.SELECTOR.ordinal(), fp);
 	}
 
 	/*
 	 * Renders the 'Status' column.
 	 */
-	private void renderColumnStatus(final TaskListItem task, int row, Column col) {
+	private void renderColumnStatus(final TaskListItem task, int row) {
 		// What's the current priority of this task?
 		String status = task.getTask().getStatus();
 		if (!(GwtClientHelper.hasString(status))) {
@@ -1216,7 +1519,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Add an Anchor for it to the TaskTable.
 		m_flexTable.setWidget(
 			row,
-			col.ordinal(),
+			Column.STATUS.ordinal(),
 			buildOptionColumn(
 				task,
 				m_statusMenu,
@@ -1227,7 +1530,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Task Name' column.
 	 */
-	private void renderColumnTaskName(final TaskListItem task, int row, Column col) {
+	private void renderColumnTaskName(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
@@ -1286,7 +1589,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (isCancelled) m_flexTableRF.addStyleName(row, "disabled");	// Cancelled:  Gray.
 		ta.getElement().appendChild(taskLabel.getElement());
 		fp.add(ta);
-		m_flexTable.setWidget(row, col.ordinal(), fp);
+		m_flexTable.setWidget(row, Column.NAME.ordinal(), fp);
 	}
 
 	/*
@@ -1302,19 +1605,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		getUIData(task).setTaskRow(row);
 		
 		// ...and render the columns.
-		renderColumnSelectCB(         task, row, Column.SELECTOR           );
-		renderColumnOrder(            task, row, Column.ORDER              );
-		renderColumnTaskName(         task, row, Column.NAME               );
-		renderColumnPriority(         task, row, Column.PRIORITY           );		
-		renderColumnDueDate(          task, row, Column.DUE_DATE           );		
-		renderColumnStatus(           task, row, Column.STATUS             );		
-		renderColumnAssignedTo(       task, row, Column.ASSIGNED_TO        );		
-		renderColumnClosedPercentDone(task, row, Column.CLOSED_PERCENT_DONE);
+		for (Column col:  Column.values()) {
+			renderColumn(task, row, col);
+		}
 		
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
 			// Yes!  Render the location column too.
-			renderColumnLocation(task, row, Column.LOCATION);
+			renderColumnLocation(task, row);
 		}
 	}
 
@@ -1342,7 +1640,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * 
 	 * @return
 	 */
-	public long showTasks(TaskBundle taskBundle) {
+	public long showTasks(TaskBundle taskBundle, List<Long> checkedTaskIds) {
 		// Save when we start...
 		long start = System.currentTimeMillis();
 
@@ -1352,6 +1650,16 @@ public class TaskTable extends Composite implements ActionHandler {
 			m_newTaskTable = false;
 			initializeUIData();
 			initializeSorting();
+		}
+
+		// ...apply any tasks checks that are being preserved...
+		if ((null != checkedTaskIds) && (!(checkedTaskIds.isEmpty()))) {
+			for (Long taskId:  checkedTaskIds) {
+				TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, taskId);
+				if (null != task) {
+					getUIData(task).setTaskSelected(true);
+				}
+			}
 		}
 				
 		// ...and render the TaskTable.
@@ -1374,18 +1682,23 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Validate the task tools for what we've got displayed.
-		Scheduler.ScheduledCommand validateCommand;
-		validateCommand = new Scheduler.ScheduledCommand() {
+		Scheduler.ScheduledCommand validator;
+		validator = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				validateTaskTools();
 			}
 		};
-		Scheduler.get().scheduleDeferred(validateCommand);
+		Scheduler.get().scheduleDeferred(validator);
 		
 		// Finally, return how long we took to show the tasks.
 		long end = System.currentTimeMillis();
 		return (end - start);
+	}
+	
+	public void showTasks(TaskBundle tb) {
+		// Always use the initial form of the method.
+		showTasks(tb, new ArrayList<Long>());
 	}
 
 	/*
@@ -1422,6 +1735,34 @@ public class TaskTable extends Composite implements ActionHandler {
 		TaskSorter.sort(tasks, comparator);
 	}
 
+	/*
+	 * Makes a GWT RPC call to the server to update the calculated
+	 * dates for the task, and any related tasks.  If the RPC call
+	 * succeeds and returns true, the TaskTable will be completely
+	 * refreshed.
+	 */
+	private void updateCalculatedDates(TaskListItem task) {
+		final Long taskId = task.getTask().getTaskId();
+		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDates(),
+					String.valueOf(taskId));
+			}
+			
+			@Override
+			public void onSuccess(Boolean forceRefresh) {
+				// Based on the update, refresh the TaskTable as
+				// necessary.
+				if (forceRefresh) {
+					refreshTaskTable();
+				}
+			}
+		});
+	}
+	
 	/*
 	 * Based on what's selected in the task list, validates the tools
 	 * in the TaskListing.

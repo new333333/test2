@@ -2679,7 +2679,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	background-position:bottom;
 	}
 	
-.gwtTaskList_objlist2 tr.columnhead .sortedcol { color: #666; font-weight: bold;}
+.gwtTaskList_objlist2 tr.columnhead .sortedcol { color: #000000; font-weight: bold;}
 a.sort-column {
 	color: inherit !important;
 	text-decoration: none !important;

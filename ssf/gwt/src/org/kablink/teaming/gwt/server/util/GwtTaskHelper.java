@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
@@ -1099,16 +1100,66 @@ public class GwtTaskHelper {
 	 * 
 	 * @param bs
 	 * @param binderId
-	 * @param taskId
+	 * @param taskIds
 	 * @param completed
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static String saveTaskCompleted(AllModulesInjected bs, Long binderId, Long taskId, String completed) {
-//!		...this needs to be implemented...
-		return "*Completed Date*";
+	@SuppressWarnings("unchecked")
+	public static String saveTaskCompleted(AllModulesInjected bs, Long binderId, List<Long> taskIds, String completed) throws GwtTeamingException {
+		// Are we marking the tasks completed?
+		boolean nowCompleted = ("c100".equals(completed));
+		
+		// Scan the tasks whose completed value is changing.
+		for (Long taskId:  taskIds) {
+			try {
+				// Construct the appropriate form data for the change...
+				Map formData = new HashMap();
+				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {completed});
+				if (nowCompleted) {
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
+				}				
+				else {				
+					FolderEntry fe = bs.getFolderModule().getEntry(binderId, taskId);
+					String currentStatus = TaskHelper.getTaskStatusValue(   fe);
+					if ("s3".equals(currentStatus)) {
+						formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
+					}
+				}
+
+				// ...and modify the entry.
+				bs.getFolderModule().modifyEntry(
+					binderId,
+					taskId, 
+					new MapInputData(formData),
+					null,
+					null,
+					null,
+					null);
+			}
+			
+			catch (Exception ex) {
+				throw GwtServerHelper.getGwtTeamingException(ex);
+			}
+		}
+
+		// If we're marking the entries completed...
+		String reply;
+		if (nowCompleted) {
+			// ...return the current date/time stamp for the current
+			// ...user's locale and time zone...
+			User user = GwtServerHelper.getCurrentUser();			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());			
+			reply = df.format(new Date());
+		}
+		else {
+			// ...otherwise, return null.
+			reply = null;
+		}
+		return reply;
 	}
 
 	/**
@@ -1160,9 +1211,25 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean saveTaskPriority(AllModulesInjected bs, Long binderId, Long taskId, String priority) {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
+	@SuppressWarnings("unchecked")
+	public static Boolean saveTaskPriority(AllModulesInjected bs, Long binderId, Long taskId, String priority) throws GwtTeamingException {
+		try {
+			Map formData = new HashMap();
+			formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {priority});
+			bs.getFolderModule().modifyEntry(
+				binderId,
+				taskId, 
+				new MapInputData(formData),
+				null,
+				null,
+				null,
+				null);
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 
 	/**
@@ -1200,16 +1267,69 @@ public class GwtTaskHelper {
 	 * 
 	 * @param bs
 	 * @param binderId
-	 * @param taskId
+	 * @param taskIds
 	 * @param status
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean saveTaskStatus(AllModulesInjected bs, Long binderId, Long taskId, String status) {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
+	@SuppressWarnings("unchecked")
+	public static String saveTaskStatus(AllModulesInjected bs, Long binderId, List<Long> taskIds, String status) throws GwtTeamingException {
+		// Are we marking the tasks completed?
+		boolean nowCompleted = ("s3".equals(status));
+		
+		// Scan the tasks whose status is changing.
+		for (Long taskId:  taskIds) {
+			try {
+				// Construct the appropriate form data for the change...
+				Map formData = new HashMap();
+				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {status});
+				if (nowCompleted) {
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+				}				
+				else {				
+					if (("s1".equals(status)) || ("s2".equals(status))) {
+						FolderEntry fe = bs.getFolderModule().getEntry(binderId, taskId);
+						String currentStatus    = TaskHelper.getTaskStatusValue(   fe);
+						String currentCompleted = TaskHelper.getTaskCompletedValue(fe);
+						if (("s3".equals(currentStatus)) && ("c100".equals(currentCompleted))) {
+							formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
+						}
+					}
+				}
+
+				// ...and modify the entry.
+				bs.getFolderModule().modifyEntry(
+					binderId,
+					taskId, 
+					new MapInputData(formData),
+					null,
+					null,
+					null,
+					null);
+			}
+			
+			catch (Exception ex) {
+				throw GwtServerHelper.getGwtTeamingException(ex);
+			}
+		}
+
+		// If we're marking the entries completed...
+		String reply;
+		if (nowCompleted) {
+			// ...return the current date/time stamp for the current
+			// ...user's locale and time zone...
+			User user = GwtServerHelper.getCurrentUser();			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());			
+			reply = df.format(new Date());
+		}
+		else {
+			// ...otherwise, return null.
+			reply = null;
+		}
+		return reply;
 	}
 
 	/*
@@ -1262,6 +1382,25 @@ public class GwtTaskHelper {
 		tb.setCanTrashEntry( hasAddEntryRights);
 	}
 	
+	/**
+	 * Updates the calculated dates on a given task.
+	 * 
+	 * If the updating required changes to this task or others, true is
+	 * returned.  Otherwise, false is returned.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean updateCalculatedDates(AllModulesInjected bs, Binder binder, Long taskId) throws GwtTeamingException {
+//!		...this needs to be implemented...
+		return Boolean.FALSE;
+	}
+
 	/**
 	 * Validates the task FolderEntry's referenced by a TaskLinkage.
 	 * 
