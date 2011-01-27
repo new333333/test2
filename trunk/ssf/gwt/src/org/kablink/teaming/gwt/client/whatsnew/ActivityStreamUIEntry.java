@@ -137,28 +137,30 @@ public abstract class ActivityStreamUIEntry extends Composite
 		mainPanel.add( panel );
 		
 		// Create a reply widget and hide it.
-		onSuccessHandler = new EditSuccessfulHandler()
 		{
-			@SuppressWarnings("unchecked")
-			public boolean editSuccessful( Object replyData )
+			onSuccessHandler = new EditSuccessfulHandler()
 			{
-				if ( replyData instanceof HashMap )
+				@SuppressWarnings("unchecked")
+				public boolean editSuccessful( Object replyData )
 				{
-					HashMap<String, String> map;
+					if ( replyData instanceof HashMap )
+					{
+						HashMap<String, String> map;
+						
+						// replyData is a HashMap that holds the title and the description.
+						map = (HashMap<String,String>)replyData;
+						
+						replyToEntry( map.get( "title" ), map.get( "description" ) );
+					}
 					
-					// replyData is a HashMap that holds the title and the description.
-					map = (HashMap<String,String>)replyData;
-					
-					replyToEntry( map.get( "title" ), map.get( "description" ) );
+					return true;
 				}
 				
-				return true;
-			}
-			
-		};
-		m_replyWidget = new ActivityStreamReply( onSuccessHandler );
-		m_replyWidget.setVisible( false );
-		mainPanel.add( m_replyWidget );
+			};
+			m_replyWidget = new ActivityStreamReply( onSuccessHandler );
+			m_replyWidget.setVisible( false );
+			mainPanel.add( m_replyWidget );
+		}
 		
 		// Create a panel for comments to go in.
 		m_commentsPanel = createCommentsPanel();
@@ -223,7 +225,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// Hide the reply ui if we have one.
 		if ( m_replyWidget != null )
 			m_replyWidget.close();
-	}
+}
 
 
 	/**
