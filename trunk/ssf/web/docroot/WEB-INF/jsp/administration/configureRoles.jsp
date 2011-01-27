@@ -154,26 +154,26 @@
 <div class="ss_clear"></div>
 
 <div style="display:block;" class="wg-tab-content">
-<span class="ss_titlebold"><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="administration.configure_roles.configure"/></span>
 <c:if test="${!empty ssException}">
-<font color="red">
+  <div style="padding:20px; color:red;">
+    <span class="ss_largerprint ss_bold" style="color:red;"><c:out value="${ssException}"/></span>
+	<br/>
 
-<span class="ss_largerprint"><c:out value="${ssException}"/></span>
-<br/>
+	<c:if test="${!empty ssRoleUsers}">
+	  <span style="padding-left:20px;"><ssf:nlt tag="errorcode.role.inuse.by"/></span>
+	  <br/>
+	</c:if>
 
-<c:if test="${!empty ssRoleUsers}">
-<span style="padding-left:20px;"><ssf:nlt tag="errorcode.role.inuse.by"/></span>
-<br/>
+	<c:forEach var="user" items="${ssRoleUsers}">
+	<span style="padding-left:40px;">${user}</span>
+	<br/>
+	</c:forEach>
+
+  </div>
 </c:if>
-
-<c:forEach var="user" items="${ssRoleUsers}">
-<span style="padding-left:40px;">${user}</span>
 <br/>
-</c:forEach>
-
-</font>
-</c:if>
-
+<br/>
 <ssf:expandableArea title='<%= NLT.get("administration.configure_roles.add") %>'>
 <div style="padding:0px 20px;">
 <fieldset>

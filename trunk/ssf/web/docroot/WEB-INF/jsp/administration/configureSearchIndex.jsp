@@ -220,6 +220,11 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		  onClick="return handleCloseBtn();"/>
 </div>
 <br>
+<input type="checkbox" name="indexAll"/>
+<span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.selectAll"/></span>
+<br>
+<br>
+<br>
 <span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
 <br>
 <span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>

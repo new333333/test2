@@ -73,6 +73,9 @@ public class Constants {
 	public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
 	public static final String ENTRY_ACL_FIELD = "_entryAcl";
 	public static final String FOLDER_ACL_FIELD = "_folderAcl";
+	public static final String CONDITION_ACL_FIELD = "_conditionAcl";
+	public static final String CONDITION_ACL_NONE = "cnone";
+	public static final String CONDITION_ACL_PREFIX = "c";
 	public static final String ENTITY_TYPE_FOLDER = "folder";
 	public static final String ENTITY_TYPE_FOLDER_ENTRY = "folderEntry";
 	public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
