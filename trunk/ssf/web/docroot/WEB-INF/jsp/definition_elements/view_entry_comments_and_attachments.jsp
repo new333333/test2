@@ -82,12 +82,6 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 </c:if>
 <c:set var="ss_tabDivCount" value="${ss_tabDivCount + 1}" scope="request"/>
 <c:set var="ss_thisCurrentTab" value="viewComments"/>
-<c:if test="${empty ssPrimaryFileAttribute && fn:length(ssDefinitionEntry.fileAttachments) > 0}">
-  <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
-</c:if>
-<c:if test="${!empty ssPrimaryFileAttribute && fn:length(ssDefinitionEntry.fileAttachments) > 1}">
-  <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
-</c:if>
 <c:if test="${!empty ss_pseudoEntity}">
   <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
 </c:if>
