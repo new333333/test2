@@ -189,20 +189,20 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	 */
 	public boolean checkForReplyInProgress()
 	{
-		boolean replyInProgress;
+		boolean inProgress;
 		FlowPanel commentsPanel;
 		int i;
 		int numComments;
 		
-		replyInProgress = false;
+		inProgress = false;
 		
 		if ( isReplyInProgress() )
 			return true;
 		
-		// Check each comment to see if the "reply to entry" widget is open and the user has entered text in it.
+		// Check each comment to see if the "reply to entry" widget is open and the user has entered text in it,
 		commentsPanel = getCommentsPanel();
 		numComments = commentsPanel.getWidgetCount();
-		for (i = 0; i < numComments && replyInProgress == false ; ++i)
+		for (i = 0; i < numComments && inProgress == false ; ++i)
 		{
 			Widget nextWidget;
 			
@@ -212,11 +212,11 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				ActivityStreamComment comment;
 				
 				comment = (ActivityStreamComment) nextWidget;
-				replyInProgress = comment.isReplyInProgress();
+				inProgress = comment.isReplyInProgress();
 			}
 		}
 
-		return replyInProgress;
+		return inProgress;
 	}
 	
 	

@@ -316,12 +316,12 @@
 	width: 450px;
 }
 
-.activityStreamReplyTitlePanel
+.activityStreamReplyTitlePanel, .shareThisTitlePanel
 {
 	padding-bottom: 5px;
 }
 
-.activityStreamReplyTitleTextBox
+.activityStreamReplyTitleTextBox, .shareThisTitleTextBox
 {
 	background-color: transparent;
 	border: 0 none;
@@ -332,7 +332,7 @@
 	width: 440px;
 }
 
-.activityStreamReplyTextArea
+.activityStreamReplyTextArea, .shareThisTextArea
 {
 	background-color: transparent;
 	border: 0 none;
@@ -360,6 +360,41 @@
 	font-size: 12px;
 	margin-right: 3px;
 	padding: 2px 10px;
+}
+
+.shareThisRecipientTablePanel
+{
+	width: 315px;
+}
+
+.shareThisRecipientTablePanelHeight
+{
+	height: 150px;
+	overflow: auto;
+}
+
+.shareThisRecipientTable
+{
+	width: 100%;
+}
+
+.shareThisTextAreaBorder
+{
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+}
+
+.shareThisCommentsLabel, .shareThisShareWithTeamsLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+	padding-top: 8px;
+}
+
+.shareThisMyTeamsPanel
+{
+	padding-top: 10px;
 }
 
 .unreadEntry

@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -130,6 +131,7 @@ public class ActivityStreamCtrl extends Composite
 	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
 	private SubscribeToEntryDlg m_subscribeToEntryDlg = null;
 	private TagThisDlg m_tagThisDlg = null;
+	private ShareThisDlg m_shareThisDlg = null;
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
 	
@@ -944,7 +946,11 @@ public class ActivityStreamCtrl extends Composite
 					break;
 					
 				case SHARE:
-					Window.alert( action.getUnlocalizedDesc() );
+					if ( actionData instanceof ActivityStreamUIEntry )
+					{
+						// Invoke the Share This dialog
+						invokeShareThisDlg( (ActivityStreamUIEntry) actionData );
+					}
 					break;
 				
 				case MARK_ENTRY_READ:
@@ -1085,6 +1091,20 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
+	 * Invoke the "Share This" dialog for the given entry.
+	 */
+	private void invokeShareThisDlg( final ActivityStreamUIEntry entry )
+	{
+		if ( m_shareThisDlg == null )
+		{
+			m_shareThisDlg = new ShareThisDlg( false, true, 0, 0, GwtTeaming.getMessages().shareCaption() );
+		}
+		
+		m_shareThisDlg.showDlg( entry.getEntryTitle(), entry.getEntryId(), Window.getClientWidth() - 75, entry.getAbsoluteTop() );
+	}
+	
+	
+	/**
 	 * Invoke the Tag This dialog for the given entry.
 	 */
 	private void invokeTagThisDlg( final ActivityStreamUIEntry entry )
@@ -1137,19 +1157,19 @@ public class ActivityStreamCtrl extends Composite
 	
 	
 	/**
-	 * Go through all the entries and see if the user has the "Reply to Entry" widget open.
+	 * Go through all the entries and see if the user has the "Reply to Entry" widget open
 	 */
 	private boolean isReplyInProgress()
 	{
-		boolean replyInProgress;
+		boolean inProgress;
 		int numEntries;
 		int i;
 		
-		replyInProgress = false;
+		inProgress = false;
 		
 		// Go through each entry on the page and see if the user has the "Reply to entry" widget open.
 		numEntries = m_searchResultsPanel.getWidgetCount();
-		for (i = 0; i < numEntries && replyInProgress == false; ++i)
+		for (i = 0; i < numEntries && inProgress == false; ++i)
 		{
 			Widget nextWidget;
 			
@@ -1159,11 +1179,11 @@ public class ActivityStreamCtrl extends Composite
 				ActivityStreamTopEntry topEntry;
 				
 				topEntry = (ActivityStreamTopEntry) nextWidget;
-				replyInProgress = topEntry.checkForReplyInProgress();
+				inProgress = topEntry.checkForReplyInProgress();
 			}
 		}
 		
-		return replyInProgress;
+		return inProgress;
 	}
 	
 	/**

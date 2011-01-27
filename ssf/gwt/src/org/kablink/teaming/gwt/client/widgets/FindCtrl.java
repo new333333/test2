@@ -554,6 +554,15 @@ public class FindCtrl extends Composite
 	
 	
 	/**
+	 * Clear the text in the text box.
+	 */
+	public void clearText()
+	{
+		m_txtBox.setText( "" );
+	}
+	
+	
+	/**
 	 * 
 	 */
 	public void executeSearch()

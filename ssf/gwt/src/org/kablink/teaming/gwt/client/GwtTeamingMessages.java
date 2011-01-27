@@ -725,6 +725,23 @@ public interface GwtTeamingMessages extends Messages
 	String noReplyText();
 	String replyToEntryLabel();
 	
+	// The following strings are used in the activity stream "share this entry" ui.
+	String addRecipient();
+	String commentsLabel();
+	String defaultShareTitle( String title );
+	String noShareRecipients();
+	String removeRecipientHint();
+	String shareCaption();
+	String shareHint();
+	String shareName();
+	String shareType();
+	String shareTypeGroup();
+	String shareTypeUser();
+	String shareWithGroups();
+	String shareWithTeams();
+	String shareWithUsers();
+	String unknownShareType();
+	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.
 	String hoverBucket();
