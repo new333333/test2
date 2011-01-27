@@ -1437,15 +1437,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param ri
 	 * @param binderId
-	 * @param taskId
+	 * @param taskIds
 	 * @param completed
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, List<Long> taskIds, String completed ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskCompleted( this, binderId, taskIds, completed );
+	}
+	
 	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long taskId, String completed ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskCompleted( this, binderId, taskId, completed );
+		List<Long> taskIds = new ArrayList<Long>();
+		taskIds.add(taskId);
+		return saveTaskCompleted( ri, binderId, taskIds, completed );
 	}
 	
 	/**
@@ -1500,17 +1506,40 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param ri
 	 * @param binderId
-	 * @param taskId
+	 * @param taskIds
 	 * @param status
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public Boolean saveTaskStatus( HttpRequestInfo ri, Long binderId, Long taskId, String status ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskStatus( this, binderId, taskId, status );
+	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, List<Long> taskIds, String status ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskStatus( this, binderId, taskIds, status );
 	}
 	
+	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, Long taskId, String status ) throws GwtTeamingException {
+		List<Long> taskIds = new ArrayList<Long>();
+		taskIds.add(taskId);
+		return saveTaskStatus( ri, binderId, taskIds, status );
+	}
+
+	/**
+	 * Updates the calculated dates on a given task.  If the updating
+	 * required changes to this task or others, true is returned.
+	 * Otherwise, false is returned.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long taskId ) throws GwtTeamingException {
+		return GwtTaskHelper.updateCalculatedDates( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskId );
+	}
+
 	/**
 	 * Returns a List<String> of the user ID's of the people the
 	 * current user is tracking.

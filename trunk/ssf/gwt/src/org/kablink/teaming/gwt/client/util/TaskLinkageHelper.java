@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
@@ -295,88 +296,112 @@ public class TaskLinkageHelper {
 		return null;
 	}
 	
-	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem tl) {
+	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem tli) {
 		// Always use the initial form of the method.
-		return findTaskList(tb, tl.getTask().getTaskId());
+		return findTaskList(tb, tli.getTask().getTaskId());
 	}
 
 	/*
-	 * Searches the TaskListItem's in tlList2Search for a TaskListItem
-	 * contain tlList2Find as its subtask list.  If found, that
+	 * Searches the TaskListItem's in tliList2Search for a TaskListItem
+	 * contain tliList2Find as its subtask list.  If found, that
 	 * TaskListItem is returned.  Otherwise, null is returned.
 	 */
-	private static TaskListItem findTaskListItemContainingList(List<TaskListItem> tlList2Search, List<TaskListItem> tlList2Find) {
+	private static TaskListItem findTaskListItemContainingList(List<TaskListItem> tliList2Search, List<TaskListItem> tliList2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
-		for (TaskListItem tl:  tlList2Search) {
+		for (TaskListItem tli:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
 			// question...
-			List<TaskListItem> subtasks = tl.getSubtasks();
-			if (subtasks == tlList2Find) {
+			List<TaskListItem> subtasks = tli.getSubtasks();
+			if (subtasks == tliList2Find) {
 				// ...return the TaskListItem.
-				return tl;
+				return tli;
 			}
 
 			// If the list we're looking for is a subtask of this
 			// TaskListItem's subtasks...
-			TaskListItem reply = findTaskListItemContainingList(subtasks, tlList2Find);
+			TaskListItem reply = findTaskListItemContainingList(subtasks, tliList2Find);
 			if (null != reply) {
 				// ...return that TaskListItem.
 				return reply;
 			}
 		}
 
-		// If we get here, we couldn't find tlList2Find in
-		// tlList2Search.  Return null.
+		// If we get here, we couldn't find tliList2Find in
+		// tliList2Search.  Return null.
 		return null;
 	}
 
 	/*
-	 * Searches the TaskListItem's in tlList2Search for a TaskListItem
-	 * contain tl2Find as one of its subtasks.  If found, that
+	 * Searches the TaskListItem's in tliList2Search for a TaskListItem
+	 * contain tli2Find as one of its subtasks.  If found, that
 	 * TaskListItem is returned.  Otherwise, null is returned.
 	 */
-	private static TaskListItem findTaskListItemContainingTask(List<TaskListItem> tlList2Search, TaskListItem tl2Find) {
+	private static TaskListItem findTaskListItemContainingTask(List<TaskListItem> tliList2Search, TaskListItem tli2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
-		for (TaskListItem tl:  tlList2Search) {
+		for (TaskListItem tli:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
 			// question...
-			List<TaskListItem> subtasks = tl.getSubtasks();
+			List<TaskListItem> subtasks = tli.getSubtasks();
 			for (TaskListItem subtask:  subtasks) {
-				if (subtask == tl2Find) {
+				if (subtask == tli2Find) {
 					// ...return the TaskListItem.
-					return tl;
+					return tli;
 				}
 			}
 
 			// If the list we're looking for is a subtask of this
 			// TaskListItem's subtasks...
-			TaskListItem reply = findTaskListItemContainingTask(subtasks, tl2Find);
+			TaskListItem reply = findTaskListItemContainingTask(subtasks, tli2Find);
 			if (null != reply) {
 				// ...return that TaskListItem.
 				return reply;
 			}
 		}
 
-		// If we get here, we couldn't find tlList2Find in
+		// If we get here, we couldn't find tliList2Find in
 		// tlList2Search.  Return null.
 		return null;
 	}
 
 	/**
+	 * Returns a List<Long> containing the ID of the given task and the
+	 * IDss of all subtasks below it.
+	 * 
+	 * @param tli
+	 * 
+	 * @return
+	 */
+	public static List<Long> getTaskIdHierarchy(TaskListItem tli) {
+		List<Long> reply = new ArrayList<Long>();
+		
+		reply.add(tli.getTask().getTaskId());
+		getTaskIdHierarchyImpl(tli.getSubtasks(), reply);
+		
+		return reply;
+	}
+	
+	private static void getTaskIdHierarchyImpl(List<TaskListItem> tliList, List<Long> tliHierarchy) {
+		for (TaskListItem tli:  tliList) {
+			tliHierarchy.add(tli.getTask().getTaskId());
+			getTaskIdHierarchyImpl(tli.getSubtasks(), tliHierarchy);
+		}		
+	}
+	
+	/**
 	 * Move one TaskListItem above another.
 	 * 
 	 * @param tb
-	 * @param tlMoveThis
-	 * @param tlRelativeToThis
+	 * @param tliMoveThis
+	 * @param tliRelativeToThis
 	 */
-	public static void moveTaskAbove(TaskBundle tb, TaskListItem tlMoveThis, TaskListItem tlRelativeToThis) {
+	public static void moveTaskAbove(TaskBundle tb, TaskListItem tliMoveThis, TaskListItem tliRelativeToThis) {
 		// Find the List<TaskListItem>'s we're moving from and to...
-		List<TaskListItem> tlFrom = findTaskList(tb, tlMoveThis);
-		List<TaskListItem> tlTo   = findTaskList(tb, tlRelativeToThis);
+		List<TaskListItem> tliFromList = findTaskList(tb, tliMoveThis);
+		List<TaskListItem> tliToList   = findTaskList(tb, tliRelativeToThis);
 
 		// ...and perform the move.
-		tlFrom.remove(tlMoveThis);
-		tlTo.add(tlTo.indexOf(tlRelativeToThis), tlMoveThis);
+		tliFromList.remove(tliMoveThis);
+		tliToList.add(tliToList.indexOf(tliRelativeToThis), tliMoveThis);
 	}
 	
 	public static void moveTaskAbove(TaskBundle tb, Long idMoveThis, Long idRelativeToThis) {
@@ -388,20 +413,20 @@ public class TaskLinkageHelper {
 	 * Moves one TaskListItem below another.
 	 * 
 	 * @param tb
-	 * @param tlMoveThis
-	 * @param tlRelativeToThis
+	 * @param tliMoveThis
+	 * @param tliRelativeToThis
 	 */
-	public static void moveTaskBelow(TaskBundle tb, TaskListItem tlMoveThis, TaskListItem tlRelativeToThis) {
+	public static void moveTaskBelow(TaskBundle tb, TaskListItem tliMoveThis, TaskListItem tliRelativeToThis) {
 		// Find the List<TaskListItem>'s we're moving from and to...
-		List<TaskListItem> tlFrom = findTaskList(tb, tlMoveThis);
-		List<TaskListItem> tlTo   = findTaskList(tb, tlRelativeToThis);
+		List<TaskListItem> tliFromList = findTaskList(tb, tliMoveThis);
+		List<TaskListItem> tliToList   = findTaskList(tb, tliRelativeToThis);
 
 		// ...and perform the move.
-		tlFrom.remove(tlMoveThis);
-		int toIndex = (tlTo.indexOf(tlRelativeToThis) + 1);
-		if (tlTo.size() == toIndex)
-		     tlTo.add(         tlMoveThis);
-		else tlTo.add(toIndex, tlMoveThis);
+		tliFromList.remove(tliMoveThis);
+		int toIndex = (tliToList.indexOf(tliRelativeToThis) + 1);
+		if (tliToList.size() == toIndex)
+		     tliToList.add(         tliMoveThis);
+		else tliToList.add(toIndex, tliMoveThis);
 	}
 	
 	public static void moveTaskBelow(TaskBundle tb, Long idMoveThis, Long idRelativeToThis) {
@@ -413,10 +438,10 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem down from its current position.
 	 * 
 	 * @param tb
-	 * @param tl
+	 * @param tli
 	 */
-	public static void moveTaskDown(TaskBundle tb, TaskListItem tl) {
-		moveTaskInDirection(tb, tl, tb.getTasks(), Direction.DOWN);
+	public static void moveTaskDown(TaskBundle tb, TaskListItem tli) {
+		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.DOWN);
 	}
 	
 	public static void moveTaskDown(TaskBundle tb, Long taskId) {
@@ -435,27 +460,27 @@ public class TaskLinkageHelper {
 	 *    however, is not as what's implemented here works the same as
 	 *    GroupWise's Tasklist feature.
 	 */
-	private static boolean moveTaskInDirection(TaskBundle tb, TaskListItem tlMoveThis, List<TaskListItem> tlList, Direction dir) {
+	private static boolean moveTaskInDirection(TaskBundle tb, TaskListItem tliMoveThis, List<TaskListItem> tliList, Direction dir) {
 		// Scan the TaskListItem's in the List<TaskListItem>. 
-		int tlMoveThisIndex;
-		int tlSize = tlList.size();
-		for (tlMoveThisIndex = 0; tlMoveThisIndex < tlSize; tlMoveThisIndex += 1) {
+		int tliMoveThisIndex;
+		int tliSize = tliList.size();
+		for (tliMoveThisIndex = 0; tliMoveThisIndex < tliSize; tliMoveThisIndex += 1) {
 			// Is this the TaskListItem we need to move?
-			TaskListItem tlScan = tlList.get(tlMoveThisIndex);
-			if (tlScan == tlMoveThis) {
+			TaskListItem tliScan = tliList.get(tliMoveThisIndex);
+			if (tliScan == tliMoveThis) {
 				// Yes!  Break out of the scan loop.
 				break;
 			}
 
 			// Can we perform the move out of this TaskListItem's subtasks?
-			if (moveTaskInDirection(tb, tlMoveThis, tlScan.getSubtasks(), dir)) {
+			if (moveTaskInDirection(tb, tliMoveThis, tliScan.getSubtasks(), dir)) {
 				// Yes!  Then we're done.
 				return true;
 			}
 		}
 		
 		// If we couldn't find the TaskListItem in question...
-		if (tlMoveThisIndex == tlSize) {
+		if (tliMoveThisIndex == tliSize) {
 			// ...there's nothing to move.
 			return false;
 		}
@@ -464,21 +489,21 @@ public class TaskLinkageHelper {
 		switch (dir) {
 		case UP:
 			// Up!  If it's not the first task in the list...
-			if (0 < tlMoveThisIndex) {
+			if (0 < tliMoveThisIndex) {
 				// ...move it up a notch.
-				tlList.remove(tlMoveThisIndex);
-				tlList.add((tlMoveThisIndex - 1), tlMoveThis);
+				tliList.remove(tliMoveThisIndex                  );
+				tliList.add(  (tliMoveThisIndex - 1), tliMoveThis);
 			}
 
 			break;
 			
 		case DOWN:
 			// Down!  If it's not the last task in the list...
-			if (tlMoveThisIndex < tlSize) {
+			if (tliMoveThisIndex < tliSize) {
 				// ...move it down a notch.
-				tlList.remove(tlMoveThisIndex);
-				if (tlMoveThisIndex == (tlSize - 1)) tlList.add(               tlMoveThis);
-				else                         tlList.add((tlMoveThisIndex + 1), tlMoveThis);
+				tliList.remove(tliMoveThisIndex);
+				if (tliMoveThisIndex == (tliSize - 1)) tliList.add(                        tliMoveThis);
+				else                                   tliList.add((tliMoveThisIndex + 1), tliMoveThis);
 			}
 			
 			break;
@@ -486,24 +511,24 @@ public class TaskLinkageHelper {
 		case LEFT:
 			// Left (i.e., decrease its subtask level)!  If it's in
 			// other than the outer most task order list...
-			if (tlList != tb.getTasks()) {
+			if (tliList != tb.getTasks()) {
 				// ...move all of the peer subtasks below it to be
 				// ...subtasks of it...
-				for (int i = (tlMoveThisIndex + 1); i < tlSize; tlSize -= 1) {
-					TaskListItem tl2Move = tlList.get(i);
-					tlList.remove(i);
-					tlMoveThis.appendSubtask(tl2Move);
+				for (int i = (tliMoveThisIndex + 1); i < tliSize; tliSize -= 1) {
+					TaskListItem tli2Move = tliList.get(i);
+					tliList.remove(i);
+					tliMoveThis.appendSubtask(tli2Move);
 				}
 				
 				// ...and make it a peer to the task it's a subtask of,
 				// ...immediately below what was its parent.
-				tlList.remove(tlMoveThisIndex);
-				TaskListItem tlWithList          = findTaskListItemContainingList(tb.getTasks(), tlList    );
-				TaskListItem tlWithListContainer = findTaskListItemContainingTask(tb.getTasks(), tlWithList);
-				List<TaskListItem> tlTargetList  = ((null == tlWithListContainer) ? tb.getTasks() : tlWithListContainer.getSubtasks());
-				tlTargetList.add(
-					(tlTargetList.indexOf(tlWithList) + 1),
-					tlMoveThis);
+				tliList.remove(tliMoveThisIndex);
+				TaskListItem tliWithList          = findTaskListItemContainingList(tb.getTasks(), tliList    );
+				TaskListItem tliWithListContainer = findTaskListItemContainingTask(tb.getTasks(), tliWithList);
+				List<TaskListItem> tliTargetList  = ((null == tliWithListContainer) ? tb.getTasks() : tliWithListContainer.getSubtasks());
+				tliTargetList.add(
+					(tliTargetList.indexOf(tliWithList) + 1),
+					tliMoveThis);
 			}
 			
 			break;
@@ -511,10 +536,10 @@ public class TaskLinkageHelper {
 		case RIGHT:
 			// Right (i.e., increase its subtask level)!  If it's not
 			// the first task in the list...
-			if (0 < tlMoveThisIndex) {
+			if (0 < tliMoveThisIndex) {
 				// ...make it the last subtask of the one above it.
-				tlList.remove(tlMoveThisIndex);
-				tlList.get(tlMoveThisIndex - 1).appendSubtask(tlMoveThis);
+				tliList.remove(tliMoveThisIndex);
+				tliList.get(   tliMoveThisIndex - 1).appendSubtask(tliMoveThis);
 			}
 			
 			break;
@@ -529,25 +554,25 @@ public class TaskLinkageHelper {
 	 * Moves one TaskListItem into another.
 	 * 
 	 * @param tb
-	 * @param tlMoveThis
-	 * @param tlTarget
+	 * @param tliMoveThis
+	 * @param tliTarget
 	 * @param targetIndex
 	 */
-	public static void moveTaskInto(TaskBundle tb, TaskListItem tlMoveThis, TaskListItem tlTarget, int targetIndex) {		
+	public static void moveTaskInto(TaskBundle tb, TaskListItem tliMoveThis, TaskListItem tliTarget, int targetIndex) {		
 		// Find the List<TaskListItem>'s we're moving from and to...
-		List<TaskListItem> tlFrom = findTaskList(tb, tlMoveThis);
-		List<TaskListItem> tlTo   = findTaskList(tb, tlTarget);
+		List<TaskListItem> tliFromList = findTaskList(tb, tliMoveThis);
+		List<TaskListItem> tliToList   = findTaskList(tb, tliTarget);
 
 		// ...and perform the move.
-		tlFrom.remove(tlMoveThis);
+		tliFromList.remove(tliMoveThis);
 		if ((-1) == targetIndex)
-		     tlTo.add(             tlMoveThis);
-		else tlTo.add(targetIndex, tlMoveThis);
+		     tliToList.add(             tliMoveThis);
+		else tliToList.add(targetIndex, tliMoveThis);
 	}
 	
-	public static void moveTaskInto(TaskBundle tb, TaskListItem tlMoveThis, TaskListItem tlTarget) {
+	public static void moveTaskInto(TaskBundle tb, TaskListItem tliMoveThis, TaskListItem tliTarget) {
 		// Always use the initial form of the method.
-		moveTaskInto(tb, tlMoveThis, tlTarget, 0);
+		moveTaskInto(tb, tliMoveThis, tliTarget, 0);
 	}
 	
 	public static void moveTaskInto(TaskBundle tb, Long idMoveThis, Long idTarget, int targetIndex) {
@@ -564,10 +589,10 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem left from its current position.
 	 * 
 	 * @param tb
-	 * @param tl
+	 * @param tli
 	 */
-	public static void moveTaskLeft(TaskBundle tb, TaskListItem tl) {
-		moveTaskInDirection(tb, tl, tb.getTasks(), Direction.LEFT);
+	public static void moveTaskLeft(TaskBundle tb, TaskListItem tli) {
+		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.LEFT);
 	}
 	
 	public static void moveTaskLeft(TaskBundle tb, Long taskId) {
@@ -579,10 +604,10 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem right from its current position.
 	 * 
 	 * @param tb
-	 * @param tl
+	 * @param tli
 	 */
-	public static void moveTaskRight(TaskBundle tb, TaskListItem tl) {
-		moveTaskInDirection(tb, tl, tb.getTasks(), Direction.RIGHT);
+	public static void moveTaskRight(TaskBundle tb, TaskListItem tli) {
+		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.RIGHT);
 	}
 	
 	public static void moveTaskRight(TaskBundle tb, Long taskId) {
@@ -594,10 +619,10 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem up from its current position.
 	 * 
 	 * @param tb
-	 * @param tl
+	 * @param tli
 	 */
-	public static void moveTaskUp(TaskBundle tb, TaskListItem tl) {
-		moveTaskInDirection(tb, tl, tb.getTasks(), Direction.UP);
+	public static void moveTaskUp(TaskBundle tb, TaskListItem tli) {
+		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.UP);
 	}
 	
 	public static void moveTaskUp(TaskBundle tb, Long taskId) {

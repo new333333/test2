@@ -245,15 +245,18 @@ public interface GwtRpcService extends RemoteService
 	public Boolean saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData ) throws GwtTeamingException;
 
 	// Task servicing APIs.
-	public List<TaskListItem> getTaskList(       HttpRequestInfo ri, Long binderId, String      filterType, String modeType       ) throws GwtTeamingException;
-	public TaskBundle         getTaskBundle(     HttpRequestInfo ri, Long binderId, String      filterType, String modeType       ) throws GwtTeamingException;
-	public TaskLinkage        getTaskLinkage(    HttpRequestInfo ri, Long binderId                                                ) throws GwtTeamingException;
-	public Boolean            removeTaskLinkage( HttpRequestInfo ri, Long binderId                                                ) throws GwtTeamingException;
-	public String             saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long        taskId,     String  completed     ) throws GwtTeamingException;
-	public Boolean            saveTaskLinkage(   HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage                       ) throws GwtTeamingException;
-	public Boolean            saveTaskPriority(  HttpRequestInfo ri, Long binderId, Long        taskId,     String  priority      ) throws GwtTeamingException;
-	public Boolean            saveTaskSort(      HttpRequestInfo ri, Long binderId, String      sortKey,    boolean sortAscending ) throws GwtTeamingException;
-	public Boolean            saveTaskStatus(    HttpRequestInfo ri, Long binderId, Long        taskId,     String  status        ) throws GwtTeamingException;
+	public List<TaskListItem> getTaskList(           HttpRequestInfo ri, Long binderId, String      filterType, String modeType       ) throws GwtTeamingException;
+	public TaskBundle         getTaskBundle(         HttpRequestInfo ri, Long binderId, String      filterType, String modeType       ) throws GwtTeamingException;
+	public TaskLinkage        getTaskLinkage(        HttpRequestInfo ri, Long binderId                                                ) throws GwtTeamingException;
+	public Boolean            removeTaskLinkage(     HttpRequestInfo ri, Long binderId                                                ) throws GwtTeamingException;
+	public String             saveTaskCompleted(     HttpRequestInfo ri, Long binderId, Long        taskId,     String  completed     ) throws GwtTeamingException;
+	public String             saveTaskCompleted(     HttpRequestInfo ri, Long binderId, List<Long>  taskIds,    String  completed     ) throws GwtTeamingException;
+	public Boolean            saveTaskLinkage(       HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage                       ) throws GwtTeamingException;
+	public Boolean            saveTaskPriority(      HttpRequestInfo ri, Long binderId, Long        taskId,     String  priority      ) throws GwtTeamingException;
+	public Boolean            saveTaskSort(          HttpRequestInfo ri, Long binderId, String      sortKey,    boolean sortAscending ) throws GwtTeamingException;
+	public String             saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long        taskId,     String  status        ) throws GwtTeamingException;
+	public String             saveTaskStatus(        HttpRequestInfo ri, Long binderId, List<Long>  taskIds,    String  status        ) throws GwtTeamingException;
+	public Boolean            updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long        taskId                            ) throws GwtTeamingException;
 	
 	// SeenMap servicing APIs.
 	public Boolean isSeen(    HttpRequestInfo ri, Long       entryId  ) throws GwtTeamingException;

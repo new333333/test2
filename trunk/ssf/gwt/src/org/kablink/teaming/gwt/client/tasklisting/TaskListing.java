@@ -174,6 +174,13 @@ public class TaskListing implements ActionTrigger {
 	public TaskButton    getMoveRightButton() {return m_moveRightButton;}
 	
 	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setTaskBundle(TaskBundle taskBundle) {m_taskBundle = taskBundle;}
+	
+	/**
 	 * Hides the hint <SPAN>, if visible.
 	 */
 	public void hideHint() {

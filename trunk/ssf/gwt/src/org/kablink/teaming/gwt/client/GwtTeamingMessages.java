@@ -277,8 +277,11 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
+	String rpcFailure_SaveTaskCompleted();
 	String rpcFailure_SaveTaskLinkage();
+	String rpcFailure_SaveTaskPriority();
 	String rpcFailure_SaveTaskSort();
+	String rpcFailure_SaveTaskStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_Search();
 	String rpcFailure_SetSeen();
@@ -290,6 +293,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UnknownException();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
+	String rpcFailure_UpdateCalculatedDates();
 	String rpcFailure_UpdateFavorites();
 
 	// Strings used with the MastHead
