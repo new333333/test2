@@ -770,7 +770,7 @@ div.ss_tag_content {
    line-height: 17px;
 }
 .ss_muted_tag_cloud {
-  width: 85%;
+  width: 95%;
   padding-top: 1px;
 }
 
@@ -2059,11 +2059,11 @@ td.ss_view_info {
 }
 img.ss_generic_close {
     background:url(<html:imagesPath/>tabs/tab_delete.png) no-repeat left 0px;
-    width:9px;
-    height: 9px;
+    width:10px;
+    height: 10px;
 }
 a:hover img.ss_generic_close {
-    background-position:  left -9px;
+    background-position:  left -10px;
 }
 img.ss_print_button {
     background:url(<html:imagesPath/>icons/printer.gif) no-repeat left -16px;
