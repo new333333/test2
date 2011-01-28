@@ -218,6 +218,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AddFavorite();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CheckForActivityStreamChanges();
+	String rpcFailure_DeleteTasks();
 	String rpcFailure_EntryDoesNotExist();
 	String rpcFailure_ExpandBucket();
 	String rpcFailure_FolderDoesNotExist();
