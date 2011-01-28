@@ -761,6 +761,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		case TASK_MOVE_LEFT:   handleTaskMoveLeft();  break;
 		case TASK_MOVE_RIGHT:  handleTaskMoveRight(); break;
 		case TASK_MOVE_UP:     handleTaskMoveUp();    break;
+		case TASK_PURGE:       handleTaskPurge();     break;
 
 		default:
 			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
@@ -818,13 +819,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * bar.
 	 */
 	private void handleTaskDelete() {
-//!		...this needs to be implemented... (on the server side)
-		Window.alert("handleTaskDelete():  ...this needs to be implemented... (on the server side)");
-		
 		// If nothing is checked...
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
 			// ...there's nothing to delete.
+			return;
+		}
+
+		// Is the user sure they want to perform the delete?
+		if (!(Window.confirm(m_messages.taskConfirmDelete()))) {
+			// No!  Bail.
 			return;
 		}
 
@@ -921,6 +925,43 @@ public class TaskTable extends Composite implements ActionHandler {
 		persistLinkageChange(task, true);
 	}
 
+	/*
+	 * Called when the user presses the purge button on the task tool
+	 * bar.
+	 */
+	private void handleTaskPurge() {
+		// If nothing is checked...
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
+			// ...there's nothing to purge.
+			return;
+		}
+
+		// Is the user sure they want to perform the purge?
+		if (!(Window.confirm(m_messages.taskConfirmPurge()))) {
+			// No!  Bail.
+			return;
+		}
+
+		// Purge the selected tasks.
+		List<TaskId> taskIds = TaskLinkageHelper.getTaskIdsFromList(tasksChecked, false);
+		m_rpcService.purgeTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_PurgeTasks());
+			}
+			
+			@Override
+			public void onSuccess(Boolean success) {
+				// Simply refresh the TaskTable and we'll reread the
+				// tasks and display them in the appropriate hierarchy. 
+				refreshTaskTable(false);
+			}
+		});
+	}
+	
 	/*
 	 * Called when the user clicks the seen sun burst on a task.
 	 */
@@ -1841,8 +1882,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		
-		// Can the user perform a delete?
-		boolean enableDelete = (m_taskBundle.getCanTrashEntry() && (0 < tasksCheckedCount));
+		// Can the user perform a delete or purge?
+		boolean enableDelete = (m_taskBundle.getCanTrashEntry() && (0 < tasksCheckedCount) && (!(m_taskBundle.getBinderIsMirrored())));
+		boolean enablePurge  = (m_taskBundle.getCanPurgeEntry() && (0 < tasksCheckedCount));
 		
 		// Does the user have the rights to manage linkage?
 		boolean allowMovement = m_taskBundle.getCanModifyTaskLinkage();
@@ -1900,5 +1942,6 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskListing.getMoveLeftButton().setEnabled( enableMoveLeft );
 		m_taskListing.getMoveRightButton().setEnabled(enableMoveRight);
 		m_taskListing.getMoveUpButton().setEnabled(   enableMoveUp   );
+		m_taskListing.getPurgeButton().setEnabled(    enablePurge    );
 	}
 }

@@ -269,6 +269,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
+	String rpcFailure_PurgeTasks();
 	String rpcFailure_QViewMicroBlog();
 	String rpcFailure_RemoveBinderTag();
 	String rpcFailure_RemoveFavorite();
@@ -806,6 +807,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
 	String taskAltMoveUp();
+	String taskAltPurge();
 	String taskAltTaskClosed();
 	String taskAltTaskUnread();
 	String taskCantMove_Filter();
@@ -831,10 +833,13 @@ public interface GwtTeamingMessages extends Messages
 	String taskCompleted_c80();
 	String taskCompleted_c90();
 	String taskCompleted_c100();
+	String taskConfirmDelete();
+	String taskConfirmPurge();
 	String taskInternalError_FilteredOrVirtual(String operation);
 	String taskInternalError_UnexpectedAction(String action);
 	String taskLabelDelete();
 	String taskLabelOrder();
+	String taskLabelPurge();
 	String taskLabelSubtask();
 	String taskMemberCount(String count);
 	String taskNoTasks();

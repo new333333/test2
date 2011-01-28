@@ -98,6 +98,7 @@ public enum TeamingAction implements IsSerializable
 	TASK_SET_PERCENT_DONE( "Sets a Task's Percentage Done." ),
 	TASK_SET_PRIORITY( "Sets a Task's Priority." ),
 	TASK_SET_STATUS( "Sets a Task's Status." ),
+	TASK_PURGE( "Delete and Immediately Purge the Selected Tasks." ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.
