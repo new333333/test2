@@ -76,7 +76,7 @@ public class TaskLinkageHelper {
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// ...adding a new TaskLink to the linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
 			reply.appendTask(newTaskLink);
 
 			// ...and updating its subtasks.
@@ -93,7 +93,7 @@ public class TaskLinkageHelper {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
 			// ...adding a new TaskLink to the subtask linkage...
 			TaskLink newTaskLink = new TaskLink();
-			newTaskLink.setTaskId(taskScan.getTask().getTaskId());
+			newTaskLink.setEntryId(taskScan.getTask().getTaskId().getEntryId());
 			taskLink.appendSubtask(newTaskLink);
 			
 			// ...and updating its subtasks.
@@ -106,7 +106,7 @@ public class TaskLinkageHelper {
 	 * its at.
 	 * 
 	 * @param tb
-	 * @param taskId
+	 * @param task
 	 * 
 	 * @return
 	 */
@@ -119,8 +119,8 @@ public class TaskLinkageHelper {
 		return reply;
 	}
 	
-	public static boolean canMoveTaskDown(TaskBundle tb, Long taskId) {
-		return canMoveTaskDown(tb, findTask(tb, taskId));
+	public static boolean canMoveTaskDown(TaskBundle tb, Long entryId) {
+		return canMoveTaskDown(tb, findTask(tb, entryId));
 	}
 	
 	/**
@@ -128,7 +128,7 @@ public class TaskLinkageHelper {
 	 * its at.
 	 * 
 	 * @param tb
-	 * @param taskId
+	 * @param task
 	 * 
 	 * @return
 	 */
@@ -141,8 +141,8 @@ public class TaskLinkageHelper {
 		return reply;
 	}
 	
-	public static boolean canMoveTaskLeft(TaskBundle tb, Long taskId) {
-		return canMoveTaskLeft(tb, findTask(tb, taskId));
+	public static boolean canMoveTaskLeft(TaskBundle tb, Long entryId) {
+		return canMoveTaskLeft(tb, findTask(tb, entryId));
 	}
 	
 	/**
@@ -150,7 +150,7 @@ public class TaskLinkageHelper {
 	 * its at.
 	 * 
 	 * @param tb
-	 * @param taskId
+	 * @param task
 	 * 
 	 * @return
 	 */
@@ -163,8 +163,8 @@ public class TaskLinkageHelper {
 		return reply;
 	}
 	
-	public static boolean canMoveTaskRight(TaskBundle tb, Long taskId) {
-		return canMoveTaskRight(tb, findTask(tb, taskId));
+	public static boolean canMoveTaskRight(TaskBundle tb, Long entryId) {
+		return canMoveTaskRight(tb, findTask(tb, entryId));
 	}
 	
 	/**
@@ -172,7 +172,7 @@ public class TaskLinkageHelper {
 	 * its at.
 	 * 
 	 * @param tb
-	 * @param taskId
+	 * @param task
 	 * 
 	 * @return
 	 */
@@ -185,24 +185,24 @@ public class TaskLinkageHelper {
 		return reply;
 	}
 	
-	public static boolean canMoveTaskUp(TaskBundle tb, Long taskId) {
-		return canMoveTaskUp(tb, findTask(tb, taskId));
+	public static boolean canMoveTaskUp(TaskBundle tb, Long entryId) {
+		return canMoveTaskUp(tb, findTask(tb, entryId));
 	}
 	
 	/**
 	 * Searches a task's subtasks for the given ID.
 	 * 
-	 * @param id
+	 * @param entryId
 	 * 
 	 * @return
 	 */
-	public static TaskListItem findSubtask(TaskListItem task, Long id) {
+	public static TaskListItem findSubtask(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (id.equals(taskScan.getTask().getTaskId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
 				return taskScan;
 			}
 			
-			TaskListItem reply = findSubtask(taskScan, id);
+			TaskListItem reply = findSubtask(taskScan, entryId);
 			if (null != reply) {
 				return reply;
 			}
@@ -216,17 +216,17 @@ public class TaskLinkageHelper {
 	 * the List<TaskListItem> that contains it.  Returns null if the
 	 * TaskListItem cannot be found.
 	 * 
-	 * @param id
+	 * @param entryId
 	 * 
 	 * @return
 	 */
-	public static List<TaskListItem> findSubtaskList(TaskListItem task, Long id) {
+	public static List<TaskListItem> findSubtaskList(TaskListItem task, Long entryId) {
 		for (TaskListItem taskScan:  task.getSubtasks()) {
-			if (id.equals(taskScan.getTask().getTaskId())) {
+			if (entryId.equals(taskScan.getTask().getTaskId().getEntryId())) {
 				return task.getSubtasks();
 			}
 			
-			List<TaskListItem> reply = findSubtaskList(taskScan, id);
+			List<TaskListItem> reply = findSubtaskList(taskScan, entryId);
 			if (null != reply) {
 				return reply;
 			}
@@ -239,21 +239,21 @@ public class TaskLinkageHelper {
 	 * Returns the TaskListItem with the given ID from this TaskLinkageHelper.
 	 * 
 	 * @param tb
-	 * @param id
+	 * @param entryId
 	 * 
 	 * @return
 	 */	
-	public static TaskListItem findTask(TaskBundle tb, Long id) {
+	public static TaskListItem findTask(TaskBundle tb, Long entryId) {
 		// Scan the TaskListItem's in this TaskLinkageHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().equals(id)) {
+			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
 				// Yes!  Return it.
 				return taskScan;
 			}
 
 			// Is this ID for a subtask of this TaskListItem?
-			TaskListItem reply = findSubtask(taskScan, id);
+			TaskListItem reply = findSubtask(taskScan, entryId);
 			if (null != reply) {
 				// Yes!  Return it.
 				return reply;
@@ -270,21 +270,21 @@ public class TaskLinkageHelper {
 	 * TaskLinkageHelper.
 	 * 
 	 * @param tb
-	 * @param id
+	 * @param entryId
 	 * 
 	 * @return
 	 */	
-	public static List<TaskListItem> findTaskList(TaskBundle tb, Long id) {
+	public static List<TaskListItem> findTaskList(TaskBundle tb, Long entryId) {
 		// Scan the TaskListItem's in this TaskLinkageHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
-			if (taskScan.getTask().getTaskId().equals(id)) {
+			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
 				// Yes!  Return it.
 				return tb.getTasks();
 			}
 
 			// Is this ID for a subtask of this TaskListItem?
-			List<TaskListItem> reply = findSubtaskList(taskScan, id);
+			List<TaskListItem> reply = findSubtaskList(taskScan, entryId);
 			if (null != reply) {
 				// Yes!  Return it.
 				return reply;
@@ -296,9 +296,9 @@ public class TaskLinkageHelper {
 		return null;
 	}
 	
-	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem tli) {
+	public static List<TaskListItem> findTaskList(TaskBundle tb, TaskListItem task) {
 		// Always use the initial form of the method.
-		return findTaskList(tb, tli.getTask().getTaskId());
+		return findTaskList(tb, task.getTask().getTaskId().getEntryId());
 	}
 
 	/*
@@ -308,13 +308,13 @@ public class TaskLinkageHelper {
 	 */
 	private static TaskListItem findTaskListItemContainingList(List<TaskListItem> tliList2Search, List<TaskListItem> tliList2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
-		for (TaskListItem tli:  tliList2Search) {
+		for (TaskListItem task:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
 			// question...
-			List<TaskListItem> subtasks = tli.getSubtasks();
+			List<TaskListItem> subtasks = task.getSubtasks();
 			if (subtasks == tliList2Find) {
 				// ...return the TaskListItem.
-				return tli;
+				return task;
 			}
 
 			// If the list we're looking for is a subtask of this
@@ -338,14 +338,14 @@ public class TaskLinkageHelper {
 	 */
 	private static TaskListItem findTaskListItemContainingTask(List<TaskListItem> tliList2Search, TaskListItem tli2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
-		for (TaskListItem tli:  tliList2Search) {
+		for (TaskListItem task:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
 			// question...
-			List<TaskListItem> subtasks = tli.getSubtasks();
+			List<TaskListItem> subtasks = task.getSubtasks();
 			for (TaskListItem subtask:  subtasks) {
 				if (subtask == tli2Find) {
 					// ...return the TaskListItem.
-					return tli;
+					return task;
 				}
 			}
 
@@ -364,27 +364,55 @@ public class TaskLinkageHelper {
 	}
 
 	/**
-	 * Returns a List<Long> containing the ID of the given task and the
-	 * IDss of all subtasks below it.
+	 * Returns a List<TaskListItem> containing the given task and all
+	 * subtasks below it.
 	 * 
-	 * @param tli
+	 * @param task
 	 * 
 	 * @return
 	 */
-	public static List<TaskListItem> getTaskHierarchy(TaskListItem tli) {
+	public static List<TaskListItem> getTaskHierarchy(TaskListItem task) {
 		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 		
-		reply.add(tli);
-		getTaskHierarchyImpl(tli.getSubtasks(), reply);
+		reply.add(task);
+		getTaskHierarchyImpl(task.getSubtasks(), reply);
 		
 		return reply;
 	}
 	
 	private static void getTaskHierarchyImpl(List<TaskListItem> tliList, List<TaskListItem> tliHierarchy) {
-		for (TaskListItem tli:  tliList) {
-			tliHierarchy.add(tli);
-			getTaskHierarchyImpl(tli.getSubtasks(), tliHierarchy);
+		for (TaskListItem task:  tliList) {
+			tliHierarchy.add(task);
+			getTaskHierarchyImpl(task.getSubtasks(), tliHierarchy);
 		}		
+	}
+
+	/**
+	 * Returns the task IDs from a List<TaskListItem>, optionally
+	 * including the IDs of the subtasks.
+	 * 
+	 * @param tliList
+	 * @param includeSubtasks
+	 * 
+	 * @return
+	 */
+	public static List<TaskId> getTaskIdsFromList(List<TaskListItem> tliList, boolean includeSubtasks) {
+		List<TaskId> reply = new ArrayList<TaskId>();		
+		getTaskIdsFromListImpl(tliList, reply, includeSubtasks);		
+		return reply;
+	}
+	
+	public static List<TaskId> getTaskIdsFromList(List<TaskListItem> tliList) {
+		return getTaskIdsFromList(tliList, true);
+	}
+	
+	private static void getTaskIdsFromListImpl(List<TaskListItem> tliList, List<TaskId> taskIds, boolean includeSubtasks) {
+		for (TaskListItem task:  tliList) {
+			taskIds.add(task.getTask().getTaskId());
+			if (includeSubtasks) {
+				getTaskIdsFromListImpl(task.getSubtasks(), taskIds, includeSubtasks);
+			}
+		}
 	}
 	
 	/**
@@ -438,15 +466,15 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem down from its current position.
 	 * 
 	 * @param tb
-	 * @param tli
+	 * @param task
 	 */
-	public static void moveTaskDown(TaskBundle tb, TaskListItem tli) {
-		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.DOWN);
+	public static void moveTaskDown(TaskBundle tb, TaskListItem task) {
+		moveTaskInDirection(tb, task, tb.getTasks(), Direction.DOWN);
 	}
 	
-	public static void moveTaskDown(TaskBundle tb, Long taskId) {
+	public static void moveTaskDown(TaskBundle tb, Long entryId) {
 		// Always use the initial form of the method.
-		moveTaskDown(tb, findTask(tb, taskId));
+		moveTaskDown(tb, findTask(tb, entryId));
 	}
 	
 	/*
@@ -589,44 +617,44 @@ public class TaskLinkageHelper {
 	 * Moves a TaskListItem left from its current position.
 	 * 
 	 * @param tb
-	 * @param tli
+	 * @param task
 	 */
-	public static void moveTaskLeft(TaskBundle tb, TaskListItem tli) {
-		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.LEFT);
+	public static void moveTaskLeft(TaskBundle tb, TaskListItem task) {
+		moveTaskInDirection(tb, task, tb.getTasks(), Direction.LEFT);
 	}
 	
-	public static void moveTaskLeft(TaskBundle tb, Long taskId) {
+	public static void moveTaskLeft(TaskBundle tb, Long entryId) {
 		// Always use the initial form of the method.
-		moveTaskLeft(tb, findTask(tb, taskId));
+		moveTaskLeft(tb, findTask(tb, entryId));
 	}
 	
 	/**
 	 * Moves a TaskListItem right from its current position.
 	 * 
 	 * @param tb
-	 * @param tli
+	 * @param task
 	 */
-	public static void moveTaskRight(TaskBundle tb, TaskListItem tli) {
-		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.RIGHT);
+	public static void moveTaskRight(TaskBundle tb, TaskListItem task) {
+		moveTaskInDirection(tb, task, tb.getTasks(), Direction.RIGHT);
 	}
 	
-	public static void moveTaskRight(TaskBundle tb, Long taskId) {
+	public static void moveTaskRight(TaskBundle tb, Long entryId) {
 		// Always use the initial form of the method.
-		moveTaskRight(tb, findTask(tb, taskId));
+		moveTaskRight(tb, findTask(tb, entryId));
 	}
 	
 	/**
 	 * Moves a TaskListItem up from its current position.
 	 * 
 	 * @param tb
-	 * @param tli
+	 * @param task
 	 */
-	public static void moveTaskUp(TaskBundle tb, TaskListItem tli) {
-		moveTaskInDirection(tb, tli, tb.getTasks(), Direction.UP);
+	public static void moveTaskUp(TaskBundle tb, TaskListItem task) {
+		moveTaskInDirection(tb, task, tb.getTasks(), Direction.UP);
 	}
 	
-	public static void moveTaskUp(TaskBundle tb, Long taskId) {
+	public static void moveTaskUp(TaskBundle tb, Long entryId) {
 		// Always use the initial form of the method.
-		moveTaskUp(tb, findTask(tb, taskId));
+		moveTaskUp(tb, findTask(tb, entryId));
 	}
 }

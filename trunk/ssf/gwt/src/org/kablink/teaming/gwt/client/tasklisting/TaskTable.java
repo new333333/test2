@@ -34,8 +34,8 @@ package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -49,6 +49,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskDate;
+import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskLinkageHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
@@ -640,7 +642,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void getTaskIdsCheckedImpl(List<TaskListItem> tasks, List<Long> checkedTaskIds) {
 		for (TaskListItem task:  tasks) {
 			if (getUIData(task).isTaskCBChecked()) {
-				checkedTaskIds.add(task.getTask().getTaskId());
+				checkedTaskIds.add(task.getTask().getTaskId().getEntryId());
 			}
 			getTaskIdsCheckedImpl(task.getSubtasks(), checkedTaskIds);
 		}
@@ -816,8 +818,33 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * bar.
 	 */
 	private void handleTaskDelete() {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskDelete():  ...this needs to be implemented...");
+//!		...this needs to be implemented... (on the server side)
+		Window.alert("handleTaskDelete():  ...this needs to be implemented... (on the server side)");
+		
+		// If nothing is checked...
+		List<TaskListItem> tasksChecked = getTasksChecked();
+		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
+			// ...there's nothing to delete.
+			return;
+		}
+
+		// Delete the selected tasks.
+		List<TaskId> taskIds = TaskLinkageHelper.getTaskIdsFromList(tasksChecked, false);
+		m_rpcService.deleteTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_DeleteTasks());
+			}
+			
+			@Override
+			public void onSuccess(Boolean success) {
+				// Simply refresh the TaskTable and we'll reread the
+				// tasks and display them in the appropriate hierarchy. 
+				refreshTaskTable(false);
+			}
+		});
 	}
 	
 	/*
@@ -898,14 +925,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called when the user clicks the seen sun burst on a task.
 	 */
 	private void handleTaskSeen(final TaskListItem task) {
-		final Long taskId = task.getTask().getTaskId();
-		m_rpcService.setSeen(HttpRequestInfo.createHttpRequestInfo(), taskId, new AsyncCallback<Boolean>() {
+		final Long entryId = task.getTask().getTaskId().getEntryId();
+		m_rpcService.setSeen(HttpRequestInfo.createHttpRequestInfo(), entryId, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_SetSeen(),
-					String.valueOf(taskId));
+					String.valueOf(entryId));
 			}
 			
 			@Override
@@ -964,14 +991,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 		
 		// Save the new task percent done value.
-		final Long taskId = task.getTask().getTaskId();
-		m_rpcService.saveTaskCompleted(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, percentDone, new AsyncCallback<String>() {
+		final Long entryId = task.getTask().getTaskId().getEntryId();
+		m_rpcService.saveTaskCompleted(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getTaskId().getBinderId(), entryId, percentDone, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskCompleted(),
-					String.valueOf(taskId));
+					String.valueOf(entryId));
 			}
 			
 			@Override
@@ -986,8 +1013,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		TaskInfo ti = task.getTask();
 		ti.setCompleted(percentDone);
 		if (!("c100".equals(percentDone))) {
-			ti.setCompletedDate(       null);
-			ti.setCompletedDateDisplay(""  );
+			ti.setCompletedDate(new TaskDate());
 		}
 		
 		// Update the Image and text displayed on the percentDone.
@@ -1012,14 +1038,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Save the new task priority.
-		final Long taskId = task.getTask().getTaskId();
-		m_rpcService.saveTaskPriority(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, priority, new AsyncCallback<Boolean>() {
+		final Long entryId = task.getTask().getTaskId().getEntryId();
+		m_rpcService.saveTaskPriority(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getTaskId().getBinderId(), entryId, priority, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskPriority(),
-					String.valueOf(taskId));
+					String.valueOf(entryId));
 			}
 			
 			@Override
@@ -1050,29 +1076,30 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Collect the tasks this is going to affect.  If we're marking
 		// a task complete or cancelled, it implies marking its entire
 		// subtask hierarchy the same way too.
-		final Long taskId = task.getTask().getTaskId();
-		final List<Long> affectedTaskIds = new ArrayList<Long>();
+		TaskInfo     ti     = task.getTask();
+		final TaskId taskId = ti.getTaskId();
 		final List<TaskListItem> affectedTasks;
+		final List<TaskId>       affectedTaskIds;
 		if (("s3".equals(status)) || ("s4".equals(status))) {
-			affectedTasks = TaskLinkageHelper.getTaskHierarchy(task);
-			for (TaskListItem affectedTask:  affectedTasks) {
-				affectedTaskIds.add(affectedTask.getTask().getTaskId());
-			}
+			affectedTasks   = TaskLinkageHelper.getTaskHierarchy(  task                );
+			affectedTaskIds = TaskLinkageHelper.getTaskIdsFromList(affectedTasks, false);
 		}
 		else {
-			affectedTaskIds.add(taskId);
 			affectedTasks = new ArrayList<TaskListItem>();
 			affectedTasks.add(task);
+			
+			affectedTaskIds = new ArrayList<TaskId>();
+			affectedTaskIds.add(taskId);
 		}
 
 		// Save the new status on the affected tasks.
-		m_rpcService.saveTaskStatus(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), affectedTaskIds, status, new AsyncCallback<String>() {
+		m_rpcService.saveTaskStatus(HttpRequestInfo.createHttpRequestInfo(), affectedTaskIds, status, new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_SaveTaskStatus(),
-					String.valueOf(taskId));
+					String.valueOf(taskId.getEntryId()));
 			}
 			
 			@Override
@@ -1101,7 +1128,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to update a task as per a new status menu selection.
 	 */
-	private void handleTaskSetStatusImpl(TaskListItem task, String status, TaskMenuOption tmo, String completedDate) {
+	private void handleTaskSetStatusImpl(TaskListItem task, String status, TaskMenuOption tmo, String completedDateDisplay) {
 		// Store the new status value in the task.
 		TaskInfo ti = task.getTask();
 		ti.setStatus(status);
@@ -1118,18 +1145,19 @@ public class TaskTable extends Composite implements ActionHandler {
 		// we're now marking this task completed.  Is that the case?
 		InlineLabel completedLabel    = uid.getTaskCompletedLabel();
 		Widget      percentDoneWidget = uid.getTaskPercentDoneWidget();
-		if (GwtClientHelper.hasString(completedDate)) {
+		if (GwtClientHelper.hasString(completedDateDisplay)) {
 			// Yes!  Hide the percent done widget...  
 			percentDoneWidget.setVisible(false);
 			
 			// ...update/show the completed widget...
-			completedLabel.setText(   completedDate);
-			completedLabel.setVisible(true         );
+			completedLabel.setText(   completedDateDisplay);
+			completedLabel.setVisible(true                );
 			
 			// ...and update the task.
-			ti.setCompleted(           "c100"       );
-			ti.setCompletedDate(       new Date()   );
-			ti.setCompletedDateDisplay(completedDate);
+			TaskDate completedDate = new TaskDate();
+			completedDate.setDateDisplay(completedDateDisplay);
+			ti.setCompleted(    "c100"     );
+			ti.setCompletedDate(completedDate);
 		}
 		
 		else {
@@ -1160,13 +1188,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTaskView(TaskListItem task) {
 		final TaskInfo ti = task.getTask();
-		m_rpcService.getViewFolderEntryUrl(HttpRequestInfo.createHttpRequestInfo(), ti.getBinderId(), ti.getTaskId(), new AsyncCallback<String>() {
+		m_rpcService.getViewFolderEntryUrl(HttpRequestInfo.createHttpRequestInfo(), ti.getTaskId().getBinderId(), ti.getTaskId().getEntryId(), new AsyncCallback<String>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
-					String.valueOf(ti.getTaskId()));
+					String.valueOf(ti.getTaskId().getEntryId()));
 			}
 			
 			@Override
@@ -1237,22 +1265,23 @@ public class TaskTable extends Composite implements ActionHandler {
 		vp.addStyleName("gwtTaskList_assigneesList");
 
 		// Scan the individual assignees...
-		boolean isCancelled = task.getTask().getStatus().equals("s4");;
-		for (final AssignmentInfo ai:  task.getTask().getAssignments()) {
+		TaskInfo ti = task.getTask();
+		boolean isCancelled = ti.getStatus().equals("s4");;
+		for (final AssignmentInfo ai:  ti.getAssignments()) {
 			// ...adding a PresenceControl for each.
 			assignments += 1;
 			vp.add(buildAssigneePanel(ai, isCancelled));
 		}
 
 		// Scan the group assignees...
-		for (AssignmentInfo ai:  task.getTask().getAssignmentGroups()) {
+		for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
 			vp.add(buildAssigneePanel(ai, isCancelled));
 		}
 		
 		// Scan the team assignees...
-		for (AssignmentInfo ai:  task.getTask().getAssignmentTeams()) {			
+		for (AssignmentInfo ai:  ti.getAssignmentTeams()) {			
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
 			vp.add(buildAssigneePanel(ai, isCancelled));
@@ -1281,7 +1310,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskBundle.setTaskLinkage(newLinkage);
 		
 		// ...and write it to the current user's folder preferences.
-		final Long binderId = task.getTask().getBinderId();
+		final Long binderId = task.getTask().getTaskId().getBinderId();
 		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1335,9 +1364,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
-	 * Call to completely refresh the contents of the TaskTable.
+	 * Called to completely refresh the contents of the TaskTable.
 	 */
-	private void refreshTaskTable() {
+	private void refreshTaskTable(final boolean preserveChecks) {
 		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode(), new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1349,7 +1378,10 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onSuccess(TaskBundle result) {
 				// Preserve the tasks that are currently checked...
-				List<Long> checkedIds = getTaskIdsChecked();
+				List<Long> checkedIds;
+				if (preserveChecks)
+				     checkedIds = getTaskIdsChecked();
+				else checkedIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...
 				m_taskListing.setTaskBundle(result);
@@ -1359,6 +1391,10 @@ public class TaskTable extends Composite implements ActionHandler {
 				showTasks(result, checkedIds);
 			}			
 		});		
+	}
+	
+	private void refreshTaskTable() {
+		refreshTaskTable(true);
 	}
 	
 	/*
@@ -1385,14 +1421,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		Widget percentDoneWidget;
 		
 		// What's the current priority of this task?
-		String percentDone = task.getTask().getCompleted();
+		TaskInfo ti = task.getTask();
+		String percentDone = ti.getCompleted();
 		if (!(GwtClientHelper.hasString(percentDone))) {
 			percentDone = "c000";
 		}
 		boolean complete = ("c100".equals(percentDone));
 
 		// Generate a completed date label...
-		String completedDateDisplay = task.getTask().getCompletedDateDisplay();
+		String completedDateDisplay = ti.getCompletedDate().getDateDisplay();
 		if (null == completedDateDisplay) completedDateDisplay = "";
 		completedLabel = new InlineLabel(completedDateDisplay);
 		completedLabel.setWordWrap(false);
@@ -1424,7 +1461,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Due Date' column.
 	 */
 	private void renderColumnDueDate(final TaskListItem task, int row) {
-		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEndDisplay());
+		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEnd().getDateDisplay());
 		il.setWordWrap(false);
 		m_flexTable.setWidget(row, Column.DUE_DATE.ordinal(), il);
 	}
@@ -1483,7 +1520,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		CheckBox cb = new CheckBox();
 		uid.setTaskSelectorCB(cb);
-		cb.getElement().setId("gwtTaskList_taskSelect_" + task.getTask().getTaskId());
+		cb.getElement().setId("gwtTaskList_taskSelect_" + task.getTask().getTaskId().getEntryId());
 		cb.addStyleName("gwtTaskList_ckbox");
 		PassThroughEventsPanel.addHandler(cb, new ChangeHandler(){
 			@Override
@@ -1671,8 +1708,8 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// ...apply any tasks checks that are being preserved...
 		if ((null != checkedTaskIds) && (!(checkedTaskIds.isEmpty()))) {
-			for (Long taskId:  checkedTaskIds) {
-				TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, taskId);
+			for (Long entryId:  checkedTaskIds) {
+				TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, entryId);
 				if (null != task) {
 					getUIData(task).setTaskSelected(true);
 				}
@@ -1715,7 +1752,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	
 	public void showTasks(TaskBundle tb) {
 		// Always use the initial form of the method.
-		showTasks(tb, new ArrayList<Long>());
+		showTasks(tb, null);
 	}
 
 	/*
@@ -1759,22 +1796,31 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * refreshed.
 	 */
 	private void updateCalculatedDates(TaskListItem task) {
-		final Long taskId = task.getTask().getTaskId();
-		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), task.getTask().getBinderId(), taskId, new AsyncCallback<Boolean>() {
+		final TaskInfo ti = task.getTask();
+		final Long entryId = ti.getTaskId().getEntryId();
+		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), ti.getTaskId().getBinderId(), entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDates(),
-					String.valueOf(taskId));
+					String.valueOf(entryId));
 			}
 			
 			@Override
-			public void onSuccess(Boolean forceRefresh) {
-				// Based on the update, refresh the TaskTable as
-				// necessary.
-				if (forceRefresh) {
-					refreshTaskTable();
+			public void onSuccess(Map<Long, TaskDate> updatedTaskInfo) {
+				// Did any tasks have the logical end dates changed?
+				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {
+					// Yes!  Scan them...
+					for (Long entryId:  updatedTaskInfo.keySet()) {
+						// ...storing their new logical end dates...
+						TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, entryId);
+						task.getTask().getEvent().setLogicalEnd(updatedTaskInfo.get(entryId));
+					}
+					
+					// ...and redisplay the tasks in the TaskTable,
+					// ...preserving any tasks that were checked.
+					showTasks(m_taskBundle, getTaskIdsChecked());
 				}
 			}
 		});

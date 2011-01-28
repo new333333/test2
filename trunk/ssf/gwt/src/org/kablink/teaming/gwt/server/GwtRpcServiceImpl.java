@@ -106,6 +106,8 @@ import org.kablink.teaming.gwt.client.util.ShowSetting;
 import org.kablink.teaming.gwt.client.util.SubscriptionData;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
+import org.kablink.teaming.gwt.client.util.TaskDate;
+import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -156,6 +158,52 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	implements GwtRpcService
 {
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
+
+	/**
+	 * Deletes the specified tasks.
+	 * 
+	 * @param ri
+	 * @param taskIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean deleteTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
+		return GwtTaskHelper.deleteTasks( this, taskIds );
+	}
+	
+	public Boolean deleteTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		List<TaskId> taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		taskIds.add(        taskId   );
+		return deleteTasks( ri, taskIds );
+	}
+
+	/**
+	 * Purges the specified tasks.
+	 * 
+	 * @param ri
+	 * @param taskIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean purgeTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
+		return GwtTaskHelper.purgeTasks( this, taskIds );
+	}
+	
+	public Boolean purgeTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		List<TaskId> taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		taskIds.add(        taskId   );
+		return purgeTasks( ri, taskIds );
+	}
 
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
@@ -1433,10 +1481,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}// end removeTaskLinkage()
 
 	/**
-	 * Stores a completed value on the specified task.
+	 * Stores a completed value on the specified tasks.
 	 * 
 	 * @param ri
-	 * @param binderId
 	 * @param taskIds
 	 * @param completed
 	 * 
@@ -1444,14 +1491,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, List<Long> taskIds, String completed ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskCompleted( this, binderId, taskIds, completed );
+	public String saveTaskCompleted( HttpRequestInfo ri, List<TaskId> taskIds, String completed ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskCompleted( this, taskIds, completed );
 	}
 	
-	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long taskId, String completed ) throws GwtTeamingException {
-		List<Long> taskIds = new ArrayList<Long>();
-		taskIds.add(taskId);
-		return saveTaskCompleted( ri, binderId, taskIds, completed );
+	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long entryId, String completed ) throws GwtTeamingException {
+		List<TaskId> taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		taskIds.add(        taskId   );
+		return saveTaskCompleted( ri, taskIds, completed );
 	}
 	
 	/**
@@ -1474,15 +1524,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @param ri
 	 * @param binderId
-	 * @param taskId
+	 * @param entryId
 	 * @param priority
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long taskId, String priority ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskPriority( this, binderId, taskId, priority );
+	public Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long entryId, String priority ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskPriority( this, binderId, entryId, priority );
 	}
 	
 	/**
@@ -1502,10 +1552,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}
 	
 	/**
-	 * Stores a status value on the specified task.
+	 * Stores a status value on the specified tasks.
 	 * 
 	 * @param ri
-	 * @param binderId
 	 * @param taskIds
 	 * @param status
 	 * 
@@ -1513,31 +1562,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, List<Long> taskIds, String status ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskStatus( this, binderId, taskIds, status );
+	public String saveTaskStatus( HttpRequestInfo ri, List<TaskId> taskIds, String status ) throws GwtTeamingException {
+		return GwtTaskHelper.saveTaskStatus( this, taskIds, status );
 	}
 	
-	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, Long taskId, String status ) throws GwtTeamingException {
-		List<Long> taskIds = new ArrayList<Long>();
-		taskIds.add(taskId);
-		return saveTaskStatus( ri, binderId, taskIds, status );
+	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, Long entryId, String status ) throws GwtTeamingException {
+		List<TaskId> taskIds = new ArrayList<TaskId>();
+		TaskId taskId = new TaskId();
+		taskId.setBinderId( binderId );
+		taskId.setEntryId(  entryId  );
+		taskIds.add(        taskId   );
+		return saveTaskStatus( ri, taskIds, status );
 	}
 
 	/**
-	 * Updates the calculated dates on a given task.  If the updating
-	 * required changes to this task or others, true is returned.
-	 * Otherwise, false is returned.
+	 * Updates the calculated dates on a given task.
+	 * 
+	 * If the updating required changes to this task or others, the
+	 * Map<Long, TaskDate> returned will contain a mapping between the
+	 * task IDs and the new calculated end date.  Otherwise, the map
+	 * returned will be empty.
 	 * 
 	 * @param ri
 	 * @param binderId
-	 * @param taskId
+	 * @param entryId
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public Boolean updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long taskId ) throws GwtTeamingException {
-		return GwtTaskHelper.updateCalculatedDates( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskId );
+	public Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		return GwtTaskHelper.updateCalculatedDates( this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
 	}
 
 	/**

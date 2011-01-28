@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
@@ -147,7 +148,7 @@ public class TaskSorter {
 		private static String getSortString(TaskListItem task, String completed) {
 			String reply = completed;
 			if (reply.equals("c100")) {
-				String completedDateDisplay = task.getTask().getCompletedDateDisplay();
+				String completedDateDisplay = task.getTask().getCompletedDate().getDateDisplay();
 				if (GwtClientHelper.hasString(completedDateDisplay)) {
 					reply = ("c101:" + completedDateDisplay);
 				}
@@ -183,13 +184,13 @@ public class TaskSorter {
 		 */
 		@Override
 		public int compare(TaskListItem task1, TaskListItem task2) {
-			Date d1 = getNonNullDate(task1.getTask().getEvent().getLogicalEnd());
-			Date d2 = getNonNullDate(task2.getTask().getEvent().getLogicalEnd());
+			TaskDate d1 = getNonNullDate(task1.getTask().getEvent().getLogicalEnd());
+			TaskDate d2 = getNonNullDate(task2.getTask().getEvent().getLogicalEnd());
 			
 			int reply;
 			if (m_ascending)
-			     reply = d1.compareTo(d2);
-			else reply = d2.compareTo(d1);
+			     reply = d1.getDate().compareTo(d2.getDate());
+			else reply = d2.getDate().compareTo(d1.getDate());
 			return reply;
 		}
 	}
@@ -405,8 +406,19 @@ public class TaskSorter {
 	/*
 	 * Helper methods used to guard against comparing null values.
 	 */
-	private static Date getNonNullDate(Date d, Date defDate) {return ((null == d) ? defDate : d);   }	
-	private static Date getNonNullDate(Date d)               {return getNonNullDate(d, new Date(0));}
+	private static TaskDate getNonNullDate(TaskDate d) {
+		TaskDate reply;
+		if ((null == d) || (null == d.getDate()))
+		     reply = getNonNullDate();
+		else reply = d;
+		return reply;
+	}
+	
+	private static TaskDate getNonNullDate() {
+		TaskDate reply = new TaskDate();
+		reply.setDate(new Date(0));
+		return reply;
+	}
 	
 	private static String getNonNullString(String s, String defString) {return ((null == s) ? defString : s);}	
 	private static String getNonNullString(String s)                   {return getNonNullString(s, "");      }

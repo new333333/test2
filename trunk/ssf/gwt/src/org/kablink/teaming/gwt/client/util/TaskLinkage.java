@@ -50,15 +50,15 @@ public class TaskLinkage implements IsSerializable {
 	
 	// The following are used as keys for the information stored in a
 	// Map representation of a TaskLinkage object.
-	private final static String SERIALIZED_TASK_IDS      = "taskIds";
-	private final static String SERIALIZED_SUBTASKS_BASE = "subtasks.";
+	private final static String SERIALIZED_ENTRY_IDS		= "taskIds";
+	private final static String SERIALIZED_SUBTASKS_BASE	= "subtasks.";
 	
 	/**
 	 * Inner class used to track individual tasks within a TaskLinkage.
 	 */
 	public static class TaskLink implements IsSerializable {
 		private List<TaskLink>	m_subtasks = new ArrayList<TaskLink>();	// List<TaskLink> of the subtasks of this task.
-		private Long			m_taskId;								// ID of the FolderEntry of this task
+		private Long			m_entryId;								// ID of the FolderEntry of this task
 
 		/**
 		 * Class constructor.
@@ -81,7 +81,7 @@ public class TaskLinkage implements IsSerializable {
 		public void appendSubtask(Long id) {
 			// Always use the initial form of the method.
 			TaskLink tl = new TaskLink();
-			tl.setTaskId(id);
+			tl.setEntryId(id);
 			appendSubtask(tl);
 		}
 		
@@ -95,12 +95,12 @@ public class TaskLinkage implements IsSerializable {
 		}
 		
 		/**
-		 * Returns the ID from this TaskLink.
+		 * Returns the entry ID from this TaskLink.
 		 * 
 		 * @return
 		 */
-		public Long getTaskId() {
-			return m_taskId;
+		public Long getEntryId() {
+			return m_entryId;
 		}
 
 		/**
@@ -122,12 +122,12 @@ public class TaskLinkage implements IsSerializable {
 		}
 		
 		/**
-		 * Stores a task ID in this TaskLink.
+		 * Stores an entry ID of a task in this TaskLink.
 		 * 
-		 * @param taskId
+		 * @param entryId
 		 */
-		public void setTaskId(Long taskId) {
-			m_taskId = taskId;
+		public void setEntryId(Long entryId) {
+			m_entryId = entryId;
 		}
 	}
 	
@@ -152,8 +152,8 @@ public class TaskLinkage implements IsSerializable {
 	public void appendTask(Long id) {
 		// Always use the initial form of the method.
 		TaskLink tl = new TaskLink();
-		tl.setTaskId(id);
-		appendTask(id);
+		tl.setEntryId(id);
+		appendTask(   id);
 	}
 
 	/**
@@ -175,16 +175,16 @@ public class TaskLinkage implements IsSerializable {
 	private static Map getSerializationMapImpl(List<TaskLink> links) {
 		Map reply = new HashMap();
 		
-		List<Long> taskIds = new ArrayList<Long>();
+		List<Long> entryIds = new ArrayList<Long>();
 		for (TaskLink tl:  links) {
-			Long tid = tl.getTaskId();
-			taskIds.add(tid);
+			Long entryId = tl.getEntryId();
+			entryIds.add(entryId);
 			reply.put(
-				(SERIALIZED_SUBTASKS_BASE + String.valueOf(tid)),
+				(SERIALIZED_SUBTASKS_BASE + String.valueOf(entryId)),
 				getSerializationMapImpl(
 					tl.getSubtasks()));
 		}		
-		reply.put(SERIALIZED_TASK_IDS, taskIds);
+		reply.put(SERIALIZED_ENTRY_IDS, entryIds);
 				
 		return reply;
 	}
@@ -222,13 +222,13 @@ public class TaskLinkage implements IsSerializable {
 	private static List<TaskLink> loadSerializationMapImpl(Map serializationMap) {
 		List<TaskLink> reply = new ArrayList<TaskLink>();
 		if ((null != serializationMap) && (!(serializationMap.isEmpty()))) {
-			List<Long> taskIds = ((List<Long>) serializationMap.get(SERIALIZED_TASK_IDS));
-			for (Long taskId:  taskIds) {
+			List<Long> entryIds = ((List<Long>) serializationMap.get(SERIALIZED_ENTRY_IDS));
+			for (Long entryId:  entryIds) {
 				TaskLink taskLink = new TaskLink();
-				taskLink.setTaskId(taskId);
+				taskLink.setEntryId(entryId);
 				taskLink.setSubtasks(
 					loadSerializationMapImpl(
-						((Map) serializationMap.get(SERIALIZED_SUBTASKS_BASE + String.valueOf(taskId)))));
+						((Map) serializationMap.get(SERIALIZED_SUBTASKS_BASE + String.valueOf(entryId)))));
 				reply.add(taskLink);
 			}
 		}
