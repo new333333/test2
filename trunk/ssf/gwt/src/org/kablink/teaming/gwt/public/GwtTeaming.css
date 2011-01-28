@@ -2596,10 +2596,17 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 }
 .gwtTaskList_assignee
 {
-	color: #353838;
 	display: inline;
 	font-weight: bold;
 	padding-left: 2px !important;
+}
+.gwtTaskList_assigneeEnabled
+{
+	color: #353838;
+}
+.gwtTaskList_assigneeDisabled
+{
+	color: #c4c4c4;
 }
 .gwtTaskList_assigneeHover
 {
@@ -2734,9 +2741,13 @@ a.sort-column:hover {
 	}
 	
 .gwtTaskList_objlist2 tr.disabled td, .gwtTaskList_objlist2 tr.disabled td a {
-	color: #c4c4c4;
-	}	
-	
+	color: #c4c4c4 !important;
+	}
+		
+.gwtTaskList_objlist2 tr.selected td {
+	background-color: #e6f2f7 !important;
+	}
+
 .gwtTaskList_objlist2b tr.regrowB td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
 	{ 
 	background-color: transparent;

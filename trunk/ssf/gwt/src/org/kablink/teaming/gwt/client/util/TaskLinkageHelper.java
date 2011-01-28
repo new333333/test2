@@ -371,19 +371,19 @@ public class TaskLinkageHelper {
 	 * 
 	 * @return
 	 */
-	public static List<Long> getTaskIdHierarchy(TaskListItem tli) {
-		List<Long> reply = new ArrayList<Long>();
+	public static List<TaskListItem> getTaskHierarchy(TaskListItem tli) {
+		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 		
-		reply.add(tli.getTask().getTaskId());
-		getTaskIdHierarchyImpl(tli.getSubtasks(), reply);
+		reply.add(tli);
+		getTaskHierarchyImpl(tli.getSubtasks(), reply);
 		
 		return reply;
 	}
 	
-	private static void getTaskIdHierarchyImpl(List<TaskListItem> tliList, List<Long> tliHierarchy) {
+	private static void getTaskHierarchyImpl(List<TaskListItem> tliList, List<TaskListItem> tliHierarchy) {
 		for (TaskListItem tli:  tliList) {
-			tliHierarchy.add(tli.getTask().getTaskId());
-			getTaskIdHierarchyImpl(tli.getSubtasks(), tliHierarchy);
+			tliHierarchy.add(tli);
+			getTaskHierarchyImpl(tli.getSubtasks(), tliHierarchy);
 		}		
 	}
 	

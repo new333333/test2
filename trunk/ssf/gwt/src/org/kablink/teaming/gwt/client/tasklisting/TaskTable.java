@@ -420,7 +420,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Builds a FlowPanel for an AssignmentInfo.
 	 */
-	private FlowPanel buildAssigneePanel(final AssignmentInfo ai) {
+	private FlowPanel buildAssigneePanel(final AssignmentInfo ai, boolean showDisabled) {
 		List<EventHandler> eventHandlers;
 		FlowPanel reply = new FlowPanel();
 		
@@ -445,7 +445,8 @@ public class TaskTable extends Composite implements ActionHandler {
 
 			// ...and a name link for it...
 			final Label assignee = new Label(ai.getTitle());
-			assignee.addStyleName("gwtTaskList_assignee");
+			String addedStyle = (showDisabled ? "gwtTaskList_assigneeDisabled" : "gwtTaskList_assigneeEnabled");
+			assignee.addStyleName("gwtTaskList_assignee " + addedStyle);
 			reply.add(assignee);
 			
 			// ...and add the event handlers for it.
@@ -930,7 +931,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskSelect(TaskListItem task) {
 		// Track the state of the task's checkbox...
 		UIData uid = getUIData(task);
-		uid.setTaskSelected(uid.isTaskCBChecked());
+		boolean checked = uid.isTaskCBChecked();
+		uid.setTaskSelected(checked);
+
+		// ...and/remove the selected style from the affected rows...
+		int row = uid.getTaskRow();
+		if (checked)
+		     m_flexTableRF.addStyleName(   row, "selected");
+		else m_flexTableRF.removeStyleName(row, "selected");
 		
 		// ...and validate the TaskListing tools.
 		validateTaskTools();
@@ -1039,17 +1047,22 @@ public class TaskTable extends Composite implements ActionHandler {
 			return;
 		}
 		
-		// Collect the IDs of the tasks this is going to affect.  If
-		// we're marking a task complete or cancelled, it implies
-		// marking its entire subtask hierarchy the same way too.
+		// Collect the tasks this is going to affect.  If we're marking
+		// a task complete or cancelled, it implies marking its entire
+		// subtask hierarchy the same way too.
 		final Long taskId = task.getTask().getTaskId();
-		final List<Long> affectedTaskIds;
+		final List<Long> affectedTaskIds = new ArrayList<Long>();
+		final List<TaskListItem> affectedTasks;
 		if (("s3".equals(status)) || ("s4".equals(status))) {
-			affectedTaskIds = TaskLinkageHelper.getTaskIdHierarchy(task);
+			affectedTasks = TaskLinkageHelper.getTaskHierarchy(task);
+			for (TaskListItem affectedTask:  affectedTasks) {
+				affectedTaskIds.add(affectedTask.getTask().getTaskId());
+			}
 		}
 		else {
-			affectedTaskIds = new ArrayList<Long>();
 			affectedTaskIds.add(taskId);
+			affectedTasks = new ArrayList<TaskListItem>();
+			affectedTasks.add(task);
 		}
 
 		// Save the new status on the affected tasks.
@@ -1069,23 +1082,14 @@ public class TaskTable extends Composite implements ActionHandler {
 				List<TaskMenuOption> sOpts = m_statusMenu.getMenuOptions();
 				for (TaskMenuOption tmo:  sOpts) {
 					if (tmo.getMenu().equals(status)) {
-						// If we're only changing one task, its got to
-						// be the one we were given.  No need to search
-						// for it.
-						if (1 == affectedTaskIds.size()) {
-							handleTaskSetStatusImpl(task, status, tmo, completedDate);
-						}
-						
-						else {
-							// Otherwise, scan the affected task IDs...
-							for (Long taskId:  affectedTaskIds) {
-								// ...updating each task.
-								handleTaskSetStatusImpl(
-									TaskLinkageHelper.findTask(m_taskBundle, taskId),
-									status,
-									tmo,
-									completedDate);
-							}
+						// Scan the affected tasks...
+						for (TaskListItem affectedTask:  affectedTasks) {
+							// ...and update each one.
+							handleTaskSetStatusImpl(
+								affectedTask,
+								status,
+								tmo,
+								completedDate);
 						}
 						break;
 					}
@@ -1099,7 +1103,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTaskSetStatusImpl(TaskListItem task, String status, TaskMenuOption tmo, String completedDate) {
 		// Store the new status value in the task.
-		task.getTask().setStatus(status);
+		TaskInfo ti = task.getTask();
+		ti.setStatus(status);
 		
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
@@ -1122,7 +1127,6 @@ public class TaskTable extends Composite implements ActionHandler {
 			completedLabel.setVisible(true         );
 			
 			// ...and update the task.
-			TaskInfo ti = task.getTask();
 			ti.setCompleted(           "c100"       );
 			ti.setCompletedDate(       new Date()   );
 			ti.setCompletedDateDisplay(completedDate);
@@ -1142,11 +1146,13 @@ public class TaskTable extends Composite implements ActionHandler {
 				handleTaskSetPercentDoneImpl(task, "c090");
 			}
 		}
-		
+
 		// Finally, make sure the row is showing with the correct
 		// styles, ...  We can do that by simply re-rendering the
-		// name column.
-		renderColumnTaskName(task, uid.getTaskRow());
+		// 'Task Name' and 'Assigned To' columns.
+		int row = uid.getTaskRow();
+		renderColumnTaskName(  task, row);
+		renderColumnAssignedTo(task, row);
 	}
 	
 	/*
@@ -1231,24 +1237,25 @@ public class TaskTable extends Composite implements ActionHandler {
 		vp.addStyleName("gwtTaskList_assigneesList");
 
 		// Scan the individual assignees...
+		boolean isCancelled = task.getTask().getStatus().equals("s4");;
 		for (final AssignmentInfo ai:  task.getTask().getAssignments()) {
 			// ...adding a PresenceControl for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai));
+			vp.add(buildAssigneePanel(ai, isCancelled));
 		}
 
 		// Scan the group assignees...
 		for (AssignmentInfo ai:  task.getTask().getAssignmentGroups()) {
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai));
+			vp.add(buildAssigneePanel(ai, isCancelled));
 		}
 		
 		// Scan the team assignees...
 		for (AssignmentInfo ai:  task.getTask().getAssignmentTeams()) {			
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai));
+			vp.add(buildAssigneePanel(ai, isCancelled));
 		}
 
 		// If there were any assignees...
@@ -1485,6 +1492,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (uid.getTaskSelected()) {
 			cb.setValue(true);
 			uid.setTaskSelected(true);
+			m_flexTableRF.addStyleName(row, "selected");
 		}
 		FlowPanel fp = new FlowPanel();
 		fp.add(cb);
@@ -1538,7 +1546,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		TaskInfo ti = task.getTask();
 		boolean isUnseen    = (!(ti.getSeen()));
 		boolean isCancelled =    ti.getStatus().equals("s4");
-		boolean isClosed    =   (ti.getCompleted().equals("c100") || isCancelled);
+		boolean isClosed    =   (ti.getCompleted().equals("c100") && (!isCancelled));
 		
 		// Define a panel to contain the task name widgets.
 		FlowPanel fp = new FlowPanel();
@@ -1585,8 +1593,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
 		uid.setTaskLabel(taskLabel);
-		if (isUnseen)    taskLabel.addStyleName("bold");				// Unseen:     Bold.
-		if (isCancelled) m_flexTableRF.addStyleName(row, "disabled");	// Cancelled:  Gray.
+		if (isUnseen)    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
+		if (isCancelled) m_flexTableRF.addStyleName(   row, "disabled");	// Cancelled:  Gray.
+		else             m_flexTableRF.removeStyleName(row, "disabled");
 		ta.getElement().appendChild(taskLabel.getElement());
 		fp.add(ta);
 		m_flexTable.setWidget(row, Column.NAME.ordinal(), fp);
@@ -1625,7 +1634,15 @@ public class TaskTable extends Composite implements ActionHandler {
 	
 	private void selectAllTasksImpl(List<TaskListItem> tasks, boolean selected) {
 		for (TaskListItem task:  tasks) {
-			getUIData(task).getTaskSelectorCB().setValue(selected);
+			UIData uid = getUIData(task);
+			uid.getTaskSelectorCB().setValue(selected);
+			uid.setTaskSelected(selected);
+			
+			int row = uid.getTaskRow();
+			if (selected)
+		         m_flexTableRF.addStyleName(   row, "selected");
+		    else m_flexTableRF.removeStyleName(row, "selected");
+
 			selectAllTasksImpl(task.getSubtasks(), selected);
 		}
 	}
