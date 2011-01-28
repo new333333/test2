@@ -700,7 +700,7 @@ a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: ${ss_style_font_smallprint};
 	background: #949494 none repeat scroll 0 0;
-	color:#FFFFFF;
+	color:#FFFFFF !important;
 	margin-right:3px;
 	padding:2px 10px;
 	text-decoration:none;
@@ -765,10 +765,12 @@ div.ss_tag_content {
 
 .ss_muted_cloud_tag {
   color: ${ss_style_muted_tag_color};
-   font-size: 11px;
+   font-size: 13px;
+   padding-right: 5px;
+   line-height: 17px;
 }
 .ss_muted_tag_cloud {
-  width: 70%;
+  width: 85%;
   padding-top: 1px;
 }
 
@@ -2056,7 +2058,7 @@ td.ss_view_info {
 	padding-left: 0;
 }
 img.ss_generic_close {
-    background:url(<html:imagesPath/>tabs/tab_delete.gif) no-repeat left 0px;
+    background:url(<html:imagesPath/>tabs/tab_delete.png) no-repeat left 0px;
     width:9px;
     height: 9px;
 }
@@ -2083,7 +2085,7 @@ a:hover img.ss_accessory_modify {
 }
 
 img.ss_accessory_delete {
-    background:url(<html:imagesPath/>icons/accessory_delete.gif) no-repeat left 0px;
+    background:url(<html:imagesPath/>icons/accessory_delete.png) no-repeat left 0px;
     width:12px;
     height: 12px;
 }
