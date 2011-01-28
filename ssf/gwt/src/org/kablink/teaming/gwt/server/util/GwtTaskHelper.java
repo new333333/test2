@@ -87,6 +87,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
@@ -472,8 +473,35 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static Boolean deleteTasks(AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
+		try {
+			// Before we delete any of them... 
+			FolderModule fm = bs.getFolderModule();
+			for (TaskId taskId:  taskIds) {
+				// ...make sure we can delete all of them.
+				fm.checkAccess(
+					fm.getEntry(
+						taskId.getBinderId(),
+						taskId.getEntryId()),
+						FolderOperation.preDeleteEntry);
+			}
+
+			// If we get here, we have rights to delete all the tasks
+			// that we were given.  Scan them...
+			for (TaskId taskId:  taskIds) {
+				// ...deleting each.
+				TrashHelper.preDeleteEntry(
+					bs,
+					taskId.getBinderId(),
+					taskId.getEntryId());
+			}
+
+			// If we get here, the deletes were successful.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 	
 	/*
@@ -988,9 +1016,10 @@ public class GwtTaskHelper {
 
 		// ...and use that to create a TaskBundle. 
 		TaskBundle reply = new TaskBundle();
-		reply.setTaskLinkage(taskLinkage   );
-		reply.setTasks(      tasks         );
-		reply.setBinderId(   binder.getId());
+		reply.setTaskLinkage(     taskLinkage        );
+		reply.setTasks(           tasks              );
+		reply.setBinderId(        binder.getId()     );
+		reply.setBinderIsMirrored(binder.isMirrored());
 		
 		// Set the Binder based rights...
 		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage( request, bs, binder ));
@@ -1122,8 +1151,34 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	public static Boolean purgeTasks(AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return Boolean.TRUE;
+		try {
+			// Before we purge any of them... 
+			FolderModule fm = bs.getFolderModule();
+			for (TaskId taskId:  taskIds) {
+				// ...make sure we can purge all of them.
+				fm.checkAccess(
+					fm.getEntry(
+						taskId.getBinderId(),
+						taskId.getEntryId()),
+						FolderOperation.deleteEntry);
+			}
+
+			// If we get here, we have rights to purge all the tasks
+			// that we were given.  Scan them...
+			for (TaskId taskId:  taskIds) {
+				// ...deleting each.
+				fm.deleteEntry(
+					taskId.getBinderId(),
+					taskId.getEntryId());
+			}
+
+			// If we get here, the purges were successful.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
 	}
 	
 	/**

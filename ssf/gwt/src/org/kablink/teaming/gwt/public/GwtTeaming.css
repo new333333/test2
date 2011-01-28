@@ -558,7 +558,7 @@ body, table td, select
 
 .margintop1 { margin-top: 0.3em }
 .margintop2 { margin-top: 0.5em }
-.margintop3 { margin-top: 1em }
+.margintop3   { margin-top: 1em }
 .marginleft1 { margin-left: 1em }
 .marginleft2 { margin-left: 2em }
 .marginleft3 { margin-left: 3em }
@@ -566,6 +566,7 @@ body, table td, select
 .marginbottom1 { margin-bottom: 0.3em }
 .marginbottom2 { margin-bottom: 0.5em }
 .marginbottom3 { margin-bottom: 1em }
+.marginright2px { margin-right: 2px }
 
 /* Style used for the panel that holds the content in the "color picker" dialog. */
 .colorPickerContentPanel

@@ -71,6 +71,7 @@ public class TaskListing implements ActionTrigger {
 	private TaskButton		m_moveUpButton;		//
 	private TaskButton		m_moveLeftButton;	//
 	private TaskButton		m_moveRightButton;	//
+	private TaskButton		m_purgeButton;		//
 	private TaskTable		m_taskTable;		//
 	
 	private final GwtRpcServiceAsync				m_rpcService = GwtTeaming.getRpcService();				// 
@@ -107,8 +108,8 @@ public class TaskListing implements ActionTrigger {
 	}
 
 	/*
-	 * Adds the task tools (move up/down, delete, ...) to the task
-	 * tools DIV.
+	 * Adds the task tools (move up/down, delete, purge, ...) to the
+	 * task tools DIV.
 	 * 
 	 * Note that all the widgets are initially created as disabled.
 	 * They'll be enabled, as appropriate, when the task listing is
@@ -145,7 +146,17 @@ public class TaskListing implements ActionTrigger {
 			m_messages.taskAltDelete(),
 			false,
 			TeamingAction.TASK_DELETE);
+		m_deleteButton.addStyleName("marginright2px");
 		m_taskToolsDIV.appendChild(m_deleteButton.getElement());
+
+		// ...create the purge button...
+		m_purgeButton = new TaskButton(
+			this,
+			m_messages.taskLabelPurge(),
+			m_messages.taskAltPurge(),
+			false,
+			TeamingAction.TASK_PURGE);
+		m_taskToolsDIV.appendChild(m_purgeButton.getElement());
 
 		// ...and create a span to hold any hints the TaskTable may
 		// ...want to display.
@@ -172,6 +183,7 @@ public class TaskListing implements ActionTrigger {
 	public TaskButton    getMoveUpButton()    {return m_moveUpButton;   }
 	public TaskButton    getMoveLeftButton()  {return m_moveLeftButton; }
 	public TaskButton    getMoveRightButton() {return m_moveRightButton;}
+	public TaskButton    getPurgeButton()     {return m_purgeButton;   }
 	
 	/**
 	 * Set'er methods.

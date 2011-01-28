@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class TaskBundle implements IsSerializable {
+	private boolean				m_binderIsMirrored;		//
 	private boolean				m_canModifyTaskLinkage;	// Based on BinderOperation.setProperty.
 	private boolean				m_canModifyEntry;		// Based on FolderOperation.modifyEntry.
 	private boolean				m_canPurgeEntry;		// Based on FolderOperation.deleteEntry.
@@ -67,6 +68,7 @@ public class TaskBundle implements IsSerializable {
 	 * 
 	 * @return
 	 */
+	public boolean            getBinderIsMirrored()     {return m_binderIsMirrored;    }
 	public boolean            getCanModifyTaskLinkage() {return m_canModifyTaskLinkage;}
 	public boolean            getCanModifyEntry()       {return m_canModifyEntry;      }
 	public boolean            getCanPurgeEntry()        {return m_canPurgeEntry;       }
@@ -82,6 +84,7 @@ public class TaskBundle implements IsSerializable {
 	 * 
 	 * @param
 	 */
+	public void setBinderIsMirrored(    boolean            binderIsMirrored)     {m_binderIsMirrored     = binderIsMirrored;    }
 	public void setCanModifyTaskLinkage(boolean            canModifyTaskLinkage) {m_canModifyTaskLinkage = canModifyTaskLinkage;}
 	public void setCanModifyEntry(      boolean            canModifyEntry)       {m_canModifyEntry       = canModifyEntry;      }
 	public void setCanPurgeEntry(       boolean            canPurgeEntry)        {m_canPurgeEntry        = canPurgeEntry;       }
