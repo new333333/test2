@@ -70,6 +70,7 @@ import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -2729,7 +2730,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtServerHelper.saveSubscriptionData( this, entryId, subscriptionData );
 	}
 	
-	
+
+	/**
+	 * Send an email notification to the given recipients for the given entry.
+	 */
+	public GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds )
+		throws GwtTeamingException
+	{
+		GwtShareEntryResults retValue;
+		
+		try
+		{
+			retValue = GwtServerHelper.shareEntry( this, entryId, comment, principalIds, teamIds );
+		}
+		catch ( Exception ex )
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		return retValue;
+	}
+
 	/**
 	 * Called to mark that the current user is tracking the specified
 	 * binder.

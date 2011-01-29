@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -267,4 +268,7 @@ public interface GwtRpcServiceAsync
 	
 	// Add a reply to the given entry
 	public void replyToEntry( HttpRequestInfo ri, String entryId, String title, String desc, AsyncCallback<ActivityStreamEntry> callback );
+
+	// Send an email notification to the given recipients for the given entry.
+	public void shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds, AsyncCallback<GwtShareEntryResults> callback );
 }// end GwtRpcServiceAsync
