@@ -367,9 +367,9 @@
 	width: 315px;
 }
 
-.shareThisRecipientTablePanelHeight
+.shareThisRecipientTablePanelHeight, .shareThisMyTeamsPanelHeight
 {
-	height: 150px;
+	height: 100px;
 	overflow: auto;
 }
 
@@ -392,7 +392,7 @@
 	padding-top: 8px;
 }
 
-.shareThisMyTeamsPanel
+.shareThisShareWithTeamsPanel
 {
 	padding-top: 10px;
 }
@@ -667,6 +667,26 @@ body, table td, select
 	right: 8px;
 	top: 9px;
 }
+
+/* Styles used for the error panel in a dialog. */
+.dlgErrorPanel
+{
+	font-size: 14px;
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+.dlgErrorLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+}
+
 
 /* Styles used with the panel that wraps a drop widget. */
 .dropWidgetWrapperPanel

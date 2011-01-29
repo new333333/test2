@@ -43,7 +43,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -69,6 +68,7 @@ public abstract class DlgBox extends PopupPanel
 	protected FocusWidget m_focusWidget;	// Widget that should receive the focus when this dialog is shown.
 	protected boolean m_modal;
 	protected boolean m_visible = false;
+	private FlowPanel m_errorPanel;
     	
 	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
@@ -137,11 +137,17 @@ public abstract class DlgBox extends PopupPanel
 		Panel		footer;
 		
 		panel = new FlowPanel();
-
+		
 		// Add the header.
 		header = createHeader( caption );
 		panel.add( header );
 		
+		// Create a panel where errors can be displayed.
+		m_errorPanel = new FlowPanel();
+		m_errorPanel.addStyleName( "dlgErrorPanel" );
+		m_errorPanel.setVisible( false );
+		panel.add( m_errorPanel );
+
 		// Add the main content of the dialog box.
 		content = createContent( properties );
 		panel.add( content );
@@ -264,6 +270,15 @@ public abstract class DlgBox extends PopupPanel
 	
 	
 	/**
+	 * Return the panel that holds the error messages.
+	 */
+	public FlowPanel getErrorPanel()
+	{
+		return m_errorPanel;
+	}
+	
+	
+	/**
 	 * Get the widget that should receive the focus when this dialog is shown.
 	 */
 	public abstract FocusWidget getFocusWidget();
@@ -297,6 +312,13 @@ public abstract class DlgBox extends PopupPanel
 		super.hide();
 	}// end hide()
 	
+	/**
+	 * Hide the panel that displays the errors.
+	 */
+	public void hideErrorPanel()
+	{
+		m_errorPanel.setVisible( false );
+	}
 	
 	/**
 	 * Initialize the edit/cancel handlers.
@@ -430,4 +452,12 @@ public abstract class DlgBox extends PopupPanel
 			timer.schedule( 500 );
 		}
 	}// end show()
+	
+	/**
+	 * Show the panel that displays the errors.
+	 */
+	public void showErrorPanel()
+	{
+		m_errorPanel.setVisible( true );
+	}
 }// end DlgBox

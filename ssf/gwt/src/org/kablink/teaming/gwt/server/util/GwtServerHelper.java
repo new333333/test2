@@ -41,12 +41,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
+import javax.portlet.ActionRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -65,6 +67,7 @@ import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -85,7 +88,9 @@ import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.FolderType;
@@ -127,6 +132,7 @@ import org.kablink.teaming.module.license.LicenseModule;
 import org.kablink.teaming.module.license.LicenseModule.LicenseOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -3509,6 +3515,154 @@ public class GwtServerHelper {
 			((null == expandedBindersList) ?
 				new ArrayList<Long>()      :
 				expandedBindersList));
+	}
+
+	/**
+	 * Send an email notification to the given recipients for the given entry.
+	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
+	 */
+	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, ArrayList<String> principalIds, ArrayList<String> teamIds )
+		throws Exception
+	{
+		FolderModule folderModule;
+		ProfileModule profileModule;
+		FolderEntry entry;
+		Long entryIdL;
+		Set<Long> principalIdsL;
+		Set<Long> teamIdsL;
+		Map sendEmailStatus;
+		List<User> noAccessPrincipals;
+		GwtShareEntryResults results;
+		
+		folderModule = ami.getFolderModule();
+		entryIdL = new Long( entryId );
+		entry = folderModule.getEntry( null, entryIdL );
+		
+		principalIdsL = new HashSet<Long>();
+
+		// Convert all of the user and groups ids to Longs
+		if ( principalIds != null )
+		{
+			for ( String nextId : principalIds )
+			{
+				principalIdsL.add( Long.valueOf( nextId ) );
+			}
+		}
+
+		teamIdsL = new HashSet<Long>();
+		
+		// Convert all of the team ids to Longs
+		if ( teamIds != null )
+		{
+			for ( String nextId : teamIds )
+			{
+				teamIdsL.add( Long.valueOf( nextId ) );
+			}
+		}
+		
+		profileModule = ami.getProfileModule();
+		profileModule.setShares( entry, principalIdsL, teamIdsL );
+
+		// Send an email to the given recipients.
+		{
+			String title;
+			String shortTitle;
+			String desc;
+			Description body;
+	        User user;
+			String mailTitle;
+			Set<String> emailAddress;
+			String bccEmailAddress;
+
+	        user = RequestContextHolder.getRequestContext().getUser();
+
+			title = entry.getTitle();
+			shortTitle = title;
+			
+			if ( entry.getParentBinder() != null )
+				title = entry.getParentBinder().getPathName() + "/" + title;
+
+			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
+			desc = "<a href=\"" + PermaLinkUtil.getPermalink( (ActionRequest) null, entry ) + "\">" + title + "</a><br/><br/>" + addedComments;
+			body = new Description( desc );
+
+			mailTitle = NLT.get( "relevance.mailShared", new Object[]{Utils.getUserTitle( user )} );
+			mailTitle += " (" + shortTitle +")";
+			
+			emailAddress = new HashSet();
+			
+			//See if this user wants to be BCC'd on all mail sent out
+			bccEmailAddress = user.getBccEmailAddress();
+			if ( bccEmailAddress != null && !bccEmailAddress.equals("") )
+			{
+				if ( !emailAddress.contains( bccEmailAddress.trim() ) )
+				{
+					//Add the user's chosen bcc email address
+					emailAddress.add( bccEmailAddress.trim() );
+				}
+			}
+			
+			// Send the email notification
+			sendEmailStatus = ami.getAdminModule().sendMail( principalIdsL, teamIdsL, emailAddress, null, null, mailTitle, body );
+		}
+			
+		// Check to see if the recipients have rights to see the given entry.
+		{
+			Set<Long> totalIds;
+			Set<Principal> totalUsers;
+
+			totalIds = new HashSet<Long>();
+			totalIds.addAll( principalIdsL );
+			
+			totalUsers = profileModule.getPrincipals( totalIds );
+			noAccessPrincipals = new ArrayList<User>();
+			for ( Principal p : totalUsers )
+			{
+				if ( p instanceof User )
+				{
+					try
+					{
+						AccessUtils.readCheck( (User)p, entry );
+					}
+					catch( AccessControlException e )
+					{
+						noAccessPrincipals.add( (User) p );
+					}
+				}
+			}
+		}
+
+		results = new GwtShareEntryResults();
+		
+		// Package up the results.
+		{
+			List errors;
+
+			// Do we have any users who were sent an email who don't have rights to read the entry?
+			if ( noAccessPrincipals != null && noAccessPrincipals.size() > 0 )
+			{
+				// Yes, add them to the results
+				for ( User user : noAccessPrincipals )
+				{
+					GwtUser gwtUser;
+					
+					// Add this user to the results.
+					gwtUser = new GwtUser();
+					gwtUser.setUserId( user.getId() );
+					gwtUser.setName( user.getName() );
+					gwtUser.setTitle( Utils.getUserTitle( user ) );
+					gwtUser.setWorkspaceTitle( user.getWSTitle() );
+					
+					results.addUser( gwtUser );
+				}
+			}
+			
+			// Add any errors that happened to the results.
+			errors = (List)sendEmailStatus.get( ObjectKeys.SENDMAIL_ERRORS );
+			results.setErrors( (String[])errors.toArray( new String[0]) );
+		}
+			
+		return results;
 	}
 
 	/*

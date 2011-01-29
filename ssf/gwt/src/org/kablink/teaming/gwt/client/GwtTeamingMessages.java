@@ -289,6 +289,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
 	String rpcFailure_SetUnseen();
+	String rpcFailure_ShareEntry();
 	String rpcFailure_TrackingBinder();
 	String rpcFailure_TrackingPerson();
 	String rpcFailure_UnknownCause();
@@ -732,8 +733,10 @@ public interface GwtTeamingMessages extends Messages
 	String commentsLabel();
 	String defaultShareTitle( String title );
 	String noShareRecipients();
+	String noShareRecipientsOrTeams();
 	String removeRecipientHint();
 	String shareCaption();
+	String shareErrors();
 	String shareHint();
 	String shareName();
 	String shareType();
@@ -743,6 +746,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithTeams();
 	String shareWithUsers();
 	String unknownShareType();
+	String usersWithoutRights();
 	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.

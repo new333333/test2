@@ -33,7 +33,7 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
@@ -55,6 +56,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -91,11 +93,13 @@ public class ShareThisDlg extends DlgBox
 	private FindCtrl m_findCtrl;
 	private ImageResource m_deleteImgR;
 	private FlexTable m_recipientTable;
+	private FlowPanel m_shareWithTeamsPanel;
 	private FlowPanel m_myTeamsPanel;
 	private FlowPanel m_recipientTablePanel;
 	private FlexCellFormatter m_cellFormatter;
 	private String m_entryId;
 	private AsyncCallback<List<TeamInfo>> m_readTeamsCallback;
+	private AsyncCallback<GwtShareEntryResults> m_shareEntryCallback;
 
 	/**
 	 * This class is a checkbox with a TeamInfo object associated with it.
@@ -157,6 +161,7 @@ public class ShareThisDlg extends DlgBox
 	private class RecipientInfo
 	{
 		private String m_recipientName;
+		private String m_id;
 		private RecipientType m_type;
 		
 		/**
@@ -165,7 +170,16 @@ public class ShareThisDlg extends DlgBox
 		public RecipientInfo()
 		{
 			m_recipientName = null;
+			m_id = null;
 			m_type = RecipientType.UNKNOWN;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getId()
+		{
+			return m_id;
 		}
 		
 		/**
@@ -182,6 +196,14 @@ public class ShareThisDlg extends DlgBox
 		public RecipientType getType()
 		{
 			return m_type;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setId( String id )
+		{
+			m_id = id;
 		}
 		
 		/**
@@ -386,9 +408,28 @@ public class ShareThisDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void close()
+	private void adjustMyTeamsPanelHeight()
 	{
-		setVisible( false );
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
+			{
+				int height;
+				
+				// Get the height of the panel that holds the list of recipients.
+				height = m_myTeamsPanel.getOffsetHeight();
+				
+				// If the height is greater than 150 pixels put an overflow auto on the panel
+				// and give the panel a fixed height of 150 pixels.
+				if ( height >= 150 )
+					m_myTeamsPanel.addStyleName( "shareThisMyTeamsPanelHeight" );
+				else
+					m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	/**
@@ -568,9 +609,18 @@ public class ShareThisDlg extends DlgBox
 		// Later, we will issue an ajax request to get the list of teams.  updateListOfTeams()
 		// will populate the ui.
 		{
+			Label label;
+
+			m_shareWithTeamsPanel = new FlowPanel();
+			m_shareWithTeamsPanel.addStyleName( "shareThisShareWithTeamsPanel" );
+			label = new Label( GwtTeaming.getMessages().shareWithTeams() );
+			label.addStyleName( "shareThisShareWithTeamsLabel" );
+			m_shareWithTeamsPanel.add( label );
+			
+			mainPanel.add( m_shareWithTeamsPanel );
+			
 			m_myTeamsPanel = new FlowPanel();
-			m_myTeamsPanel.addStyleName( "shareThisMyTeamsPanel" );
-			mainPanel.add( m_myTeamsPanel );
+			m_shareWithTeamsPanel.add( m_myTeamsPanel );
 		}
 		
 		// Create an image resource for the delete image.
@@ -608,9 +658,151 @@ public class ShareThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
-		return true;
+		HttpRequestInfo ri;
+		String comment;
+		ArrayList<String> principalIds;
+		ArrayList<String> teamIds;
+		
+		if ( m_shareEntryCallback == null )
+		{
+			m_shareEntryCallback = new AsyncCallback<GwtShareEntryResults>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_ShareEntry() );
+					
+					hide();
+				}
+
+				/**
+				 * 
+				 */
+				public void onSuccess( GwtShareEntryResults result )
+				{
+					ArrayList<GwtUser> usersWithoutReadRights;
+					String[] errorMessages;
+					FlowPanel errorPanel;
+					
+					boolean haveErrors;
+					
+					haveErrors = false;
+					
+					// Get the panel that holds the errors.
+					errorPanel = getErrorPanel();
+					errorPanel.clear();
+					
+					// Are there any recipients that did not have read rights to the entry?
+					usersWithoutReadRights = result.getUsersWithoutReadRights();
+					if ( usersWithoutReadRights != null && usersWithoutReadRights.size() > 0 )
+					{
+						// Yes
+						haveErrors = true;
+
+						// Add a message that tells the user that some of the recipients don't
+						// have rights to this entry.
+						{
+							Label label;
+							
+							label = new Label( GwtTeaming.getMessages().usersWithoutRights() );
+							label.addStyleName( "dlgErrorLabel" );
+							errorPanel.add( label );
+							
+							for ( GwtUser nextUser : usersWithoutReadRights )
+							{
+								label = new Label( nextUser.getShortDisplayName() );
+								errorPanel.add( label );
+							}
+							
+							// Add some space.
+							{
+								FlowPanel spacerPanel;
+								
+								spacerPanel = new FlowPanel();
+								spacerPanel.addStyleName( "paddingTop8px" );
+								errorPanel.add( spacerPanel );
+							}
+						}
+					}
+					
+					// Were there any errors?
+					errorMessages = result.getErrors();
+					if ( errorMessages != null && errorMessages.length > 0 )
+					{
+						// Yes
+						haveErrors = true;
+
+						// Add each error message to the error panel.
+						{
+							Label label;
+							
+							label = new Label( GwtTeaming.getMessages().shareErrors() );
+							label.addStyleName( "dlgErrorLabel" );
+							errorPanel.add( label );
+							
+							for ( String nextErrMsg : errorMessages )
+							{
+								label = new Label( nextErrMsg );
+								errorPanel.add( label );
+							}
+						}
+					}
+					
+					// Do we have any errors to display?
+					if ( haveErrors )
+					{
+						// Yes
+						// Make the error panel visible.
+						showErrorPanel();
+					}
+					else
+					{
+						// Close this dialog.
+						hide();
+					}
+				}
+			};
+		}
+		
+		// Get the comment the user entered.
+		comment = getComment();
+		
+		// Get the ids of the users and groups we should send an email to.
+		principalIds = getRecipientIds();
+		
+		// Get the ids of the teams we should send an email to.
+		teamIds = getTeamIds();
+		
+		// Did the user specify any recipients or teams to send to?
+		if ( (principalIds != null && principalIds.size() > 0) || (teamIds != null && teamIds.size() > 0) )
+		{
+			// Yes
+			// Issue an ajax request to send the email.
+			ri = HttpRequestInfo.createHttpRequestInfo();
+			GwtTeaming.getRpcService().shareEntry( ri, m_entryId, comment, principalIds, teamIds, m_shareEntryCallback );
+		}
+		else
+		{
+			// No, tell the user to specify at least one recipient.
+			Window.alert( GwtTeaming.getMessages().noShareRecipientsOrTeams() );
+		}
+		
+		// Returning false will prevent the dialog from closing.  We will close
+		// the dialog when we get the response back from our ajax request.
+		return false;
 	}
 
+	/**
+	 * Return the text the user entered for the comment.
+	 */
+	private String getComment()
+	{
+		return m_msgTextArea.getText();
+	}
 	
 	/**
 	 * Implements the DlgBox.getDataFromDlg() abstract method.
@@ -647,6 +839,77 @@ public class ShareThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the ids of each of the recipients (users and groups)
+	 */
+	private ArrayList<String> getRecipientIds()
+	{
+		ArrayList<String> recipientIds;
+		int i;
+		
+		recipientIds = new ArrayList<String>();
+		
+		// Look through the table for the given recipient.
+		// Recipients start in row 1.
+		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		{
+			Widget widget;
+			
+			if ( m_recipientTable.getCellCount( i ) > 2 )
+			{
+				// Get the RemoveRecipientWidget from the 3 column.
+				widget = m_recipientTable.getWidget( i, 2 );
+				if ( widget != null && widget instanceof RemoveRecipientWidget )
+				{
+					RecipientInfo nextRecipientInfo;
+					
+					nextRecipientInfo = ((RemoveRecipientWidget) widget).getRecipientInfo();
+					if ( nextRecipientInfo != null )
+					{
+						recipientIds.add( nextRecipientInfo.getId() );
+					}
+				}
+			}
+		}
+		
+		return recipientIds;
+	}
+	
+	/**
+	 * Return the ids of each of the teams the user selected.
+	 */
+	private ArrayList<String> getTeamIds()
+	{
+		ArrayList<String> teamIds;
+		int i;
+		
+		teamIds = new ArrayList<String>();
+		
+		for (i = 0; i < m_myTeamsPanel.getWidgetCount(); ++i)
+		{
+			Widget nextWidget;
+			
+			// Get the next widget in the "my teams" panel.
+			nextWidget = m_myTeamsPanel.getWidget( i );
+			
+			// Is this widget a TeamCheckbox widget? 
+			if ( nextWidget instanceof TeamCheckBox )
+			{
+				TeamCheckBox teamCheckbox;
+				
+				// Yes, is the team selected?
+				teamCheckbox = (TeamCheckBox) nextWidget;
+				if ( teamCheckbox.getValue() == Boolean.TRUE )
+				{
+					// Yes, add it to the list.
+					teamIds.add( teamCheckbox.getTeamInfo().getBinderId() );
+				}
+			}
+		}
+		
+		return teamIds;
+	}
+	
+	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */
 	public void handleAction( TeamingAction ta, Object selectedObj )
@@ -665,6 +928,7 @@ public class ShareThisDlg extends DlgBox
 				recipientInfo = new RecipientInfo();
 				recipientInfo.setName( user.getShortDisplayName() );
 				recipientInfo.setType( RecipientType.USER );
+				recipientInfo.setId( user.getUserId() );
 				
 				// Add the recipient to our list of recipients
 				addRecipient( recipientInfo );
@@ -815,6 +1079,8 @@ public class ShareThisDlg extends DlgBox
 		
 		init( title, entryId );
 		
+		hideErrorPanel();
+		
 		posCallback = new PopupPanel.PositionCallback()
 		{
 			/**
@@ -840,13 +1106,9 @@ public class ShareThisDlg extends DlgBox
 	{
 		int count = 0;
 		Iterator<TeamInfo> teamIT;
-		Label label;
 		
 		m_myTeamsPanel.clear();
-		
-		label = new Label( GwtTeaming.getMessages().shareWithTeams() );
-		label.addStyleName( "shareThisShareWithTeamsLabel" );
-		m_myTeamsPanel.add( label );
+		m_myTeamsPanel.removeStyleName( "shareThisMyTeamsPanelHeight" );
 		
 		teamIT = listOfTeams.iterator();
 		while ( teamIT.hasNext() )
@@ -867,11 +1129,12 @@ public class ShareThisDlg extends DlgBox
 		if ( count == 0 )
 		{
 			// No, Hide the panel that holds the teams.
-			m_myTeamsPanel.setVisible( false );
+			m_shareWithTeamsPanel.setVisible( false );
 		}
 		else
 		{
-			m_myTeamsPanel.setVisible( true );
+			m_shareWithTeamsPanel.setVisible( true );
+			adjustMyTeamsPanelHeight();
 		}
 	}
 
