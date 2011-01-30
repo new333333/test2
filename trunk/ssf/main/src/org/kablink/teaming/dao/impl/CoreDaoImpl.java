@@ -2415,4 +2415,21 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		return result.size();
 	}
 	
+	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult) {
+		List result = new ArrayList();
+		result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(LoginInfo.class)
+					.setProjection(Projections.property("id"))
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+						.add(Restrictions.eq("startBy", userId))
+						.add(Restrictions.eq("description", authenticatorName))
+						.add(Restrictions.ge("startDate", startDate))
+						.setCacheable(false);
+				if(maxResult != null)
+					crit.setMaxResults(maxResult);
+				return crit.list();
+			}});;
+		return result;
+	}
  }

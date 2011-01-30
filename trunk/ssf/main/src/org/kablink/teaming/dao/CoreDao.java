@@ -226,5 +226,6 @@ public interface CoreDao {
     
     public int getLoginCount(final Date startDate);
     
-	
+	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult);
+
 }

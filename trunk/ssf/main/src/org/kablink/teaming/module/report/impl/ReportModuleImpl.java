@@ -122,6 +122,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected FolderModule folderModule;
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
+	protected Map<String, String> authenticatorFrequency = new HashMap<String, String>();
+	private final static String AUTHENTICATOR_FREQUENCY_DAILY = "daily";
+	private final static String AUTHENTICATOR_FREQUENCY_ALL = "all";
+	private final static String AUTHENTICATOR_FREQUENCY_DEFAULT = AUTHENTICATOR_FREQUENCY_DAILY;
 	private final static long MEGABYTES = 1024L * 1024L;
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -198,14 +202,61 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
  					break;
  				}
  			}
-
  		}
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_ICAL);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_PORTAL);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_B);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_T);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_RSS);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_UNKNOWN);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEB);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEBDAV);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WS);
  	}
 
+	private void initAuthenticatorFrequency(String authenticator) {
+ 		authenticatorFrequency.put(authenticator, 
+ 				SPropsUtil.getString("audit.login.authenticator.frequency." + authenticator, AUTHENTICATOR_FREQUENCY_DEFAULT));
+	}
+	
+	private String getAuthenticatorFrequency(String authenticator) {
+		String freq = authenticatorFrequency.get(authenticator);
+		if(freq != null)
+			return freq;
+		else
+			return AUTHENTICATOR_FREQUENCY_DEFAULT;
+	}
+	
 	public void addAuditTrail(AuditTrail auditTrail) {
 		//only log if enabled
-		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType()))
-			getCoreDao().save(auditTrail);
+		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
+			if(auditTrail instanceof LoginInfo) {
+				LoginInfo li = (LoginInfo) auditTrail;
+				if(getAuthenticatorFrequency(li.getAuthenticatorName()).equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+					getCoreDao().save(auditTrail);
+				}
+				else { // we log this only once a day
+					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
+							RequestContextHolder.getRequestContext().getUserId(),
+							li.getAuthenticatorName(), 
+							getBeginningOfToday(), 
+							1);
+					if(loginInfoIds.size() == 0)
+						getCoreDao().save(auditTrail);
+				}
+			}
+			else {
+				getCoreDao().save(auditTrail);
+			}
+		}
+	}
+	private Date getBeginningOfToday() {
+		Calendar c = Calendar.getInstance(); // current time
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
 	}
 	public void addAuditTrail(AuditType type, DefinableEntity entity) {
 		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity));
