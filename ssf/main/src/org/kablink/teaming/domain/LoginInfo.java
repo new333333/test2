@@ -70,15 +70,15 @@ public class LoginInfo extends AuditTrail {
 	 */
 	public static final String AUTHENTICATOR_ICAL	= "ical";
 	/**
-	 * SOAP-based WS client with WS-Security authentication (message-level security)
+	 * SOAP web services client with WS-Security authentication (message-level security)
 	 */
 	public static final String AUTHENTICATOR_WS		= "ws";
 	/**
-	 * Remoting client with HTTP Basic authentication
+	 * SOAP web services client with HTTP Basic authentication
 	 */
 	public static final String AUTHENTICATOR_REMOTING_B = "r_b";
 	/**
-	 * Remoting client with token-based authentication (message-level security)
+	 * SOAP web services client with token-based authentication (message-level security)
 	 */
 	public static final String AUTHENTICATOR_REMOTING_T = "r_t";
 	
