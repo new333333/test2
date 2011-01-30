@@ -237,7 +237,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				}
 				else { // we log this only once a day
 					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
-							RequestContextHolder.getRequestContext().getUserId(),
+							// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
+							// during authentication, the value from the request context will always be admin.
+							li.getStartBy(),
 							li.getAuthenticatorName(), 
 							getBeginningOfToday(), 
 							1);
