@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -123,10 +124,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
 	protected Map<String, String> authenticatorFrequency = new HashMap<String, String>();
-	private final static String AUTHENTICATOR_FREQUENCY_DAILY = "daily";
+	private final static String AUTHENTICATOR_FREQUENCY_DAILY_STRICT = "daily_strict";
+	private final static String AUTHENTICATOR_FREQUENCY_DAILY_SOFT = "daily_soft";
 	private final static String AUTHENTICATOR_FREQUENCY_ALL = "all";
-	private final static String AUTHENTICATOR_FREQUENCY_DEFAULT = AUTHENTICATOR_FREQUENCY_DAILY;
+	private final static String AUTHENTICATOR_FREQUENCY_NONE = "none";
+	private final static String AUTHENTICATOR_FREQUENCY_DEFAULT = AUTHENTICATOR_FREQUENCY_DAILY_SOFT;
 	private final static long MEGABYTES = 1024L * 1024L;
+	private static ConcurrentHashMap<String, Integer> loginInfoLastDays = new ConcurrentHashMap<String, Integer>();
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -232,10 +236,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
 			if(auditTrail instanceof LoginInfo) {
 				LoginInfo li = (LoginInfo) auditTrail;
-				if(getAuthenticatorFrequency(li.getAuthenticatorName()).equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+				String authenticatorFrequency = getAuthenticatorFrequency(li.getAuthenticatorName());
+				if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+					// each event causes a new record
 					getCoreDao().save(auditTrail);
 				}
-				else { // we log this only once a day
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
+					// only once record a day for this type
 					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
 							// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
 							// during authentication, the value from the request context will always be admin.
@@ -246,11 +253,30 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					if(loginInfoIds.size() == 0)
 						getCoreDao().save(auditTrail);
 				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
+					Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName());
+					int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+					if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
+						getCoreDao().save(auditTrail);
+						setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName(), 
+							dayOfYear);
+					}
+				}
 			}
 			else {
 				getCoreDao().save(auditTrail);
 			}
 		}
+	}
+	private Integer getLoginInfoLastDay(Long zoneId, Long userId, String authenticatorName) {
+		return loginInfoLastDays.get(zoneId + "." + userId + "." + authenticatorName);
+	}
+	private void setLoginInfoLastDay(Long zoneId, Long userId, String authenticatorName, int day) {
+		loginInfoLastDays.put(zoneId + "." + userId + "." + authenticatorName, Integer.valueOf(day));
 	}
 	private Date getBeginningOfToday() {
 		Calendar c = Calendar.getInstance(); // current time
