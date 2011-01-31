@@ -60,6 +60,43 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
 	var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
+	
+	function toggleGraphs() {
+		var ss_taskGraphExpander  = "<ssf:escapeJavaScript><html:imagesPath/>pics/sym_s_expand.gif</ssf:escapeJavaScript>";
+		var ss_taskGraphCollapser = "<ssf:escapeJavaScript><html:imagesPath/>pics/sym_s_collapse.gif</ssf:escapeJavaScript>";
+
+		// Are we showing the graphs?
+		var ePriorities = document.getElementById("taskPrioritiesGraph");
+		var eRefresh    = document.getElementById("taskRefreshGraph"   );
+		var eStatus     = document.getElementById("taskStatusGraph"    );		
+		var eIMG        = document.getElementById("graph-toggle-img"   );
+		if (0 < eIMG.src.indexOf(ss_taskGraphExpander)) {
+			// Yes!  Make the expander a collapser...
+			eIMG.src   = ss_taskGraphCollapser;
+			eIMG.title = "<ssf:escapeJavaScript><ssf:nlt tag="task.graphsHideAlt"/></ssf:escapeJavaScript>";
+			
+			// ...and show them.
+			if (null != ePriorities) ePriorities.className = "";
+			if (null != eRefresh)    eRefresh.className    = "";
+			if (null != eStatus)     eStatus.className     = "";
+		}
+		else {
+			// No, we must be hiding the graphcs!  Make the collapser
+			// and expander...
+			eIMG.src   = ss_taskGraphExpander;
+			eIMG.title = "<ssf:escapeJavaScript><ssf:nlt tag="task.graphsShowAlt"/></ssf:escapeJavaScript>";
+			
+			// ...and hide them.
+			if (null != ePriorities) ePriorities.className = "ss_taskGraphsHidden";
+			if (null != eRefresh)    eRefresh.className    = "ss_taskGraphsHidden";
+			if (null != eStatus)     eStatus.className     = "ss_taskGraphsHidden";
+		}
+
+		// In either case, we need to tell GWT to relayout things so
+		// that the task listing table properly shows a scroll bar
+		// when needed.
+		window.top.ss_gwtRelayoutPage();
+	}
 </script>
 <c:if test="${ ssCurrentFolderModeType != 'VIRTUAL' }">
 	<table class="ss_statisticTable"><tr>
@@ -67,16 +104,28 @@
 	<c:if test="${!empty ssBinder &&
 	              !empty ssBinder.customAttributes['statistics'] && 
 	              !empty ssBinder.customAttributes['statistics'].value && 
-	              !empty ssBinder.customAttributes['statistics'].value.value}">		
+	              !empty ssBinder.customAttributes['statistics'].value.value}">
+	    <td>
+	    	<h5 class="ss_statisticLabel"><a id="graph-toggle" href="javascript: ;" onClick="javascript:toggleGraphs();">
+	    		<%= NLT.get("task.graphs") %>
+	    		<img
+	    			id="graph-toggle-img"
+	    			border="0"
+	    			align="absmiddle"
+	    			src="<html:imagesPath/>pics/sym_s_expand.gif"
+	    			title="<%= NLT.get("task.graphsShowAlt") %>" />
+	    	</a></h5>
+	    </td>		
+		<c:set var="colCount" value="${colCount + 1}"/>
 		<c:forEach var="definition" items="${ssBinder.customAttributes['statistics'].value.value}">
 			<c:if test="${!empty definition.value}">
 				<c:if test="${!empty definition.value.priority}">
-					<td><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true" labelAll="true"/></td>
+					<td><div id="taskPrioritiesGraph" class="ss_taskGraphsHidden"><ssf:drawStatistic statistic="${definition.value.priority}" style="coloredBar" showLabel="true" showLegend="true" labelAll="true"/></div></td>
 					<c:set var="colCount" value="${colCount + 1}"/>
 				</c:if>
 	
 				<c:if test="${!empty definition.value.status}">
-					<td><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true" labelAll="true"/></td>
+					<td><div id="taskStatusGraph" class="ss_taskGraphsHidden"><ssf:drawStatistic statistic="${definition.value.status}" style="coloredBar ss_statusBar" showLabel="true" showLegend="true" labelAll="true"/></div></td>
 					<c:set var="colCount" value="${colCount + 1}"/>
 				</c:if>
 			</c:if>
@@ -86,8 +135,8 @@
 	<c:if test="${colCount > 0}">
 	<tr>
 	<td colspan="${colCount}" align="right">
-	<input type="button" class="ss_linkButton ss_fineprint" onClick="self.location.reload(true);"
-	 value="<%= NLT.get("task.refreshChart") %>" />
+	<div id="taskRefreshGraph" class="ss_taskGraphsHidden"><input type="button" class="ss_linkButton ss_fineprint" onClick="self.location.reload(true);"
+	 value="<%= NLT.get("task.refreshChart") %>" /></div>
 	</td>
 	</tr>
 	</c:if>

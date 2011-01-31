@@ -319,6 +319,11 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::contextLoaded(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, inSearch, searchTabId );
 		}//end ss_contextLoaded()
+		
+		$wnd.ss_gwtRelayoutPage = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::relayoutPage()();
+		}//end ss_gwtRelayoutPage()
 	}-*/;
 
 	/*
@@ -1924,6 +1929,11 @@ public class GwtMainPage extends Composite
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 		}
+	}// end relayoutPage()
+	
+	public void relayoutPage()
+	{
+		relayoutPage( false );
 	}// end relayoutPage()
 
 	
