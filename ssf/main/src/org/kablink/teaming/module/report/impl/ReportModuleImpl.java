@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
@@ -119,7 +120,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected FolderModule folderModule;
 	protected AdminModule adminModule;
 	protected ProfileModule profileModule;
+	protected Map<String, String> authenticatorFrequency = new HashMap<String, String>();
+	private final static String AUTHENTICATOR_FREQUENCY_DAILY_STRICT = "daily_strict";
+	private final static String AUTHENTICATOR_FREQUENCY_DAILY_SOFT = "daily_soft";
+	private final static String AUTHENTICATOR_FREQUENCY_ALL = "all";
+	private final static String AUTHENTICATOR_FREQUENCY_NONE = "none";
+	private final static String AUTHENTICATOR_FREQUENCY_DEFAULT = AUTHENTICATOR_FREQUENCY_DAILY_SOFT;
 	private final static long MEGABYTES = 1024L * 1024L;
+	private static ConcurrentHashMap<String, Integer> loginInfoLastDays = new ConcurrentHashMap<String, Integer>();
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -195,14 +203,85 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
  					break;
  				}
  			}
-
  		}
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_ICAL);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_PORTAL);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_B);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_REMOTING_T);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_RSS);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_UNKNOWN);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEB);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WEBDAV);
+ 		initAuthenticatorFrequency(LoginInfo.AUTHENTICATOR_WS);
  	}
+
+	private void initAuthenticatorFrequency(String authenticator) {
+ 		authenticatorFrequency.put(authenticator, 
+ 				SPropsUtil.getString("audit.login.authenticator.frequency." + authenticator, AUTHENTICATOR_FREQUENCY_DEFAULT));
+	}
+	
+	private String getAuthenticatorFrequency(String authenticator) {
+		String freq = authenticatorFrequency.get(authenticator);
+		if(freq != null)
+			return freq;
+		else
+			return AUTHENTICATOR_FREQUENCY_DEFAULT;
+	}
 
 	public void addAuditTrail(AuditTrail auditTrail) {
 		//only log if enabled
-		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType()))
-			getCoreDao().save(auditTrail);
+		if (allEnabled || enabledTypes.contains(auditTrail.getAuditType())) {
+			if(auditTrail instanceof LoginInfo) {
+				LoginInfo li = (LoginInfo) auditTrail;
+				String authenticatorFrequency = getAuthenticatorFrequency(li.getAuthenticatorName());
+				if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_ALL)) {
+					// each event causes a new record
+					getCoreDao().save(auditTrail);
+				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_STRICT)) {
+					// only once record a day for this type
+					List<String> loginInfoIds = getCoreDao().getLoginInfoIds(RequestContextHolder.getRequestContext().getZoneId(), 
+							// NEVER get the user ID from request context. Since this method is being executed with AsAdmin context
+							// during authentication, the value from the request context will always be admin.
+							li.getStartBy(),
+							li.getAuthenticatorName(), 
+							getBeginningOfToday(), 
+							1);
+					if(loginInfoIds.size() == 0)
+						getCoreDao().save(auditTrail);
+				}
+				else if(authenticatorFrequency.equals(AUTHENTICATOR_FREQUENCY_DAILY_SOFT)) {
+					Integer loginInfoLastDay = getLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName());
+					int dayOfYear = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+					if(loginInfoLastDay == null || (loginInfoLastDay.intValue() != dayOfYear)) {
+						getCoreDao().save(auditTrail);
+						setLoginInfoLastDay(RequestContextHolder.getRequestContext().getZoneId(),
+							li.getStartBy(),
+							li.getAuthenticatorName(), 
+							dayOfYear);
+					}
+				}
+			}
+			else {
+				getCoreDao().save(auditTrail);
+			}
+		}
+	}
+	private Integer getLoginInfoLastDay(Long zoneId, Long userId, String authenticatorName) {
+		return loginInfoLastDays.get(zoneId + "." + userId + "." + authenticatorName);
+	}
+	private void setLoginInfoLastDay(Long zoneId, Long userId, String authenticatorName, int day) {
+		loginInfoLastDays.put(zoneId + "." + userId + "." + authenticatorName, Integer.valueOf(day));
+	}
+	private Date getBeginningOfToday() {
+		Calendar c = Calendar.getInstance(); // current time
+		c.set(Calendar.HOUR_OF_DAY, 0);
+		c.set(Calendar.MINUTE, 0);
+		c.set(Calendar.SECOND, 0);
+		c.set(Calendar.MILLISECOND, 0);
+		return c.getTime();
 	}
 	public void addAuditTrail(AuditType type, DefinableEntity entity) {
 		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity));
