@@ -242,6 +242,33 @@ public class GwtTaskHelper {
 	private static String buildEventFieldName(String fieldName) {
 		return (Constants.EVENT_FIELD_START_END + BasicIndexUtils.DELIMITER + fieldName);
 	}
+
+	/**
+	 * Marks the given task in the given binder as having its subtask
+	 * display collapsed.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean collapseSubtasks(AllModulesInjected bs, Long binderId, Long entryId) throws GwtTeamingException {
+		try {
+			List<Long> collapsedSubtasks = getCollapsedSubtasks(bs, binderId);
+			if (!(collapsedSubtasks.contains(entryId))) {
+				collapsedSubtasks.add(entryId);
+		   		bs.getProfileModule().setUserProperty(null, binderId, ObjectKeys.USER_PROPERTY_COLLAPSE_SUBTASKS, collapsedSubtasks);				
+			}
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
 	
 	/*
 	 * When initially build, the AssignmentInfo's in the List<TaskInfo>
@@ -600,6 +627,33 @@ public class GwtTaskHelper {
 		}
 	}
 
+	/**
+	 * Marks the given task in the given binder as having its subtask
+	 * display expanded.
+	 *
+	 * @param bs
+	 * @param binderId
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean expandSubtasks(AllModulesInjected bs, Long binderId, Long entryId) throws GwtTeamingException {
+		try {
+			List<Long> collapsedSubtasks = getCollapsedSubtasks(bs, binderId);
+			if (collapsedSubtasks.contains(entryId)) {
+				collapsedSubtasks.remove(entryId);
+		   		bs.getProfileModule().setUserProperty(null, binderId, ObjectKeys.USER_PROPERTY_COLLAPSE_SUBTASKS, collapsedSubtasks);				
+			}
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+	
 	/*
 	 * Searches a List<TaskInfo> for a task with a specific ID.
 	 */
@@ -662,6 +716,21 @@ public class GwtTaskHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns a List<Long> of the task IDs from the Binder that should
+	 * have their subtask lists collapsed.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<Long> getCollapsedSubtasks(AllModulesInjected bs, Long binderId) {
+		User user = GwtServerHelper.getCurrentUser();
+		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+		List<Long> reply = ((List<Long>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_COLLAPSE_SUBTASKS));
+		if (null == reply) {
+			reply = new ArrayList<Long>();
+		}
+		return reply;
+	}
+	
 	/*
 	 * Reads a Date from a Map.
 	 */
@@ -940,13 +1009,14 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {		
 		return
 			getTaskListImpl(
 				request,
 				bs,
 				binder,
-				getTaskLinkage(bs, binder),
+				getCollapsedSubtasks(bs, binder.getId()),
+				getTaskLinkage(      bs, binder        ),
 				filterType,
 				modeType);
 	}
@@ -954,7 +1024,7 @@ public class GwtTaskHelper {
 	/*
 	 * Reads the task information from the specified binder.
 	 */
-	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskLinkage taskLinkage, String filterType, String modeType) throws GwtTeamingException {
+	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> collapsedSubtasks, TaskLinkage taskLinkage, String filterType, String modeType) throws GwtTeamingException {
 		// Create a List<TaskListItem> that we'll fill up with the task
 		// list.
 		List<TaskListItem> reply = new ArrayList<TaskListItem>();
@@ -965,7 +1035,7 @@ public class GwtTaskHelper {
 		// Process the order information from the supplied task
 		// linkage.
 		List<TaskLink> taskOrder = taskLinkage.getTaskOrder();
-		processTaskLinkList(reply, tasks, taskOrder);		
+		processTaskLinkList(reply, collapsedSubtasks, tasks, taskOrder);		
 
 		// Scan any tasks that weren't addressed by the task linkage...
 		boolean changedLinkage = (!(tasks.isEmpty()));
@@ -974,6 +1044,7 @@ public class GwtTaskHelper {
 			// ...built...
 			TaskListItem tli = new TaskListItem();
 			tli.setTask(task);
+			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
 			reply.add(tli);
 			
 			// ...and add it to the linkage since it will now be
@@ -1011,8 +1082,9 @@ public class GwtTaskHelper {
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		// Read the task linkage and tasks...
-		TaskLinkage        taskLinkage = getTaskLinkage(          bs, binder                                             );
-		List<TaskListItem> tasks       = getTaskListImpl(request, bs, binder, taskLinkage, filterTypeParam, modeTypeParam);
+		List<Long>         collapsedTasks = getCollapsedSubtasks(    bs, binder.getId()                                                     );
+		TaskLinkage        taskLinkage    = getTaskLinkage(          bs, binder                                                             );
+		List<TaskListItem> tasks          = getTaskListImpl(request, bs, binder, collapsedTasks, taskLinkage, filterTypeParam, modeTypeParam);
 
 		// ...and use that to create a TaskBundle. 
 		TaskBundle reply = new TaskBundle();
@@ -1116,7 +1188,7 @@ public class GwtTaskHelper {
 	 * Processes the TaskLink's in a List<TaskLink> into a
 	 * List<TaskListItem>, maintaining order and hierarchy.
 	 */
-	private static void processTaskLinkList(List<TaskListItem> taskList, List<TaskInfo> tasks, List<TaskLink> links) {
+	private static void processTaskLinkList(List<TaskListItem> taskList, List<Long> collapsedSubtasks, List<TaskInfo> tasks, List<TaskLink> links) {
 		// Scan the List<TaskLink>.
 		for (TaskLink link:  links) {
 			// Can we find the TaskInfo for this TaskLink?
@@ -1133,10 +1205,11 @@ public class GwtTaskHelper {
 			// ...List<TaskListItem>...
 			TaskListItem tli = new TaskListItem();
 			tli.setTask(task);			
+			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
 			taskList.add(tli);
 			
 			// ...and recursively process any subtasks.
-			processTaskLinkList(tli.getSubtasks(), tasks, link.getSubtasks());
+			processTaskLinkList(tli.getSubtasks(), collapsedSubtasks, tasks, link.getSubtasks());
 		}
 	}
 	

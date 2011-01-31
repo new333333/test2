@@ -48,8 +48,9 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  *
  */
 public class TaskListItem implements IsSerializable {
-	private List<TaskListItem>	m_subtasks = new ArrayList<TaskListItem>();
-	private TaskInfo			m_task     = new TaskInfo();
+	private boolean				m_expandSubtasks = true;							//
+	private List<TaskListItem>	m_subtasks       = new ArrayList<TaskListItem>();	//
+	private TaskInfo			m_task           = new TaskInfo();					//
 	
 	private transient Object	m_uiData;	// Used to store information for the managing this in the user interface.
 
@@ -349,18 +350,20 @@ public class TaskListItem implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public List<TaskListItem> getSubtasks() {return m_subtasks;}
-	public TaskInfo           getTask()     {return m_task;    }
-	public Object             getUIData()   {return m_uiData;  }
+	public boolean            getExpandSubtasks() {return m_expandSubtasks;}
+	public List<TaskListItem> getSubtasks()       {return m_subtasks;      }
+	public TaskInfo           getTask()           {return m_task;          }
+	public Object             getUIData()         {return m_uiData;        }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @return
 	 */
-	public void setSubtasks(List<TaskListItem> subtasks) {m_subtasks = subtasks;}
-	public void setTask(    TaskInfo           task    ) {m_task     = task;    }
-	public void setUIData(  Object             uiData  ) {m_uiData   = uiData;  }
+	public void setExpandedSubtasks(boolean            expandSubtasks) {m_expandSubtasks = expandSubtasks;}
+	public void setSubtasks(        List<TaskListItem> subtasks      ) {m_subtasks       = subtasks;      }
+	public void setTask(            TaskInfo           task          ) {m_task           = task;          }
+	public void setUIData(          Object             uiData        ) {m_uiData         = uiData;        }
 
 	/**
 	 * Appends a TaskListItem as a subtask.
