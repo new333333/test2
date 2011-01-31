@@ -514,12 +514,25 @@ public class GwtTaskHelper {
 
 			// If we get here, we have rights to delete all the tasks
 			// that we were given.  Scan them...
+			List<Long> binderIds = new ArrayList<Long>();  
 			for (TaskId taskId:  taskIds) {
 				// ...deleting each.
+				Long binderId = taskId.getBinderId();
+				addLToLLIfUnique(binderIds, binderId);
 				TrashHelper.preDeleteEntry(
 					bs,
-					taskId.getBinderId(),
+					binderId,
 					taskId.getEntryId());
+			}
+
+			// Scan the IDs of binders that we're deleting from...
+			for (Long binderId:  binderIds) {
+				// ...and tell each to update the calculated dates they
+				// ...contain.
+				updateCalculatedDates(
+					bs,
+					getTaskBinder(bs, binderId),
+					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 
 			// If we get here, the deletes were successful.
@@ -1238,11 +1251,24 @@ public class GwtTaskHelper {
 
 			// If we get here, we have rights to purge all the tasks
 			// that we were given.  Scan them...
+			List<Long> binderIds = new ArrayList<Long>();  
 			for (TaskId taskId:  taskIds) {
 				// ...deleting each.
+				Long binderId = taskId.getBinderId();
+				addLToLLIfUnique(binderIds, binderId);
 				fm.deleteEntry(
-					taskId.getBinderId(),
+					binderId,
 					taskId.getEntryId());
+			}
+			
+			// Scan the IDs of binders that we're purging from...
+			for (Long binderId:  binderIds) {
+				// ...and tell each to update any calculated dates they
+				// ...contain.
+				updateCalculatedDates(
+					bs,
+					getTaskBinder(bs, binderId),
+					null);	// null -> Update the calculated dates for all the tasks in the binder.
 			}
 
 			// If we get here, the purges were successful.
@@ -1561,14 +1587,18 @@ public class GwtTaskHelper {
 	/**
 	 * Updates the calculated dates on a given task.
 	 * 
-	 * If the updating required changes to this task or others, the
-	 * Map<Long, TaskDate> returned will contain a mapping between the
-	 * task IDs and the new calculated end date.  Otherwise, the map
-	 * returned will be empty.
+	 * Notes:
+	 * 1) If the updating required changes to this task or others, the
+	 *    Map<Long, TaskDate> returned will contain a mapping between
+	 *    the task IDs and the new calculated end date.  Otherwise, the
+	 *    map returned will be empty.
+	 * 2) If the entryId is null, that implies that ALL the tasks in
+	 *    the binder need to be checked whether their calculated end
+	 *    dates need to be updated.
 	 * 
 	 * @param bs
 	 * @param binder
-	 * @param entryId
+	 * @param entryId	May be null.
 	 * 
 	 * @return
 	 * 
