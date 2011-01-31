@@ -161,6 +161,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	protected static Log m_logger = LogFactory.getLog(GwtRpcServiceImpl.class);
 
 	/**
+	 * Marks the given task in the given binder as having its subtask
+	 * display collapsed.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean collapseSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		return GwtTaskHelper.collapseSubtasks( this, binderId, entryId );
+	}
+
+	/**
 	 * Deletes the specified tasks.
 	 * 
 	 * @param ri
@@ -181,6 +197,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		taskId.setEntryId(  entryId  );
 		taskIds.add(        taskId   );
 		return deleteTasks( ri, taskIds );
+	}
+
+	/**
+	 * Marks the given task in the given binder as having its subtask
+	 * display expanded.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * @param taskId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public Boolean expandSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
+		return GwtTaskHelper.expandSubtasks( this, binderId, entryId );
 	}
 
 	/**

@@ -191,8 +191,17 @@ public class TaskTable extends Composite implements ActionHandler {
 		/**
 		 * Class constructor.
 		 */
+		UIData(UIData baseUID) {
+			// If we have a base UIData that we're constructing this
+			// from...
+			if (null != baseUID) {
+				// ...copy the fields that we maintain between them.
+				m_taskSelected = baseUID.m_taskSelected;
+			}
+		}
+		
 		UIData() {
-			// Nothing to do.
+			this(null);
 		}
 
 		/**
@@ -236,7 +245,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * @return
 		 */
 		public boolean isTaskCBChecked() {
-			return jsIsCBChecked(getTaskSelectorCB().getElement().getId());
+			CheckBox cb = getTaskSelectorCB();
+			boolean reply = ((null != cb) && jsIsCBChecked(cb.getElement().getId()));
+			return reply;
 		}
 	}
 	
@@ -710,14 +721,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		int     subtaskDepth = (taskDepth + 1);
 		for (TaskListItem task:  tasks) {
 			// Build a UIData object for this TaskListItem...
-			UIData uid = getUIData(task);
-			uid.setTaskDepth(taskDepth);
+			UIData newUID = new UIData(((UIData) task.getUIData()));
+			task.setUIData(newUID);
+			newUID.setTaskDepth(taskDepth);
 			if (baseTask) {
-				uid.setTaskOrder(taskOrder);
+				newUID.setTaskOrder(taskOrder);
 				taskOrder += 1;
 			}
 			else {
-				uid.setTaskOrder(-1);
+				newUID.setTaskOrder(-1);
 			}
 
 			// ...and build the UIData's for any subtasks.
@@ -854,9 +866,54 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called when the user clicks the expand/collapse on a task.
 	 */
-	private void handleTaskExpander(TaskListItem task) {
-//!		... this needs to be implemented...
-		Window.alert("handleTaskExpander( " + task.getTask().getTitle() + " ):  ...this needs to be implemented...");
+	private void handleTaskExpander(final TaskListItem task) {
+		// Extract the IDs we need to perform the expand/collapse.
+		TaskId taskId   = task.getTask().getTaskId();
+		Long   binderId = taskId.getBinderId();
+		Long   entryId  = taskId.getEntryId();
+
+		// Are we collapsing the subtasks?
+		if (task.getExpandSubtasks()) {
+			// Yes!  Collapse them...
+			m_rpcService.collapseSubtasks(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Boolean>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_CollapseSubtasks());
+				}
+				
+				@Override
+				public void onSuccess(Boolean success) {
+					// ...and mark the task as having its subtasks
+					// ...collapsed and redisplay the TaskTable. 
+					task.setExpandedSubtasks(false);
+					initializeUIData();	// Forces the referenced widgets to be reset.
+					showTasks(m_taskBundle);
+				}
+			});
+		}
+		
+		else {
+			// No, we must be expanding the subtasks!  Expand them...
+			m_rpcService.expandSubtasks(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Boolean>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_ExpandSubtasks());
+				}
+				
+				@Override
+				public void onSuccess(Boolean success) {
+					// ...and mark the task as having its subtasks
+					// ...expanded and redisplay the TaskTable. 
+					task.setExpandedSubtasks(true);
+					initializeUIData();	// Forces the referenced widgets to be reset.
+					showTasks(m_taskBundle);
+				}
+			});
+		}
 	}
 	
 	/*
@@ -1576,7 +1633,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		fp.add(cb);
 		if (0 < task.getSubtasks().size()) {
 			Anchor a = buildAnchor();
-			Image  i = buildImage(m_images.task_closer());
+			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			a.getElement().appendChild(i.getElement());
 			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
 				@Override
@@ -1748,7 +1805,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// ...apply any tasks checks that are being preserved...
-		if ((null != checkedTaskIds) && (!(checkedTaskIds.isEmpty()))) {
+		if (null != checkedTaskIds) {
 			for (Long entryId:  checkedTaskIds) {
 				TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, entryId);
 				if (null != task) {
@@ -1807,7 +1864,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			renderTaskItem(task);
 			
 			// ...and their subtasks.
-			showTasksImpl( task.getSubtasks());
+			if (task.getExpandSubtasks()) {
+				showTasksImpl(task.getSubtasks());
+			}
 		}
 	}
 
