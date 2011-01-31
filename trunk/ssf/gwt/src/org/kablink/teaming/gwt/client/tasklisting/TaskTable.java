@@ -858,7 +858,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			public void onSuccess(Boolean success) {
 				// Simply refresh the TaskTable and we'll reread the
 				// tasks and display them in the appropriate hierarchy. 
-				refreshTaskTable(false);
+				refreshTaskTable(false, true);
 			}
 		});
 	}
@@ -1014,7 +1014,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			public void onSuccess(Boolean success) {
 				// Simply refresh the TaskTable and we'll reread the
 				// tasks and display them in the appropriate hierarchy. 
-				refreshTaskTable(false);
+				refreshTaskTable(false, true);
 			}
 		});
 	}
@@ -1408,7 +1408,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskBundle.setTaskLinkage(newLinkage);
 		
 		// ...and write it to the current user's folder preferences.
-		final Long binderId = task.getTask().getTaskId().getBinderId();
+		final Long binderId = m_taskBundle.getBinderId();
 		m_rpcService.saveTaskLinkage(HttpRequestInfo.createHttpRequestInfo(), binderId, m_taskBundle.getTaskLinkage(), new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1464,7 +1464,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
-	private void refreshTaskTable(final boolean preserveChecks) {
+	private void refreshTaskTable(final boolean preserveChecks, final boolean persistLinkage) {
 		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode(), new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1476,23 +1476,28 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onSuccess(TaskBundle result) {
 				// Preserve the tasks that are currently checked...
-				List<Long> checkedIds;
+				List<Long> checkedTaskIds;
 				if (preserveChecks)
-				     checkedIds = getTaskIdsChecked();
-				else checkedIds = null;
+				     checkedTaskIds = getTaskIdsChecked();
+				else checkedTaskIds = null;
 				
 				// ...store the new TaskBundle in the TaskListing...
 				m_taskListing.setTaskBundle(result);
 				
-				// ...and force the TaskTable to redisplay.
+				// ...force the TaskTable to redisplay...
 				m_newTaskTable = true;
-				showTasks(result, checkedIds);
+				showTasks(result, checkedTaskIds);
+				
+				// ...and if we were requested to do so...
+				if (persistLinkage) {
+					// ...persist the current state of things as the
+					// ...new task linkage.
+					persistLinkageChange(
+						null,	// null  -> No task.  We don't need one when not updating the calculated dates.
+						false);	// false -> Don't update calculated dates. 
+				}
 			}			
 		});		
-	}
-	
-	private void refreshTaskTable() {
-		refreshTaskTable(true);
 	}
 	
 	/*
@@ -1788,7 +1793,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Returns the time, in milliseconds, that it took to show them.
 	 * 
 	 * @param taskBundle
-	 * @param applySort
+	 * @param checkedTaskIds
 	 * 
 	 * @return
 	 */
@@ -1850,7 +1855,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	
 	public void showTasks(TaskBundle tb) {
 		// Always use the initial form of the method.
-		showTasks(tb, null);
+		showTasks(tb, null);	// null -> No checked tasks to preserve.
 	}
 
 	/*
@@ -1896,9 +1901,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * refreshed.
 	 */
 	private void updateCalculatedDates(TaskListItem task) {
-		final TaskInfo ti = task.getTask();
-		final Long entryId = ti.getTaskId().getEntryId();
-		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), ti.getTaskId().getBinderId(), entryId, new AsyncCallback<Map<Long, TaskDate>>() {
+		final TaskId taskId  = task.getTask().getTaskId();
+		final Long   entryId = taskId.getEntryId();
+		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), taskId.getBinderId(), entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1919,8 +1924,7 @@ public class TaskTable extends Composite implements ActionHandler {
 					}
 					
 					// ...and redisplay the tasks in the TaskTable,
-					// ...preserving any tasks that were checked.
-					showTasks(m_taskBundle, getTaskIdsChecked());
+					showTasks(m_taskBundle);
 				}
 			}
 		});
