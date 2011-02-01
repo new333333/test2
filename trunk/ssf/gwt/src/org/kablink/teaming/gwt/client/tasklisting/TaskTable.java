@@ -115,8 +115,17 @@ public class TaskTable extends Composite implements ActionHandler {
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
 
 	/*
-	 * Enumeration value used to represent the order of the columns in
-	 * the TaskTable.
+	 * Enumeration used to represent the type of an AssignmentInfo.
+	 */
+	private enum AssigneeType {
+		INDIVIDUAL,
+		GROUP,
+		TEAM,
+	}
+	
+	/*
+	 * Enumeration used to represent the order of the columns in the
+	 * TaskTable.
 	 */
 	private enum Column {
 		SELECTOR(           "*Unsortable*"),
@@ -431,22 +440,25 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
-	 * Builds a FlowPanel for an AssignmentInfo.
+	 * Builds and adds Widgets for an AssignmentInfo to a
+	 * VerticalPanel.
 	 */
-	private FlowPanel buildAssigneePanel(final AssignmentInfo ai, boolean showDisabled) {
+	private void buildAssigneeWidgets(VerticalPanel vp, final AssigneeType assigneeType, final AssignmentInfo ai, final boolean showDisabled) {
+		FlowPanel fp = new FlowPanel();
+		final Label assignee;
 		List<EventHandler> eventHandlers;
-		FlowPanel reply = new FlowPanel();
-		
-		// Is this an individual assignee?
-		GwtPresenceInfo presence = ai.getPresence();
-		if (null != presence) {
-			// Yes!  Generate a PresenceControl...
+
+		// What type of assignee is this?
+		switch (assigneeType) {
+		case INDIVIDUAL:
+			// Individual assignee!  Generate a PresenceControl...
+			GwtPresenceInfo presence = ai.getPresence();
 			PresenceControl pc = new PresenceControl(String.valueOf(ai.getPresenceUserWSId()), false, false, false, presence);
 			pc.setImageAlignment("top");
 			pc.addStyleName("displayInline");
 			pc.addStyleName("verticalAlignTop");
 			pc.setAnchorStyleName("cursorPointer");
-			reply.add(pc);			
+			fp.add(pc);			
 			PassThroughEventsPanel.addHandler(pc, new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
@@ -457,10 +469,11 @@ public class TaskTable extends Composite implements ActionHandler {
 			});
 
 			// ...and a name link for it...
-			final Label assignee = new Label(ai.getTitle());
+			assignee = new Label(ai.getTitle());
 			String addedStyle = (showDisabled ? "gwtTaskList_assigneeDisabled" : "gwtTaskList_assigneeEnabled");
 			assignee.addStyleName("gwtTaskList_assignee " + addedStyle);
-			reply.add(assignee);
+			fp.add(assignee);
+			vp.add(fp);
 			
 			// ...and add the event handlers for it.
 			eventHandlers = new ArrayList<EventHandler>();
@@ -484,26 +497,33 @@ public class TaskTable extends Composite implements ActionHandler {
 				}
 			});
 			PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
-		}
+			
+			break;
 		
-		else {
-			// No, this isn't an individual assignee!  It must be a
-			// group or team assignee.
+		case GROUP:
+		case TEAM:
+			// Group or team assignee!
 			Image assigneeImg = new Image();
 			assigneeImg.setUrl(m_gwtMainPage.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 			assigneeImg.getElement().setAttribute("align", "absmiddle");
-			reply.add(assigneeImg);
+			fp.add(assigneeImg);
 
 			int    members       = ai.getMembers();
 			String membersString = m_messages.taskMemberCount(String.valueOf(members));
 			String assigneeLabel = (ai.getTitle() + " " + membersString);
-			final Label assignee = new Label(assigneeLabel);
+			assignee = new Label(assigneeLabel);
 			assignee.addStyleName("gwtTaskList_assignee");
-			reply.add(assignee);
+			fp.add(assignee);
+			vp.add(fp);
 			
 			// Does the group/team have any members?
 			if (0 < members) {
-				// Yes!  Add event handlers so the user can see them.
+				// Yes!
+				final FlowPanel expansionFP = new FlowPanel();
+				expansionFP.addStyleName("gwtTaskList_showGroupListHidden marginleft2");
+				vp.add(expansionFP);
+				
+				// Add event handlers so the user can see them.
 				eventHandlers = new ArrayList<EventHandler>();
 				eventHandlers.add(new MouseOverHandler() {
 					@Override
@@ -521,16 +541,14 @@ public class TaskTable extends Composite implements ActionHandler {
 					@Override
 					public void onClick(ClickEvent event) {
 						assignee.removeStyleName("gwtTaskList_assigneeHover");
-						handleMembershipSelect(ai);
+						handleMembershipSelect(assigneeType, ai, expansionFP, showDisabled);
 					}
 				});
 				PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
 			}
+			
+			break;
 		}
-
-		// If we get here, reply refers to a FlowPanel containing the
-		// Widget's for the assignee.  Return it.
-		return reply;
 	}
 
 	/*
@@ -782,12 +800,97 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
-	 * Called when the user clicks on a link to show a group or team's
-	 * membership.
+	 * Called when the membership of a group or team has been
+	 * determined to display the members.
 	 */
-	private void handleMembershipSelect(AssignmentInfo ai) {
-//!		...this needs to be implemented...
-		Window.alert("handleMembershipSelect():  ...this needs to be implemented...");
+	private void handleMembershipDisplay(List<AssignmentInfo> assignees, FlowPanel expansionFP, boolean showDisabled) {		
+		VerticalPanel vp = new VerticalPanel();
+		for (AssignmentInfo ai:  assignees) {
+			buildAssigneeWidgets(
+				vp,
+				((null == ai.getPresence()) ?
+					AssigneeType.GROUP      :
+					AssigneeType.INDIVIDUAL),
+				ai,
+				showDisabled);
+		}
+		expansionFP.clear();
+		expansionFP.add(vp);
+		
+		expansionFP.removeStyleName("gwtTaskList_showGroupListHidden");
+		expansionFP.addStyleName(   "gwtTaskList_showGroupList"      );
+	}
+	
+	/*
+	 * Called when the user clicks on the link to show a group or
+	 * team's membership.
+	 */
+	private void handleMembershipSelect(AssigneeType assigneeType, final AssignmentInfo ai, final FlowPanel expansionFP, final boolean showDisabled) {
+		// Is the <DIV> that contains the membership currently visible?
+		String s = expansionFP.getStyleName();
+		boolean visible = (0 > s.indexOf("gwtTaskList_showGroupListHidden"));
+		if (visible) {
+			// Yes!  Then we simply need to hide and empty it.
+			expansionFP.removeStyleName("gwtTaskList_showGroupList"      );
+			expansionFP.addStyleName(   "gwtTaskList_showGroupListHidden");
+			expansionFP.clear();
+			
+			return;
+		}
+
+		// Have we already queried the membership for this
+		// AssignmentInfo?
+		List<AssignmentInfo> members = ai.getMembership();
+		if (null != members) {
+			// Yes!  Just re-display it.  No need to read it again.
+			handleMembershipDisplay(members, expansionFP, showDisabled);
+			return;
+		}
+		
+		final Long assigneeId = ai.getId();
+		switch (assigneeType) {
+		case GROUP:
+			m_rpcService.getGroupMembership(HttpRequestInfo.createHttpRequestInfo(), assigneeId, new AsyncCallback<List<AssignmentInfo>>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetGroupMembership(),
+						String.valueOf(assigneeId));
+				}
+				
+				@Override
+				public void onSuccess(List<AssignmentInfo> groupMembers) {
+					// Store the group membership (so we don't re-read
+					// it if it gets displayed again) and display it.
+					ai.setMembership(       groupMembers                           );
+					handleMembershipDisplay(groupMembers, expansionFP, showDisabled);
+				}
+			});
+			
+			break;
+			
+		case TEAM:
+			m_rpcService.getTeamMembership(HttpRequestInfo.createHttpRequestInfo(), assigneeId, new AsyncCallback<List<AssignmentInfo>>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetTeamMembership(),
+						String.valueOf(assigneeId));
+				}
+				
+				@Override
+				public void onSuccess(List<AssignmentInfo> teamMembers) {
+					// Store the team membership (so we don't re-read
+					// it if it gets displayed again) and display it.
+					ai.setMembership(       teamMembers                           );
+					handleMembershipDisplay(teamMembers, expansionFP, showDisabled);
+				}
+			});
+			
+			break;
+		}
 	}
 	
 	/*
@@ -798,7 +901,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		SimpleProfileParams params;
 		
 		// Invoke the Simple Profile dialog.
-		params = new SimpleProfileParams(element, String.valueOf(ai.getPresenceUserWSId()), ai.getTitle());
+		Long wsId = ai.getPresenceUserWSId();
+		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
+		params = new SimpleProfileParams(element, wsIdS, ai.getTitle());
 		m_gwtMainPage.handleAction(TeamingAction.INVOKE_SIMPLE_PROFILE, params);
 	}
 		
@@ -1368,21 +1473,21 @@ public class TaskTable extends Composite implements ActionHandler {
 		for (final AssignmentInfo ai:  ti.getAssignments()) {
 			// ...adding a PresenceControl for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai, isCancelled));
+			buildAssigneeWidgets(vp, AssigneeType.INDIVIDUAL, ai, isCancelled);
 		}
 
 		// Scan the group assignees...
 		for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai, isCancelled));
+			buildAssigneeWidgets(vp, AssigneeType.GROUP, ai, isCancelled);
 		}
 		
 		// Scan the team assignees...
 		for (AssignmentInfo ai:  ti.getAssignmentTeams()) {			
 			// ...adding a FlowPanel display for each.
 			assignments += 1;
-			vp.add(buildAssigneePanel(ai, isCancelled));
+			buildAssigneeWidgets(vp, AssigneeType.TEAM, ai, isCancelled);
 		}
 
 		// If there were any assignees...

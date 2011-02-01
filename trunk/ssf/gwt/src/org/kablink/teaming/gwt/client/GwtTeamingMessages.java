@@ -238,6 +238,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDefinitionId();
 	String rpcFailure_GetFolderEntry();
 	String rpcFailure_GetGeneric();
+	String rpcFailure_GetGroupMembership();
 	String rpcFailure_GwtGroups();
 	String rpcFailure_GetGwtUIInfo();
 	String rpcFailure_GetImUrl();
@@ -258,6 +259,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetTags();
 	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
+	String rpcFailure_GetTeamMembership();
 	String rpcFailure_GetTeams();
 	String rpcFailure_GetToolbarItems();
 	String rpcFailure_GetTopRanked();
