@@ -170,7 +170,7 @@ img { -ms-interpolation-mode: bicubic; }
   	color: ${ss_style_link_visited_color};
 	}
 .ss_style a:hover {
-  	color: ${ss_style_link_hover_color};
+  	color: ${ss_style_link_hover_color} !important;
 	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
     background-position:  left center;
 	-moz-border-radius: 3px;
