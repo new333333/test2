@@ -155,5 +155,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jersey-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/lucene-snowball.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
