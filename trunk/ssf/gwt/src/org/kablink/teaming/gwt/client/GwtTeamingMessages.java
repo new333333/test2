@@ -856,6 +856,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskPriority_p3();
 	String taskPriority_p4();
 	String taskPriority_p5();
+	String taskShowMore();
 	String taskStatus_cancelled();
 	String taskStatus_completed();
 	String taskStatus_inProcess();
