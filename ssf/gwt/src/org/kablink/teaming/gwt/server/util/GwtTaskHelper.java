@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.server.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -104,6 +106,44 @@ import org.kablink.util.search.Constants;
 public class GwtTaskHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtTaskHelper.class);
 
+	/**
+	 * Inner class used to compare two AssignmentInfo's.
+	 */
+	private static class AssignmentInfoComparator implements Comparator<AssignmentInfo> {
+		private boolean m_ascending;	//
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param ascending
+		 */
+		public AssignmentInfoComparator(boolean ascending) {
+			m_ascending = ascending;
+		}
+
+		/**
+		 * Compares two TaskListItem's by their assignee.
+		 * 
+		 * Implements the Comparator.compare() method.
+		 * 
+		 * @param task1
+		 * @param task2
+		 * 
+		 * @return
+		 */
+		@Override
+		public int compare(AssignmentInfo ai1, AssignmentInfo ai2) {
+			String assignee1 = ai1.getTitle();
+			String assignee2 = ai2.getTitle();
+
+			int reply;
+			if (m_ascending)
+			     reply = MiscUtil.safeSColatedCompare(assignee1, assignee2);
+			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
+			return reply;
+		}
+	}
+	
 	/*
 	 * Converts a String to a Long, if possible, and adds it as the ID
 	 * of an AssignmentInfo to a List<AssignmentInfo>.
@@ -392,6 +432,15 @@ public class GwtTaskHelper {
 				setAIMembers(ai, teamCounts);
 				ai.setPresenceDude("trees/people.gif");
 			}
+		}		
+
+		// Finally, one last scan through the List<TaskInfo>...
+		Comparator<AssignmentInfo> comparator = new AssignmentInfoComparator(true);
+		for (TaskInfo ti:  tasks) {
+			// ...this time, to sort the assignee lists.
+			Collections.sort(ti.getAssignments(),      comparator);
+			Collections.sort(ti.getAssignmentGroups(), comparator);
+			Collections.sort(ti.getAssignmentTeams(),  comparator);
 		}
 	}
 	
@@ -526,6 +575,10 @@ public class GwtTaskHelper {
 			// ...and remove the from the list.
 			assignees.remove(bogusAssignee);
 		}
+
+		// Finally, sort the list so that it appears nicely in the
+		// assigned to list.
+		Collections.sort(assignees, new AssignmentInfoComparator(true));
 	}
 
 	/*
@@ -1347,7 +1400,7 @@ public class GwtTaskHelper {
 			}
 			
 			// Complete the content of the AssignmentInfo's to return.
-			completeMembershipAIs(bs, reply);
+			completeMembershipAIs(bs, reply);			
 
 			// If we get here, reply refers to a List<AssignmentInfo>
 			// describing the members of a team.  Return it.
