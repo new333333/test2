@@ -2658,7 +2658,11 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	visibility: hidden;
 	display: none;
 }
-
+.gwtTaskList_showMoreMembersAnchor
+{
+	cursor: pointer;
+	margin-left: 16px;
+}
 
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
 .gwtTaskList_objlist2  /*   apply to the object list table tag <table class="objlist">  */ 

@@ -113,6 +113,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
 	private final GwtTeamingMessages				m_messages     = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
+	
+	// The following defines the number of entries we show before
+	// adding an ellipse to show more.
+	private final int MEMBERSHIP_ELLIPSE_COUNT	= 10;
 
 	/*
 	 * Enumeration used to represent the type of an AssignmentInfo.
@@ -568,6 +572,66 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Builds and adds Widgets for a 'More...' link (when there are
+	 * more than the number of AssignmentInfo's we display at a time)
+	 * to a VerticalPanel.
+	 */
+	private void buildMoreEllipseWidgets(final VerticalPanel vp, final AssigneeType assigneeType, final AssignmentInfo assignee, final boolean showDisabled) {
+		// Create an <A> to hold a 'More...' link for the user to
+		// request that addition members be shown.
+		final Anchor a = new Anchor();
+		String addedStyle = (showDisabled ? "gwtTaskList_assigneeDisabled" : "gwtTaskList_assigneeEnabled");
+		a.addStyleName("gwtTaskList_showMoreMembersAnchor " + addedStyle);
+		InlineLabel li = new InlineLabel(m_messages.taskShowMore());
+		a.getElement().appendChild(li.getElement());
+		vp.add(a);
+
+		// Add a ClickHandler to the <A>.
+		PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Remove the previous 'More...' link.
+				vp.remove(a);
+
+				// Scan the membership from the point where we left
+				// off.
+				List<AssignmentInfo> membership   = assignee.getMembership();
+				int                  members      = membership.size();
+				int                  membersShown = assignee.getMembersShown();
+				int                  assignments;
+				for (assignments = membersShown; assignments < members; assignments += 1) {
+					// Have we displayed enough members yet?
+					if (assignments == (membersShown + MEMBERSHIP_ELLIPSE_COUNT)) {
+						// Yes!  Add a 'More...' link for the user to
+						// request more. 
+						buildMoreEllipseWidgets(
+							vp,
+							assigneeType,
+							assignee,
+							showDisabled);
+						
+						break;
+					}
+					
+					else {
+						// No, we haven't displayed enough members yet!
+						// Display another one.
+						buildAssigneeWidgets(
+							vp,
+							assigneeType,
+							membership.get(assignments),
+							showDisabled);
+					}
+				}
+				
+				// Update the number of members that we've got
+				// displayed.
+				assignee.setMembersShown(assignments);
+			}
+		});
+	}
+	
+	/*
 	 * Build a column that contains a task option Widget. 
 	 */
 	private Widget buildOptionColumn(final TaskListItem task, final TaskPopupMenu taskMenu, String optionValue, String anchorStyle) {
@@ -803,20 +867,49 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called when the membership of a group or team has been
 	 * determined to display the members.
 	 */
-	private void handleMembershipDisplay(List<AssignmentInfo> assignees, FlowPanel expansionFP, boolean showDisabled) {		
+	private void handleMembershipDisplay(AssignmentInfo assignee, List<AssignmentInfo> assignees, FlowPanel expansionFP, boolean showDisabled) {
+		// Create a VerticalPanel to display the membership in.
 		VerticalPanel vp = new VerticalPanel();
+		
+		// Scan the AssignmentInfo's.
+		int assignments = 0;
 		for (AssignmentInfo ai:  assignees) {
-			buildAssigneeWidgets(
-				vp,
+			// What type of assignee is this?
+			AssigneeType assigneeType =
 				((null == ai.getPresence()) ?
 					AssigneeType.GROUP      :
-					AssigneeType.INDIVIDUAL),
-				ai,
-				showDisabled);
+					AssigneeType.INDIVIDUAL);
+
+			// Have we displayed enough members yet?
+			if (MEMBERSHIP_ELLIPSE_COUNT == assignments) {
+				// Yes!  Add a 'More...' link for the user to request
+				// more.
+				buildMoreEllipseWidgets(
+					vp,
+					assigneeType,
+					assignee,
+					showDisabled);
+				
+				break;
+			}
+			else {
+				// No, we haven't displayed enough members yet!
+				// Display another one.
+				assignments += 1;
+				buildAssigneeWidgets(
+					vp,
+					assigneeType,
+					ai,
+					showDisabled);
+			}
 		}
-		expansionFP.clear();
-		expansionFP.add(vp);
 		
+		// Store the number of members that we've got displayed...
+		assignee.setMembersShown(assignments);
+		
+		// ...and display the <DIV> containing them.
+		expansionFP.clear();
+		expansionFP.add(vp);		
 		expansionFP.removeStyleName("gwtTaskList_showGroupListHidden");
 		expansionFP.addStyleName(   "gwtTaskList_showGroupList"      );
 	}
@@ -843,7 +936,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<AssignmentInfo> members = ai.getMembership();
 		if (null != members) {
 			// Yes!  Just re-display it.  No need to read it again.
-			handleMembershipDisplay(members, expansionFP, showDisabled);
+			handleMembershipDisplay(ai, members, expansionFP, showDisabled);
 			return;
 		}
 		
@@ -863,8 +956,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				public void onSuccess(List<AssignmentInfo> groupMembers) {
 					// Store the group membership (so we don't re-read
 					// it if it gets displayed again) and display it.
-					ai.setMembership(       groupMembers                           );
-					handleMembershipDisplay(groupMembers, expansionFP, showDisabled);
+					ai.setMembership(           groupMembers                           );
+					handleMembershipDisplay(ai, groupMembers, expansionFP, showDisabled);
 				}
 			});
 			
@@ -884,8 +977,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				public void onSuccess(List<AssignmentInfo> teamMembers) {
 					// Store the team membership (so we don't re-read
 					// it if it gets displayed again) and display it.
-					ai.setMembership(       teamMembers                           );
-					handleMembershipDisplay(teamMembers, expansionFP, showDisabled);
+					ai.setMembership(           teamMembers                           );
+					handleMembershipDisplay(ai, teamMembers, expansionFP, showDisabled);
 				}
 			});
 			
@@ -1463,13 +1556,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Assigned To' column.
 	 */
 	private void renderColumnAssignedTo(final TaskListItem task, int row) {
-		int assignments = 0;
 		VerticalPanel vp = new VerticalPanel();
 		vp.addStyleName("gwtTaskList_assigneesList");
 
 		// Scan the individual assignees...
 		TaskInfo ti = task.getTask();
 		boolean isCancelled = ti.getStatus().equals("s4");;
+		int assignments = 0;
 		for (final AssignmentInfo ai:  ti.getAssignments()) {
 			// ...adding a PresenceControl for each.
 			assignments += 1;

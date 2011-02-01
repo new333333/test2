@@ -51,8 +51,10 @@ public class TaskListItem implements IsSerializable {
 	private boolean				m_expandSubtasks = true;							//
 	private List<TaskListItem>	m_subtasks       = new ArrayList<TaskListItem>();	//
 	private TaskInfo			m_task           = new TaskInfo();					//
-	
-	private transient Object	m_uiData;	// Used to store information for the managing this in the user interface.
+
+	// The following is used to store information for managing this
+	// TaskListItem in the user interface.
+	private transient Object	m_uiData;
 
 	/**
 	 * Inner class used to model assignment information for a task.
@@ -60,12 +62,15 @@ public class TaskListItem implements IsSerializable {
 	public static class AssignmentInfo implements IsSerializable {
 		private GwtPresenceInfo m_presence;			// Only used for individual assignees.
 		private int             m_members = (-1);	// Only used for group and team assignees.
-		private Long            m_id;
+		private Long            m_id;				//
 		private Long			m_presenceUserWSId;	// Only used for individual assignees.
 		private String			m_presenceDude;		// Used for all assignees.
-		private String          m_title;
-		
-		private transient List<AssignmentInfo> m_membership;	// Only used for group and team assignees on the client side.
+		private String          m_title;			//
+
+		// The following are used for managing group and team assignees
+		// for this AssignmentInfo in the user interface.
+		private transient List<AssignmentInfo> m_membership;
+		private transient int                  m_membersShown;
 		
 		/**
 		 * Constructor method.
@@ -88,6 +93,7 @@ public class TaskListItem implements IsSerializable {
 		public String               getPresenceDude()     {return m_presenceDude;    }
 		public String               getTitle()            {return m_title;           }
 		public List<AssignmentInfo> getMembership()       {return m_membership;      }
+		public int                  getMembersShown()     {return m_membersShown;    }
 		
 		/**
 		 * Set'er methods.
@@ -101,6 +107,7 @@ public class TaskListItem implements IsSerializable {
 		public void setPresenceDude(    String               presenceDude)     {m_presenceDude     = presenceDude;    }
 		public void setTitle(           String               title)            {m_title            = title;           }
 		public void setMembership(      List<AssignmentInfo> membership)       {m_membership       = membership;      }
+		public void setMembersShown(    int                  membersShown)     {m_membersShown     = membersShown;    }
 		
 		/**
 		 * Constructs an AssignmentInfo from the parameters.
