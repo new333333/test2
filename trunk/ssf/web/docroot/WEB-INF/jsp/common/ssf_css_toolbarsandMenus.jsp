@@ -154,7 +154,7 @@ li.ss_actions_bar_separator {
 	border-right:none;
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color: #fff ;
+	color: #fff !important;
 	font-size: 11px;
 	padding: 2px 10px;
 	margin-right: 5px;
@@ -167,7 +167,7 @@ li.ss_actions_bar_separator {
 	padding:4px 7px;
 	}
 .ss_actions_bar li a:hover{
-	color: #fff;
+	color: #fff !important;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;
 	-moz-border-radius:10px 10px 10px 10px;

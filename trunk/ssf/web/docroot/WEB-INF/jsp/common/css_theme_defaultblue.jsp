@@ -151,7 +151,7 @@
   --
   -- FOOTER COLORS
   --
---%><c:set var="ss_style_footer_text_color" value="blue" scope="request"/><%--
+--%><c:set var="ss_style_footer_text_color" value="#666666" scope="request"/><%--
 --%><c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/><%--
 --%><%--
   --
