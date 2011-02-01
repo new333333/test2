@@ -131,7 +131,7 @@
 }
  
 
-.activityStreamHover
+.activityStreamHover, .shareThisDlgNameHover, .groupMembershipNameHover
 {
 	cursor: pointer;
 	background: url(images/H_bg_blend_teal_light.png) repeat-x scroll center bottom;
@@ -390,7 +390,7 @@
 	border-width: 1px;
 }
 
-.shareThisCommentsLabel, .shareThisShareWithTeamsLabel
+.shareThisCommentsLabel, .shareThisShareWithTeamsLabel, .groupMembershipGroupNameLabel
 {
 	font-size: 12px;
 	font-weight: bold;
@@ -415,6 +415,43 @@
 {
 	cursor: pointer;
 	padding-right: 5px;
+}
+
+.groupMembershipPopup
+{
+	font-size: 14px;
+	background-color: #EBECA5;
+	border-color: #BABDB6;
+	border-style: solid solid solid;
+	border-width: 1px;
+	padding: 5px 10px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	z-index: 1100;
+}
+
+.closeGroupMembershipPopupImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 10px;
+	top: 5px;
+}
+
+.groupMembershipTablePanel
+{
+	width: 315px;
+}
+
+.groupMembershipTablePanelHeight
+{
+	height: 150px;
+	overflow: auto;
+}
+
+.groupMembershipTable
+{
+	width: 100%;
 }
 
 .displayInline
@@ -2135,6 +2172,11 @@ body, table td, select
 .paddingTop10px
 {
 	padding-top: 10px;
+}
+
+.paddingBottom8px
+{
+	padding-bottom: 8px;
 }
 
 /* */

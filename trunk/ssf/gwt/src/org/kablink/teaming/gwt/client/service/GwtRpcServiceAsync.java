@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
@@ -276,4 +277,8 @@ public interface GwtRpcServiceAsync
 
 	// Send an email notification to the given recipients for the given entry.
 	public void shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds, AsyncCallback<GwtShareEntryResults> callback );
+
+	// Get the membership of the given group.
+	public void getGroupMembership( HttpRequestInfo ri, String groupId, AsyncCallback<ArrayList<GwtTeamingItem>> callback );
+
 }// end GwtRpcServiceAsync

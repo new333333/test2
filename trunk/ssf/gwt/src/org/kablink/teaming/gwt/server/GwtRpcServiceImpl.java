@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
+import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
@@ -360,7 +361,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			break;
 		
 		case TEAMS:
-			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			searchTermFilter.addTeamFilter( searchText );
 			break;
 
 		case PERSON:
@@ -373,7 +374,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			break;
 			
 		default:
-			//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			//Add the login name term
+			if ( searchText.length() >0 ) {
+				searchTermFilter.addTitleFilter(searchText);
+				searchTermFilter.addLoginNameFilter(searchText);
+			}
 			break;
 		}// end switch()
 
@@ -444,8 +449,94 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 
 			case GROUP:
-				//!!! Finish, grab code from ajaxFind() in TypeToFindAjaxController.java
+			{
+				Map entries;
+		    	List searchEntries;
+		    	Integer searchHits;
+		    	ArrayList<GwtTeamingItem> results = null;
+				
+				entries = getProfileModule().getGroups( options );
+				
+				// Do we get any search hits?
+		    	searchEntries = (List)entries.get( ObjectKeys.SEARCH_ENTRIES );
+		    	searchHits = (Integer)entries.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+		    	if ( (null != searchEntries) && (null != searchHits) && (0 < searchHits) )
+		    	{
+					boolean sendingEmail;
+					boolean allowSendToAllUsers;
+					int size;
+
+					// Yes
+					results = new ArrayList( searchEntries.size() );
+
+					// Is this search a part of sending an email ui?
+					// And are we supposed to disallow sending email to the "all users" group?
+					sendingEmail = searchCriteria.getIsSendingEmail();
+					allowSendToAllUsers = SPropsUtil.getBoolean( "mail.allowSendToAllUsers", false );
+
+					// Create a GwtGroup object for each group returned by the search.
+					size = searchEntries.size();
+					for (int i = (size - 1); i >= 0; i -= 1)
+					{
+			    		Map entry;
+						String id;
+						boolean useGroup;
+
+						useGroup = true;
+			    		entry = (Map)searchEntries.get(i);
+			    		id = (String)entry.get(Constants.RESERVEDID_FIELD);
+						
+						// Is this search part of a sending email ui?
+						if ( sendingEmail )
+						{
+							// Is sending an email to all users allowed?
+							if ( allowSendToAllUsers == false )
+							{
+								// No
+								// Is this group the "all users" group?
+								if ( (null != id) && id.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) )
+								{
+									// Yes, skip it.
+									useGroup = false;
+									--searchHits;
+								}
+							}
+						}
+						
+						// Should we add this group to the search results?
+						if ( useGroup )
+						{
+							ProfileModule profileModule;
+							List<Long> groupId = new ArrayList<Long>();
+							SortedSet<Principal> groupPrincipals;
+
+							id = (String)entry.get( "_docId" );
+							groupId.add( Long.valueOf( id ) );
+							profileModule = getProfileModule();
+							groupPrincipals = profileModule.getPrincipals( groupId );
+							
+							if ( groupPrincipals.size() > 0  )
+							{
+								GwtGroup gwtGroup;
+								Principal group;
+								
+								group = groupPrincipals.first();
+								
+								// Create a GwtGroup item for this group.
+								gwtGroup = new GwtGroup();
+								gwtGroup.setId( id );
+								gwtGroup.setName( group.getName() );
+								gwtGroup.setTitle( group.getTitle() );
+								results.add( gwtGroup );
+							}
+						}
+			    	}
+		    	}
+						
+				searchResults.setCountTotal( searchHits.intValue() );
+				searchResults.setResults( results );
 				break;
+			}
 				
 			case PLACES:
 			{
@@ -531,8 +622,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			}
 			
 			case TEAMS:
-				//!!! Get code from ajaxFind() in TypeToFindAjaxController.java
+			{
+				List teamEntries;
+				ArrayList<GwtTeamingItem> results;
+				Integer count;
+				Iterator it;
+
+				// Search for teams
+				retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options );
+				
+				// Add the search results to the GwtSearchResults object.
+				count = (Integer) retMap.get( ObjectKeys.SEARCH_COUNT_TOTAL );
+				searchResults.setCountTotal( count.intValue() );
+				
+				// Create a GwtTeam item for each search result.
+				teamEntries = (List)retMap.get( ObjectKeys.SEARCH_ENTRIES );
+				results = new ArrayList( teamEntries.size() );
+				it = teamEntries.iterator();
+				while ( it.hasNext() )
+				{
+					Map<String,String> entry;
+					String teamId;
+
+					// Get the next team in the search results.
+					entry = (Map) it.next();
+
+					// Pull information about this team from the search results.
+					teamId = entry.get( "_docId" );
+					
+					//!!! Finish
+				}
+				searchResults.setResults( results );
 				break;
+			}
 
 			case PERSON:
 			case USER:
@@ -3264,6 +3386,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	}
+
+	/**
+	 * Return the membership of the given group.
+	 */
+	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId )
+	{
+		return GwtServerHelper.getGroupMembership( this, groupId );
+	}
+	
 	
 	/**
 	 * Returns Look up the user and return the list of groups they belong to.
@@ -3294,7 +3425,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			throw GwtServerHelper.getGwtTeamingException( ex );
 		} 
 		
-	}// end getMyGroups()
+	}
 
 	/**
 	 * Returns Look up the workspace owner and return the list of teams they belong to.

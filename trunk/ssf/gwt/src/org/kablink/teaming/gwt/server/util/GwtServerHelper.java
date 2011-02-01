@@ -86,10 +86,12 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
+import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
@@ -2768,6 +2770,68 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
+	/**
+	 * Return the membership of the given group.
+	 */
+	public static ArrayList<GwtTeamingItem> getGroupMembership(AllModulesInjected ami, String groupId)
+	{
+		Long groupIdL;
+		Principal group;
+		List<Principal> memberList;
+		ArrayList<GwtTeamingItem> retList;
+
+		retList = new ArrayList<GwtTeamingItem>();
+
+		// Get the group object.
+		groupIdL = Long.valueOf(groupId);
+		group = ami.getProfileModule().getEntry(groupIdL);
+		if ( group != null && group instanceof Group )
+		{
+			Iterator<Principal> itMembers;
+
+			memberList = ((Group) group).getMembers();
+
+			itMembers = memberList.iterator();
+			while (itMembers.hasNext())
+			{
+				Principal member;
+
+				member = (Principal) itMembers.next();
+				if (member instanceof Group)
+				{
+					Group nextGroup;
+					GwtGroup gwtGroup;
+					
+					nextGroup = (Group) member;
+					
+					gwtGroup = new GwtGroup();
+					gwtGroup.setId( nextGroup.getId().toString() );
+					gwtGroup.setName( nextGroup.getName() );
+					gwtGroup.setTitle( nextGroup.getTitle() );
+					
+					retList.add( gwtGroup );
+				}
+				else if (member instanceof User)
+				{
+					User user;
+					GwtUser gwtUser;
+					
+					user = (User) member;
+
+					gwtUser = new GwtUser();
+					gwtUser.setUserId( user.getId() );
+					gwtUser.setName( user.getName() );
+					gwtUser.setTitle( Utils.getUserTitle( user ) );
+					gwtUser.setWorkspaceTitle( user.getWSTitle() );
+
+					retList.add( gwtUser );
+				}
+			}
+		}
+
+		return retList;
+	}
+
 	/**
 	 * Returns information about the teams of a specific user
 	 * @param bs
