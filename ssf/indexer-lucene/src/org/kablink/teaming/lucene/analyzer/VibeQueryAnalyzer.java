@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
-public class StandardQueryAnalyzer extends Analyzer {
+public class VibeQueryAnalyzer extends Analyzer {
 	private String stemmerName;
 	private Set<String> stopSet;
 
@@ -53,11 +53,11 @@ public class StandardQueryAnalyzer extends Analyzer {
 
 	public static final Set<String> STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
 
-	public StandardQueryAnalyzer(boolean ignoreCaseForStop, String stemmerName) {
+	public VibeQueryAnalyzer(boolean ignoreCaseForStop, String stemmerName) {
 		this(STOP_WORDS_SET, ignoreCaseForStop, stemmerName);
 	}
 
-	public StandardQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+	public VibeQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
 			String stemmerName) {
 		stopSet = stopWords;
 		this.ignoreCaseForStop = ignoreCaseForStop;
@@ -65,7 +65,7 @@ public class StandardQueryAnalyzer extends Analyzer {
 		init();
 	}
 
-	public StandardQueryAnalyzer(File stopwords, boolean ignoreCaseForStop,
+	public VibeQueryAnalyzer(File stopwords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
@@ -73,7 +73,7 @@ public class StandardQueryAnalyzer extends Analyzer {
 		init();
 	}
 
-	public StandardQueryAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
+	public VibeQueryAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
@@ -82,7 +82,7 @@ public class StandardQueryAnalyzer extends Analyzer {
 	}
 
 	private final void init() {
-		setOverridesTokenStreamMethod(StandardQueryAnalyzer.class);
+		setOverridesTokenStreamMethod(VibeQueryAnalyzer.class);
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
