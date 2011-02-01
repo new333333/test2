@@ -37,6 +37,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -54,6 +55,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -392,7 +394,7 @@ public class GwtTaskHelper {
 			}
 		}
 	}
-
+	
 	/*
 	 * Scan the List<TaskInfo> and stores a location string in each
 	 * TaskInfo.
@@ -439,6 +441,90 @@ public class GwtTaskHelper {
 			// ...the TaskInfo's.
 			String location = binderLocationMap.get(task.getTaskId().getBinderId());
 			task.setLocation((null == location) ? "" : location);
+		}
+	}
+
+	/*
+	 * When initially build, the AssignmentInfo's in the
+	 * List<AssignmentInfo> only contain the assignee IDs.  We need to
+	 * complete them with each assignee's title, ...
+	 */
+	@SuppressWarnings("unchecked")
+	private static void completeMembershipAIs(AllModulesInjected bs, List<AssignmentInfo> assignees) {
+		// Collect the IDs of the assignees in a List<Long>.
+		List<Long> assigneeIds = new ArrayList<Long>();
+		for (AssignmentInfo ai:  assignees) {
+			assigneeIds.add(ai.getId());
+		}
+		
+		// Construct Maps, mapping the principal IDs to their titles
+		// and membership counts.
+		Map<Long, Group>           groups            = new HashMap<Long, Group>();
+		Map<Long, GwtPresenceInfo> presenceInfo      = new HashMap<Long, GwtPresenceInfo>();
+		Map<Long, Integer>         groupCounts       = new HashMap<Long, Integer>();
+		Map<Long, Long>            presenceUserWSIds = new HashMap<Long, Long>();
+		Map<Long, String>          principalTitles   = new HashMap<Long, String>();
+		Map<Long, User>            users             = new HashMap<Long, User>();
+		if (!(assigneeIds.isEmpty())) {
+			List principals = null;
+			try {principals = ResolveIds.getPrincipals(assigneeIds);}
+			catch (Exception ex) {}
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				boolean isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
+				for (Object o:  principals) {
+					Principal p = ((Principal) o);
+					Long pId = p.getId();
+					principalTitles.put(pId, p.getTitle());					
+					if (p instanceof GroupPrincipal) {
+						Group group = ((Group) p);
+						groups.put(pId, group);
+						groupCounts.put(pId, getGroupCount(group));						
+					}
+					else if (p instanceof UserPrincipal) {
+						User user = ((User) p);
+						users.put(pId, user);
+						presenceUserWSIds.put(pId, user.getWorkspaceId());
+						if (isPresenceEnabled) {
+							presenceInfo.put(pId, GwtServerHelper.getPresenceInfo(user));
+						}
+					}
+				}
+			}
+		}
+		
+		// Scan the List<AssignmentInfo> again.
+		List<AssignmentInfo> bogusAssignees = new ArrayList<AssignmentInfo>();
+		for (AssignmentInfo ai:  assignees) {
+			// Is this assignment that of a user?
+			Long aiId = ai.getId();
+			if (null != users.get(aiId)) {
+				// Yes!  Set its title and presence information.
+				setAITitle(           ai, principalTitles  );
+				setAIPresence(        ai, presenceInfo     );
+				setAIPresenceUserWSId(ai, presenceUserWSIds);
+			}
+			
+			// No, this assignment isn't that of a user!  Is it that
+			// of a group?
+			else if (null != groups.get(aiId)) {
+				// Yes!  Set its title and membership count.
+				setAITitle(  ai, principalTitles);
+				setAIMembers(ai, groupCounts    );
+				ai.setPresenceDude("pics/group_icon_small.gif");
+			}
+			
+			else {
+				// No, this assignment isn't that of a group either!
+				// It may be a deleted user, or something else we just
+				// can't access.  Track it as bogus.
+				bogusAssignees.add(ai);
+			}
+		}
+
+		// Scan any AssignmentInfo's we couldn't complete...
+		for (AssignmentInfo bogusAssignee:  bogusAssignees) {
+			// ...and remove the from the list.
+			assignees.remove(bogusAssignee);
 		}
 	}
 
@@ -832,6 +918,14 @@ public class GwtTaskHelper {
 	 * Returns a count of the members of a group.
 	 */
 	private static int getGroupCount(GroupPrincipal group) {
+		Set<Long> groupMemberIds = getGroupMemberIds(group);
+		return ((null == groupMemberIds) ? 0 : groupMemberIds.size());
+	}
+
+	/*
+	 * Returns a Set<Long> of the IDs of the members of a group.
+	 */
+	private static Set<Long> getGroupMemberIds(GroupPrincipal group) {
 		List<Long> groupIds = new ArrayList<Long>();
 		groupIds.add(group.getId());
 		Set<Long> groupMemberIds = null;
@@ -840,9 +934,61 @@ public class GwtTaskHelper {
 			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
 		}
 		catch (Exception ex) {}
-		return ((null == groupMemberIds) ? 0 : groupMemberIds.size());
+		return validatePrincipalIds(groupMemberIds);
 	}
 	
+	/**
+	 * Returns a List<AssignmentInfo> containing information about the
+	 * membership of a group.
+	 * 
+	 * @param bs
+	 * @param groupId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	@SuppressWarnings("unchecked")
+	public static List<AssignmentInfo> getGroupMembership(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+		try {
+			// Construct a List<AssignmentInfo> we can return.
+			List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
+			
+			// Can we resolve the group ID to a GroupPrincipal?
+			List<Long> groupIds = new ArrayList<Long>();
+			groupIds.add(groupId);
+			List principals = ResolveIds.getPrincipals(groupIds);
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				for (Object o:  principals) {
+					Principal p = ((Principal) o);
+					if (p instanceof GroupPrincipal) {
+						// Yes!  Can we read its membership IDs?
+						Set<Long> groupMemberIds = getGroupMemberIds((GroupPrincipal) p);
+						if (null != groupMemberIds) {
+							// Yes!  Add a base AssignmentInfo with
+							// each ID to the List<AssignmentInfo> that
+							// we're going to return.
+							for (Long memberId:  groupMemberIds) {
+								reply.add(AssignmentInfo.construct(memberId));
+							}
+						}
+					}
+				}
+			}
+			
+			// Complete the content of the AssignmentInfo's to return.
+			completeMembershipAIs(bs, reply);
+
+			// If we get here, reply refers to a List<AssignmentInfo>
+			// describing the members of a group.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
 	/*
 	 * Reads an integer from a Map.
 	 */
@@ -1158,14 +1304,61 @@ public class GwtTaskHelper {
 	/*
 	 * Returns a count of the members of a team.
 	 */
-	@SuppressWarnings("unchecked")
 	private static int getTeamCount(AllModulesInjected bs, Binder binder) {
-		Set teamMembers = null;
-		try {teamMembers = bs.getBinderModule().getTeamMembers(binder, false);}
+		Set<Long> teamMemberIds = getTeamMemberIds(bs, binder.getId());
+		return ((null == teamMemberIds) ? 0 : teamMemberIds.size());
+	}
+
+	/*
+	 * Returns a Set<Long> of the member IDs of a team.
+	 */
+	private static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
+		Set<Long> teamMemberIds = null;
+		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, false);}
 		catch (Exception ex) {}
-		return ((null == teamMembers) ? 0 : teamMembers.size());
+		return validatePrincipalIds(teamMemberIds);
 	}
 	
+	/**
+	 * Returns a List<AssignmentInfo> containing information about the
+	 * membership of a team.
+	 * 
+	 * @param bs
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static List<AssignmentInfo> getTeamMembership(AllModulesInjected bs, Long binderId) throws GwtTeamingException {
+		try {
+			// Construct a List<AssignmentInfo> we can return.
+			List<AssignmentInfo> reply = new ArrayList<AssignmentInfo>();
+			
+			// Can we resolve the binder ID to a set of team member
+			// IDs?
+			Set<Long> teamMemberIds = getTeamMemberIds(bs, binderId);
+			if (null != teamMemberIds) {
+				// Yes!  Add a base AssignmentInfo with each ID to the
+				// List<AssignmentInfo> that we're going to return.
+				for (Long memberId:  teamMemberIds) {
+					reply.add(AssignmentInfo.construct(memberId));
+				}
+			}
+			
+			// Complete the content of the AssignmentInfo's to return.
+			completeMembershipAIs(bs, reply);
+
+			// If we get here, reply refers to a List<AssignmentInfo>
+			// describing the members of a team.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}
+	}
+
 	/*
 	 * Returns true if a TaskLink refers to a valid FolderEntry and false
 	 * otherwise.
@@ -1609,6 +1802,27 @@ public class GwtTaskHelper {
 		return new HashMap<Long, TaskDate>();
 	}
 
+	/*
+	 * Validates that the Long's in a Set<Long> are valid principal
+	 * IDs.
+	 */
+	@SuppressWarnings("unchecked")
+	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
+		Set<Long> reply = new HashSet<Long>();
+		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
+			List principals = null;
+			try {principals = ResolveIds.getPrincipals(principalIds);}
+			catch (Exception ex) {}
+			if ((null != principals) && (!(principals.isEmpty()))) {
+				for (Object o:  principals) {
+					Principal p = ((Principal) o);
+					reply.add(p.getId());
+				}
+			}
+		}
+		return reply;
+	}
+
 	/**
 	 * Validates the task FolderEntry's referenced by a TaskLinkage.
 	 * 
@@ -1650,5 +1864,5 @@ public class GwtTaskHelper {
 				validateTaskLinkList(bs, tl.getSubtasks());
 			}
 		}
-	}	
+	}
 }

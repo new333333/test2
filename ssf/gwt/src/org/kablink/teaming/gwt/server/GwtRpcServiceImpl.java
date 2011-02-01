@@ -97,6 +97,7 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -213,6 +214,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean expandSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
 		return GwtTaskHelper.expandSubtasks( this, binderId, entryId );
+	}
+
+	/**
+	 * Returns a List<AssignmentInfo> containing information about the
+	 * membership of a group.
+	 * 
+	 * @param ri
+	 * @param groupId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public List<AssignmentInfo> getGroupMembership( HttpRequestInfo ri, Long groupId ) throws GwtTeamingException {
+		return GwtTaskHelper.getGroupMembership( this, groupId );
+	}
+
+	/**
+	 * Returns a List<AssignmentInfo> containing information about the
+	 * membership of a team.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public List<AssignmentInfo> getTeamMembership( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
+		return GwtTaskHelper.getTeamMembership( this, binderId );
 	}
 
 	/**

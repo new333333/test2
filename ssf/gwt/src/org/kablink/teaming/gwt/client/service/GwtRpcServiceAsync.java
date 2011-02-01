@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -242,24 +243,26 @@ public interface GwtRpcServiceAsync
 	public void saveSubscriptionData( HttpRequestInfo ri, String entryId, SubscriptionData subscriptionData, AsyncCallback<Boolean> callback );
 
 	// Task servicing APIs.
-	public void collapseSubtasks(      HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>             callback );
-	public void deleteTask(            HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>             callback );
-	public void deleteTasks(           HttpRequestInfo ri,                List<TaskId> taskIds,                           AsyncCallback<Boolean>             callback );
-	public void expandSubtasks(        HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>             callback );
-	public void getTaskList(           HttpRequestInfo ri, Long binderId, String       filterType, String modeType,       AsyncCallback<List<TaskListItem>>  callback );
-	public void getTaskBundle(         HttpRequestInfo ri, Long binderId, String       filterType, String modeType,       AsyncCallback<TaskBundle>          callback );
-	public void getTaskLinkage(        HttpRequestInfo ri, Long binderId,                                                 AsyncCallback<TaskLinkage>         callback );
-	public void purgeTask(             HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>             callback );
-	public void purgeTasks(            HttpRequestInfo ri,                List<TaskId> taskIds,                           AsyncCallback<Boolean>             callback );
-	public void removeTaskLinkage(     HttpRequestInfo ri, Long binderId,                                                 AsyncCallback<Boolean>             callback );
-	public void saveTaskCompleted(     HttpRequestInfo ri, Long binderId, Long         entryId,    String  completed,     AsyncCallback<String>              callback );
-	public void saveTaskCompleted(     HttpRequestInfo ri,                List<TaskId> taskIds,    String  completed,     AsyncCallback<String>              callback );
-	public void saveTaskLinkage(       HttpRequestInfo ri, Long binderId, TaskLinkage  taskLinkage,                       AsyncCallback<Boolean>             callback );
-	public void saveTaskPriority(      HttpRequestInfo ri, Long binderId, Long         entryId,    String  priority,      AsyncCallback<Boolean>             callback );
-	public void saveTaskSort(          HttpRequestInfo ri, Long binderId, String       sortKey,    boolean sortAscending, AsyncCallback<Boolean>             callback );
-	public void saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long         entryId,    String  status,        AsyncCallback<String>              callback );
-	public void saveTaskStatus(        HttpRequestInfo ri,                List<TaskId> taskIds,    String  status,        AsyncCallback<String>              callback );
-	public void updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Map<Long, TaskDate>> callback );
+	public void collapseSubtasks(      HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>              callback );
+	public void deleteTask(            HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>              callback );
+	public void deleteTasks(           HttpRequestInfo ri,                List<TaskId> taskIds,                           AsyncCallback<Boolean>              callback );
+	public void expandSubtasks(        HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>              callback );
+	public void getGroupMembership(    HttpRequestInfo ri,                Long         groupId,                           AsyncCallback<List<AssignmentInfo>> callback );
+	public void getTaskList(           HttpRequestInfo ri, Long binderId, String       filterType, String modeType,       AsyncCallback<List<TaskListItem>>   callback );
+	public void getTaskBundle(         HttpRequestInfo ri, Long binderId, String       filterType, String modeType,       AsyncCallback<TaskBundle>           callback );
+	public void getTaskLinkage(        HttpRequestInfo ri, Long binderId,                                                 AsyncCallback<TaskLinkage>          callback );
+	public void getTeamMembership(     HttpRequestInfo ri, Long binderId,                                                 AsyncCallback<List<AssignmentInfo>> callback );
+	public void purgeTask(             HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Boolean>              callback );
+	public void purgeTasks(            HttpRequestInfo ri,                List<TaskId> taskIds,                           AsyncCallback<Boolean>              callback );
+	public void removeTaskLinkage(     HttpRequestInfo ri, Long binderId,                                                 AsyncCallback<Boolean>              callback );
+	public void saveTaskCompleted(     HttpRequestInfo ri, Long binderId, Long         entryId,    String  completed,     AsyncCallback<String>               callback );
+	public void saveTaskCompleted(     HttpRequestInfo ri,                List<TaskId> taskIds,    String  completed,     AsyncCallback<String>               callback );
+	public void saveTaskLinkage(       HttpRequestInfo ri, Long binderId, TaskLinkage  taskLinkage,                       AsyncCallback<Boolean>              callback );
+	public void saveTaskPriority(      HttpRequestInfo ri, Long binderId, Long         entryId,    String  priority,      AsyncCallback<Boolean>              callback );
+	public void saveTaskSort(          HttpRequestInfo ri, Long binderId, String       sortKey,    boolean sortAscending, AsyncCallback<Boolean>              callback );
+	public void saveTaskStatus(        HttpRequestInfo ri, Long binderId, Long         entryId,    String  status,        AsyncCallback<String>               callback );
+	public void saveTaskStatus(        HttpRequestInfo ri,                List<TaskId> taskIds,    String  status,        AsyncCallback<String>               callback );
+	public void updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long         entryId,                           AsyncCallback<Map<Long, TaskDate>>  callback );
 	
 	// SeenMap servicing APIs.
 	public void isSeen(    HttpRequestInfo ri, Long       entryId,  AsyncCallback<Boolean> callback );
