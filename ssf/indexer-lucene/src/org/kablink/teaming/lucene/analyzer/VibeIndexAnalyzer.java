@@ -52,10 +52,13 @@ public class VibeIndexAnalyzer extends Analyzer {
 
 	private boolean ignoreCaseForStop = true;
 
-	public static final Set<String> STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
-
-	public VibeIndexAnalyzer(boolean ignoreCaseForStop, String stemmerName) {
-		this(STOP_WORDS_SET, ignoreCaseForStop, stemmerName);
+	public VibeIndexAnalyzer() {
+		init();
+	}
+	
+	public VibeIndexAnalyzer(String stemmerName) {
+		this.stemmerName = stemmerName;
+		init();
 	}
 
 	public VibeIndexAnalyzer(Set stopWords, boolean ignoreCaseForStop,
@@ -93,7 +96,8 @@ public class VibeIndexAnalyzer extends Analyzer {
 		if (stopSet != null && stopSet.size() > 0) {
 			result = new StopFilter(true, result, stopSet, ignoreCaseForStop);
 		}
-		result = new SnowballFilter(result, stemmerName);
+		if(stemmerName != null && !stemmerName.equals(""))
+			result = new SnowballFilter(result, stemmerName);
 		return result;
 	}
 
@@ -120,7 +124,8 @@ public class VibeIndexAnalyzer extends Analyzer {
 			if (stopSet != null && stopSet.size() > 0)
 				streams.result = new StopFilter(true, streams.result, stopSet,
 						ignoreCaseForStop);
-			streams.result = new SnowballFilter(streams.result, stemmerName);
+			if(stemmerName != null && !stemmerName.equals(""))
+				streams.result = new SnowballFilter(streams.result, stemmerName);
 			setPreviousTokenStream(streams);
 		} else {
 			streams.source.reset(reader);
