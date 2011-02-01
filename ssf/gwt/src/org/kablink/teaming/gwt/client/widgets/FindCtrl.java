@@ -820,6 +820,14 @@ public class FindCtrl extends Composite
 		m_prevSearchString = searchString;
 	}// end setInitialSearchString()
 	
+	/**
+	 * 
+	 */
+	public void setIsSendingEmail( boolean isSendingEmail )
+	{
+		m_searchCriteria.setIsSendingEmail( isSendingEmail );
+	}
+	
 	
 	/**
 	 * Set the search criteria for whether or not we are searching only for folders.

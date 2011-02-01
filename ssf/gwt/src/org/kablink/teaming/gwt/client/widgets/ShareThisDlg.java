@@ -39,6 +39,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
@@ -54,6 +55,10 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -68,6 +73,7 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -225,6 +231,90 @@ public class ShareThisDlg extends DlgBox
 	
 	
 	/**
+	 * This widget is used to display a recipient's name.  If the recipient is a group
+	 * then the user can click on the name and see the members of the group.
+	 */
+	private class RecipientNameWidget extends Composite
+		implements ClickHandler, MouseOverHandler, MouseOutHandler
+	{
+		private RecipientInfo m_recipientInfo;
+		private InlineLabel m_nameLabel;
+		private GroupMembershipPopup m_groupMembershipPopup;
+		
+		/**
+		 * 
+		 */
+		public RecipientNameWidget( RecipientInfo recipientInfo )
+		{
+			FlowPanel panel;
+			
+			m_recipientInfo = recipientInfo;
+			
+			panel = new FlowPanel();
+			
+			m_nameLabel = new InlineLabel( recipientInfo.getName() );
+			panel.add( m_nameLabel );
+			
+			// If we are dealing with a group, let the user click on the group.
+			if ( recipientInfo.getType() == RecipientType.GROUP )
+			{
+				m_nameLabel.addClickHandler( this );
+				m_nameLabel.addMouseOverHandler( this );
+				m_nameLabel.addMouseOutHandler( this );
+			}
+			
+			// All composites must call initWidget() in their constructors.
+			initWidget( panel );
+		}
+		
+		/**
+		 * Close the group membership popup if it is open.
+		 */
+		public void closePopups()
+		{
+			if ( m_groupMembershipPopup != null )
+				m_groupMembershipPopup.closePopups();
+		}
+
+		/**
+		 * This gets called when the user clicks on the recipient's name.  This will only
+		 * be called if the recipient is a group.
+		 */
+		public void onClick( ClickEvent event )
+		{
+			// Create a popup that will display the membership of this group.
+			if ( m_groupMembershipPopup == null )
+			{
+				m_groupMembershipPopup = new GroupMembershipPopup(
+															false,
+															false,
+															m_recipientInfo.getName(),
+															m_recipientInfo.getId() );
+			}
+			
+			m_groupMembershipPopup.setPopupPosition( getAbsoluteLeft(), getAbsoluteTop() );
+			m_groupMembershipPopup.show();
+		}
+		
+		/**
+		 * Remove the mouse-over style from the name. 
+		 */
+		public void onMouseOut( MouseOutEvent event )
+		{
+			m_nameLabel.removeStyleName( "shareThisDlgNameHover" );
+		}
+
+		
+		/**
+		 * Add the mouse-over style to the name.
+		 */
+		public void onMouseOver( MouseOverEvent event )
+		{
+			m_nameLabel.addStyleName( "shareThisDlgNameHover" );
+		}
+	}
+	
+	/**
 	 * This widget is used to remove a recipient from the list of recipients
 	 */
 	private class RemoveRecipientWidget extends Composite
@@ -321,6 +411,7 @@ public class ShareThisDlg extends DlgBox
 		String type;
 		int row;
 		RemoveRecipientWidget removeWidget;
+		RecipientNameWidget recipientNameWidget;
 		
 		row = m_recipientTable.getRowCount();
 		
@@ -349,7 +440,8 @@ public class ShareThisDlg extends DlgBox
 		
 		// Add the recipient name in the first column.
 		m_cellFormatter.setColSpan( row, 0, 1 );
-		m_recipientTable.setText( row, 0, recipientInfo.getName() );
+		recipientNameWidget = new RecipientNameWidget( recipientInfo );
+		m_recipientTable.setWidget( row, 0,  recipientNameWidget );
 
 		// Add the recipient type in the second column.
 		if ( recipientInfo.getType() == RecipientType.USER )
@@ -550,6 +642,7 @@ public class ShareThisDlg extends DlgBox
 			mainPanel.add( table );
 			
 			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.USER );
+			m_findCtrl.setIsSendingEmail( true );
 			table.setWidget( 0, 0, m_findCtrl );
 		}
 		
@@ -640,6 +733,25 @@ public class ShareThisDlg extends DlgBox
 	 */
 	public boolean editCanceled()
 	{
+		int i;
+		
+		// Go through the list of recipients and close any "Group Membership" popups that may be open.
+		for (i = 1; i < m_recipientTable.getRowCount(); ++i)
+		{
+			Widget widget;
+			
+			if ( m_recipientTable.getCellCount( i ) > 2 )
+			{
+				// Get the RecipientNameWidget from the first column.
+				widget = m_recipientTable.getWidget( i, 0 );
+				if ( widget != null && widget instanceof RecipientNameWidget )
+				{
+					// Close any group membership popup that this widget may have open.
+					((RecipientNameWidget) widget).closePopups();
+				}
+			}
+		}
+		
 		// Simply return true to allow the dialog to close.
 		return true;
 	}
@@ -916,10 +1028,13 @@ public class ShareThisDlg extends DlgBox
 	{
 		if ( TeamingAction.SELECTION_CHANGED == ta )
 		{
+			RecipientInfo recipientInfo;
+
+			recipientInfo = null;
+			
 			// Are we dealing with a User?
 			if ( selectedObj instanceof GwtUser )
 			{
-				RecipientInfo recipientInfo;
 				GwtUser user;
 				
 				// Yes
@@ -929,6 +1044,25 @@ public class ShareThisDlg extends DlgBox
 				recipientInfo.setName( user.getShortDisplayName() );
 				recipientInfo.setType( RecipientType.USER );
 				recipientInfo.setId( user.getUserId() );
+			}
+			// Are we dealing with a group?
+			else if ( selectedObj instanceof GwtGroup )
+			{
+				GwtGroup group;
+				
+				// Yes
+				group = (GwtGroup) selectedObj;
+				
+				recipientInfo = new RecipientInfo();
+				recipientInfo.setName( group.getShortDisplayName() );
+				recipientInfo.setType( RecipientType.GROUP );
+				recipientInfo.setId( group.getId() );
+			}
+
+			// Do we have an object to add to our list of recipients?
+			if ( recipientInfo != null )
+			{
+				// Yes
 				
 				// Add the recipient to our list of recipients
 				addRecipient( recipientInfo );
@@ -996,6 +1130,10 @@ public class ShareThisDlg extends DlgBox
 		m_entryId = entryId;
 		m_findCtrl.setInitialSearchString( "" );
 		m_usersRB.setValue( Boolean.TRUE );
+		m_groupsRB.setValue( Boolean.FALSE );
+
+		// Set the filter of the Find Control to only search for users.
+		m_findCtrl.setSearchType( SearchType.USER );
 
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.

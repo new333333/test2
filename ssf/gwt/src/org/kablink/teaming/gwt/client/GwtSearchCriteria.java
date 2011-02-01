@@ -82,6 +82,7 @@ public class GwtSearchCriteria
 	private boolean m_foldersOnly = false;
 	private boolean m_addCurrentUser = false;
 	private SearchType m_searchType = SearchType.ENTRIES;
+	private boolean m_sendingEmail = false;	// Is the search part of a "sending email" ui?
 
 	/**
 	 * 
@@ -129,6 +130,14 @@ public class GwtSearchCriteria
 		return m_foldersOnly;
 	}// end getFoldersOnly()
 	
+	
+	/**
+	 * 
+	 */
+	public boolean getIsSendingEmail()
+	{
+		return m_sendingEmail;
+	}
 	
 	/**
 	 * 
@@ -210,6 +219,14 @@ public class GwtSearchCriteria
 		m_foldersOnly = foldersOnly;
 	}// end setFoldersOnly()
 	
+	
+	/**
+	 * Set whether this search is part of sending an email;
+	 */
+	public void setIsSendingEmail( boolean sendingEmail )
+	{
+		m_sendingEmail = sendingEmail;
+	}
 	
 	/**
 	 * 

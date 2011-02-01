@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.admin.ExtensionDefinitionInUseException;
 import org.kablink.teaming.gwt.client.admin.ExtensionFiles;
 import org.kablink.teaming.gwt.client.admin.ExtensionInfoClient;
@@ -283,4 +284,8 @@ public interface GwtRpcService extends RemoteService
 	
 	// Send an email notification to the given recipients for the given entry.
 	public GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds ) throws GwtTeamingException;
+	
+	// Get the membership of the given group.
+	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId );
+
 }// end GwtRpcService

@@ -752,6 +752,10 @@ public interface GwtTeamingMessages extends Messages
 	String unknownShareType();
 	String usersWithoutRights();
 	
+	// The following strings are used in the Group Membership popup
+	String noGroupMembers();
+	String unknownGroupMemberType();
+	
 	// The following strings are used as the hover text over various
 	// binder type images in the sidebar workspace tree control.
 	String hoverBucket();
