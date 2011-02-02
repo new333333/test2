@@ -74,6 +74,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -124,6 +125,7 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionModule.DefinitionOperation;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
@@ -455,7 +457,7 @@ public class GwtServerHelper {
 		FolderEntry replyEntry;
 		Long entryIdL;
 		Long binderIdL;
-		String entryDefId;
+		String replyDefId;
 		Map fileMap;
 		Map<String, String> inputMap;
 		MapInputData inputData;
@@ -467,8 +469,58 @@ public class GwtServerHelper {
 		entry = folderModule.getEntry( null, entryIdL );
 		binderIdL = entry.getParentBinder().getId();
 		
-		// Get the entry's definition id.
-		entryDefId = entry.getEntryDefId();
+		// Get the entry's reply definition id.
+		{
+			Document entryDefDoc = null;
+
+			replyDefId = null;
+			entryDefDoc = entry.getEntryDefDoc();
+			if ( entryDefDoc != null )
+			{
+				List replyStyles = null;
+
+				// Get the reply styles for this entry.
+				replyStyles = DefinitionUtils.getPropertyValueList( entryDefDoc.getRootElement(), "replyStyle" );
+
+				// Do we have any reply styles?
+				if ( replyStyles != null && replyStyles.isEmpty() == false )
+				{
+					int i;
+
+					// Yes, find the one whose name is "_comment"
+					for (i = 0; i < replyStyles.size() && replyDefId == null; i++)
+					{
+						String replyStyleId;
+
+						replyStyleId = (String)replyStyles.get(i);
+						
+						try
+						{
+							Definition replyDef;
+							String replyName;
+
+							replyDef = bs.getDefinitionModule().getDefinition( replyStyleId );
+							replyName = replyDef.getName();
+							if ( replyName != null && replyName.equalsIgnoreCase( "_comment" ) )
+								replyDefId = replyStyleId;
+						}
+						catch ( NoDefinitionByTheIdException e )
+						{
+							continue;
+						}
+					}
+					
+					if ( replyDefId == null )
+					{
+						// use the first one.
+						replyDefId = (String) replyStyles.get( 0 );
+					}
+				}
+			}
+
+			if ( replyDefId == null )
+				replyDefId = entry.getEntryDefId();
+		}
 		
 		// Create an empty file map.
 		fileMap = new HashMap();
@@ -478,7 +530,7 @@ public class GwtServerHelper {
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
 		inputData = new MapInputData( inputMap );
 
-    	replyEntry = folderModule.addReply( binderIdL, entryIdL, entryDefId, inputData, fileMap, null );
+    	replyEntry = folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
 
 		// Are we supposed to update the timestamp on top level
 		// entries when a reply is posted?
