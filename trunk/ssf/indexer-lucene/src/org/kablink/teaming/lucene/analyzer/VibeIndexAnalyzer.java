@@ -36,7 +36,6 @@ import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
 import org.kablink.teaming.lucene.util.SsfTokenFilter;
 
 import java.io.File;
@@ -44,49 +43,29 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
-public class VibeIndexAnalyzer extends Analyzer {
-	private String stemmerName;
-	private Set<String> stopSet;
-
-	private static final Version VERSION = Version.LUCENE_29;
-
-	private boolean ignoreCaseForStop = true;
-
+public class VibeIndexAnalyzer extends VibeAnalyzer {
+	
 	public VibeIndexAnalyzer() {
-		init();
+		super();
 	}
 	
 	public VibeIndexAnalyzer(String stemmerName) {
-		this.stemmerName = stemmerName;
-		init();
+		super(stemmerName);
 	}
 
 	public VibeIndexAnalyzer(Set stopWords, boolean ignoreCaseForStop,
 			String stemmerName) {
-		stopSet = stopWords;
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
-	public VibeIndexAnalyzer(File stopwords, boolean ignoreCaseForStop,
+	public VibeIndexAnalyzer(File stopWords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
-		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
-	public VibeIndexAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
+	public VibeIndexAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
-		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
-	}
-
-	private final void init() {
-		setOverridesTokenStreamMethod(VibeIndexAnalyzer.class);
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
@@ -100,11 +79,6 @@ public class VibeIndexAnalyzer extends Analyzer {
 			result = new SnowballFilter(result, stemmerName);
 		return result;
 	}
-
-	private class SavedStreams {
-		Tokenizer source;
-		TokenStream result;
-	};
 
 	public TokenStream reusableTokenStream(String fieldName, Reader reader)
 			throws IOException {

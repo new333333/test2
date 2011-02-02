@@ -32,37 +32,64 @@
  */
 package org.kablink.teaming.lucene.analyzer;
 
+import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-
-import junit.framework.Assert;
+import java.io.Reader;
+import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.WordlistLoader;
+import org.apache.lucene.util.Version;
 
-public class AnalyzerUtils {
+public abstract class VibeAnalyzer extends Analyzer {
+	protected String stemmerName;
+	protected Set<String> stopSet;
+	protected boolean ignoreCaseForStop = true;
 
-	public static void displayTokens(Analyzer analyzer, String text) throws IOException {
-			displayTokens(analyzer.tokenStream("contents", new StringReader(text)));
-	}
+	protected static final Version VERSION = Version.LUCENE_29;
 
-	public static void displayTokens(TokenStream stream) throws IOException {
-		TermAttribute term = (TermAttribute) stream.addAttribute(TermAttribute.class);
-		while (stream.incrementToken()) {
-			System.out.print("[" + term.term() + "] ");
-		}
+	public VibeAnalyzer() {
+		init();
 	}
 	
-	public static void assertAnalyzesTo(Analyzer analyzer, String input,
-			String[] output) throws Exception {
-		TokenStream stream = analyzer.tokenStream("field", new StringReader(input));
-		TermAttribute termAttr = (TermAttribute) stream.addAttribute(TermAttribute.class);
-		for (String expected : output) {
-			Assert.assertTrue(stream.incrementToken());
-			Assert.assertEquals(expected, termAttr.term());
-		}
-		Assert.assertFalse(stream.incrementToken());
-		stream.close();
+	public VibeAnalyzer(String stemmerName) {
+		this.stemmerName = stemmerName;
+		init();
 	}
+
+	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+			String stemmerName) {
+		stopSet = stopWords;
+		this.ignoreCaseForStop = ignoreCaseForStop;
+		this.stemmerName = stemmerName;
+		init();
+	}
+
+	public VibeAnalyzer(File stopwords, boolean ignoreCaseForStop,
+			String stemmerName) throws IOException {
+		stopSet = WordlistLoader.getWordSet(stopwords);
+		this.ignoreCaseForStop = ignoreCaseForStop;
+		this.stemmerName = stemmerName;
+		init();
+	}
+
+	public VibeAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
+			String stemmerName) throws IOException {
+		stopSet = WordlistLoader.getWordSet(stopwords);
+		this.ignoreCaseForStop = ignoreCaseForStop;
+		this.stemmerName = stemmerName;
+		init();
+	}
+
+	private void init() {
+		setOverridesTokenStreamMethod(getClass());
+	}
+
+	protected class SavedStreams {
+		Tokenizer source;
+		TokenStream result;
+	};
+
 }

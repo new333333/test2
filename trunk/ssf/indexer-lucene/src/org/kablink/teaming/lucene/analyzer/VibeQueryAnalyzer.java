@@ -36,53 +36,35 @@ import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.apache.lucene.util.Version;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Set;
 
-public class VibeQueryAnalyzer extends Analyzer {
-	private String stemmerName;
-	private Set<String> stopSet;
+public class VibeQueryAnalyzer extends VibeAnalyzer {
 
-	private static final Version VERSION = Version.LUCENE_29;
-
-	private boolean ignoreCaseForStop = true;
-
-	public static final Set<String> STOP_WORDS_SET = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
-
-	public VibeQueryAnalyzer(boolean ignoreCaseForStop, String stemmerName) {
-		this(STOP_WORDS_SET, ignoreCaseForStop, stemmerName);
+	public VibeQueryAnalyzer() {
+		super();
+	}
+	
+	public VibeQueryAnalyzer(String stemmerName) {
+		super(stemmerName);
 	}
 
 	public VibeQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
 			String stemmerName) {
-		stopSet = stopWords;
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
-	public VibeQueryAnalyzer(File stopwords, boolean ignoreCaseForStop,
+	public VibeQueryAnalyzer(File stopWords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
-		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
-	public VibeQueryAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
+	public VibeQueryAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
 			String stemmerName) throws IOException {
-		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
-		this.stemmerName = stemmerName;
-		init();
-	}
-
-	private final void init() {
-		setOverridesTokenStreamMethod(VibeQueryAnalyzer.class);
+		super(stopWords, ignoreCaseForStop, stemmerName);
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
@@ -91,14 +73,10 @@ public class VibeQueryAnalyzer extends Analyzer {
 		if (stopSet != null && stopSet.size() > 0) {
 			result = new StopFilter(true, result, stopSet, ignoreCaseForStop);
 		}
-		result = new SnowballFilter(result, stemmerName);
+		if(stemmerName != null && !stemmerName.equals(""))
+			result = new SnowballFilter(result, stemmerName);
 		return result;
 	}
-
-	private class SavedStreams {
-		Tokenizer source;
-		TokenStream result;
-	};
 
 	public TokenStream reusableTokenStream(String fieldName, Reader reader)
 			throws IOException {
@@ -117,7 +95,8 @@ public class VibeQueryAnalyzer extends Analyzer {
 			if (stopSet != null && stopSet.size() > 0)
 				streams.result = new StopFilter(true, streams.result, stopSet,
 						ignoreCaseForStop);
-			streams.result = new SnowballFilter(streams.result, stemmerName);
+			if(stemmerName != null && !stemmerName.equals(""))
+				streams.result = new SnowballFilter(streams.result, stemmerName);
 			setPreviousTokenStream(streams);
 		} else {
 			streams.source.reset(reader);
