@@ -34,6 +34,7 @@ package org.kablink.teaming.lucene.analyzer;
 
 import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Set;
 
 import junit.framework.TestCase;
 
@@ -79,21 +80,21 @@ public class VibeQueryAnalyzerTest extends TestCase {
 	
 	public void testStopWords() throws Exception {
 		// Apply stop words case insensitively.
-		Analyzer analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), true, null);
+		Analyzer analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), true, null, false);
 		String text = "the The tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, new String[] {});	
 
 		// Apply stop words case sensitively.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), false, null);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), false, null, false);
 		text = "the The Then tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, new String[] {"The", "thE", "THE"});	
 
 		// Apply non-English Latin-1 (Western European languages) stop words.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), true, null);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), true, null, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
@@ -101,5 +102,14 @@ public class VibeQueryAnalyzerTest extends TestCase {
 				new String[] {"L'éphéméride", "novell", "dänemark", "vibe"});	
 	}
 	
+	public void testFoldingToAscii() throws Exception {
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, true);
+		String text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe évènement";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"L'ephemeride", "Guterzug", "novell", "uberfuhr", "by", "danemark", "Caractere", "to", "brulante", "vibe", "evenement"}); 
+	}
+
 }
 

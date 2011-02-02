@@ -53,28 +53,33 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 		super(stemmerName);
 	}
 
+	public VibeIndexAnalyzer(boolean foldToAscii) {
+		super(foldToAscii);
+	}
+	
 	public VibeIndexAnalyzer(Set stopWords, boolean ignoreCaseForStop,
-			String stemmerName) {
-		super(stopWords, ignoreCaseForStop, stemmerName);
+			String stemmerName, boolean foldToAscii) {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
 	public VibeIndexAnalyzer(File stopWords, boolean ignoreCaseForStop,
-			String stemmerName) throws IOException {
-		super(stopWords, ignoreCaseForStop, stemmerName);
+			String stemmerName, boolean foldToAscii) throws IOException {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
 	public VibeIndexAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
-			String stemmerName) throws IOException {
-		super(stopWords, ignoreCaseForStop, stemmerName);
+			String stemmerName, boolean foldToAscii) throws IOException {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		TokenStream result = new StandardTokenizer(VERSION, reader);
 		result = new StandardFilter(result);
+		if(foldToAscii)
+			result = new ASCIIFoldingFilter(result);
 		result = new SsfTokenFilter(result);
-		if (stopSet != null && stopSet.size() > 0) {
+		if (stopSet != null && stopSet.size() > 0)
 			result = new StopFilter(true, result, stopSet, ignoreCaseForStop);
-		}
 		if(stemmerName != null && !stemmerName.equals(""))
 			result = new SnowballFilter(result, stemmerName);
 		return result;
@@ -94,6 +99,8 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 			streams = new SavedStreams();
 			streams.source = new StandardTokenizer(VERSION, reader);
 			streams.result = new StandardFilter(streams.source);
+			if(foldToAscii)
+				streams.result = new ASCIIFoldingFilter(streams.result);
 			streams.result = new SsfTokenFilter(streams.result);
 			if (stopSet != null && stopSet.size() > 0)
 				streams.result = new StopFilter(true, streams.result, stopSet,
