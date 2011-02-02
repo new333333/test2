@@ -591,6 +591,8 @@ public class EntityIndexUtils {
     }
     public static String getFolderAclString(Binder binder, boolean includeTitleAcl) {
     	Long allUsersId = Utils.getAllUsersGroupId();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
 		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
@@ -600,7 +602,7 @@ public class EntityIndexUtils {
        		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
        	}
        	//TODO Add the condition acls ids
-       	ids = ids.trim() + " " + Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+       	ids = ids.trim() + " " + String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
         return ids.trim();
     }
     public static String getFolderTeamAclString(Binder binder) {
@@ -622,6 +624,8 @@ public class EntityIndexUtils {
     }
     public static String getEntryAclString(Binder binder, Entry entry) {
     	Long allUsersId = Utils.getAllUsersGroupId();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
     	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
     		//This is a reply to a folder entry. Get the acl of the top entry
     		entry = ((FolderEntry)entry).getTopEntry();
@@ -638,7 +642,7 @@ public class EntityIndexUtils {
 	       		}
 	        }
 	       	//TODO Add the condition acls ids
-	       	ids = ids.trim() + " " + Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+	       	ids = ids.trim() + " " + String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
 	       	
 	       	if (entryIds.contains(allUsersId)) {
 	       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
@@ -655,7 +659,7 @@ public class EntityIndexUtils {
        			ids = Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
        		}
        		//TODO Add in the Condition ACLs
-       		ids += Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+       		ids += String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
        		return ids.trim();
     	}
     }

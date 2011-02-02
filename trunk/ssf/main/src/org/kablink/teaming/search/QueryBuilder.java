@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.dao.SecurityDao;
@@ -723,18 +724,20 @@ public class QueryBuilder {
 			//This is the super user, so the only acl needed is the conditions acl
 			List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
 
+	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
 			StringBuffer qString = new StringBuffer();
 			if (!conditions.isEmpty()) {
-				qString.append("(").append(ENTRY_PREFIX).append(Utils.getAdminName())
+				qString.append("(").append(ENTRY_PREFIX).append(String.valueOf(superUser.getId()))
 				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
 				qString.append(" OR ");
-				qString.append(FOLDER_PREFIX).append(Utils.getAdminName())
+				qString.append(FOLDER_PREFIX).append(String.valueOf(superUser.getId()))
 				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
 				//Get the conditions that the current user passes
 		      	List<Long> conditionsMet = getConditionsMet(conditions);
 				for (Long cId : conditionsMet) {
-					qString.append(" OR ").append(ENTRY_PREFIX).append(Utils.getAdminName()).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
-					qString.append(" OR ").append(FOLDER_PREFIX).append(Utils.getAdminName()).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
+					qString.append(" OR ").append(ENTRY_PREFIX).append(String.valueOf(superUser.getId())).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
+					qString.append(" OR ").append(FOLDER_PREFIX).append(String.valueOf(superUser.getId())).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
 				}
 				qString.append(")");
 			}
