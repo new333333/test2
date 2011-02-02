@@ -70,10 +70,10 @@ Boolean webdavSupported = new Boolean(org.kablink.teaming.web.util.BinderHelper.
 <ssf:skipLink tag='<%= NLT.get("skip.toolbar") %>' id="toolbar_${ss_toolbarCount}_${renderResponse.namespace}">
 
 <div class="wiki-content">
-<div class="wiki-actions">
+<div class="wiki-actions wiki-menu">
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
 	<c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
-		<span class="ss_smallprint" id="parent_<%= menuTagDivId %>${renderResponse.namespace}">
+		<span id="parent_<%= menuTagDivId %>${renderResponse.namespace}">
 
 		<c:choose>
 			<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">

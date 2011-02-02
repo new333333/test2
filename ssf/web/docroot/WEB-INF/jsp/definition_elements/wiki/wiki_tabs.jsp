@@ -38,7 +38,6 @@
 <div id="wiki-tabset" class="wiki-tabs margintop3" style="text-align: left;">
 	<table cellpadding="0" cellspacing="0" style="white-space: nowrap;">
 		<tr>
-			<td width="100%"></td>
 			<td align="right" style="padding-right: 7px;" nowrap>
 		      <c:if test="${!empty ss_wikiEntryBeingShown}">
 				<span class="wiki-tab <c:if test="${ss_wikiCurrentTab == 'page'}">on</c:if>">
@@ -66,6 +65,7 @@
 				  ><ssf:nlt tag="wiki.topicsAndPages"/></a>
 				</span>
 			</td>
+			<td width="100%"></td>
 		</tr>	
 	</table>	
 </div>
