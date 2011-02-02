@@ -793,6 +793,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 								schedulerSession.deleteTimer(timer);
 							} else {
 								logger.error(timer.getException());
+								String exception = timer.getException();
 								//want it to run again, so remove exception
 								timer.setException(null);
 								schedulerSession.saveTimer(timer);

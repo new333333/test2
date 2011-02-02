@@ -62,6 +62,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.util.Validator;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -72,6 +73,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
 		Binder topBinder = getWorkspaceModule().getTopWorkspace();
+		Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
 		if ((formData.containsKey("addBtn") && formData.containsKey("roleName")) && WebHelper.isMethodPost(request)) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			Set operations = new HashSet();
@@ -98,7 +100,6 @@ public class ConfigureRolesController extends  SAbstractController {
 				} catch(Exception e) {}
 			}
 			//if trying to add conditions, make sure the indexing had been done
-			Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
 			if (conditions.isEmpty() || (conditionsInitialized != null && conditionsInitialized)) {
 				String roleName = "";
 				String roleScope = ObjectKeys.ROLE_TYPE_BINDER;
@@ -153,7 +154,6 @@ public class ConfigureRolesController extends  SAbstractController {
 				} catch(Exception e) {}
 			}
 			//if trying to add conditions, make sure the indexing had been done
-			Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
 			if (conditions.isEmpty() || (conditionsInitialized != null && conditionsInitialized)) {
 				String roleName = null;
 				try {
@@ -278,7 +278,12 @@ public class ConfigureRolesController extends  SAbstractController {
 			//Delete a condition
 			Long id = PortletRequestUtils.getLongParameter(request, "conditionIdToBeDeleted");
 			if (id != null) {
-				getAdminModule().deleteFunctionCondition(id);
+				try {
+					getAdminModule().deleteFunctionCondition(id);
+				} catch(DataIntegrityViolationException e) {
+					//There must be a role that is still using this condition
+					response.setRenderParameter(WebKeys.ERROR_MESSAGE, NLT.get("error.deletingCondition"));
+				}
 			}
 			
 		} else {
@@ -291,6 +296,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map model = new HashMap();
+		model.put(WebKeys.ERROR_MESSAGE, request.getParameter(WebKeys.ERROR_MESSAGE));
 		
 		if (op.equals("defineConditions") || formData.containsKey("addCondition") || 
 				formData.containsKey("modifyCondition") || formData.containsKey("deleteCondition")) {

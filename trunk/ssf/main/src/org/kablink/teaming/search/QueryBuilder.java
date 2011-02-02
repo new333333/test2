@@ -35,6 +35,7 @@ package org.kablink.teaming.search;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -62,9 +63,16 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.util.LanguageTaster;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.dao.SecurityDao;
+import org.kablink.teaming.security.function.Condition;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -117,6 +125,10 @@ public class QueryBuilder {
 		this.applicationPrincipals = null;
 	}
 
+	protected WorkspaceModule getWorkspaceModule() {
+		return (WorkspaceModule)SpringContextUtil.getBean("workspaceModule");
+	}
+
 	protected ProfileDao getProfileDao() {
 		return (ProfileDao)SpringContextUtil.getBean("profileDao");
 	}
@@ -127,6 +139,14 @@ public class QueryBuilder {
 
 	protected CoreDao getCoreDao() {
 		return (CoreDao)SpringContextUtil.getBean("coreDao");
+	}
+	
+	protected SecurityDao getSecurityDao() {
+		return (SecurityDao)SpringContextUtil.getBean("securityDao");
+	}
+	
+	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+		return (WorkAreaFunctionMembershipManager)SpringContextUtil.getBean("WorkAreaFunctionMembershipManager");
 	}
 
 	public SearchObject buildQuery(Document domQuery) {
@@ -173,55 +193,7 @@ public class QueryBuilder {
 		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
 		so.setLanguage(lang);
 		
-		// OLD (executed only for debugging purpose)
-		
-		if(logger.isDebugEnabled()) {
-			parseRootElementDoNotUse(root, so);
-		
-			//If searching as a different user, add in the acl for that user
-			if (asUserId != null && !ignoreAcls) {
-				QueryBuilder aclQ = new QueryBuilder(asUserId);
-				String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
-				if (acls.length() != 0) {
-					String q = so.getQueryStringDoNotUse();
-					if (q.equalsIgnoreCase("(  )"))
-						q = "";
-					if (q.length() > 0)
-						q += "AND ";
-					q += acls;
-					so.setQueryStringDoNotUse(q);
-				}
-			}
-			
-			String q = so.getQueryStringDoNotUse();
-			// add acl check to every query. (If it's the superuser doing this query, then this clause
-			// will return the empty string.
-			
-			if (!ignoreAcls) { 
-				String acls = getAclClause();
-				if (acls.length() != 0) {
-					q = so.getQueryStringDoNotUse();
-					if (q.equalsIgnoreCase("(  )"))
-						q = "";
-					if (q.length() > 0)
-						q += "AND ";
-					q += acls;
-					so.setQueryStringDoNotUse(q);
-				}
-			}
-			
-			// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
-			if (q.equalsIgnoreCase("(  )"))
-				q = " "; // if it's an empty clause - delete it
-			if (q.length() > 0)
-				q += " AND ";  // if there's a clause there, then AND this to it
-			String preDeletedClause = getPreDeletedClauseDoNotUse(preDeleted);
-			q += preDeletedClause;
-			so.setQueryStringDoNotUse(q);
-		} // OLD
-		
-		// NEW
-		
+		//Add on the ACL clauses that filter out anything the user is not allowed to see.
 		handleRootElement(root, so);
 		
 		//If searching as a different user, add in the acl for that user
@@ -232,7 +204,8 @@ public class QueryBuilder {
 		}
 		
 		// add acl check to every query. (If it's the superuser doing this query, then this clause
-		// will return the empty string.
+		// will return the conditions string only.
+		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!ignoreAcls) { 
 			String acls = getAclClause();
 			addAclClauses(acls, so);
@@ -746,8 +719,27 @@ public class QueryBuilder {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if ((user.isSuper() || 
 				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
-				applicationPrincipals == null) 
-			return "";
+				applicationPrincipals == null) {
+			//This is the super user, so the only acl needed is the conditions acl
+			List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
+
+			StringBuffer qString = new StringBuffer();
+			if (!conditions.isEmpty()) {
+				qString.append("(").append(ENTRY_PREFIX).append(Utils.getAdminName())
+				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
+				qString.append(" OR ");
+				qString.append(FOLDER_PREFIX).append(Utils.getAdminName())
+				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
+				//Get the conditions that the current user passes
+		      	List<Long> conditionsMet = getConditionsMet(conditions);
+				for (Long cId : conditionsMet) {
+					qString.append(" OR ").append(ENTRY_PREFIX).append(Utils.getAdminName()).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
+					qString.append(" OR ").append(FOLDER_PREFIX).append(Utils.getAdminName()).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
+				}
+				qString.append(")");
+			}
+			return qString.toString();
+		}
 
 		String clause = getAclClauseForIds(userPrincipals, user.getId());
 		if(applicationPrincipals != null) {
@@ -756,16 +748,22 @@ public class QueryBuilder {
 		}
 		return clause;
 	}
-
+	
 	private String getAclClauseForIds(Set principalIds, Long userId)
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
-      	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());;
+      	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+      	
+      	//Get the conditions that the current user passes
+		List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
+      	List<Long> conditionsMet = getConditionsMet(conditions);
+      	
 		//check user can see all users
       	boolean canOnlySeeCommonGroupMembers = Utils.canUserOnlySeeCommonGroupMembers(user);
 		if (canOnlySeeCommonGroupMembers) {
 			if (allUsersGroupId != null && principalIds2.contains(allUsersGroupId) ) {
+				//This user is not allowed to see all users, so remove the AllUsers group id
 				principalIds2.remove(allUsersGroupId);
 			}
 		}
@@ -783,21 +781,26 @@ public class QueryBuilder {
 		 *  
 		 */
 		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
-		String folderPrincipals = idField(principalIds2, FOLDER_PREFIX);
-		String teamPrincipals = idField(principalIds2, TEAM_PREFIX);
+		String folderPrincipals = idField(principalIds2, FOLDER_PREFIX, conditionsMet);
+		String teamPrincipals = idField(principalIds2, TEAM_PREFIX, conditionsMet);
 		if (principalIds.contains(allUsersGroupId)) {
 			if (folderPrincipals.equals("")) {
 				folderPrincipals = FOLDER_ALL_GLOBAL;
+				folderPrincipals += addConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			} else {
 				folderPrincipals = folderPrincipals.trim() + " OR " + FOLDER_ALL_GLOBAL;
+				folderPrincipals += addConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			}
 			if (teamPrincipals.equals("")) {
 				teamPrincipals = TEAM_ALL_GLOBAL;
+				teamPrincipals += addConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			} else {
 				teamPrincipals = teamPrincipals.trim() + " OR " + TEAM_ALL_GLOBAL;
+				teamPrincipals += addConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			}
 		}
 		String entryAll = ENTRY_ALL;
+		entryAll += addConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
 		
 		// folderAcl:1,2,3...
 		if (widen) {
@@ -816,7 +819,7 @@ public class QueryBuilder {
 			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
 			}
-			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
+			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX, conditionsMet) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + teamPrincipals + "))");
 			qString.append(")");
@@ -836,11 +839,34 @@ public class QueryBuilder {
 				qString.append(" OR " + ENTRY_ALL_USERS);
 			}
 			qString.append(" OR " +	
-						idField(principalIds2, ENTRY_PREFIX) + ")");
+						idField(principalIds2, ENTRY_PREFIX, conditionsMet) + ")");
 			qString.append(" OR ");
 			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + teamPrincipals + "))");
 			qString.append("))");
+		}
+		String acls = qString.toString();
+		return acls;
+	}
+	
+	//Routine to get a list of conditions that the current user meets (if any)
+	private List<Long> getConditionsMet(List<Condition> conditions) {
+		List<Long> cIds = new ArrayList<Long>();
+		for (Condition c : conditions) {
+			if (c.evaluate()) {
+				//This user matches this condition, so add it to the list
+				cIds.add(c.getId());
+			}
+		}
+		return cIds;
+	}
+	
+	//Routine to add the conditional clauses to a global ACL string
+	private String addConditionExp(String aclField, String aclString, List<Long> conditionsMet) {
+		StringBuffer qString = new StringBuffer();
+		for (Long cId : conditionsMet) {
+			qString.append(" OR ").append(aclField).append(aclString)
+				.append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
 		}
 		return qString.toString();
 	}
@@ -858,7 +884,7 @@ public class QueryBuilder {
 		return qString.toString();
 	}
 	
-	private String idField(Collection<Long>ids, String prefix) {
+	private String idField(Collection<Long>ids, String prefix, List<Long> conditionsMet) {
 		StringBuffer buf = new StringBuffer("");
 		if (ids != null) {
 			boolean first = true;
@@ -868,6 +894,16 @@ public class QueryBuilder {
 				}
 				buf.append(prefix + id);
 				first = false;
+				//If there are conditions that have been met, add a "c" id for each condition
+				for (Long cId : conditionsMet) {
+					buf.append(" OR ");
+					buf.append(prefix + id + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+					
+					//TODO if more than one condition per entry gets supported, 
+					//  then this code must be expanded to build all of the combinations of conditions 
+					//  (e.g., for user id=1 and conditions c1 and c2, the list would be 1c1, 1c2, 1c1c2)
+					//  Currently we don't support more than on condition per entry, so we don't expand this list
+				}
 			}
 		}
 		return buf.toString();

@@ -708,7 +708,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		User guest=null;
 		try {
 			Binder parent = superU.getParentBinder();
-			String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
+			String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
 			guest = getProfileDao().findUserByName(guestName, zone.getId());
 			
 			if(guest !=null ){
@@ -1082,7 +1082,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return addReservedUser(parent, stamp, "_synchronizationAgent", null, NLT.get("administration.initial.synchronizationAgent.title"), ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
-		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
+		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
 		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
 		
 	}

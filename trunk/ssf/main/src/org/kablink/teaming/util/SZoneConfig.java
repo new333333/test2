@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.util.Validator;
@@ -174,7 +175,7 @@ public class SZoneConfig {
     protected String _getAdminUserName(String zoneName) {
     	String adminUser = adminUsers.get(zoneName);
     	if(adminUser == null) {
-    		adminUser = SZoneConfig.getString(zoneName, "property[@name='adminUser']", "admin");
+    		adminUser = SZoneConfig.getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
     		adminUsers.put(zoneName, adminUser);
     	}
     	return adminUser;
@@ -183,7 +184,7 @@ public class SZoneConfig {
     protected String _getGuestUserName(String zoneName) {
     	String guestUser = guestUsers.get(zoneName);
     	if(guestUser == null) {
-    		guestUser = SZoneConfig.getString(zoneName, "property[@name='guestUser']", "guest");
+    		guestUser = SZoneConfig.getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
     		guestUsers.put(zoneName, guestUser);
     	}
     	return guestUser;

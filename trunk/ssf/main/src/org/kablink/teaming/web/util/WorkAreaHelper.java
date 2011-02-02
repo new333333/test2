@@ -463,6 +463,9 @@ public class WorkAreaHelper {
 	public static void buildRoleConditionBeans(AllModulesInjected bs, Map model) {
 		List<Condition> conditions = bs.getAdminModule().getFunctionConditions();
 		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
+		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
+		model.put(WebKeys.FUNCTION_CONDITIONS_INITIALIZED, conditionsInitialized);
 	}
 	
 }
