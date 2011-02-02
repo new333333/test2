@@ -175,8 +175,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-top:6px;
 	}
 .wiki-actions {
-    margin: 0px 0px 5px;
-    text-align: right;
+    margin: 0px 0px 15px;
     }
 
 .wiki-menu a {
@@ -190,7 +189,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     -webkit-border-radius: 10px;
     }
 .wiki-menu a:hover {
-    color: #fff;
+    color: #fff !important;
     background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -266,7 +265,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     }
 #descriptionRegion1 .ss_entryDescription {
 	background-color: #fff;
-	padding: 5px 20px 0px 15px;
+	padding: 5px 20px 0px 5px;
 	color: #505354;
 	font-size: 1.15em;
 	border: 0px;
