@@ -53,6 +53,10 @@ public interface ObjectKeys {
 	//Original zoneId for V1 zones
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";
 	
+	//Default account name for admin and guest
+	public static final String ADMIN = "admin";
+	public static final String GUEST = "guest";
+	
 	//Reserved template and definition names
 	public static final String DEFAULT_TEMPLATE_NAME_BLOG="_folder_blog";
 	public static final String DEFAULT_TEMPLATE_NAME_MINIBLOG="_folder_miniblog";

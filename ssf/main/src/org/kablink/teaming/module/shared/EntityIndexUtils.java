@@ -599,8 +599,9 @@ public class EntityIndexUtils {
 	    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
        		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
        	}
-       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
-        return ids;
+       	//TODO Add the condition acls ids
+       	ids = ids.trim() + " " + Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+        return ids.trim();
     }
     public static String getFolderTeamAclString(Binder binder) {
     	Long allUsersId = Utils.getAllUsersGroupId();
@@ -636,19 +637,26 @@ public class EntityIndexUtils {
 	       			ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
 	       		}
 	        }
-	       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
+	       	//TODO Add the condition acls ids
+	       	ids = ids.trim() + " " + Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+	       	
 	       	if (entryIds.contains(allUsersId)) {
 	       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
+	       		//If this entry is not in the "personal workspaces hierarchy, then add "global"
 	       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
 	       	}
-	        return ids;
+	        return ids.trim();
     	} else {
+       		String ids;
        		boolean personal = Utils.isWorkareaInProfilesTree(binder);
        		if (personal) {
-       			return entry.getOwnerId().toString() + " " + Constants.READ_ACL_ALL;
+       			ids = entry.getOwnerId().toString() + " " + Constants.READ_ACL_ALL;
        		} else {
-       			return Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
+       			ids = Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
        		}
+       		//TODO Add in the Condition ACLs
+       		ids += Utils.getAdminName() + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
+       		return ids.trim();
     	}
     }
     

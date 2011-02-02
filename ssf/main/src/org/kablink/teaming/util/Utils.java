@@ -60,6 +60,17 @@ import org.kablink.util.Validator;
 
 
 public class Utils {
+	
+	//Return the account name of the super user (e.g., "admin")
+	public static String getAdminName() {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		return SZoneConfig.getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
+	}
+
+	public static String getGuestName() {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		return SZoneConfig.getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
+	}
 
 	public static String getZoneKey() {
 		// If default zone

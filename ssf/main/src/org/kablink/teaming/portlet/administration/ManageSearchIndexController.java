@@ -118,7 +118,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 	    		if (ids.contains(topBinder.getId())) {
-	    			topBinder.setProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED, Boolean.TRUE);
+	    			getBinderModule().setProperty( topBinder.getId(), ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED, Boolean.TRUE);
 	    		}
 				if (logger.isDebugEnabled()) {
 					logger.debug(SimpleProfiler.toStr());
