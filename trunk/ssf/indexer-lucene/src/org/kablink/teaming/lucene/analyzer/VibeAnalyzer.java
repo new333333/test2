@@ -47,6 +47,7 @@ public abstract class VibeAnalyzer extends Analyzer {
 	protected String stemmerName;
 	protected Set<String> stopSet;
 	protected boolean ignoreCaseForStop = true;
+	protected boolean foldToAscii = false;
 
 	protected static final Version VERSION = Version.LUCENE_29;
 
@@ -59,27 +60,35 @@ public abstract class VibeAnalyzer extends Analyzer {
 		init();
 	}
 
+	public VibeAnalyzer(boolean foldToAscii) {
+		this.foldToAscii = foldToAscii;
+		init();
+	}
+	
 	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
-			String stemmerName) {
+			String stemmerName, boolean foldToAscii) {
 		stopSet = stopWords;
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
+		this.foldToAscii = foldToAscii;
 		init();
 	}
 
 	public VibeAnalyzer(File stopwords, boolean ignoreCaseForStop,
-			String stemmerName) throws IOException {
+			String stemmerName, boolean foldToAscii) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
+		this.foldToAscii = foldToAscii;
 		init();
 	}
 
 	public VibeAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
-			String stemmerName) throws IOException {
+			String stemmerName, boolean foldToAscii) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
+		this.foldToAscii = foldToAscii;
 		init();
 	}
 
