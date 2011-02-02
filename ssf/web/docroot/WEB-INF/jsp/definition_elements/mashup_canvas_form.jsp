@@ -125,84 +125,99 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 	}
 }
 </script>
-  <div style="padding: 20px 0px 20px 0px;">
-    <div><span class="ss_bold">${property_caption}</span></div>
-
-	<!-- This div holds the checkboxes for hiding/showing the various parts of the page, masthead, sidebar, etc. -->
-    <div style="padding:6px 0px 6px 20px;">
-      <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
-      	id="${ss_mashupPropertyName}__hideMasthead"
-        <c:if test="${ss_mashupHideMasthead}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__hideMasthead">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
-      </label>
-      <br/>
-      <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
-      	id="${ss_mashupPropertyName}__hideSidebar"
-        <c:if test="${ss_mashupHideSidebar}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__hideSidebar">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
-      </label>
-      <br/>
-
-<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
-      <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
-      	id="${ss_mashupPropertyName}__hideToolbar"
-        <c:if test="${ss_mashupHideToolbar}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__hideToolbar">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
-      </label>
-      <br/>
-<% } %>
-
-      <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
-      	id="${ss_mashupPropertyName}__hideFooter"
-        <c:if test="${ss_mashupHideFooter}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__hideFooter">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
-      </label>
-      <br/>
-
-<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
-      <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
-      	id="${ss_mashupPropertyName}__showBranding"
-        <c:if test="${ss_mashupShowBranding}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__showBranding">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
-      </label>
-      <br/>
-      <input type="checkbox" name="${ss_mashupPropertyName}__showFavoritesAndTeams"
-      	id="${ss_mashupPropertyName}__showFavoritesAndTeams"
-        <c:if test="${ss_mashupShowFavoritesAndTeams}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__showFavoritesAndTeams">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showFavoritesAndTeams"/></span>
-      </label>
-      <br/>
-      <input type="checkbox" name="${ss_mashupPropertyName}__showNavigation"
-      	id="${ss_mashupPropertyName}__showNavigation"
-        <c:if test="${ss_mashupShowNavigation}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__showNavigation">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.showNavigation"/></span>
-      </label>
-      <br/>
-<% } %>
-
-      <br/>
-      <span class="ss_labelAbove"><ssf:nlt tag="mashup.style"/></span>
-      <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
-      	id="${ss_mashupPropertyName}__style"
-        <c:if test="${ss_mashupStyle == 'mashup.css'}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__style">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style_light"/></span>
-      </label>
-      <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup_dark.css"
-      	id="${ss_mashupPropertyName}__style_dark"
-        <c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
-      <label for="${ss_mashupPropertyName}__style_dark">
-      	<span class="ss_labelRight"><ssf:nlt tag="mashup.style_dark"/></span>
-      </label>
-      <br/>
+  <table style="padding: 20px 0px 20px 0px;">
+  	<tr>
+		<td style="vertical-align:top; padding-right: 40px;">
+			<span class="ss_bold">${property_caption}</span>
+		
+			<!-- This div holds the checkboxes for hiding/showing the various parts of the page, masthead, sidebar, etc. -->
+			<div style="padding:6px 0px 6px 20px;">
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
+					id="${ss_mashupPropertyName}__hideMasthead"
+					<c:if test="${ss_mashupHideMasthead}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__hideMasthead">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
+				  </label>
+				</div>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
+					id="${ss_mashupPropertyName}__hideSidebar"
+					<c:if test="${ss_mashupHideSidebar}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__hideSidebar">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
+				  </label>
+				</div>
+		
+		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
+					id="${ss_mashupPropertyName}__hideToolbar"
+					<c:if test="${ss_mashupHideToolbar}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__hideToolbar">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
+				  </label>
+				</div>
+		<% } %>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
+					id="${ss_mashupPropertyName}__hideFooter"
+					<c:if test="${ss_mashupHideFooter}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__hideFooter">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
+				  </label>
+				</div>
+		
+		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
+					id="${ss_mashupPropertyName}__showBranding"
+					<c:if test="${ss_mashupShowBranding}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__showBranding">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.showBranding"/></span>
+				  </label>
+				</div>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__showFavoritesAndTeams"
+					id="${ss_mashupPropertyName}__showFavoritesAndTeams"
+					<c:if test="${ss_mashupShowFavoritesAndTeams}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__showFavoritesAndTeams">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.showFavoritesAndTeams"/></span>
+				  </label>
+				</div>
+				<div>
+				  <input type="checkbox" name="${ss_mashupPropertyName}__showNavigation"
+					id="${ss_mashupPropertyName}__showNavigation"
+					<c:if test="${ss_mashupShowNavigation}">checked</c:if> >
+				  <label for="${ss_mashupPropertyName}__showNavigation">
+					<span class="ss_labelRight"><ssf:nlt tag="mashup.showNavigation"/></span>
+				  </label>
+				</div>
+		<% } %>
+		    </div>
+	</td>
+	<td style="vertical-align:top;">	
+		  <span class="ss_labelAbove" style="padding-top: 0px;"><ssf:nlt tag="mashup.style"/></span>
+		  <div class="margintop2 marginleft1">
+			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
+				id="${ss_mashupPropertyName}__style"
+				<c:if test="${ss_mashupStyle == 'mashup.css'}">checked</c:if> >
+			  <label for="${ss_mashupPropertyName}__style">
+				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_light"/></span>
+			  </label>
+		  </div>
+		  <div class="margintop1 marginleft1">
+			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup_dark.css"
+				id="${ss_mashupPropertyName}__style_dark"
+				<c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
+			  <label for="${ss_mashupPropertyName}__style_dark">
+				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_dark"/></span>
+			  </label>
+		  </div>
     </div>
+	</td>
+	</tr>
+  </table>	
 
 	<!-- This div will hold the Landing Page editor implemented in gwt.  See GwtTeaming.java -->
 	<div id="gwtLandingPageEditorDiv">
