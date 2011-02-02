@@ -80,7 +80,7 @@ public class ActionsControl extends Composite
 		{
 			Image img;
 			
-			imageResource = GwtTeaming.getImageBundle().edit10();
+			imageResource = GwtTeaming.getImageBundle().move10();
 			img = new Image(imageResource);
 			img.addMouseDownHandler( mouseDownHandler );
 			img.addStyleName( "margin-right-5" );

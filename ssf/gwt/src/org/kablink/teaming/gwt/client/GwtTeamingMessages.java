@@ -270,6 +270,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserWorkspaceUrl();
 	String rpcFailure_GetViewFolderEntryUrl();
+	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -753,6 +754,7 @@ public interface GwtTeamingMessages extends Messages
 	String usersWithoutRights();
 	
 	// The following strings are used in the Group Membership popup
+	String allUsersGroupDesc();
 	String noGroupMembers();
 	String unknownGroupMemberType();
 	

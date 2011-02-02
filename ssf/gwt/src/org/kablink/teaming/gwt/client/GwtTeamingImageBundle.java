@@ -243,6 +243,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource menu();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/move10.png")
+	public ImageResource move10();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/my_workspace1.png")
 	public ImageResource myWorkspace1();
 

@@ -45,12 +45,21 @@ public abstract class GwtTeamingItem implements IsSerializable
 	/**
 	 * 
 	 */
+	public abstract String getName();
+	
+	/**
+	 * 
+	 */
 	public abstract String getSecondaryDisplayText();
 	
 	/**
 	 * 
 	 */
 	public abstract String getShortDisplayName();
-
 	
+	/**
+	 * 
+	 */
+	public abstract String getTitle();
+
 }// end GwtTeamingItem()

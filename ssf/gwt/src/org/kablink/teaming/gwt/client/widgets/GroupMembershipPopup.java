@@ -73,6 +73,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	private FlowPanel m_membersTablePanel;
 	private FlexCellFormatter m_cellFormatter;
 	private AsyncCallback<ArrayList<GwtTeamingItem>> m_getGroupMembershipCallback;
+	private AsyncCallback<Boolean> m_isAllUsersGroupCallback;
 	
 	/**
 	 * This widget is used to display a group members's name.  If the member is a group
@@ -352,6 +353,25 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	}
 	
 	/**
+	 * Add the text "The "All users" group contains a list of all registered users, not including the "Guest" user account" 
+	 * to the table that holds the list of group memembers.
+	 */
+	private void addAllUsersGroupMessage()
+	{
+		int row;
+		
+		row = 1;
+		m_cellFormatter.setColSpan( row, 0, 3 );
+		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
+		m_cellFormatter.addStyleName( row, 0, "oltBorderRight" );
+		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
+		m_cellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
+
+		m_membersTable.setText( row, 0, GwtTeaming.getMessages().allUsersGroupDesc() );
+	}
+	
+	
+	/**
 	 * Add the "This group does not have any members" text to the table
 	 * that holds the list of group memembers.
 	 */
@@ -468,8 +488,43 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 			};
 		}
 		
-		// Issue an ajax request to get the membership of this group.
-		GwtTeaming.getRpcService().getGroupMembership( HttpRequestInfo.createHttpRequestInfo(), m_groupId, m_getGroupMembershipCallback );
+		if ( m_isAllUsersGroupCallback == null )
+		{
+			m_isAllUsersGroupCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_IsAllUsersGroup() );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( Boolean isAllUsersGroup )
+				{
+					// Are we dealing with the "all users" group?
+					if ( isAllUsersGroup )
+					{
+						addAllUsersGroupMessage();
+					}
+					else
+					{
+						// No
+						// Issue an ajax request to get the membership of this group.
+						GwtTeaming.getRpcService().getGroupMembership( HttpRequestInfo.createHttpRequestInfo(), m_groupId, m_getGroupMembershipCallback );
+					}
+				}
+			};
+		}
+		
+		// Issue an ajax request to see if this group is the "all users" group.  If it is
+		// not the "all users" group we will make another ajax request to get the group membership.
+		GwtTeaming.getRpcService().isAllUsersGroup( HttpRequestInfo.createHttpRequestInfo(), m_groupId, m_isAllUsersGroupCallback );
 	}
 	
 	/**

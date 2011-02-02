@@ -2773,62 +2773,89 @@ public class GwtServerHelper {
 	/**
 	 * Return the membership of the given group.
 	 */
-	public static ArrayList<GwtTeamingItem> getGroupMembership(AllModulesInjected ami, String groupId)
+	public static ArrayList<GwtTeamingItem> getGroupMembership( AllModulesInjected ami, String groupId ) throws GwtTeamingException
 	{
-		Long groupIdL;
-		Principal group;
-		List<Principal> memberList;
 		ArrayList<GwtTeamingItem> retList;
 
-		retList = new ArrayList<GwtTeamingItem>();
-
-		// Get the group object.
-		groupIdL = Long.valueOf(groupId);
-		group = ami.getProfileModule().getEntry(groupIdL);
-		if ( group != null && group instanceof Group )
+		try
 		{
-			Iterator<Principal> itMembers;
+			Long groupIdL;
+			Principal group;
 
-			memberList = ((Group) group).getMembers();
-
-			itMembers = memberList.iterator();
-			while (itMembers.hasNext())
+			retList = new ArrayList<GwtTeamingItem>();
+	
+			// Get the group object.
+			groupIdL = Long.valueOf(groupId);
+			group = ami.getProfileModule().getEntry(groupIdL);
+			if ( group != null && group instanceof Group )
 			{
-				Principal member;
-
-				member = (Principal) itMembers.next();
-				if (member instanceof Group)
+				Iterator<Principal> itMembers;
+				List<Long> membership;
+				List<Principal> memberList;
+				
+				// Get the members of the group.
+				memberList = ((Group) group).getMembers();
+				
+				// Get a list of the ids of all the members of this group.
+				membership = new ArrayList<Long>();
+				itMembers = memberList.iterator();
+				while (itMembers.hasNext())
 				{
-					Group nextGroup;
-					GwtGroup gwtGroup;
+					Principal member;
 					
-					nextGroup = (Group) member;
-					
-					gwtGroup = new GwtGroup();
-					gwtGroup.setId( nextGroup.getId().toString() );
-					gwtGroup.setName( nextGroup.getName() );
-					gwtGroup.setTitle( nextGroup.getTitle() );
-					
-					retList.add( gwtGroup );
+					member = (Principal) itMembers.next();
+					membership.add( member.getId() );
 				}
-				else if (member instanceof User)
+				
+				// Get all the memembers of the group.  We call ResolveIDs.getPrincipals()
+				// because it handles deleted users and users the logged-in user has
+				// rights to see.
+				memberList = ResolveIds.getPrincipals( membership );
+
+				// For each member of the group create a GwtUser or GwtGroup object.
+				itMembers = memberList.iterator();
+				while ( itMembers.hasNext() )
 				{
-					User user;
-					GwtUser gwtUser;
-					
-					user = (User) member;
-
-					gwtUser = new GwtUser();
-					gwtUser.setUserId( user.getId() );
-					gwtUser.setName( user.getName() );
-					gwtUser.setTitle( Utils.getUserTitle( user ) );
-					gwtUser.setWorkspaceTitle( user.getWSTitle() );
-
-					retList.add( gwtUser );
+					Principal member;
+	
+					member = (Principal) itMembers.next();
+					if (member instanceof Group)
+					{
+						Group nextGroup;
+						GwtGroup gwtGroup;
+						
+						nextGroup = (Group) member;
+						
+						gwtGroup = new GwtGroup();
+						gwtGroup.setId( nextGroup.getId().toString() );
+						gwtGroup.setName( nextGroup.getName() );
+						gwtGroup.setTitle( nextGroup.getTitle() );
+						
+						retList.add( gwtGroup );
+					}
+					else if (member instanceof User)
+					{
+						User user;
+						GwtUser gwtUser;
+						
+						user = (User) member;
+	
+						gwtUser = new GwtUser();
+						gwtUser.setUserId( user.getId() );
+						gwtUser.setName( user.getName() );
+						gwtUser.setTitle( Utils.getUserTitle( user ) );
+						gwtUser.setWorkspaceTitle( user.getWSTitle() );
+	
+						retList.add( gwtUser );
+					}
 				}
 			}
 		}
-
+		catch (Exception ex)
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
 		return retList;
 	}
 

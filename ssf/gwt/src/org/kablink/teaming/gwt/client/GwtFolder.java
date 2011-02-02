@@ -76,6 +76,13 @@ public class GwtFolder extends GwtTeamingItem
 		return m_folderName;
 	}// end getFolderName()
 	
+	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return getFolderName();
+	}
 
 	/**
 	 * 
@@ -109,6 +116,14 @@ public class GwtFolder extends GwtTeamingItem
 	{
 		return m_folderName;
 	}// end getShortDisplayName()
+	
+	/**
+	 * 
+	 */
+	public String getTitle()
+	{
+		return "";
+	}
 	
 	
 	/**

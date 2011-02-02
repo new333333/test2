@@ -83,6 +83,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
+	public String getName()
+	{
+		return getEntryName();
+	}
+	
+	/**
+	 * 
+	 */
 	public Long getParentBinderId()
 	{
 		return m_parentBinderId;
@@ -121,6 +129,14 @@ public class GwtFolderEntry extends GwtTeamingItem
 		return m_entryName;
 	}// end getShortDisplayName()
 	
+	
+	/**
+	 * 
+	 */
+	public String getTitle()
+	{
+		return "";
+	}
 	
 	/**
 	 * Return the url that can be used to view this entry.
