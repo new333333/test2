@@ -281,4 +281,6 @@ public interface GwtRpcServiceAsync
 	// Get the membership of the given group.
 	public void getGroupMembership( HttpRequestInfo ri, String groupId, AsyncCallback<ArrayList<GwtTeamingItem>> callback );
 
+	// See if this group is the "all users" group
+	public void isAllUsersGroup( HttpRequestInfo ri, String groupId, AsyncCallback<Boolean> callback );
 }// end GwtRpcServiceAsync

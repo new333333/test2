@@ -61,6 +61,14 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	}
 	
 	/**
+	 * 
+	 */
+	public String getName()
+	{
+		return getTagName();
+	}
+	
+	/**
 	 * Return the secondary display name of the tag.
 	 * 
 	 * Implements the GwtTeamingItem.getSecondaryDisplayText() abstract
@@ -82,7 +90,15 @@ public class GwtTag extends GwtTeamingItem implements IsSerializable {
 	public String getShortDisplayName() {
 		return getTagName();
 	}
-		
+
+	/**
+	 * 
+	 */
+	public String getTitle()
+	{
+		return "";
+	}
+	
 	/**
 	 * Stores the name for this tag.
 	 * 

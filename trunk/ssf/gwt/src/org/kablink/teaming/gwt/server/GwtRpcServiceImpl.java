@@ -55,6 +55,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -139,6 +140,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -527,6 +529,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 								gwtGroup.setId( id );
 								gwtGroup.setName( group.getName() );
 								gwtGroup.setTitle( group.getTitle() );
+								
 								results.add( gwtGroup );
 							}
 						}
@@ -2975,6 +2978,37 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
 		return Boolean.TRUE;
 	}//end untrackPerson()
+
+	/**
+	 * Return whether the given group is the "all users" group.
+	 */
+	public Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
+	{
+		try
+		{
+			Long groupIdL;
+			Principal group;
+
+			// Get the group object.
+			groupIdL = Long.valueOf(groupId);
+			group = getProfileModule().getEntry(groupIdL);
+			if ( group != null && group instanceof Group )
+			{
+				String internalId;
+				
+				internalId = group.getInternalId();
+				if ( internalId != null && internalId.equalsIgnoreCase( ObjectKeys.ALL_USERS_GROUP_INTERNALID ) )
+					return Boolean.TRUE;
+			}
+		}
+		catch (Exception ex)
+		{
+			throw GwtServerHelper.getGwtTeamingException( ex );
+		}
+		
+		// If we get here the group is not the "all users" group.
+		return Boolean.FALSE;
+	}
 	
 	/**
 	 * Called to check if the current user is tracking the
@@ -3390,7 +3424,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/**
 	 * Return the membership of the given group.
 	 */
-	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId )
+	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId ) throws GwtTeamingException
 	{
 		return GwtServerHelper.getGroupMembership( this, groupId );
 	}

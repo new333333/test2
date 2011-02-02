@@ -286,6 +286,9 @@ public interface GwtRpcService extends RemoteService
 	public GwtShareEntryResults shareEntry( HttpRequestInfo ri, String entryId, String comment, ArrayList<String> principalIds, ArrayList<String> teamIds ) throws GwtTeamingException;
 	
 	// Get the membership of the given group.
-	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId );
+	public ArrayList<GwtTeamingItem> getGroupMembership( HttpRequestInfo ri, String groupId ) throws GwtTeamingException;
+	
+	// See if this group is the "all users" group
+	public Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException;
 
 }// end GwtRpcService
