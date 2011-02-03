@@ -61,6 +61,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
+import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.util.PropsUtil;
@@ -74,7 +75,7 @@ public class LuceneProvider extends IndexSupport {
 	private static final String FIND_TYPE_PERSONAL_TAGS = "personalTags";
 	private static final String FIND_TYPE_COMMUNITY_TAGS = "communityTags";
 	
-	private static Analyzer defaultAnalyzer = new SsfIndexAnalyzer();
+	private static Analyzer defaultAnalyzer;
 	
 	private LuceneProviderManager luceneProviderManager;
 	
@@ -146,9 +147,15 @@ public class LuceneProvider extends IndexSupport {
 		logInfo("Lucene provider initialized");
 	}
 	
+	private Analyzer getDefaultAnalyzer() {
+		if(defaultAnalyzer == null)
+			defaultAnalyzer = VibeIndexAnalyzer.getInstance();
+		return defaultAnalyzer;
+	}
+	
 	private void createIndex(Directory dir) throws LockObtainFailedException, IOException {
 		// Use IndexWriter to create index
-		IndexWriter iw = new IndexWriter(dir, new SsfIndexAnalyzer(), true, IndexWriter.MaxFieldLength.UNLIMITED);
+		IndexWriter iw = new IndexWriter(dir, VibeIndexAnalyzer.getInstance(), true, IndexWriter.MaxFieldLength.UNLIMITED);
 		iw.close();
 		logInfo("Index created");
 	}
@@ -166,7 +173,7 @@ public class LuceneProvider extends IndexSupport {
 		int ramBufferSizeMb = PropsUtil.getInt("lucene.ram.buffer.size.mb", 256);
 		boolean useCompoundFile = PropsUtil.getBoolean("lucene.use.compound.file", false);
 
-		IndexWriter writer = new IndexWriter(dir, new SsfIndexAnalyzer(), create, new MaxFieldLength(maxFields));
+		IndexWriter writer = new IndexWriter(dir, VibeIndexAnalyzer.getInstance(), create, new MaxFieldLength(maxFields));
 		
 		if(maxMerge >= 0)
 			writer.setMaxMergeDocs(maxMerge);
@@ -373,16 +380,16 @@ public class LuceneProvider extends IndexSupport {
 		// analyzer to use
 		String language = LanguageTaster.taste(snippet.toCharArray());
 		if (language.equalsIgnoreCase(LanguageTaster.DEFAULT)) {
-			return defaultAnalyzer;
+			return getDefaultAnalyzer();
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
-			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new SsfIndexAnalyzer());
+			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(VibeIndexAnalyzer.getInstance());
 			retAnalyzer.addAnalyzer(Constants.ALL_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.DESC_TEXT_FIELD, new ChineseAnalyzer());
 			retAnalyzer.addAnalyzer(Constants.TITLE_FIELD, new ChineseAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
+			Analyzer analyzer = getDefaultAnalyzer();
 			String aName = PropsUtil.getString("lucene.hebrew.analyzer", "");
 			if (!aName.equalsIgnoreCase("")) {
 				// load the hebrew analyzer here
@@ -396,7 +403,7 @@ public class LuceneProvider extends IndexSupport {
 			return analyzer;
 		} else {
 			// return new ARABICAnalyzer;
-			Analyzer analyzer = defaultAnalyzer;
+			Analyzer analyzer = getDefaultAnalyzer();
 			String aName = PropsUtil.getString("lucene.arabic.analyzer", "");
 			if (!aName.equalsIgnoreCase("")) {
 				// load the arabic analyzer here

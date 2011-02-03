@@ -32,17 +32,30 @@
  */
 package org.kablink.teaming.lucene.analyzer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.*;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.kablink.util.PropsUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Set;
 
 public class VibeQueryAnalyzer extends VibeAnalyzer {
+
+	private static Log logger = LogFactory.getLog(VibeIndexAnalyzer.class);
+	
+	private static boolean inited = false;
+	private static Set<String> queryStopWords;
+	private static boolean queryStopWordIgnoreCase; // meaningful only if queryStopWords exists
+	private static String queryStemmerName;
+	private static boolean queryFoldToAscii;
+	private static boolean queryFallbackToLegacy;
 
 	public VibeQueryAnalyzer() {
 		super();
@@ -109,6 +122,66 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 			streams.source.reset(reader);
 		}
 		return streams.result;
+	}
+
+	public static Analyzer getInstance() {
+		if(!inited)
+			init();
+		if(queryFallbackToLegacy)
+			return new SsfQueryAnalyzer();
+		else
+			return new VibeIndexAnalyzer(queryStopWords, queryStopWordIgnoreCase, queryStemmerName, queryFoldToAscii);
+	}
+	
+	private static void init() {
+		queryFallbackToLegacy = PropsUtil.getBoolean("lucene.searching.fallbackto.legacy", false);
+		if(queryFallbackToLegacy) {
+			logger.info("Fall back to legacy analyzer for searching");
+		}
+		else {
+			queryStopWordIgnoreCase = PropsUtil.getBoolean("lucene.searching.stopwords.ignorecase", true);
+			if(PropsUtil.getBoolean("lucene.searching.stopwords.enable", true)) {
+				// Stop-words filtering is enabled.
+				String stopWordFilePath = PropsUtil.getString("lucene.searching.stopwords.file.path", "");
+				if(!stopWordFilePath.equals("")) {
+					// Stop-words file exists. Load it. 
+					String stopWordFileCharset = PropsUtil.getString("lucene.searching.stopwords.file.charset", "UTF-8");
+					if(stopWordFileCharset.equalsIgnoreCase("jvm-default")) {
+						stopWordFileCharset = Charset.defaultCharset().name();
+					}				
+					try {
+						logger.info("Loading stopwords from file '" + stopWordFilePath + "' using charset " + stopWordFileCharset); 
+						queryStopWords = WordlistLoader.getWordSet(openStopWordFile(stopWordFilePath, stopWordFileCharset));
+					} catch (IOException e) {
+						logger.error("Error loading stopwords" , e);
+						logger.info("Defaulting to common English stopwords");
+						queryStopWords = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
+					}
+				}
+				else {
+					// Stop-words file is not specified. Use the default English stop-words list.
+					logger.info("Defaulting to common English stopwords");
+					queryStopWords = StopAnalyzer.ENGLISH_STOP_WORDS_SET;
+				}
+				logger.info("Stop words filtering is enabled for searching. List size is " + queryStopWords.size());
+			}
+			else {
+				logger.info("Stop words filtering is disabled for searching");
+			}
+	
+			if(PropsUtil.getBoolean("lucene.searching.stemming.enable", true)) {
+				queryStemmerName = PropsUtil.getString("lucene.searching.stemming.stemmer.names", "English");
+				logger.info("Stemming is enabled for searching with stemmer '" + queryStemmerName + "'");
+			}
+			else {
+				logger.info("Stemming is disabled for searching");
+			}
+			
+			queryFoldToAscii = PropsUtil.getBoolean("lucene.searching.asciifolding.enable", true);
+			logger.info("ASCII folding is " + ((queryFoldToAscii)? "enabled":"disabled") + " for searching");
+		}
+		
+		inited = true;
 	}
 
 }
