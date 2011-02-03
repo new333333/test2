@@ -58,7 +58,7 @@ public class WorkAreaFunctionMembership extends ZonedObject {
     private Long workAreaId;
     private String workAreaType;
     private Long functionId;
-    private Set memberIds; // A set of Long
+    private Set<Long> memberIds; // A set of Long
     
     private long lockVersion; // Used for optimistic locking support
     
@@ -88,10 +88,10 @@ public class WorkAreaFunctionMembership extends ZonedObject {
      * @hibernate.element type="long" column="memberId" not-null="true"
      * @hibernate.cache usage="nonstrict-read-write"
      */
-    public Set getMemberIds() {
+    public Set<Long> getMemberIds() {
         return memberIds;
     }
-    public void setMemberIds(Set memberIds) {
+    public void setMemberIds(Set<Long> memberIds) {
         this.memberIds = memberIds;
     }
     

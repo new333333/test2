@@ -32,9 +32,13 @@
  */
 package org.kablink.teaming.module.shared;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
@@ -51,6 +55,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
+import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -62,9 +67,15 @@ import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
 import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.WorkAreaHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -93,7 +104,14 @@ public class AccessUtils  {
 		this.functionManager = functionManager;
 	}
 	protected FunctionManager getFunctionManager() {
-		return functionManager;
+		if (functionManager != null) {
+			return functionManager;
+		} else {
+			return (FunctionManager) SpringContextUtil.getBean("functionManager");
+		}
+	}
+	protected WorkAreaFunctionMembershipManager getWorkAreaFunctionMembershipManager() {
+		return (WorkAreaFunctionMembershipManager) SpringContextUtil.getBean("workAreaFunctionMembershipManager");
 	}
 
 	public void setProfileDao(ProfileDao profileDao) {
@@ -218,43 +236,169 @@ public class AccessUtils  {
 		}
 	}	
 
-	public static Set getReadAccessIds(Binder binder) {
+	public static Set<String> getReadAccessIds(Binder binder) {
 		return getReadAccessIds(binder, false);
 	}
-	public static Set getReadAccessIds(Binder binder, boolean includeTitleAcl) {
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);
+	public static Set<String> getReadAccessIds(Binder binder, boolean includeTitleAcl) {
+		//Build a list of all ids that can read this entry (including function conditions)
+        Set<String> readEntries = getReadIds(binder, WorkAreaOperation.READ_ENTRIES);
+
         if (includeTitleAcl) {
-        	Set readTitles = getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
+        	Set<String> readTitles = getReadIds(binder, WorkAreaOperation.VIEW_BINDER_TITLE);
         	readEntries.addAll(readTitles);
         }
-   		//See if this binder is in the "personal workspaces" tree
-        Long allUsersId = Utils.getAllUsersGroupId();
-        if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(binder)) {
-			//The read access ids includes AllUsers; add in the groups of the binder owner and the team
-        	Set<Long> userGroupIds = getInstance().getProfileDao().getAllGroupMembership(binder.getOwner().getId(), zoneId);
-			readEntries.addAll(userGroupIds);
-			readEntries.addAll(binder.getTeamMemberIds());
-		}
         return readEntries;
 	}     	
-	public static Set getReadAccessIds(Entry entry) {
+	public static Set<String> getReadAccessIds(Entry entry) {
+        //Build a list of all ids that can read this entry (including function conditions)
+        Set<String> readEntries = getReadIds(entry, WorkAreaOperation.READ_ENTRIES);
+
+        return readEntries;
+	} 
+	
+	//Routine to get the expanded list of ids who can read an entity (including function conditions)
+	private static Set<String> getReadIds(DefinableEntity entity, WorkAreaOperation operation) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        Set readEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.READ_ENTRIES);
-   		//See if this entry is in the "personal workspaces" tree
-        Long allUsersId = Utils.getAllUsersGroupId();
-        if (allUsersId != null && readEntries.contains(allUsersId) && Utils.isWorkareaInProfilesTree(entry)) {
-			//The read access ids includes AllUsers; add in the groups of the binder owner and the team
-        	Set<Long> userGroupIds = getInstance().getProfileDao()
-        		.getAllGroupMembership(entry.getCreation().getPrincipal().getId(), zoneId);
-			readEntries.addAll(userGroupIds);
-			userGroupIds = getInstance().getProfileDao()
-    			.getAllGroupMembership(entry.getParentBinder().getOwner().getId(), zoneId);
-			readEntries.addAll(userGroupIds);
-			readEntries.addAll(entry.getParentBinder().getTeamMemberIds());
+    	Long allUsersId = Utils.getAllUsersGroupId();
+	    boolean personal = Utils.isWorkareaInProfilesTree((WorkArea)entity);
+		
+	    //Find the workArea that actually defines the ACL
+	    WorkArea workArea = (WorkArea) entity;
+		while (workArea.isFunctionMembershipInherited()) {
+			workArea = workArea.getParentWorkArea();
+	    	if (workArea == null) {
+	    		//Not found, just use the original (which will return an empty ACL)
+	    		workArea = (WorkArea) entity;
+	    		break;
+	    	}
 		}
+		
+		//Start with a list of the functions (aka Roles) that are used in this workArea
+		List<WorkAreaFunctionMembership> wfms = getInstance().getWorkAreaFunctionMembershipManager()
+        	.findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, operation);
+        
+		//Look at each function (aka Role) to get its read membership and to see if it has any conditions
+		Set<String> readEntries = new HashSet<String>();
+        for (WorkAreaFunctionMembership wfm:wfms) {
+        	Long fId = wfm.getFunctionId();
+        	Function f = getInstance().getFunctionManager().getFunction(zoneId, fId);
+        	if (f.isConditional()) {
+        	    List<Long> conditionIds = f.getConditionIds(ConditionalClause.Meet.MUST);
+        	    if (conditionIds.size() > 0) {
+        	        // This role has MUST type conditions. 
+        	    	// We need to build a single combined term value from this for the acl field (e.g. 5c1c2)
+        	    	StringBuffer cond = new StringBuffer();
+        	    	for (Long cId : conditionIds) {
+        	    		cond.append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
+        	    	}
+	        	    for (Long mId : (Set<Long>)wfm.getMemberIds()) {
+	        	    	String sId = String.valueOf(mId);
+	        	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM;
+	        	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = Constants.READ_ACL_BINDER_OWNER;
+	        	    	readEntries.add(sId + cond.toString());
+	        	       	if (entity instanceof FolderEntry && ((FolderEntry)entity).isIncludeFolderAcl()) {
+	        	       		if (!(entity instanceof WorkflowSupport) || 
+	        	       				((WorkflowControlledEntry)entity).isWorkAreaAccess(WfAcl.AccessType.read)) {
+	        	       			//If this is an entry and it includes the folder ACL, add "all" and "global"
+	        	       			readEntries.add(Constants.READ_ACL_ALL + cond.toString());
+	        	       			if (!personal) {
+	        	       				readEntries.add(Constants.READ_ACL_GLOBAL + cond.toString());
+	        	       			}
+	        	       		}
+	        	        }
+	        	    	if (mId.equals(allUsersId) && !personal) {
+	        	    		readEntries.add(Constants.READ_ACL_GLOBAL + cond.toString());
+	        	    	}
+	        	    	if (mId.equals(allUsersId) && personal) {
+	        				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
+	        	        	Set<Long> userGroupIds = getInstance().getProfileDao()
+	        	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
+	        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
+	        				if (entity instanceof FolderEntry) {
+	        					userGroupIds.addAll(getInstance().getProfileDao()
+	        		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
+	        				}
+	        				for (Long id : userGroupIds) {
+	        					readEntries.add(String.valueOf(id) + cond.toString());
+	        				}
+	        	    	}
+	        	    }
+        	    	
+        	    } else {
+        	        conditionIds = f.getConditionIds(ConditionalClause.Meet.SHOULD);
+        	        // We need to build one term per condition ID (e.g., 5c1, 5c2)
+        	    	for (Long cId : conditionIds) {
+		        	    for (Long mId : (Set<Long>)wfm.getMemberIds()) {
+		        	    	String sId = String.valueOf(mId);
+		        	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM;
+		        	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = Constants.READ_ACL_BINDER_OWNER;
+		        	    	readEntries.add(sId + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        	       	if (entity instanceof FolderEntry && ((FolderEntry)entity).isIncludeFolderAcl()) {
+		        	       		if (!(entity instanceof WorkflowSupport) || 
+		        	       				((WorkflowControlledEntry)entity).isWorkAreaAccess(WfAcl.AccessType.read)) {
+		        	       			//If this is an entry and it includes the folder ACL, add "all" and "global"
+		        	       			readEntries.add(Constants.READ_ACL_ALL + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        	       			if (!personal) {
+		        	       				readEntries.add(Constants.READ_ACL_GLOBAL + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        	       			}
+		        	       		}
+		        	        }
+		        	    	if (mId.equals(allUsersId) && !personal) {
+		        	    		readEntries.add(Constants.READ_ACL_GLOBAL + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        	    	}
+		        	    	if (mId.equals(allUsersId) && personal) {
+		        				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
+		        	        	Set<Long> userGroupIds = getInstance().getProfileDao()
+		        	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
+		        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
+		        				if (entity instanceof FolderEntry) {
+		        					userGroupIds.addAll(getInstance().getProfileDao()
+		        		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
+		        				}
+		        				for (Long id : userGroupIds) {
+		        					readEntries.add(String.valueOf(id) + Constants.CONDITION_ACL_PREFIX + String.valueOf(cId));
+		        				}
+		        	    	}
+		        	    }
+        	    	}
+        	    }
+        	} else {
+        		for (Long mId : (Set<Long>)wfm.getMemberIds()) {
+        	    	String sId = String.valueOf(mId);
+        	    	if (mId.equals(ObjectKeys.TEAM_MEMBER_ID)) sId = Constants.READ_ACL_TEAM;
+        	    	if (mId.equals(ObjectKeys.OWNER_USER_ID)) sId = Constants.READ_ACL_BINDER_OWNER;
+        			readEntries.add(sId);
+        	       	if (entity instanceof FolderEntry && ((FolderEntry)entity).isIncludeFolderAcl()) {
+        	       		if (!(entity instanceof WorkflowSupport) || 
+        	       				((WorkflowControlledEntry)entity).isWorkAreaAccess(WfAcl.AccessType.read)) {
+        	       			//If this is an entry and it includes the folder ACL, add "all" and "global"
+        	       			readEntries.add(Constants.READ_ACL_ALL);
+        	       			if (!personal) {
+        	       				readEntries.add(Constants.READ_ACL_GLOBAL);
+        	       			}
+        	       		}
+        	        }
+        	    	if (mId.equals(allUsersId) && !personal) {
+        	    		readEntries.add(Constants.READ_ACL_GLOBAL);
+        	    	}
+        	    	if (mId.equals(allUsersId) && personal) {
+        				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
+        	        	Set<Long> userGroupIds = getInstance().getProfileDao()
+        	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
+        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
+        				if (entity instanceof FolderEntry) {
+        					userGroupIds.addAll(getInstance().getProfileDao()
+        		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
+        				}
+        				for (Long id : userGroupIds) {
+        					readEntries.add(String.valueOf(id));
+        				}
+        	    	}
+        		}
+        	}
+        }
         return readEntries;
-	}     	
+	}
 	
 	public static void readCheck(User user, DefinableEntity entity) throws AccessControlException {
 		if (entity.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 

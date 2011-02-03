@@ -45,6 +45,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -268,6 +269,9 @@ public class Utils {
 
 	public static boolean isWorkareaInProfilesTree(WorkArea workArea) {
 		WorkArea parent = workArea.getParentWorkArea();
+		if (workArea instanceof FolderEntry) {
+			parent = ((FolderEntry)workArea).getParentFolder();
+		}
 		while (parent != null) {
 			if (parent.getWorkAreaType().equals(EntityType.profiles.name())) return true;
 			parent = parent.getParentWorkArea();

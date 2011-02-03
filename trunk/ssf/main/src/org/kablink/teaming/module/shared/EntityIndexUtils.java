@@ -590,24 +590,15 @@ public class EntityIndexUtils {
     	return getFolderAclString(binder, false);
     }
     public static String getFolderAclString(Binder binder, boolean includeTitleAcl) {
-    	Long allUsersId = Utils.getAllUsersGroupId();
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
-		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
+		Set<String> binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
    		String ids = LongIdUtil.getIdsAsString(binderIds);
-       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
-       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
-       	if (binderIds.contains(allUsersId)) {
-	    	boolean personal = Utils.isWorkareaInProfilesTree(binder);
-       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
-       	}
-       	//TODO Add the condition acls ids
-       	ids = ids.trim() + " " + String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
         return ids.trim();
     }
     public static String getFolderTeamAclString(Binder binder) {
     	Long allUsersId = Utils.getAllUsersGroupId();
-    	Set teamList = binder.getTeamMemberIds();
+    	Set teamList = binder.getTeamMemberIds();  
+    	//Note: condition acls are not needed here 
+    	//  since these get paired with _folderAcl:team which does have any conditions applied
     	if (teamList.contains(allUsersId)) {
     		//Add in the groups of the owner of the binder
     		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -623,44 +614,25 @@ public class EntityIndexUtils {
     	return ids;
     }
     public static String getEntryAclString(Binder binder, Entry entry) {
-    	Long allUsersId = Utils.getAllUsersGroupId();
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
-    	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
+     	if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
     		//This is a reply to a folder entry. Get the acl of the top entry
     		entry = ((FolderEntry)entry).getTopEntry();
     	}
     	if (entry.hasEntryAcl()) {
-			Set entryIds = AccessUtils.getReadAccessIds(entry);
+			Set<String> entryIds = AccessUtils.getReadAccessIds(entry);
 	   		String ids = LongIdUtil.getIdsAsString(entryIds);
-	       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
-	       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), entry.getOwnerId().toString());
-	       	
-	       	if (entry.isIncludeFolderAcl()) {
-	       		if (!(entry instanceof WorkflowSupport) || ((WorkflowControlledEntry)entry).isWorkAreaAccess(WfAcl.AccessType.read)) {
-	       			ids = ids.trim() + " " + Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
-	       		}
-	        }
-	       	//TODO Add the condition acls ids
-	       	ids = ids.trim() + " " + String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
-	       	
-	       	if (entryIds.contains(allUsersId)) {
-	       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
-	       		//If this entry is not in the "personal workspaces hierarchy, then add "global"
-	       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
-	       	}
 	        return ids.trim();
     	} else {
-       		String ids;
+       		//This entry uses the folder ACL. Therefore we can set it to "all" without any conditions. 
+    		//  The folder ACL provides the condition checking.
+    		String ids;
        		boolean personal = Utils.isWorkareaInProfilesTree(binder);
        		if (personal) {
        			ids = entry.getOwnerId().toString() + " " + Constants.READ_ACL_ALL;
        		} else {
        			ids = Constants.READ_ACL_ALL + " " + Constants.READ_ACL_GLOBAL;
        		}
-       		//TODO Add in the Condition ACLs
-       		ids += String.valueOf(superUser.getId()) + Constants.CONDITION_ACL_PREFIX + Constants.CONDITION_ACL_NONE;
-       		return ids.trim();
+           	return ids.trim();
     	}
     }
     
@@ -692,7 +664,7 @@ public class EntityIndexUtils {
 		//add binder owner
 		Long owner = binder.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
-		if (owner != null) ownerStr = owner.toString();
+		if (owner != null) ownerStr = owner.toString();  //TODO fix this
 		doc.add(new Field(Constants.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.TOKENIZED));    	
     }
     //Add acl fields for binder for storage in dom4j documents.
@@ -703,24 +675,19 @@ public class EntityIndexUtils {
     }
     private static void addBinderAcls(org.dom4j.Element parent, Binder binder, boolean includeTitleAcl) {
     	Long allUsersId = Utils.getAllUsersGroupId();
-		Set binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
-      	if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
+		Set<String> binderIds = AccessUtils.getReadAccessIds(binder, includeTitleAcl);
       	String ids = LongIdUtil.getIdsAsString(binderIds);
-       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
-       	if (binderIds.contains(allUsersId)) {
-       		boolean personal = Utils.isWorkareaInProfilesTree(binder);
-       		if (!personal) ids = ids.trim() + " " + Constants.READ_ACL_GLOBAL;
-       	}
     	Element acl = parent.addElement(Constants.FOLDER_ACL_FIELD);
    		acl.setText(ids);
-   		//add Team
+   		//add Team 
+   		//  Don't need to add conditions since this is paired with _folderAcl:team which does have conditions applied
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
    		String tms = binder.getTeamMemberString();
    		if (binder.getTeamMemberIds().contains(allUsersId)) {
    			tms = tms + " " + Constants.READ_ACL_GLOBAL;
    		}
    		acl.setText(tms);
-   }
+    }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
     	addReadAccess(doc, binder, fieldsOnly, false);

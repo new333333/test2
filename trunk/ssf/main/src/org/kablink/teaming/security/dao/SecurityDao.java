@@ -79,8 +79,8 @@ public interface SecurityDao {
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(Long zoneId, 
     		Long workAreaId, String workAreaType, Long functionId);
 
-    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
-	public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId, String workAreaType);
+    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
+	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, Long functionId, String workAreaType);
 
     /**
      * 
@@ -92,12 +92,12 @@ public interface SecurityDao {
      * @return
      */
     public List<Long> checkWorkAreaFunctionMembership(Long zoneId, Long workAreaId, 
-            String workAreaType, String workAreaOperationName, Set membersToLookup);
-    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId,
+            String workAreaType, String workAreaOperationName, Set<Long> membersToLookup);
+    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(Long zoneId,
             Long workAreaId, String workAreaType, 
             String workAreaOperationName);
-    public List findWorkAreaByOperation( Long zoneId,
-             String workAreaOperationName,  Set membersToLookup);
+    public List<WorkAreaFunctionMembership> findWorkAreaByOperation( Long zoneId,
+             String workAreaOperationName,  Set<Long> membersToLookup);
 
     public TokenInfoSession loadTokenInfoSession(Long zoneId, String infoId);
 

@@ -128,12 +128,6 @@
 		formObj.conditionIdToBeDeleted.value = id;
 	}
 
-	function checkIfSearchIndexInitialized() {
-		<c:if test="${!ssConditionsInitialized}">
-			alert("<ssf:nlt quoteDoubleQuote="true" tag="errorcode.role.conditionsNotInitializedWarning"/>");
-		</c:if>
-	}
-
 </script>
 
 <div class="ss_pseudoPortal">
@@ -227,8 +221,7 @@
 	</div>
 	<br/>
 	<br/>		
-	<input type="submit" class="ss_submit" name="addCondition" value="<ssf:nlt tag="button.add" text="Add"/>"
-	  onClick="return checkIfSearchIndexInitialized();">
+	<input type="submit" class="ss_submit" name="addCondition" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 </ssf:expandableArea>
 <br>
