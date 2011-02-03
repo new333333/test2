@@ -121,12 +121,12 @@ public class GwtTaskHelper {
 		}
 
 		/**
-		 * Compares two TaskListItem's by their assignee.
+		 * Compares two AssignmentInfo's by their assignee's name.
 		 * 
 		 * Implements the Comparator.compare() method.
 		 * 
-		 * @param task1
-		 * @param task2
+		 * @param ai1
+		 * @param ai2
 		 * 
 		 * @return
 		 */
@@ -167,29 +167,29 @@ public class GwtTaskHelper {
 	}
 
 	/*
-	 * Generates a base TaskBundle object with the rights, information
-	 * about the binder, ... initialized.
+	 * Generates a base TaskBundle object with the rights, binder
+	 * information, task linkage, ... initialized.
 	 * 
-	 * The only thing missing is the task list.
+	 * The only thing missing are the tasks which are filled in by a
+	 * follow up call to readTaskList().
 	 */
 	private static TaskBundle buildBaseTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		// Allocate a new TaskBundle. 
 		TaskBundle reply = new TaskBundle();
-		reply.setFilterTypeParam(filterTypeParam);
-		reply.setModeTypeParam(  modeTypeParam  );
 		
-		// Set the task linkage information for the Binder.
-		reply.setTaskLinkage(getTaskLinkage(bs, binder));
-		
-		// Set information about the Binder.
+		// Store information about the Binder.
 		reply.setBinderId(        binder.getId()     );
 		reply.setBinderIsMirrored(binder.isMirrored());
 
-		// Set the user's rights to the Binder.
+		// Store the task linkage for the Binder.
+		reply.setTaskLinkage(getTaskLinkage(bs, binder));
+		
+		// Store the user's rights to the Binder.
 		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage(request, bs, binder));
 		setTaskBundleRights(bs, ((Folder) binder), reply);
 		
-		// Set whether the task list is being filtered.
+		// Store whether the task list is being filtered.
+		reply.setFilterTypeParam(filterTypeParam);
 		FilterType filterType = ((null == filterTypeParam) ? FilterType.ALL : FilterType.valueOf(filterTypeParam));
 		boolean isFiltered = (FilterType.ALL != filterType);
 		if (!isFiltered) {
@@ -199,8 +199,9 @@ public class GwtTaskHelper {
 		}
 		reply.setIsFiltered(isFiltered);
 
-		// Set whether the tasks being shown are from the folder (vs.
+		// Store whether the tasks being shown are from the folder (vs.
 		// those assigned to the current user.)
+		reply.setModeTypeParam(  modeTypeParam  );
 		ModeType modeType = ((null == modeTypeParam) ? ModeType.PHYSICAL : ModeType.valueOf(modeTypeParam));
 		reply.setIsFromFolder(ModeType.PHYSICAL == modeType);
 
@@ -1158,95 +1159,6 @@ public class GwtTaskHelper {
 		return reply; 
 	}
 	
-	/*
-	 * Reads the tasks from the specified binder.
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
-		Map taskEntriesMap;		
-		try {
-			// Setup to read the task entries...
-			HttpSession session = WebHelper.getRequiredSession(request);
-			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
-			Map options = ((Map) optionsObj.getData());
-			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-			options.put(ObjectKeys.SEARCH_OFFSET,   0);
-	
-			// ...and read them.
-			taskEntriesMap = TaskHelper.findTaskEntries(
-				bs,
-				WebHelper.getRequiredSession(request), 
-				binder,
-				filterTypeParam,
-				modeTypeParam,
-				options);
-		}
-		catch (Exception ex) {
-			m_logger.error("GwtTaskHelper.getTasks( EXCEPTION ): ", ex);
-			throw GwtServerHelper.getGwtTeamingException(ex);
-		}		
-    	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
-
-		// Did we find any entries?
-		List<TaskInfo> reply = new ArrayList<TaskInfo>();
-		if ((null == taskEntriesList) || taskEntriesList.isEmpty()) {
-			// No!  Bail.
-			return reply;
-		}
-		
-		// Scan the task entries that we read.
-		Long binderId = binder.getId();
-		SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
-		for (Map taskEntry:  taskEntriesList) {			
-			TaskInfo ti = new TaskInfo();
-			
-			ti.setOverdue(         getOverdueFromMap(  taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
-			ti.setEvent(           getEventFromMap(    taskEntry                                                             ));
-			ti.setStatus(          getStringFromMap(   taskEntry, "status"                                                   ));
-			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
-			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
-			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD                                     ));
-			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD                                      ));
-			ti.setPriority(        getStringFromMap(   taskEntry, "priority"                                                 ));
-			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
-			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
-			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
-			
-			TaskId taskId = new TaskId();
-			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
-			taskId.setEntryId( getLongFromMap(taskEntry, Constants.DOCID_FIELD    ));
-			ti.setTaskId(taskId);
-			
-			Date     completedDateStamp = getDateFromMap( taskEntry, Constants.TASK_COMPLETED_DATE_FIELD);
-			TaskDate completedDate      = new TaskDate();
-			completedDate.setDate(                         completedDateStamp );
-			completedDate.setDateDisplay(getDateTimeString(completedDateStamp));
-			ti.setCompletedDate(                           completedDate      );
-			
-			reply.add(ti);
-		}
-
-		// At this point, the TaskInfo's in the List<TaskInfo> are not
-		// complete.  They're missing things like the user's rights to
-		// the entries, the location of their binders and details about
-		// the task's assignments.  Complete their content.  Note that
-		// we do this AFTER collecting data from the search index so
-		// that we only have to perform a single DB read for each type
-		// of information we need to complete the TaskInfo details.
-		completeTaskRights(     bs, reply);
-		completeBinderLocations(bs, reply);
-		completeAIs(            bs, reply);
-				
-		if (m_logger.isDebugEnabled()) {
-			m_logger.debug("GwtTaskHelper.getTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
-			dumpTaskInfoList(reply);
-		}
-		
-		// If we get here, reply refers to the List<TaskInfo> of the
-		// entries contained in binder.  Return it. 
-		return reply;
-	}
-
 	/**
 	 * Reads the task information from the specified binder.
 	 * 
@@ -1265,77 +1177,6 @@ public class GwtTaskHelper {
 		return tb.getTasks();
 	}
 
-	/*
-	 * Reads the task information from the specified binder.
-	 */
-	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks) throws GwtTeamingException {
-		// Create a List<TaskListItem> that we'll fill up with the task
-		// list.
-		List<TaskListItem> reply = new ArrayList<TaskListItem>();
-
-		// Read the tasks from the binder.
-		List<TaskInfo> tasks = getTasks(
-			request,
-			bs,
-			binder,
-			tb.getFilterTypeParam(),
-			tb.getModeTypeParam());
-
-		// Are we displaying entries from the folder (vs. those
-		// assigned to the user)?
-		List<TaskLink> taskOrder;
-		boolean entriesFromFolder = tb.getIsFromFolder();
-		if (entriesFromFolder) {
-			// Yes!  Process the order information from the supplied
-			// task linkage.
-			taskOrder = tb.getTaskLinkage().getTaskOrder();
-			processTaskLinkList(reply, collapsedSubtasks, tasks, taskOrder);
-		}
-		else {
-			// No, we must be displaying tasks assigned to the user!
-			// In this case, no order/hierarchy is assumed.
-			taskOrder = null;
-		}
-
-		// Scan any tasks that weren't addressed by the task linkage...
-		boolean changedLinkage = (!(tasks.isEmpty()));
-		for (TaskInfo task:  tasks) {
-			// ...add each as a TaskListItem to the task list being
-			// ...built...
-			TaskListItem tli = new TaskListItem();
-			tli.setTask(task);
-			if (entriesFromFolder) {
-				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
-			}
-			reply.add(tli);
-			
-			// ...and add it to the linkage since it will now be
-			// ...considered 'linked into' the task folder's order
-			// ...and hierarchy.
-			TaskLink tl = new TaskLink();
-			tl.setEntryId(task.getTaskId().getEntryId());
-			if (entriesFromFolder) {
-				taskOrder.add(tl);
-			}
-		}
-
-		// Are we displaying entries from the folder (vs. those
-		// assigned to the user)?
-		if (entriesFromFolder) {
-			// Yes!  If we changed the task linkage in building the
-			// task list and the user has rights to modify it on this
-			// folder...
-			if (changedLinkage && tb.getCanModifyTaskLinkage()) {
-				// ...we need to save the task linkage changes.
-				saveTaskLinkage(bs, binder, tb.getTaskLinkage());
-			}
-		}
-
-		// If we get here, reply refers to the List<TaskListItem> for
-		// the tasks.  Return it.
-		return reply;
-	}
-
 	/**
 	 * Returns the TaskBundle from a task folder.
 	 *
@@ -1350,7 +1191,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
-		// Build the base TaskBundle...
+		// Build a base TaskBundle...
 		TaskBundle reply = buildBaseTaskBundle(
 			request,
 			bs,
@@ -1359,17 +1200,16 @@ public class GwtTaskHelper {
 			modeTypeParam);
 		
 		// ...and read the tasks into it.
-		reply.setTasks(
-			getTaskListImpl(
-				request,
+		readTaskList(
+			request,
+			bs,
+			binder,
+			reply,
+			getCollapsedSubtasks(
 				bs,
-				binder,
-				reply,
-				getCollapsedSubtasks(
-					bs,
-					binder.getId())));
+				binder.getId()));
 		
-		// If we get here, reply refers to the request TaskBundle.
+		// If we get here, reply refers to the requested TaskBundle.
 		// Return it.
 		return reply;
 	}
@@ -1569,6 +1409,154 @@ public class GwtTaskHelper {
 		}
 	}
 	
+	/*
+	 * Reads the task information from the specified binder and stores
+	 * it in the given TaskBundle.
+	 * 
+	 * Apply task linkage, ... as necessary to the list stored.
+	 */
+	private static void readTaskList(HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks) throws GwtTeamingException {
+		// Create a List<TaskListItem> that we'll fill up with the task
+		// list.
+		List<TaskListItem> taskList = new ArrayList<TaskListItem>();
+		tb.setTasks(taskList);
+
+		// Read the tasks from the binder.
+		List<TaskInfo> tasks = readTasks(
+			request,
+			bs,
+			binder,
+			tb.getFilterTypeParam(),
+			tb.getModeTypeParam());		
+		tb.setTotalTasks(tasks.size());
+
+		// Do we need to respect the task linkage information?
+		List<TaskLink> taskOrder;
+		boolean respectLinkage = tb.respectLinkage();
+		if (respectLinkage) {
+			// Yes!  Process the order information from the supplied
+			// task linkage.
+			taskOrder = tb.getTaskLinkage().getTaskOrder();
+			processTaskLinkList(taskList, collapsedSubtasks, tasks, taskOrder);
+		}
+		else {
+			// No, we are not applying the task linkage!  In this case,
+			// no order/hierarchy is assumed.
+			taskOrder = null;
+		}
+
+		// Scan any tasks that weren't addressed by the task linkage...
+		for (TaskInfo task:  tasks) {
+			// ...add each as a TaskListItem to the task list being
+			// ...built...
+			TaskListItem tli = new TaskListItem();
+			tli.setTask(task);
+			if (respectLinkage) {
+				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
+			}
+			taskList.add(tli);
+
+			// ...and if we're handling the task linkage... 
+			if (respectLinkage) {
+				// ...add it to the order since it will now be
+				// ...considered 'linked into' the task folder's order
+				// ...and hierarchy.
+				TaskLink tl = new TaskLink();
+				tl.setEntryId(task.getTaskId().getEntryId());
+				taskOrder.add(tl);
+			}
+		}
+	}
+
+	/*
+	 * Reads the tasks from the specified binder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		Map taskEntriesMap;		
+		try {
+			// Setup to read the task entries...
+			HttpSession session = WebHelper.getRequiredSession(request);
+			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
+			Map options = ((Map) optionsObj.getData());
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
+			options.put(ObjectKeys.SEARCH_OFFSET,   0);
+	
+			// ...and read them.
+			taskEntriesMap = TaskHelper.findTaskEntries(
+				bs,
+				WebHelper.getRequiredSession(request), 
+				binder,
+				filterTypeParam,
+				modeTypeParam,
+				options);
+		}
+		catch (Exception ex) {
+			m_logger.error("GwtTaskHelper.readTasks( EXCEPTION ): ", ex);
+			throw GwtServerHelper.getGwtTeamingException(ex);
+		}		
+    	List<Map> taskEntriesList = ((List) taskEntriesMap.get(ObjectKeys.SEARCH_ENTRIES));
+
+		// Did we find any entries?
+		List<TaskInfo> reply = new ArrayList<TaskInfo>();
+		if ((null == taskEntriesList) || taskEntriesList.isEmpty()) {
+			// No!  Bail.
+			return reply;
+		}
+		
+		// Scan the task entries that we read.
+		Long binderId = binder.getId();
+		SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+		for (Map taskEntry:  taskEntriesList) {			
+			TaskInfo ti = new TaskInfo();
+			
+			ti.setOverdue(         getOverdueFromMap(  taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
+			ti.setEvent(           getEventFromMap(    taskEntry                                                             ));
+			ti.setStatus(          getStringFromMap(   taskEntry, "status"                                                   ));
+			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
+			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
+			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD                                     ));
+			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD                                      ));
+			ti.setPriority(        getStringFromMap(   taskEntry, "priority"                                                 ));
+			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
+			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
+			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
+			
+			TaskId taskId = new TaskId();
+			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
+			taskId.setEntryId( getLongFromMap(taskEntry, Constants.DOCID_FIELD    ));
+			ti.setTaskId(taskId);
+			
+			Date     completedDateStamp = getDateFromMap( taskEntry, Constants.TASK_COMPLETED_DATE_FIELD);
+			TaskDate completedDate      = new TaskDate();
+			completedDate.setDate(                         completedDateStamp );
+			completedDate.setDateDisplay(getDateTimeString(completedDateStamp));
+			ti.setCompletedDate(                           completedDate      );
+			
+			reply.add(ti);
+		}
+
+		// At this point, the TaskInfo's in the List<TaskInfo> are not
+		// complete.  They're missing things like the user's rights to
+		// the entries, the location of their binders and details about
+		// the task's assignments.  Complete their content.  Note that
+		// we do this AFTER collecting data from the search index so
+		// that we only have to perform a single DB read for each type
+		// of information we need to complete the TaskInfo details.
+		completeTaskRights(     bs, reply);
+		completeBinderLocations(bs, reply);
+		completeAIs(            bs, reply);
+				
+		if (m_logger.isDebugEnabled()) {
+			m_logger.debug("GwtTaskHelper.readTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
+			dumpTaskInfoList(reply);
+		}
+		
+		// If we get here, reply refers to the List<TaskInfo> of the
+		// entries contained in binder.  Return it. 
+		return reply;
+	}
+
 	/**
 	 * Removes the TaskLinkage from a task folder.
 	 * 

@@ -50,6 +50,7 @@ public class TaskBundle implements IsSerializable {
 	private boolean				m_canTrashEntry;		// Based on FolderOperation.preDeleteEntry.
 	private boolean				m_isFiltered;			//
 	private boolean				m_isFromFolder;			//
+	private int					m_totalTasks;			//
 	private List<TaskListItem>	m_tasks;				//
 	private Long				m_binderId;				//
 	private String				m_filterTypeParam;		//
@@ -77,12 +78,13 @@ public class TaskBundle implements IsSerializable {
 	public boolean            getCanTrashEntry()        {return m_canTrashEntry;       }
 	public boolean            getIsFiltered()           {return m_isFiltered;          }
 	public boolean            getIsFromFolder()         {return m_isFromFolder;        }
+	public int                getTotalTasks()			{return m_totalTasks;          }
 	public List<TaskListItem> getTasks()                {return m_tasks;               }
 	public Long               getBinderId()             {return m_binderId;            }
 	public String             getFilterTypeParam()      {return m_filterTypeParam;     }
 	public String             getModeTypeParam()        {return m_modeTypeParam;       }
 	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
-	
+
 	/**
 	 * Set'er methods.
 	 * 
@@ -95,9 +97,24 @@ public class TaskBundle implements IsSerializable {
 	public void setCanTrashEntry(       boolean            canTrashEntry)        {m_canTrashEntry        = canTrashEntry;       }
 	public void setIsFiltered(          boolean            isFiltered)           {m_isFiltered           = isFiltered;          }
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
+	public void setTotalTasks(          int                totalTasks)           {m_totalTasks           = totalTasks;          }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
 	public void setBinderId(            Long               binderId)             {m_binderId             = binderId;            }
 	public void setFilterTypeParam(     String             filterTypeParam)      {m_filterTypeParam      = filterTypeParam;     }
 	public void setModeTypeParam(       String             modeTypeParam)        {m_modeTypeParam        = modeTypeParam;       }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
+
+	/**
+	 * Returns true if based on the information in the TaskBundle, the
+	 * UI should respect the linkage information and false otherwise.
+	 * 
+	 * Currently, linkage is ignored for tasks lists that are not
+	 * from the folder (i.e., they're an 'Assigned To' list) or that
+	 * are filtered.
+	 * 
+	 * @return
+	 */
+	public boolean respectLinkage() {
+		return (getIsFromFolder() && (!(getIsFiltered())));
+	}
 }
