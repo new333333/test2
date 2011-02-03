@@ -94,8 +94,6 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 	 </td>
 	</c:if>
-	    </tr>
-    <tr>
 	 <td valign="top" style="padding-right:4px;">
 	 </td>
 	 <td width="100%">
