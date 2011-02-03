@@ -39,7 +39,10 @@
 <tbody>
 <c:forEach var="ptag" items="${ssTags}">
 <tr>
-  <td style="width: 10px; padding-left:10px;">
+  <td style="padding-left: 10px; padding-right:8px;">
+    <span class="ss_tags" title="${ptag.name}">${ptag.name}</span>
+  </td>
+  <td  style="padding-right:10px;">
     
     <c:choose>
     
@@ -58,9 +61,6 @@
     </c:otherwise>     
     </c:choose>
     
-  </td>
-  <td>
-    <span class="ss_tags" style="padding-right:10px;" title="${ptag.name}">${ptag.name}</span>
   </td>
 </tr>
 </c:forEach>
