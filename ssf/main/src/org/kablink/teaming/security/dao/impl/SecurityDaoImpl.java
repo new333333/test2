@@ -190,10 +190,10 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 
 	}
 
-	public List findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId) {
+	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId) {
 		long begin = System.currentTimeMillis();
 		try {
-	        return (List) getHibernateTemplate().execute(
+	        return (List<WorkAreaFunctionMembership>) getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	return session.createCriteria(WorkAreaFunctionMembership.class)
@@ -211,14 +211,14 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     		end(begin, "findWorkAreaFunctionMemberships(Long,Long)");
     	}
 	}
-	public List findWorkAreaFunctionMemberships(final Long zoneId,
+	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(final Long zoneId,
             final Long workAreaId, final String workAreaType) {
 		long begin = System.currentTimeMillis();
 		try {
-	       return (List)getHibernateTemplate().execute(
+	       return (List<WorkAreaFunctionMembership>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
-	                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
+	                    	List<Long> results = session.createCriteria(WorkAreaFunctionMembership.class)
 	                                .add(Expression.conjunction() 
 	                               			.add(Expression.eq(ZONE_ID, zoneId))
 	                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
@@ -295,7 +295,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     		end(begin, "checkWorkAreaFunctionMembership(Long,Long,String,String,Set)");
     	}
     }
-    public List findWorkAreaFunctionMembershipsByOperation(final Long zoneId,
+    public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName) {
 		long begin = System.currentTimeMillis();
@@ -304,7 +304,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		//The loop will retry up to 5 times if it fails the first time
 		while(retryCount < 5) {
 			try {
-		    	List matches = (List) getHibernateTemplate().execute(
+		    	List<WorkAreaFunctionMembership> matches = (List<WorkAreaFunctionMembership>) getHibernateTemplate().execute(
 		                new HibernateCallback() {
 		                    public Object doInHibernate(Session session) throws HibernateException {
 		                        // The following query performs 4 table joins in a single SQL query.
@@ -345,11 +345,11 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 		return null;
     }
     
-    public List findWorkAreaByOperation(final Long zoneId,
-                      final String workAreaOperationName, final Set membersToLookup) {
+    public List<WorkAreaFunctionMembership> findWorkAreaByOperation(final Long zoneId,
+                      final String workAreaOperationName, final Set<Long> membersToLookup) {
 		long begin = System.currentTimeMillis();
 		try {
-	    	List matches = (List) getHibernateTemplate().execute(
+	    	List<WorkAreaFunctionMembership> matches = (List) getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        // The following query performs 4 table joins in a single SQL query.

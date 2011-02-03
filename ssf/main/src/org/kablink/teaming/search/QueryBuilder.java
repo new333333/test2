@@ -204,8 +204,7 @@ public class QueryBuilder {
 			addAclClauses(acls, so);
 		}
 		
-		// add acl check to every query. (If it's the superuser doing this query, then this clause
-		// will return the conditions string only.
+		// add acl check to every query. 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		if (!ignoreAcls) { 
 			String acls = getAclClause();
@@ -721,27 +720,7 @@ public class QueryBuilder {
 		if ((user.isSuper() || 
 				ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId())) && 
 				applicationPrincipals == null) {
-			//This is the super user, so the only acl needed is the conditions acl
-			List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
-
-	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	       	User superUser = AccessUtils.getZoneSuperUser(zoneId);
-			StringBuffer qString = new StringBuffer();
-			if (!conditions.isEmpty()) {
-				qString.append("(").append(ENTRY_PREFIX).append(String.valueOf(superUser.getId()))
-				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
-				qString.append(" OR ");
-				qString.append(FOLDER_PREFIX).append(String.valueOf(superUser.getId()))
-				.append(Constants.CONDITION_ACL_PREFIX).append(Constants.CONDITION_ACL_NONE);
-				//Get the conditions that the current user passes
-		      	List<Long> conditionsMet = getConditionsMet(conditions);
-				for (Long cId : conditionsMet) {
-					qString.append(" OR ").append(ENTRY_PREFIX).append(String.valueOf(superUser.getId())).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
-					qString.append(" OR ").append(FOLDER_PREFIX).append(String.valueOf(superUser.getId())).append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
-				}
-				qString.append(")");
-			}
-			return qString.toString();
+			return "";
 		}
 
 		String clause = getAclClauseForIds(userPrincipals, user.getId());
@@ -785,25 +764,22 @@ public class QueryBuilder {
 		 */
 		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
 		String folderPrincipals = idField(principalIds2, FOLDER_PREFIX, conditionsMet);
-		String teamPrincipals = idField(principalIds2, TEAM_PREFIX, conditionsMet);
+		String teamPrincipals = idField(principalIds2, TEAM_PREFIX, new ArrayList()); //Don't need condition explosion for _teamAcl
 		if (principalIds.contains(allUsersGroupId)) {
 			if (folderPrincipals.equals("")) {
-				folderPrincipals = FOLDER_ALL_GLOBAL;
-				folderPrincipals += addConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
+				folderPrincipals = getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			} else {
-				folderPrincipals = folderPrincipals.trim() + " OR " + FOLDER_ALL_GLOBAL;
-				folderPrincipals += addConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
+				folderPrincipals = folderPrincipals.trim() + " OR ";
+				folderPrincipals += getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			}
 			if (teamPrincipals.equals("")) {
-				teamPrincipals = TEAM_ALL_GLOBAL;
-				teamPrincipals += addConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
+				teamPrincipals = getConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			} else {
-				teamPrincipals = teamPrincipals.trim() + " OR " + TEAM_ALL_GLOBAL;
-				teamPrincipals += addConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
+				teamPrincipals = teamPrincipals.trim() + " OR ";
+				teamPrincipals += getConditionExp(TEAM_PREFIX, Constants.READ_ACL_GLOBAL, conditionsMet);
 			}
 		}
-		String entryAll = ENTRY_ALL;
-		entryAll += addConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
+		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
 		
 		// folderAcl:1,2,3...
 		if (widen) {
@@ -811,29 +787,29 @@ public class QueryBuilder {
 			qString.append("(");
 			qString.append("(" + entryAll  + " AND "); //(entryAcl:all AND
 			qString.append("(" + folderPrincipals + "))"); //(folderAcl:1 OR folderAcl:2))
-			qString.append(" OR (" + entryAll  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
-								FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " +
-								"(" + teamPrincipals + "))");
+			qString.append(" OR (" + entryAll  + " AND (" +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+					getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_TEAM, conditionsMet) + ") AND " +
+					"(" + teamPrincipals + "))");
 			if(userId != null) {
-				qString.append(" OR (" + entryAll  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
-						FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " +
+				qString.append(" OR (" + entryAll  + " AND (" +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
+						getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + ") AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
 			}
 			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX, conditionsMet) + ")"); //OR (entryAcl:1 OR entryAcl:2)
-			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append(" OR ((" + getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_TEAM, conditionsMet) + ") AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + teamPrincipals + "))");
 			qString.append(")");
 		} else {
 			qString.append("(");
 			qString.append("((" + folderPrincipals + ")"); //((folderAcl:1 OR folderAcl:2)
 			qString.append(" OR ");
-			qString.append("(" + FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append("((" + getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_TEAM, conditionsMet) + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + teamPrincipals + "))");
 			if(userId != null) {
-				qString.append(" OR (" + FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
+				qString.append(" OR (" + getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + ") AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(") AND (");			//) AND (
@@ -844,7 +820,7 @@ public class QueryBuilder {
 			qString.append(" OR " +	
 						idField(principalIds2, ENTRY_PREFIX, conditionsMet) + ")");
 			qString.append(" OR ");
-			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append("(("  + getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_TEAM, conditionsMet) + ") AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + teamPrincipals + "))");
 			qString.append("))");
 		}
@@ -864,13 +840,15 @@ public class QueryBuilder {
 		return cIds;
 	}
 	
-	//Routine to add the conditional clauses to a global ACL string
-	private String addConditionExp(String aclField, String aclString, List<Long> conditionsMet) {
+	//Routine to get the conditional clauses to a global ACL string
+	private String getConditionExp(String aclField, String aclString, List<Long> conditionsMet) {
 		StringBuffer qString = new StringBuffer();
+		qString.append(" (").append(aclField).append(aclString);
 		for (Long cId : conditionsMet) {
 			qString.append(" OR ").append(aclField).append(aclString)
 				.append(Constants.CONDITION_ACL_PREFIX).append(String.valueOf(cId));
 		}
+		qString.append(") ");
 		return qString.toString();
 	}
 	

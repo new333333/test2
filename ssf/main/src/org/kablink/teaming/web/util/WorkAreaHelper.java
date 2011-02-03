@@ -464,8 +464,6 @@ public class WorkAreaHelper {
 		List<Condition> conditions = bs.getAdminModule().getFunctionConditions();
 		model.put(WebKeys.FUNCTION_CONDITIONS, conditions);
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
-		Boolean conditionsInitialized = (Boolean) topBinder.getProperty(ObjectKeys.BINDER_PROPERTY_ROLE_CONDITIONS_INITIALIZED);
-		model.put(WebKeys.FUNCTION_CONDITIONS_INITIALIZED, conditionsInitialized);
 	}
 	
 }
