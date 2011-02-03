@@ -194,11 +194,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     }   
-
 .wiki-menu {
-    padding: 5px;
+    padding: 2px 0px;
     }
-
+.wiki-menu a:visited {
+	color: #fff;
+	}
 
 /* Wiki Entry styles */
 /*-------------------------------------------*/

@@ -421,6 +421,7 @@ div.ss_editorHints {
   font-family: ${ss_style_title_font_family};
   margin-top: 4px;
   margin-right: 10px;
+  padding-right: 25px;
   }
 .ss_entryTitleFile {
   font-weight: bold;
@@ -453,8 +454,15 @@ div.ss_editorHints {
   	font-style: normal !important;
   	}
 #ss_entryTop1 {
+	position: relative;
 	margin-left: 5px;
 	}
+.descriptionRegionBut {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	}
+	
 div.ss_entryContent a {
   	color:#135c8f !important;
 	}

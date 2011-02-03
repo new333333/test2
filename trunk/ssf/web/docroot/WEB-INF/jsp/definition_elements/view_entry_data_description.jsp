@@ -45,9 +45,9 @@
 		regionView_descriptionRegion = (String) userProperties.get("regionView.descriptionRegion");
 	}
 	if ("collapsed".equals(regionView_descriptionRegion)) {
-		%><c:set var="regionClass" value="wg-description-content-clipped"/><c:set var="regionImg" value="expand_16_yellow.png"/><%
+		%><c:set var="regionClass" value="wg-description-content-clipped"/><c:set var="regionImg" value="slide_down_btn.png"/><%
 	} else {
-		%><c:set var="regionClass" value="wg-description-content"/><c:set var="regionImg" value="collapse_16_yellow.png"/><%
+		%><c:set var="regionClass" value="wg-description-content"/><c:set var="regionImg" value="slide_up_btn.png"/><%
 	}
 %>
 <c:set var="textFormat" value=""/>
@@ -56,7 +56,7 @@
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.description.text}">
     <c:if test="${ssDefinitionEntry.entityType != 'folderEntry' || ssDefinitionEntry.top}">
-    <div id="descriptionRegionImg${ss_divCounter}" class="margintop2" align="right" style="display:none; width:100%;">
+    <div id="descriptionRegionImg${ss_divCounter}" class="margintop2 descriptionRegionBut">
       <a href="javascript: ;" 
         onClick="ss_toggleRegion(this, 'descriptionRegion${ss_divCounter}', 'descriptionRegion', 'wg-description-content', 200);return false;" 
         alt="<ssf:nlt tag="general.expandCollapseRegion"/>" title="<ssf:nlt tag="general.expandCollapseRegion"/>"

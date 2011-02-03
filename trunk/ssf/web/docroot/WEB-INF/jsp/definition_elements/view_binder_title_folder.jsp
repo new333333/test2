@@ -67,7 +67,7 @@
  			  titleClass="" />
  		   </td>
  		   <%  if (!parentTree2.empty()) {  %>
- 		     <td valign="top"><div class="ss_profile_box_h1 ss_treeWidget"><img style="padding: 0 5px" src="../images/pics/breadspace.gif" border="0" align="absmiddle"></div>
+ 		     <td valign="top"><div class="ss_profile_box_h1 ss_treeWidget"><img src="../images/pics/breadspace.gif" border="0" align="absmiddle"></div>
  		     </td>
  		   <%  }  %>
  		 </tr>
@@ -83,7 +83,7 @@
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
          	<span>${nextBinder.title}</span>
-      </a><%  if (!parentTree2.empty()) {  %><img style="padding: 0 5px" src="../images/pics/breadspace.gif" border="0" align="absmiddle"><%  }  %>
+      </a><%  if (!parentTree2.empty()) {  %><img src="../images/pics/breadspace.gif" border="0" align="absmiddle"><%  }  %>
       </div>
   </c:if>
   </li>
