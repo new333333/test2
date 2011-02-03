@@ -71,9 +71,9 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 		regionView_commentsAndAttachmentsRegion = (String) userProperties.get("regionView.commentsAndAttachmentsRegion");
 	}
 	if ("collapsed".equals(regionView_commentsAndAttachmentsRegion)) {
-		%><c:set var="regionClass" value="wg-tab-content-clipped"/><c:set var="regionImg" value="slide_down_btn.png"/><%
+		%><c:set var="regionClass" value="wg-tab-content-clipped"/><c:set var="regionImg" value="expand_16_yellow.png"/><%
 	} else {
-		%><c:set var="regionClass" value="wg-tab-content"/><c:set var="regionImg" value="slide_up_btn.png"/><%
+		%><c:set var="regionClass" value="wg-tab-content"/><c:set var="regionImg" value="collapse_16_yellow.png"/><%
 	}
 %>
 
