@@ -613,9 +613,28 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Returns true if based on the current environment, linkage
+	 * changes can be persisted and false otherwise.
+	 */
+	private boolean canPersistLinkage() {
+		// Did the TaskBundle tells us to respect the task linkage
+		// information?
+		boolean reply = m_taskBundle.respectLinkage();
+		if (reply) {
+			// Yes!  Does the user have rights to save linkage on this
+			// binder?
+			reply = m_taskBundle.getCanModifyTaskLinkage();
+		}
+		
+		// If we get here, reply is true if linkage can be saved and
+		// false otherwise.  Return it.
+		return reply;
+	}
+	
+	/*
 	 * Called to clear the contents of the TaskTable.
 	 */
-	public void clearTaskTable() {
+	private void clearTaskTable() {
 		m_flexTable.removeAllRows();
 		addHeaderRow();
 	}
@@ -705,7 +724,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		if ((Column.LOCATION == m_sortColumn) && m_taskBundle.getIsFromFolder()) {
 			m_sortColumn = Column.ORDER;
 		}
-		
+
+		// ...accounting for cases where we don't show the order
+		// ...column...
 		if ((!(showOrderColumn())) && (Column.ORDER == m_sortColumn)) {
 			m_sortColumn = Column.NAME;
 		}
@@ -1466,10 +1487,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called to write the change in linkage to the folder preferences.
 	 */
 	private void persistLinkageChange(final TaskListItem task, final boolean updateCalculatedDates) {
-		// If the list is filtered or in virtual mode...
-		if (m_taskBundle.getIsFiltered() || (!(m_taskBundle.getIsFromFolder()))) {
-			// ...this should never be called.
-			Window.alert(m_messages.taskInternalError_FilteredOrVirtual("Persist Linkage"));
+		// If we're not in a state were link changes can be saved...
+		if (!(canPersistLinkage())) {
+			// ...bail.
 			return;
 		}
 
@@ -2074,10 +2094,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * otherwise.
 	 */
 	private boolean showOrderColumn() {
-		// Currently, we only hide the order column if we're
-		// showing assigned tasks vs. those from the current
-		// binder.
-		return m_taskBundle.getIsFromFolder();
+		// We hide the order column if the TaskBundle tells us to not
+		// respect the task linkage information.
+		return m_taskBundle.respectLinkage();
 	}
 	
 	/**
