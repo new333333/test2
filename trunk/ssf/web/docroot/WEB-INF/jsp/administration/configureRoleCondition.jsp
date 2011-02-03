@@ -70,6 +70,7 @@
 		var div;
 		var span;
 		var input;
+		if (typeof id == 'undefined') id = "";
 		if (typeof ss_nextIpAddressConditionId == 'undefined') ss_nextIpAddressConditionId = 0;
 		var tableObj = document.getElementById('ss_ip_addresses'+id);
 		var tableTbodyObj = document.getElementById('ss_ip_addresses_tbody'+id);
@@ -213,7 +214,7 @@
 		  <tbody id="ss_ip_addresses_tbody">
 		  </tbody>
 		</table>
-		<a href="javascript: ;return false;" onClick="addIpAddressConditionRow('');">
+		<a href="javascript: ;" onClick="addIpAddressConditionRow('');return false;">
 		  <span><ssf:nlt tag="administration.configure_roles.conditions.addIpAddresses"/></span>
 		</a>
 	</div>
@@ -326,7 +327,7 @@
 			</c:forEach>
 		  </tbody>
 		</table>
-		<a href="javascript: ;return false;" onClick="addIpAddressConditionRow('${condition.id}');">
+		<a href="javascript: ;" onClick="addIpAddressConditionRow('${condition.id}');return false;">
 		  <span><ssf:nlt tag="administration.configure_roles.conditions.addIpAddresses"/></span>
 		</a>
 	</div>
