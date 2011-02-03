@@ -194,6 +194,53 @@ public class QueryBuilder {
 		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
 		so.setLanguage(lang);
 		
+		// OLD (executed only for debugging purpose)
+		
+		if(logger.isDebugEnabled()) {
+			parseRootElementDoNotUse(root, so);
+		
+			//If searching as a different user, add in the acl for that user
+			if (asUserId != null && !ignoreAcls) {
+				QueryBuilder aclQ = new QueryBuilder(asUserId);
+				String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
+				if (acls.length() != 0) {
+					String q = so.getQueryStringDoNotUse();
+					if (q.equalsIgnoreCase("(  )"))
+						q = "";
+					if (q.length() > 0)
+						q += "AND ";
+					q += acls;
+					so.setQueryStringDoNotUse(q);
+				}
+			}
+			
+			String q = so.getQueryStringDoNotUse();
+			// add acl check to every query. (If it's the superuser doing this query, then this clause
+			// will return the empty string.
+			
+			if (!ignoreAcls) { 
+				String acls = getAclClause();
+				if (acls.length() != 0) {
+					q = so.getQueryStringDoNotUse();
+					if (q.equalsIgnoreCase("(  )"))
+						q = "";
+					if (q.length() > 0)
+						q += "AND ";
+					q += acls;
+					so.setQueryStringDoNotUse(q);
+				}
+			}
+			
+			// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
+			if (q.equalsIgnoreCase("(  )"))
+				q = " "; // if it's an empty clause - delete it
+			if (q.length() > 0)
+				q += " AND ";  // if there's a clause there, then AND this to it
+			String preDeletedClause = getPreDeletedClauseDoNotUse(preDeleted);
+			q += preDeletedClause;
+			so.setQueryStringDoNotUse(q);
+		} // OLD
+
 		//Add on the ACL clauses that filter out anything the user is not allowed to see.
 		handleRootElement(root, so);
 		
