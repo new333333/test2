@@ -44,9 +44,9 @@
 		regionView_descriptionRegion = (String) userProperties.get("regionView.descriptionRegion");
 	}
 	if ("collapsed".equals(regionView_descriptionRegion)) {
-		%><c:set var="regionClass" value="wg-description-content-clipped"/><c:set var="regionImg" value="slide_down_btn.png"/><%
+		%><c:set var="regionClass" value="wg-description-content-clipped"/><c:set var="regionImg" value="expand_16_yellow.png"/><%
 	} else {
-		%><c:set var="regionClass" value="wg-description-content"/><c:set var="regionImg" value="slide_up_btn.png"/><%
+		%><c:set var="regionClass" value="wg-description-content"/><c:set var="regionImg" value="collapse_16_yellow.png"/><%
 	}
 %>
 <c:set var="textFormat" value=""/>
