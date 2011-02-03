@@ -75,11 +75,13 @@ import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
-
 /**
+ * Helper methods for code that services task requests.
  *
+ * @author drfoster@novell.com
  */
 public class TaskHelper {
+	// Attribute names used for items related to tasks.
 	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME		= "responsible_external";
 	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
 	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME			= "assignment";
@@ -92,7 +94,13 @@ public class TaskHelper {
 	public static final String TASK_ASSIGNED_TO_TEAMS						= "assignedToTeams";	
 	public static final String TASK_COMPLETED_DATE_ATTRIBUTE 				= "completedDate";
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME		= "start_end";
-	
+
+	// Key into the session cache used to store the find task options
+	// Map for use by the GWT UI.
+	public final static String CACHED_FIND_TASKS_OPTIONS_KEY = "gwt-ui-find-tasks-options";
+
+	// Enumeration type that represents the 'Quick Filters' that can be
+	// applied to the tasks in a task folder.
 	public enum FilterType {
 		CLOSED,
 		DAY,
@@ -101,197 +109,103 @@ public class TaskHelper {
 		ACTIVE,
 		ALL;
 	}
+	
+	// The default filter type applied to the tasks in a task folder.
+	// If nothing is stored, this is used as the default.
 	public static final FilterType FILTER_TYPE_DEFAULT = FilterType.ALL;
 	
-	// Key into the session cache used to store the find task options
-	// Map for use by the GWT UI.
-	public final static String CACHED_FIND_TASKS_OPTIONS_KEY = "gwt-ui-find-tasks-options";
-
 	/**
+	 * Adjusts the various task attributes so that they make sense in unison.
 	 * 
 	 * @param entry
+	 * @param formData
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static String getTaskCompletedValue(Entry entry) {	
-		CustomAttribute customAttribute = entry.getCustomAttribute(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-		if (null == customAttribute) {
-			return null;
+	public static Map adjustTaskAttributesDependencies(FolderEntry entry, Map formData) {
+		Map result = new HashMap(formData);
+		if (!(isTaskEntryType(entry))) {
+			return formData;
 		}
 		
-		Set value = ((Set) customAttribute.getValueSet());		
-		if (null == value) {
-			return null;
-		}
-		
-		Iterator it = value.iterator();
-		if (it.hasNext()) {
-			return ((String) it.next());
-		}
-		
-		return null;
-	}
+		String newPriority = getTaskPriorityValue(formData);
+		String newStatus = getTaskStatusValue(formData);
+		String newCompleted = getTaskCompletedValue(formData);
 
-	/**
-	 * 
-	 * @param entry
-	 * 
-	 * @return
-	 */
+		adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
-	public static String getTaskStatusValue(Entry entry) {		
-		CustomAttribute customAttribute = entry.getCustomAttribute(STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
-		if (null == customAttribute) {
-			return null;
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, String typeOfEntry, Map formData, String newPriority, String newStatus, String newCompleted) {
+		if (((null != typeOfEntry) && (!(isTaskEntryType(typeOfEntry)))) ||
+			((null != entry)       && (!(isTaskEntryType(entry))))) {
+			return;
 		}
 		
-		Set value = ((Set) customAttribute.getValueSet());		
-		if (null == value) {
-			return null;
+		if (!(newPriority.equals(""))) {
+			formData.put(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
 		}
 		
-		Iterator it = value.iterator();
-		if (it.hasNext()) {
-			return ((String) it.next());
-		}
-		
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @param formData
-	 * @param key
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private static String getTaskSingleValue(Map formData, String key) {
-		Object values = formData.get(key);
-		
-		if      (values == null)             return null;
-		else if (values instanceof String)   return ((String)   values);
-		else if (values instanceof String[]) return ((String[]) values)[0];
-		
-		return null;
-	}
-	
-	/**
-	 * 
-	 * @param formData
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getTaskStatusValue(Map formData) {
-		return getTaskSingleValue(formData, STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
-	}
-	
-	/**
-	 * 
-	 * @param formData
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getTaskPriorityValue(Map formData) {
-		return getTaskSingleValue(formData, PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
-	}
-	
-	/**
-	 * 
-	 * @param formData
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getTaskCompletedValue(Map formData) {
-		return getTaskSingleValue(formData, COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-	}
-	
-	/**
-	 * 
-	 * @param session
-	 * 
-	 * @return
-	 */
-	public static FilterType getTaskFilterType(PortletSession session) {
-		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
-	}
-	
-	public static FilterType getTaskFilterType(HttpSession session) {
-		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
-	}
-	
-	/**
-	 * 
-	 * @param bs
-	 * @param userId
-	 * @param binderId
-	 * 
-	 * @return
-	 */
-	public static ModeType getTaskModeType(AllModulesInjected bs, Long userId, Long binderId) {
-		return ListFolderHelper.getFolderModeType(bs, userId, binderId);
-	}
-	
-	/**
-	 * Saves given type in session or default type if given is <code>null</code> or unknown.
-	 * 
-	 * @param session
-	 * @param filterType
-	 * @return
-	 */
-	public static FilterType setTaskFilterType(PortletSession session, FilterType filterType) {
-		if (null == filterType) {
-			filterType = getTaskFilterType(session);
-			if (null == filterType) {
-				filterType = FILTER_TYPE_DEFAULT;
+		if (!(newStatus.equals(""))) {
+			formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
+			if (newStatus.equals("s3")) {
+				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+			}
+			
+			if (null != entry) {
+				String statusCurrent = getTaskStatusValue(entry);
+				String completedCurrent = getTaskCompletedValue(entry);
+				
+				if ((newStatus.equals("s1") || newStatus.equals("s2")) &&
+						"s3".equals(  statusCurrent)                   &&
+						"c100".equals(completedCurrent)) {
+					formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
+				}
 			}
 		}
 		
-		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-		return filterType;
-	}
-	
-	public static FilterType setTaskFilterType(HttpSession session, FilterType filterType) {
-		if (null == filterType) {
-			filterType = getTaskFilterType(session);
-			if (null == filterType) {
-				filterType = FILTER_TYPE_DEFAULT;
+		if (!(newCompleted.equals(""))) {
+			formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});			
+			
+			if (newCompleted.equals("c000")) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
 			}
+			
+			else if (newCompleted.equals("c010") ||
+				     newCompleted.equals("c020") ||
+				     newCompleted.equals("c030") ||
+				     newCompleted.equals("c040") ||
+				     newCompleted.equals("c050") ||
+				     newCompleted.equals("c060") ||
+				     newCompleted.equals("c070") ||
+				     newCompleted.equals("c080") ||
+				     newCompleted.equals("c090")) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
+			}
+			
+			else if (newCompleted.equals("c100")) {
+				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
+			}		
+
 		}
-		
-		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
-		return filterType;
 	}
 
-	/**
-	 * Saves given folder mode in session or default mode if given is <code>null</code> or unknown.
-	 * 
-	 * @param bs
-	 * @param userId
-	 * @param binderId
-	 * @param modeType
-	 * 
-	 * @return
-	 */
-	public static ListFolderHelper.ModeType setTaskModeType(AllModulesInjected bs, Long userId, Long binderId, ListFolderHelper.ModeType modeType) {
-		return ListFolderHelper.setFolderModeType(bs, userId, binderId, modeType);
+	@SuppressWarnings("unchecked")
+	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
+		// Always use the initial form of the method.
+		adjustTaskAttributesDependencies(
+			entry,
+			DefinitionUtils.getFamily(entry.getEntryDefDoc()),
+			formData,
+			newPriority,
+			newStatus,
+			newCompleted);
 	}
 	
 	/**
-	 * 
-	 * @param filterType
-	 * 
-	 * @return
-	 */
-	public static SearchFilter buildSearchFilter(FilterType filterType) {
-		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null, null);
-	}
-	
-	/**
+	 * Returns a search filter based on a task filter type.
 	 * 
 	 * @param filterType
 	 * @param modeType
@@ -367,112 +281,9 @@ public class TaskHelper {
 
 		return searchFilter;
 	}
-
-	/**
-	 * 
-	 * @param entry
-	 * @param formData
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static Map adjustTaskAttributesDependencies(FolderEntry entry, Map formData) {
-		Map result = new HashMap(formData);
-		if (!(isTaskEntryType(entry))) {
-			return formData;
-		}
-		
-		String newPriority = getTaskPriorityValue(formData);
-		String newStatus = getTaskStatusValue(formData);
-		String newCompleted = getTaskCompletedValue(formData);
-
-		adjustTaskAttributesDependencies(entry, result, newPriority, newStatus, newCompleted);
-		return result;
-	}
 	
-	private static boolean isTaskEntryType(FolderEntry entry) {
-		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());		
-		return isTaskEntryType(family);
-	}
-	
-	private static boolean isTaskEntryType(String family) {
-		return ObjectKeys.FAMILY_TASK.equals(family);
-	}
-
-	/**
-	 *
-	 * @param entry
-	 * @param typeOfEntry
-	 * @param formData
-	 * @param newPriority
-	 * @param newStatus
-	 * @param newCompleted
-	 */
-	@SuppressWarnings("unchecked")
-	public static void adjustTaskAttributesDependencies(FolderEntry entry, String typeOfEntry, Map formData, String newPriority, String newStatus, String newCompleted) {
-		if (((null != typeOfEntry) && (!(isTaskEntryType(typeOfEntry)))) ||
-			((null != entry)       && (!(isTaskEntryType(entry))))) {
-			return;
-		}
-		
-		if (!(newPriority.equals(""))) {
-			formData.put(PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newPriority});
-		}
-		
-		if (!(newStatus.equals(""))) {
-			formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newStatus});
-			if (newStatus.equals("s3")) {
-				formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
-			}
-			
-			if (null != entry) {
-				String statusCurrent = getTaskStatusValue(entry);
-				String completedCurrent = getTaskCompletedValue(entry);
-				
-				if ((newStatus.equals("s1") || newStatus.equals("s2")) &&
-						"s3".equals(  statusCurrent)                   &&
-						"c100".equals(completedCurrent)) {
-					formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
-				}
-			}
-		}
-		
-		if (!(newCompleted.equals(""))) {
-			formData.put(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {newCompleted});			
-			
-			if (newCompleted.equals("c000")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s1"});
-			}
-			
-			else if (newCompleted.equals("c010") ||
-				     newCompleted.equals("c020") ||
-				     newCompleted.equals("c030") ||
-				     newCompleted.equals("c040") ||
-				     newCompleted.equals("c050") ||
-				     newCompleted.equals("c060") ||
-				     newCompleted.equals("c070") ||
-				     newCompleted.equals("c080") ||
-				     newCompleted.equals("c090")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
-			}
-			
-			else if (newCompleted.equals("c100")) {
-				formData.put(STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
-			}		
-
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static void adjustTaskAttributesDependencies(FolderEntry entry, Map formData, String newPriority, String newStatus, String newCompleted) {
-		// Always use the initial form of the method.
-		adjustTaskAttributesDependencies(
-			entry,
-			DefinitionUtils.getFamily(entry.getEntryDefDoc()),
-			formData,
-			newPriority,
-			newStatus,
-			newCompleted);
+	public static SearchFilter buildSearchFilter(FilterType filterType) {
+		return buildSearchFilter(filterType, ListFolderHelper.ModeType.PHYSICAL, null, null);
 	}
 	
 	/**
@@ -496,8 +307,6 @@ public class TaskHelper {
 	
 	/**
 	 * Called to read task entries.
-	 * 
-	 * Called from:  ListFolderHelper.getShowFolder()
 	 * 
 	 * @param bs
 	 * @param request
@@ -545,22 +354,6 @@ public class TaskHelper {
 		return taskEntries;
 	}
 	
-	/**
-	 * Called to read task entries.
-	 * 
-	 * Called from:  GwtTaskHelper.getTasks()
-	 * 
-	 * @param bs
-	 * @param session
-	 * @param binder
-	 * @param filterType
-	 * @param modeType
-	 * @param options
-	 * 
-	 * @return
-	 * 
-	 * @throws PortletRequestBindingException
-	 */
 	@SuppressWarnings("unchecked")
 	public static Map findTaskEntries(
 			AllModulesInjected	bs,
@@ -669,6 +462,140 @@ public class TaskHelper {
 	}
 
 	/**
+	 * Returns the task completed value from an entry.
+	 * 
+	 * @param entry
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskCompletedValue(Entry entry) {	
+		CustomAttribute customAttribute = entry.getCustomAttribute(COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == customAttribute) {
+			return null;
+		}
+		
+		Set value = ((Set) customAttribute.getValueSet());		
+		if (null == value) {
+			return null;
+		}
+		
+		Iterator it = value.iterator();
+		if (it.hasNext()) {
+			return ((String) it.next());
+		}
+		
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static String getTaskCompletedValue(Map formData) {
+		return getTaskSingleValue(formData, COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
+	/**
+	 * Returns a filter type stored in the session cache.
+	 * 
+	 * @param session
+	 * 
+	 * @return
+	 */
+	public static FilterType getTaskFilterType(PortletSession session) {
+		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
+	}
+	
+	public static FilterType getTaskFilterType(HttpSession session) {
+		return ((FilterType) session.getAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE));
+	}
+	
+	/**
+	 * Return the 'Mode' (physical vs. virtual) for a task folder.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * 
+	 * @return
+	 */
+	public static ModeType getTaskModeType(AllModulesInjected bs, Long userId, Long binderId) {
+		return ListFolderHelper.getFolderModeType(bs, userId, binderId);
+	}
+	
+	/**
+	 * Returns a task priority from a form input Map.
+	 *  
+	 * @param formData
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskPriorityValue(Map formData) {
+		return getTaskSingleValue(formData, PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
+	/*
+	 * Returns a single value based on a key from a form input Map.
+	 */
+	@SuppressWarnings("unchecked")
+	private static String getTaskSingleValue(Map formData, String key) {
+		Object values = formData.get(key);
+		
+		if      (values == null)             return null;
+		else if (values instanceof String)   return ((String)   values);
+		else if (values instanceof String[]) return ((String[]) values)[0];
+		
+		return null;
+	}
+	
+	/**
+	 * Returns a task status from an entry.
+	 *  
+	 * @param entry
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getTaskStatusValue(Entry entry) {		
+		CustomAttribute customAttribute = entry.getCustomAttribute(STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == customAttribute) {
+			return null;
+		}
+		
+		Set value = ((Set) customAttribute.getValueSet());		
+		if (null == value) {
+			return null;
+		}
+		
+		Iterator it = value.iterator();
+		if (it.hasNext()) {
+			return ((String) it.next());
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static String getTaskStatusValue(Map formData) {
+		return getTaskSingleValue(formData, STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+	
+	/*
+	 * Returns true if a folder entry is a task and false otherwise.
+	 */
+	private static boolean isTaskEntryType(FolderEntry entry) {
+		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());		
+		return isTaskEntryType(family);
+	}
+
+	/*
+	 * Returns true if the family from an entry definition is that of a
+	 * task and false otherwise.
+	 */
+	private static boolean isTaskEntryType(String family) {
+		return ObjectKeys.FAMILY_TASK.equals(family);
+	}
+
+	/**
 	 * Called when a task is modified or created to process the
 	 * completion date.
 	 * 
@@ -706,4 +633,52 @@ public class TaskHelper {
 			task.addCustomAttribute(TASK_COMPLETED_DATE_ATTRIBUTE, new Date());
 		}		
 	}
+	
+	/**
+	 * Saves given type in session or default type if given is
+	 * <code>null</code> or unknown.
+	 * 
+	 * @param session
+	 * @param filterType
+	 * 
+	 * @return
+	 */
+	public static FilterType setTaskFilterType(PortletSession session, FilterType filterType) {
+		if (null == filterType) {
+			filterType = getTaskFilterType(session);
+			if (null == filterType) {
+				filterType = FILTER_TYPE_DEFAULT;
+			}
+		}
+		
+		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		return filterType;
+	}
+	
+	public static FilterType setTaskFilterType(HttpSession session, FilterType filterType) {
+		if (null == filterType) {
+			filterType = getTaskFilterType(session);
+			if (null == filterType) {
+				filterType = FILTER_TYPE_DEFAULT;
+			}
+		}
+		
+		session.setAttribute(WebKeys.TASK_CURRENT_FILTER_TYPE, filterType);
+		return filterType;
+	}
+
+	/**
+	 * Saves given folder mode in session or default mode if given is
+	 * <code>null</code> or unknown.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * @param modeType
+	 * 
+	 * @return
+	 */
+	public static ListFolderHelper.ModeType setTaskModeType(AllModulesInjected bs, Long userId, Long binderId, ListFolderHelper.ModeType modeType) {
+		return ListFolderHelper.setFolderModeType(bs, userId, binderId, modeType);
+	}	
 }

@@ -96,7 +96,6 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.util.search.Constants;
 
-
 /**
  * Helper methods for the GWT UI server code that services task
  * requests.
@@ -153,8 +152,7 @@ public class GwtTaskHelper {
 			Long lVal = Long.parseLong(s);
 			l.add(AssignmentInfo.construct(lVal));
 		}
-		catch (NumberFormatException nfe) {
-		}
+		catch (NumberFormatException nfe) {/* Ignored. */}
 	}
 
 	/*
@@ -167,13 +165,48 @@ public class GwtTaskHelper {
 			lList.add(l);
 		}
 	}
-	
+
 	/*
-	 * Generates a search index field name reference for an event's
-	 * duration field.
+	 * Generates a base TaskBundle object with the rights, information
+	 * about the binder, ... initialized.
+	 * 
+	 * The only thing missing is the task list.
 	 */
-	private static String buildDurationFieldName(String fieldName) {
-		return (buildEventFieldName(Constants.EVENT_FIELD_DURATION) + BasicIndexUtils.DELIMITER + fieldName);
+	private static TaskBundle buildBaseTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		// Allocate a new TaskBundle. 
+		TaskBundle reply = new TaskBundle();
+		reply.setFilterTypeParam(filterTypeParam);
+		reply.setModeTypeParam(  modeTypeParam  );
+		
+		// Set the task linkage information for the Binder.
+		reply.setTaskLinkage(getTaskLinkage(bs, binder));
+		
+		// Set information about the Binder.
+		reply.setBinderId(        binder.getId()     );
+		reply.setBinderIsMirrored(binder.isMirrored());
+
+		// Set the user's rights to the Binder.
+		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage(request, bs, binder));
+		setTaskBundleRights(bs, ((Folder) binder), reply);
+		
+		// Set whether the task list is being filtered.
+		FilterType filterType = ((null == filterTypeParam) ? FilterType.ALL : FilterType.valueOf(filterTypeParam));
+		boolean isFiltered = (FilterType.ALL != filterType);
+		if (!isFiltered) {
+			User user = GwtServerHelper.getCurrentUser();
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
+			isFiltered = (null != BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
+		}
+		reply.setIsFiltered(isFiltered);
+
+		// Set whether the tasks being shown are from the folder (vs.
+		// those assigned to the current user.)
+		ModeType modeType = ((null == modeTypeParam) ? ModeType.PHYSICAL : ModeType.valueOf(modeTypeParam));
+		reply.setIsFromFolder(ModeType.PHYSICAL == modeType);
+
+		// If we get here, reply refers to the base TaskBundle.  Return
+		// it.
+		return reply;
 	}
 	
 	/*
@@ -278,6 +311,14 @@ public class GwtTaskHelper {
 	}
 	
 	/*
+	 * Generates a search index field name reference for an event's
+	 * duration field.
+	 */
+	private static String buildDurationFieldName(String fieldName) {
+		return (buildEventFieldName(Constants.EVENT_FIELD_DURATION) + BasicIndexUtils.DELIMITER + fieldName);
+	}
+	
+	/*
 	 * Generates a search index field name reference for an event
 	 * field.
 	 */
@@ -369,7 +410,7 @@ public class GwtTaskHelper {
 		if (hasPrincipals) {
 			List principals = null;
 			try {principals = ResolveIds.getPrincipals(principalIds);}
-			catch (Exception ex) {}
+			catch (Exception ex) {/* Ignored. */}
 			if ((null != principals) && (!(principals.isEmpty()))) {
 				for (Object o:  principals) {
 					Principal p = ((Principal) o);
@@ -397,7 +438,7 @@ public class GwtTaskHelper {
 		if (hasTeams) {
 			SortedSet<Binder> binders = null;
 			try {binders = bs.getBinderModule().getBinders(teamIds);}
-			catch (Exception ex) {}
+			catch (Exception ex) {/* Ignored. */}
 			if ((null != binders) && (!(binders.isEmpty()))) {
 				for (Binder b:  binders) {
 					Long bId = b.getId();
@@ -476,12 +517,12 @@ public class GwtTaskHelper {
 							Binder parentBinder = ((Binder) binder.getParentWorkArea());
 							location = (location + " (" + parentBinder.getTitle() + ")");
 						}
-						catch (Exception ex) {}
+						catch (Exception ex) {/* Ignored. */}
 						binderLocationMap.put(binder.getId(), location);					
 					}
 				}
 			}
-			catch (Exception ex) {}
+			catch (Exception ex) {/* Ignored. */}
 		}
 
 		// Scan the List<TaskInfo> again...
@@ -517,7 +558,7 @@ public class GwtTaskHelper {
 		if (!(assigneeIds.isEmpty())) {
 			List principals = null;
 			try {principals = ResolveIds.getPrincipals(assigneeIds);}
-			catch (Exception ex) {}
+			catch (Exception ex) {/* Ignored. */}
 			if ((null != principals) && (!(principals.isEmpty()))) {
 				boolean isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
 				for (Object o:  principals) {
@@ -623,9 +664,7 @@ public class GwtTaskHelper {
 			}
 			
 		}
-		catch (Exception ex) {
-			// Ignore.
-		}
+		catch (Exception ex) {/* Ignored. */}
 	}
 	
 	/**
@@ -986,7 +1025,7 @@ public class GwtTaskHelper {
 			ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
 			groupMemberIds = profileDao.explodeGroups(groupIds, group.getZoneId());
 		}
-		catch (Exception ex) {}
+		catch (Exception ex) {/* Ignored. */}
 		return validatePrincipalIds(groupMemberIds);
 	}
 	
@@ -1107,23 +1146,23 @@ public class GwtTaskHelper {
 		}
 		
 		catch (Exception ex) {
-			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ": EXCEPTION ): ", ex);
+			m_logger.debug("GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": EXCEPTION ): ", ex);
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 
 		if (null == reply) {
-			m_logger.debug("GwtRpcServiceImpl.getTaskBinder( " + String.valueOf(binderId) + ": Could not access binder. )");
+			m_logger.debug("GwtTaskHelper.getTaskBinder( " + String.valueOf(binderId) + ": Could not access binder. )");
 			throw GwtServerHelper.getGwtTeamingException();
 		}
 		
 		return reply; 
-	}// end getTasKBinder()
+	}
 	
 	/*
 	 * Reads the tasks from the specified binder.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {
+	private static List<TaskInfo> getTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...
@@ -1138,8 +1177,8 @@ public class GwtTaskHelper {
 				bs,
 				WebHelper.getRequiredSession(request), 
 				binder,
-				filterType,
-				modeType,
+				filterTypeParam,
+				modeTypeParam,
 				options);
 		}
 		catch (Exception ex) {
@@ -1214,40 +1253,49 @@ public class GwtTaskHelper {
 	 * @param request
 	 * @param bs
 	 * @param binder
-	 * @param filterType
-	 * @param modeType
+	 * @param filterTypeParam
+	 * @param modeTypeParam
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterType, String modeType) throws GwtTeamingException {		
-		return
-			getTaskListImpl(
-				request,
-				bs,
-				binder,
-				getCollapsedSubtasks(bs, binder.getId()),
-				getTaskLinkage(      bs, binder        ),
-				filterType,
-				modeType);
+	public static List<TaskListItem> getTaskList( HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		TaskBundle tb = getTaskBundle(request, bs, binder, filterTypeParam, modeTypeParam);
+		return tb.getTasks();
 	}
 
 	/*
 	 * Reads the task information from the specified binder.
 	 */
-	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, List<Long> collapsedSubtasks, TaskLinkage taskLinkage, String filterType, String modeType) throws GwtTeamingException {
+	private static List<TaskListItem> getTaskListImpl( HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks) throws GwtTeamingException {
 		// Create a List<TaskListItem> that we'll fill up with the task
 		// list.
 		List<TaskListItem> reply = new ArrayList<TaskListItem>();
 
 		// Read the tasks from the binder.
-		List<TaskInfo> tasks = getTasks(request, bs, binder, filterType, modeType);
+		List<TaskInfo> tasks = getTasks(
+			request,
+			bs,
+			binder,
+			tb.getFilterTypeParam(),
+			tb.getModeTypeParam());
 
-		// Process the order information from the supplied task
-		// linkage.
-		List<TaskLink> taskOrder = taskLinkage.getTaskOrder();
-		processTaskLinkList(reply, collapsedSubtasks, tasks, taskOrder);		
+		// Are we displaying entries from the folder (vs. those
+		// assigned to the user)?
+		List<TaskLink> taskOrder;
+		boolean entriesFromFolder = tb.getIsFromFolder();
+		if (entriesFromFolder) {
+			// Yes!  Process the order information from the supplied
+			// task linkage.
+			taskOrder = tb.getTaskLinkage().getTaskOrder();
+			processTaskLinkList(reply, collapsedSubtasks, tasks, taskOrder);
+		}
+		else {
+			// No, we must be displaying tasks assigned to the user!
+			// In this case, no order/hierarchy is assumed.
+			taskOrder = null;
+		}
 
 		// Scan any tasks that weren't addressed by the task linkage...
 		boolean changedLinkage = (!(tasks.isEmpty()));
@@ -1256,7 +1304,9 @@ public class GwtTaskHelper {
 			// ...built...
 			TaskListItem tli = new TaskListItem();
 			tli.setTask(task);
-			tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
+			if (entriesFromFolder) {
+				tli.setExpandedSubtasks(!(collapsedSubtasks.contains(task.getTaskId().getEntryId())));
+			}
 			reply.add(tli);
 			
 			// ...and add it to the linkage since it will now be
@@ -1264,14 +1314,21 @@ public class GwtTaskHelper {
 			// ...and hierarchy.
 			TaskLink tl = new TaskLink();
 			tl.setEntryId(task.getTaskId().getEntryId());
-			taskOrder.add(tl);
+			if (entriesFromFolder) {
+				taskOrder.add(tl);
+			}
 		}
 
-		// If we changed the task linkage in building the task list and
-		// the user has rights to modify it on this folder...
-		if (changedLinkage && TaskHelper.canModifyTaskLinkage(request, bs, binder)) {
-			// ...we need to save the task linkage changes.
-			saveTaskLinkage(bs, binder, taskLinkage);
+		// Are we displaying entries from the folder (vs. those
+		// assigned to the user)?
+		if (entriesFromFolder) {
+			// Yes!  If we changed the task linkage in building the
+			// task list and the user has rights to modify it on this
+			// folder...
+			if (changedLinkage && tb.getCanModifyTaskLinkage()) {
+				// ...we need to save the task linkage changes.
+				saveTaskLinkage(bs, binder, tb.getTaskLinkage());
+			}
 		}
 
 		// If we get here, reply refers to the List<TaskListItem> for
@@ -1293,39 +1350,25 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
-		// Read the task linkage and tasks...
-		List<Long>         collapsedTasks = getCollapsedSubtasks(    bs, binder.getId()                                                     );
-		TaskLinkage        taskLinkage    = getTaskLinkage(          bs, binder                                                             );
-		List<TaskListItem> tasks          = getTaskListImpl(request, bs, binder, collapsedTasks, taskLinkage, filterTypeParam, modeTypeParam);
-
-		// ...and use that to create a TaskBundle. 
-		TaskBundle reply = new TaskBundle();
-		reply.setTaskLinkage(     taskLinkage        );
-		reply.setTasks(           tasks              );
-		reply.setBinderId(        binder.getId()     );
-		reply.setBinderIsMirrored(binder.isMirrored());
+		// Build the base TaskBundle...
+		TaskBundle reply = buildBaseTaskBundle(
+			request,
+			bs,
+			binder,
+			filterTypeParam,
+			modeTypeParam);
 		
-		// Set the Binder based rights...
-		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage( request, bs, binder ));
-
-		// ...and the Folder based rights on the TaskBundle...
-		setTaskBundleRights(bs, ((Folder) binder), reply);
+		// ...and read the tasks into it.
+		reply.setTasks(
+			getTaskListImpl(
+				request,
+				bs,
+				binder,
+				reply,
+				getCollapsedSubtasks(
+					bs,
+					binder.getId())));
 		
-		// Set whether the list is being filtered...
-		FilterType filterType = ((null == filterTypeParam) ? FilterType.ALL : FilterType.valueOf(filterTypeParam));
-		boolean isFiltered = (FilterType.ALL != filterType);
-		if (!isFiltered) {
-			User user = GwtServerHelper.getCurrentUser();
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
-			isFiltered = (null != BinderHelper.getSearchFilter(bs, binder, userFolderProperties));
-		}
-		reply.setIsFiltered(isFiltered);
-
-		// ...and showing the tasks from the folder (vs. those assigned
-		// ...to the current user) on the TaskBundle.
-		ModeType modeType = ((null == modeTypeParam) ? ModeType.PHYSICAL : ModeType.valueOf(modeTypeParam));
-		reply.setIsFromFolder(ModeType.PHYSICAL == modeType);
-
 		// If we get here, reply refers to the request TaskBundle.
 		// Return it.
 		return reply;
@@ -1368,7 +1411,7 @@ public class GwtTaskHelper {
 	private static Set<Long> getTeamMemberIds(AllModulesInjected bs, Long binderId) {
 		Set<Long> teamMemberIds = null;
 		try {teamMemberIds = bs.getBinderModule().getTeamMemberIds(binderId, false);}
-		catch (Exception ex) {}
+		catch (Exception ex) {/* Ignored. */}
 		return validatePrincipalIds(teamMemberIds);
 	}
 	
@@ -1865,7 +1908,7 @@ public class GwtTaskHelper {
 		if ((null != principalIds) && (!(principalIds.isEmpty()))) {
 			List principals = null;
 			try {principals = ResolveIds.getPrincipals(principalIds);}
-			catch (Exception ex) {}
+			catch (Exception ex) {/* Ignored. */}
 			if ((null != principals) && (!(principals.isEmpty()))) {
 				for (Object o:  principals) {
 					Principal p = ((Principal) o);
