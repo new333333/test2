@@ -65,64 +65,6 @@
 	var allowAccessText = "<ssf:nlt tag="administration.configure_roles.conditions.allow"/>";
 	var denyAccessText = "<ssf:nlt tag="administration.configure_roles.conditions.deny"/>";
 	
-	var ss_nextIpAddressConditionId;
-	function addIpAddressConditionRow() {
-		var div;
-		var span;
-		var input;
-		if (typeof ss_nextIpAddressConditionId == 'undefined') ss_nextIpAddressConditionId = 0;
-		var tableObj = document.getElementById('ss_ip_addresses');
-		var tableTbodyObj = document.getElementById('ss_ip_addresses_tbody');
-
-		//Build the next row
-		var conditionRow = document.createElement("tr");
-		conditionRow.setAttribute("id", "trConditionRow"+ss_nextIpAddressConditionId)
-		tableTbodyObj.appendChild(conditionRow)
-		
-		//Build the ip address input text box
-		var conditionTd1 = document.createElement("td");
-		conditionTd1.style.verticalAlign = "middle";
-		conditionTd1.style.padding = "8px 20px 8px 0px";
-		conditionRow.appendChild(conditionTd1);
-		input = document.createElement("input");
-		input.setAttribute("type", "text");
-		input.setAttribute("name", "ipAddressCondition"+ss_nextIpAddressConditionId);
-		input.style.width = "200px";
-		conditionTd1.appendChild(input);
-
-		//Build the access options
-		var conditionTd2 = document.createElement("td");
-		conditionTd1.style.verticalAlign = "middle";
-		conditionTd2.style.padding = "8px 0px";
-		conditionRow.appendChild(conditionTd2);
-		div = document.createElement("div");
-		conditionTd2.appendChild(div);
-		input = document.createElement("input");
-		input.setAttribute("type", "radio");
-		input.setAttribute("name", "ipAddressAccessCondition"+ss_nextIpAddressConditionId);
-		input.setAttribute("value", "allow");
-		input.setAttribute("checked", "checked");
-		div.appendChild(input)
-		span = document.createElement("span");
-		span.appendChild(document.createTextNode(allowAccessText));
-		div.appendChild(span);
-		div = document.createElement("div");
-		conditionTd2.appendChild(div);
-		input = document.createElement("input");
-		input.setAttribute("type", "radio");
-		input.setAttribute("name", "ipAddressAccessCondition"+ss_nextIpAddressConditionId);
-		input.setAttribute("value", "deny");
-		div.appendChild(input)
-		span = document.createElement("span");
-		span.appendChild(document.createTextNode(denyAccessText));
-		div.appendChild(span);
-		
-		ss_nextIpAddressConditionId++;
-	}
-	
-	//Add the first row
-	ss_createOnLoadObj('addIpAddressConditionRow', addIpAddressConditionRow);
-
 </script>
 
 <div class="ss_pseudoPortal">
