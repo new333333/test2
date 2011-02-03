@@ -50,9 +50,11 @@ public class TaskBundle implements IsSerializable {
 	private boolean				m_canTrashEntry;		// Based on FolderOperation.preDeleteEntry.
 	private boolean				m_isFiltered;			//
 	private boolean				m_isFromFolder;			//
-	private List<TaskListItem>	m_tasks;
-	private Long				m_binderId;
-	private TaskLinkage			m_taskLinkage;
+	private List<TaskListItem>	m_tasks;				//
+	private Long				m_binderId;				//
+	private String				m_filterTypeParam;		//
+	private String				m_modeTypeParam;		//
+	private TaskLinkage			m_taskLinkage;			//
 
 	/**
 	 * Class constructor.
@@ -77,6 +79,8 @@ public class TaskBundle implements IsSerializable {
 	public boolean            getIsFromFolder()         {return m_isFromFolder;        }
 	public List<TaskListItem> getTasks()                {return m_tasks;               }
 	public Long               getBinderId()             {return m_binderId;            }
+	public String             getFilterTypeParam()      {return m_filterTypeParam;     }
+	public String             getModeTypeParam()        {return m_modeTypeParam;       }
 	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
 	
 	/**
@@ -93,5 +97,7 @@ public class TaskBundle implements IsSerializable {
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
 	public void setTasks(               List<TaskListItem> tasks)                {m_tasks                = tasks;               }
 	public void setBinderId(            Long               binderId)             {m_binderId             = binderId;            }
+	public void setFilterTypeParam(     String             filterTypeParam)      {m_filterTypeParam      = filterTypeParam;     }
+	public void setModeTypeParam(       String             modeTypeParam)        {m_modeTypeParam        = modeTypeParam;       }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 }

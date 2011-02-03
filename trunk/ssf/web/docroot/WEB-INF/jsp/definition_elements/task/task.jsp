@@ -45,13 +45,13 @@
 	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
 	if (subtasksEnabled) {
 		// Yes!  Are we viewing the task list as 'Entries from Folder'?
-		subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
+//! 	subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
 		if (subtasksEnabled) {
 			// Yes!  Is the number of items that we're working with
 			// within our supported limits?
 			subtasksEnabled =
 				((ss_searchTotalHits != null) &&
-				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", 1000)));
+				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
 		}
 	}
 %>
