@@ -54,35 +54,28 @@
   <tr><th align="left"><ssf:nlt tag="tags.personalTags"/></th></tr>
 
   <tr><td>
+  	<div class="ss_tag_pane_color">
+      <!-- input type="text" class="ss_text" name="personalTag" / -->
+		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" displayValueOnly="true" width="130px" singleItem="true" accessibilityText="title.add.personal.tags" />
+      
+      	<a  <%= addAnchorStyle %> href="javascript:;" 
+          onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
+          <ssf:title tag="title.add.personal.tags" />
+    	><img src="<html:rootPath/>images/pics/add_btn.png" border="0" align="absmiddle"></a>
+
+	</div>
+  </td></tr>
+
+  <tr><td>
 	<c:set var="ssTags" value="${ssPersonalTags}" scope="request" />
 	<c:set var="ssTagsType" value="p" scope="request" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
   </td></tr>
 
-  <tr><td>
-  	<table class="ss_tag_pane_color"><tbody><tr><td>
-      <!-- input type="text" class="ss_text" name="personalTag" / -->
-		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
-      
-      	<a class="ss_linkButton" <%= addAnchorStyle %> href="javascript:;" 
-          onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
-          <ssf:title tag="title.add.personal.tags" />
-        ><span><ssf:nlt tag="button.add"/></span></a>
-      </td></tr>
-    </tbody></table>
-  </td></tr>
-
-  <tr><th align="left" style="padding-top:10px;"><ssf:nlt tag="tags.communityTags"/></th></tr>
+  <tr><th align="left" style="padding-top:15px;"><ssf:nlt tag="tags.communityTags"/></th></tr>
 
   <tr><td>
-	<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
-	<c:set var="ssTagsType" value="c" scope="request" />
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
-  </td></tr>
-
-  <tr><td>
-  	<table class="ss_tag_pane_color"><tbody>
-  	  <tr><td>
+  	<div class="ss_tag_pane_color">
     	<!--input type="text" class="ss_text" name="communityTag"/ -->
    
 		<c:set var="manageTagsAllowed" value="false"/>
@@ -93,14 +86,21 @@
 		  <c:set var="manageTagsAllowed" value="true"/>
 		</ssf:ifAccessAllowed>
 		<c:if test="${manageTagsAllowed}">
-		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.community.tags" />
-    	<a class="ss_linkButton" <%= addAnchorStyle %> href="javascript:;" 
+		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" displayValueOnly="true" width="130px" singleItem="true" accessibilityText="title.add.community.tags" />
+    	<a  <%= addAnchorStyle %> href="javascript:;" 
        	  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');setTimeout('document.ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}.reset()', 100);return false;"
        	  <ssf:title tag="title.add.community.tags" />
-    	><span><ssf:nlt tag="button.add"/></span></a>
+    	><img src="<html:rootPath/>images/pics/add_btn.png" border="0" align="absmiddle"></a>
     	</c:if>  
-
-      </td></tr>
-    </tbody></table>
+    </div>
   </td></tr>
+
+
+  <tr><td>
+	<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
+	<c:set var="ssTagsType" value="c" scope="request" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
+  </td></tr>
+
+
 </tbody></table>    

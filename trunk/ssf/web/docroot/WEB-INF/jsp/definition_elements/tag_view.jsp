@@ -65,25 +65,9 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 
   <table class="ss_style" cellspacing="0" cellpadding="0">
    <tbody>
-    <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
 	    <tr>
-		 <td valign="top" style="padding-right:4px;">
-			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
-				<span>
-					<ssf:nlt tag="tags.tags.colon"/>
-				</span>
-			</div>
-		 </td>
-		 <td width="100%">
-			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
-			
-			<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
-		 </td>
-	    </tr>
-	</c:if>
-    <tr>
-	 <td valign="top" style="padding-right:4px;">
-		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+		 <td valign="top" style="padding-right:10px;">
+		<div style="padding-left: 5px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
 			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
 			<ssf:title tag="title.open.tag.menu" />
@@ -102,6 +86,18 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
 		</div>
 	 </td>
+
+    <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
+	 <td width="100%">
+		<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
+		
+		<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+	 </td>
+	</c:if>
+	    </tr>
+    <tr>
+	 <td valign="top" style="padding-right:4px;">
+	 </td>
 	 <td width="100%">
 	   <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
 		<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
@@ -111,8 +107,10 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
     </tr>
   </tbody>
   </table>
-
- <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane" style="position:relative;">
+ 
+ 
+ <!-- Tags popup dialog -->
+ <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane" style="position: absolute;">
 
    <ssf:popupPane width="250px" titleTag="tags.manageTags" closeScript="${ssCloseScript}">
 
@@ -124,15 +122,13 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 		
 			  <jsp:include page="/WEB-INF/jsp/definition_elements/tag_table_view.jsp" />
   			  
-  			  <table class="ss_tag_pane_color">
-  			   <tbody><tr><td style="padding-top:10px;">
-    				<a class="ss_linkButton" href="javascript:;" title="<ssf:nlt tag="title.closeMenu" />"
+  			  <div class="ss_tag_pane_color" style="padding-top:10px; text-align: right;">
+    				<a class="ss_tinyButton" href="javascript:;" title="<ssf:nlt tag="title.closeMenu" />"
       			  	  onClick="ss_hideAccessibleMenu('ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane'); return false;"
     				>
     				  <ssf:nlt tag="button.close"/>
     				</a>
-    		    </td></tr>
-  			  </tbody></table>
+  			  </div>
 			
 		<input type="submit" value="ok" style="height:10px; width:10px; margin-left: -8000px;"
   		  onClick="ss_tagAdd('${ss_tagViewNamespace}', '${ss_tagDivNumber}', '${ssBinder.id}', '${ss_tagObject.entityType}', '${ss_tagObject.id}');return false;"/>
