@@ -54,6 +54,12 @@
   <tr><th align="left"><ssf:nlt tag="tags.personalTags"/></th></tr>
 
   <tr><td>
+	<c:set var="ssTags" value="${ssPersonalTags}" scope="request" />
+	<c:set var="ssTagsType" value="p" scope="request" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
+  </td></tr>
+
+  <tr><td>
   	<table class="ss_tag_pane_color"><tbody><tr><td>
       <!-- input type="text" class="ss_text" name="personalTag" / -->
 		<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" displayValueOnly="true" width="70px" singleItem="true" accessibilityText="title.add.personal.tags" />
@@ -66,13 +72,13 @@
     </tbody></table>
   </td></tr>
 
+  <tr><th align="left" style="padding-top:10px;"><ssf:nlt tag="tags.communityTags"/></th></tr>
+
   <tr><td>
-	<c:set var="ssTags" value="${ssPersonalTags}" scope="request" />
-	<c:set var="ssTagsType" value="p" scope="request" />
+	<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
+	<c:set var="ssTagsType" value="c" scope="request" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
   </td></tr>
-
-  <tr><th align="left" style="padding-top:10px;"><ssf:nlt tag="tags.communityTags"/></th></tr>
 
   <tr><td>
   	<table class="ss_tag_pane_color"><tbody>
@@ -97,13 +103,4 @@
       </td></tr>
     </tbody></table>
   </td></tr>
-
-
-  <tr><td>
-	<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
-	<c:set var="ssTagsType" value="c" scope="request" />
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
-  </td></tr>
-
-
 </tbody></table>    

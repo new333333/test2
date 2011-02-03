@@ -67,36 +67,40 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
    <tbody>
     <c:if test="${!empty ssPersonalTags || !empty ssCommunityTags}">
 	    <tr>
-			 <td valign="top" style="padding-right:4px;">
-				<div style="padding-left: 2px; padding-top: 3px; padding-bottom: 15px; padding-right: 8px">
-				  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
-					onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
-					<ssf:title tag="title.open.tag.menu" />
-				  >
-					<!-- The help spot is positioned relative to the position of its parent. -->
-					<!-- That's why I put it in a <span> -->
-					<span>
-					  <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
-						<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
-									  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
-						</ssHelpSpot>
-					  </c:if>
-					  <ssf:nlt tag="tags.addtag"/>
-					</span>
-				  </a>
-				  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
-				</div>
-			 </td>
-			 <td width="100%">
-				<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
-				
-				<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
-			 </td>
+		 <td valign="top" style="padding-right:4px;">
+			<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+				<span>
+					<ssf:nlt tag="tags.tags.colon"/>
+				</span>
+			</div>
+		 </td>
+		 <td width="100%">
+			<c:set var="ssCloseScript" value="ss_tagHide('${ss_tagViewNamespace}', '${ss_tagDivNumber}');return false;" scope="request"/>
+			
+			<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+		 </td>
 	    </tr>
 	</c:if>
     <tr>
-	 <td valign="top" style="padding-right:10px;">
-		&nbsp;
+	 <td valign="top" style="padding-right:4px;">
+		<div style="padding-left: 19px; padding-top: 10px; padding-bottom: 10px;">
+		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
+			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
+			<ssf:title tag="title.open.tag.menu" />
+		  >
+			<!-- The help spot is positioned relative to the position of its parent. -->
+			<!-- That's why I put it in a <span> -->
+			<span>
+			  <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
+				<ssHelpSpot helpId="workspaces_folders/misc_tools/tags" offsetX="-3" offsetY="6" 
+		    		 		  title="<ssf:nlt tag="helpSpot.tags" text="Tags"/>">
+			  	</ssHelpSpot>
+			  </c:if>
+			  <ssf:nlt tag="tags.addtag"/>
+			</span>
+		  </a>
+		  <div id="ss_tags_anchor${ss_tagViewNamespace}_${ss_tagDivNumber}"></div>
+		</div>
 	 </td>
 	 <td width="100%">
 	   <c:if test="${empty ssPersonalTags && empty ssCommunityTags}">
