@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -57,6 +57,7 @@ import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.util.cal.DayAndPosition;
+import org.kablink.util.cal.Duration;
 
 
 
@@ -93,16 +94,24 @@ public class EventHelper {
         if (uid != null && uid.length() > 0) {
         	event.setUid(uid);
         }
-       
+        
         // duration present means there is a start and end id
         String startId = "dp_" + id;
         String endId = "dp2_" + id;
 
-        Date start = inputData.getDateValue(startId);
-        Date end = inputData.getDateValue(endId);
+        Duration eventDur = checkDuration(inputData, prefix);        
+        Date     start    = inputData.getDateValue(startId);
+        Date     end      = inputData.getDateValue(endId);
         
         if (start == null && end == null) {
-            return null;
+        	if (null == eventDur) {
+        		event = null;
+        	}
+        	else {
+        		event.setTimeZone(getTimeZone(inputData, id));
+        		event.setDuration(eventDur);
+        	}
+            return event;
         } else if (start == null && end != null) {
         	DateTime startDt = new DateTime();
         	start = startDt.plusMinutes(5).minusMinutes(startDt.getMinuteOfHour() % 5).withSecondOfMinute(0).withMillisOfSecond(0).toDate();
@@ -201,10 +210,29 @@ public class EventHelper {
         } else {
             event.setFrequency(Event.NO_RECURRENCE);
         }
-        
+               
+    	if (null != eventDur) {
+    		event.setDuration(eventDur);
+    	}
+    	
         return event;
     }
-
+    
+    private static Duration checkDuration(InputDataAccessor inputData, String prefix) {
+    	Duration reply = null;
+        String durationDaysS = inputData.getSingleValue(prefix + "durationDays");
+        if (MiscUtil.hasString(durationDaysS)) {
+        	try {
+        		int days = Integer.parseInt(durationDaysS);
+        		if (0 < days) {
+	        		reply = new Duration();
+	        		reply.setDays(days);
+        		}
+        	}
+        	catch (Exception ex) {}
+        }
+        return reply;
+    }
 
 	public static Document buildSearchFilterDoc(Document baseFilter, PortletRequest request, Collection folderIds, SearchUtils.AssigneeType assigneeType) {
 		return buildSearchFilter(baseFilter, request, folderIds, assigneeType).getFilter();
@@ -408,4 +436,3 @@ public class EventHelper {
 	}
     
 }
-

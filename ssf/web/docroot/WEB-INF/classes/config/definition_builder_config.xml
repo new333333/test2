@@ -302,6 +302,7 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
+			<property name="hasDurationDays" caption="__has_duration_days" type="boolean" default="false"/>
 			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true">
 				<help>ihelp.designers.recur</help>
 			</property>	
