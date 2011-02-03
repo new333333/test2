@@ -32,9 +32,14 @@
  */
 package org.kablink.teaming.lucene.analyzer;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -100,5 +105,9 @@ public abstract class VibeAnalyzer extends Analyzer {
 		Tokenizer source;
 		TokenStream result;
 	};
+
+	protected static Reader openStopWordFile(String stopWordFilePath, String stopWordFileCharset) throws UnsupportedEncodingException, FileNotFoundException {
+		return new BufferedReader(new InputStreamReader(new FileInputStream(stopWordFilePath), stopWordFileCharset));
+	}
 
 }

@@ -46,6 +46,7 @@ import org.apache.lucene.search.SortField;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.NullAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
+import org.kablink.teaming.lucene.analyzer.VibeQueryAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -82,7 +83,7 @@ public class SearchObject {
 		BooleanQuery.setMaxClauseCount(SPropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES));
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
-			QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
+			QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, VibeQueryAnalyzer.getInstance());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
 			qp = new QueryParser(Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
@@ -169,7 +170,7 @@ public class SearchObject {
 		} else if (lang.equalsIgnoreCase(LanguageTaster.ARABIC)) {
 			if (queryParserARABIC.get() == null) {
 				logger.debug("QueryParser instantiating new ARABIC QP");
-				Analyzer analyzer = new SsfQueryAnalyzer();
+				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
 				String aName = SPropsUtil.getString("lucene.arabic.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the arabic analyzer here
@@ -190,7 +191,7 @@ public class SearchObject {
 		} else {
 			if (queryParserHEBREW.get() == null) {
 				logger.debug("QueryParser instantiating new HEBREW QP");
-				Analyzer analyzer = new SsfQueryAnalyzer();
+				Analyzer analyzer = VibeQueryAnalyzer.getInstance();
 				String aName = SPropsUtil.getString("lucene.hebrew.analyzer", "");
 				if (!aName.equalsIgnoreCase("")) {
 					//load the hebrew analyzer here

@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 public class VibeIndexAnalyzerTest extends TestCase {
 	
 	public void testPuntuationAndEmailAddress() throws Exception {
-		//System.out.println(Charset.defaultCharset());
+		System.out.println(Charset.defaultCharset());
 		
 		Analyzer analyzer = new VibeIndexAnalyzer();
 		String text = "vibe_onprem a.b. a.b a-b end. 30-12 vibe_onprem@novell.com";
@@ -76,6 +76,14 @@ public class VibeIndexAnalyzerTest extends TestCase {
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"stem", "algorithm", "Algorithm", "algorithm", "breath", "breath", "run", "Run", "run", "RUNS", "run", "ran", "run"});
+
+		// The following test shows that English stemmers do NOT necessarily leave non-English words intact.
+		// Pay attention to Caractère and brûlante.
+		text = "L'éphéméride Güterzug überfuhr working dänemark Caractère brûlante évènement";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"L'éphéméride", "l'éphéméride", "Güterzug", "güterzug", "überfuhr", "work", "dänemark", "Caractèr", "caractèr", "brûlant", "évènement"}); 
 	}
 	
 	public void testStopWords() throws Exception {
