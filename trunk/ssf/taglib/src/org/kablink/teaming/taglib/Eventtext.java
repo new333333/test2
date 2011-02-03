@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.User;
+import org.kablink.util.cal.Duration;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -60,6 +61,7 @@ import org.kablink.util.servlet.StringServletResponse;
  * @author billmers ;
  */
 
+@SuppressWarnings("serial")
 public class Eventtext extends TagSupport {
 
 	private String contextPath;
@@ -121,15 +123,33 @@ public class Eventtext extends TagSupport {
 
 			String repeatString = EventsViewHelper.eventToRepeatHumanReadableString(event, user.getLocale());
 
+			Duration eventDur = event.getDuration();
 			req.setAttribute("startString", startString);
 			req.setAttribute("endString", endString);
 			req.setAttribute("repeatString", repeatString);
 			req.setAttribute("allDayEvent", event.isAllDayEvent());
-			req.setAttribute("hasDuration", event.getDuration().getInterval() != 0);
-			long msDuration = event.getDuration().getInterval();
+			req.setAttribute("hasDuration", eventDur.getInterval() != 0);
+			long msDuration = eventDur.getInterval();
 			Integer durationDays = Integer.valueOf((int)((msDuration + 24l*60l*60l*1000l/2l)/(24l*60l*60l*1000l)));
 			req.setAttribute("durationDays", durationDays);
 			req.setAttribute("freeBusy", event.getFreeBusy().name());
+
+			// Is this a non-all day event that doesn't have both a
+			// start/end date?
+			int days = 0;
+			boolean hasStartAndEnd = ((null != event.getDtStart()) && (null != event.getDtEnd()));			
+			if ((!(event.isAllDayEvent())) && (!hasStartAndEnd)) {
+				// Yes!  Does it only have a day value in the duration?
+				if ((0 == eventDur.getWeeks())       &&
+						(0 == eventDur.getHours())   &&
+						(0 == eventDur.getMinutes()) &&
+						(0 == eventDur.getSeconds()) &&
+						(0 <  eventDur.getDays())) {
+					// Yes!  Pass it through.
+					days = eventDur.getDays();
+				}
+			}
+			req.setAttribute("durationDaysOnly", new Integer(days));
 			
 			StringServletResponse res = new StringServletResponse(
 					(HttpServletResponse) pageContext.getResponse());

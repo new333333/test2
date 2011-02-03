@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -211,6 +211,27 @@
 				</td>
 			</tr>
 	</c:if>
+	
+	<c:if test="${attMap.hasDurDays}">
+		<tr>
+			<td class="contentbold"><ssf:nlt tag="event.duration_days" />:</td>
+			<td nowrap>
+				<input
+						type="text"
+						class="ss_text"
+						size="5" 
+						name="${prefix}_durationDays" 
+						id="${prefix}_durationDays"
+						<c:choose>
+							<c:when test="${durationDays > 0}" > value="${durationDays}" </c:when>
+							<c:otherwise> value="" </c:otherwise>
+						</c:choose>
+						onBlur="intRequiredBlur(this, INT_MODE_GT_ZERO, '<ssf:escapeJavaScript><ssf:nlt tag="event.error.integerRequired" /></ssf:escapeJavaScript>');" />
+				&nbsp;<ssf:nlt tag="event.duration_days.hint" />
+			</td>
+		</tr>
+	</c:if>
+	
 	<c:if test="${attMap.isFreeBusyActive}">
 		<tr>
 			<td colspan="4">
@@ -518,6 +539,7 @@
 				dojo.addClass(document.body, "tundra");
 			}
 		);
+
 		function checkWidgetHasValue(id,err) {
 			var	eWidget = document.getElementById(id);
 			var	sValue = eWidget.value;
@@ -528,13 +550,107 @@
 			}
 			return( true );
 		}
+		
+		// Called to validate the combination of start/end/duration
+		// values specified by the user.
+		//
+		// If the values are invalid, or contain an invalid
+		// combination of values, the user is informed of the
+		// error and false is returned.  Otherwise, true is
+		// returned.
+		function ${prefix}_validateDuration() {
+			// Can we access all the widgets we need to validate
+			// things?
+			var eAllDayEvent  = document.getElementById("${prefix}_allDayEvent"     );
+			var eDurationDays = document.getElementById("${prefix}_durationDays"    );
+			var eEnd          = document.getElementById("event_end_${prefix}"       );
+			var eEndTime      = document.getElementById("event_end_time_${prefix}"  );
+			var eStart        = document.getElementById("event_start_${prefix}"     );
+			var eStartTime    = document.getElementById("event_start_time_${prefix}");
+			
+			if ((null != eAllDayEvent)      &&
+					(null != eDurationDays) &&
+					(null != eEnd)          && (null != eEndTime) &&
+					(null != eStart)        && (null != eStartTime)) {
+				// Yes!  What data was supplied?
+				var hasDurationDays = (0 < eDurationDays.value.length);
+				var hasEnd          = (0 < eEnd.value.length);
+				var hasStart        = (0 < eStart.value.length);
+
+				// Is the 'All day' checkbox checked?
+				if (eAllDayEvent.checked) {
+					// Yes!  If we have a 'Duration'...
+					if (hasDurationDays) {
+						// ...that's invalid.
+						alert("<ssf:escapeJavaScript><ssf:nlt tag="event.error.duration.daysWithAllDay" /></ssf:escapeJavaScript>");
+						return false;
+					}
+					
+					// If we don't have a starting date...
+					if (!hasStart) {
+						// ...that's invalid.
+						alert("<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.start" /></ssf:escapeJavaScript>");
+						return false;
+					}
+					
+					// If we don't have an ending date...
+					if (!hasEnd) {
+						// ...that's invalid.
+						alert("<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.end" /></ssf:escapeJavaScript>");
+						return false;
+					}
+					
+					// Otherwise, things are valid.
+					return true;
+				}
+				
+				else {
+					// No, the 'All day' checkbox is not checked!
+					//
+					// As per the Task Improvements for Evergreen
+					// design document, the following items must be
+					// supplied:
+					// 1) A 'Start' date and time; or
+					// 2) Both a 'Start' and an End' date and time; or
+					// 3) A 'Start' date and time and a 'Duration' (in days); or
+					// 4) A 'Duration' (in days.)
+					hasEnd   = (hasEnd   && (0 < eEndTime.value.length));
+					hasStart = (hasStart && (0 < eStartTime.value.length));
+					if (hasStart && (!hasEnd) && (!hasDurationDays)) {
+						// Condition 1 has been met.
+						return true;
+					}
+					if (hasStart && hasEnd && (!hasDurationDays)) {
+						// Condition 2 has been met.
+						return true;
+					}
+					if (hasStart && (!hasEnd) && hasDurationDays) {
+						// Condition 3 has been met.
+						return true;
+					}
+					if ((!hasStart) && (!hasEnd) && hasDurationDays) {
+						// Condition 4 has been met.
+						return true;
+					}
+					
+					// One of the conditions has not been met.
+					alert("<ssf:escapeJavaScript><ssf:nlt tag="event.error.duration.invalidCombination" /></ssf:escapeJavaScript>");
+					return false;
+				}
+			}
+
+			// If we get here, things are assumed to be valid.  Return
+			// true.
+			return true;
+		}
+		
 		function ${prefix}_onEventFormSubmit() {
 			<c:if test="${required}">
-				if (!(checkWidgetHasValue("event_start_${prefix}", "<ssf:nlt tag="event.error.no.start" />"))) return( false );
-				if (!(checkWidgetHasValue("event_end_${prefix}",   "<ssf:nlt tag="event.error.no.end"   />"))) return( false );
+				if (!(checkWidgetHasValue("event_start_${prefix}", "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.start" /></ssf:escapeJavaScript>"))) return( false );
+				if (!(checkWidgetHasValue("event_end_${prefix}",   "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.end"   /></ssf:escapeJavaScript>"))) return( false );
 				if (!(document.getElementById("${prefix}_allDayEvent").checked)) {
-					if (!(checkWidgetHasValue("event_start_time_${prefix}", "<ssf:nlt tag="event.error.no.start.time" />"))) return( false );
-					if (!(checkWidgetHasValue("event_end_time_${prefix}",   "<ssf:nlt tag="event.error.no.end.time"   />"))) return( false );
+					if (!(checkWidgetHasValue("event_start_time_${prefix}", "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.start.time" /></ssf:escapeJavaScript>"))) return( false );
+					if (!(checkWidgetHasValue("event_end_time_${prefix}",   "<ssf:escapeJavaScript><ssf:nlt tag="event.error.no.end.time"   /></ssf:escapeJavaScript>"))) return( false );
 				}
 			</c:if>
 
@@ -546,12 +662,21 @@
 			if (endDateTimeZoneSensitiveObj) {
 				endDateTimeZoneSensitiveObj.value = "true";				
 			}
+			
+			// Does the form contain a duration days <INPUT>?
+			<c:if test="${attMap.hasDurDays}">
+				// Yes!  Are the start/end/duration values specified
+				// valid?
+				if (!(${prefix}_validateDuration())) {
+					// No!  validateDuration() will have told the user
+					// about the problems.  Simply bail.
+					return false;
+				}
+			</c:if>
 		
 			return true;
 		}
 
-		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);
-		 
+		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);		 
 	</script>
-
 </div>

@@ -1086,7 +1086,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 *         {@link Calendar#FRIDAY}, or {@link Calendar#SATURDAY}).
 	 */
 	public int getWeekStart() {
-		return dtStart.getFirstDayOfWeek();
+		int weekStart;
+		weekStart = ((null == dtStart) ? Calendar.MONDAY : dtStart.getFirstDayOfWeek());
+		return weekStart;
 	}
 
 	/**
@@ -1108,7 +1110,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 *            {@link Calendar#FRIDAY}, or {@link Calendar#SATURDAY}).
 	 */
 	public void setWeekStart(int weekstart) {
-		dtStart.setFirstDayOfWeek(weekstart);
+		if (null != dtStart) {
+			dtStart.setFirstDayOfWeek(weekstart);
+		}
 	}
 
 	/**
@@ -3459,6 +3463,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	@SuppressWarnings("unchecked")
 	public List getAllRecurrenceDates() {
 		List result = new ArrayList();
+		if (null == getDtStart()) {
+			return result;
+		}
 
 		// Is this an all day event?
 		VEvent vEvent = null;

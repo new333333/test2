@@ -457,6 +457,12 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>hasDurationDays</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
 			<name>hasRecurrence</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

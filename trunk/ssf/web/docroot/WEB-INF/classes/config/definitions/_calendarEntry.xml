@@ -43,18 +43,17 @@
           <property name="required" value=""/> 
         </properties> 
       </item>  
-      <item name="event" caption="__event" type="data" id="22"> 
-        <properties> 
-          <property name="name" value="event"/>  
-          <property name="caption" value="__event"/>  
-          <property name="hasDuration" value="true"/>  
-          <property name="hasRecurrence" value="true"/>  
-          <property name="timeZoneSensitiveActive" value="true"/>  
-          <property name="freeBusyActive" value="true"/>  
-          <property name="required" caption="__required" type="boolean" default="false" value="true"> 
-            <help>ihelp.designers.required</help> 
-          </property> 
-        </properties> 
+      <item name="event" caption="__event" type="data" id="22" dataType="event" category="entryData" display="form"> 
+        <properties>
+          <property name="caption" value="__event"/>
+          <property name="name" value="event"/>
+          <property name="hasDuration" value="true"/>
+          <property name="hasDurationDays" value="false"/>
+          <property name="hasRecurrence" value="true"/>
+          <property name="timeZoneSensitiveActive" value="true"/>
+          <property name="required" value="true"/>
+          <property name="fieldModificationAllowed" value="false"/>
+        </properties>
       </item>  
       <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="33"> 
         <properties> 
@@ -191,12 +190,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="40">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="40"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -229,12 +228,12 @@
         <property name="caption" value="__entry_workflow"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="43">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="43"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <properties> 
     <property name="name" value="_calendarEntry"/>  

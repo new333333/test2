@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ package org.kablink.teaming.taglib;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import javax.servlet.RequestDispatcher;
@@ -50,6 +51,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import org.joda.time.DateTime;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Event;
+import org.kablink.util.cal.Duration;
 import org.kablink.util.servlet.DynamicServletRequest;
 import org.kablink.util.servlet.StringServletResponse;
 
@@ -58,6 +60,7 @@ import org.kablink.util.servlet.StringServletResponse;
  * @author billmers ;
  */
 
+@SuppressWarnings({"serial", "unchecked"})
 public class Eventeditor extends TagSupport {
 
 	private String contextPath;
@@ -65,6 +68,7 @@ public class Eventeditor extends TagSupport {
 	private String formName;
 	private Event initEvent = null;
 	private Boolean hasDuration = false;
+	private Boolean hasDurationDays = false;
 	private Boolean hasRecurrence = true;
 	private Boolean isTimeZoneSensitiveActive = false;
 	private Boolean isFreeBusyActive = false;
@@ -100,19 +104,29 @@ public class Eventeditor extends TagSupport {
 			Date endDate = null;
 			// initialize the event, if none was provided
 			if (initEvent != null) {
-				Calendar startCal = initEvent.getDtStart();
-				Calendar endCal = initEvent.getDtEnd();
 				// if the start or end dates were never initialized, set to
 				// today
-				if (startCal.getTime().getTime() == 0) {
-					startCal.setTime(startDate);
+				Calendar startCal = initEvent.getDtStart();
+				if ((null == startCal) && required) {
+					startDate = new Date();
 				}
-				if (endCal.getTime().getTime() == 0) {
-					endCal.setTime(endDate);
+				else if (null != startCal) {
+					if (0 == startCal.getTime().getTime()) {
+						startCal.setTime(startDate);
+					}
+					startDate = startCal.getTime();
 				}
-
-				startDate = startCal.getTime();
-				endDate = endCal.getTime();
+				
+				Calendar endCal = initEvent.getDtEnd();
+				if ((null == endCal) && required) {
+					endDate = new Date();
+				}
+				else if (null != endCal) {
+					if (0 == endCal.getTime().getTime()) {
+						endCal.setTime(endDate);
+					}
+					endDate = endCal.getTime();
+				}
 			} else if (required) {
 				initEvent = new Event();
 				initEvent.setTimeZone(RequestContextHolder.getRequestContext()
@@ -145,10 +159,36 @@ public class Eventeditor extends TagSupport {
 			// the JSP page
 			HashMap attMap = new HashMap();
 			attMap.put("hasDur", hasDuration);
+			attMap.put("hasDurDays", hasDurationDays);
 			attMap.put("hasRecur", hasRecurrence);
 			attMap.put("isTimeZoneSensitiveActive", isTimeZoneSensitiveActive);
 			attMap.put("isFreeBusyActive", isFreeBusyActive);
 			req.setAttribute("attMap", attMap);
+
+			// Does this even support a duration days field?
+			if (hasDurationDays) {
+				// Yes!  Does the event contain a duration?
+				int days = 0;
+				Duration eventDur = ((null == initEvent) ? null : initEvent.getDuration());
+				if (null != eventDur) {
+					// Yes!  Is it a non-all day event that doesn't
+					// have both a start/end date?
+					boolean hasStartAndEnd = ((null != initEvent.getDtStart()) && (null != initEvent.getDtEnd()));
+					if ((!(initEvent.isAllDayEvent())) && (!hasStartAndEnd)) {
+						// Yes!  Does it only have a day value in the
+						// duration?
+						if ((0 == eventDur.getWeeks())       &&
+								(0 == eventDur.getHours())   &&
+								(0 == eventDur.getMinutes()) &&
+								(0 == eventDur.getSeconds()) &&
+								(0 <  eventDur.getDays())) {
+							// Yes!  Pass it through.
+							days = eventDur.getDays();
+						}
+					}
+				}
+				req.setAttribute("durationDays", new Integer(days));
+			}
 
 			StringServletResponse res = new StringServletResponse(
 					(HttpServletResponse) pageContext.getResponse());
@@ -165,6 +205,7 @@ public class Eventeditor extends TagSupport {
 			formName = null;
 			initEvent = null;
 			hasDuration = false;
+			hasDurationDays = false;
 			hasRecurrence = true;
 			isTimeZoneSensitiveActive = false;
 			isFreeBusyActive = false;
@@ -188,6 +229,10 @@ public class Eventeditor extends TagSupport {
 
 	public void setHasDuration(Boolean hasDuration) {
 		this.hasDuration = hasDuration;
+	}
+
+	public void setHasDurationDays(Boolean hasDurationDays) {
+		this.hasDurationDays = hasDurationDays;
 	}
 
 	public void setHasRecurrence(Boolean hasRecurrence) {

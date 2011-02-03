@@ -34,14 +34,17 @@
         <property name="name" value="form1"/>  
         <property name="type" value="task"/> 
       </properties>  
-      <item name="event" caption="__event" type="data" category="entryData" id="22"> 
-        <properties> 
-          <property name="name" value="start_end"/>  
-          <property name="caption" value="__task_time_period"/>  
-          <property name="hasDuration" value="true"/>  
-          <property name="hasRecurrence" value="false"/>  
-          <property name="required" value="false"/> 
-        </properties> 
+      <item name="event" caption="__event" type="data" category="entryData" id="22" dataType="event" display="form"> 
+        <properties>
+          <property name="caption" value="__task_time_period"/>
+          <property name="name" value="start_end"/>
+          <property name="hasDuration" value="true"/>
+          <property name="hasDurationDays" value="true"/>
+          <property name="hasRecurrence" value="false"/>
+          <property name="timeZoneSensitiveActive" value="false"/>
+          <property name="required" value="false"/>
+          <property name="fieldModificationAllowed" value="false"/>
+        </properties>
       </item>  
       <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23" display="form"> 
         <item name="selectboxSelection" caption="__selection" id="24"> 
@@ -362,14 +365,19 @@
       <properties> 
         <property name="name" value="start_end"/>  
         <property name="caption" value="__task_time_period"/> 
-      </properties> 
+      </properties>  
+      <operations>
+        <operation name="deleteItem" caption="__delete"/>
+        <operation name="modifyItem" caption="__modify"/>
+        <operation name="moveItem" caption="__move"/>
+      </operations>
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="67">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="67"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
     <properties> 
@@ -420,12 +428,12 @@
         <property name="caption" value="__task_status"/> 
       </properties> 
     </item>  
-    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="68">
-      <properties>
-        <property name="caption" value=""/>
-        <property name="tabTitle" value="comments"/>
-      </properties>
-    </item>
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="68"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
   </item>  
   <properties> 
     <property name="name" value="_taskEntry"/>  

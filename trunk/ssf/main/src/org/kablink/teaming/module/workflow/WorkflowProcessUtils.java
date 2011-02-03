@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -832,18 +832,20 @@ public static void resumeTimers(WorkflowSupport entry) {
 								} else if (currentVal instanceof Event) {
 									Event e = (Event)currentVal;
 									if (e.getFrequency() == Event.NO_RECURRENCE) {
+										Calendar dtEnd   = e.getDtEnd();
+										Calendar dtStart = e.getDtStart();
 										if ("beforeStart".equals(operation)) {
-											if (!beforeDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;									
+											if ((null == dtStart) || !beforeDate(eCondition, dtStart.getTime(), currentCal, minDate)) currentMatch = false;									
 										} else if ("afterStart".equals(operation)) {
-											if (!afterDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;							
+											if ((null == dtStart) || !afterDate(eCondition, dtStart.getTime(), currentCal, minDate)) currentMatch = false;							
 										} else if ("started".equals(operation)) {
-											if (!passedDate(eCondition, e.getDtStart().getTime(), currentCal, minDate)) currentMatch = false;
+											if ((null == dtStart) || !passedDate(eCondition, dtStart.getTime(), currentCal, minDate)) currentMatch = false;
 										} else if ("ended".equals(operation)) {
-											if (!passedDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;
+											if ((null == dtEnd) || !passedDate(eCondition, dtEnd.getTime(), currentCal, minDate)) currentMatch = false;
 										} else if ("afterEnd".equals(operation)) {
-											if (!afterDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;							
+											if ((null == dtEnd) || !afterDate(eCondition, dtEnd.getTime(), currentCal, minDate)) currentMatch = false;							
 										} else if ("beforeEnd".equals(operation)) {
-											if (!beforeDate(eCondition, e.getDtEnd().getTime(), currentCal, minDate)) currentMatch = false;									
+											if ((null == dtEnd) || !beforeDate(eCondition, dtEnd.getTime(), currentCal, minDate)) currentMatch = false;									
 										}
 									} else {
 										//on repeating events, get the next recurrence since we entered the state
