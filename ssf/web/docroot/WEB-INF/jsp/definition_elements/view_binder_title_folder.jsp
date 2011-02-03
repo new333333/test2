@@ -67,7 +67,7 @@
  			  titleClass="" />
  		   </td>
  		   <%  if (!parentTree2.empty()) {  %>
- 		     <td valign="top"><div class="ss_profile_box_h1 ss_treeWidget"><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"></div>
+ 		     <td><div class="ss_profile_box_h1 ss_treeWidget"><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"></div>
  		     </td>
  		   <%  }  %>
  		 </tr>
