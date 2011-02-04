@@ -449,6 +449,7 @@ public class GwtServerHelper {
 	/**
 	 * Add a reply to the given entry.
 	 */
+	@SuppressWarnings("unchecked")
 	public static FolderEntry addReply( AllModulesInjected bs, String entryId, String title, String desc )
 		throws WriteEntryDataException, WriteFilesException
 	{
@@ -2825,6 +2826,7 @@ public class GwtServerHelper {
 	/**
 	 * Return the membership of the given group.
 	 */
+	@SuppressWarnings("unchecked")
 	public static ArrayList<GwtTeamingItem> getGroupMembership( AllModulesInjected ami, String groupId ) throws GwtTeamingException
 	{
 		ArrayList<GwtTeamingItem> retList;
@@ -3664,6 +3666,7 @@ public class GwtServerHelper {
 	 * Send an email notification to the given recipients for the given entry.
 	 * This code was taken from RelevanceAjaxController.java, ajaxSaveShareThisBinder() and modified.
 	 */
+	@SuppressWarnings("unchecked")
 	public static GwtShareEntryResults shareEntry( AllModulesInjected ami, String entryId, String addedComments, ArrayList<String> principalIds, ArrayList<String> teamIds )
 		throws Exception
 	{

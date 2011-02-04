@@ -451,29 +451,49 @@ public class GwtTaskHelper {
 		
 		// Scan the List<TaskInfo> again.
 		for (TaskInfo ti:  tasks) {
+			// The removeList is used to handle cases where an ID could
+			// not be resolved (e.g., an 'Assigned To' user has been
+			// deleted.)
+			List<AssignmentInfo> removeList = new ArrayList<AssignmentInfo>();
+			
 			// Scan this TaskInfo's individual assignees again...
 			for (AssignmentInfo ai:  ti.getAssignments()) {
 				// ...setting each one's title.
-				setAITitle(           ai, principalTitles  );
-				setAIPresence(        ai, userPresence     );
-				setAIPresenceUserWSId(ai, presenceUserWSIds);
+				if (setAITitle(           ai, principalTitles )) {
+					setAIPresence(        ai, userPresence     );
+					setAIPresenceUserWSId(ai, presenceUserWSIds);
+				}
+				else {
+					removeList.add(ai);
+				}
 			}
+			removeUnresolvedAssignees(ti.getAssignments(), removeList);
 			
 			// Scan this TaskInfo's group assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentGroups()) {
 				// ...setting each one's title and membership count.
-				setAITitle(  ai, principalTitles);
-				setAIMembers(ai, groupCounts    );
-				ai.setPresenceDude("pics/group_icon_small.gif");
+				if (setAITitle(  ai, principalTitles)) {
+					setAIMembers(ai, groupCounts     );
+					ai.setPresenceDude("pics/group_icon_small.gif");
+				}
+				else {
+					removeList.add(ai);
+				}
 			}
+			removeUnresolvedAssignees(ti.getAssignmentGroups(), removeList);
 			
 			// Scan this TaskInfo's team assignees again...
 			for (AssignmentInfo ai:  ti.getAssignmentTeams()) {
 				// ...setting each one's title and membership count.
-				setAITitle(  ai, teamTitles);
-				setAIMembers(ai, teamCounts);
-				ai.setPresenceDude("trees/people.gif");
+				if (setAITitle(  ai, teamTitles)) {
+					setAIMembers(ai, teamCounts );
+					ai.setPresenceDude("trees/people.gif");
+				}
+				else {
+					removeList.add(ai);
+				}
 			}
+			removeUnresolvedAssignees(ti.getAssignmentTeams(), removeList);
 		}		
 
 		// Finally, one last scan through the List<TaskInfo>...
@@ -1571,6 +1591,21 @@ public class GwtTaskHelper {
 		return saveTaskLinkage(bs, binder, null);
 	}
 
+	/*
+	 * Removes the AssignmentInfo's in a remove list from an assignee
+	 * list and clears the remove list.
+	 */
+	private static void removeUnresolvedAssignees(List<AssignmentInfo> assigneeList, List<AssignmentInfo> removeList) {
+		// Scan the remove list...
+		for (AssignmentInfo ai: removeList) {
+			// ...removing the assignments from the assignee list...
+			assigneeList.remove(ai);
+		}
+		
+		// ...and clearing the remove list.
+		removeList.clear();
+	}
+	
 	/**
 	 * Stores a new completed value for a task.
 	 * 
@@ -1823,12 +1858,16 @@ public class GwtTaskHelper {
 	/*
 	 * Stores the title of an AssignmentInfo based on Map lookup using
 	 * its ID.
+	 * 
+	 * Returns true if a title was stored and false otherwise.
 	 */
-	private static void setAITitle(AssignmentInfo ai, Map<Long, String> titleMap) {
+	private static boolean setAITitle(AssignmentInfo ai, Map<Long, String> titleMap) {
 		String title = titleMap.get(ai.getId());
-		if (MiscUtil.hasString(title)) {
+		boolean reply = MiscUtil.hasString(title);
+		if (reply) {
 			ai.setTitle(title);
 		}
+		return reply;
 	}
 
 	/*

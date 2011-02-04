@@ -345,6 +345,31 @@ public class TaskListItem implements IsSerializable {
 		public void setCompletedDate(   TaskDate             completedDate)    {m_completedDate    = completedDate;   }
 		public void setEvent(           TaskEvent            event)            {m_event            = event;           }
 		public void setTaskId(          TaskId               taskId)           {m_taskId           = taskId;          }
+
+		/**
+		 * Various task state evaluators.
+		 * 
+		 * @return
+		 */
+		public boolean isTaskCancelled() {
+			return getStatus().equals("s4");
+		}
+		
+		public boolean isTaskClosed() {
+			return (isTaskCompleted() && (!(isTaskCancelled())));
+		}
+		
+		public boolean isTaskCompleted() {
+			return getCompleted().equals("c100");
+		}
+		
+		public boolean isTaskOverdue() {
+			return (getOverdue() && (!(isTaskCompleted())) && (!(isTaskCancelled())));
+		}
+		
+		public boolean isTaskUnseen() {
+			return (!(getSeen()));
+		}		
 	}
 	
 	/**

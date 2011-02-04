@@ -1420,9 +1420,10 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// Finally, make sure the row is showing with the correct
 		// styles, ...  We can do that by simply re-rendering the
-		// 'Task Name' and 'Assigned To' columns.
+		// 'Task Name', 'Due Date' and 'Assigned To' columns.
 		int row = uid.getTaskRow();
 		renderColumnTaskName(  task, row, getColumnIndex(Column.NAME       ));
+		renderColumnDueDate(   task, row, getColumnIndex(Column.DUE_DATE   ));
 		renderColumnAssignedTo(task, row, getColumnIndex(Column.ASSIGNED_TO));
 	}
 	
@@ -1712,6 +1713,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void renderColumnDueDate(final TaskListItem task, int row, int colIndex) {
 		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEnd().getDateDisplay());
 		il.setWordWrap(false);
+		if (task.getTask().isTaskOverdue()) {
+			il.addStyleName("gwtTaskList_task-overdue-color");
+		}
 		m_flexTable.setWidget(row, colIndex, il);
 	}
 	
@@ -1836,12 +1840,6 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
-		// Is the task unseen, cancelled and/or closed?
-		TaskInfo ti = task.getTask();
-		boolean isUnseen    = (!(ti.getSeen()));
-		boolean isCancelled =    ti.getStatus().equals("s4");
-		boolean isClosed    =   (ti.getCompleted().equals("c100") && (!isCancelled));
-		
 		// Define a panel to contain the task name widgets.
 		FlowPanel fp = new FlowPanel();
 
@@ -1856,12 +1854,13 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// Add the closed/unseen marker Widget to the panel.
 		Widget marker;
-		if (isClosed) {
+		TaskInfo ti = task.getTask();
+		if (ti.isTaskClosed()) {
 			fp.addStyleName("gwtTaskList_task-strike");
 			Image i = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
 			marker = i;
 		}
-		else if (isUnseen) {
+		else if (ti.isTaskUnseen()) {
 			final Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
 			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
@@ -1875,6 +1874,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		else {
 			marker = buildSpacer();
 		}
+		if (ti.isTaskOverdue()) {
+			fp.addStyleName("gwtTaskList_task-overdue");
+		}
 		marker.addStyleName("gwtTaskList_task-icon");
 		fp.add(marker);
 		
@@ -1887,9 +1889,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
 		uid.setTaskLabel(taskLabel);
-		if (isUnseen)    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
-		if (isCancelled) m_flexTableRF.addStyleName(   row, "disabled");	// Cancelled:  Gray.
-		else             m_flexTableRF.removeStyleName(row, "disabled");
+		if (ti.isTaskUnseen())    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
+		if (ti.isTaskCancelled()) m_flexTableRF.addStyleName(   row, "disabled");	// Cancelled:  Gray.
+		else                      m_flexTableRF.removeStyleName(row, "disabled");
 		ta.getElement().appendChild(taskLabel.getElement());
 		fp.add(ta);
 		m_flexTable.setWidget(row, colIndex, fp);

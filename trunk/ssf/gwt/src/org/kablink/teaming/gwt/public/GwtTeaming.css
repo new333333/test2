@@ -2882,6 +2882,13 @@ a.sort-column:hover {
 	background:url(images/strike_marker_blue.png) no-repeat 15px 2px;
 	}
 	
+.gwtTaskList_task-overdue {
+	background:url(images/strike_bar_yellow.png) no-repeat 15px 0 transparent;
+	}
+.gwtTaskList_task-overdue-color {
+	color: #FDA414;
+	}
+	
 .gwtTaskList_task-icon, .gwtTaskList_icon-spacer {
 	margin-right: 3px;
 	}
