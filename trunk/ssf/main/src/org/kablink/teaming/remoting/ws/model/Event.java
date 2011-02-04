@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,12 +35,18 @@ package org.kablink.teaming.remoting.ws.model;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import org.kablink.util.cal.Duration;
+
 public class Event {
 
 	private Calendar dtStart;
+	private Calendar dtCalcStart;
 
 	private Calendar dtEnd;
+	private Calendar dtCalcEnd;
 
+	private Duration duration;
+	
 	/**
 	 * 0 = SECONDLY
 	 * 1 = MINUTELY
@@ -105,9 +111,10 @@ public class Event {
 		
 		return new org.kablink.teaming.domain.Event(
 				event.dtStart,
+				event.dtCalcStart,
 				event.dtEnd,
-				//Duration.toDomainModel(event.duration),
-				null,
+				event.dtCalcEnd,
+				event.duration,
 				event.frequency,
 				event.interval,
 				event.until,
@@ -134,16 +141,60 @@ public class Event {
 		return dtStart;
 	}
 
+	public Calendar getDtCalcStart() {
+		return dtCalcStart;
+	}
+
+	public Calendar getLogicalStart() {
+		Calendar start = getDtStart();
+		if (null == start) {
+			start = getDtCalcStart();
+		}
+		return start;
+	}
+
 	public void setDtStart(Calendar dtStart) {
 		this.dtStart = dtStart;
+	}
+
+	public void setDtCalcStart(Calendar dtCalcStart) {
+		this.dtCalcStart = dtCalcStart;
+	}
+
+	public Duration getDuration() {
+		return duration;
+	}
+	
+	public boolean hasDuration() {
+		return ((null != duration) && (0 != duration.getInterval()));
+	}
+
+	public void setDuration(Duration duration) {
+		this.duration = duration;
 	}
 
 	public Calendar getDtEnd() {
 		return dtEnd;
 	}
 
+	public Calendar getDtCalcEnd() {
+		return dtCalcEnd;
+	}
+
+	public Calendar getLogicalEnd() {
+		Calendar end = getDtEnd();
+		if (null == end) {
+			end = getDtCalcEnd();
+		}
+		return end;
+	}
+
 	public void setDtEnd(Calendar dtEnd) {
 		this.dtEnd = dtEnd;
+	}
+
+	public void setDtCalcEnd(Calendar dtCalcEnd) {
+		this.dtCalcEnd = dtCalcEnd;
 	}
 
 	public Integer getFrequency() {
@@ -326,6 +377,5 @@ public class Event {
 		public void setPosition(int position) {
 			this.position = position;
 		}
-
 	}
 }

@@ -844,8 +844,8 @@ public static void resumeTimers(WorkflowSupport entry) {
 								} else if (currentVal instanceof Event) {
 									Event e = (Event)currentVal;
 									if (e.getFrequency() == Event.NO_RECURRENCE) {
-										Calendar dtEnd   = e.getDtEnd();
-										Calendar dtStart = e.getDtStart();
+										Calendar dtEnd   = e.getLogicalEnd();
+										Calendar dtStart = e.getLogicalStart();
 										if ("beforeStart".equals(operation)) {
 											if ((null == dtStart) || !beforeDate(eCondition, dtStart.getTime(), currentCal, minDate)) currentMatch = false;									
 										} else if ("afterStart".equals(operation)) {

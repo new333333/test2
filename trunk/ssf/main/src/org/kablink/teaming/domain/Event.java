@@ -413,6 +413,54 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			int[]				byYearDay,
 			int[]				byWeekNo,
 			int[]				byMonth) {
+		this(
+			dtStart,
+			null,	// null -> No dtCalcStart.
+			dtEnd,
+			null,	// null -> No dtCalcEnd.
+			duration,
+			frequency,
+			interval,
+			until,
+			count,
+			weekStart,
+			timeZoneSensitive,
+			timeZone,
+			uid,
+			freeBusy,
+			bySecond,
+			byMinute,
+			byHour,
+			byDay,
+			byMonthDay,
+			byYearDay,
+			byWeekNo,
+			byMonth);
+	}
+	
+	public Event(
+			Calendar			dtStart,
+			Calendar			dtCalcStart,
+			Calendar			dtEnd,
+			Calendar			dtCalcEnd,
+			Duration			duration,
+			Integer				frequency,
+			Integer				interval,
+			Calendar			until,
+			Integer				count,
+			Integer				weekStart,
+			Boolean				timeZoneSensitive,
+			TimeZone			timeZone,
+			String				uid,
+			FreeBusyType		freeBusy,
+			int[]				bySecond,
+			int[]				byMinute,
+			int[]				byHour,
+			DayAndPosition[]	byDay,
+			int[]				byMonthDay,
+			int[]				byYearDay,
+			int[]				byWeekNo,
+			int[]				byMonth) {
 		// It is important to call this base constructor, since it sets up some default.
 		this(); 
 		
@@ -3727,5 +3775,4 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	public UidBuilder parseUid() {
 		return new UidBuilder(this.uid);
 	}
-
 }

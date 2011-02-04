@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -376,6 +376,7 @@ public class EventsViewHelper {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private static List<Map> getEventsBeansByEvents(Map entry, List<Event> events, String eventType) {
 		List<Map> result = new ArrayList<Map>();
 		
@@ -390,22 +391,31 @@ public class EventsViewHelper {
 		sdf2.setTimeZone(timeZone);
 
 		for (Event event : events) {
+			// If the event doesn't have both a start and end date...
+			Calendar start = event.getLogicalStart();
+			Calendar end   = event.getLogicalEnd();
+			if ((null == start) || (null == end)) {
+				// ...ignore it as we don't know where to display it in
+				// ...a calendar.
+				continue;
+			}
+			
 			Map eventBean = new HashMap();
 			eventBean.put("entry", entry);
 			eventBean.put("eventType", eventType);
-			eventBean.put("eventid", event.getId() + "_" + event.getDtStart().getTimeInMillis() +"_" + event.getDtEnd().getTimeInMillis());
+			eventBean.put("eventid", event.getId() + "_" + start.getTimeInMillis() +"_" + end.getTimeInMillis());
 			eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
-					.format(event.getDtStart().getTime()));
+					.format(start.getTime()));
 			eventBean.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(event
-					.getDtEnd().getTime()));
-			eventBean.put("cal_starttime", event.getDtStart().getTime());
-			eventBean.put("cal_endtime", event.getDtEnd().getTime());
+					.getLogicalEnd().getTime()));
+			eventBean.put("cal_starttime", start.getTime());
+			eventBean.put("cal_endtime", end.getTime());
 			eventBean.put("cal_oneDayEvent", event.isOneDayEvent());
 			eventBean.put("cal_allDay", event.isAllDayEvent());
 			eventBean.put("cal_timeZoneSensitive", event.isTimeZoneSensitive());
 			eventBean.put("cal_freeBusy", event.getFreeBusy().name());
-			eventBean.put("cal_duration", (event.getDtEnd().getTime()
-					.getTime() - event.getDtStart().getTime()
+			eventBean.put("cal_duration", (end.getTime()
+					.getTime() - start.getTime()
 					.getTime()) / 60000);
 			result.add(eventBean);
 		}
