@@ -3780,8 +3780,15 @@
 			<property name="question" caption="__workflow_question" type="text" />
 			<property name="response" caption="__workflow_response" type="text" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-			<property name="everyone" caption="__workflow_response_everyone" type="checkbox"/>
-			<property name="everyone_this" caption="__workflow_response_everyone_this" type="checkbox"/>
+			<property name="transition_rule" caption="__workflow_response_transitionRule" 
+			  type="radio" default="first">
+				<option name="first" caption="__workflow_response_firstAnswerThis" />
+				<option name="majority_immediate" caption="__workflow_response_majorityAnswerImmediate" />
+				<option name="all" caption="__workflow_response_allAnswerThis" />
+				<option name="one" caption="__workflow_response_oneAnswerThis" />
+				<option name="one_other" caption="__workflow_response_oneAnswerOther" />
+				<option name="majority" caption="__workflow_response_majorityAnswerThis" />
+			</property>
 		</properties>
 		<options>
 			<option name="variable" caption="__workflow_variable_set_on_transition" />

@@ -694,50 +694,62 @@ public static void resumeTimers(WorkflowSupport entry) {
 				} else if (type.equals("transitionOnResponse")) {
 					String question = DefinitionUtils.getPropertyValue(condition, "question");
 					String response = DefinitionUtils.getPropertyValue(condition, "response");
-					boolean everyoneMustRespond = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone"));
-					boolean everyoneMustRespondThis = GetterUtil.getBoolean(DefinitionUtils.getPropertyValue(condition, "everyone_this"));
-					Set<Long> responders = new HashSet();
-					if (everyoneMustRespond) {
-						//Build a list of the people who must respond
-						responders = getQuestionResponders(entry, state, question);
-					}
+					String responseRule = GetterUtil.get(DefinitionUtils.getPropertyValue(condition, "transition_rule"), "first");
+					//Build a list of the people who must respond
+					Set<Long> responders = getQuestionResponders(entry, state, question);
 					Set<Long> respondersFound = new HashSet();
+					Set<Long> respondersWhoAnsweredThis = new HashSet();
 					boolean doTransition = false;
-					boolean anotherResponseSeen = false;
 					if (!Validator.isNull(question) && !Validator.isNull(response)) {
 						Set responses = entry.getWorkflowResponses();
 						for (Iterator iter=responses.iterator(); iter.hasNext(); ) {
 							WorkflowResponse wr = (WorkflowResponse)iter.next();
+							//Is this is the question we are looking for
 							if (state.getDefinition().getId().equals(wr.getDefinitionId()) &&
 									question.equals(wr.getName())) {
-								if (response.equals(wr.getResponse()) && !everyoneMustRespond && !everyoneMustRespondThis) {
+								//Yes, Build lists of responders who answered and responders who answered with this response
+								if (responders.contains(wr.getResponderId())) {
+									respondersFound.add(wr.getResponderId());
+									if (response.equals(wr.getResponse())) {
+										respondersWhoAnsweredThis.add(wr.getResponderId());
+									}
+								}
+								
+								//Now check the rules
+								if (response.equals(wr.getResponse()) && responseRule.equals("first")) {
 									//Transition as soon as one person gives this response.
 									doTransition = true;
 									break;
-								} else if (response.equals(wr.getResponse()) && (everyoneMustRespond || everyoneMustRespondThis)) {
-									//We have to wait until we see if all responders answered
-									if (responders.contains(wr.getResponderId())) {
-										respondersFound.add(wr.getResponderId());
-									}
-									if (responders.size() == respondersFound.size() && everyoneMustRespondThis && !anotherResponseSeen) {
-										//all of the responders have responded with exactly this value
-										doTransition = true;
-										break;
-									} else if (responders.size() == respondersFound.size() && !everyoneMustRespondThis) {
-										//all of the responders have responded
-										doTransition = true;
-										break;
-									}
-								} else if (!response.equals(wr.getResponse()) && everyoneMustRespond && !everyoneMustRespondThis) {
-									//Someone has responded with another value
-									anotherResponseSeen = true;
+								} else if (responders.size() == respondersFound.size() && responseRule.equals("all") 
+										&& respondersWhoAnsweredThis.size() == responders.size()) {
+									//all of the responders have responded with exactly this value
+									doTransition = true;
+									break;
+								} else if (responders.size() == respondersFound.size() && responseRule.equals("one")
+										&& respondersWhoAnsweredThis.size() > 0) {
+									//all of the responders have responded and at least one has answered this
+									doTransition = true;
+									break;
+								} else if (responders.size() == respondersFound.size() && responseRule.equals("one_other")
+										&& respondersWhoAnsweredThis.size() < responders.size()) {
+									//all of the responders have responded and at least one did not answer with this
+									doTransition = true;
+									break;
+								} else if (responders.size() == respondersFound.size() && responseRule.equals("majority")
+										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
+									//All of the responders have answered and a majority have answered with this
+									doTransition = true;
+									break;
+								} else if (responseRule.equals("majority_immediate")
+										&& respondersWhoAnsweredThis.size() > responders.size()/2) {
+									//A majority have answered with this response
+									doTransition = true;
+									break;
+								} else {
 									//See if all responders answered
-									if (responders.contains(wr.getResponderId())) {
-										respondersFound.add(wr.getResponderId());
-									}
 									if (responders.size() == respondersFound.size()) {
-										//all of the responders have responded 
-										doTransition = true;
+										//all of the responders have responded and no conditions were met
+										doTransition = false;
 										break;
 									}
 								}
