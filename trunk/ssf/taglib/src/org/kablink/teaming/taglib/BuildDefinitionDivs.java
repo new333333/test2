@@ -724,6 +724,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
+						} else if (type.equals("radio")) {
+							sb.append("<table>");
 						}
 						//See if there are any built-in options
 						Iterator  itSelections = propertyConfig.elementIterator("option");
@@ -748,12 +750,13 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("</option>\n");
 								optionCount++;
 							} else if (type.equals("radio")) {
-								sb.append("<br/>\n");
+								sb.append("<tr><td valign='top'>\n");
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
-								sb.append("\"").append(checked).append("/>");
+								sb.append("\"").append(checked).append("/>\n</td><td>");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
 									.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+								sb.append("\n</td></tr>\n");
 							}
 						}
 						//See if there are any items to be shown from the "sourceRoot"
@@ -820,12 +823,13 @@ public class BuildDefinitionDivs extends TagSupport {
 											sb.append("</option>\n");
 											optionCount++;
 										} else if (type.equals("radio")) {
-											sb.append("<br/>\n");
+											sb.append("<tr><td valign='top'>\n");
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
-											sb.append("\"").append(checked).append("/>");
+											sb.append("\"").append(checked).append("/>\n</td><td>");
 											sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", "")))
 													.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
+											sb.append("\n</td></tr>\n");
 										}
 									}
 								}
@@ -838,6 +842,8 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
 							}
 							sb.append("</select><br/><br/>\n");
+						} else if (type.equals("radio")) {
+							sb.append("</table><br/>\n");
 						}
 					
 					} else if (type.equals("itemSelect")) {
