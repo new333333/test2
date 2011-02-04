@@ -75,9 +75,9 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
-	public VibeIndexAnalyzer(File stopWords, boolean ignoreCaseForStop,
+	public VibeIndexAnalyzer(File stopWords, String charset, boolean ignoreCaseForStop,
 			String stemmerName, boolean foldToAscii) throws IOException {
-		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
+		super(openStopWordFile(stopWords, charset), ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
 	public VibeIndexAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
@@ -154,7 +154,7 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 					}				
 					try {
 						logger.info("Loading stopwords from file '" + stopWordFilePath + "' using charset " + stopWordFileCharset); 
-						indexStopWords = WordlistLoader.getWordSet(openStopWordFile(stopWordFilePath, stopWordFileCharset));
+						indexStopWords = WordlistLoader.getWordSet(openStopWordFile(new File(stopWordFilePath), stopWordFileCharset));
 					} catch (IOException e) {
 						logger.error("Error loading stopwords" , e);
 						logger.info("Defaulting to common English stopwords");

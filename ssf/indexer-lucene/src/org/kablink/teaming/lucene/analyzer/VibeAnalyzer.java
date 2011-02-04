@@ -106,8 +106,8 @@ public abstract class VibeAnalyzer extends Analyzer {
 		TokenStream result;
 	};
 
-	protected static Reader openStopWordFile(String stopWordFilePath, String stopWordFileCharset) throws UnsupportedEncodingException, FileNotFoundException {
-		return new BufferedReader(new InputStreamReader(new FileInputStream(stopWordFilePath), stopWordFileCharset));
+	protected static Reader openStopWordFile(File stopWordFile, String stopWordFileCharset) throws UnsupportedEncodingException, FileNotFoundException {
+		return new BufferedReader(new InputStreamReader(new FileInputStream(stopWordFile), stopWordFileCharset));
 	}
 
 }
