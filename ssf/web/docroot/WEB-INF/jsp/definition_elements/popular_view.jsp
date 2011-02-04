@@ -66,48 +66,50 @@
 		</td>
   </c:otherwise>
 </c:choose> 
-</tr>
-<tr>
- <td class="ss_nowrap" valign="middle" align="right"> 
-<c:if test="${ssDefinitionEntry.top}">
-
-   <c:if test="${!empty ssDefinitionEntry.popularity}">
-    <span class="ss_muted_label_small">
-      <c:if test="${ssDefinitionEntry.popularity == 1}">
-        <ssf:nlt tag="popularity.visit1"/>
-      </c:if>
-      <c:if test="${ssDefinitionEntry.popularity > 1}">
-        <ssf:nlt tag="popularity.visits"><ssf:param 
-          name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt>
-      </c:if>
-    </span>
-  </c:if>
-  <c:if test="${empty ssDefinitionEntry.popularity}">
-    <span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
-  </c:if>
-
-</c:if>
-&nbsp;&nbsp;
-<c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
-<span class="ss_muted_label_small">
-  <c:if test="${ssDefinitionEntry.totalReplyCount == 1}">
-    <c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.reply1"/></c:if>
-    <c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comment1"/></c:if>
-  </c:if>
-  <c:if test="${ssDefinitionEntry.totalReplyCount > 1}">
-    <c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.replies"><ssf:param 
-      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
-    <c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comments"><ssf:param 
-      name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
-  </c:if>
-</span>
-</c:if>
-<c:if test="${ssDefinitionEntry.totalReplyCount == 0}">
-<c:if test="${ssDefinitionFamily == 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.replies.none" /></span></c:if>
-<c:if test="${ssDefinitionFamily != 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span></c:if>
-</c:if>
-</td>
-</tr>
+ 		<td class="ss_nowrap" valign="middle" align="right" > 
+			<span style="padding-left: 10px;">
+			<c:if test="${ssDefinitionEntry.top}">
+			
+			   <c:if test="${!empty ssDefinitionEntry.popularity}">
+				<span class="ss_muted_label_small">
+				  <c:if test="${ssDefinitionEntry.popularity == 1}">
+					<ssf:nlt tag="popularity.visit1"/>
+				  </c:if>
+				  <c:if test="${ssDefinitionEntry.popularity > 1}">
+					<b><ssf:nlt tag="popularity.visits"><ssf:param 
+					  name="value" value="${ssDefinitionEntry.popularity}"/></ssf:nlt>
+					 </b> 
+				  </c:if>
+				</span>
+			  </c:if>
+			  <c:if test="${empty ssDefinitionEntry.popularity}">
+				<span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
+			  </c:if>
+			
+			</c:if>
+			</span>	
+			<span style="padding-left: 5px;">
+				<c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
+				<span class="ss_muted_label_small">
+				  <c:if test="${ssDefinitionEntry.totalReplyCount == 1}">
+					<c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.reply1"/></c:if>
+					<c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comment1"/></c:if>
+				  </c:if>
+				  <c:if test="${ssDefinitionEntry.totalReplyCount > 1}">
+					<c:if test="${ssDefinitionFamily == 'discussion'}"><ssf:nlt tag="popularity.replies"><ssf:param 
+					  name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
+					<c:if test="${ssDefinitionFamily != 'discussion'}"><ssf:nlt tag="popularity.comments"><ssf:param 
+					  name="value" value="${ssDefinitionEntry.totalReplyCount}"/></ssf:nlt></c:if>
+				  </c:if>
+				</span>
+				</c:if>
+				<c:if test="${ssDefinitionEntry.totalReplyCount == 0}">
+				<c:if test="${ssDefinitionFamily == 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.replies.none" /></span></c:if>
+				<c:if test="${ssDefinitionFamily != 'discussion'}"><span class="ss_muted_label_small"><ssf:nlt tag="popularity.comments.none" /></span></c:if>
+				</c:if>
+			</span>
+		</td>
+	</tr>
 </table>
 </div><!--end of alignment-->
 </c:if>
