@@ -88,25 +88,59 @@ public class VibeIndexAnalyzerTest extends TestCase {
 	
 	public void testStopWords() throws Exception {
 		// Apply stop words case insensitively.
-		Analyzer analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), true, null, false);
+		Analyzer analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false);
 		String text = "the The tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, new String[] {});	
 
 		// Apply stop words case sensitively.
-		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), false, null, false);
+		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), false, null, false);
 		text = "the The Then tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, new String[] {"The", "then", "thE", "THE"});	
 
-		// Apply non-English Latin-1 (Western European languages) stop words.
-		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), true, null, false);
+		// Apply Western European language (specifically, German and French) stop words by
+		// reading them from a file previously encoded in windows-1252 using system default 
+		// character encoding (which is windows-1252 on Windows and probably ISO-8859-1 on Linux).
+		// This should work properly.
+		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"L'éphéméride", "l'éphéméride", "novell", "dänemark", "vibe"});	
+
+		// Apply Western European language (specifically, German and French) stop words by
+		// reading them using UTF-8 charset from a file previously encoded also in UTF-8.
+		// This should work properly.
+		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.utf8.txt"), "UTF-8", true, null, false);
+		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"L'éphéméride", "l'éphéméride", "novell", "dänemark", "vibe"});	
+		
+		// Apply Western European language (specifically, German and French) stop words by
+		// reading them from a file previously encoded in UTF-8 using system default 
+		// character encoding (which is windows-1252 on Windows and probably ISO-8859-1 on Linux).
+		// This should NOT work properly.
+		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.utf8.txt"), Charset.defaultCharset().name(), true, null, false);
+		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesNotTo(analyzer, text, 
+				new String[] {"L'éphéméride", "l'éphéméride", "novell", "dänemark", "vibe"});	
+
+		// Apply Western European language (specifically, German and French) stop words by
+		// reading them using UTF-8 charset from a file previously encoded in windows-1252.
+		// This should NOT work properly.
+		analyzer = new VibeIndexAnalyzer(new File("C:/junk/stop_words.txt"), "UTF-8", true, null, false);
+		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesNotTo(analyzer, text, 
 				new String[] {"L'éphéméride", "l'éphéméride", "novell", "dänemark", "vibe"});	
 	}
 	

@@ -65,4 +65,19 @@ public class AnalyzerUtils {
 		Assert.assertFalse(stream.incrementToken());
 		stream.close();
 	}
+	
+	public static void assertAnalyzesNotTo(Analyzer analyzer, String input,
+			String[] output) throws Exception {
+		TokenStream stream = analyzer.tokenStream("field", new StringReader(input));
+		TermAttribute termAttr = (TermAttribute) stream.addAttribute(TermAttribute.class);
+		for (String expected : output) {
+			if(!stream.incrementToken())
+				return; // success
+			if(!expected.equals(termAttr.term()))
+				return; // success
+		}
+		// If still here, this is last chance for success.
+		Assert.assertTrue(stream.incrementToken());
+		stream.close();
+	}
 }
