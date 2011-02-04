@@ -263,9 +263,6 @@ var ss_invalidYouTubeUrl = "<%= NLT.get("__youTubeInvalidUrl").replaceAll("\"", 
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
 </c:if>">
 
-  <c:if test="${!empty element_id}">
-    <label for="${element_id}">&nbsp;</label>
-  </c:if>
 <textarea class="ss_style mceEditable_${editor_toolbar}"
   style="<c:if test="${!empty element_height}">height:${element_height}px;</c:if> <c:if 
   test="${!empty element_color}">background-color:${element_color}; </c:if>"

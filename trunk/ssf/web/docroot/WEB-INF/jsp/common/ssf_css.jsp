@@ -741,8 +741,9 @@ a.ss_tinyButton:hover {
 .ss_labelLeft {
   font-weight: bold;
   font-size: ${ss_style_font_normalprint};
-  display: inline;
-  padding-right: 2px;
+  display: inline-block;
+  padding-right: 5px;
+  padding-top: 10px;
 }
 
 .ss_labelRight {

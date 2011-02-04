@@ -68,7 +68,7 @@ if (parentFolderViewStyle == null || parentFolderViewStyle.equals("")) parentFol
 <td valign="top" style="white-space: nowrap">
   	<a class="ss_actions_bar13_pane_none" href="javascript: window.print();"><img border="0" 
       alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
-      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" /></a>&nbsp;&nbsp;
+      src="<html:rootPath/>images/pics/masthead/masthead_printer.png" border="0" align="absmiddle" /></a>&nbsp;&nbsp;
   <ssf:showHelp className="ss_actions_bar13_pane_none" guideName="user" pageId="entry" />
 </td>
 </tr>
