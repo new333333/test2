@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -2163,7 +2163,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		VToDo vToDo = null;
 		
 		if (!event.isAllDayEvent()) {
-			DateTime start = new DateTime(event.getDtStart().getTime());
+			DateTime start = getStartDT(event);
 			if (timeZone != null) {
 				start.setTimeZone(timeZone);
 			}
@@ -2180,10 +2180,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			vToDo.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE_TIME);
 		} else {
-			Date start = new Date(event.getDtStart().getTime());
+			Date start = new Date(event.getLogicalStart().getTime());
 			Date end = (Date)start.clone();
-			if (event.getDtEnd() != null) {
-				end = new Date(event.getDtEnd().getTime());
+			if (event.getLogicalEnd() != null) {
+				end = new Date(event.getLogicalEnd().getTime());
 			}
 			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vToDo = new VToDo(start, end, entry.getTitle());
@@ -2206,6 +2206,14 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		addRecurrences(vToDo, event);
 
 		return vToDo;
+	}
+
+	private DateTime getStartDT(Event event) {
+		DateTime start;
+		if (null == event.getLogicalStart())
+		     start = new DateTime();
+		else start = new DateTime(event.getLogicalStart().getTime());
+		return start;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -2451,7 +2459,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			TimeZone timeZone) {
 		VEvent vEvent = null;
 		if (!event.isAllDayEvent()) {
-			DateTime start = new DateTime(event.getDtStart().getTime());
+			DateTime start = getStartDT(event);
 			if (timeZone != null) {
 				start.setTimeZone(timeZone);
 			}
@@ -2469,10 +2477,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					.getParameters().add(Value.DATE_TIME);
 			vEvent.getProperties().add(Transp.OPAQUE);
 		} else {
-			Date start = new Date(event.getDtStart().getTime());
+			Date start = new Date(event.getLogicalStart().getTime());
 			Date end = (Date)start.clone();
-			if (event.getDtEnd() != null) {
-				end = new Date(event.getDtEnd().getTime());
+			if (event.getLogicalEnd() != null) {
+				end = new Date(event.getLogicalEnd().getTime());
 			}
 			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vEvent = new VEvent(start, end, entry.getTitle());
