@@ -119,8 +119,12 @@ public class IndexSynchronizationManager {
     }
         
     public static void setNodeNames(String[] nodeNames) {
-    	if(logger.isDebugEnabled())
-    		logger.debug("setNodeNames(" + nodeNames[0] + "...)");
+    	if(logger.isDebugEnabled()) {
+    		if(nodeNames != null && nodeNames.length > 0)
+    			logger.debug("setNodeNames(" + nodeNames[0] + "...)");
+    		else
+    			logger.debug("setNodeNames()");
+    	}
     	
     	nodeNamesTL.set(nodeNames);
     }
