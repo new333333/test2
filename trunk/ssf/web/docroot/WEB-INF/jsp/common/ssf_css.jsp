@@ -454,13 +454,17 @@ div.ss_editorHints {
   	font-style: normal !important;
   	}
 #ss_entryTop1 {
-	position: relative;
 	margin-left: 5px;
 	}
 .descriptionRegionBut {
+	position: relative;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 8px;
+	}
+.descriptionRegionBut img {
 	position: absolute;
-	top: 0px;
 	right: 0px;
+	top: -8px;
 	}
 	
 div.ss_entryContent a {

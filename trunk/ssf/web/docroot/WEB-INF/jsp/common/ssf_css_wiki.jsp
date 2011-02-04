@@ -267,7 +267,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #descriptionRegion1 .ss_entryDescription {
 	background-color: #fff;
 	padding: 5px 20px 0px 5px;
-	color: #505354;
+	color: #353838;
 	font-size: 1.15em;
 	border: 0px;
 	}	
