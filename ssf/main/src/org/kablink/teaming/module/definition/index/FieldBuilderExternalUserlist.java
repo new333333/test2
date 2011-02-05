@@ -55,7 +55,7 @@ public class FieldBuilderExternalUserlist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = ((String) it.next());
-	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED);
+	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        fields[i] = field;
         }
         

@@ -72,19 +72,19 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_CALC_END_DATE,      event.getDtCalcEnd());
 		buildEventDateIndex(fields, dataElemName, Constants.EVENT_FIELD_LOGICAL_END_DATE,   event.getLogicalEnd());
 		if (!event.isAllDayEvent()) {
-			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
 		Duration dur = event.getDuration();
 		if (null != dur) {
 			String durField = makeFieldName(dataElemName, Constants.EVENT_FIELD_DURATION);
-			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_SECONDS), String.valueOf(dur.getSeconds()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_MINUTES), String.valueOf(dur.getMinutes()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_HOURS),   String.valueOf(dur.getHours()),   Field.Store.YES, Field.Index.NOT_ANALYZED));
-			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_DAYS),    String.valueOf(dur.getDays()),    Field.Store.YES, Field.Index.NOT_ANALYZED));
-			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_WEEKS),   String.valueOf(dur.getWeeks()),   Field.Store.YES, Field.Index.NOT_ANALYZED));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_SECONDS), String.valueOf(dur.getSeconds()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_MINUTES), String.valueOf(dur.getMinutes()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_HOURS),   String.valueOf(dur.getHours()),   Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_DAYS),    String.valueOf(dur.getDays()),    Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+			fields.add(new Field(makeFieldName(durField, Constants.DURATION_FIELD_WEEKS),   String.valueOf(dur.getWeeks()),   Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_FREE_BUSY), event.getFreeBusy().name(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_FREE_BUSY), event.getFreeBusy().name(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
 		Field[] realFields = new Field[fields.size()];
 		realFields = (Field[]) fields.toArray(realFields);
 		return realFields;
@@ -99,7 +99,7 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 					makeFieldName(dataElemName, fieldName),
 					DateTools.dateToString(date.getTime(), DateTools.Resolution.SECOND),
 					Field.Store.YES,
-					Field.Index.NOT_ANALYZED));
+					Field.Index.NOT_ANALYZED_NO_NORMS));
 		}
 	}
 

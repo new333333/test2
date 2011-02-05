@@ -79,16 +79,16 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
-        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.NOT_ANALYZED));    
-        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED));
+        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));    
+        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
-        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     
     public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
-        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.NOT_ANALYZED));
+        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
     /*
     public static Document createDocument(String uid, String docType, String className) {

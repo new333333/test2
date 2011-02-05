@@ -50,7 +50,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 			Field sortField = null;
 			if(!getSearchFieldName(dataElemName).equals(getSortFieldName(dataElemName))) {
 				// This data element requires a separate sort field.
-				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+				sortField = new Field(getSortFieldName(dataElemName), strToIndex.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 			}
 			// Handle optional allText field.
            	Field allTextField = null;
@@ -102,7 +102,7 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 		if(isAnalyzed()) 
 			return Field.Index.ANALYZED;
 		else
-			return Field.Index.NOT_ANALYZED;
+			return Field.Index.NOT_ANALYZED_NO_NORMS;
 	}
 	
 	// Default implementation.
