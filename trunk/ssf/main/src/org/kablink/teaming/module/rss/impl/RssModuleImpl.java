@@ -628,19 +628,19 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		Date eDate = entry.getModification().getDate();
 
 		Field ageField = new Field("age", new Long(eDate.getTime()).toString(),
-				Field.Store.YES, Field.Index.UN_TOKENIZED);
+				Field.Store.YES, Field.Index.NOT_ANALYZED);
 		doc.add(ageField);
 		Field guidField = new Field("guid", entry.getId().toString(),
-				Field.Store.YES, Field.Index.TOKENIZED);
+				Field.Store.YES, Field.Index.ANALYZED);
 		doc.add(guidField);
 		Field allField = new Field(ALL_FIELD, ALL, Field.Store.NO,
-				Field.Index.UN_TOKENIZED);
+				Field.Index.NOT_ANALYZED);
 		doc.add(allField);
 		Field rssItemField = new Field("rssItem", createRssItem(entry),
-				Field.Store.YES, Field.Index.UN_TOKENIZED);
+				Field.Store.YES, Field.Index.NOT_ANALYZED);
 		doc.add(rssItemField);
 		Field atomItemField = new Field("atomItem", createAtomItem(entry),
-				Field.Store.YES, Field.Index.UN_TOKENIZED);
+				Field.Store.YES, Field.Index.NOT_ANALYZED);
 		doc.add(atomItemField);
 		// add same acls(folder and entry) as search engine uses
 		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry, true);

@@ -79,16 +79,16 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid, boolean fieldsOnly) {
-        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.UN_TOKENIZED));    
-        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.NOT_ANALYZED));    
+        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.NOT_ANALYZED));
     }
     
     public static void addDocType(Document doc, String docType, boolean fieldsOnly) {
-        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.NOT_ANALYZED));
     }
     
     public static void addAttachmentType(Document doc, String attType, boolean fieldsOnly) {
-        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field(ATTACHMENT_TYPE_FIELD, attType, Field.Store.YES, Field.Index.NOT_ANALYZED));
     }
     /*
     public static Document createDocument(String uid, String docType, String className) {
@@ -141,12 +141,12 @@ public class BasicIndexUtils {
     }
     
     public static  void addFileContents(Document doc, String text) {
-    	Field contents = new Field(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
+    	Field contents = new Field(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
         doc.add(contents);
     }
     
     public static  Field allTextField(String text) {
-        return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
+        return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
     }   
    
     public static String buildAclTag(String tag, String aclId)
