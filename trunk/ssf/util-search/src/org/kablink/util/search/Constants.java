@@ -56,6 +56,7 @@ public class Constants {
 	public static final String ASCENDING_TRUE = "TRUE";
 	public static final String INCLUSIVE_TRUE = "TRUE";
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
+	public static final String EXACT_PHRASE_FALSE = "FALSE";
 	public static final String TRUE = "true";
 	public static final String FALSE = "false";
 	public static final String TAG_ELEMENT = "TAG";

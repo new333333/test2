@@ -46,11 +46,11 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		System.out.println(Charset.defaultCharset());
 		
 		Analyzer analyzer = new VibeQueryAnalyzer();
-		String text = "vibe_onprem a.b. a.b a-b end. 30-12 vibe_onprem@novell.com";
+		String text = "vibe_onprem a.b. test.doc a-b end. 30-12 vibe_onprem@novell.com";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"vibe", "onprem", "ab", "a.b", "a", "b", "end", "30-12", "vibe_onprem@novell.com"});
+				new String[] {"vibe", "onprem", "ab", "test.doc", "a", "b", "end", "30-12", "vibe_onprem@novell.com"});
 	}
 	
 	public void testCases() throws Exception {

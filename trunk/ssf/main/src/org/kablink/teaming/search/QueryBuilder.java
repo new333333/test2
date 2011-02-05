@@ -531,11 +531,12 @@ public class QueryBuilder {
 		String fieldName = element.attributeValue(FIELD_NAME_ATTRIBUTE);
 		String exactPhrase = element.attributeValue(EXACT_PHRASE_ATTRIBUTE);
 
+		// Make exactphrase=true as the default.
 		if ((exactPhrase != null)
-				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_TRUE)))
-			exact = true;
-		else
+				&& (exactPhrase.equalsIgnoreCase(EXACT_PHRASE_FALSE)))
 			exact = false;
+		else
+			exact = true;
 
 		List children = element.elements();
 		Node child = (Node) children.get(0);

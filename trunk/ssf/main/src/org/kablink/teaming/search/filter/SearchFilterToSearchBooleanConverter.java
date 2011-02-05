@@ -885,6 +885,7 @@ public class SearchFilterToSearchBooleanConverter {
 		// The Lucene query parser will assign the terms to the appropriate default field.
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(text);
+		field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, Constants.EXACT_PHRASE_FALSE);
 	}
 	
 	private static void addItemTypesField(Element block, Element filterTerm) {
