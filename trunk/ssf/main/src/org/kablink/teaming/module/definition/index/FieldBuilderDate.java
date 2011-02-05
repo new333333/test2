@@ -47,7 +47,7 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED);
+            Field field = new Field(getSearchFieldName(dataElemName), DateTools.dateToString(val,getResolution(args)),Field.Store.YES,Field.Index.NOT_ANALYZED_NO_NORMS);
             return new Field[] {field};
         }
     }

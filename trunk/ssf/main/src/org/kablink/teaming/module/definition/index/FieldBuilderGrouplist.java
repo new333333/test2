@@ -51,7 +51,7 @@ public class FieldBuilderGrouplist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = Long.valueOf(((String)it.next()).trim());
-	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED);
+	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        fields[i] = field;
         }
         
