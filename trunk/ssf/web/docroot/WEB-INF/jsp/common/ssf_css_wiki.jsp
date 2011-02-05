@@ -137,39 +137,47 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .wiki-tabs {
     text-align: center;
-    border-bottom: 1px solid #c4c4c4;
     margin-bottom: 5px;
+	padding: 5px 6px 0px 10px;
+	background: #d1d1d1 url(<html:rootPath/>images/pics/blends/gray_blend6_28.png) repeat-x bottom;
+    -moz-border-radius-topright: 6px;
+    -moz-border-radius-topleft: 6px;
+    -webkit-border-top-right-radius: 6px;
+    -webkit-border-top-left-radius: 6px;
     }
 .wiki-tab {
     font-size: 12px;
     font-weight: normal;
     padding: 3px 6px;
-    margin: 2px 0px;
+    margin: 2px 0px 4px;
     background: #fff;
     display:inline-block;
     cursor: pointer;
     color: #fff;
-    background: #949494;
+    background: #505354;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
     }   
 .wiki-tab.on {
     color: #353838;
-    background: #e6e6e4;
+    background: #fff;
     font-weight: bold;
     cursor: pointer;
     display: inline-block;
-    padding: 5px 6px;
-    margin: 0px;
+    padding: 4px 8px 7px;
+    margin: 2px 0px 0px 0px;
     -moz-border-radius-bottomright: 0px;
     -moz-border-radius-bottomleft: 0px;
     -webkit-border-bottom-right-radius: 0px;
     -webkit-border-bottom-left-radius: 0px;
     }
-.wiki-tab:hover {
-    color: #fff;
+.wiki-tab:hover, .wiki-tab.on:hover {
+    color: #fff !important;
     background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
     }   
+.wiki-tab a:hover, .wiki-tab.on a:hover {
+    color: #fff !important;
+	}
 
 .wiki-tabs2 {
 	padding-top:6px;
@@ -273,7 +281,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}	
 
 
-.nv-footer-wiki     { border-top: 1px solid #c4c4c4; border-bottom: 1px solid #c4c4c4; padding-bottom:10px;}
+.nv-footer-wiki     { border-top: 1px solid #c4c4c4; padding-bottom:10px; padding-top: 5px;}
 .nv-footer-wiki .ss_muster_users { font-size: 11px;}
 .nv-footer          { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: center; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
 .nv-footer-r        { position: relative; background-color: #e6e6e4; height: 25px; vertical-align:middle; text-align: right; margin-top: .5em; padding: 0.5em; border-top: 1px solid #babdb6; }
