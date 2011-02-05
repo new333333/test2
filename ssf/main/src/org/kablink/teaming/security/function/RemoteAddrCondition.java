@@ -167,8 +167,8 @@ public class RemoteAddrCondition extends Condition {
 
 	private String toRegex(String rawExp) {
 		String regex = rawExp.replace(".", "\\.");
-		regex = regex.replace("*", "[0-9]*");
-		regex = regex.replace("+", "[0-9]+");
+		regex = regex.replace("*", "[0-9a-fA-F]*");
+		regex = regex.replace("+", "[0-9a-fA-F]+");
 		return regex;
 	}
 	
@@ -195,11 +195,9 @@ public class RemoteAddrCondition extends Condition {
 	public static void main(String[] args) {
 		String origExp = "192.168.+.*";
 		String regex = origExp.replace(".", "\\.");
-		regex = regex.replace("*", "[0-9]*");
-		regex = regex.replace("+", "[0-9]+");
-		
+		regex = regex.replace("*", "[0-9a-fA-F]*");
+		regex = regex.replace("+", "[0-9a-fA-F]+");
 		System.out.println(regex);
-		
 		Pattern pattern = Pattern.compile(regex);
 		String input;
 		input = "192.168";
@@ -221,6 +219,19 @@ public class RemoteAddrCondition extends Condition {
 		input = "192.168.5.";
 		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
 		input = "192.168..10";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		
+		origExp = "2001:+:85a3:**:*";
+		regex = origExp.replace(".", "\\.");
+		regex = regex.replace("*", "[0-9a-fA-F]*");
+		regex = regex.replace("+", "[0-9a-fA-F]+");
+		System.out.println(regex);
+		pattern = Pattern.compile(regex);
+		input = "2001.0db8.85a3.00:1";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "2001:0DB8:85a3:00:1";
+		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
+		input = "2001:0db8:85g3:00:1";
 		System.out.println("[" + input + "] " + pattern.matcher(input).matches());
 	}
 }
