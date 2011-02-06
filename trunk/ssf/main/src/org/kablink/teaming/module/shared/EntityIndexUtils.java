@@ -85,6 +85,7 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -638,7 +639,9 @@ public class EntityIndexUtils {
     
     private static void addEntryAcls(Document doc, Binder binder, Entry entry) {
 		//get real entry access
-		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getEntryAclString(binder, entry), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+    	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
+    	for(String acl:acls)
+    		doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
 
     private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
@@ -658,9 +661,13 @@ public class EntityIndexUtils {
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
 		//get real binder access
-		doc.add(new Field(Constants.FOLDER_ACL_FIELD, getFolderAclString(binder, includeTitleAcl), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
+    	for(String acl:acls)
+    		doc.add(new Field(Constants.FOLDER_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//get team members
-		doc.add(new Field(Constants.TEAM_ACL_FIELD, getFolderTeamAclString(binder), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
+    	for(String acl:acls)
+    		doc.add(new Field(Constants.TEAM_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
 		//add binder owner
 		Long owner = binder.getOwnerId();
 		String ownerStr = Constants.EMPTY_ACL_FIELD;
@@ -762,7 +769,9 @@ public class EntityIndexUtils {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
        		if (wEntry.hasAclSet()) {
-       			doc.add(new Field(Constants.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+       			String[] acls = StringUtil.split(getWfEntryAccess(wEntry), " ");
+       			for(String acl:acls)
+       				doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
        		}
        		//add entry access
     		if (((Entry)entry).hasEntryAcl()) {
@@ -788,7 +797,9 @@ public class EntityIndexUtils {
 
     	} else if (entry instanceof User) {
             // Add the Entry_ACL field
-           	doc.add(new Field(Constants.ENTRY_ACL_FIELD, getUserEntryAccess((User)entry), Field.Store.NO, Field.Index.ANALYZED_NO_NORMS));
+    		String[] acls = StringUtil.split(getUserEntryAccess((User)entry), " ");
+    		for(String acl:acls)
+    			doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
            	//add binder access
         	addBinderAcls(doc, binder);
 
@@ -869,8 +880,9 @@ public class EntityIndexUtils {
     		doc.add(tagField);
     	}
     	
-    	tagField = new Field(Constants.ACL_TAG_FIELD, aclTags, Field.Store.YES, Field.Index.ANALYZED_NO_NORMS);
-    	doc.add(tagField);
+    	String[] acls = StringUtil.split(aclTags, " ");
+    	for(String acl:acls)
+    		doc.add(new Field(Constants.ACL_TAG_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     }
 	
     public static void addFileType(Document doc, File textfile, boolean fieldsOnly) {
