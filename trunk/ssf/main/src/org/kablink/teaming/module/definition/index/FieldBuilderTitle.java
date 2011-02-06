@@ -58,13 +58,13 @@ public class FieldBuilderTitle extends AbstractFieldBuilder {
 	}
 
 	@Override
-	public boolean isAnalyzed() {
-		return false;
+	public Field.Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED_NO_NORMS;
 	}
 
 	@Override
-	public boolean isStored() {
-		return false;
+	public Field.Store getFieldStore() {
+		return Field.Store.NO;
 	}
 
 }

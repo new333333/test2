@@ -85,13 +85,13 @@ public class FieldBuilderDate extends AbstractFieldBuilder {
 	}
 
 	@Override
-	public boolean isAnalyzed() {
-		return false;
+	public Field.Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED_NO_NORMS;
 	}
 
 	@Override
-	public boolean isStored() {
-		return true;
+	public Field.Store getFieldStore() {
+		return Field.Store.YES;
 	}
-    
+
 }

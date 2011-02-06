@@ -122,15 +122,13 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
 	}
 
 	@Override
-	public boolean isAnalyzed() {
-		// This method is meaningless for this data element
-		return true;
+	public Field.Index getFieldIndex() {
+		return Field.Index.ANALYZED;
 	}
 
 	@Override
-	public boolean isStored() {
-		// This method is meaningless for this data element
-		return true;
+	public Field.Store getFieldStore() {
+		return Field.Store.YES;
 	}
 
 }

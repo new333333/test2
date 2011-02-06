@@ -85,7 +85,7 @@ public interface FieldBuilder {
     public String getSortFieldName(String dataElemName);
     
     /**
-     * Returns whether or not the data is stored in the index field.
+     * Returns Field.Store constant.
      * This method is relevant only if the <code>getSearchFieldName</code> method 
      * returns non-null value.
      * <p>
@@ -93,10 +93,10 @@ public interface FieldBuilder {
      * 
      * @return
      */
-    public boolean isStored();
+    public Field.Store getFieldStore();
     
     /**
-     * Returns whether or not the data is analyzed for the index field.
+     * Returns Field.Index constant.
      * This method is relevant only if the <code>getSearchFieldName</code> method 
      * returns non-null value.
      * <p>
@@ -104,5 +104,5 @@ public interface FieldBuilder {
      * 
      * @return
      */
-    public boolean isAnalyzed();
+    public Field.Index getFieldIndex();
 }
