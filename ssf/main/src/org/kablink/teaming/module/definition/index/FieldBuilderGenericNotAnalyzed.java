@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.module.definition.index;
 
+import org.apache.lucene.document.Field;
+
 public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric {
 	
 	@Override
@@ -40,8 +42,8 @@ public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric
 	}
 
 	@Override
-	public boolean isAnalyzed() {
-		return false;
+	public Field.Index getFieldIndex() {
+		return Field.Index.NOT_ANALYZED_NO_NORMS;
 	}
 
 }

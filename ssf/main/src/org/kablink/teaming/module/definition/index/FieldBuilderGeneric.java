@@ -90,19 +90,13 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	}
 	
 	// Default implementation.
-	protected Field.Store getFieldStore() {
-		if(isStored())
-			return Field.Store.YES;
-		else
-			return Field.Store.NO;
+	public Field.Store getFieldStore() {
+		return Field.Store.YES;
 	}
 
 	// Default implementation.
-	protected Field.Index getFieldIndex() {
-		if(isAnalyzed()) 
-			return Field.Index.ANALYZED;
-		else
-			return Field.Index.NOT_ANALYZED_NO_NORMS;
+	public Field.Index getFieldIndex() {
+		return Field.Index.ANALYZED;
 	}
 	
 	// Default implementation.
@@ -115,18 +109,6 @@ public abstract class FieldBuilderGeneric extends AbstractFieldBuilder {
 	@Override
 	public String getSortFieldName(String dataElemName) {
 		return Constants.SORT_FIELD_PREFIX + getSearchFieldName(dataElemName);
-	}
-
-	// Default implementation.
-	@Override
-	public boolean isAnalyzed() {
-		return true;
-	}
-
-	// Default implementation.
-	@Override
-	public boolean isStored() {
-		return true;
 	}
 
 }

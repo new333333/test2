@@ -75,15 +75,15 @@ public class FieldBuilderSurvey extends AbstractFieldBuilder {
 	public String getSortFieldName(String dataElemName) {
 		return null; // This element does not support sorting.
 	}
-
+	
 	@Override
-	public boolean isAnalyzed() {
-		return true;
+	public Field.Index getFieldIndex() {
+		return Field.Index.ANALYZED;
 	}
 
 	@Override
-	public boolean isStored() {
-		return false;
+	public Field.Store getFieldStore() {
+		return Field.Store.NO;
 	}
 	
 	protected List<String> extractsTextsToIndex(Survey survey) {
