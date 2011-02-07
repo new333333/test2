@@ -129,6 +129,11 @@
 		formObj.conditionIdToBeDeleted.value = id;
 	}
 
+	function showReIndexWarning() {
+		alert("<ssf:nlt tag="administration.configure_roles.warning2"/>");
+		return true;
+	}
+	
 </script>
 
 <div class="ss_pseudoPortal">
@@ -336,7 +341,8 @@
 	<br/>
 	<br/>
 	<input type="hidden" name="id" value="${condition.id}"/>
-	<input type="submit" class="ss_submit" name="modifyCondition" value="<ssf:nlt tag="button.apply"/>">
+	<input type="submit" class="ss_submit" name="modifyCondition" 
+	  onClick="showReIndexWarning();" value="<ssf:nlt tag="button.apply"/>">
 	<input type="submit" class="ss_submit" onClick="ss_toggleShowDiv('modifyConditionDiv${condition.id}');return false;" 
 	  value="<ssf:nlt tag="button.cancel"/>">
 </form>

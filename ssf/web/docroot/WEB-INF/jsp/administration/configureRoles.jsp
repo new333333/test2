@@ -64,6 +64,11 @@
 
 	var allowAccessText = "<ssf:nlt tag="administration.configure_roles.conditions.allow"/>";
 	var denyAccessText = "<ssf:nlt tag="administration.configure_roles.conditions.deny"/>";
+
+	function showReIndexWarning() {
+		alert("<ssf:nlt tag="administration.configure_roles.reIndexWarning"/>");
+		return true;
+	}
 	
 </script>
 
@@ -267,7 +272,8 @@
 	</c:forEach>		
 <input type="hidden" name="roleId" value="${function2.id}">
 <div class="ss_buttonBarLeft">
-	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
+	<input type="submit" class="ss_submit" name="modifyBtn" 
+	  onClick="showReIndexWarning();" value="<ssf:nlt tag="button.apply" text="Apply"/>">
 	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
 </div>
 <div style="padding:10px;">
