@@ -94,7 +94,7 @@ public class ActionsControl extends Composite
 			imageResource = GwtTeaming.getImageBundle().edit10();
 			m_editImg = new Image(imageResource);
 			m_editImg.addClickHandler( this );
-			m_editImg.addStyleName( "margin-right-5" );
+			m_editImg.addStyleName( "lpeEditImg" );
 			
 			mainPanel.add( m_editImg );
 		}
@@ -103,6 +103,7 @@ public class ActionsControl extends Composite
 		{
 			imageResource = GwtTeaming.getImageBundle().delete10();
 			m_deleteImg = new Image(imageResource);
+			m_deleteImg.addStyleName( "lpeDeleteImg" );
 			m_deleteImg.addClickHandler( this );
 			
 			mainPanel.add( m_deleteImg );
