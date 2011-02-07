@@ -52,10 +52,10 @@ import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
-import org.kablink.teaming.gwt.client.util.TaskLinkageHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
 
@@ -990,7 +990,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Delete the selected tasks.
-		List<TaskId> taskIds = TaskLinkageHelper.getTaskIdsFromList(tasksChecked, false);
+		List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 		m_rpcService.deleteTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1070,7 +1070,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskDown(m_taskBundle, task);
+			TaskListItemHelper.moveTaskDown(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -1084,7 +1084,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskLeft(m_taskBundle, task);
+			TaskListItemHelper.moveTaskLeft(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -1098,7 +1098,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskRight(m_taskBundle, task);
+			TaskListItemHelper.moveTaskRight(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -1112,7 +1112,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
 			TaskListItem task = tasksChecked.get(0);
-			TaskLinkageHelper.moveTaskUp(m_taskBundle, task);
+			TaskListItemHelper.moveTaskUp(m_taskBundle, task);
 			handleTaskPostMove(task);
 		}
 	}
@@ -1146,7 +1146,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Purge the selected tasks.
-		List<TaskId> taskIds = TaskLinkageHelper.getTaskIdsFromList(tasksChecked, false);
+		List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 		m_rpcService.purgeTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1324,8 +1324,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		final List<TaskListItem> affectedTasks;
 		final List<TaskId>       affectedTaskIds;
 		if (("s3".equals(status)) || ("s4".equals(status))) {
-			affectedTasks   = TaskLinkageHelper.getTaskHierarchy(  task                );
-			affectedTaskIds = TaskLinkageHelper.getTaskIdsFromList(affectedTasks, false);
+			affectedTasks   = TaskListItemHelper.getTaskHierarchy(  task                );
+			affectedTaskIds = TaskListItemHelper.getTaskIdsFromList(affectedTasks, false);
 		}
 		else {
 			affectedTasks = new ArrayList<TaskListItem>();
@@ -1495,7 +1495,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Update the TaskLinkage in the TaskBundle...
-		TaskLinkage newLinkage = TaskLinkageHelper.buildLinkage(m_taskBundle);
+		TaskLinkage newLinkage = TaskListItemHelper.buildLinkage(m_taskBundle);
 		m_taskBundle.setTaskLinkage(newLinkage);
 		
 		// ...and write it to the current user's folder preferences.
@@ -2126,7 +2126,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// ...apply any tasks checks that are being preserved...
 		if (null != checkedTaskIds) {
 			for (Long entryId:  checkedTaskIds) {
-				TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, entryId);
+				TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
 				if (null != task) {
 					getUIData(task).setTaskSelected(true);
 				}
@@ -2233,7 +2233,7 @@ public class TaskTable extends Composite implements ActionHandler {
 					// Yes!  Scan them...
 					for (Long entryId:  updatedTaskInfo.keySet()) {
 						// ...storing their new logical end dates...
-						TaskListItem task = TaskLinkageHelper.findTask(m_taskBundle, entryId);
+						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
 						task.getTask().getEvent().setLogicalEnd(updatedTaskInfo.get(entryId));
 					}
 					
@@ -2307,10 +2307,10 @@ public class TaskTable extends Composite implements ActionHandler {
 				// Yes!  Furthermore, the allowed movement is based on the
 				// selected task's current position in the linkage.
 				TaskListItem task = tasksChecked.get(0);
-				enableMoveDown    = TaskLinkageHelper.canMoveTaskDown( m_taskBundle, task);
-				enableMoveLeft    = TaskLinkageHelper.canMoveTaskLeft( m_taskBundle, task);
-				enableMoveRight   = TaskLinkageHelper.canMoveTaskRight(m_taskBundle, task);
-				enableMoveUp      = TaskLinkageHelper.canMoveTaskUp(   m_taskBundle, task);
+				enableMoveDown    = TaskListItemHelper.canMoveTaskDown( m_taskBundle, task);
+				enableMoveLeft    = TaskListItemHelper.canMoveTaskLeft( m_taskBundle, task);
+				enableMoveRight   = TaskListItemHelper.canMoveTaskRight(m_taskBundle, task);
+				enableMoveUp      = TaskListItemHelper.canMoveTaskUp(   m_taskBundle, task);
 			}
 		}
 		else {

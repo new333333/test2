@@ -140,7 +140,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -191,7 +190,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean deleteTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
-		return GwtTaskHelper.deleteTasks( this, taskIds );
+		return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
 	}
 	
 	public Boolean deleteTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
@@ -260,7 +259,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean purgeTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
-		return GwtTaskHelper.purgeTasks( this, taskIds );
+		return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );
 	}
 	
 	public Boolean purgeTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
@@ -275,7 +274,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * This method is meant to search for applications or entries or groups or places or tags or teams or users.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "unused"})
 	private GwtSearchResults doSearch( HttpServletRequest request, GwtSearchCriteria searchCriteria ) throws Exception
 	{
 		Map options;
@@ -1781,7 +1780,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		return GwtTaskHelper.updateCalculatedDates( this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
+		return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
 	}
 
 	/**

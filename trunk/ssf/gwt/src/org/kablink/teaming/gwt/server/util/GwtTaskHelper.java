@@ -35,9 +35,11 @@ package org.kablink.teaming.gwt.server.util;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,6 +57,8 @@ import org.apache.lucene.document.DateTools;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
@@ -76,6 +80,7 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -89,6 +94,7 @@ import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -141,6 +147,49 @@ public class GwtTaskHelper {
 			else reply = MiscUtil.safeSColatedCompare(assignee2, assignee1);
 			return reply;
 		}
+	}
+
+	/*
+	 * Inner class used to track event dates that are required for
+	 * updating calculated dates on the server.
+	 */
+	private static class ServerDates {
+		private TaskDate	m_actualStart;	//
+		private TaskDate	m_actualEnd;	//
+		private TaskDate	m_calcStart;	//
+		private TaskDate	m_calcEnd;		//
+
+		/**
+		 * Constructor method.
+		 */
+		public ServerDates() {
+			// Nothing to do.
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public TaskDate getActualStart() {return m_actualStart; }
+		public TaskDate getActualEnd()   {return m_actualEnd;   }
+		public TaskDate getCalcStart()   {return m_calcStart;   }
+		public TaskDate getCalcEnd()     {return m_calcEnd;     }
+		
+		public boolean  hasActualStart() {return (null != m_actualStart);}
+		public boolean  hasActualEnd()   {return (null != m_actualEnd  );}
+		public boolean  hasCalcStart()   {return (null != m_calcStart  );}
+		public boolean  hasCalcEnd()     {return (null != m_calcEnd    );}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setActualStart(TaskDate actualStart) {m_actualStart = actualStart;}
+		public void setActualEnd(  TaskDate actualEnd)   {m_actualEnd   = actualEnd;  }
+		public void setCalcStart(  TaskDate calcStart)   {m_calcStart   = calcStart;  }
+		public void setCalcEnd(    TaskDate calcEnd)     {m_calcEnd     = calcEnd;    }
 	}
 	
 	/*
@@ -690,7 +739,8 @@ public class GwtTaskHelper {
 	
 	/**
 	 * Deletes the specified tasks.
-	 * 
+	 *
+	 * @param request
 	 * @param bs
 	 * @param taskIds
 	 * 
@@ -698,7 +748,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean deleteTasks(AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
+	public static Boolean deleteTasks(HttpServletRequest request, AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
 		try {
 			// Before we delete any of them... 
 			FolderModule fm = bs.getFolderModule();
@@ -729,6 +779,7 @@ public class GwtTaskHelper {
 				// ...and tell each to update the calculated dates they
 				// ...contain.
 				updateCalculatedDates(
+					request,
 					bs,
 					getTaskBinder(bs, binderId),
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
@@ -992,22 +1043,24 @@ public class GwtTaskHelper {
 	 * Reads an event from a map.
 	 */
 	@SuppressWarnings("unchecked")
-	private static TaskEvent getEventFromMap(Map m) {
+	private static TaskEvent getEventFromMap(Map m, boolean clientBundle) {
 		TaskEvent reply = new TaskEvent();
+
+		// Are we reading the information for the client?
+		if (!clientBundle) {
+			// No!  Extract the event's actual and calculated start and
+			// end dates.
+			ServerDates sd = new ServerDates();
+			sd.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE     ), true));
+			sd.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE       ), true));
+			sd.setCalcStart(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), true));
+			sd.setCalcEnd(    getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE  ), true));
+			reply.setServerData(sd);
+		}
 		
-		// Extract the event's end...
-		Date     logicalEndDate = getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE));
-		TaskDate logicalEnd     = new TaskDate();
-		logicalEnd.setDate(                         logicalEndDate );
-		logicalEnd.setDateDisplay(getDateTimeString(logicalEndDate));
-		reply.setLogicalEnd(                        logicalEnd     );
-		
-		// ...and start dates from the Map...
-		Date     logicalStartDate = getDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE));
-		TaskDate logicalStart     = new TaskDate();
-		logicalStart.setDate(                         logicalStartDate );
-		logicalStart.setDateDisplay(getDateTimeString(logicalStartDate));
-		reply.setLogicalStart(                        logicalStart     );
+		// Extract the event's logical start and end...
+		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), false ));		
+		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), false ));
 
 		// ...extract the event's 'All Day Event' flag from the Map...
 		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));
@@ -1211,6 +1264,17 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException 
 	 */
 	public static TaskBundle getTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+		return
+			getTaskBundleImpl(
+				request,
+				bs,
+				binder,
+				filterTypeParam,
+				modeTypeParam,
+				true);	// true -> Retrieve the TaskBundle on behalf of the client.
+	}
+	
+	private static TaskBundle getTaskBundleImpl(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
 		// Build a base TaskBundle...
 		TaskBundle reply = buildBaseTaskBundle(
 			request,
@@ -1225,12 +1289,29 @@ public class GwtTaskHelper {
 			bs,
 			binder,
 			reply,
-			getCollapsedSubtasks(
-				bs,
-				binder.getId()));
+			getCollapsedSubtasks(bs, binder.getId()),
+			clientBundle);
 		
 		// If we get here, reply refers to the requested TaskBundle.
 		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Reads a Date from a Map and constructs a TaskDate from it.
+	 */
+	@SuppressWarnings("unchecked")
+	private static TaskDate getTaskDateFromMap(Map m, String key, boolean nullIfNotThere) {
+		TaskDate reply;
+		Date date = getDateFromMap(m, key);
+		if ((null == date) && nullIfNotThere) {
+			reply = null;
+		}
+		else {
+			reply = new TaskDate();
+			reply.setDate(                         date );
+			reply.setDateDisplay(getDateTimeString(date));
+		}
 		return reply;
 	}
 	
@@ -1385,7 +1466,7 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Boolean purgeTasks(AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
+	public static Boolean purgeTasks(HttpServletRequest request, AllModulesInjected bs, List<TaskId> taskIds) throws GwtTeamingException {
 		try {
 			// Before we purge any of them... 
 			FolderModule fm = bs.getFolderModule();
@@ -1415,6 +1496,7 @@ public class GwtTaskHelper {
 				// ...and tell each to update any calculated dates they
 				// ...contain.
 				updateCalculatedDates(
+					request,
 					bs,
 					getTaskBinder(bs, binderId),
 					null);	// null -> Update the calculated dates for all the tasks in the binder.
@@ -1435,7 +1517,7 @@ public class GwtTaskHelper {
 	 * 
 	 * Apply task linkage, ... as necessary to the list stored.
 	 */
-	private static void readTaskList(HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks) throws GwtTeamingException {
+	private static void readTaskList(HttpServletRequest request, AllModulesInjected bs, Binder binder, TaskBundle tb, List<Long> collapsedSubtasks, boolean clientBundle) throws GwtTeamingException {
 		// Create a List<TaskListItem> that we'll fill up with the task
 		// list.
 		List<TaskListItem> taskList = new ArrayList<TaskListItem>();
@@ -1447,7 +1529,8 @@ public class GwtTaskHelper {
 			bs,
 			binder,
 			tb.getFilterTypeParam(),
-			tb.getModeTypeParam());		
+			tb.getModeTypeParam(),
+			clientBundle);		
 		tb.setTotalTasks(tasks.size());
 
 		// Do we need to respect the task linkage information?
@@ -1492,7 +1575,7 @@ public class GwtTaskHelper {
 	 * Reads the tasks from the specified binder.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
+	private static List<TaskInfo> readTasks(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam, boolean clientBundle) throws GwtTeamingException {
 		Map taskEntriesMap;		
 		try {
 			// Setup to read the task entries...
@@ -1531,7 +1614,7 @@ public class GwtTaskHelper {
 			TaskInfo ti = new TaskInfo();
 			
 			ti.setOverdue(         getOverdueFromMap(  taskEntry, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE)));
-			ti.setEvent(           getEventFromMap(    taskEntry                                                             ));
+			ti.setEvent(           getEventFromMap(    taskEntry, clientBundle                                               ));
 			ti.setStatus(          getStringFromMap(   taskEntry, "status"                                                   ));
 			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
 			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
@@ -1546,12 +1629,12 @@ public class GwtTaskHelper {
 			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
 			taskId.setEntryId( getLongFromMap(taskEntry, Constants.DOCID_FIELD    ));
 			ti.setTaskId(taskId);
-			
-			Date     completedDateStamp = getDateFromMap( taskEntry, Constants.TASK_COMPLETED_DATE_FIELD);
-			TaskDate completedDate      = new TaskDate();
-			completedDate.setDate(                         completedDateStamp );
-			completedDate.setDateDisplay(getDateTimeString(completedDateStamp));
-			ti.setCompletedDate(                           completedDate      );
+
+			ti.setCompletedDate(
+				getTaskDateFromMap(
+					taskEntry,
+					Constants.TASK_COMPLETED_DATE_FIELD,
+					false));	// false -> Don't return a null entry.
 			
 			reply.add(ti);
 		}
@@ -1563,9 +1646,11 @@ public class GwtTaskHelper {
 		// we do this AFTER collecting data from the search index so
 		// that we only have to perform a single DB read for each type
 		// of information we need to complete the TaskInfo details.
-		completeTaskRights(     bs, reply);
-		completeBinderLocations(bs, reply);
-		completeAIs(            bs, reply);
+		completeTaskRights(         bs, reply);
+		if (clientBundle) {
+			completeBinderLocations(bs, reply);
+			completeAIs(            bs, reply);
+		}
 				
 		if (m_logger.isDebugEnabled()) {
 			m_logger.debug("GwtTaskHelper.readTasks( Read List<TaskInfo> for binder ): " + String.valueOf(binderId));
@@ -1911,7 +1996,8 @@ public class GwtTaskHelper {
 	 * 2) If the entryId is null, that implies that ALL the tasks in
 	 *    the binder need to be checked whether their calculated end
 	 *    dates need to be updated.
-	 * 
+	 *
+	 * @param request
 	 * @param bs
 	 * @param binder
 	 * @param entryId	May be null.
@@ -1920,9 +2006,246 @@ public class GwtTaskHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static Map<Long, TaskDate> updateCalculatedDates(AllModulesInjected bs, Binder binder, Long entryId) throws GwtTeamingException {
-//!		...this needs to be implemented...
-		return new HashMap<Long, TaskDate>();
+	public static Map<Long, TaskDate> updateCalculatedDates(HttpServletRequest request, AllModulesInjected bs, Binder binder, Long entryId) throws GwtTeamingException {
+		// Read the TaskBundle.  We'll use this to find the tasks that
+		// need to be updated.
+		TaskBundle tb = getTaskBundleImpl(
+			request,
+			bs,
+			binder,
+			String.valueOf(FilterType.ALL),		// We may need to manipulate all...
+			String.valueOf(ModeType.PHYSICAL),	// ...the tasks from the given Binder.
+			false);								// false -> Retrieve the TaskBundle to perform server updates.
+
+		// Allocate a Map we can use to track the IDs and dates for
+		// those entries whose calculated dates changed.
+		Map<Long, TaskDate> reply = new HashMap<Long, TaskDate>();
+		
+		// Are we updating the calculated dates based on a specific
+		// task? 
+		if (null != entryId) {
+			// Yes!  Update the dates of the list containing the task
+			// and all of its subtasks.
+			updateCalculatedDatesImpl(
+				bs,
+				tb,
+				reply,
+				TaskListItemHelper.findTaskList(
+					tb,
+					entryId));
+		}
+		
+		else {
+			// No, we're not updating a specific task!  Update
+			// everything.
+			updateCalculatedDatesImpl(
+				bs,
+				tb,
+				reply,
+				tb.getTasks());
+		}
+		
+		// If we get here, reply refers to a Map<Long, TaskDate>
+		// mapping the tasks whose calculated dates had to be updated
+		// with the newly calculated dates.  Return it. 
+		return reply;
+	}
+
+	/*
+	 * Updates the calculated dates of the tasks in a list and all
+	 * their subtasks.
+	 */
+	private static void updateCalculatedDatesImpl(AllModulesInjected bs, TaskBundle tb, Map<Long, TaskDate> updates, List<TaskListItem> taskList) throws GwtTeamingException {
+		// Scan the tasks in the list.
+		boolean  rootTasks = (tb.getTasks() == taskList);
+		TaskInfo prevTI    = null;		
+		for (TaskListItem task:  taskList) {
+			// If a task doesn't have a duration in days, we can't
+			// update its calculated dates.  Does it have a duration in
+			// days?
+			TaskInfo     ti   = task.getTask();
+			TaskEvent    tiE  = ti.getEvent();
+			ServerDates  tiSD = ((ServerDates) tiE.getServerData());
+			TaskDuration tiD  = tiE.getDuration();
+			if (tiD.hasDaysOnly()) {
+				// Yes!  Are we working on the root task list in the
+				// binder?
+				boolean removeCalcStart;
+				boolean removeCalcEnd;
+				Date calcStart = null;				
+				Date calcEnd   = null;
+				if (rootTasks) {
+					// Yes!  Then we simply remove the calculated
+					// dates.
+					removeCalcStart =
+					removeCalcEnd   = true;
+				}
+		
+				else {
+					// No, we aren't working on the root task list in
+					// the binder.!  Does this task have actual start
+					// and/or end dates?
+					removeCalcStart  =
+					removeCalcEnd    = false;
+					int durDays      = tiD.getDays();
+					boolean hasStart = tiSD.hasActualStart();
+					boolean hasEnd   = tiSD.hasActualEnd();
+					if (hasStart && hasEnd) {
+						// Has start and end!  No calculated dates.
+						removeCalcStart =
+						removeCalcEnd   = true;
+					}
+					
+					else if (hasStart && (!hasEnd)) {
+						// Has start, no end!  Calculate an end.
+						calcEnd         = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
+						removeCalcStart = true;
+					}
+					
+					else if ((!hasStart) && hasEnd) {
+						// No start, has end!  Calculate a start.
+						calcStart     = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), -durDays);
+						removeCalcEnd = true;
+					}
+					
+					else {
+						// No start or end!  Use the previous task's end
+						// date as the start...
+						calcStart = ((null == prevTI) ? null : prevTI.getEvent().getLogicalEnd().getDate());
+						if (null == calcStart) {
+							removeCalcStart =
+							removeCalcEnd   = true;
+						}
+						else {
+							// ...and use that to calculate an end.
+							calcEnd = EventHelper.adjustDate(calcStart, durDays);
+						}
+					}
+	
+					// If we have a calculated start that didn't change...
+					if ((null != calcStart) && tiSD.hasCalcStart()) {
+						long newTime = calcStart.getTime();
+						long oldTime = tiSD.getCalcStart().getDate().getTime();
+						if (newTime == oldTime) {
+							// ...don't save it.
+							calcStart = null;
+						}
+					}
+					
+					// If we have calculated end that didn't change...
+					if ((null != calcEnd) && tiSD.hasCalcEnd()) {
+						long newTime = calcEnd.getTime();
+						long oldTime = tiSD.getCalcEnd().getDate().getTime();
+						if (newTime == oldTime) {
+							// ...don't save it.
+							calcEnd = null;
+						}
+					}
+				}
+
+				// Do we have changes to make to the calculated start
+				// or end dates for this task?
+				if (removeCalcStart || (null != calcStart) ||
+					removeCalcEnd   || (null != calcEnd)) {
+					// Yes!  If we can save them and we changed the
+					// calculated end date...
+					boolean saved = updateCalculatedDatesOnTask(bs, ti, removeCalcStart, calcStart, removeCalcEnd, calcEnd);
+					if (saved && (removeCalcEnd || (null != calcEnd))) {
+						// ...track the fact that we changed this
+						// ...task's calculated end date.
+						TaskDate calcTD = new TaskDate();
+						if (!removeCalcEnd) {
+							calcTD.setDate(                         calcEnd);
+							calcTD.setDateDisplay(getDateTimeString(calcEnd));
+						}
+						updates.put(ti.getTaskId().getEntryId(), calcTD);
+					}
+				}
+			}
+			
+			// Update this tasks's subtasks.
+			updateCalculatedDatesImpl(
+				bs,
+				tb,
+				updates,
+				task.getSubtasks());
+
+			// As we step through the task list, we may need to look
+			// back at the previous task to calculate the next one.
+			// Keep track of it.
+			prevTI = ti;
+		}
+	}
+
+	/*
+	 * Updates the calculated start and/or end dates on a task.
+	 */
+	@SuppressWarnings("unchecked")
+	private static boolean updateCalculatedDatesOnTask(AllModulesInjected bs, TaskInfo ti, boolean removeCalcStart, Date calcStart, boolean removeCalcEnd, Date calcEnd) throws GwtTeamingException {		
+		// Do we have rights to modify this task?
+		boolean reply = false;
+		if (ti.getCanModify()) {		
+			try {
+				// Yes!  Read the existing Event data from it...
+				Long binderId = ti.getTaskId().getBinderId();
+				Long entryId  = ti.getTaskId().getEntryId();
+				FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
+				CustomAttribute customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);
+				Event event = ((Event) customAttribute.getValue());
+				
+				// ...modify the event with the new calculated
+				// ...start/end dates, as appropriate...
+				Calendar eventCalcStart = event.getDtCalcStart();
+				Calendar eventCalcEnd   = event.getDtCalcEnd();
+				boolean modifiedEvent = false;
+				if (removeCalcStart) {
+					if (null != eventCalcStart) {
+						event.setDtCalcStart((Calendar) null);
+						modifiedEvent = true;
+					}
+				}
+				else if (null != calcStart) {
+					if ((null == eventCalcStart) || eventCalcStart.getTime().getTime() != calcStart.getTime()) {
+						Calendar cal = new GregorianCalendar();
+						cal.setTime(calcStart);
+						event.setDtCalcStart(cal);
+						modifiedEvent = true;
+					}
+				}
+				
+				if (removeCalcEnd) {
+					if (null != eventCalcEnd) {
+						event.setDtCalcEnd((Calendar) null);
+						modifiedEvent = true;
+					}
+				}
+				else if (null != calcEnd) {
+					if ((null == eventCalcEnd) || eventCalcEnd.getTime().getTime() != calcEnd.getTime()) {
+						Calendar cal = new GregorianCalendar();
+						cal.setTime(calcEnd);
+						event.setDtCalcEnd(cal);
+						modifiedEvent = true;
+					}
+				}
+
+				// ...and if we really changed anything...
+				if (modifiedEvent) {
+					// ...save the modified Event.
+					Map formData = new HashMap(); 
+					formData.put(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME, event);
+					bs.getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), null, null, null, null);
+					reply = true;
+				}
+			}
+			
+			catch (Exception ex) {
+				throw GwtServerHelper.getGwtTeamingException(ex);
+			}
+		}
+		
+		// If we get here, reply is true if we modified task's
+		// calculated start and or end and false otherwise.  Return it.
+		return reply;
 	}
 
 	/*

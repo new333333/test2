@@ -35,7 +35,7 @@ package org.kablink.teaming.remoting.ws.model;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.kablink.util.cal.Duration;
+import org.kablink.teaming.remoting.ws.model.Duration;
 
 public class Event {
 
@@ -114,7 +114,7 @@ public class Event {
 				event.dtCalcStart,
 				event.dtEnd,
 				event.dtCalcEnd,
-				event.duration,
+				Duration.toDomainModel(event.duration),
 				event.frequency,
 				event.interval,
 				event.until,

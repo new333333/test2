@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -97,20 +97,16 @@ public class Duration implements Cloneable {
   private int minutes;
   private int seconds;
 
-  private final static int SECONDS_PER_MINUTE = 60;
-  private final static int MINUTES_PER_HOUR   = 60;
-  private final static int HOURS_PER_DAY      = 24;
-  private final static int DAYS_PER_WEEK      = 7;
+  public final static int SECONDS_PER_MINUTE = 60;
+  public final static int MINUTES_PER_HOUR   = 60;
+  public final static int HOURS_PER_DAY      = 24;
+  public final static int DAYS_PER_WEEK      = 7;
 
-  private final static int MILLIS_PER_SECOND = 1000;
-  private final static int MILLIS_PER_MINUTE =
-    SECONDS_PER_MINUTE * MILLIS_PER_SECOND;
-  private final static long MILLIS_PER_HOUR   =
-    MINUTES_PER_HOUR * MILLIS_PER_MINUTE;
-  private final static long MILLIS_PER_DAY    =
-    HOURS_PER_DAY * MILLIS_PER_HOUR;
-  private final static long MILLIS_PER_WEEK   =
-    DAYS_PER_WEEK * MILLIS_PER_DAY;
+  public final static int  MILLIS_PER_SECOND = 1000;
+  public final static int  MILLIS_PER_MINUTE = (SECONDS_PER_MINUTE * MILLIS_PER_SECOND);
+  public final static long MILLIS_PER_HOUR   = (MINUTES_PER_HOUR   * MILLIS_PER_MINUTE);
+  public final static long MILLIS_PER_DAY    = (HOURS_PER_DAY      * MILLIS_PER_HOUR);
+  public final static long MILLIS_PER_WEEK   = (DAYS_PER_WEEK      * MILLIS_PER_DAY);
 
   /**
    * Construct a <code>Duration</code> object and initializes it to
