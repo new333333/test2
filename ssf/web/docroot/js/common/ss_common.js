@@ -2701,7 +2701,7 @@ function ss_showDivAtXY(divName) {
 	var objLeftOffset = -10;
 	ss_setObjectTop(divObj, parseInt(ss_getClickPositionY() + objTopOffset))
 	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX() + objLeftOffset))
-	ss_showDiv(divName)
+	ss_toggleShowDiv(divName, "")
 }
 function ss_showDiv(divName, backgroundIframe) {
 	var divObj = document.getElementById(divName);
