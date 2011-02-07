@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import com.google.gwt.http.client.URL;
+
 
 
 /**
@@ -57,6 +59,27 @@ public class HtmlConfig extends ConfigItem
 		results = configStr.split( "[,;]" );
 		if ( results != null )
 		{
+			int i;
+			
+			for (i = 0; i < results.length; ++i)
+			{
+				String[] results2;
+				
+				results2 = ConfigData.splitConfigItem( results[i] );
+				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
+				{
+					try
+					{
+						if ( results2[0].equalsIgnoreCase( "data" ) )
+							m_properties.setHtml( URL.decodeComponent( results2[1] ) );
+					}
+					catch (Exception ex)
+					{
+						// Nothing to do.  This is here to handle the case when the data is
+						// not properly url encoded.
+					}
+				}
+			}
 		}
 	}
 	

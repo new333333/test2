@@ -220,6 +220,11 @@ public class ConfigData
 					configItem = new LinkToFolderConfig( itemData[i] );
 					++i;
 				}
+				else if ( itemName.equalsIgnoreCase( "html" ) )
+				{
+					configItem = new HtmlConfig( itemData[i] );
+					++i;
+				}
 				else
 				{
 					// We don't know what this item is.  Skip it.

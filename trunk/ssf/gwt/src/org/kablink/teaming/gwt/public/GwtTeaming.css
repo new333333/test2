@@ -780,6 +780,17 @@ body, table td, select
 	width: 41px;
 }
 
+.lpeEditImg
+{
+	cursor: pointer;
+	margin-right: 5px;
+}
+
+.lpeDeleteImg
+{
+	cursor: pointer;
+}
+
 /* Styles used with the "edit" anchor in the Edit-Delete control. */
 .editDeleteControlAnchor
 {

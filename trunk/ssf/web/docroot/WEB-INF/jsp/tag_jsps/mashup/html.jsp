@@ -1,3 +1,4 @@
+<%
 /**
  * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
@@ -30,78 +31,35 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+%>
+<% //Mashup html view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "url");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 
-package org.kablink.teaming.gwt.client.lpe;
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+%>
 
-import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+<% if (ss_mashupListDepth > 0) { %>
+	<c:if test="${!empty mashup_attributes['data']}">
+		<li>
+	</c:if>
+<% } %>
 
+<c:if test="${ssConfigJspStyle != 'form'}">
+	<div class="ss_mashup_url_content">
+		<c:if test="${!empty mashup_attributes['data']}">
+	    	${mashup_attributes['data']}
+	  	</c:if>
+	</div>
+</c:if>
 
-/**
- * This class holds all of the properties needed to define an "HTML" widget in a landing page.
- * @author jwootton
- *
- */
-public class HtmlProperties
-	implements PropertiesObj
-{
-	private String m_html;
-	
-	/**
-	 * 
-	 */
-	public HtmlProperties()
-	{
-		m_html = null;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void copy( PropertiesObj props )
-	{
-		if ( props instanceof HtmlProperties )
-		{
-			HtmlProperties htmlProps;
-			
-			htmlProps = (HtmlProperties) props;
-			setHtml( htmlProps.getHtml() );
-		}
-	}
-	
-
-	/**
-	 * Return the properties as a string that can be stored in the db.
-	 */
-	public String createConfigString()
-	{
-		String str;
-		
-		// The string should look like: "html,data=;"
-		str = "html,data=";
-		if ( m_html != null )
-			str += ConfigData.encodeConfigData( m_html );
-		
-		str += ";";
-
-		return str;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public String getHtml()
-	{
-		return m_html;
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void setHtml( String html )
-	{
-		m_html = html;
-	}
-}
+<% if (ss_mashupListDepth > 0) { %>
+	<c:if test="${!empty mashup_attributes['data']}">
+		</li>
+	</c:if>
+<% } %>
