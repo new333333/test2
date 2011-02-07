@@ -8,4 +8,8 @@ create table SS_FunctionConditionMap (functionId numeric(19,0) not null, meet va
 create table SS_FunctionConditions (id numeric(19,0) identity not null, type varchar(32) not null, zoneId numeric(19,0) not null, encodedSpec ntext null, title nvarchar(255) not null, description_text ntext null, description_format int null, primary key (id));
 alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions;
 alter table SS_FunctionConditionMap add constraint FK945D2AD868DAC30E foreign key (conditionId) references SS_FunctionConditions;
-INSERT INTO SS_SchemaInfo values (16);
+create table SS_BinderQuota (binderId numeric(19,0) not null, zoneId numeric(19,0) not null, diskQuota numeric(19,0) null, diskSpaceUsed numeric(19,0) null, diskSpaceUsedCumulative numeric(19,0) null, primary key (binderId));
+create index diskSpaceUsed_bquota on SS_BinderQuota (diskSpaceUsed);
+create index diskSpaceUsedCumulative_bquota on SS_BinderQuota (diskSpaceUsedCumulative);
+create index diskQuota_bquota on SS_BinderQuota (diskQuota);
+INSERT INTO SS_SchemaInfo values (17);

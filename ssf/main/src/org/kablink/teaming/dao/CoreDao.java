@@ -38,10 +38,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Date;
 
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -227,5 +229,19 @@ public interface CoreDao {
     public int getLoginCount(final Date startDate);
     
 	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult);
+	
+	/**
+	 * Computes disk usage for the binder. 
+	 * The result is a sum of the sizes of all files associated with the binder 
+	 * as well as the entries within the binder. The computation does NOT 
+	 * include files associated with sub-binders. That is, this is one level only.
+	 *   
+	 * @param zoneId
+	 * @param binderId
+	 * @return
+	 */
+	public Long computeDiskSpaceUsed(Long zoneId, Long binderId);
+
+	public BinderQuota loadBinderQuota(Long zoneId, Long binderId) throws NoObjectByTheIdException;
 
 }
