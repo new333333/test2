@@ -484,6 +484,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 		</c:forEach>
 	</c:forEach>	
   </div>	
+  <c:if test="${function.conditional}">
+    <div style="padding-top:10px;">
+      <span class="ss_bold"><ssf:nlt tag="access.subjectToConditions"/></span><br>
+      <c:forEach var="conditionalClause" items="${function.conditionalClauses}">
+      <span style="padding-left:10px;">${conditionalClause.condition.title}</span><br/>
+      </c:forEach>
+    </div>
+  </c:if>
 </div>
 </c:forEach>
 
