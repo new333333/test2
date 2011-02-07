@@ -33,6 +33,11 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.security.function.Condition" %>
+<%@ page import="org.kablink.teaming.security.function.ConditionalClause" %>
+<%@ page import="org.kablink.teaming.security.function.Function" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.HashSet" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("toolbar.whoHasAccess") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
@@ -134,6 +139,33 @@
 <%@ include file="/WEB-INF/jsp/binder/view_access_table.jsp" %>
 
 <br/>
+<c:set var="someConditionsApply" value="false"/>
+<%  Set<Condition> cSet = new java.util.HashSet<Condition>();  %>
+<c:forEach var="function2" items="${ssFunctions}">
+<jsp:useBean id="function2" type="org.kablink.teaming.security.function.Function" />
+  <c:if test="${function2.conditional}">
+    <c:set var="someConditionsApply" value="true"/>
+    <%  
+    	for (ConditionalClause cc : function2.getConditionalClauses()) {
+    		cSet.add(cc.getCondition());
+    	}
+    %>
+  </c:if>
+</c:forEach>
+<c:if test="${someConditionsApply}">
+<div style="padding:10px 0px;">
+<span><ssf:nlt tag="access.subjectToSomeConditions"/></span><br/>
+<%  for (Condition c : cSet) {  %>
+	    <div>
+	      <span style="padding-left:10px;"><%= c.getTitle() %> 
+	      <% if (c.getDescription().getText() != null && !"".equals(c.getDescription().getText())) { %>
+	         - <%= c.getDescription() %>
+	      <%  }  %>
+	      </span><br/>
+	    </div>
+<%  }  %>
+</div>
+</c:if>
 
 </c:if>
 <br/>
