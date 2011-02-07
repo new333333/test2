@@ -38,14 +38,13 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.util.TaskLinkage.TaskLink;
 
 /**
- * Class containing utility methods for manipulating task linkage from
- * the client.
+ * Class containing utility methods for manipulating TaskListItem's.
  *  
  * @author drfoster@novell.com
  */
-public class TaskLinkageHelper {
+public class TaskListItemHelper {
 	// Enumeration used to tell moveTaskInDirection() which direction a
-	// TaskListItem is to be moved within a TaskLinkageHelper object.
+	// TaskListItem is to be moved within a TaskListItemHelper object.
 	private enum Direction {
 		UP,
 		DOWN,
@@ -56,7 +55,7 @@ public class TaskLinkageHelper {
 	/*
 	 * Class constructor.
 	 */
-	private TaskLinkageHelper() {
+	private TaskListItemHelper() {
 		// Inhibits this class from being instantiated.
 	}
 
@@ -236,7 +235,7 @@ public class TaskLinkageHelper {
 	}
 
 	/**
-	 * Returns the TaskListItem with the given ID from this TaskLinkageHelper.
+	 * Returns the TaskListItem with the given ID from this TaskListItemHelper.
 	 * 
 	 * @param tb
 	 * @param entryId
@@ -244,7 +243,7 @@ public class TaskLinkageHelper {
 	 * @return
 	 */	
 	public static TaskListItem findTask(TaskBundle tb, Long entryId) {
-		// Scan the TaskListItem's in this TaskLinkageHelper.
+		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
 			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
@@ -267,7 +266,7 @@ public class TaskLinkageHelper {
 
 	/**
 	 * Returns the List<TaskListItem> containing the given ID from this
-	 * TaskLinkageHelper.
+	 * TaskListItemHelper.
 	 * 
 	 * @param tb
 	 * @param entryId
@@ -275,7 +274,7 @@ public class TaskLinkageHelper {
 	 * @return
 	 */	
 	public static List<TaskListItem> findTaskList(TaskBundle tb, Long entryId) {
-		// Scan the TaskListItem's in this TaskLinkageHelper.
+		// Scan the TaskListItem's in this TaskListItemHelper.
 		for (TaskListItem taskScan:  tb.getTasks()) {
 			// Is this the TaskListItem in question?
 			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
@@ -479,7 +478,7 @@ public class TaskLinkageHelper {
 	
 	/*
 	 * Moves a TaskListItem in the direction specified relative to the
-	 * other TaskListItem's in this TaskLinkageHelper.
+	 * other TaskListItem's in this TaskListItemHelper.
 	 * 
 	 * Returns true if we found the entry to move in the supplied
 	 * List<TaskListItem> (even if we didn't move it) and false otherwise.

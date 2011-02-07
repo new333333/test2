@@ -93,7 +93,7 @@ public class ElementBuilderEvent extends AbstractElementBuilder {
 		remoteModel.setDtCalcStart(event.getDtCalcStart());
 		remoteModel.setDtEnd(event.getDtEnd());
 		remoteModel.setDtCalcEnd(event.getDtCalcEnd());
-		remoteModel.setDuration(event.getDuration());
+		remoteModel.setDuration(org.kablink.teaming.remoting.ws.model.Duration.toRemoteModel(event.getDuration()));
 		remoteModel.setFrequency(event.getFrequency());
 		remoteModel.setInterval(event.getInterval());
 		remoteModel.setUntil(event.getUntil());

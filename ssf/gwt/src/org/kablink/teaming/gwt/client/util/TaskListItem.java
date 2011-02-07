@@ -221,6 +221,21 @@ public class TaskListItem implements IsSerializable {
 			     (m_days    * MILLIS_PER_DAY)    +
 			     (m_weeks   * MILLIS_PER_WEEK));
 		}
+
+		/**
+		 * Returns true if the duration only contains a days value and
+		 * false otherwise.
+		 *
+		 * @return
+		 */
+		public boolean hasDaysOnly() {
+			return
+				((0 == m_seconds) &&
+				 (0 == m_minutes) &&
+				 (0 == m_hours)   &&
+				 (0 != m_days)    &&
+				 (0 == m_weeks));
+		}
 	}
 	
 	/**
@@ -228,10 +243,14 @@ public class TaskListItem implements IsSerializable {
 	 * compatible with GWT RPC calls 
 	 */
 	public static class TaskEvent implements IsSerializable {
-		private boolean			m_allDayEvent;						//
-		private TaskDate		m_logicalEnd   = new TaskDate();	//
-		private TaskDate		m_logicalStart = new TaskDate();	//
-		private TaskDuration	m_duration;							//
+		private boolean				m_allDayEvent;						//
+		private TaskDate			m_logicalStart = new TaskDate();	//
+		private TaskDate			m_logicalEnd   = new TaskDate();	//
+		private TaskDuration		m_duration;							//
+		
+		// The following is used to store information for managing this
+		// TaskEvent on the server while updating calculated dates.
+		private transient Object	m_serverData;						//
 		
 		/**
 		 * Constructor method.
@@ -247,10 +266,11 @@ public class TaskListItem implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public boolean      getAllDayEvent()  {return m_allDayEvent; }
-		public TaskDate     getLogicalEnd()   {return m_logicalEnd;  }
-		public TaskDate     getLogicalStart() {return m_logicalStart;}
-		public TaskDuration getDuration()     {return m_duration;    }
+		public boolean      getAllDayEvent()   {return m_allDayEvent;  }
+		public TaskDate     getLogicalStart()  {return m_logicalStart; }
+		public TaskDate     getLogicalEnd()    {return m_logicalEnd;   }
+		public TaskDuration getDuration()      {return m_duration;     }
+		public Object       getServerData()    {return m_serverData;   }
 		
 		/**
 		 * Set'er methods.
@@ -258,9 +278,10 @@ public class TaskListItem implements IsSerializable {
 		 * @param
 		 */
 		public void setAllDayEvent( boolean      allDayEvent)  {m_allDayEvent  = allDayEvent; }
-		public void setLogicalEnd(  TaskDate     logicalEnd)   {m_logicalEnd   = logicalEnd;  }
 		public void setLogicalStart(TaskDate     logicalStart) {m_logicalStart = logicalStart;}
+		public void setLogicalEnd(  TaskDate     logicalEnd)   {m_logicalEnd   = logicalEnd;  }
 		public void setDuration(    TaskDuration duration)     {m_duration     = duration;    }
+		public void setServerData(  Object       serverData)   {m_serverData   = serverData;  }
 	}
 	
 	/**
@@ -281,15 +302,15 @@ public class TaskListItem implements IsSerializable {
 		private List<AssignmentInfo>	m_assignments      = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentGroups = new ArrayList<AssignmentInfo>();
 		private List<AssignmentInfo>	m_assignmentTeams  = new ArrayList<AssignmentInfo>();
-		private String					m_completed     = "";	
-		private String					m_entityType    = "";
-		private String					m_location      = "";
-		private String					m_priority      = "";
-		private String					m_title         = "";
-		private String					m_status        = "";
-		private TaskDate				m_completedDate = new TaskDate();	
-		private TaskEvent				m_event         = new TaskEvent();
-		private TaskId					m_taskId        = new TaskId();	
+		private String					m_completed        = "";	
+		private String					m_entityType       = "";
+		private String					m_location         = "";
+		private String					m_priority         = "";
+		private String					m_title            = "";
+		private String					m_status           = "";
+		private TaskDate				m_completedDate    = new TaskDate();	
+		private TaskEvent				m_event            = new TaskEvent();
+		private TaskId					m_taskId           = new TaskId();	
 		
 		/**
 		 * Constructor method.
