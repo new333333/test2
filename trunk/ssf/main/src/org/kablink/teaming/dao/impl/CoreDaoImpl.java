@@ -74,6 +74,7 @@ import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -2438,4 +2439,43 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			end(begin, "getLoginInfoIds()");
 		}
 	}
+	
+	public Long computeDiskSpaceUsed(final Long zoneId, final Long binderId) {
+		long begin = System.currentTimeMillis();
+		try {
+			List<Long> result = (List) getHibernateTemplate().execute(new HibernateCallback() {
+				public Object doInHibernate(Session session) throws HibernateException {
+					Criteria crit = session.createCriteria(VersionAttachment.class)
+					.setProjection(Projections.projectionList().add(Projections.sum("fileItem.length")))
+					.add(Restrictions.eq("owner.owningBinderId", binderId))
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+					.add(Restrictions.ne("repositoryName", ObjectKeys.FI_ADAPTER));
+					return crit.list();
+				}});;
+			if(result != null && result.size() > 0 && result.get(0) != null)
+				return result.get(0);
+			else
+				return 0L;
+		}
+		finally {
+			end(begin, "computeDiskSpaceUsed(Long,Long)");
+		}
+	}
+	
+	public BinderQuota loadBinderQuota(Long zoneId, Long binderId) {
+		long begin = System.currentTimeMillis();
+		try {
+			BinderQuota bq = (BinderQuota) load(BinderQuota.class, binderId);
+			if(bq == null)
+				throw new NoObjectByTheIdException("errorcode.no.binderquota.by.the.id", binderId);
+	        //make sure from correct zone
+	        if (!bq.getZoneId().equals(zoneId)) 
+	        	throw new NoObjectByTheIdException("errorcode.no.binderquota.by.the.id", binderId);
+	  		return bq;
+    	}
+    	finally {
+    		end(begin, "loadBinderQuota(Long, Long)");
+    	}	        		
+	}
+
  }

@@ -8,4 +8,8 @@ create table SS_FunctionConditionMap (functionId bigint not null, meet varchar(1
 create table SS_FunctionConditions (id bigint not null auto_increment, type varchar(32) not null, zoneId bigint not null, encodedSpec longtext, title varchar(255) not null, description_text longtext, description_format integer, primary key (id)) ENGINE=InnoDB;
 alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions (id);
 alter table SS_FunctionConditionMap add constraint FK945D2AD868DAC30E foreign key (conditionId) references SS_FunctionConditions (id);
-INSERT INTO SS_SchemaInfo values (16);
+create table SS_BinderQuota (binderId bigint not null, zoneId bigint not null, diskQuota bigint, diskSpaceUsed bigint, diskSpaceUsedCumulative bigint, primary key (binderId)) ENGINE=InnoDB;
+create index diskSpaceUsed_bquota on SS_BinderQuota (diskSpaceUsed);
+create index diskSpaceUsedCumulative_bquota on SS_BinderQuota (diskSpaceUsedCumulative);
+create index diskQuota_bquota on SS_BinderQuota (diskQuota);
+INSERT INTO SS_SchemaInfo values (17);
