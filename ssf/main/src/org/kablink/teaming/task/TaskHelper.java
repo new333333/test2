@@ -579,10 +579,14 @@ public class TaskHelper {
 		return getTaskSingleValue(formData, STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
 	}
 	
-	/*
+	/**
 	 * Returns true if a folder entry is a task and false otherwise.
+	 * 
+	 * @param entry
+	 * 
+	 * @return
 	 */
-	private static boolean isTaskEntryType(FolderEntry entry) {
+	public static boolean isTaskEntryType(FolderEntry entry) {
 		String family = DefinitionUtils.getFamily(entry.getEntryDefDoc());		
 		return isTaskEntryType(family);
 	}

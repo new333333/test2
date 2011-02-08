@@ -86,8 +86,7 @@ public class GwtUIHelper {
 	
 	// ssf*.properties settings that affect various aspects of the GWT
 	// based UI.
-	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN =           SPropsUtil.getBoolean("activity.stream.on.login",  true );
-	private final static boolean IS_MODIFY_TOP_ENTRY_ON_REPLY = false; // SPropsUtil.getBoolean("modify.top.entry.on.reply", false);
+	private final static boolean IS_ACTIVITY_STREAMS_ON_LOGIN = SPropsUtil.getBoolean("activity.stream.on.login",  true);
 	
 	// String used to recognized an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
@@ -996,17 +995,6 @@ public class GwtUIHelper {
 
 	}
 
-	/**
-	 * Returns true if we're supposed to change the top entry's
-	 * modification time when a reply is posted or modified and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isModifyTopEntryOnReply() {
-		return IS_MODIFY_TOP_ENTRY_ON_REPLY;
-	}
-	
 	/**
 	 * Checks the session for the session captive (i.e., running under
 	 * GroupWise) state.  If a value is stored, it's returned.  If a

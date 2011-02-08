@@ -35,14 +35,16 @@
 <% // Task Folder Listing View %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date"                                         %>
+<%@ page import="org.kablink.teaming.ObjectKeys"                         %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil"                    %>
 <%@ page import="org.kablink.teaming.web.util.ListFolderHelper.ModeType" %>
 <jsp:useBean id="ssSeenMap"               type="org.kablink.teaming.domain.SeenMap"                     scope="request" />
 <jsp:useBean id="ssCurrentFolderModeType" type="org.kablink.teaming.web.util.ListFolderHelper.ModeType" scope="request" />
 <jsp:useBean id="ss_searchTotalHits"      type="java.lang.Integer"                                      scope="request" />
+<jsp:useBean id="ssBinder"                type="org.kablink.teaming.domain.Binder"                      scope="request" />
 <%
 	// Is the GWT based subtasks feature enabled?
-	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
+	boolean subtasksEnabled       = SPropsUtil.getBoolean("subtasks.enabled", true);
 	if (subtasksEnabled) {
 		// Yes!  Are we viewing the task list as 'Entries from Folder'?
 //! 	subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
@@ -54,6 +56,15 @@
 				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
 		}
 	}
+	
+	boolean updateCalculatedDates = false;
+	try {
+		Boolean taskChanged = ((Boolean) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGED));
+		if (null != taskChanged) {
+			updateCalculatedDates = taskChanged.booleanValue();
+		}
+	}
+	catch (Exception ex) {}
 %>
 
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
@@ -176,7 +187,7 @@
 			function ss_initGwtTaskListing() {
 				if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
 						(window.name == "gwtContentIframe")) {
-					window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}");
+					window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}", "<%= updateCalculatedDates %>");
 				}
 				else {
 					alert("*Internal Error* - The GWT Task UI code is missing!!!");

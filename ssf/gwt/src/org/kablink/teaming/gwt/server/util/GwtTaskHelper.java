@@ -2036,12 +2036,19 @@ public class GwtTaskHelper {
 		
 		else {
 			// No, we're not updating a specific task!  Update
-			// everything.
+			// everything...
 			updateCalculatedDatesImpl(
 				bs,
 				tb,
 				reply,
 				tb.getTasks());
+
+			// ...and clear any flag from the binder telling us we've
+			// ...go a change pending.
+			bs.getBinderModule().setProperty(
+				tb.getBinderId(),
+				ObjectKeys.BINDER_PROPERTY_TASK_CHANGED,
+				Boolean.FALSE);
 		}
 		
 		// If we get here, reply refers to a Map<Long, TaskDate>
@@ -2166,23 +2173,39 @@ public class GwtTaskHelper {
 				// or end dates for this task?
 				if (removeCalcStart || (null != newCalcStart) ||
 					removeCalcEnd   || (null != newCalcEnd)) {
-					// Yes!  If we can save them and we changed the
-					// calculated end date...
+					// Yes!  Can we save the changes?
 					boolean saved = updateCalculatedDatesOnTask(
 						bs,
 						ti,
 						removeCalcStart, newCalcStart,
 						removeCalcEnd,   newCalcEnd);
 					
-					if (saved && (removeCalcEnd || (null != newCalcEnd))) {
-						// ...track the fact that we changed this
-						// ...task's calculated end date.
-						TaskDate calcTD = new TaskDate();
-						if (!removeCalcEnd) {
-							calcTD.setDate(                         newCalcEnd);
-							calcTD.setDateDisplay(getDateTimeString(newCalcEnd));
+					if (saved) {
+						// Yes!  If we changed the calculated start...
+						if (removeCalcStart || (null != newCalcEnd)) {
+							// ...update it in the task.
+							TaskDate calcTD = new TaskDate();
+							if (!removeCalcStart) {
+								calcTD.setDate(newCalcStart);
+								calcTD.setDateDisplay(getDateTimeString(newCalcStart));
+							}
+							tiE.setLogicalStart(calcTD);
 						}
-						updates.put(ti.getTaskId().getEntryId(), calcTD);
+
+						// If we changed the calculated end...
+						if (removeCalcEnd || (null != newCalcEnd)) {
+							// ...update it in the task...
+							TaskDate calcTD = new TaskDate();
+							if (!removeCalcEnd) {
+								calcTD.setDate(                         newCalcEnd);
+								calcTD.setDateDisplay(getDateTimeString(newCalcEnd));
+							}
+							tiE.setLogicalEnd(calcTD);
+							
+							// ...and track the fact that we changed
+							// ...this task's calculated end date.
+							updates.put(ti.getTaskId().getEntryId(), calcTD);
+						}
 					}
 				}
 			}

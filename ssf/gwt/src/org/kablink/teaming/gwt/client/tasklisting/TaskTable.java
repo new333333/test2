@@ -272,7 +272,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Initialize the super class..
 		super();
 
-		// ...store the parameter...
+		// ...store the parameters...
 		m_taskListing = taskListing;
 		
 		// ...create the popup menus we'll need for the TaskTable.
@@ -1520,17 +1520,10 @@ public class TaskTable extends Composite implements ActionHandler {
 				// If we were requested to do so, update the calculated
 				// dates, based on the given task having changed.
 				if (updateCalculatedDates) {
-					Scheduler.ScheduledCommand updater;
-					updater = new Scheduler.ScheduledCommand() {
-						@Override
-						public void execute() {
-							// Note that we run this delayed so that we
-							// don't invoke one RPC method while
-							// processing the results of another.
-							updateCalculatedDates(task);
-						}
-					};
-					Scheduler.get().scheduleDeferred(updater);
+					// Note that we run this asynchronously so that we 
+					// don't invoke one RPC method while processing the
+					// results of another.
+					updateCalculatedDatesAsync(task);
 				}
 			}
 		});
@@ -1947,6 +1940,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			public void onClick(ClickEvent event) {handleTableResort(Column.CLOSED_PERCENT_DONE);}			
 		});
 		m_flexTable.setWidget(0, colIndex, a);
+		if (m_taskBundle.getIsFromFolder()) {
+			m_flexTableCF.setWidth(0, colIndex, "100%");
+		}
 	}
 	
 	/*
@@ -1988,7 +1984,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				@Override
 				public void onClick(ClickEvent event) {handleTableResort(Column.LOCATION);}			
 			});
-			m_flexTable.setWidget(0, colIndex, a);
+			m_flexTable.setWidget( 0, colIndex, a     );
+			m_flexTableCF.setWidth(0, colIndex, "100%");
 		}
 	}
 	
@@ -2129,20 +2126,10 @@ public class TaskTable extends Composite implements ActionHandler {
 		return m_taskBundle.respectLinkage();
 	}
 	
-	/**
-	 * Shows the tasks in the List<TaskListItem>.
-	 * 
-	 * Returns the time, in milliseconds, that it took to show them.
-	 * 
-	 * @param taskBundle
-	 * @param checkedTaskIds
-	 * 
-	 * @return
+	/*
+	 * Shows the tasks in the TaskBundle.
 	 */
-	public long showTasks(TaskBundle taskBundle, List<Long> checkedTaskIds) {
-		// Save when we start...
-		long start = System.currentTimeMillis();
-
+	private void showTasks(TaskBundle taskBundle, List<Long> checkedTaskIds) {
 		// ...decide how the table should be sorted...
 		m_taskBundle = taskBundle;
 		if (m_newTaskTable) {
@@ -2189,15 +2176,41 @@ public class TaskTable extends Composite implements ActionHandler {
 			}
 		};
 		Scheduler.get().scheduleDeferred(validator);
+	}
+	
+	/**
+	 * Shows the tasks in the TaskBundle.
+	 * 
+	 * Returns the time, in milliseconds, that it took to show them.
+	 * 
+	 * @param taskBundle
+	 * @param checkedTaskIds
+	 * 
+	 * @return
+	 */
+	public long showTasks(final TaskBundle tb, boolean updateCalculatedDates) {
+		// Save when we start...
+		long start = System.currentTimeMillis();
+
+		// Always use the initial form of the method.
+		showTasks(tb, null);	// null -> No checked tasks to preserve.
+
+		// After displaying the table, are we supposed to update the
+		// calculated dates?
+		if (updateCalculatedDates) {
+			// Yes!  Perform the update.  Note that we run this
+			// asynchronously so that the user is able to view and
+			// interact with the task table while we're updating.
+			updateCalculatedDatesAsync(tb.getBinderId(), null);
+		}
 		
 		// Finally, return how long we took to show the tasks.
 		long end = System.currentTimeMillis();
 		return (end - start);
 	}
 	
-	public void showTasks(TaskBundle tb) {
-		// Always use the initial form of the method.
-		showTasks(tb, null);	// null -> No checked tasks to preserve.
+	public long showTasks(TaskBundle tb) {
+		return showTasks(tb, false);	// false -> Don't update the calculated dates.
 	}
 
 	/*
@@ -2238,22 +2251,19 @@ public class TaskTable extends Composite implements ActionHandler {
 
 	/*
 	 * Makes a GWT RPC call to the server to update the calculated
-	 * dates for the task, and any related tasks.  If the RPC call
-	 * succeeds and returns true, the TaskTable will be completely
-	 * refreshed.
+	 * dates for the binder and/or task, and any related subtasks.  If
+	 * the RPC call succeeds any modified end dates will be reflected
+	 * in the task table.
 	 */
-	private void updateCalculatedDates(TaskListItem task) {
-		final TaskId taskId  = task.getTask().getTaskId();
-		final Long   entryId = taskId.getEntryId();
+	private void updateCalculatedDates(final Long binderId, final Long entryId) {
 		m_dueDateBusy.setResource(m_images.busyAnimation());
-		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), taskId.getBinderId(), entryId, new AsyncCallback<Map<Long, TaskDate>>() {
+		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
 			public void onFailure(Throwable t) {
 				m_dueDateBusy.setResource(m_images.spacer());
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDates(),
-					String.valueOf(entryId));
+				if (null == entryId)
+				     GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesBinder(), String.valueOf(binderId));
+				else GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesTask(),   String.valueOf(entryId ));
 			}
 			
 			@Override
@@ -2266,13 +2276,37 @@ public class TaskTable extends Composite implements ActionHandler {
 						// ...storing their new logical end dates...
 						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
 						task.getTask().getEvent().setLogicalEnd(updatedTaskInfo.get(entryId));
+						
+						// ...and redisplaying the task's due date.
+						renderColumnDueDate(
+							task,
+							getUIData(task).getTaskRow(),
+							getColumnIndex(Column.DUE_DATE));
 					}
-					
-					// ...and redisplay the tasks in the TaskTable,
-					showTasks(m_taskBundle);
 				}
 			}
 		});
+	}
+	
+	private void updateCalculatedDates(TaskListItem task) {
+		TaskId taskId = task.getTask().getTaskId();
+		updateCalculatedDates(taskId.getBinderId(), taskId.getEntryId());
+	}
+	
+	private void updateCalculatedDatesAsync(final Long binderId, final Long entryId) {
+		Scheduler.ScheduledCommand updater;
+		updater = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				updateCalculatedDates(binderId, entryId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(updater);
+	}
+	
+	private void updateCalculatedDatesAsync(TaskListItem task) {
+		TaskId taskId = task.getTask().getTaskId();
+		updateCalculatedDatesAsync(taskId.getBinderId(), taskId.getEntryId());
 	}
 	
 	/*

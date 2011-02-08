@@ -233,6 +233,7 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
     public static final String BINDER_PROPERTY_TASK_LINKAGE = "taskLinkage";
+    public static final String BINDER_PROPERTY_TASK_CHANGED = "taskChanged";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
