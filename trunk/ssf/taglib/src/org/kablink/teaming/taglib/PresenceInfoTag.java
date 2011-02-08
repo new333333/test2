@@ -140,7 +140,7 @@ public class PresenceInfoTag extends BodyTagSupport {
 			String dudeGif;
 			switch (userStatus) {
 				case PresenceInfo.STATUS_AVAILABLE:
-					dudeGif = "sym_s_green_dude.gif";
+					dudeGif = "sym_s_green_dude_14.png";
 					if (statusText == null) {
 						statusText = NLT.get("presence.online");
 					}
@@ -149,28 +149,28 @@ public class PresenceInfoTag extends BodyTagSupport {
 					if (statusText == null) {
 						statusText = NLT.get("presence.away");
 					}
-					dudeGif = "sym_s_yellow_dude.gif";
+					dudeGif = "sym_s_yellow_dude_14.png";
 					break;
 				case PresenceInfo.STATUS_IDLE:
 					if (statusText == null) {
 						statusText = NLT.get("presence.idle");
 					}
-					dudeGif = "sym_s_yellow_dude.gif";
+					dudeGif = "sym_s_yellow_dude_14.png";
 					break;
 				case PresenceInfo.STATUS_BUSY:
 					if (statusText == null) {
 						statusText = NLT.get("presence.busy");
 					}
-					dudeGif = "sym_s_red_dude.gif";
+					dudeGif = "sym_s_red_dude_14.png";
 					break;
 				case PresenceInfo.STATUS_OFFLINE:
 					if (statusText == null) {
 						statusText = NLT.get("presence.offline");
 					}
-					dudeGif = "sym_s_gray_dude.gif";
+					dudeGif = "sym_s_gray_dude_14.png";
 					break;
 				default:
-					dudeGif = "sym_s_white_dude.gif";
+					dudeGif = "sym_s_white_dude_14.png";
 					statusText = NLT.get("presence.none");
 			}
 
