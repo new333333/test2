@@ -12,4 +12,7 @@ create table SS_BinderQuota (binderId number(19,0) not null, zoneId number(19,0)
 create index diskSpaceUsed_bquota on SS_BinderQuota (diskSpaceUsed);
 create index diskSpaceUsedCumulative_bquota on SS_BinderQuota (diskSpaceUsedCumulative);
 create index diskQuota_bquota on SS_BinderQuota (diskQuota);
-INSERT INTO SS_SchemaInfo values (17);
+alter table SS_ZoneConfig add binderQuotasInitialized number(1,0);
+alter table SS_ZoneConfig add binderQuotasEnabled number(1,0);
+alter table SS_ZoneConfig add binderQuotasAllowOwner number(1,0);
+INSERT INTO SS_SchemaInfo values (18);
