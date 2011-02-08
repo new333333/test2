@@ -145,6 +145,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     -webkit-border-top-right-radius: 6px;
     -webkit-border-top-left-radius: 6px;
     }
+.wiki-tabs table {
+	background-color: transparent;
+	}	
 .wiki-tab {
     font-size: 12px;
     font-weight: normal;
