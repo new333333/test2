@@ -71,6 +71,13 @@ public class ManageQuotasController extends SAbstractController {
 			} else {
 				getAdminModule().setQuotaEnabled(false);
 			}
+			if (formData.containsKey("enableBinderQuotas")) {
+				boolean allowBinderOwner = false;
+				if (formData.containsKey("allowBinderQuotasByOwner")) allowBinderOwner = true;
+				getAdminModule().setBinderQuotasEnabled(true, allowBinderOwner);
+			} else {
+				getAdminModule().setBinderQuotasEnabled(false, false);
+			}
 			Integer defaultQuota;
 			Integer highWaterMark;
 			
@@ -195,6 +202,8 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
 		model.put(WebKeys.QUOTAS_HIGH_WATER_MARK, getAdminModule().getQuotaHighWaterMark());
+		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
+		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_QUOTAS, model);
 

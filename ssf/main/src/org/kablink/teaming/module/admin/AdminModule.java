@@ -139,6 +139,10 @@ public interface AdminModule {
     public void setQuotaEnabled(boolean quotaEnabled);
     public void setQuotaDefault(Integer quotaDefault);
     public void setQuotaHighWaterMark(Integer quotaHighWaterMark);
+    public void setBinderQuotasInitialized(boolean binderQuotaInitialized);
+    public boolean isBinderQuotaEnabled();
+    public boolean isBinderQuotaAllowBinderOwnerEnabled();
+    public void setBinderQuotasEnabled(boolean quotaEnabled, boolean allowBinderOwner);
     
     public boolean isMobileAccessEnabled();
     public void setMobileAccessEnabled(boolean mobileAccessEnabled);

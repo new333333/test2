@@ -379,6 +379,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		if (zoneConfig.getDiskQuotasHighwaterPercentage() == quotaHighWaterMark) return; // if no change, do nothing
   		zoneConfig.setDiskQuotasHighwaterPercentage(quotaHighWaterMark);
   	}
+    public void setBinderQuotasInitialized(boolean binderQuotaInitialized) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setBinderQuotasInitialized(binderQuotaInitialized);
+    }
+    public void setBinderQuotasEnabled(boolean binderQuotaEnabled, boolean allowBinderOwner) {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		zoneConfig.setBinderQuotasEnabled(binderQuotaEnabled, allowBinderOwner);
+    }
+    public boolean isBinderQuotaEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isBinderQuotaEnabled(); 		
+    }
+    public boolean isBinderQuotaAllowBinderOwnerEnabled() {
+  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+  		return zoneConfig.isBinderQuotaAllowBinderOwnerEnabled(); 		
+    }
+
   	public boolean isMobileAccessEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.isMobileAccessEnabled(); 		

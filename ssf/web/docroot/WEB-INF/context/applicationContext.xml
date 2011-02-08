@@ -636,6 +636,8 @@
 				<prop key="setQuotaEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setQuotaDefault">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setQuotaHighWaterMark">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderQuotasEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setBinderQuotasInitialized">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setHomePageConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>

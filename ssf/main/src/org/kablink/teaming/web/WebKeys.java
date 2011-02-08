@@ -1097,6 +1097,8 @@ public class WebKeys {
     public static final String QUOTAS_GROUPS="ss_quotasGroups";
     public static final String QUOTAS_USERS="ss_quotasUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
+    public static final String BINDER_QUOTAS_ENABLED="ss_binderQuotasEnabled";
+    public static final String BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED="ss_binderQuotasAllowBinderOwnerEnabled";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
