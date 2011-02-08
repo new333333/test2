@@ -117,6 +117,9 @@
 	} else if (itemType.equals("team_list")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_team_list.jsp" /><%
 
+	} else if (itemType.equals("email_list")) {
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_email_list.jsp" /><%
+
 	} else if (itemType.equals("survey")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_survey.jsp" /><%
 

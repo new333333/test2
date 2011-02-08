@@ -32,31 +32,36 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="org.kablink.teaming.domain.CustomAttribute" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<%@ page contentType="text/xml; charset=UTF-8" %>
-<taconite-root xml:space="preserve">
-<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+<% // External user list view. %>
+<%
+	java.util.Set externalUserListSet = new java.util.HashSet();
+%>
 
-<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-
-	<taconite-replace contextNodeID="conditionEntryElements" 
-	parseInBrowser="true"><div 
-	   id="conditionEntryElements" >
-	   <span class="ss_bold"><ssf:nlt tag="definition.selectEntryElements"/></span><br/>
-	   <select multiple="multiple"
-	   name="conditionElementName" 
-	   >
-	     <option value="" selected="selected"><ssf:nlt 
-	       tag="filter.selectElement"/></option>
-	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
-	       <c:if test="${element.value.type == 'user_list' || element.value.type == 'userListSelectbox' || 
-	           element.value.type == 'group_list' || element.value.type == 'team_list' || 
-	           element.value.type == 'email_list'}">
-	         <option value="<c:out value="${element.value.type}:${element.key}"/>"><c:out value="${element.value.caption}"/></option>
-	       </c:if>
-	     </c:forEach>
-	   </select></div></taconite-replace>
-
+<c:if test="${empty ss_element_display_style}">
+	<div class="ss_entryContent">
+		<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+		<ul class="ss_nobullet">
+			<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
+				<li><ssf:mailto email="${selection}" /></li>
+			</c:forEach>
+		</ul>
+	</div>
 </c:if>
-</taconite-root>
+
+<c:if test="${!empty ss_element_display_style && ss_element_display_style == 'tableAlignLeft'}">
+	<tr>
+		<td class="ss_table_spacer_right" valign="top" align="right">
+			<span class="${ss_element_display_style_caption}"><c:out value="${property_caption}" /></span>
+		</td>
+		<td valign="top" align="left">
+			<ul class="ss_nobullet">
+			<c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}" >
+				<li><ssf:mailto email="${selection}" /></li>
+			</c:forEach>
+			</ul>
+		</td>
+	</tr>
+</c:if>

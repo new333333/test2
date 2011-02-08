@@ -137,11 +137,11 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		    	} else if ("appendBody".equals(name)) {
 		    		n.appendBody = GetterUtil.getBoolean(value, false);
 		    	} else if ("emailAddrs".equals(name)) {
-		    		n.emailAddrs = new ArrayList();
+		    		n.toEmailAddrs = new ArrayList();
 		    		String[] addrs = prop.getText().split("\\n");
 		    		for (int i = 0; i < addrs.length; i++) {
 		    			String addr = addrs[i].trim();
-		    			if (!n.emailAddrs.contains(addr)) n.emailAddrs.add(addr);
+		    			if (!n.toEmailAddrs.contains(addr)) n.toEmailAddrs.add(addr);
 		    		}
 		    	} 
 	    	}
@@ -149,6 +149,15 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     	n.toUsers = getUsers(props, wfEntry); 		
     	n.ccUsers = getUsers(notifyElement.selectNodes("./item[@name='ccNotifications']/properties/property"), wfEntry);
     	n.bccUsers = getUsers(notifyElement.selectNodes("./item[@name='bccNotifications']/properties/property"), wfEntry);
+    	
+    	List<String> toAddrs = getEmailAddrs(props, wfEntry);
+    	for (String addr : toAddrs) {
+    		if (!n.toEmailAddrs.contains(addr)) {
+    			n.toEmailAddrs.add(addr);
+    		}
+    	}
+     	n.ccEmailAddrs = getEmailAddrs(notifyElement.selectNodes("./item[@name='ccNotifications']/properties/property"), wfEntry);
+    	n.bccEmailAddrs = getEmailAddrs(notifyElement.selectNodes("./item[@name='bccNotifications']/properties/property"), wfEntry);
 
  	  	return n;    	
     }
@@ -197,8 +206,49 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    	if (allUsersId != null && !sendingToAllUsersIsAllowed) ids.remove(allUsersId);
 	    	return getUsers(ids);
  		} else return null;
-
     }
+    
+    private static List<String> getEmailAddrs(List<Element> props, WorkflowSupport wfEntry) {
+ 		if ((props != null) && !props.isEmpty()) {
+ 	    	Set<String>addrs = new HashSet();
+	    	DefinableEntity entity = (DefinableEntity)wfEntry;
+	    	for (Element prop:props) {
+	    		String name = prop.attributeValue("name","");
+	    		String value = prop.attributeValue("value","");
+		    	if ("condition".equals(name)) {
+		    		if (entity.getEntryDefId() != null) {
+		    			List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
+		    					entity.getEntryDefId() + "']");
+		    			if (userLists != null && !userLists.isEmpty()) {
+		    				for (Element element:userLists) {
+		    					String userListName = element.attributeValue("elementName"); //custom attribute name
+		    					if (Validator.isNull(userListName)) continue;
+		    					//elementName can have the element type pre-pended (e.g., user_list:attr_name)
+		    					String listType = "user_list";
+		    					if (userListName.indexOf(":") >= 0) {
+		    						listType = userListName.substring(0, userListName.indexOf(":"));
+		    						userListName = userListName.substring(userListName.indexOf(":")+1);
+		    					}
+		    					CustomAttribute attr = entity.getCustomAttribute(userListName); 
+		    					if (attr != null) {
+		    						//comma separated value
+		    						if (listType.equals("email_list")) {
+		    							addrs.addAll(attr.getValueSet());
+		    						}
+		    					}
+		    				}
+		    			}
+		    		}
+		    	}
+	    	}
+	    	List<String> addrList = new ArrayList<String>();
+	    	for (String addr : addrs) {
+	    		addrList.add(addr);
+	    	}
+	    	return addrList;
+ 		} else return null;
+    }
+
  	public static void endWorkflow(WorkflowSupport wEntry, WorkflowState state, boolean deleteIt) {
 		JbpmContext context=WorkflowFactory.getContext();
 		try {
@@ -1184,7 +1234,9 @@ public static void resumeTimers(WorkflowSupport entry) {
 	protected static class WfNotify {
 		private String subject="";
 		private String body="";
-		private List<String> emailAddrs;
+		private List<String> toEmailAddrs;
+		private List<String> ccEmailAddrs;
+		private List<String> bccEmailAddrs;
 		private boolean appendTitle=false;
 		private boolean appendBody=false;
 		private Collection<User> toUsers;
@@ -1212,8 +1264,14 @@ public static void resumeTimers(WorkflowSupport entry) {
 		public Collection<User> getBCCUsers() {
 			return bccUsers;
 		}
-		public List<String> getEmailAddrs() {
-			return emailAddrs;
+		public List<String> getToEmailAddrs() {
+			return toEmailAddrs;
+		}
+		public List<String> getCcEmailAddrs() {
+			return ccEmailAddrs;
+		}
+		public List<String> getBccEmailAddrs() {
+			return bccEmailAddrs;
 		}
 
 	}
