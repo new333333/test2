@@ -100,6 +100,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private Column				m_sortColumn;		//
 	private FlexCellFormatter	m_flexTableCF;		//
 	private FlexTable			m_flexTable;		//
+	private Image 				m_dueDateBusy;	//
 	private int					m_taskCount;		//
 	private RowFormatter		m_flexTableRF;		//
 	private TaskBundle			m_taskBundle;		//
@@ -601,15 +602,19 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Returns a spacer Image.
 	 */
-	private Image buildSpacer(int width) {
+	private Image buildSpacer(int height, int width) {
 		Image reply = new Image(m_images.spacer());
-		reply.setHeight(                     "16px");
-		reply.setWidth(String.valueOf(width) + "px");
+		reply.setHeight(String.valueOf(height) + "px");
+		reply.setWidth( String.valueOf(width ) + "px");
 		return reply;
 	}
 	
+	private Image buildSpacer(int width) {
+		return buildSpacer(16, width);
+	}
+
 	private Image buildSpacer() {
-		return buildSpacer(16);
+		return buildSpacer(16, 16);
 	}
 
 	/*
@@ -817,6 +822,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleMembershipDisplay(AssignmentInfo assignee, List<AssignmentInfo> assignees, FlowPanel expansionFP, boolean showDisabled) {
 		// Create a VerticalPanel to display the membership in.
 		VerticalPanel vp = new VerticalPanel();
+		vp.addStyleName("gwtTaskList_assigneesList");
 		
 		// Scan the AssignmentInfo's.
 		int assignments = 0;
@@ -1947,6 +1953,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Due Date' column header.
 	 */
 	private void renderHeaderDueDate(int colIndex) {
+		FlowPanel fp = new FlowPanel();
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
 		markAsSortKey(a, Column.DUE_DATE);
@@ -1954,7 +1961,17 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.DUE_DATE);}			
 		});
-		m_flexTable.setWidget(0, colIndex, a);
+		fp.add(a);
+
+		// Add a 'Due Date' busy Image that we'll use when calculating
+		// dates for a task.  Depending on that task relationships
+		// involved, that could be a time consuming operation.
+		m_dueDateBusy = buildSpacer(14, 14);
+		m_dueDateBusy.addStyleName("marginleft2px");
+		m_dueDateBusy.getElement().setAttribute("align", "absmiddle");
+		fp.add(m_dueDateBusy);
+		
+		m_flexTable.setWidget(0, colIndex, fp);
 	}
 
 	/*
@@ -2077,16 +2094,27 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	private void selectAllTasksImpl(List<TaskListItem> tasks, boolean selected) {
+		// Scan the tasks.
 		for (TaskListItem task:  tasks) {
+			// Mark this task's selection state.
 			UIData uid = getUIData(task);
-			uid.getTaskSelectorCB().setValue(selected);
 			uid.setTaskSelected(selected);
 			
-			int row = uid.getTaskRow();
-			if (selected)
-		         m_flexTableRF.addStyleName(   row, "selected");
-		    else m_flexTableRF.removeStyleName(row, "selected");
-
+			// Is this task visible?  (If a task's subtasks are
+			// collapsed, the subtasks aren't visible.)
+			CheckBox selectorCB = uid.getTaskSelectorCB();
+			if (null != selectorCB) {
+				// Yes!  Set its checkbox state...
+				selectorCB.setValue(selected);
+				
+				// ...and make the appropriate style change to the row.
+				int row = uid.getTaskRow();
+				if (selected)
+			         m_flexTableRF.addStyleName(   row, "selected");
+			    else m_flexTableRF.removeStyleName(row, "selected");
+			}
+			
+			// Select this task's subtasks.
 			selectAllTasksImpl(task.getSubtasks(), selected);
 		}
 	}
@@ -2217,9 +2245,11 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void updateCalculatedDates(TaskListItem task) {
 		final TaskId taskId  = task.getTask().getTaskId();
 		final Long   entryId = taskId.getEntryId();
+		m_dueDateBusy.setResource(m_images.busyAnimation());
 		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), taskId.getBinderId(), entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
 			public void onFailure(Throwable t) {
+				m_dueDateBusy.setResource(m_images.spacer());
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDates(),
@@ -2229,6 +2259,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onSuccess(Map<Long, TaskDate> updatedTaskInfo) {
 				// Did any tasks have the logical end dates changed?
+				m_dueDateBusy.setResource(m_images.spacer());
 				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {
 					// Yes!  Scan them...
 					for (Long entryId:  updatedTaskInfo.keySet()) {
