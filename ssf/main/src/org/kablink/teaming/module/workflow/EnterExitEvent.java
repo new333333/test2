@@ -423,8 +423,8 @@ public class EnterExitEvent extends AbstractActionHandler {
 		HashMap details = new HashMap();
 		List<InternetAddress>addrs = getAddrs(notify.getToUsers());
 		//Add in the additional email addresses
-		if (notify.getEmailAddrs() != null) {
-			for (String addr : notify.getEmailAddrs()) {
+		if (notify.getToEmailAddrs() != null) {
+			for (String addr : notify.getToEmailAddrs()) {
 				try {
 					InternetAddress ia = new InternetAddress(addr);
 					if (addrs == null) addrs = new ArrayList<InternetAddress>();
@@ -435,10 +435,33 @@ public class EnterExitEvent extends AbstractActionHandler {
 		
 		if (addrs == null || addrs.isEmpty()) return; //need a to list
 		details.put(MailModule.TO, addrs);
+		
+		//Add in the cc email addresses
 		addrs = getAddrs(notify.getCCUsers());
+		if (notify.getCcEmailAddrs() != null) {
+			for (String addr : notify.getCcEmailAddrs()) {
+				try {
+					InternetAddress ia = new InternetAddress(addr);
+					if (addrs == null) addrs = new ArrayList<InternetAddress>();
+					if (!addrs.contains(ia)) addrs.add(ia);
+				} catch(Exception e) {}
+			}
+		}
 		if (addrs != null && !addrs.isEmpty()) details.put(MailModule.CC, addrs);
+		
+		//Add in the bcc email addresses
 		addrs = getAddrs(notify.getBCCUsers());
+		if (notify.getBccEmailAddrs() != null) {
+			for (String addr : notify.getBccEmailAddrs()) {
+				try {
+					InternetAddress ia = new InternetAddress(addr);
+					if (addrs == null) addrs = new ArrayList<InternetAddress>();
+					if (!addrs.contains(ia)) addrs.add(ia);
+				} catch(Exception e) {}
+			}
+		}
 		if (addrs != null && !addrs.isEmpty()) details.put(MailModule.BCC, addrs);
+		
 		String s = notify.getSubject();
 		if (notify.isAppendTitle()) {
 			s = s + " " + entry.getTitle();

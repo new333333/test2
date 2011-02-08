@@ -59,6 +59,8 @@
 	}
 	if (!width.equals("")) {
 		width = "width:"+width+"px;";
+	} else {
+		width = "width:300px;";
 	}
 	if (height == null || height.equals("")) {
 		height = "";
@@ -68,6 +70,8 @@
 	}
 	if (!height.equals("")) {
 		height = "height:"+height+"px;";
+	} else {
+		height = "height:60px;";
 	}
 	if (caption == null || caption.equals("")) {
 		caption = "";
@@ -86,5 +90,6 @@
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 <textarea name="<%= elementName %>" wrap="virtual" ${ss_fieldModifyInputAttribute}
   style="<%= height %> <%= width %>"
-><c:out value="${ssDefinitionEntry.customAttributes[property_name].value}"/></textarea>
+><c:forEach var="selection" items="${ssDefinitionEntry.customAttributes[property_name].valueSet}">${selection}
+</c:forEach></textarea>
 </div>
