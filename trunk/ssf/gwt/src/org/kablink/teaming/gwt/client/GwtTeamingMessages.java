@@ -301,7 +301,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UnknownException();
 	String rpcFailure_UntrackingBinder();
 	String rpcFailure_UntrackingPerson();
-	String rpcFailure_UpdateCalculatedDates();
+	String rpcFailure_UpdateCalculatedDatesBinder();
+	String rpcFailure_UpdateCalculatedDatesTask();
 	String rpcFailure_UpdateFavorites();
 
 	// Strings used with the MastHead

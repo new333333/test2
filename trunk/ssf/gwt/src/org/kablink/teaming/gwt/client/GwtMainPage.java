@@ -331,11 +331,11 @@ public class GwtMainPage extends Composite
 	 * task.jsp when a task listing is loaded.
 	 */
 	private native void initTaskListingJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend )
+		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates )
 		{
 			var taskListingDIV = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskListingDIV");
 			var taskToolsDIV   = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskToolsDIV"  );
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates );
 		}//end ss_initTaskListing()
 	}-*/;
 
@@ -523,7 +523,7 @@ public class GwtMainPage extends Composite
 	/*
 	 * Called when the GWT task listing UI is loading.
 	 */
-	private void initTaskListing( Element taskToolsDIV, Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend )
+	private void initTaskListing( Element taskToolsDIV, Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend, String updateCalculatedDates )
 	{
 		// Create a TaskListing object...
 		m_taskListing = new TaskListing(
@@ -534,7 +534,8 @@ public class GwtMainPage extends Composite
 			filterType,
 			mode,
 			sortBy,
-			(GwtClientHelper.hasString( sortDescend ) ? Boolean.parseBoolean(sortDescend) : false) );
+			( GwtClientHelper.hasString( sortDescend )           ? Boolean.parseBoolean( sortDescend           ) : false ),
+			( GwtClientHelper.hasString( updateCalculatedDates ) ? Boolean.parseBoolean( updateCalculatedDates ) : false ) );
 		
 		// ...and show it.
 		m_taskListing.show();

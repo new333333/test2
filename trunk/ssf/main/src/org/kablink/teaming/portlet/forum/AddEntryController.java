@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -70,6 +70,7 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.web.WebKeys;
@@ -148,6 +149,20 @@ public class AddEntryController extends SAbstractController {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 					response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");
 				}
+				
+				try {
+					// If we just added a task entry...
+					FolderEntry fe = getFolderModule().getEntry(folderId, entryId);
+					if (TaskHelper.isTaskEntryType(fe)) {
+						// ...mark the binder so that the task listing
+						// ...knows something changed.
+						getBinderModule().setProperty(
+							folderId,
+							ObjectKeys.BINDER_PROPERTY_TASK_CHANGED,
+							Boolean.TRUE);
+					}
+				}
+				catch (Exception ex) {}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
@@ -163,13 +178,6 @@ public class AddEntryController extends SAbstractController {
 		    		return;
 				}
 
-				// Are we supposed to update the timestamp on top level
-				// entries when a reply is posted?
-		    	if (GwtUIHelper.isModifyTopEntryOnReply()) {
-					// Yes!  Update the top entry's timestamp.
-		    		getFolderModule().updateModificationStamp(folderId, entry.getTopEntry().getId());
-		    	}
-		    	
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
 				if (!blogReply.equals("")) {

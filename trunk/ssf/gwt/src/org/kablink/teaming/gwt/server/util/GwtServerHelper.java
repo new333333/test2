@@ -455,7 +455,6 @@ public class GwtServerHelper {
 	{
 		FolderModule folderModule;
 		FolderEntry entry;
-		FolderEntry replyEntry;
 		Long entryIdL;
 		Long binderIdL;
 		String replyDefId;
@@ -531,17 +530,7 @@ public class GwtServerHelper {
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
 		inputData = new MapInputData( inputMap );
 
-    	replyEntry = folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
-
-		// Are we supposed to update the timestamp on top level
-		// entries when a reply is posted?
-    	if ( GwtUIHelper.isModifyTopEntryOnReply() )
-    	{
-			// Yes!  Update the top entry's timestamp.
-    		folderModule.updateModificationStamp( binderIdL, replyEntry.getTopEntry().getId() );
-    	}
-    	
-    	return replyEntry;
+    	return folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
 	}
 	
 	
