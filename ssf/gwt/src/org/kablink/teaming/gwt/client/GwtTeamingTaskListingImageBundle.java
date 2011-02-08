@@ -94,6 +94,10 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource arrowUpMouseOver();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/busyanim16b.gif")
+	public ImageResource busyAnimation();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/c0.png")
 	public ImageResource c0();
 
