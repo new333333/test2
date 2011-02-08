@@ -2823,7 +2823,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	padding-right: .5em;
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
-	background:url(images/bg/gray_blend7_28.png) repeat-x;
+	background:url(images/blends/gray_blend7_28.png) repeat-x;
 	background-position:bottom;
 	}
 	
@@ -2901,7 +2901,8 @@ a.sort-column:hover {
 	background:url(images/strike_bar_yellow.png) no-repeat 15px 0 transparent;
 	}
 .gwtTaskList_task-overdue-color {
-	color: #FDA414;
+	color: red;
+	font-weight: bold;
 	}
 	
 .gwtTaskList_task-icon, .gwtTaskList_icon-spacer {
