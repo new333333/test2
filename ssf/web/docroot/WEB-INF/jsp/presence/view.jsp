@@ -52,7 +52,7 @@
 </td>
 </tr>
 <tr>
-<td algin="right">LynnDude
+<td algin="right">
 <div align="right">
   <a class="ss_linkButton" href="<portlet:renderURL 
       portletMode="edit" 
