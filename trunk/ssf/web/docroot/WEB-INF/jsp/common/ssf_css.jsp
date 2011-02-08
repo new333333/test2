@@ -2571,16 +2571,16 @@ a.ss_presence_dude {
   </c:if>
 }
 .ss_presence_green_dude {
-    background:url(<html:imagesPath/>pics/sym_s_green_dude.gif) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_green_dude_14.png) no-repeat left;
 }
 .ss_presence_gray_dude {
-    background:url(<html:imagesPath/>pics/sym_s_gray_dude.gif) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_gray_dude_14.png) no-repeat left;
 }
 .ss_presence_white_dude {
-    background:url(<html:imagesPath/>pics/sym_s_white_dude.gif) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_white_dude_14.png) no-repeat left;
 }
 .ss_presence_yellow_dude {
-    background:url(<html:imagesPath/>pics/sym_s_yellow_dude.gif) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_yellow_dude_14.png) no-repeat left;
 }
 
 /* Accessible mode styles */
