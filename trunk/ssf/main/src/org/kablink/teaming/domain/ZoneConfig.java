@@ -44,6 +44,9 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	private Boolean diskQuotasEnabled;
 	private Integer diskQuotaUserDefault;
 	private Integer diskQuotasHighwaterPercentage;
+	private Boolean binderQuotasInitialized;
+	private Boolean binderQuotasEnabled;
+	private Boolean binderQuotasAllowOwner;
 	private MailConfig mailConfig;
 	public ZoneConfig()
 	{
@@ -96,6 +99,36 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	
 	public void setDiskQuotasEnabled(Boolean diskQuotasEnabled) {
 		this.diskQuotasEnabled = Boolean.valueOf(diskQuotasEnabled);
+	}
+	
+	public void setBinderQuotasInitialized(Boolean binderQuotasInitialized) {
+		this.binderQuotasInitialized = Boolean.valueOf(binderQuotasInitialized);
+	}
+	
+	public void setBinderQuotasEnabled(Boolean binderQuotasEnabled, Boolean allowBinderOwner) {
+		this.binderQuotasEnabled = Boolean.valueOf(binderQuotasEnabled);
+		this.binderQuotasAllowOwner = Boolean.valueOf(allowBinderOwner);
+	}
+	
+	public Boolean isBinderQuotaInitialized() {
+		if (binderQuotasInitialized != null)
+			return binderQuotasInitialized.booleanValue();
+		else
+			return false; // default value
+	}
+	
+	public Boolean isBinderQuotaEnabled() {
+		if (binderQuotasEnabled != null)
+			return binderQuotasEnabled.booleanValue();
+		else
+			return false; // default value
+	}
+	
+	public Boolean isBinderQuotaAllowBinderOwnerEnabled() {
+		if (binderQuotasAllowOwner != null)
+			return binderQuotasAllowOwner.booleanValue();
+		else
+			return false; // default value
 	}
 	
 	public Integer getDiskQuotasHighwaterPercentage() {

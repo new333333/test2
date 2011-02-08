@@ -110,6 +110,10 @@ function ss_showModifyDiv(id) {
 	}
 }
 
+function ss_validateBinderQuotas() {
+	alert('validation is not implemented yet');
+}
+
 </script>
 
 <div class="ss_pseudoPortal">
@@ -145,7 +149,7 @@ function ss_showModifyDiv(id) {
 	<table style="margin: 10px">
 	<tr>
 	<td>
-	  <ssf:nlt tag="administration.quotas.default"/>:
+	  <ssf:nlt tag="administration.quotas.default"/>
 	</td>
 	<td style="padding-left:4px;">
 	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
@@ -156,7 +160,7 @@ function ss_showModifyDiv(id) {
 	</tr>
 	<tr>
 	<td>
-	  <ssf:nlt tag="administration.quotas.highWaterMark"/>:
+	  <ssf:nlt tag="administration.quotas.highWaterMark"/>
 	</td>
 	<td style="padding-left:4px;">
 	  <input type="text" size="6" name="highWaterMark" value="${ss_quotasHighWaterMark}"
@@ -388,11 +392,35 @@ function ss_showModifyDiv(id) {
     <br/>
     <br/>
 </c:if>
-  <div style="margin-top: 50px;">
+<br/>
+
+	<fieldset class="ss_fieldset">
+	  <legend class="ss_legend"><input type="checkbox" name="enableBinderQuotas" 
+	  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
+	  />
+	  <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
+		
+	<div style="margin: 10px">
+	  <input type="checkbox" name="allowBinderQuotasByOwner" 
+	  <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
+	  /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
+	</div>
+  <div style="margin: 10px;">
+    <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
+      title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
+    >
+      <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
+    </a>
+  </div>
+	</fieldset>
+			
+
+  <div style="padding: 10px 0px;">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
-  </div>		  
+  </div>
+  
   <input type="hidden" name="modifyId" id="modifyId" value="" />
 </form>
 </div>

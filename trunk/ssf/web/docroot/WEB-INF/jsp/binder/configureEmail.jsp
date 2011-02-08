@@ -169,7 +169,6 @@
 					<div>
 					  <input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssNotification_ScheduleInfo.enabled}">checked</c:if> />
 					  <span class="ss_labelRight"><ssf:nlt tag="notify.schedule.add"/> </span>
-					  <ssf:inlineHelp jsp="workspaces_folders/misc_tools/sync_schedule"/>
 					</div>
 					<c:set var="schedule" value="${ssNotification_ScheduleInfo.schedule}"/>
 					<c:set var="schedPrefix" value="notify"/>
