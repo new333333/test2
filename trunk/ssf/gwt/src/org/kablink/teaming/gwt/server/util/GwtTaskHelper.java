@@ -1989,13 +1989,12 @@ public class GwtTaskHelper {
 	 * Updates the calculated dates on a given task.
 	 * 
 	 * Notes:
-	 * 1) If the updating required changes to this task or others, the
+	 * 1) If the updating requires changes to this task or others, the
 	 *    Map<Long, TaskDate> returned will contain a mapping between
 	 *    the task IDs and the new calculated end date.  Otherwise, the
 	 *    map returned will be empty.
-	 * 2) If the entryId is null, that implies that ALL the tasks in
-	 *    the binder need to be checked whether their calculated end
-	 *    dates need to be updated.
+	 * 2) If the entryId is null, ALL the tasks in the binder will have
+	 *    their calculated dates updated.
 	 *
 	 * @param request
 	 * @param bs
@@ -2013,8 +2012,8 @@ public class GwtTaskHelper {
 			request,
 			bs,
 			binder,
-			String.valueOf(FilterType.ALL),		// We may need to manipulate all...
-			String.valueOf(ModeType.PHYSICAL),	// ...the tasks from the given Binder.
+			String.valueOf(FilterType.ALL   ),	// We need all the tasks from...
+			String.valueOf(ModeType.PHYSICAL),	// ...the binder for the update.
 			false);								// false -> Retrieve the TaskBundle to perform server updates.
 
 		// Allocate a Map we can use to track the IDs and dates for
@@ -2047,7 +2046,7 @@ public class GwtTaskHelper {
 		
 		// If we get here, reply refers to a Map<Long, TaskDate>
 		// mapping the tasks whose calculated dates had to be updated
-		// with the newly calculated dates.  Return it. 
+		// with the newly calculated end dates.  Return it. 
 		return reply;
 	}
 
@@ -2060,103 +2059,128 @@ public class GwtTaskHelper {
 		boolean  rootTasks = (tb.getTasks() == taskList);
 		TaskInfo prevTI    = null;		
 		for (TaskListItem task:  taskList) {
-			// If a task doesn't have a duration in days, we can't
-			// update its calculated dates.  Does it have a duration in
-			// days?
-			TaskInfo     ti   = task.getTask();
-			TaskEvent    tiE  = ti.getEvent();
-			ServerDates  tiSD = ((ServerDates) tiE.getServerData());
-			TaskDuration tiD  = tiE.getDuration();
-			if (tiD.hasDaysOnly()) {
-				// Yes!  Are we working on the root task list in the
-				// binder?
-				boolean removeCalcStart;
-				boolean removeCalcEnd;
-				Date calcStart = null;				
-				Date calcEnd   = null;
-				if (rootTasks) {
-					// Yes!  Then we simply remove the calculated
-					// dates.
+			// If a task is an all day event or doesn't have a duration
+			// in days, we don't update its calculated dates.  Can we
+			// potentially update this task's calculated dates?
+			TaskInfo     ti  = task.getTask();
+			TaskEvent    tiE = ti.getEvent();
+			TaskDuration tiD = tiE.getDuration();
+			if ((!(tiE.getAllDayEvent())) && tiD.hasDaysOnly()) {
+				// Yes!  Extract the additional information we may need
+				// for the calculations from the task...
+				int         durDays        = tiD.getDays();
+				ServerDates tiSD           = ((ServerDates) tiE.getServerData());
+				boolean     hasActualStart = tiSD.hasActualStart();
+				boolean     hasActualEnd   = tiSD.hasActualEnd();
+
+				// ...and define a few other local variables we'll
+				// ...need for the analysis.
+				boolean removeCalcStart = false;
+				boolean removeCalcEnd   = false;
+				Date    newCalcStart    = null;
+				Date    newCalcEnd      = null;
+				
+				// What combination of actual start/end dates were
+				// specified for this task?
+				if (hasActualStart && hasActualEnd) {
+					// Has start and end!  No calculated dates.
 					removeCalcStart =
 					removeCalcEnd   = true;
 				}
-		
+				
+				else if (hasActualStart && (!hasActualEnd)) {
+					// Has start, no end!  Calculate an end.
+					newCalcEnd      = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
+					removeCalcStart = true;
+				}
+				
+				else if ((!hasActualStart) && hasActualEnd) {
+					// No start, has end!  Calculate a start.
+					newCalcStart  = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), (-durDays));
+					removeCalcEnd = true;
+				}
+				
 				else {
-					// No, we aren't working on the root task list in
-					// the binder.!  Does this task have actual start
-					// and/or end dates?
-					removeCalcStart  =
-					removeCalcEnd    = false;
-					int durDays      = tiD.getDays();
-					boolean hasStart = tiSD.hasActualStart();
-					boolean hasEnd   = tiSD.hasActualEnd();
-					if (hasStart && hasEnd) {
-						// Has start and end!  No calculated dates.
+					// No start or end!  If we're working on the root
+					// task list in the binder...
+					if (rootTasks) {
+						// ...we don't try to supply either calculated
+						// ...date.
 						removeCalcStart =
 						removeCalcEnd   = true;
 					}
 					
-					else if (hasStart && (!hasEnd)) {
-						// Has start, no end!  Calculate an end.
-						calcEnd         = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
-						removeCalcStart = true;
-					}
-					
-					else if ((!hasStart) && hasEnd) {
-						// No start, has end!  Calculate a start.
-						calcStart     = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), -durDays);
-						removeCalcEnd = true;
-					}
-					
 					else {
-						// No start or end!  Use the previous task's end
-						// date as the start...
-						calcStart = ((null == prevTI) ? null : prevTI.getEvent().getLogicalEnd().getDate());
-						if (null == calcStart) {
+						// No, this isn't the root task list in the
+						// binder!  Is it the first task in the list?
+						if (null == prevTI) {
+							// Yes!  Use the parent task's start date
+							// as its start.
+							TaskListItem parentTask  = TaskListItemHelper.findTaskListItemContainingList(tb, taskList);
+							TaskDate     parentStart = ((null == parentTask)  ? null : parentTask.getTask().getEvent().getLogicalStart());
+							newCalcStart             = ((null == parentStart) ? null : parentStart.getDate());
+						}
+						
+						else {
+							// No, it isn't the first task in the list!
+							// Use the previous task's end date as its
+							// start.
+							newCalcStart = prevTI.getEvent().getLogicalEnd().getDate();
+						}
+
+						// If we don't have its start...
+						if (null == newCalcStart) {
+							// ...remove any existing calculated dates...
 							removeCalcStart =
 							removeCalcEnd   = true;
 						}
 						else {
-							// ...and use that to calculate an end.
-							calcEnd = EventHelper.adjustDate(calcStart, durDays);
+							// ...otherwise, use its start to calculate
+							// ...its end.
+							newCalcEnd = EventHelper.adjustDate(newCalcStart, durDays);
 						}
 					}
-	
-					// If we have a calculated start that didn't change...
-					if ((null != calcStart) && tiSD.hasCalcStart()) {
-						long newTime = calcStart.getTime();
-						long oldTime = tiSD.getCalcStart().getDate().getTime();
-						if (newTime == oldTime) {
-							// ...don't save it.
-							calcStart = null;
-						}
+				}
+
+				// If we have a calculated start that didn't change...
+				if ((null != newCalcStart) && tiSD.hasCalcStart()) {
+					long newTime = newCalcStart.getTime();
+					long oldTime = tiSD.getCalcStart().getDate().getTime();
+					if (newTime == oldTime) {
+						// ...don't save it.
+						newCalcStart = null;
 					}
-					
-					// If we have calculated end that didn't change...
-					if ((null != calcEnd) && tiSD.hasCalcEnd()) {
-						long newTime = calcEnd.getTime();
-						long oldTime = tiSD.getCalcEnd().getDate().getTime();
-						if (newTime == oldTime) {
-							// ...don't save it.
-							calcEnd = null;
-						}
+				}
+				
+				// If we have calculated end that didn't change...
+				if ((null != newCalcEnd) && tiSD.hasCalcEnd()) {
+					long newTime = newCalcEnd.getTime();
+					long oldTime = tiSD.getCalcEnd().getDate().getTime();
+					if (newTime == oldTime) {
+						// ...don't save it.
+						newCalcEnd = null;
 					}
 				}
 
 				// Do we have changes to make to the calculated start
 				// or end dates for this task?
-				if (removeCalcStart || (null != calcStart) ||
-					removeCalcEnd   || (null != calcEnd)) {
+				if (removeCalcStart || (null != newCalcStart) ||
+					removeCalcEnd   || (null != newCalcEnd)) {
 					// Yes!  If we can save them and we changed the
 					// calculated end date...
-					boolean saved = updateCalculatedDatesOnTask(bs, ti, removeCalcStart, calcStart, removeCalcEnd, calcEnd);
-					if (saved && (removeCalcEnd || (null != calcEnd))) {
+					boolean saved = updateCalculatedDatesOnTask(
+						bs,
+						ti,
+						removeCalcStart, newCalcStart,
+						removeCalcEnd,   newCalcEnd);
+					
+					if (saved && (removeCalcEnd || (null != newCalcEnd))) {
 						// ...track the fact that we changed this
 						// ...task's calculated end date.
 						TaskDate calcTD = new TaskDate();
 						if (!removeCalcEnd) {
-							calcTD.setDate(                         calcEnd);
-							calcTD.setDateDisplay(getDateTimeString(calcEnd));
+							calcTD.setDate(                         newCalcEnd);
+							calcTD.setDateDisplay(getDateTimeString(newCalcEnd));
 						}
 						updates.put(ti.getTaskId().getEntryId(), calcTD);
 					}
@@ -2179,6 +2203,8 @@ public class GwtTaskHelper {
 
 	/*
 	 * Updates the calculated start and/or end dates on a task.
+	 * 
+	 * Returns true if the update was performed and false otherwise.
 	 */
 	@SuppressWarnings("unchecked")
 	private static boolean updateCalculatedDatesOnTask(AllModulesInjected bs, TaskInfo ti, boolean removeCalcStart, Date calcStart, boolean removeCalcEnd, Date calcEnd) throws GwtTeamingException {		
@@ -2197,39 +2223,39 @@ public class GwtTaskHelper {
 				// ...start/end dates, as appropriate...
 				Calendar eventCalcStart = event.getDtCalcStart();
 				Calendar eventCalcEnd   = event.getDtCalcEnd();
-				boolean modifiedEvent = false;
+				boolean  modifyEvent    = false;
 				if (removeCalcStart) {
 					if (null != eventCalcStart) {
 						event.setDtCalcStart((Calendar) null);
-						modifiedEvent = true;
+						modifyEvent = true;
 					}
 				}
 				else if (null != calcStart) {
-					if ((null == eventCalcStart) || eventCalcStart.getTime().getTime() != calcStart.getTime()) {
+					if ((null == eventCalcStart) || (eventCalcStart.getTime().getTime() != calcStart.getTime())) {
 						Calendar cal = new GregorianCalendar();
 						cal.setTime(calcStart);
 						event.setDtCalcStart(cal);
-						modifiedEvent = true;
+						modifyEvent = true;
 					}
 				}
 				
 				if (removeCalcEnd) {
 					if (null != eventCalcEnd) {
 						event.setDtCalcEnd((Calendar) null);
-						modifiedEvent = true;
+						modifyEvent = true;
 					}
 				}
 				else if (null != calcEnd) {
-					if ((null == eventCalcEnd) || eventCalcEnd.getTime().getTime() != calcEnd.getTime()) {
+					if ((null == eventCalcEnd) || (eventCalcEnd.getTime().getTime() != calcEnd.getTime())) {
 						Calendar cal = new GregorianCalendar();
 						cal.setTime(calcEnd);
 						event.setDtCalcEnd(cal);
-						modifiedEvent = true;
+						modifyEvent = true;
 					}
 				}
 
-				// ...and if we really changed anything...
-				if (modifiedEvent) {
+				// ...and if we really need to change anything...
+				if (modifyEvent) {
 					// ...save the modified Event.
 					Map formData = new HashMap(); 
 					formData.put(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME, event);
@@ -2239,8 +2265,15 @@ public class GwtTaskHelper {
 			}
 			
 			catch (Exception ex) {
-				throw GwtServerHelper.getGwtTeamingException(ex);
+				m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
+				m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( EXCEPTION ):  ", ex);
 			}
+		}
+		
+		else {
+			// No, the user doesn't have rights to modify the task.
+			m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Update failed on:  '" + ti.getTitle() + "' )");
+			m_logger.debug("GwtTaskHelper.updateCalculatedDatesOnTask( Insufficient Rights )");
 		}
 		
 		// If we get here, reply is true if we modified task's

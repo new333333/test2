@@ -300,12 +300,25 @@ public class TaskListItemHelper {
 		return findTaskList(tb, task.getTask().getTaskId().getEntryId());
 	}
 
+	/**
+	 * Searches the tasks in a TaskBundle for the task that contains
+	 * tliList2Find as its subtask list.
+	 * 
+	 * @param tb
+	 * @param tliList2Find
+	 * 
+	 * @return
+	 */
+	public static TaskListItem findTaskListItemContainingList(TaskBundle tb, List<TaskListItem> tliList2Find) {
+		return findTaskListItemContainingListImpl(tb.getTasks(), tliList2Find);
+	}
+	
 	/*
 	 * Searches the TaskListItem's in tliList2Search for a TaskListItem
 	 * contain tliList2Find as its subtask list.  If found, that
 	 * TaskListItem is returned.  Otherwise, null is returned.
 	 */
-	private static TaskListItem findTaskListItemContainingList(List<TaskListItem> tliList2Search, List<TaskListItem> tliList2Find) {
+	private static TaskListItem findTaskListItemContainingListImpl(List<TaskListItem> tliList2Search, List<TaskListItem> tliList2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
 		for (TaskListItem task:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
@@ -318,7 +331,7 @@ public class TaskListItemHelper {
 
 			// If the list we're looking for is a subtask of this
 			// TaskListItem's subtasks...
-			TaskListItem reply = findTaskListItemContainingList(subtasks, tliList2Find);
+			TaskListItem reply = findTaskListItemContainingListImpl(subtasks, tliList2Find);
 			if (null != reply) {
 				// ...return that TaskListItem.
 				return reply;
@@ -330,12 +343,25 @@ public class TaskListItemHelper {
 		return null;
 	}
 
+	/**
+	 * Searches the tasks in a TaskBundle for the task that contains
+	 * tli2Find as a task in its subtask list.
+	 * 
+	 * @param tb
+	 * @param tli2Find
+	 * 
+	 * @return
+	 */
+	public static TaskListItem findTaskListItemContainingTask(TaskBundle tb, TaskListItem tli2Find) {
+		return findTaskListItemContainingTaskImpl(tb.getTasks(), tli2Find);
+	}
+	
 	/*
 	 * Searches the TaskListItem's in tliList2Search for a TaskListItem
 	 * contain tli2Find as one of its subtasks.  If found, that
 	 * TaskListItem is returned.  Otherwise, null is returned.
 	 */
-	private static TaskListItem findTaskListItemContainingTask(List<TaskListItem> tliList2Search, TaskListItem tli2Find) {
+	private static TaskListItem findTaskListItemContainingTaskImpl(List<TaskListItem> tliList2Search, TaskListItem tli2Find) {
 		// Scan the TaskListItem's in the List<TaskListItem> to search.
 		for (TaskListItem task:  tliList2Search) {
 			// If this TaskListItem's subtask List<TaskListItem> is the list in
@@ -350,7 +376,7 @@ public class TaskListItemHelper {
 
 			// If the list we're looking for is a subtask of this
 			// TaskListItem's subtasks...
-			TaskListItem reply = findTaskListItemContainingTask(subtasks, tli2Find);
+			TaskListItem reply = findTaskListItemContainingTaskImpl(subtasks, tli2Find);
 			if (null != reply) {
 				// ...return that TaskListItem.
 				return reply;
@@ -550,8 +576,8 @@ public class TaskListItemHelper {
 				// ...and make it a peer to the task it's a subtask of,
 				// ...immediately below what was its parent.
 				tliList.remove(tliMoveThisIndex);
-				TaskListItem tliWithList          = findTaskListItemContainingList(tb.getTasks(), tliList    );
-				TaskListItem tliWithListContainer = findTaskListItemContainingTask(tb.getTasks(), tliWithList);
+				TaskListItem tliWithList          = findTaskListItemContainingList(tb, tliList    );
+				TaskListItem tliWithListContainer = findTaskListItemContainingTask(tb, tliWithList);
 				List<TaskListItem> tliTargetList  = ((null == tliWithListContainer) ? tb.getTasks() : tliWithListContainer.getSubtasks());
 				tliTargetList.add(
 					(tliTargetList.indexOf(tliWithList) + 1),
