@@ -886,7 +886,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
 		}
-
+		if (!getAdminModule().isBinderQuotaInitialized()) {
+			getAdminModule().setBinderQuotasInitialized(Boolean.TRUE);
+		}
 		model.put(WebKeys.ERROR_COUNT, String.valueOf(errors.size()));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/validate_binder_quotas", model);

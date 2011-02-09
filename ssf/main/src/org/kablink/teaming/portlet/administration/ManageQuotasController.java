@@ -208,6 +208,7 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
 		model.put(WebKeys.QUOTAS_HIGH_WATER_MARK, getAdminModule().getQuotaHighWaterMark());
+		model.put(WebKeys.BINDER_QUOTAS_INITIALIZED, getAdminModule().isBinderQuotaInitialized());
 		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
 		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		
