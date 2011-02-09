@@ -1747,17 +1747,35 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 	}
 
-   	
-    public Collection validateBinderQuotasTree(Binder binder, Collection exclusions, StatusTicket statusTicket, 
+   	//Routine to validate the quota data for all binders
+   	//  Builds a map of every binder, its quota data, and its parent
+   	//  Then walks that tree validating the data
+	private class QuotaData {
+		private Long diskSpaceUsed;
+		private Long diskSpaceUsedCumulative;
+		private Long newDiskSpaceUsedCumulative;
+		private Long parentBinderId;
+		public QuotaData(Long diskSpaceUsed, Long diskSpaceUsedCumulative, Binder binder) {
+			this.diskSpaceUsed = diskSpaceUsed;
+			this.diskSpaceUsedCumulative = diskSpaceUsedCumulative;
+			this.parentBinderId = null;
+			if (binder.getParentBinder() != null) {
+				this.parentBinderId = binder.getParentBinder().getId();
+			}
+			this.newDiskSpaceUsedCumulative = null;
+		}
+	}
+    public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
     		List<Long> errors) {
     	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	Map<Long,Long> binderQuotasToUpdate = new HashMap<Long,Long>();
+    	final List<Long> binderQuotasToUpdate = new ArrayList<Long>();
+    	final Map<Long,QuotaData> binderQuotasMap = new HashMap<Long,QuotaData>();
+    	final Set<Long> binderParents = new HashSet<Long>();
     	
    		//get all the ids of child binders. order for statusTicket to make some sense
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
-		if (exclusions != null) ids.removeAll(exclusions);
 		Map params = new HashMap();
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
@@ -1776,52 +1794,114 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 					otherIds.add(e.getEntityIdentifier());
 			}
 
+			//For this chunk of binders, calculate the disk space usage
 			for (Binder b:binders) {
 				if (b.isDeleted()) continue;
-	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
+				//Build a set of all binders that are parents. This is used later to find end nodes of the tree
+				if (b.getParentBinder() != null) binderParents.add(b.getParentBinder().getId());
+	   	    	statusTicket.setStatus(NLT.get("validate.binderQuota.status", 
+	   	    			new Object[] {String.valueOf(binderQuotasMap.size()), String.valueOf(ids.size()), String.valueOf(errors.size())}));
 	   	    	
 	   	    	Long dsu = getCoreDao().computeDiskSpaceUsed(zoneId, b.getId());
 	   	    	BinderQuota bq = null;
+	   	    	QuotaData qd = null;
 	   	    	try {
 	   	    		bq = getCoreDao().loadBinderQuota(zoneId, b.getId());
+	   	    		qd = new QuotaData(bq.getDiskSpaceUsed(), bq.getDiskSpaceUsedCumulative(), b);
 	   	    	} catch(NoObjectByTheIdException e) {
-	   	    		binderQuotasToUpdate.put(b.getId(), dsu);
+	   	    		binderQuotasToUpdate.add(b.getId());
+	   	    		qd = new QuotaData(dsu, Long.valueOf(0), b);
 	   	    	}
-	   	    	if (bq != null && !bq.getDiskQuota().equals(dsu)) {
-	   	    		//This quota was wrong, so fix it
-	   	    		binderQuotasToUpdate.put(b.getId(), dsu);
+   	    		binderQuotasMap.put(b.getId(), qd);
+	   	    	if (bq != null && !dsu.equals(bq.getDiskSpaceUsed())) {
+	   	    		//This disk space used value was wrong, so add it to the fix list
+	   	    		binderQuotasToUpdate.add(b.getId());
 		   	    	errors.add(b.getId());
 	   	    	}
 	   	    	getCoreDao().evict(b);
 			}
+			//Next, make sure each of these binders has a BinderQuota row in the database
 			if (!binderQuotasToUpdate.isEmpty()) {
-				final Map<Long,Long> binderQuotas = new HashMap<Long,Long>(binderQuotasToUpdate);
-				binderQuotasToUpdate = new HashMap<Long,Long>();
 				SimpleProfiler sp = new SimpleProfiler(false);
-				sp.start("update_binder_quotas");
+				sp.start("validateBinderQuotasTree");
 		        // The following part requires update database transaction.
 		        getTransactionTemplate().execute(new TransactionCallback() {
 		        	public Object doInTransaction(TransactionStatus status) {
-		        		for (Long binderId : binderQuotas.keySet()) {
+		        		//Go through all binders to validate and update the disk space used values
+		        		//  This step makes sure each binder has a BinderQuota in the database
+		        		for (Long binderId : binderQuotasToUpdate) {
+		        			QuotaData qd = binderQuotasMap.get(binderId);
 		    	   	    	BinderQuota bq = null;
 		    	   	    	try {
 		    	   	    		bq = getCoreDao().loadBinderQuota(zoneId, binderId);
-		    	   	    		bq.setDiskSpaceUsed(binderQuotas.get(binderId));
+		    	   	    		if (bq.getDiskSpaceUsed().equals(qd.diskSpaceUsed)) {
+		    	   	    			//The disk space used value was different, so update it
+		    	   	    			bq.setDiskSpaceUsed(qd.diskSpaceUsed);
+		    	   	    		}
 		    	   	    	} catch(NoObjectByTheIdException e) {
 		    	   	    		bq = new BinderQuota();
 		    	   	    		bq.setZoneId(zoneId);
 		    	   	    		bq.setBinderId(binderId);
-		    	   	    		bq.setDiskSpaceUsed(binderQuotas.get(binderId));
+		    	   	    		bq.setDiskSpaceUsed(qd.diskSpaceUsed);
+		    	   	    		getCoreDao().save(bq);
 		    	   	    	}
-	    	   	    		getCoreDao().save(bq);
 		        		}
 		                return null;
 		        	}
 		        });
-		        sp.stop("update_binder_quotas");
+		        sp.stop("validateBinderQuotasTree");
 			}
 		}
-   		return ids;
+		//At this point, all binders in the zone have been analyzed and a complete map exists
+		//Now, walk up the tree from each end node and calculate the cumulative values
+        for (Long binderId : binderQuotasMap.keySet()) {
+        	//Is this an end node?
+        	if (!binderParents.contains(binderId)) {
+        		//This is not a parent of any binder, so it must be an end node
+        		QuotaData qd = binderQuotasMap.get(binderId);
+        		qd.newDiskSpaceUsedCumulative = qd.diskSpaceUsed;
+        		Long increment = qd.diskSpaceUsed; 
+        		while (qd.parentBinderId != null) {
+        			//Walk up the tree to the top adding up the space used
+        			qd = binderQuotasMap.get(qd.parentBinderId);
+        			if (qd.newDiskSpaceUsedCumulative == null) {
+        				//This is the first time seeing this binder, so add in the binder's own usage
+        				increment += qd.diskSpaceUsed;
+        				qd.newDiskSpaceUsedCumulative = Long.valueOf(0);
+        			}
+        			qd.newDiskSpaceUsedCumulative += increment;
+        		}
+        	}
+        }
+        //Now, the map is updated with new cumulative counts, look for changes to be written to the database
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		//Go through all binders to validate and update the disk space used values
+        		//  This step makes sure each binder has a BinderQuota in the database
+        		for (Long binderId : binderQuotasMap.keySet()) {
+        			QuotaData qd = binderQuotasMap.get(binderId);
+        			if (!qd.newDiskSpaceUsedCumulative.equals(qd.diskSpaceUsedCumulative)) {
+	    	   	    	//The cumulative count was different, so this must be refected in the database
+        				BinderQuota bq = null;
+	    	   	    	try {
+	    	   	    		bq = getCoreDao().loadBinderQuota(zoneId, binderId);
+	    	   	    		bq.setDiskSpaceUsedCumulative(qd.newDiskSpaceUsedCumulative);
+	    	   	    	} catch(NoObjectByTheIdException e) {
+	    	   	    		bq = new BinderQuota();
+	    	   	    		bq.setZoneId(zoneId);
+	    	   	    		bq.setBinderId(binderId);
+	    	   	    		bq.setDiskSpaceUsed(qd.diskSpaceUsed);
+	    	   	    		bq.setDiskSpaceUsedCumulative(qd.newDiskSpaceUsedCumulative);
+	    	   	    		getCoreDao().save(bq);
+	    	   	    	}
+        			}
+        		}
+        		return null;
+        	}
+        });
+
+        return ids;
 
     }
 

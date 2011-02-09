@@ -870,8 +870,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		Binder topBinder = getWorkspaceModule().getTopWorkspace();
-		Collection<Long> ids = new HashSet();
-		ids.add(topBinder.getId());
 
 		// Create a new status ticket
 		String ticketId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none");
@@ -882,14 +880,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 			SimpleProfiler.setProfiler(profiler);
 		}
 		List<Long> errors = new ArrayList<Long>();
-		Collection idsIndexed = getBinderModule().validateBinderQuotaTree(ids, statusTicket, errors);
+		Collection idsIndexed = getBinderModule().validateBinderQuotaTree(topBinder, statusTicket, errors);
+		statusTicket.done();
 		if (logger.isDebugEnabled()) {
 			logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
 		}
 
-		response.setContentType("text/xml");
-		return new ModelAndView("administration/validate_binder_quotas", model);
+		model.put(WebKeys.ERROR_COUNT, String.valueOf(errors.size()));
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/validate_binder_quotas", model);
 	}
 
 	/**

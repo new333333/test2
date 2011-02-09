@@ -433,7 +433,7 @@ public interface BinderModule {
      * @param error list
      * @return Set of binderIds indexed
      */
-	public Set<Long> validateBinderQuotaTree(Collection<Long> ids, StatusTicket statusTicket, List<Long> errorIds) 
+	public Set<Long> validateBinderQuotaTree(Binder binder, StatusTicket statusTicket, List<Long> errorIds) 
 		throws AccessControlException;
 
 	/**
