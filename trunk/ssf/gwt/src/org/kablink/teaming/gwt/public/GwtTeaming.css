@@ -959,8 +959,21 @@ body, table td, select
 {
 	cursor: pointer;
 }
-.workspaceTreeControlHeader_closeImg
+.workspaceTreeControlHeader_closeButton
 {
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	background: url(images/slice_blend_teal_27.png) repeat-x scroll 0 0 #81B2Bd;
+	border: 1px solid #60919C;
+	color: #FFFFFF;
+	display: inline-block;
+	font-size: 12px !important;
+	margin: 5px;
+	padding: 1px 12px;
+}
+.workspaceTreeControlHeader_closeButton:hover
+{
+	border: 1px solid #D9EAF0;
 }
 .workspaceTreeControlHeader_nav
 {

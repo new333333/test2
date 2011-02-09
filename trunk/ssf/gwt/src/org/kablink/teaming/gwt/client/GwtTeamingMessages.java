@@ -457,6 +457,7 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the workspace tree control.
 	String treeBucketHover( String firstPart, String lastPart );
 	String treeCloseActivityStreams();
+	String treeCloseActivityStreamsHint();
 	String treeCloseBreadCrumbs();
 	String treeSiteWide();
 	
