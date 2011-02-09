@@ -1299,7 +1299,11 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean success) {
-				// Update the Image and text displayed on the priority.
+				// Store the new priority in the task...
+				task.getTask().setPriority(priority);
+				
+				// ...and update the Image and text displayed on the
+				// ...priority.
 				Image img = getUIData(task).getTaskPriorityImage();
 				List<TaskMenuOption> pOpts = m_priorityMenu.getMenuOptions();
 				for (TaskMenuOption tmo:  pOpts) {
