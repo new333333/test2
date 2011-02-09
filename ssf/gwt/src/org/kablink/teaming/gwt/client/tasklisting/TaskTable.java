@@ -973,7 +973,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		sortByColumn(m_taskBundle.getTasks(), m_sortColumn, m_sortAscending);
 		
 		// ...and redisplay the tasks.
-		showTasks(m_taskBundle);
+		renderTaskBundle(m_taskBundle);
 		persistSortChange();
 	}
 
@@ -1040,7 +1040,7 @@ public class TaskTable extends Composite implements ActionHandler {
 					// ...collapsed and redisplay the TaskTable. 
 					task.setExpandedSubtasks(false);
 					initializeUIData();	// Forces the referenced widgets to be reset.
-					showTasks(m_taskBundle);
+					renderTaskBundle(m_taskBundle);
 				}
 			});
 		}
@@ -1061,7 +1061,7 @@ public class TaskTable extends Composite implements ActionHandler {
 					// ...expanded and redisplay the TaskTable. 
 					task.setExpandedSubtasks(true);
 					initializeUIData();	// Forces the referenced widgets to be reset.
-					showTasks(m_taskBundle);
+					renderTaskBundle(m_taskBundle);
 				}
 			});
 		}
@@ -1129,7 +1129,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTaskPostMove(TaskListItem task) {	
 		initializeUIData();	// Forces the order and depths to be reset.
-		showTasks(m_taskBundle);
+		renderTaskBundle(m_taskBundle);
 		persistLinkageChange(task, true);
 	}
 
@@ -1580,7 +1580,7 @@ public class TaskTable extends Composite implements ActionHandler {
 				
 				// ...force the TaskTable to redisplay...
 				m_newTaskTable = true;
-				showTasks(result, checkedTaskIds);
+				renderTaskBundle(result, checkedTaskIds);
 				
 				// ...and if we were requested to do so...
 				if (persistLinkage) {
@@ -2070,6 +2070,77 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	/*
+	 * Renders the tasks in the TaskBundle.
+	 */
+	private void renderTaskBundle(TaskBundle taskBundle, List<Long> checkedTaskIds) {
+		// Decide how the table should be sorted...
+		m_taskBundle = taskBundle;
+		if (m_newTaskTable) {
+			m_newTaskTable = false;
+			initializeUIData();
+			initializeSorting();
+		}
+
+		// ...apply any task checks that are being preserved...
+		if (null != checkedTaskIds) {
+			for (Long entryId:  checkedTaskIds) {
+				TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
+				if (null != task) {
+					getUIData(task).setTaskSelected(true);
+				}
+			}
+		}
+				
+		// ...and render the TaskTable.
+		clearTaskTable();
+		List<TaskListItem> tasks = taskBundle.getTasks();
+		
+		// Are there any tasks to show?
+		if (tasks.isEmpty()) {
+			// No!  Add a message saying there are no tasks.
+			int row = m_flexTable.getRowCount();
+			m_flexTableCF.setColSpan(row, 0, 8);
+			m_flexTableCF.addStyleName(row, 0, "paddingTop10px");
+			InlineLabel il = new InlineLabel(m_messages.taskNoTasks());
+			il.addStyleName("wiki-noentries-panel");
+			m_flexTable.setWidget(row, 0, il);
+		}
+		else {
+			// Yes, there any tasks to show!
+			renderTaskList(tasks);
+		}
+
+		// Validate the task tools for what we've got displayed.
+		Scheduler.ScheduledCommand validator;
+		validator = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				validateTaskTools();
+			}
+		};
+		Scheduler.get().scheduleDeferred(validator);
+	}
+	
+	private void renderTaskBundle(TaskBundle tb, boolean updateCalculatedDates) {
+		// Always use the initial form of the method.
+		renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
+
+		// After displaying the table, are we supposed to update the
+		// calculated dates?
+		if (updateCalculatedDates) {
+			// Yes!  Perform the update.  Note that we run this
+			// asynchronously so that the user is able to view and
+			// interact with the task table while we're updating.
+			updateCalculatedDatesAsync(tb.getBinderId(), null);
+		}
+	}
+	
+	private void renderTaskBundle(TaskBundle tb) {
+		// Always use the initial form of the method.
+		renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
+	}
+
+	/*
 	 * Renders a TaskListItem into the TaskTable.
 	 */
 	private void renderTaskItem(final TaskListItem task) {		
@@ -2085,6 +2156,22 @@ public class TaskTable extends Composite implements ActionHandler {
 		for (Column col:  Column.values()) {
 			renderColumn(task, row, col);
 		}		
+	}
+
+	/*
+	 * Renders the tasks in the List<TaskListItem>.
+	 */
+	private void renderTaskList(List<TaskListItem> tasks) {
+		// Scan the tasks in the list...
+		for (TaskListItem task:  tasks) {
+			// ..rendering each one...
+			renderTaskItem(task);
+			
+			// ...and their subtasks.
+			if (task.getExpandSubtasks()) {
+				renderTaskList(task.getSubtasks());
+			}
+		}
 	}
 
 	/*
@@ -2130,110 +2217,28 @@ public class TaskTable extends Composite implements ActionHandler {
 		return m_taskBundle.respectLinkage();
 	}
 	
-	/*
-	 * Shows the tasks in the TaskBundle.
-	 */
-	private void showTasks(TaskBundle taskBundle, List<Long> checkedTaskIds) {
-		// ...decide how the table should be sorted...
-		m_taskBundle = taskBundle;
-		if (m_newTaskTable) {
-			m_newTaskTable = false;
-			initializeUIData();
-			initializeSorting();
-		}
-
-		// ...apply any tasks checks that are being preserved...
-		if (null != checkedTaskIds) {
-			for (Long entryId:  checkedTaskIds) {
-				TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
-				if (null != task) {
-					getUIData(task).setTaskSelected(true);
-				}
-			}
-		}
-				
-		// ...and render the TaskTable.
-		clearTaskTable();
-		List<TaskListItem> tasks = taskBundle.getTasks();
-		
-		// Are there any tasks to show?
-		if (tasks.isEmpty()) {
-			// No!  Add a message saying there are no tasks.
-			int row = m_flexTable.getRowCount();
-			m_flexTableCF.setColSpan(row, 0, 8);
-			m_flexTableCF.addStyleName(row, 0, "paddingTop10px");
-			InlineLabel il = new InlineLabel(m_messages.taskNoTasks());
-			il.addStyleName("wiki-noentries-panel");
-			m_flexTable.setWidget(row, 0, il);
-		}
-		else {
-			// Yes, there any tasks to show!
-			showTasksImpl(tasks);
-		}
-
-		// Validate the task tools for what we've got displayed.
-		Scheduler.ScheduledCommand validator;
-		validator = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				validateTaskTools();
-			}
-		};
-		Scheduler.get().scheduleDeferred(validator);
-	}
-	
 	/**
 	 * Shows the tasks in the TaskBundle.
 	 * 
 	 * Returns the time, in milliseconds, that it took to show them.
 	 * 
 	 * @param taskBundle
-	 * @param checkedTaskIds
+	 * @param updateCalculatedDates
 	 * 
 	 * @return
 	 */
-	public long showTasks(final TaskBundle tb, boolean updateCalculatedDates) {
+	public long showTasks(TaskBundle tb, boolean updateCalculatedDates) {
 		// Save when we start...
 		long start = System.currentTimeMillis();
 
-		// Always use the initial form of the method.
-		showTasks(tb, null);	// null -> No checked tasks to preserve.
-
-		// After displaying the table, are we supposed to update the
-		// calculated dates?
-		if (updateCalculatedDates) {
-			// Yes!  Perform the update.  Note that we run this
-			// asynchronously so that the user is able to view and
-			// interact with the task table while we're updating.
-			updateCalculatedDatesAsync(tb.getBinderId(), null);
-		}
+		// ...render the tasks from the bundle...
+		renderTaskBundle(tb, updateCalculatedDates);
 		
-		// Finally, return how long we took to show the tasks.
+		// ...and return how long we took to do it.
 		long end = System.currentTimeMillis();
 		return (end - start);
 	}
 	
-	public long showTasks(TaskBundle tb) {
-		return showTasks(tb, false);	// false -> Don't update the calculated dates.
-	}
-
-	/*
-	 * Shows the tasks in the List<TaskListItem> as being at a specific
-	 * depth in the listing.
-	 */
-	private void showTasksImpl(List<TaskListItem> tasks) {
-		// Scan the tasks in the list...
-		for (TaskListItem task:  tasks) {
-			// ..rendering each one...
-			renderTaskItem(task);
-			
-			// ...and their subtasks.
-			if (task.getExpandSubtasks()) {
-				showTasksImpl(task.getSubtasks());
-			}
-		}
-	}
-
 	/*
 	 * Sorts the List<TaskListItem> by column in the specified order.
 	 */
