@@ -596,6 +596,52 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return loadBinderProcessor(binder).indexBinderIncremental(binder,
 				includeEntries);
 	}
+	
+	public Set<Long> validateBinderQuotaTree(Collection<Long> ids, StatusTicket statusTicket, List<Long> errorIds) 
+			throws AccessControlException {
+		long startTime = System.currentTimeMillis();
+		getCoreDao().flush(); // just incase
+		try {
+			// make list of binders we have access to first
+			List<Binder> binders = getCoreDao().loadObjects(ids,
+					Binder.class,
+					RequestContextHolder.getRequestContext().getZoneId());
+			List<Binder> checked = new ArrayList();
+			for (Binder binder : binders) {
+				try {
+					checkAccess(binder, BinderOperation.indexTree);
+					if (binder.isDeleted()) {
+						continue;
+					}
+					checked.add(binder);
+				} catch (AccessControlException ex) {
+					// Skip the ones we cannot access
+				} catch (Exception ex) {
+					logger.error("Error indexing binder " + binder, ex);
+					errorIds.add(binder.getId());
+				}
+
+			}
+			Set<Long> done = new HashSet();
+			if (!checked.isEmpty()) {
+				try {
+					for (Binder binder : checked) {
+						done.addAll(loadBinderProcessor(binder).validateBinderQuotasTree(binder,
+								done, statusTicket, errorIds));
+					}
+				} finally {
+				}
+			}
+			logger.info("validateBinderQuotasTree took " + (System.currentTimeMillis()-startTime) + " ms");
+			return done;
+		} finally {
+			// It is important to call this at the end of the processing no
+			// matter how it went.
+			if (statusTicket != null)
+				statusTicket.done();
+		}
+	}
+
 
     //no transaction
     public void modifyBinder(Long binderId, String fileDataItemName, String fileName, InputStream content)

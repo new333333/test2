@@ -111,5 +111,10 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     public void indexTeamMembership(Binder binder, boolean cascade) {
     	//don't index
    }
-	
+
+    public Collection validateBinderQuotasTree(Binder binder, Collection exclusions, StatusTicket statusTicket, 
+    		List<Long> errors) {
+    	return new ArrayList();
+    }
+
 }

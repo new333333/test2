@@ -600,6 +600,7 @@ public class WebKeys {
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
 	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
 	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
+	public static final String OPERATION_VALIDATE_BINDER_QUOTAS = "validate_binder_quotas";
 	public static final String OPERATION_VIEW_NEXT = "view_next";
 	public static final String OPERATION_VIEW_PREVIOUS = "view_previous";
 	public static final String OPERATION_VIEW_PHOTO = "view_photo";

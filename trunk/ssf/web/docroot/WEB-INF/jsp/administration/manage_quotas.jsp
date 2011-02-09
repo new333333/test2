@@ -65,6 +65,8 @@
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
+var ss_validateStatusTicket = ss_random++;
+
 function ss_checkIfNumber(obj) {
 	if (!ss_isInteger(obj.value)) {
 		var msg = "<ssf:nlt tag="definition.error.invalidCharacter"><ssf:param name="value" value="xxxxxx"/></ssf:nlt>";
@@ -111,7 +113,25 @@ function ss_showModifyDiv(id) {
 }
 
 function ss_validateBinderQuotas() {
-	alert('validation is not implemented yet');
+	ss_setupStatusMessageDiv();
+	var urlParams = {operation:"validate_binder_quotas", ss_statusId:ss_validateStatusTicket};
+	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
+	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
+}
+
+var ss_checkStatusUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="false" >
+	<ssf:param name="operation" value="check_status" />
+	</ssf:url>";
+	
+function ss_getOperationStatus() {
+	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("ss_statusId",ss_validateStatusTicket);
+	ajaxRequest.sendRequest();  //Send the request
+	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
 </script>

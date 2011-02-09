@@ -426,6 +426,16 @@ public interface BinderModule {
       */
 	public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) throws AccessControlException;
    
+    /**
+     * Validate the binder quota values for a set of binder trees
+     * @param binderIds
+     * @param status ticket
+     * @param error list
+     * @return Set of binderIds indexed
+     */
+	public Set<Long> validateBinderQuotaTree(Collection<Long> ids, StatusTicket statusTicket, List<Long> errorIds) 
+		throws AccessControlException;
+
 	/**
      * Attach a single file to a binder.  
      * @param binderId

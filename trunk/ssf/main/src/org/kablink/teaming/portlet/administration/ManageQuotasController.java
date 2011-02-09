@@ -48,8 +48,11 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -65,6 +68,8 @@ public class ManageQuotasController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
+		Binder topBinder = getWorkspaceModule().getTopWorkspace();
+		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (formData.containsKey("enableQuotas")) {
 				getAdminModule().setQuotaEnabled(true);
@@ -186,6 +191,7 @@ public class ManageQuotasController extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
+		getAdminModule().checkAccess(AdminOperation.manageFunction);
 
 		if (formData.containsKey("okBtn")) {
 			//return new ModelAndView("forum/close_window", model);

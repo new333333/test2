@@ -104,6 +104,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.Subscription;
@@ -135,6 +136,7 @@ import org.kablink.teaming.portlet.binder.AccessControlController;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.relevance.util.RelevanceUtils;
+import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFiltersBuilder;
 import org.kablink.teaming.security.AccessControlException;
@@ -150,6 +152,7 @@ import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -568,6 +571,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		else if (op.equals(WebKeys.OPERATION_TOGGLE_GWT_UI)) {
 			return ajaxToggleGwtUI(request, response);
 		}
+		else if (op.equals(WebKeys.OPERATION_VALIDATE_BINDER_QUOTAS)) {
+			return ajaxValidateBinderQuotas(request, response);
+		}
 		return ajaxReturn(request, response);
 	} 
 
@@ -850,6 +856,40 @@ public class AjaxController  extends SAbstractControllerRetry {
 		GwtUIHelper.setGwtUIActive(request, (!(GwtUIHelper.isGwtUIActive(request))));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/toggle_gwtUI", model);
+	}
+
+	/**
+	 * Toggles the current GWT UI mode.
+	 * 
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private ModelAndView ajaxValidateBinderQuotas(RenderRequest request, RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		getAdminModule().checkAccess(AdminOperation.manageFunction);
+		Binder topBinder = getWorkspaceModule().getTopWorkspace();
+		Collection<Long> ids = new HashSet();
+		ids.add(topBinder.getId());
+
+		// Create a new status ticket
+		String ticketId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none");
+		StatusTicket statusTicket = WebStatusTicket.newStatusTicket(ticketId, request);
+		SimpleProfiler profiler = null; 
+		if (logger.isDebugEnabled()) {
+			profiler = new SimpleProfiler("validateBinderQuotas");
+			SimpleProfiler.setProfiler(profiler);
+		}
+		List<Long> errors = new ArrayList<Long>();
+		Collection idsIndexed = getBinderModule().validateBinderQuotaTree(ids, statusTicket, errors);
+		if (logger.isDebugEnabled()) {
+			logger.debug(SimpleProfiler.toStr());
+			SimpleProfiler.clearProfiler();
+		}
+
+		response.setContentType("text/xml");
+		return new ModelAndView("administration/validate_binder_quotas", model);
 	}
 
 	/**
