@@ -65,7 +65,7 @@
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
-var ss_validateStatusTicket = ss_random++;
+var ss_validateStatusTicket = "validate"+ss_random++;
 
 function ss_checkIfNumber(obj) {
 	if (!ss_isInteger(obj.value)) {
@@ -112,11 +112,25 @@ function ss_showModifyDiv(id) {
 	}
 }
 
+var ss_validationRunning = false;
 function ss_validateBinderQuotas() {
 	ss_setupStatusMessageDiv();
+	var statusDiv = document.getElementById("ss_operation_status");
+	statusDiv.innerHTML = "<ssf:nlt tag="validate.binderQuota.starting"/>";
 	var urlParams = {operation:"validate_binder_quotas", ss_statusId:ss_validateStatusTicket};
-	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
+	ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams), ss_validationComplete);
+	ss_validationRunning = true;
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
+}
+
+function ss_validationComplete(data) {
+	if (ss_indexTimeout != null) {
+		clearTimeout(ss_indexTimeout);
+		ss_indexTimeout = null;
+	}
+	ss_validationRunning = false;
+	var statusDiv = document.getElementById("ss_operation_status");
+	statusDiv.innerHTML = "<ssf:nlt tag="validate.binderQuota.completed"/> " + data.errors;
 }
 
 var ss_checkStatusUrl = "<ssf:url 
@@ -128,6 +142,7 @@ var ss_checkStatusUrl = "<ssf:url
 	</ssf:url>";
 	
 function ss_getOperationStatus() {
+	if (!ss_validationRunning) return;
 	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("ss_statusId",ss_validateStatusTicket);
 	ajaxRequest.sendRequest();  //Send the request
@@ -415,23 +430,28 @@ function ss_getOperationStatus() {
 <br/>
 
 	<fieldset class="ss_fieldset">
-	  <legend class="ss_legend"><input type="checkbox" name="enableBinderQuotas" 
-	  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
-	  />
-	  <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
+	  <legend class="ss_legend">
+	    <input type="checkbox" name="enableBinderQuotas" 
+		  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
+		/>
+		<span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
 		
-	<div style="margin: 10px">
-	  <input type="checkbox" name="allowBinderQuotasByOwner" 
-	  <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
-	  /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
-	</div>
-  <div style="margin: 10px;">
-    <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
-      title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
-    >
-      <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
-    </a>
-  </div>
+		<div style="margin: 10px">
+		  <input type="checkbox" name="allowBinderQuotasByOwner" 
+		  <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
+		  /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
+		</div>
+	    <div style="margin: 10px;">
+	      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
+	        title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
+	      >
+	        <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
+	      </a>
+	    </div>
+	    <div style="padding-left:100px;">
+	      <div id="ss_operation_status">
+	      </div>
+	    </div>
 	</fieldset>
 			
 

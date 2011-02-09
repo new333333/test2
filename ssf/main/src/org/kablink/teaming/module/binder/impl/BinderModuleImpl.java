@@ -597,41 +597,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				includeEntries);
 	}
 	
-	public Set<Long> validateBinderQuotaTree(Collection<Long> ids, StatusTicket statusTicket, List<Long> errorIds) 
+	//Routine to look through all binders and validate that the quota data is correct
+	public Set<Long> validateBinderQuotaTree(Binder binder, StatusTicket statusTicket, List<Long> errorIds) 
 			throws AccessControlException {
 		long startTime = System.currentTimeMillis();
 		getCoreDao().flush(); // just incase
 		try {
-			// make list of binders we have access to first
-			List<Binder> binders = getCoreDao().loadObjects(ids,
-					Binder.class,
-					RequestContextHolder.getRequestContext().getZoneId());
-			List<Binder> checked = new ArrayList();
-			for (Binder binder : binders) {
-				try {
-					checkAccess(binder, BinderOperation.indexTree);
-					if (binder.isDeleted()) {
-						continue;
-					}
-					checked.add(binder);
-				} catch (AccessControlException ex) {
-					// Skip the ones we cannot access
-				} catch (Exception ex) {
-					logger.error("Error indexing binder " + binder, ex);
-					errorIds.add(binder.getId());
-				}
-
-			}
 			Set<Long> done = new HashSet();
-			if (!checked.isEmpty()) {
-				try {
-					for (Binder binder : checked) {
-						done.addAll(loadBinderProcessor(binder).validateBinderQuotasTree(binder,
-								done, statusTicket, errorIds));
-					}
-				} finally {
-				}
-			}
+			done.addAll(loadBinderProcessor(binder).validateBinderQuotasTree(binder,
+								statusTicket, errorIds));
 			logger.info("validateBinderQuotasTree took " + (System.currentTimeMillis()-startTime) + " ms");
 			return done;
 		} finally {

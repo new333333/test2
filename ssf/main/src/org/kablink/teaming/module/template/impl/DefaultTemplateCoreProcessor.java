@@ -112,7 +112,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
     	//don't index
    }
 
-    public Collection validateBinderQuotasTree(Binder binder, Collection exclusions, StatusTicket statusTicket, 
+    public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, 
     		List<Long> errors) {
     	return new ArrayList();
     }
