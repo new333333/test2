@@ -1051,7 +1051,7 @@ body, table td, select
 }
 
 /* Styles used for the jsp name in a "custom jsp" widget */
-.lpeCustomJspName
+.lpeCustomJspName, .lpeLandingPageExtName
 {
 	cursor: default;
 	color: #333333;
@@ -1170,7 +1170,7 @@ body, table td, select
 
 /* Styles for the "Custom Jsp", "Entry", "Folder", "Graphic", "Link to Entry", */
 /* "Link to Folder", "Link to Url", "Utility Element" widgets. */
-.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGoogleGadgetWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeUtilityElementWidget
+.lpeCustomJspWidget, .lpeEntryWidget, .lpeFolderWidget, .lpeGoogleGadgetWidget, .lpeGraphicWidget, .lpeLinkToEntryWidget, .lpeLinkToFolderWidget, .lpeLinkToUrlWidget, .lpeLandingPageExtWidget, .lpeUtilityElementWidget
 {
 	background-color: #E5E5E5;
 	border: 1px solid #AEAEAE;
@@ -1372,6 +1372,14 @@ body, table td, select
 	font-size: 13px;
 	font-weight: bold;
 	margin-right: .25em;
+}
+
+/* Styles used in the landing page extension dialog */
+.lpExtDescLabel
+{
+	font-size: 10px;
+	padding: 5px;
+	width: 375px;
 }
 
 /* Style used for the panel that holds the content control. */

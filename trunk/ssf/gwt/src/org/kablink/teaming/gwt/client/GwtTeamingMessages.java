@@ -83,6 +83,29 @@ public interface GwtTeamingMessages extends Messages
 	String noFileAttachmentsHint();
 	String selectGraphicLabel();
 	
+	// Strings used in the Landing Page Extentions widget in the landing page editor
+	String landingPageExtLabel();
+	String landingPageExtNameLabel();
+	String landingPageExtProperties();
+	String lpExtDisplayEntry();
+	String lpExtDisplayEntryDesc();
+	String lpExtDisplayFullEntry();
+	String lpExtDisplayFullEntryDesc();
+	String lpExtDisplayRecentEntries();
+	String lpExtDisplayRecentEntriesDesc();
+	String lpExtDisplayRecentEntriesList();
+	String lpExtDisplayRecentEntriesListDesc();
+	String lpExtDisplayRecentEntriesListSorted();
+	String lpExtDisplayRecentEntriesListSortedDesc();
+	String lpeExtDisplayFileListSorted();
+	String lpeExtDisplayFileListSortedDesc();
+	String lpeExtDisplayCalendarFolder();
+	String lpeExtDisplayCalendarFolderDesc();
+	String lpeExtDisplayTaskFolder();
+	String lpeExtDisplayTaskFolderDesc();
+	String lpeExtDisplaySurvey();
+	String lpeExtDisplaySurveyDesc();
+	
 	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();
 	String lpeAltEntry();
@@ -94,6 +117,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
 	String lpeAltList();
+	String lpeAltLPExt();
 	String lpeAltTable();
 	String lpeAltUtilityElement();
 	String lpeCustomJSP();
@@ -109,6 +133,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeLinkFolderWS();
 	String lpeLinkURL();
 	String lpeList();
+	String lpeLPExt();
 	String lpeTable();
 	String lpeUtilityElement();
 	

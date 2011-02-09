@@ -225,6 +225,11 @@ public class ConfigData
 					configItem = new HtmlConfig( itemData[i] );
 					++i;
 				}
+				else if ( itemName.equalsIgnoreCase( "landingPageExt" ) )
+				{
+					configItem = new LandingPageExtConfig( itemData[i] );
+					++i;
+				}
 				else
 				{
 					// We don't know what this item is.  Skip it.

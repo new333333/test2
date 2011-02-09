@@ -99,6 +99,10 @@ public class Palette extends Composite
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 
+		paletteItem = new LandingPageExtPaletteItem();
+		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+
 		paletteItem = new HtmlPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
