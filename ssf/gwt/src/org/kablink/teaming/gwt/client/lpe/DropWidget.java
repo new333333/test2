@@ -108,6 +108,9 @@ public abstract class DropWidget extends Composite
 		if ( configItem instanceof HtmlConfig )
 			return new HtmlDropWidget( lpe, (HtmlConfig) configItem );
 		
+		if ( configItem instanceof LandingPageExtConfig )
+			return new LandingPageExtDropWidget( lpe, (LandingPageExtConfig) configItem );
+		
 		//!!! Add new DropWidgets here.
 		
 		// If we get here we didn't recognize the type of widget being requested.

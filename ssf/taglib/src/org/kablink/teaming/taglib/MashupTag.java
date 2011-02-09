@@ -124,7 +124,10 @@ public class MashupTag extends BodyTagSupport {
 						
 						// Output the start of the mashup table element
 						String jsp = "/WEB-INF/jsp/tag_jsps/mashup/"+type+".jsp";
+						
+						// Are we working with a custom jsp?
 						if (type.equals("customJsp") && !view.equals("form")) {
+							// Yes
 							if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME) && 
 									!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME).equals("")) {
 								jsp = "/WEB-INF/jsp/custom_jsps/" + 
@@ -137,6 +140,23 @@ public class MashupTag extends BodyTagSupport {
 								}
 							}
 						}
+						// Are we working with a landing page extension?
+						else if ( type.equalsIgnoreCase( "landingPageExt" ) && !view.equals( "form" ) )
+						{
+							// Yes
+							if ( mashupItemAttributes.containsKey( ObjectKeys.MASHUP_ATTR_LANDING_PAGE_EXT_JSP_NAME) )
+							{
+								String jspName;
+								
+								// Get the name of the landing page extension jsp
+								jspName = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_LANDING_PAGE_EXT_JSP_NAME );
+								if ( jspName != null && jspName.length() > 0 )
+								{
+									jsp = "/WEB-INF/jsp/landingpage_ext/" + jspName;
+								}
+							}
+						}
+						
 						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 						ServletRequest req = pageContext.getRequest();
 						StringServletResponse res = new StringServletResponse(httpRes);
