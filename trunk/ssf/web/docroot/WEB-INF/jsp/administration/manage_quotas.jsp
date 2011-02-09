@@ -116,7 +116,7 @@ var ss_validationRunning = false;
 function ss_validateBinderQuotas() {
 	ss_setupStatusMessageDiv();
 	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<ssf:nlt tag="validate.binderQuota.starting"/>";
+	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.starting"/></span>";
 	var urlParams = {operation:"validate_binder_quotas", ss_statusId:ss_validateStatusTicket};
 	ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams), ss_validationComplete);
 	ss_validationRunning = true;
@@ -130,7 +130,12 @@ function ss_validationComplete(data) {
 	}
 	ss_validationRunning = false;
 	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<ssf:nlt tag="validate.binderQuota.completed"/> " + data.errors;
+	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completed"/> " + data.errors + "</span>";
+	<c:if test="${!ss_binderQuotasInitialized}">
+	  var url = "<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/></ssf:url>";
+	  self.location.href = url;
+	</c:if>
 }
 
 var ss_checkStatusUrl = "<ssf:url 
@@ -433,19 +438,30 @@ function ss_getOperationStatus() {
 	  <legend class="ss_legend">
 	    <input type="checkbox" name="enableBinderQuotas" 
 		  <c:if test="${ss_binderQuotasEnabled}">checked=checked</c:if>
+		  <c:if test="${!ss_binderQuotasInitialized}">disabled=disabled</c:if>
 		/>
 		<span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.enable" /></span></legend>
 		
 		<div style="margin: 10px">
-		  <input type="checkbox" name="allowBinderQuotasByOwner" 
-		  <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
-		  /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
+		  <c:if test="${ss_binderQuotasInitialized}">
+		    <input type="checkbox" name="allowBinderQuotasByOwner" 
+		    <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">checked=checked</c:if>
+		    /><ssf:nlt tag="administration.quotas.binder.allowBinderOwners"/>
+		  </c:if>
+		  <c:if test="${!ss_binderQuotasInitialized}">
+		    <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.mustInitialize"/></span>
+		  </c:if>
 		</div>
 	    <div style="margin: 10px;">
 	      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
 	        title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
 	      >
-	        <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
+	        <c:if test="${ss_binderQuotasInitialized}">
+	          <span><ssf:nlt tag="administration.quotas.binder.validate"/></span>
+	        </c:if>
+	        <c:if test="${!ss_binderQuotasInitialized}">
+	          <span><ssf:nlt tag="administration.quotas.binder.initialize"/></span>
+	        </c:if>
 	      </a>
 	    </div>
 	    <div style="padding-left:100px;">
