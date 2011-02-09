@@ -1397,6 +1397,14 @@ public class GwtTaskHelper {
 	}
 
 	/*
+	 * Returns true if given a TaskDate with a value and false
+	 * otherwise.
+	 */
+	private static boolean hasDateValue(TaskDate td) {
+		return ((null != td) && MiscUtil.hasString(td.getDateDisplay()));
+	}
+	
+	/*
 	 * Returns true if a TaskLink refers to a valid FolderEntry and false
 	 * otherwise.
 	 */
@@ -2062,9 +2070,15 @@ public class GwtTaskHelper {
 	 * their subtasks.
 	 */
 	private static void updateCalculatedDatesImpl(AllModulesInjected bs, TaskBundle tb, Map<Long, TaskDate> updates, List<TaskListItem> taskList) throws GwtTeamingException {
-		// Scan the tasks in the list.
+		// What task and list are we working from?
 		boolean  rootTasks = (tb.getTasks() == taskList);
-		TaskInfo prevTI    = null;		
+		TaskListItem parentTask;
+		if (rootTasks)
+		     parentTask = null;
+		else parentTask = TaskListItemHelper.findTaskListItemContainingList(tb, taskList);
+		
+		// Scan the tasks in the list.
+		TaskInfo prevTI = null;		
 		for (TaskListItem task:  taskList) {
 			// If a task is an all day event or doesn't have a duration
 			// in days, we don't update its calculated dates.  Can we
@@ -2123,9 +2137,8 @@ public class GwtTaskHelper {
 						if (null == prevTI) {
 							// Yes!  Use the parent task's start date
 							// as its start.
-							TaskListItem parentTask  = TaskListItemHelper.findTaskListItemContainingList(tb, taskList);
-							TaskDate     parentStart = ((null == parentTask)  ? null : parentTask.getTask().getEvent().getLogicalStart());
-							newCalcStart             = ((null == parentStart) ? null : parentStart.getDate());
+							TaskDate parentStart = ((null == parentTask)  ? null : parentTask.getTask().getEvent().getLogicalStart());
+							newCalcStart         = ((null == parentStart) ? null : parentStart.getDate());
 						}
 						
 						else {
@@ -2221,6 +2234,81 @@ public class GwtTaskHelper {
 			// back at the previous task to calculate the next one.
 			// Keep track of it.
 			prevTI = ti;
+		}
+
+		// Did we just process a non-empty subtask list for some parent
+		// task?
+		if ((null != parentTask) && (!(taskList.isEmpty()))) {
+			// Yes!  What do we know about the parent task?
+			TaskInfo     pTask       = parentTask.getTask();
+			TaskEvent    pEvent      = pTask.getEvent();
+			boolean      pHasDurDays = pEvent.getDuration().hasDaysOnly();
+			ServerDates  pDates      = ((ServerDates) pEvent.getServerData());
+			boolean      pHasStart   = hasDateValue(pDates.getActualStart());
+			boolean      pHasEnd     = hasDateValue(pDates.getActualEnd());			
+
+
+			// Does the parent task need its calculated start updated
+			// from its subtasks?
+			TaskDate pNewCalcStart;
+			if ((!pHasStart) && ((!pHasEnd) || (!pHasDurDays))) {
+				// No start and no end or duration!  It needs a start!
+				// (If it had an end and duration, that would have been
+				// used to calculated the start previously.)  Does the
+				// first subtask have a start that can be used?
+				pNewCalcStart = taskList.get(0).getTask().getEvent().getLogicalStart();
+				if (!hasDateValue(pNewCalcStart)) {
+					// No!
+					pNewCalcStart = null;
+				}
+			}
+			else {
+				// We don't need a start from the subtasks.
+				pNewCalcStart = null;
+			}
+			
+			// Does the parent task need its calculated end updated
+			// from its subtasks?
+			TaskDate pNewCalcEnd;
+			if ((!pHasEnd) && ((!pHasStart) || (!pHasDurDays))) {
+				// No end and no start or duration!  It needs an end!
+				// (If it had a start and duration, that would have
+				// been used to calculated the end previously.)  Does
+				// the last subtask have an end that can be used?
+				pNewCalcEnd = taskList.get(taskList.size() - 1).getTask().getEvent().getLogicalEnd();
+				if (!(hasDateValue(pNewCalcEnd))) {
+					// No!
+					pNewCalcEnd = null;
+				}
+			}
+			else {
+				// We don't need an edn from the subtasks.
+				pNewCalcEnd = null;
+			}
+			
+			// Do we have new calculated start and/or end for the
+			// parent task?
+			if ((null != pNewCalcStart) || (null != pNewCalcEnd)) {
+				// Yes!  Can we save the changes?
+				boolean saved = updateCalculatedDatesOnTask(
+					bs,
+					pTask,
+					false, ((null == pNewCalcStart) ? null : pNewCalcStart.getDate()),
+					false, ((null == pNewCalcEnd)   ? null : pNewCalcEnd.getDate()));
+
+				if (saved) {
+					// Yes!  Put them into effect on the parent
+					// task.
+					if (null != pNewCalcStart) {
+						pEvent.setLogicalStart(pNewCalcStart);
+					}
+					
+					if (null != pNewCalcEnd) {
+						pEvent.setLogicalEnd(  pNewCalcEnd  );
+						updates.put(pTask.getTaskId().getEntryId(), pNewCalcEnd);
+					}
+				}
+			}
 		}
 	}
 
