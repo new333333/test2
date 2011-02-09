@@ -95,9 +95,9 @@
 
 .activityStreamCtrlHeaderSubtitle
 {
-	color: #333333;
-	font-size: .75em;
-	margin-left: 1em;
+	color: #b8b8b8;
+	font-size: .7em;
+	margin-left: .7em;
 	padding: 5px;
 	white-space: nowrap;
 }
@@ -134,7 +134,7 @@
 .activityStreamHover, .shareThisDlgNameHover, .groupMembershipNameHover
 {
 	cursor: pointer;
-	background: url(images/H_bg_blend_teal_light.png) repeat-x scroll center bottom;
+	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
 	padding-left: 3px;
 	padding-right: 3px;
@@ -415,6 +415,7 @@
 {
 	cursor: pointer;
 	padding-right: 5px;
+	vertical-align: middle;
 }
 
 .groupMembershipPopup
@@ -905,6 +906,7 @@ body, table td, select
 .workspaceTreeBinderSelected
 {
 	color: #5691a6;
+	padding-left: 2px;
 }
 .workspaceTreeControl
 {
@@ -917,16 +919,28 @@ body, table td, select
 }
 .workspaceTreeControlBody
 {
-	padding-top: 4px;
+	padding-top: 5px;
 }
 .workspaceTreeControlHeader .workspaceTreeBinderSelected
 {
 	color: #fff;
 }
+.workspaceTreeControlHeader td
+{
+	vertical-align: top;
+}
 .workspaceTreeControlHeader_as
 {
-	background: #85BCC3 url(images/H_bg_blend_teal.png) repeat-x scroll center bottom;
+	background: #949494 url(images/blends/gray_blend3_75.png) repeat-x scroll center bottom;
 	cursor: default;
+	height: 64px;
+}
+.workspaceTreeControlHeader_as td div
+{
+	font-size: 20px;
+	font-weight: normal;
+	padding-left: 8px;
+	padding-top: 5px;
 }
 .workspaceTreeControlHeader_base
 {
@@ -2615,11 +2629,12 @@ top:100px;
 /* Start:  GWT Task Folder Listing styles. */
 .gwtTaskTools
 {
-	background: none repeat scroll 0 0 #E0E0E0;
+	background:url(images/blends/gray_blend7_28.png) repeat-x;
+	background-position: bottom;
 	border: 1px solid #E0E0E0;
 	margin:  5px;
 	display: block;
-	padding:  6px 3px 6px 12px;
+	padding:  3px 3px 3px 12px;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 1.25em; 
 	white-space: nowrap;
@@ -2650,7 +2665,8 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 }
 .gwtTaskToolsButton_WidgetImage
 {
-	margin-left: 2px;
+	margin-left: 3px;
+	vertical-align: text-top;
 }
 .gwtTaskToolsButton_WidgetText
 {
@@ -2679,6 +2695,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	font-size: 1.35em; 
 	overflow-y: auto;
 	overflow-x: hidden;
+	border: 1px solid #bbbbb9;
 }
 .gwtTaskList_assigneesList tr td
 {
@@ -2823,9 +2840,9 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	padding-bottom: 0.2em;
 	padding-left: .5em;
 	padding-right: .5em;
-	border-bottom: 1px solid #bbbbb9; 
+	border-bottom: 1px solid #D2D5D1; 
 	white-space: nowrap;
-	background:url(images/blends/gray_blend7_28.png) repeat-x;
+	background:url(images/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	}
 	
@@ -2910,6 +2927,7 @@ a.sort-column:hover {
 	
 .gwtTaskList_task-icon, .gwtTaskList_icon-spacer {
 	margin-right: 3px;
+	vertical-align: text-bottom;
 	}
 a.gwtTaskList_task-icon:hover
 {
