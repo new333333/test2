@@ -57,6 +57,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -64,6 +65,7 @@ import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -1744,7 +1746,85 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		return errors;
 
 	}
+
    	
+    public Collection validateBinderQuotasTree(Binder binder, Collection exclusions, StatusTicket statusTicket, 
+    		List<Long> errors) {
+    	final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	Map<Long,Long> binderQuotasToUpdate = new HashMap<Long,Long>();
+    	
+   		//get all the ids of child binders. order for statusTicket to make some sense
+   		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
+				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
+		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+		if (exclusions != null) ids.removeAll(exclusions);
+		Map params = new HashMap();
+		for (int i=0; i<ids.size(); i+=inClauseLimit) {
+			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
+			params.put("pList", subList);
+			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
+			getCoreDao().bulkLoadCollections(binders);
+			List<EntityIdentifier> folderIds = new ArrayList();
+			List<EntityIdentifier> workspaceIds = new ArrayList();
+			List<EntityIdentifier> otherIds = new ArrayList();
+			for (Binder e: binders) {
+				if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
+					folderIds.add(e.getEntityIdentifier());
+				else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
+					workspaceIds.add(e.getEntityIdentifier());
+				else 
+					otherIds.add(e.getEntityIdentifier());
+			}
+
+			for (Binder b:binders) {
+				if (b.isDeleted()) continue;
+	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
+	   	    	
+	   	    	Long dsu = getCoreDao().computeDiskSpaceUsed(zoneId, b.getId());
+	   	    	BinderQuota bq = null;
+	   	    	try {
+	   	    		bq = getCoreDao().loadBinderQuota(zoneId, b.getId());
+	   	    	} catch(NoObjectByTheIdException e) {
+	   	    		binderQuotasToUpdate.put(b.getId(), dsu);
+	   	    	}
+	   	    	if (bq != null && !bq.getDiskQuota().equals(dsu)) {
+	   	    		//This quota was wrong, so fix it
+	   	    		binderQuotasToUpdate.put(b.getId(), dsu);
+		   	    	errors.add(b.getId());
+	   	    	}
+	   	    	getCoreDao().evict(b);
+			}
+			if (!binderQuotasToUpdate.isEmpty()) {
+				final Map<Long,Long> binderQuotas = new HashMap<Long,Long>(binderQuotasToUpdate);
+				binderQuotasToUpdate = new HashMap<Long,Long>();
+				SimpleProfiler sp = new SimpleProfiler(false);
+				sp.start("update_binder_quotas");
+		        // The following part requires update database transaction.
+		        getTransactionTemplate().execute(new TransactionCallback() {
+		        	public Object doInTransaction(TransactionStatus status) {
+		        		for (Long binderId : binderQuotas.keySet()) {
+		    	   	    	BinderQuota bq = null;
+		    	   	    	try {
+		    	   	    		bq = getCoreDao().loadBinderQuota(zoneId, binderId);
+		    	   	    		bq.setDiskSpaceUsed(binderQuotas.get(binderId));
+		    	   	    	} catch(NoObjectByTheIdException e) {
+		    	   	    		bq = new BinderQuota();
+		    	   	    		bq.setZoneId(zoneId);
+		    	   	    		bq.setBinderId(binderId);
+		    	   	    		bq.setDiskSpaceUsed(binderQuotas.get(binderId));
+		    	   	    	}
+	    	   	    		getCoreDao().save(bq);
+		        		}
+		                return null;
+		        	}
+		        });
+		        sp.stop("update_binder_quotas");
+			}
+		}
+   		return ids;
+
+    }
+
    	
     // ***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {
