@@ -1670,6 +1670,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) ids.removeAll(exclusions);
 		Map params = new HashMap();
+		int bindersIndexed = 0;
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
@@ -1695,12 +1696,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
+	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
 	   	   		
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
+	   	    	bindersIndexed++;
 			}
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
@@ -1750,7 +1752,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	//Routine to validate the quota data for all binders
    	//  Builds a map of every binder, its quota data, and its parent
    	//  Then walks that tree validating the data
-	private class QuotaData {
+	public class QuotaData {
 		private Long diskSpaceUsed;
 		private Long diskSpaceUsedCumulative;
 		private Long newDiskSpaceUsedCumulative;

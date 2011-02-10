@@ -186,6 +186,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "copy");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "modify_binder", "move");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "export_import");
+		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_binder_quota");
 		addNestedItemFromUrl(m_actionsBucket, m_commonActionsTBI, "manage_definitions");
 		
 		// ...then the team section...

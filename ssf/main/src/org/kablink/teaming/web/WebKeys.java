@@ -333,6 +333,7 @@ public class WebKeys {
 	public static final String ACTION_LOGIN = "__login";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
+	public static final String ACTION_MANAGE_BINDER_QUOTA="manage_binder_quota";
 	public static final String ACTION_EXPORT_IMPORT="export_import";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
@@ -1099,6 +1100,7 @@ public class WebKeys {
     public static final String QUOTAS_GROUPS="ss_quotasGroups";
     public static final String QUOTAS_USERS="ss_quotasUsers";
     public static final String QUOTAS_HIGH_WATER_MARK="ss_quotasHighWaterMark";
+    public static final String BINDER_QUOTA="ss_binderQuota";
     public static final String BINDER_QUOTAS_INITIALIZED="ss_binderQuotasInitialized";
     public static final String BINDER_QUOTAS_ENABLED="ss_binderQuotasEnabled";
     public static final String BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED="ss_binderQuotasAllowBinderOwnerEnabled";
@@ -1500,6 +1502,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
+    public static final String VIEW_MANAGE_BINDER_QUOTA="binder/manage_binder_quota";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";

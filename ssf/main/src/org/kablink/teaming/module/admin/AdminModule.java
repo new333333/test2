@@ -37,6 +37,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -139,6 +141,8 @@ public interface AdminModule {
     public void setQuotaEnabled(boolean quotaEnabled);
     public void setQuotaDefault(Integer quotaDefault);
     public void setQuotaHighWaterMark(Integer quotaHighWaterMark);
+    public BinderQuota getBinderQuota(Binder binder);
+    public void setBinderQuota(Binder binder, BinderQuota binderQuota);
     public void setBinderQuotasInitialized(boolean binderQuotaInitialized);
     public boolean isBinderQuotaInitialized();
     public boolean isBinderQuotaEnabled();
