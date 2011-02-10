@@ -44,10 +44,110 @@
 
 <body class="ss_style_body tundra">
 
+<script type="text/javascript">
+function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = "<ssf:url actionUrl="false" action="manage_binder_quota"><ssf:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	self.location.href = url;
+	return false;
+}
+</script>
+
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="${tag}">
+<br/>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <span><ssf:nlt tag="access.currentFolder"/></span>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+</c:if>
+<% //need to check tags for templates %>
+<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+<div align="right">
+<form class="ss_form" method="post" style="display:inline;" 
+	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+  <input type="submit" class="ss_submit" name="closeBtn" 
+    value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+</form>
+</div>
 
-<br/>under construction
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeShowIdConfig${renderResponse.namespace}" 
+  scope="request" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+
+<br/>
+<form class="ss_form" method="post" style="display:inline;" 
+	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+	
+    <fieldset class="ss_fieldset">
+      <legend class="ss_legend"><ssf:nlt tag="quota.setQuota"/></legend>
+      <c:set var="type" value="workspace"/>
+      <c:if test="${ssBinder.entityType == 'folder'}"><c:set var="type" value="folder"/></c:if>
+      
+      <div style="padding:10px 10px 0px 10px;">
+        <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsed.${type}"/></span>
+        <span>
+          <fmt:setLocale value="${ssUser.locale}"/>
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsed + 500000)/1000000}"
+		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
+		</span>
+      </div>
+
+      <div style="padding:6px 10px 0px 10px;">
+        <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsedCumulative.${type}"/></span>
+        <span>
+          <fmt:setLocale value="${ssUser.locale}"/>
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsedCumulative + 500000)/1000000}"
+		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
+		</span>
+      </div>
+
+      <c:set var="currentQuota"><fmt:formatNumber value="${(BinderQuota.diskQuota + 500000)/1000000}"
+		  maxFractionDigits="0"/></c:set>
+	  <div style="padding:6px 10px 0px 10px;">
+        <span class="ss_bold"><ssf:nlt tag="quota.currentQuota"/></span>
+        <span>
+          <c:if test="${empty ss_binderQuota.diskQuota}"><ssf:nlt tag="None"/></c:if>
+          <c:if test="${!empty ss_binderQuota.diskQuota}">
+          <fmt:setLocale value="${ssUser.locale}"/>
+		  <fmt:formatNumber value="${(BinderQuota.diskQuota + 500000)/1000000}"
+		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
+        </span>
+      </div>
+
+      <div style="padding:16px 10px 0px 10px;">
+        <c:if test="${empty ss_binderQuota.diskQuota}">
+          <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
+          <input type="text" name="quota" value="" 
+            style="width:50px; text-align:right;"
+            onChange='if (!ss_checkIfInteger(this.value)){alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");this.value="";}'
+          ><ssf:nlt tag="file.sizeMB"/>
+        </c:if>
+        <c:if test="${!empty ss_binderQuota.diskQuota}">
+          <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
+          <input type="text" name="quota" value="${currentQuota}" 
+            style="width:50px; text-align:right;"
+            onChange='if (!ss_checkIfInteger(this.value)){alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");this.value="";}'
+            /><ssf:nlt tag="file.sizeMB"/>
+        </c:if>
+	  </div>
+    </fieldset>
+
 <br/>
 <br/>
 

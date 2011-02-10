@@ -45,8 +45,12 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
+import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
@@ -67,7 +71,21 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			//Save the quota setting
+			if (getAdminModule().isBinderQuotaAllowBinderOwnerEnabled() && 
+					getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				//Save the quota setting
+				String sQuota = PortletRequestUtils.getStringParameter(request, "quota", "");
+				Long quota = null;
+				if (!sQuota.equals("")) {
+					quota = new Long(PortletRequestUtils.getLongParameter(request, "quota"));
+					quota = quota * 1000000;
+				}
+				BinderQuota bq = getAdminModule().getBinderQuota(binder);
+				bq.setDiskQuota(quota);
+				getAdminModule().setBinderQuota(binder, bq);
+			}
+
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewBinder(response, binderId, binder.getEntityType().name());
@@ -81,6 +99,11 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 				WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
+
+		//Set up navigation beans
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+
 		model.put(WebKeys.BINDER_QUOTA, getAdminModule().getBinderQuota(binder));
 		return new ModelAndView(WebKeys.VIEW_MANAGE_BINDER_QUOTA, model);
 	}
