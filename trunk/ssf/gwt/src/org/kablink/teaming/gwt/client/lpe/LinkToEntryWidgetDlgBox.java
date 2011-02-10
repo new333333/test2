@@ -38,19 +38,24 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -70,6 +75,8 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	private CheckBox	m_newWndCkBox = null;
 	private String m_entryId = null;
 	private InlineLabel m_currentEntryNameLabel = null;
+	private InlineLabel m_findLabel;
+	private Button m_editBtn;
 	
 	/**
 	 * 
@@ -100,44 +107,84 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		InlineLabel inlineLabel;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
-		HTMLTable.CellFormatter cellFormatter;
-		FlowPanel flowPanel;
+		FlowPanel panel;
 		
 		properties = (LinkToEntryProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add a label that will say Current entry: name of the currently selected entry
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		flowPanel = new FlowPanel();
-		inlineLabel = new InlineLabel( GwtTeaming.getMessages().currentEntry() );
-		m_currentEntryNameLabel = new InlineLabel();
-		m_currentEntryNameLabel.addStyleName( "bold" );
-		m_currentEntryNameLabel.addStyleName( "marginLeftPoint25em" );
-		flowPanel.add( inlineLabel );
-		flowPanel.add( m_currentEntryNameLabel );
-		table.setWidget( 0, 0, flowPanel );
+
 		mainPanel.add( table );
 
-		// Add label and find control for "Entry id"
-		table = new FlexTable();
-		table.setCellSpacing( 8 );
-		cellFormatter = table.getCellFormatter();
-		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
-		label = new Label( GwtTeaming.getMessages().findEntry() );
-		table.setWidget( 0, 0, label );
-		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
-		table.setWidget( 0, 1, m_findCtrl );
-		mainPanel.add( table );
+		// Add a label that will say Current entry:
+		inlineLabel = new InlineLabel( GwtTeaming.getMessages().currentEntry() );
+		table.setWidget( 0, 0, inlineLabel );
+		
+		// Add a lable to hold the name of the selected entry
+		m_currentEntryNameLabel = new InlineLabel();
+		m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
+		m_currentEntryNameLabel.addStyleName( "marginLeftPoint25em" );
+		m_currentEntryNameLabel.addStyleName( "marginright10px" );
+		panel = new FlowPanel();
+		panel.add( m_currentEntryNameLabel );
+		
+		// Add an "Edit" button
+		{
+			ClickHandler clickHandler;
+			
+			m_editBtn = new Button( GwtTeaming.getMessages().edit() );
+			m_editBtn.addStyleName( "teamingButton" );
+			panel.add( m_editBtn );
+			
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Make the find control visible.
+							showFindControl();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			m_editBtn.addClickHandler( clickHandler );
+		}
+
+		table.setWidget( 0, 1, panel );
+
+		// Add a "find" control
+		{
+			m_findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
+			m_findLabel.setVisible( false );
+			table.setWidget( 1, 0, m_findLabel );
+			
+			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+			m_findCtrl.setVisible( false );
+			table.setWidget( 1, 1, m_findCtrl );
+		}
 		
 		// Add label and edit control for "Title"
 		label = new Label( GwtTeaming.getMessages().linkToEntryTitleLabel() );
-		table.setWidget( 1, 0, label );
+		table.setWidget( 2, 0, label );
 		m_titleTxtBox = new TextBox();
 		m_titleTxtBox.setVisibleLength( 30 );
-		table.setWidget( 1, 1, m_titleTxtBox );
+		table.setWidget( 2, 1, m_titleTxtBox );
 		
 		// Add a checkbox for "Open the entry in a new window"
 		table = new FlexTable();
@@ -145,6 +192,17 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		m_newWndCkBox = new CheckBox( GwtTeaming.getMessages().openEntryInNewWnd() );
 		table.setWidget( 0, 0, m_newWndCkBox );
 		mainPanel.add( table );
+
+		// Add an empty div that is as wide as the find control.  We do this so when we
+		// show/hide the find control the size of the dialog doesn't change width.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 440, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 2, Unit.PX );
+			mainPanel.add( spacer );
+		}
 
 		init( properties );
 		
@@ -185,6 +243,47 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * Issue an ajax request to get the entry for the given id.  After we get the entry
+	 * we will update the name of the selected entry.
+	 */
+	private void getEntry( final String entryId )
+	{
+		AsyncCallback<GwtFolderEntry> callback;
+		
+		callback = new AsyncCallback<GwtFolderEntry>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
+					entryId );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtFolderEntry gwtFolderEntry )
+			{
+				if ( gwtFolderEntry != null )
+				{
+					// Update the name of the selected entry.
+					m_currentEntryNameLabel.setText( gwtFolderEntry.getEntryName() );
+					m_currentEntryNameLabel.removeStyleName( "noEntrySelected" );
+					m_currentEntryNameLabel.addStyleName( "bold" );
+				}
+			}
+		};
+
+		GwtTeaming.getRpcService().getEntry( HttpRequestInfo.createHttpRequestInfo(), null, entryId, callback );
+	}
+	
+
+	/**
 	 * Return entry id of the selected entry.
 	 */
 	public String getEntryIdValue()
@@ -222,6 +321,17 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private void hideFindControl()
+	{
+		m_findLabel.setVisible( false );
+		m_findCtrl.setVisible( false );
+		m_findCtrl.hideSearchResults();
+	}
+	
+	
+	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init( PropertiesObj props )
@@ -231,17 +341,43 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		
 		properties = (LinkToEntryProperties) props;
 
-		// Update the name of the currently selected entry.
-		m_currentEntryNameLabel.setText( properties.getEntryName() ); 
+		// Remember the entry id that was passed to us.
+		m_entryId = properties.getEntryId();
+		
+		// Do we have an entry?
+		if ( m_entryId != null && m_entryId.length() > 0 )
+		{
+			// Yes
+			// Update the name of the currently selected entry.
+			m_currentEntryNameLabel.setText( properties.getEntryName() );
+			m_currentEntryNameLabel.removeStyleName( "noEntrySelected" );
+			m_currentEntryNameLabel.addStyleName( "bold" );
+			
+			// Hide the find control.
+			hideFindControl();
+			
+			// Show the edit button.
+			m_editBtn.setVisible( true );
+		}
+		else
+		{
+			// No
+			m_currentEntryNameLabel.setText( GwtTeaming.getMessages().noEntrySelected() );
+			m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
+			m_currentEntryNameLabel.removeStyleName( "bold" );
+			
+			// Show the find control and give it the focus.
+			showFindControl();
+			
+			// Hide the edit button.
+			m_editBtn.setVisible( false );
+		}
 		 
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 
 		// Populate the find control's text box with the name of the selected entry.
 		m_findCtrl.setInitialSearchString( "" );
-		
-		// Remember the entry id that was passed to us.
-		m_entryId = properties.getEntryId();
 		
 		tmp = properties.getTitle();
 		if ( tmp == null )
@@ -267,10 +403,31 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 				gwtFolderEntry = (GwtFolderEntry) selectedObj;
 				m_entryId = gwtFolderEntry.getEntryId();
 				
-				// Hide the search-results widget.
-				m_findCtrl.hideSearchResults();
+				// Hide the find control.
+				hideFindControl();
+				
+				// Issue an ajax request to get information about the selected entry.
+				getEntry( m_entryId );
+
+				// Show the edit button.
+				m_editBtn.setVisible( true );
 			}
 		}
 	}// end handleAction()
 	
+	/**
+	 * Show the find control and give it the focus.
+	 */
+	private void showFindControl()
+	{
+		FocusWidget focusWidget;
+
+		m_findLabel.setVisible( true );
+		m_findCtrl.setVisible( true );
+
+		focusWidget = m_findCtrl.getFocusWidget();
+		if ( focusWidget != null )
+			focusWidget.setFocus( true );
+	}
+
 }// end LinkToEntryWidgetDlgBox
