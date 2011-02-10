@@ -767,16 +767,20 @@ public class GwtActivityStreamHelper {
 	 * Adds a Long to a List<Long> if it's not already there.
 	 */
 	private static void addLToLLIfUnique(List<Long> lList, Long l) {
-		// If the List<Long> doesn't contain the Long...
-		if (!(lList.contains(l))) {
-			// ...add it.
-			lList.add(l);
+		if (null != l) {
+			// If the List<Long> doesn't contain the Long...
+			if (!(lList.contains(l))) {
+				// ...add it.
+				lList.add(l);
+			}
 		}
 	}
 	
 	private static void addLToLLIfUnique(List<Long> lList, String l) {
-		// Always use the initial form of the method.
-		addLToLLIfUnique(lList, Long.parseLong(l));
+		if (MiscUtil.hasString(l)) {
+			// Always use the initial form of the method.
+			addLToLLIfUnique(lList, Long.parseLong(l));
+		}
 	}
 	
 	/*

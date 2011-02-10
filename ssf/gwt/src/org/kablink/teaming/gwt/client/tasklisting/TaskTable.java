@@ -211,6 +211,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			if (null != baseUID) {
 				// ...copy the fields that we maintain between them.
 				m_taskSelected = baseUID.m_taskSelected;
+				m_taskOrder    = baseUID.m_taskOrder;
 			}
 		}
 		
@@ -745,11 +746,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * (Re)initializes the UIData objects on the tasks.
 	 */
-	private void initializeUIData() {
-		initializeUIDataImpl(m_taskBundle.getTasks(), 0);
+	private void initializeUIData(boolean updateOrder) {
+		initializeUIDataImpl(m_taskBundle.getTasks(), 0, updateOrder);
 	}
 	
-	private void initializeUIDataImpl(List<TaskListItem> tasks, int taskDepth) {
+	private void initializeUIData() {
+		// Always use the initial form of the method.
+		initializeUIData(true);
+	}
+	
+	private void initializeUIDataImpl(List<TaskListItem> tasks, int taskDepth, boolean updateOrder) {
 		int     taskOrder    = 1;
 		boolean baseTask     = (0 == taskDepth);
 		int     subtaskDepth = (taskDepth + 1);
@@ -758,16 +764,18 @@ public class TaskTable extends Composite implements ActionHandler {
 			UIData newUID = new UIData(((UIData) task.getUIData()));
 			task.setUIData(newUID);
 			newUID.setTaskDepth(taskDepth);
-			if (baseTask) {
-				newUID.setTaskOrder(taskOrder);
-				taskOrder += 1;
-			}
-			else {
-				newUID.setTaskOrder(-1);
+			if (updateOrder) {
+				if (baseTask) {
+					newUID.setTaskOrder(taskOrder);
+					taskOrder += 1;
+				}
+				else {
+					newUID.setTaskOrder(-1);
+				}
 			}
 
 			// ...and build the UIData's for any subtasks.
-			initializeUIDataImpl(task.getSubtasks(), subtaskDepth);
+			initializeUIDataImpl(task.getSubtasks(), subtaskDepth, updateOrder);
 		}
 	}
 	
@@ -1747,8 +1755,12 @@ public class TaskTable extends Composite implements ActionHandler {
 			// Yes!  Render the column.  Extract the UIData from this
 			// task.
 			UIData uid = getUIData(task);
-			
-			String orderHTML = ((0 == uid.getTaskDepth()) ? String.valueOf(uid.getTaskOrder()) : "");
+
+			int order = uid.getTaskOrder();
+			String orderHTML;
+			if ((0 == uid.getTaskDepth()) && ((-1) != order))
+			     orderHTML = String.valueOf(order);
+			else orderHTML = "";
 			m_flexTable.setHTML(row, colIndex, orderHTML);
 			m_flexTableCF.setHorizontalAlignment(row, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
 			m_flexTableCF.setWidth(row, colIndex, "16px");
@@ -2254,7 +2266,7 @@ public class TaskTable extends Composite implements ActionHandler {
 				// Yes!  Then we have to flatten the task list before
 				// sorting.  Thanks Tracy !!!  :-)
 				TaskListItemHelper.flattenTaskList(m_taskBundle);
-				initializeUIData();	// Forces the depths, ... to be reset.
+				initializeUIData(false);	// Forces the depths, ... to be reset.
 			}
 			
 			// No, we didn't have to flatten the list!  Are we sorting
