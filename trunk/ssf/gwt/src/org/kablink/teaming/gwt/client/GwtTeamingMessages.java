@@ -60,6 +60,7 @@ public interface GwtTeamingMessages extends Messages
 	String entryLabel();
 	String entryProperties();
 	String findEntry();
+	String noEntrySelected();
 	String pleaseSelectAnEntry();
 	
 	// Strings used with the Folder widget in the landing page editor
@@ -184,6 +185,9 @@ public interface GwtTeamingMessages extends Messages
 	String cancel();
 	String cantAccessEntry();
 	String cantAccessFolder();
+	String change();
+	String edit();
+	String find();
 	String ok();
 	String oneMomentPlease();
 	String percent();
