@@ -91,6 +91,7 @@ import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -1627,11 +1628,16 @@ public class GwtTaskHelper {
 			ti.setCompleted(       getStringFromMap(   taskEntry, "completed"                                                ));
 			ti.setSeen(            seenMap.checkIfSeen(taskEntry                                                             ));
 			ti.setEntityType(      getStringFromMap(   taskEntry, Constants.ENTITY_FIELD                                     ));
-			ti.setTitle(           getStringFromMap(   taskEntry, Constants.TITLE_FIELD                                      ));
 			ti.setPriority(        getStringFromMap(   taskEntry, "priority"                                                 ));
 			ti.setAssignments(     getAIListFromMap(   taskEntry, "assignment"                                               ));
 			ti.setAssignmentGroups(getAIListFromMap(   taskEntry, "assignment_groups"                                        ));
 			ti.setAssignmentTeams( getAIListFromMap(   taskEntry, "assignment_teams"                                         ));
+			
+			String title = getStringFromMap(taskEntry, Constants.TITLE_FIELD);
+			if (!(MiscUtil.hasString(title))) {
+				title = ("--" + NLT.get("entry.noTitle") + "--");
+			}
+			ti.setTitle(title);
 			
 			TaskId taskId = new TaskId();
 			taskId.setBinderId(getLongFromMap(taskEntry, Constants.BINDER_ID_FIELD));
