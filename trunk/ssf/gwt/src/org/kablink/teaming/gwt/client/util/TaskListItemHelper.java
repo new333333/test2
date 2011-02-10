@@ -60,6 +60,58 @@ public class TaskListItemHelper {
 	}
 
 	/**
+	 * Restructures the tasks in a TaskBundle as per a new TaskLinkage.
+	 * 
+	 * @param tb
+	 * @param tl
+	 */
+	public static void applyTaskLinkage(TaskBundle tb) {
+		// We need a flat list to apply the linkage to.  Flatten the
+		// list in the TaskBundle...
+		flattenTaskList(tb);
+
+		// ...apply the linkage from the TaskBundle...
+		List<TaskListItem> flatTaskList       = tb.getTasks();
+		List<TaskListItem> structuredTaskList = new ArrayList<TaskListItem>();
+		applyTaskLinkageImpl(structuredTaskList, flatTaskList, tb.getTaskLinkage().getTaskOrder());
+		
+		// ...scan any tasks that weren't addressed by the task
+		// ...linkage...
+		for (TaskListItem task:  flatTaskList) {
+			// ...add each to the 'structured' List<TaskListItem>
+			// ...being built.
+			structuredTaskList.add(task);
+		}
+
+		// Finally, store the structured task list in TaskBundle.
+		tb.setTasks(structuredTaskList);
+	}
+	
+	/*
+	 * Restructures a 'flat' List<TaskListInfo> into a 'structured'
+	 * List<TaskListInfo> based a List<TaskLink> defining the structure.
+	 */
+	private static void applyTaskLinkageImpl(List<TaskListItem> structuredTaskList, List<TaskListItem> flatTaskList, List<TaskLink> links) {
+		// Scan the List<TaskLink>.
+		for (TaskLink link:  links) {
+			// Can we find the TaskListItem for this TaskLink?
+			TaskListItem flatTask = findTask(flatTaskList, link.getEntryId());
+			if (null == flatTask) {
+				// No!  Skip it.
+				continue;
+			}
+
+			// Remove the TaskListItem from the flatTaskList and add it
+			// the structured task list...
+			flatTaskList.remove(   flatTask);
+			structuredTaskList.add(flatTask);
+			
+			// ...and recursively process any subtasks.
+			applyTaskLinkageImpl(flatTask.getSubtasks(), flatTaskList, link.getSubtasks());
+		}
+	}
+	
+	/**
 	 * Uses the current contents of m_tasks to update the contained
 	 * TaskLinkage.
 	 * 
@@ -237,14 +289,14 @@ public class TaskListItemHelper {
 	/**
 	 * Returns the TaskListItem with the given ID from this TaskListItemHelper.
 	 * 
-	 * @param tb
+	 * @param taskList
 	 * @param entryId
 	 * 
 	 * @return
 	 */	
-	public static TaskListItem findTask(TaskBundle tb, Long entryId) {
+	public static TaskListItem findTask(List<TaskListItem> taskList, Long entryId) {
 		// Scan the TaskListItem's in this TaskListItemHelper.
-		for (TaskListItem taskScan:  tb.getTasks()) {
+		for (TaskListItem taskScan:  taskList) {
 			// Is this the TaskListItem in question?
 			if (taskScan.getTask().getTaskId().getEntryId().equals(entryId)) {
 				// Yes!  Return it.
@@ -263,6 +315,12 @@ public class TaskListItemHelper {
 		// ID.  Return null.
 		return null;
 	}
+	
+	public static TaskListItem findTask(TaskBundle tb, Long entryId) {
+		// Always use the initial form of the method.
+		return findTask(tb.getTasks(), entryId);
+	}
+	
 
 	/**
 	 * Returns the List<TaskListItem> containing the given ID from this
@@ -388,6 +446,33 @@ public class TaskListItemHelper {
 		return null;
 	}
 
+	/*
+	 * Flattens the subtask list in a TaskListItem so that the
+	 * hierarchy has been removed.
+	 */
+	private static void flattenSubtaskList(TaskListItem task, List<TaskListItem> flatTaskList) {
+		for (TaskListItem subtask:  task.getSubtasks()) {
+			flatTaskList.add(subtask);
+			flattenSubtaskList(subtask, flatTaskList);
+		}
+		task.getSubtasks().clear();
+	}
+
+	/**
+	 * Flattens the task list in a TaskBundle so that the hierarchy has
+	 * been removed.
+	 * 
+	 * @param tb
+	 */
+	public static void flattenTaskList(TaskBundle tb) {
+		List<TaskListItem> flatTaskList = new ArrayList<TaskListItem>();
+		for (TaskListItem task:  tb.getTasks()) {
+			flatTaskList.add(task);
+			flattenSubtaskList(task, flatTaskList);
+		}
+		tb.setTasks(flatTaskList);
+	}
+	
 	/**
 	 * Returns a List<TaskListItem> containing the given task and all
 	 * subtasks below it.
