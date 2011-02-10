@@ -38,22 +38,27 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HTMLTable;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -73,8 +78,10 @@ public class FolderWidgetDlgBox extends DlgBox
 	private CheckBox m_showEntriesOpenedCkBox = null;
 	private TextBox m_numEntriesToShowTxtBox;
 	private FindCtrl m_findCtrl = null;
+	private InlineLabel m_findLabel;
 	private String m_folderId = null;
 	private InlineLabel m_currentFolderNameLabel = null;
+	private Button m_editBtn;
 
 	/**
 	 * 
@@ -105,44 +112,82 @@ public class FolderWidgetDlgBox extends DlgBox
 		InlineLabel inlineLabel;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
-		HTMLTable.CellFormatter cellFormatter;
-		FlowPanel flowPanel;
+		FlowPanel panel;
 		
 		properties = (FolderProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add a label that will say Current folder: name of the currently selected folder
 		table = new FlexTable();
 		table.setCellSpacing( 8 );
-		flowPanel = new FlowPanel();
-		inlineLabel = new InlineLabel( GwtTeaming.getMessages().currentFolder() );
-		m_currentFolderNameLabel = new InlineLabel();
-		m_currentFolderNameLabel.addStyleName( "bold" );
+
+		mainPanel.add( table );
+		
+		// Add a label that will say Current folder:
+		inlineLabel = new InlineLabel( GwtTeaming.getMessages().folderLabel() );
+		table.setWidget( 0, 0, inlineLabel );
+		
+		// Add a label to hold the name of the selected folder.
+		m_currentFolderNameLabel = new InlineLabel( GwtTeaming.getMessages().noFolderSelected() );
+		m_currentFolderNameLabel.addStyleName( "noFolderSelected" );
 		m_currentFolderNameLabel.addStyleName( "marginLeftPoint25em" );
-		flowPanel.add( inlineLabel );
-		flowPanel.add( m_currentFolderNameLabel );
-		table.setWidget( 0, 0, flowPanel );
-		mainPanel.add( table );
+		m_currentFolderNameLabel.addStyleName( "marginright10px" );
+		panel = new FlowPanel();
+		panel.add( m_currentFolderNameLabel );
 
-		// Add label and edit control for "Folder id"
-		table = new FlexTable();
-		table.setCellSpacing( 8 );
+		// Add an "Edit" button
+		{
+			ClickHandler clickHandler;
+			
+			m_editBtn = new Button( GwtTeaming.getMessages().edit() );
+			m_editBtn.addStyleName( "teamingButton" );
+			panel.add( m_editBtn );
+			
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * 
+				 */
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Make the find control visible.
+							showFindControl();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				
+			};
+			m_editBtn.addClickHandler( clickHandler );
+		}
 
-		// Add controls for the folder.
-		label = new Label( GwtTeaming.getMessages().findFolderLabel() );
-		cellFormatter = table.getCellFormatter();
-		cellFormatter.setAlignment( 0, 0, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_TOP );
-		table.setWidget( 0, 0, label );
-		m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
-		m_findCtrl.setSearchForFoldersOnly( true );
-		table.setWidget( 0, 1, m_findCtrl );
-		mainPanel.add( table );
+		table.setWidget( 0, 1, panel );
 
+		// Add a "find" control
+		{
+			m_findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
+			m_findLabel.setVisible( false );
+			table.setWidget( 1, 0, m_findLabel );
+			
+			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+			m_findCtrl.setSearchForFoldersOnly( true );
+			m_findCtrl.setVisible( false );
+			
+			table.setWidget( 1, 1, m_findCtrl );
+		}
+		
 		// Add controls for "Number of entries to show"
 		table = new FlexTable();
-		table.setCellSpacing( 8 );
 		label = new Label( GwtTeaming.getMessages().numEntriesToShow() );
 		table.setWidget( 0, 0, label );
 		m_numEntriesToShowTxtBox = new TextBox();
@@ -165,6 +210,17 @@ public class FolderWidgetDlgBox extends DlgBox
 		m_showEntriesOpenedCkBox = new CheckBox( GwtTeaming.getMessages().showEntriesOpened() );
 		table.setWidget( 2, 0, m_showEntriesOpenedCkBox );
 		mainPanel.add( table );
+
+		// Add an empty div that is as wide as the find control.  We do this so when we
+		// show/hide the find control the size of the dialog doesn't change width.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 440, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 2, Unit.PX );
+			mainPanel.add( spacer );
+		}
 
 		init( properties );
 		
@@ -228,6 +284,47 @@ public class FolderWidgetDlgBox extends DlgBox
 	
 
 	/**
+	 * Issue an ajax request to get the folder for the given id.  After we get the folder
+	 * we will update the name of the selected folder.
+	 */
+	private void getFolder( final String folderId )
+	{
+		AsyncCallback<GwtFolder> callback;
+		
+		callback = new AsyncCallback<GwtFolder>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolder(),
+					folderId );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( GwtFolder gwtFolder )
+			{
+				if ( gwtFolder != null )
+				{
+					// Update the name of the selected folder.
+					m_currentFolderNameLabel.setText( gwtFolder.getFolderName() );
+					m_currentFolderNameLabel.removeStyleName( "noFolderSelected" );
+					m_currentFolderNameLabel.addStyleName( "bold" );
+				}
+			}
+		};
+
+		GwtTeaming.getRpcService().getFolder( HttpRequestInfo.createHttpRequestInfo(), null, folderId, callback );
+	}
+	
+
+	/**
 	 * Return the number of entries to show.
 	 */
 	public int getNumEntriesToShowValue()
@@ -281,6 +378,17 @@ public class FolderWidgetDlgBox extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private void hideFindControl()
+	{
+		m_findLabel.setVisible( false );
+		m_findCtrl.setVisible( false );
+		m_findCtrl.hideSearchResults();
+	}
+	
+	
+	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init( PropertiesObj props )
@@ -290,9 +398,39 @@ public class FolderWidgetDlgBox extends DlgBox
 		
 		properties = (FolderProperties) props;
 
-		// Update the name of the currently selected folder.
-		m_currentFolderNameLabel.setText( properties.getFolderName() ); 
+		// Remember the folder id that was passed to us.
+		m_folderId = properties.getFolderId();
 
+		// Do we have a folder?
+		if ( m_folderId != null && m_folderId.length() > 0 )
+		{
+			//Yes
+			// Update the name of the currently selected folder.
+			m_currentFolderNameLabel.setText( properties.getFolderName() ); 
+
+			m_currentFolderNameLabel.removeStyleName( "noFolderSelected" );
+			m_currentFolderNameLabel.addStyleName( "bold" );
+			
+			// Hide the find control.
+			hideFindControl();
+			
+			// Show the edit button.
+			m_editBtn.setVisible( true );
+		}
+		else
+		{
+			// No
+			m_currentFolderNameLabel.setText( GwtTeaming.getMessages().noFolderSelected() );
+			m_currentFolderNameLabel.addStyleName( "noFolderSelected" );
+			m_currentFolderNameLabel.removeStyleName( "bold" );
+			
+			// Show the find control and give it the focus.
+			showFindControl();
+			
+			// Hide the edit button.
+			m_editBtn.setVisible( false );
+		}
+		
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		m_showDescCkBox.setValue( properties.getShowDescValue() );
 		m_showEntriesOpenedCkBox.setValue( properties.getShowEntriesOpenedValue() );
@@ -303,9 +441,6 @@ public class FolderWidgetDlgBox extends DlgBox
 		// Populate the find control's text box with the name of the selected folder.
 		m_findCtrl.setInitialSearchString( "" );
 		
-		// Remember the entry id that was passed to us.
-		m_folderId = properties.getFolderId();
-
 		num = properties.getNumEntriesToBeShownValue();
 		m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
 	}// end init()
@@ -357,10 +492,31 @@ public class FolderWidgetDlgBox extends DlgBox
 				gwtFolder = (GwtFolder) selectedObj;
 				m_folderId = gwtFolder.getFolderId();
 				
-				// Hide the search-results widget.
-				m_findCtrl.hideSearchResults();
+				// Hide the find control.
+				hideFindControl();
+				
+				// Issue an ajax request to get information about the selected folder.
+				getFolder( m_folderId );
+
+				// Show the edit button.
+				m_editBtn.setVisible( true );
 			}
 		}
 	}// end handleAction()
 	
+	/**
+	 * Show the find control and give it the focus.
+	 */
+	private void showFindControl()
+	{
+		FocusWidget focusWidget;
+
+		m_findLabel.setVisible( true );
+		m_findCtrl.setVisible( true );
+
+		focusWidget = m_findCtrl.getFocusWidget();
+		if ( focusWidget != null )
+			focusWidget.setFocus( true );
+	}
+
 }// end FolderWidgetDlgBox

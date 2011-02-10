@@ -68,6 +68,7 @@ public interface GwtTeamingMessages extends Messages
 	String findFolderLabel();
 	String folderLabel();
 	String folderProperties();
+	String noFolderSelected();
 	String numEntriesToShow();
 	String pleaseSelectAFolder();
 	String showEntriesOpened();
