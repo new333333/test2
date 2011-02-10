@@ -939,10 +939,10 @@ body, table td, select
 }
 .workspaceTreeControlHeader_as td div
 {
-	font-size: 20px;
+	font-size: 18px;
 	font-weight: normal;
-	padding-left: 10px;
-	padding-top: 2px;
+	padding-left: 8px;
+	margin-top: 5px;
 }
 .workspaceTreeControlHeader_base
 {
@@ -971,7 +971,7 @@ body, table td, select
 	display: inline-block;
 	font-size: 12px !important;
 	margin: 5px;
-	padding: 1px 12px;
+	padding: 2px 12px !important;
 }
 .workspaceTreeControlHeader_closeButton:hover
 {
@@ -2700,7 +2700,7 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 {
 	background:            none repeat scroll 0 0 #949494 !important;
 	color:                 #FFFFFF                        !important;
-	font-size:             .75em;
+	font-size:             .7em;
 	padding:               2px 12px;
 	text-decoration:       none;
 	-moz-border-radius:    15px;
