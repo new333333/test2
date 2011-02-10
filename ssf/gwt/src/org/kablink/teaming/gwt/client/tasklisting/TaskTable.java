@@ -738,7 +738,7 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// ...and apply it, as necessary.
 		if ((Column.ORDER != m_sortColumn) || (!(m_sortAscending))) {
-			sortByColumn(m_taskBundle.getTasks(), m_sortColumn, m_sortAscending);
+			sortByColumn(Column.ORDER);
 		}
 	}
 	
@@ -967,10 +967,11 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTableResort(Column col) {
 		// Apply the resort...
+		Column previousSortColumn = m_sortColumn;
 		if (col == m_sortColumn)
 			 m_sortAscending = (!m_sortAscending);
 		else m_sortColumn    = col;		
-		sortByColumn(m_taskBundle.getTasks(), m_sortColumn, m_sortAscending);
+		sortByColumn(previousSortColumn);
 		
 		// ...and redisplay the tasks.
 		renderTaskBundle(m_taskBundle);
@@ -2242,20 +2243,45 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Sorts the List<TaskListItem> by column in the specified order.
 	 */
-	private void sortByColumn(List<TaskListItem> tasks, Column col, boolean sortAscending) {
-		Comparator<TaskListItem> comparator;
-		switch(col) {
-		default:
-		case ORDER:                comparator = new TaskSorter.OrderComparator(            sortAscending); break;
-		case NAME:                 comparator = new TaskSorter.NameComparator(             sortAscending); break;
-		case PRIORITY:             comparator = new TaskSorter.PriorityComparator(         sortAscending); break;
-		case DUE_DATE:             comparator = new TaskSorter.DueDateComparator(          sortAscending); break;
-		case STATUS:               comparator = new TaskSorter.StatusComparator(           sortAscending); break;
-		case ASSIGNED_TO:          comparator = new TaskSorter.AssignedToComparator(       sortAscending); break;
-		case CLOSED_PERCENT_DONE:  comparator = new TaskSorter.ClosedPercentDoneComparator(sortAscending); break;		
-		case LOCATION:             comparator = new TaskSorter.LocationComparator(         sortAscending); break;		
+	private void sortByColumn(Column previousSortColumn) {
+		// Are we currently in a mode that respects the task linkage?
+		// (We don't if the list is filtered or showing 'Assigned To'
+		// items.)
+		if (m_taskBundle.respectLinkage()) {
+			// Yes!  Are we sorting on other than the order column when
+			// we were previously sorted on the order column?
+			if ((Column.ORDER != m_sortColumn) && (Column.ORDER == previousSortColumn)) {
+				// Yes!  Then we have to flatten the task list before
+				// sorting.  Thanks Tracy !!!  :-)
+				TaskListItemHelper.flattenTaskList(m_taskBundle);
+				initializeUIData();	// Forces the depths, ... to be reset.
+			}
+			
+			// No, we didn't have to flatten the list!  Are we sorting
+			// on the order column when we were previously sorted on
+			// other than the order column?
+			else if ((Column.ORDER == m_sortColumn) && (Column.ORDER != previousSortColumn)) {
+				// Yes!  Then we have to restructure the list before
+				// sorting.  Thanks Tracy !!!  :-)
+				TaskListItemHelper.applyTaskLinkage(m_taskBundle);
+				initializeUIData();	// Forces the depths, ... to be reset.
+			}
 		}
-		TaskSorter.sort(tasks, comparator);
+
+		// Apply the sort base on the selected column.
+		Comparator<TaskListItem> comparator;
+		switch(m_sortColumn) {
+		default:
+		case ORDER:                comparator = new TaskSorter.OrderComparator(            m_sortAscending); break;
+		case NAME:                 comparator = new TaskSorter.NameComparator(             m_sortAscending); break;
+		case PRIORITY:             comparator = new TaskSorter.PriorityComparator(         m_sortAscending); break;
+		case DUE_DATE:             comparator = new TaskSorter.DueDateComparator(          m_sortAscending); break;
+		case STATUS:               comparator = new TaskSorter.StatusComparator(           m_sortAscending); break;
+		case ASSIGNED_TO:          comparator = new TaskSorter.AssignedToComparator(       m_sortAscending); break;
+		case CLOSED_PERCENT_DONE:  comparator = new TaskSorter.ClosedPercentDoneComparator(m_sortAscending); break;		
+		case LOCATION:             comparator = new TaskSorter.LocationComparator(         m_sortAscending); break;		
+		}
+		TaskSorter.sort(m_taskBundle.getTasks(), comparator);
 	}
 
 	/*
