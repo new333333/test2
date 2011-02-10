@@ -4589,13 +4589,10 @@ div.ssPageNavi table td {
 }
 #ss_operation_status {
 	width: 300px;
-	
-	text-align: center;
 }
 
 #ss_operation_status span {
 	width: 100%;
-	text-align: center;
 	color: ${ss_style_link_hover_color};
 	font-weight: bold;
 }

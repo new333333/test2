@@ -59,6 +59,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
@@ -379,6 +380,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		if (zoneConfig.getDiskQuotasHighwaterPercentage() == quotaHighWaterMark) return; // if no change, do nothing
   		zoneConfig.setDiskQuotasHighwaterPercentage(quotaHighWaterMark);
   	}
+    public BinderQuota getBinderQuota(Binder binder) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	BinderQuota bq = null;
+    	try {
+    		bq = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+    	} catch(NoObjectByTheIdException e) {
+    		bq = new BinderQuota();
+    		bq.setZoneId(zoneId);
+    		bq.setBinderId(binder.getId());
+    		Long diskSpaceUsed = getCoreDao().computeDiskSpaceUsed(zoneId, binder.getId());
+    		bq.setDiskSpaceUsed(diskSpaceUsed);
+    	}
+    	return bq;
+    }
+    public void setBinderQuota(Binder binder, BinderQuota binderQuota) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	BinderQuota bq = null;
+    	try {
+    		bq = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+    		bq = binderQuota;
+    	} catch(NoObjectByTheIdException e) {
+    		getCoreDao().save(binderQuota);
+    	}
+    }
     public void setBinderQuotasInitialized(boolean binderQuotaInitialized) {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setBinderQuotasInitialized(binderQuotaInitialized);
