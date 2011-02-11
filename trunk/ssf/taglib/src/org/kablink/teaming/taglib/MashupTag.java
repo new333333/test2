@@ -140,19 +140,19 @@ public class MashupTag extends BodyTagSupport {
 								}
 							}
 						}
-						// Are we working with a landing page extension?
-						else if ( type.equalsIgnoreCase( "landingPageExt" ) && !view.equals( "form" ) )
+						// Are we working with an enhanced view?
+						else if ( type.equalsIgnoreCase( "enhancedView" ) && !view.equals( "form" ) )
 						{
 							// Yes
-							if ( mashupItemAttributes.containsKey( ObjectKeys.MASHUP_ATTR_LANDING_PAGE_EXT_JSP_NAME) )
+							if ( mashupItemAttributes.containsKey( ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME) )
 							{
 								String jspName;
 								
 								// Get the name of the landing page extension jsp
-								jspName = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_LANDING_PAGE_EXT_JSP_NAME );
+								jspName = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME );
 								if ( jspName != null && jspName.length() > 0 )
 								{
-									jsp = "/WEB-INF/jsp/landingpage_ext/" + jspName;
+									jsp = "/WEB-INF/jsp/landing_page_enhanced_views/" + jspName;
 								}
 							}
 						}

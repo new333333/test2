@@ -38,14 +38,14 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 /**
  * 
  */
-public class LandingPageExtPaletteItem extends PaletteItem
+public class EnhancedViewPaletteItem extends PaletteItem
 {
 	/**
 	 * 
 	 */
-	public LandingPageExtPaletteItem()
+	public EnhancedViewPaletteItem()
 	{
-		super( GwtTeaming.getImageBundle().landingPageEditorLPExt(), GwtTeaming.getMessages().lpeLPExt(), GwtTeaming.getMessages().lpeAltLPExt() );
+		super( GwtTeaming.getImageBundle().landingPageEditorEnhancedView(), GwtTeaming.getMessages().lpeEnhancedView(), GwtTeaming.getMessages().lpeAltEnhancedView() );
 	}
 	
 	
@@ -54,7 +54,7 @@ public class LandingPageExtPaletteItem extends PaletteItem
 	 */
 	public DropWidget createDropWidget( LandingPageEditor lpe )
 	{
-		return new LandingPageExtDropWidget( lpe, (LandingPageExtProperties) null );
+		return new EnhancedViewDropWidget( lpe, (EnhancedViewProperties) null );
 	}
 	
 }

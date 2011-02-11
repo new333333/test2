@@ -45,36 +45,36 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
- * This class holds all of the properties needed to define a "Landing Page Extension" widget in a landing page.
+ * This class holds all of the properties needed to define an "Enhanced View" widget in a landing page.
  * @author jwootton
  *
  */
-public class LandingPageExtProperties
+public class EnhancedViewProperties
 	implements PropertiesObj
 {
 	private String	 m_jspName;
 
-	// The following data members are relevant when the landing page extension requires a folder to be selected.
+	// The following data members are relevant when the enhanced view requires a folder to be selected.
 	private boolean m_showTitle;
 	private int m_numEntriesToBeShown;
 	private String m_folderId;
 	private String m_folderName;
 	private AsyncCallback<GwtFolder> m_folderCallback;
 
-	// The following data members are relevant when the landing page extension requires an entry to be selected.
+	// The following data members are relevant when the enhanced view requires an entry to be selected.
 	private String m_entryId;
 	private String m_entryName;
 	private String m_parentBinderName;	// Name of the binder the folder or entry is found in.
 	private AsyncCallback<GwtFolderEntry> m_folderEntryCallback;
 	
-	// The following data members are relevant when the landing page extension requires either a folder or an entry to be selected.
+	// The following data members are relevant when the enhanced view requires either a folder or an entry to be selected.
 	private String m_zoneUUID;
 	private boolean m_rpcInProgress;
 	
 	/**
 	 * 
 	 */
-	public LandingPageExtProperties()
+	public EnhancedViewProperties()
 	{
 		m_jspName = null;
 		m_showTitle = false;
@@ -158,17 +158,17 @@ public class LandingPageExtProperties
 	 */
 	public void copy( PropertiesObj props )
 	{
-		if ( props instanceof LandingPageExtProperties )
+		if ( props instanceof EnhancedViewProperties )
 		{
-			LandingPageExtProperties lpExtProps;
+			EnhancedViewProperties evProps;
 			String newFolderId;
 			String newEntryId;
 			
-			lpExtProps = (LandingPageExtProperties) props;
-			setJspName( lpExtProps.getJspName() );
+			evProps = (EnhancedViewProperties) props;
+			setJspName( evProps.getJspName() );
 
 			// Did the folder id change?
-			newFolderId = lpExtProps.getFolderId();
+			newFolderId = evProps.getFolderId();
 			if ( m_folderId != null && newFolderId != null && !m_folderId.equalsIgnoreCase( newFolderId ) )
 			{
 				// Yes, throw away the zone id.
@@ -176,7 +176,7 @@ public class LandingPageExtProperties
 			}
 			
 			// Did the entry id change?
-			newEntryId = lpExtProps.getEntryId();
+			newEntryId = evProps.getEntryId();
 			if ( m_entryId != null && m_entryId != null && !m_entryId.equalsIgnoreCase( newEntryId ) )
 			{
 				// Yes, throw away the zone id.
@@ -184,12 +184,12 @@ public class LandingPageExtProperties
 			}
 			
 			m_entryId = newEntryId;
-			m_entryName = lpExtProps.getEntryName();
+			m_entryName = evProps.getEntryName();
 			m_folderId = newFolderId;
-			m_folderName = lpExtProps.getFolderName();
-			m_parentBinderName = lpExtProps.getParentBinderName();
-			m_showTitle = lpExtProps.getShowTitleValue();
-			m_numEntriesToBeShown = lpExtProps.getNumEntriesToBeShownValue();
+			m_folderName = evProps.getFolderName();
+			m_parentBinderName = evProps.getParentBinderName();
+			m_showTitle = evProps.getShowTitleValue();
+			m_numEntriesToBeShown = evProps.getNumEntriesToBeShownValue();
 		}
 	}
 	
@@ -201,8 +201,8 @@ public class LandingPageExtProperties
 	{
 		String str;
 		
-		// The string should look like: "landingPageExt,jspName=some jsp name;"
-		str = "landingPageExt,jspName=";
+		// The string should look like: enhancedView,jspName=some jsp name;"
+		str = "enhancedView,jspName=";
 		if ( m_jspName != null )
 			str += ConfigData.encodeConfigData( m_jspName );
 		

@@ -225,9 +225,9 @@ public class ConfigData
 					configItem = new HtmlConfig( itemData[i] );
 					++i;
 				}
-				else if ( itemName.equalsIgnoreCase( "landingPageExt" ) )
+				else if ( itemName.equalsIgnoreCase( "enhancedView" ) )
 				{
-					configItem = new LandingPageExtConfig( itemData[i] );
+					configItem = new EnhancedViewConfig( itemData[i] );
 					++i;
 				}
 				else

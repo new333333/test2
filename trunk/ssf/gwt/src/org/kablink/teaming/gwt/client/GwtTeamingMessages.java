@@ -85,28 +85,28 @@ public interface GwtTeamingMessages extends Messages
 	String noFileAttachmentsHint();
 	String selectGraphicLabel();
 	
-	// Strings used in the Landing Page Extentions widget in the landing page editor
-	String landingPageExtLabel();
-	String landingPageExtNameLabel();
-	String landingPageExtProperties();
-	String lpExtDisplayEntry();
-	String lpExtDisplayEntryDesc();
-	String lpExtDisplayFullEntry();
-	String lpExtDisplayFullEntryDesc();
-	String lpExtDisplayRecentEntries();
-	String lpExtDisplayRecentEntriesDesc();
-	String lpExtDisplayRecentEntriesList();
-	String lpExtDisplayRecentEntriesListDesc();
-	String lpExtDisplayRecentEntriesListSorted();
-	String lpExtDisplayRecentEntriesListSortedDesc();
-	String lpeExtDisplayFileListSorted();
-	String lpeExtDisplayFileListSortedDesc();
-	String lpeExtDisplayCalendarFolder();
-	String lpeExtDisplayCalendarFolderDesc();
-	String lpeExtDisplayTaskFolder();
-	String lpeExtDisplayTaskFolderDesc();
-	String lpeExtDisplaySurvey();
-	String lpeExtDisplaySurveyDesc();
+	// Strings used in the Enhanced Views widget in the landing page editor
+	String enhancedViewLabel();
+	String enhancedViewNameLabel();
+	String enhancedViewProperties();
+	String enhancedViewDisplayEntry();
+	String enhancedViewDisplayEntryDesc();
+	String enhancedViewDisplayFullEntry();
+	String enhancedViewDisplayFullEntryDesc();
+	String enhancedViewDisplayRecentEntries();
+	String enhancedViewDisplayRecentEntriesDesc();
+	String enhancedViewDisplayRecentEntriesList();
+	String enhancedViewDisplayRecentEntriesListDesc();
+	String enhancedViewDisplayRecentEntriesListSorted();
+	String enhancedViewDisplayRecentEntriesListSortedDesc();
+	String enhancedViewDisplayFileListSorted();
+	String enhancedViewDisplayFileListSortedDesc();
+	String enhancedViewDisplayCalendarFolder();
+	String enhancedViewDisplayCalendarFolderDesc();
+	String enhancedViewDisplayTaskFolder();
+	String enhancedViewDisplayTaskFolderDesc();
+	String enhancedViewDisplaySurvey();
+	String enhancedViewDisplaySurveyDesc();
 	
 	// lpe stands for Landing Page Editor
 	String lpeAltCustomJsp();
@@ -119,7 +119,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
 	String lpeAltList();
-	String lpeAltLPExt();
+	String lpeAltEnhancedView();
 	String lpeAltTable();
 	String lpeAltUtilityElement();
 	String lpeCustomJSP();
@@ -135,7 +135,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeLinkFolderWS();
 	String lpeLinkURL();
 	String lpeList();
-	String lpeLPExt();
+	String lpeEnhancedView();
 	String lpeTable();
 	String lpeUtilityElement();
 	

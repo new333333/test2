@@ -271,7 +271,7 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_BINDER_ID = "binderId";
     public static final String MASHUP_ATTR_GRAPHIC = "graphic";
     public static final String MASHUP_ATTR_TITLE = "title";
-    public static final String MASHUP_ATTR_LANDING_PAGE_EXT_JSP_NAME = "jspName";
+    public static final String MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME = "jspName";
     public static final String MASHUP_ATTR_ZONE_UUID = "zoneUUID";
     public static final String MASHUP_TYPE_CUSTOM_JSP = "customJsp";
     public static final String MASHUP_TYPE_ENTRY = "entry";

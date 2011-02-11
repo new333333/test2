@@ -75,12 +75,12 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author jwootton
  *
  */
-public class LandingPageExtWidgetDlgBox extends DlgBox
+public class EnhancedViewWidgetDlgBox extends DlgBox
 	implements KeyPressHandler, ActionHandler
 {
-	private ListBox m_extListBox = null;
+	private ListBox m_evListBox = null;
 	private Label m_descLabel;
-	private ArrayList<LPExtensionInfo> m_extensions;
+	private ArrayList<EnhancedViewInfo> m_views;
 	
 	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
 	private String m_folderId = null;
@@ -104,41 +104,41 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	/**
 	 * 
 	 */
-	public LandingPageExtWidgetDlgBox(
+	public EnhancedViewWidgetDlgBox(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
 		boolean modal,
 		int xPos,
 		int yPos,
-		LandingPageExtProperties properties ) // Where properties used in the dialog are read from and saved to.
+		EnhancedViewProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
 		
-		LPExtensionInfo extInfo;
+		EnhancedViewInfo evInfo;
 		
-		m_extensions = new ArrayList<LPExtensionInfo>();
-		extInfo = new LPExtensionInfo( "landing_page_entry.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_full_entry.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_folder.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_folder_list.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_folder_list_sorted.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_folder_list_sorted_files.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_calendar.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_task_folder.jsp" );
-		m_extensions.add( extInfo );
-		extInfo = new LPExtensionInfo( "landing_page_survey.jsp" );
-		m_extensions.add( extInfo );
+		m_views = new ArrayList<EnhancedViewInfo>();
+		evInfo = new EnhancedViewInfo( "landing_page_entry.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_full_entry.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_folder.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_folder_list.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_folder_list_sorted.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_folder_list_sorted_files.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_calendar.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_task_folder.jsp" );
+		m_views.add( evInfo );
+		evInfo = new EnhancedViewInfo( "landing_page_survey.jsp" );
+		m_views.add( evInfo );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().landingPageExtProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
+		createAllDlgContent( GwtTeaming.getMessages().enhancedViewProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
 	}
 	
 
@@ -147,25 +147,25 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	 */
 	public Panel createContent( Object props )
 	{
-		LandingPageExtProperties properties;
+		EnhancedViewProperties properties;
 		Label			label;
 		VerticalPanel	mainPanel;
 		
-		properties = (LandingPageExtProperties) props;
+		properties = (EnhancedViewProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and list box for the landing page extension
-		label = new Label( GwtTeaming.getMessages().landingPageExtNameLabel() );
+		// Add label and list box for the view
+		label = new Label( GwtTeaming.getMessages().enhancedViewNameLabel() );
 		mainPanel.add( label );
 		
-		// Create a listbox that holds the names of all the landing page extensions.
+		// Create a listbox that holds the names of all the view.
 		{
 			ChangeHandler changeHandler;
 			
-			m_extListBox = new ListBox( false );
-			m_extListBox.setVisibleItemCount( 1 );
+			m_evListBox = new ListBox( false );
+			m_evListBox.setVisibleItemCount( 1 );
 			
 			changeHandler = new ChangeHandler()
 			{
@@ -183,37 +183,37 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 						 */
 						public void execute()
 						{
-							handleExtensionSelected();
+							handleViewSelected();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
-			m_extListBox.addChangeHandler( changeHandler );
+			m_evListBox.addChangeHandler( changeHandler );
 			
-			for ( LPExtensionInfo extInfo : m_extensions )
+			for ( EnhancedViewInfo evInfo : m_views )
 			{
-				m_extListBox.addItem( extInfo.getDisplayName(), extInfo.getJspName() );
+				m_evListBox.addItem( evInfo.getDisplayName(), evInfo.getJspName() );
 			}
 			
-			mainPanel.add( m_extListBox );
+			mainPanel.add( m_evListBox );
 		}
 		
-		// Create a panel where we will display the description of the selected extension.
+		// Create a panel where we will display the description of the selected view.
 		{
 			m_descLabel = new Label();
-			m_descLabel.addStyleName( "lpExtDescLabel" );
+			m_descLabel.addStyleName( "enhancedViewDescLabel" );
 			
 			mainPanel.add( m_descLabel );
 		}
 		
-		// Create the controls that will be visible if the user selects an extension that requires
+		// Create the controls that will be visible if the user selects a view that requires
 		// a folder to be selected.
 		m_selectFolderPanel = createSelectFolderPanel();
 		m_selectFolderPanel.setVisible( false );
 		mainPanel.add( m_selectFolderPanel );
 		
-		// Create the controls that will be visibe if the user selects an extension that requires
+		// Create the controls that will be visibe if the user selects a view that requires
 		// an entry to be selected.
 		m_selectEntryPanel = createSelectEntryPanel();
 		m_selectEntryPanel.setVisible( false );
@@ -226,7 +226,7 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * Create the controls that will be needed if the user selects an extension that
+	 * Create the controls that will be needed if the user selects a view that
 	 * requires a folder to be selected.
 	 */
 	public Panel createSelectEntryPanel()
@@ -315,7 +315,7 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * Create the controls that will be needed if the user selects an extension that requires
+	 * Create the controls that will be needed if the user selects a view that requires
 	 * a folder to be selected.
 	 */
 	public Panel createSelectFolderPanel()
@@ -421,11 +421,11 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 	/**
 	 * Show/hide the appropriate controls in the dialog based on whether the selected
-	 * extension requires a folder or an entry to be selected.
+	 * view requires a folder or an entry to be selected.
 	 */
 	public void danceControls()
 	{
-		LPExtensionInfo extInfo;
+		EnhancedViewInfo evInfo;
 		
 		// Hide the ui dealing with selecting a folder.
 		m_selectFolderPanel.setVisible( false );
@@ -433,26 +433,26 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 		// Hide the ui dealing with selecting an entry.
 		m_selectEntryPanel.setVisible( false );
 		
-		// Get the selected extension.
-		extInfo = getSelectedExtension();
-		if ( extInfo != null )
+		// Get the selected view.
+		evInfo = getSelectedView();
+		if ( evInfo != null )
 		{
 			String desc;
 			
-			// Show the description of the extension
-			desc = extInfo.getDesc();
+			// Show the description of the view
+			desc = evInfo.getDesc();
 			if ( desc != null )
 				m_descLabel.setText( desc );
 			
-			// Does the selected extension require the user to select a folder?
-			if ( extInfo.isFolderRequired() )
+			// Does the selected view require the user to select a folder?
+			if ( evInfo.isFolderRequired() )
 			{
 				// Yes, show the ui for selecting a folder.
 				m_selectFolderPanel.setVisible( true );
 			}
 			
-			// Does the selected extension require the user to select an entry?
-			if ( extInfo.isEntryRequired() )
+			// Does the selected view require the user to select an entry?
+			if ( evInfo.isEntryRequired() )
 			{
 				// Yes, show the ui for selecting an entry.
 				m_selectEntryPanel.setVisible( true );
@@ -461,32 +461,32 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	}
 	
 	/**
-	 * Does the selected extension require the user to select an entry?
+	 * Does the selected view require the user to select an entry?
 	 */
-	private boolean doesSelectedExtensionRequireEntry()
+	private boolean doesSelectedViewRequireEntry()
 	{
-		LPExtensionInfo extInfo;
+		EnhancedViewInfo evInfo;
 		
-		// Get the selected extension information.
-		extInfo = getSelectedExtension();
-		if ( extInfo != null )
-			return extInfo.isEntryRequired();
+		// Get the selected view information.
+		evInfo = getSelectedView();
+		if ( evInfo != null )
+			return evInfo.isEntryRequired();
 		
 		return false;
 	}
 	
 	
 	/**
-	 * Does the selected extension require the user to select a folder?
+	 * Does the selected view require the user to select a folder?
 	 */
-	private boolean doesSelectedExtensionRequireFolder()
+	private boolean doesSelectedViewRequireFolder()
 	{
-		LPExtensionInfo extInfo;
+		EnhancedViewInfo evInfo;
 		
-		// Get the selected extension information.
-		extInfo = getSelectedExtension();
-		if ( extInfo != null )
-			return extInfo.isFolderRequired();
+		// Get the selected view information.
+		evInfo = getSelectedView();
+		if ( evInfo != null )
+			return evInfo.isFolderRequired();
 		
 		return false;
 	}
@@ -496,15 +496,15 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	 */
 	public PropertiesObj getDataFromDlg()
 	{
-		LandingPageExtProperties	properties;
+		EnhancedViewProperties	properties;
 		
-		properties = new LandingPageExtProperties();
+		properties = new EnhancedViewProperties();
 		
-		// Save away the name of the jsp that the selected extension uses.
+		// Save away the name of the jsp that the selected view uses.
 		properties.setJspName( getJspName() );
 
-		// Does the selected extension require a folder to be selected?
-		if ( doesSelectedExtensionRequireFolder() )
+		// Does the selected view require a folder to be selected?
+		if ( doesSelectedViewRequireFolder() )
 		{
 			// Yes
 			// Did the user select a folder?
@@ -523,8 +523,8 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 			properties.setShowTitle( getShowFolderTitleValue() );
 		}
 		
-		// Does the selected extension require an entry to be selected.
-		if ( doesSelectedExtensionRequireEntry() )
+		// Does the selected view require an entry to be selected.
+		if ( doesSelectedViewRequireEntry() )
 		{
 			// Yes
 			// Did the user select an entry?
@@ -586,19 +586,19 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * Return an LPExtensionInfo object for the given jsp name.
+	 * Return an EnhancedViewInfo object for the given jsp name.
 	 */
-	private LPExtensionInfo getExtensionByJspName( String jspName )
+	private EnhancedViewInfo getViewByJspName( String jspName )
 	{
 		if ( jspName != null )
 		{
-			for ( LPExtensionInfo extInfo : m_extensions )
+			for ( EnhancedViewInfo evInfo : m_views )
 			{
 				String nextJspName;
 				
-				nextJspName = extInfo.getJspName();
+				nextJspName = evInfo.getJspName();
 				if ( nextJspName != null && jspName.equalsIgnoreCase( nextJspName ) )
-					return extInfo;
+					return evInfo;
 			}
 		}
 		
@@ -610,7 +610,7 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	 */
 	public FocusWidget getFocusWidget()
 	{
-		return m_extListBox;
+		return m_evListBox;
 	}
 	
 	
@@ -656,16 +656,16 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 
 	/**
-	 * Return the jsp name of the selected extension
+	 * Return the jsp name of the selected view
 	 */
 	public String getJspName()
 	{
-		LPExtensionInfo extInfo;
+		EnhancedViewInfo evInfo;
 		
-		// Get the selected extension.
-		extInfo = getSelectedExtension();
-		if ( extInfo != null )
-			return extInfo.getJspName();
+		// Get the selected view.
+		evInfo = getSelectedView();
+		if ( evInfo != null )
+			return evInfo.getJspName();
 		
 		return "";
 	}
@@ -698,20 +698,20 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	
 	
 	/**
-	 * Return the selected extension.
+	 * Return the selected view.
 	 */
-	private LPExtensionInfo getSelectedExtension()
+	private EnhancedViewInfo getSelectedView()
 	{
 		int selectedIndex;
 		
-		// Get the selected index from the listbox that holds the list of extensions.
-		selectedIndex = m_extListBox.getSelectedIndex();
+		// Get the selected index from the listbox that holds the list of views.
+		selectedIndex = m_evListBox.getSelectedIndex();
 		if ( selectedIndex >= 0 )
 		{
 			String jspName;
 			
-			jspName = m_extListBox.getValue( selectedIndex );
-			return getExtensionByJspName( jspName );
+			jspName = m_evListBox.getValue( selectedIndex );
+			return getViewByJspName( jspName );
 		}
 		
 		return null;
@@ -780,11 +780,11 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	}
 	
 	/**
-	 * This method gets called when the user selects an extension in the listbox.
+	 * This method gets called when the user selects a view in the listbox.
 	 */
-	private void handleExtensionSelected()
+	private void handleViewSelected()
 	{
-		// Dance the ui based on the selected extension
+		// Dance the ui based on the selected view
 		danceControls();
 	}
 	
@@ -815,7 +815,7 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	 */
 	public void init( PropertiesObj props )
 	{
-		LandingPageExtProperties properties;
+		EnhancedViewProperties properties;
 		
 		m_folderId = null;
 		m_entryId = null;
@@ -824,10 +824,10 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 		m_showEntryTitleCkBox.setValue( false );
 		m_descLabel.setText( "" );
 		
-		properties = (LandingPageExtProperties) props;
+		properties = (EnhancedViewProperties) props;
 
-		// Select the appropriate extension in the listbox.
-		selectExtensionByJspName( properties.getJspName() );
+		// Select the appropriate view in the listbox.
+		selectViewByJspName( properties.getJspName() );
 		
 		m_folderId = properties.getFolderId();
 		m_entryId = properties.getEntryId();
@@ -913,7 +913,7 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 			m_entryFindCtrl.setInitialSearchString( "" );
 		}
 		
-		// Hide/show the appropriate controls on the page based on the selected extension.
+		// Hide/show the appropriate controls on the page based on the selected view.
 		danceControls();
 	}
 
@@ -948,34 +948,34 @@ public class LandingPageExtWidgetDlgBox extends DlgBox
 	}
 
 	/**
-	 * Select an extension in the list box for the given jsp name.
+	 * Select a view in the list box for the given jsp name.
 	 */
-	private int selectExtensionByJspName( String jspName )
+	private int selectViewByJspName( String jspName )
 	{
 		if ( jspName != null && jspName.length() > 0 )
 		{
 			int i;
 			
-			// Go through the list box and select the extension whose jsp name matches the given jsp name.
-			for (i = 0; i < m_extListBox.getItemCount(); ++i)
+			// Go through the list box and select the view whose jsp name matches the given jsp name.
+			for (i = 0; i < m_evListBox.getItemCount(); ++i)
 			{
 				String nextJspName;
 				
-				nextJspName = m_extListBox.getValue( i );
+				nextJspName = m_evListBox.getValue( i );
 				if ( nextJspName != null )
 				{
 					if ( nextJspName.equalsIgnoreCase( jspName ) )
 					{
-						m_extListBox.setSelectedIndex( i );
+						m_evListBox.setSelectedIndex( i );
 						return i;
 					}
 				}
 			}
 		}
 		else
-			m_extListBox.setSelectedIndex( 0 );
+			m_evListBox.setSelectedIndex( 0 );
 		
-		return -1;
+		return 0;
 	}
 
 	/**

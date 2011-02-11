@@ -75,6 +75,10 @@ public class Palette extends Composite
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 		
+		paletteItem = new EnhancedViewPaletteItem();
+		panel.add( paletteItem );
+		paletteItem.addMouseDownHandler( lpe );
+
 		paletteItem = new GraphicPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
@@ -96,10 +100,6 @@ public class Palette extends Composite
 		paletteItem.addMouseDownHandler( lpe );
 		
 		paletteItem = new CustomJspPaletteItem();
-		panel.add( paletteItem );
-		paletteItem.addMouseDownHandler( lpe );
-
-		paletteItem = new LandingPageExtPaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 
