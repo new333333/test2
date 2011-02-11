@@ -498,6 +498,7 @@ public abstract class WSClientBase {
 			System.out.println("Folder " + i + " family: " + fb[i].getFamily());
 			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
 			System.out.println("Folder " + i + " path: " + fb[i].getPath());
+			System.out.println("Folder " + i + " permalink: " + fb[i].getPermaLink());
 		}
 	}
 	
