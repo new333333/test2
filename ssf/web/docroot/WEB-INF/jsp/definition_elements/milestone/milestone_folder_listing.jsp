@@ -40,8 +40,10 @@ var ss_showingFolder = true;
 
 <table class="ss_milestones_list">
 	<tr class="ss_tableheader_style">
-		<th class="ss_nowrap">
+		<td></td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
+
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
 			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -63,21 +65,26 @@ var ss_showingFolder = true;
 				  </c:otherwise>
 				</c:choose>	
 				 >
+				 
 </c:if>	
-			      <div class="ss_title_menu"><ssf:nlt tag="milestone.title"/> </div>
+			    	<c:if test="${ ssFolderSortBy != '_sortTitle'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="milestone.title"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.title"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.title"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>		
-		</th>
-		<th class="ss_nowrap">
+		</td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -101,20 +108,26 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>	
-			      <div class="ss_title_menu"><ssf:nlt tag="milestone.responsible"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != 'responsible'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="milestone.responsible"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.responsible"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.responsible"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>				
-		</th>
-		<th class="ss_nowrap">
+		</td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -138,20 +151,26 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>	
-			      <div class="ss_title_menu"><ssf:nlt tag="milestone.tasks"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != 'tasks'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="milestone.tasks"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.tasks"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.tasks"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>			
-		</th>
-		<th class="ss_nowrap">
+		</td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 				<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 					name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -175,20 +194,26 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>
-			      <div class="ss_title_menu"><ssf:nlt tag="milestone.status"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != 'status'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="milestone.status"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.status"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.status"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>		
-		</th>
-		<th class="ss_nowrap">
+		</td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -212,20 +237,26 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>
-			      <div class="ss_title_menu"><ssf:nlt tag="milestone.dueDate"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != 'due_date'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="milestone.dueDate"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.dueDate"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="milestone.dueDate"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>		
-		</th>
-	</tr>
+		</td>
+	</td>
 	<c:if test="${empty ssFolderEntries}">
 		<tr><td colspan="5" class="ss_fixed_TD ss_nowrap"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
 	</c:if>
@@ -244,25 +275,30 @@ var ss_showingFolder = true;
 			<c:if test="${overdue && entry.status != 'completed'}">
 				<c:set var="tdClass" value="class='ss_overdue'" />
 			</c:if>
-			
 			<tr>
-				<td class="ss_fixed_TD ss_nowrap">
-					<span class="ss_entryTitle ss_normalprint">
+				<td class="ss_fixed_TD_unread" valign="middle">
+				
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 					
-	   					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-					    
-						  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-						  title="<ssf:nlt tag="sunburst.click"/>"
-						  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-						><span 
-						  style="display:${ss_sunburstVisibilityHide};"
-						  id="ss_sunburstShow${renderResponse.namespace}" 
-						  class="ss_fineprint">
-						  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-						  </span>
-						  </a>
-						    
-						<% } %>
+					  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+					  title="<ssf:nlt tag="sunburst.click"/>"
+					  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+					><span 
+					  style="display:${ss_sunburstVisibilityHide};"
+					  id="ss_sunburstShow${renderResponse.namespace}" 
+					  class="ss_fineprint">
+						<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" align="absmiddle" <ssf:alt tag="alt.new"/> />
+					  </span>
+					  </a>
+						
+					<% } %>
+				
+				</td>
+				<td class="ss_fixed_TD ss_nowrap">
+			
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+					<span class="ss_entryTitle ss_normalprint ss_bold">	
+					<% } %>
 					
 						<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
 						binderId="${entry._binderId}" entityType="${entry._entityType}" 
@@ -275,7 +311,11 @@ var ss_showingFolder = true;
 						
 							<c:out value="${entry.title}" escapeXml="false"/>
 						</ssf:titleLink>
+						
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 					</span>
+					<% } %>
+
 				</td>
 				<td class="ss_fixed_TD ss_nowrap">
 					<ul class="ss_nobullet">

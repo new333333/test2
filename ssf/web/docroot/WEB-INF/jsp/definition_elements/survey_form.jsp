@@ -47,44 +47,55 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
-	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+	<div class="ss_labelAbove ss_normal margintop2" style="font-size: 18px; border-bottom: 1px solid #b8b8b8;"><c:out value="${property_caption}"/></div>
+
 
 <c:if test="${empty ss_fieldModifyDisabled}">
-	<p>
-		<ssf:nlt tag="survey.view.results.beforeDue"/><br>
-		<input type="radio" checked="true" name="beforeDueTime"  id="${ss_namespace}_${property_name}_viewBeforeDueTime_all" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_all"><ssf:nlt tag="survey.view.results.beforeDue.all" /></label>
-		<input type="radio" name="beforeDueTime" id="${ss_namespace}_${property_name}_viewBeforeDueTime_voters" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_voters"><ssf:nlt tag="survey.view.results.beforeDue.voters" /></label>
-		<input type="radio" name="beforeDueTime" id="${ss_namespace}_${property_name}_viewBeforeDueTime_moderator" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_moderator"><ssf:nlt tag="survey.view.results.beforeDue.moderators" /></label>
-	</p>
-
-	<p>
-		<ssf:nlt tag="survey.view.results.afterDue"/><br>
-		<input type="radio" checked="true" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_all" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_all"><ssf:nlt tag="survey.view.results.afterDue.all" /></label>
-		<input type="radio" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_voters" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_voters"><ssf:nlt tag="survey.view.results.afterDue.voters" /></label>
-		<input type="radio" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_moderator" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_moderator"><ssf:nlt tag="survey.view.results.afterDue.moderators" /></label>
-	</p>
-
-	<p>
-		<ssf:nlt tag="survey.view.results.details"/><br>
-		<input type="radio" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_all" /><label for="${ss_namespace}_${property_name}_viewDetails_all"><ssf:nlt tag="survey.view.results.details.all"/></label>
-		<input type="radio" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_voters" /><label for="${ss_namespace}_${property_name}_viewDetails_voters"><ssf:nlt tag="survey.view.results.details.voters"/></label>
-		<input type="radio" checked="true" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_moderator" /><label for="${ss_namespace}_${property_name}_viewDetails_moderator"><ssf:nlt tag="survey.view.results.details.moderators"/></label>
-	</p>
-
-	<p>
-		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> <label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/>
-	</p>
-
 	<input type="hidden" name="${property_name}" value="" id="survey_${ss_namespace}_${property_name}" />
-	<div id="ss_surveyForm_questions_${ss_namespace}_${property_name}">
-	</div>
 	
-	<div class="ss_more">
-		<a class="ss_button" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('multiple', '', null, true);"><ssf:nlt tag="survey.addQuestion.multiple"/></a>
-		<a class="ss_button" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('single', '', null, true);"><ssf:nlt tag="survey.addQuestion.single"/></a>
-		<a class="ss_button" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('input', '', null, true);"><ssf:nlt tag="survey.addQuestion.input"/></a>
+	<div class="margintop3" id="ss_surveyForm_questions_${ss_namespace}_${property_name}">
+	</div>	
+
+	<div class="ss_more margintop3">
+		<a class="ss_tinyButton" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('multiple', '', null, true);"><ssf:nlt tag="survey.addQuestion.multiple"/></a>
+		<a class="ss_tinyButton" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('single', '', null, true);"><ssf:nlt tag="survey.addQuestion.single"/></a>
+		<a class="ss_tinyButton" href="javascript: ss_survey_${ss_namespace}_${property_name}.ss_newSurveyQuestion('input', '', null, true);"><ssf:nlt tag="survey.addQuestion.input"/></a>
 	</div>
-	
+
+	<div class="margintop3 ss_padleft5">
+		<span class="ss_bold"><ssf:nlt tag="survey.view.results.beforeDue"/></span>
+			<div class="margintop1 marginleft1">
+				<input type="radio" checked="true" name="beforeDueTime"  id="${ss_namespace}_${property_name}_viewBeforeDueTime_all" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_all"><ssf:nlt tag="survey.view.results.beforeDue.all" /></label></div>
+			<div class="margintop1 marginleft1">
+				<input type="radio" name="beforeDueTime" id="${ss_namespace}_${property_name}_viewBeforeDueTime_voters" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_voters"><ssf:nlt tag="survey.view.results.beforeDue.voters" /></label></div>
+			<div class="margintop1 marginleft1">
+				<input type="radio" name="beforeDueTime" id="${ss_namespace}_${property_name}_viewBeforeDueTime_moderator" /><label for="${ss_namespace}_${property_name}_viewBeforeDueTime_moderator"><ssf:nlt tag="survey.view.results.beforeDue.moderators" /></label></div>
+	</div>
+
+	<div class="margintop3 ss_padleft5">
+		<span class="ss_bold"><ssf:nlt tag="survey.view.results.afterDue"/></span>
+		<div class="margintop1 marginleft1">
+			<input type="radio" checked="true" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_all" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_all"><ssf:nlt tag="survey.view.results.afterDue.all" /></label></div>
+		<div class="margintop1 marginleft1">
+			<input type="radio" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_voters" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_voters"><ssf:nlt tag="survey.view.results.afterDue.voters" /></label></div>
+		<div class="margintop1 marginleft1">
+			<input type="radio" name="afterDueTime" id="${ss_namespace}_${property_name}_viewAfterDueTime_moderator" /><label for="${ss_namespace}_${property_name}_viewAfterDueTime_moderator"><ssf:nlt tag="survey.view.results.afterDue.moderators" /></label></div>
+	</div>
+
+	<div class="margintop3 ss_padleft5">
+		<span class="ss_bold"><ssf:nlt tag="survey.view.results.details"/></span>
+		<div class="margintop1 marginleft1">
+			<input type="radio" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_all" /><label for="${ss_namespace}_${property_name}_viewDetails_all"><ssf:nlt tag="survey.view.results.details.all"/></label></div>
+		<div class="margintop1 marginleft1">
+			<input type="radio" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_voters" /><label for="${ss_namespace}_${property_name}_viewDetails_voters"><ssf:nlt tag="survey.view.results.details.voters"/></label></div>
+		<div class="margintop1 marginleft1">
+			<input type="radio" checked="true" name="resultDetails" id="${ss_namespace}_${property_name}_viewDetails_moderator" /><label for="${ss_namespace}_${property_name}_viewDetails_moderator"><ssf:nlt tag="survey.view.results.details.moderators"/></label></div>
+	</div>
+
+	<div class="margintop3 marginleft1 ss_padleft5">
+		<input type="checkbox" name="allowChange" id="${ss_namespace}_${property_name}_allowChange"/> <label for="${ss_namespace}_${property_name}_allowChange"><ssf:nlt tag="survey.modify.label"/>
+	</div>
+
 	
 	<script type="text/javascript">
 		var ss_survey_${ss_namespace}_${property_name} = new ssSurvey("survey_${ss_namespace}_${property_name}", "ss_surveyForm_questions_${ss_namespace}_${property_name}", "${ss_namespace}_${property_name}");
