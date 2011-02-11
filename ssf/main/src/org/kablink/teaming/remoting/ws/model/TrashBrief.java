@@ -223,11 +223,13 @@ public class TrashBrief implements Serializable {
 		feb.setHref(WebUrlUtil.getEntryViewURL(fe));
 		feb.setPermaLink(PermaLinkUtil.getPermalink(fe));
 		Set<FileAttachment> fileAttachments = fe.getFileAttachments();
-		String[] fileNames = new String[fileAttachments.size()];
-		int i = 0;
-		for(FileAttachment fa:fileAttachments)
-			fileNames[i++] = fa.getFileItem().getName();
-		feb.setFileNames(fileNames);
+		if(fileAttachments.size() > 0) {
+			String[] fileNames = new String[fileAttachments.size()];
+			int i = 0;
+			for(FileAttachment fa:fileAttachments)
+				fileNames[i++] = fa.getFileItem().getName();
+			feb.setFileNames(fileNames);
+		}
 		if(null != fe.getCreation()) {
 			feb.setCreation(getTimestampFromHistory(fe.getCreation()));
 		}
