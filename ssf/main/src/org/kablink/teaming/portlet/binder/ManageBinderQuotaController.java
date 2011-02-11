@@ -75,10 +75,10 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 					getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				//Save the quota setting
-				String sQuota = PortletRequestUtils.getStringParameter(request, "quota", "");
+				String sQuota = PortletRequestUtils.getStringParameter(request, "quota", "").trim();
 				Long quota = null;
-				if (!sQuota.equals("")) {
-					quota = new Long(PortletRequestUtils.getLongParameter(request, "quota"));
+				if (!sQuota.equals("") && sQuota.matches("^[0-9]+$")) {
+					quota = Long.valueOf(sQuota);
 					quota = quota * 1000000;
 				}
 				BinderQuota bq = getAdminModule().getBinderQuota(binder);
