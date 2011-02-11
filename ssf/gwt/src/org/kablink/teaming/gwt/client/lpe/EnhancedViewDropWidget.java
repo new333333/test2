@@ -45,20 +45,20 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author jwootton
  *
  */
-public class LandingPageExtDropWidget extends DropWidget
+public class EnhancedViewDropWidget extends DropWidget
 {
-	private static LandingPageExtWidgetDlgBox m_landingPageExtDlgBox = null;	// For efficiency sake, we only create one dialog box.
-	private LandingPageExtProperties	m_properties = null;
-	private InlineLabel			m_extName = null;
+	private static EnhancedViewWidgetDlgBox m_evDlgBox = null;	// For efficiency sake, we only create one dialog box.
+	private EnhancedViewProperties	m_properties = null;
+	private InlineLabel			m_viewName = null;
 	private Timer				m_timer = null;
 	
 
 	/**
 	 * 
 	 */
-	public LandingPageExtDropWidget( LandingPageEditor lpe, LandingPageExtConfig configData )
+	public EnhancedViewDropWidget( LandingPageEditor lpe, EnhancedViewConfig configData )
 	{
-		LandingPageExtProperties properties;
+		EnhancedViewProperties properties;
 		
 		properties = null;
 		if ( configData != null )
@@ -71,7 +71,7 @@ public class LandingPageExtDropWidget extends DropWidget
 	/**
 	 * 
 	 */
-	public LandingPageExtDropWidget( LandingPageEditor lpe, LandingPageExtProperties properties )
+	public EnhancedViewDropWidget( LandingPageEditor lpe, EnhancedViewProperties properties )
 	{
 		init( lpe, properties );
 	}
@@ -94,7 +94,7 @@ public class LandingPageExtDropWidget extends DropWidget
 		if ( m_dragProxy == null )
 		{
 			// Create a drag proxy that will be displayed when the user drags this item.
-			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorLPExt(), GwtTeaming.getMessages().lpeLPExt() );
+			m_dragProxy = new DragProxy( GwtTeaming.getImageBundle().landingPageEditorEnhancedView(), GwtTeaming.getMessages().lpeEnhancedView() );
 		}
 		
 		return m_dragProxy;
@@ -107,18 +107,18 @@ public class LandingPageExtDropWidget extends DropWidget
 	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
 	{
 		// Have we already created a dialog?
-		if ( m_landingPageExtDlgBox == null )
+		if ( m_evDlgBox == null )
 		{
-			// Pass in the object that holds all the properties for a LandingPageExtDropWidget.
-			m_landingPageExtDlgBox = new LandingPageExtWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			// Pass in the object that holds all the properties for a EnhancedViewDropWidget.
+			m_evDlgBox = new EnhancedViewWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{
-			m_landingPageExtDlgBox.init( m_properties );
-			m_landingPageExtDlgBox.initHandlers( this, this );
+			m_evDlgBox.init( m_properties );
+			m_evDlgBox.initHandlers( this, this );
 		}
 		
-		return m_landingPageExtDlgBox;
+		return m_evDlgBox;
 	}
 	
 	
@@ -126,7 +126,7 @@ public class LandingPageExtDropWidget extends DropWidget
 	 * @param lpe
 	 * @param properties
 	 */
-	public void init( LandingPageEditor lpe, LandingPageExtProperties properties )
+	public void init( LandingPageEditor lpe, EnhancedViewProperties properties )
 	{
 		FlowPanel wrapperPanel;
 		
@@ -160,22 +160,22 @@ public class LandingPageExtDropWidget extends DropWidget
 			
 			mainPanel = new FlowPanel();
 			mainPanel.addStyleName( "lpeDropWidget" );
-			mainPanel.addStyleName( "lpeLandingPageExtWidget" );
+			mainPanel.addStyleName( "lpeEnhancedViewWidget" );
 			
-			// Add a label that identifies this widget as a Landing Page Extension
-			label = new InlineLabel( GwtTeaming.getMessages().landingPageExtLabel() );
+			// Add a label that identifies this widget as an enhanced view
+			label = new InlineLabel( GwtTeaming.getMessages().enhancedViewLabel() );
 			label.addStyleName( "lpeWidgetIdentifier" );
 			mainPanel.add( label );
 			
-			m_extName = new InlineLabel();
-			m_extName.addStyleName( "lpeLandingPageExtName" );
-			mainPanel.add( m_extName );
+			m_viewName = new InlineLabel();
+			m_viewName.addStyleName( "lpeEnhancedViewName" );
+			mainPanel.add( m_viewName );
 			
 			wrapperPanel.add( mainPanel );
 		}
 		
-		// Create an object to hold all of the properties that define a "landing page extension" widget.
-		m_properties = new LandingPageExtProperties();
+		// Create an object to hold all of the properties that define an "enhanced view" widget.
+		m_properties = new EnhancedViewProperties();
 		
 		// If we were passed some properties, make a copy of them.
 		if ( properties != null )
@@ -205,13 +205,13 @@ public class LandingPageExtDropWidget extends DropWidget
 		jspName = m_properties.getJspName();
 		
 		if ( jspName == null || jspName.length() == 0 )
-			m_extName.setText( "" );
+			m_viewName.setText( "" );
 		else
 		{
-			LPExtensionInfo extInfo;
+			EnhancedViewInfo evInfo;
 			
-			extInfo = new LPExtensionInfo( jspName );
-			m_extName.setText( extInfo.getDisplayName() );
+			evInfo = new EnhancedViewInfo( jspName );
+			m_viewName.setText( evInfo.getDisplayName() );
 		}
 
 		// Get the needed information from the server.

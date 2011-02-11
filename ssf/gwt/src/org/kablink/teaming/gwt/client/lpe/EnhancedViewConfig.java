@@ -36,22 +36,22 @@ package org.kablink.teaming.gwt.client.lpe;
 import com.google.gwt.http.client.URL;
 
 /**
- * This class represents the configuration data for a Landing Page Extension
+ * This class represents the configuration data for an enhanced view
  * @author jwootton
  *
  */
-public class LandingPageExtConfig extends ConfigItem
+public class EnhancedViewConfig extends ConfigItem
 {
-	private LandingPageExtProperties		m_properties;
+	private EnhancedViewProperties		m_properties;
 	
 	/**
 	 * 
 	 */
-	public LandingPageExtConfig( String configStr )
+	public EnhancedViewConfig( String configStr )
 	{
 		String[] results;
 		
-		m_properties = new LandingPageExtProperties();
+		m_properties = new EnhancedViewProperties();
 		
 		// Split the configuration data into its parts.  ie jspName=xxx
 		results = configStr.split( "[,;]" );
@@ -118,7 +118,7 @@ public class LandingPageExtConfig extends ConfigItem
 	/**
 	 * 
 	 */
-	public LandingPageExtProperties getProperties()
+	public EnhancedViewProperties getProperties()
 	{
 		return m_properties;
 	}

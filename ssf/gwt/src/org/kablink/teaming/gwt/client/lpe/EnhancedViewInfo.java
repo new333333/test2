@@ -36,9 +36,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
 /**
- * This class is used to hold information about a landing page extension
+ * This class is used to hold information about an enhanced view
  */
-public class LPExtensionInfo
+public class EnhancedViewInfo
 {
 	private String m_displayName;
 	private String m_desc;
@@ -49,7 +49,7 @@ public class LPExtensionInfo
 	/**
 	 * 
 	 */
-	public LPExtensionInfo( String jspName )
+	public EnhancedViewInfo( String jspName )
 	{
 		GwtTeamingMessages messages;
 		
@@ -57,64 +57,64 @@ public class LPExtensionInfo
 		
 		if ( jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )
 		{
-			m_displayName = messages.lpExtDisplayEntry();
-			m_desc = messages.lpExtDisplayEntryDesc();
+			m_displayName = messages.enhancedViewDisplayEntry();
+			m_desc = messages.enhancedViewDisplayEntryDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_full_entry.jsp" ) )
 		{
-			m_displayName = messages.lpExtDisplayFullEntry();
-			m_desc = messages.lpExtDisplayFullEntryDesc();
+			m_displayName = messages.enhancedViewDisplayFullEntry();
+			m_desc = messages.enhancedViewDisplayFullEntryDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder.jsp" ) )
 		{
-			m_displayName = messages.lpExtDisplayRecentEntries();
-			m_desc = messages.lpExtDisplayRecentEntriesDesc();
+			m_displayName = messages.enhancedViewDisplayRecentEntries();
+			m_desc = messages.enhancedViewDisplayRecentEntriesDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list.jsp" ) )
 		{
-			m_displayName = messages.lpExtDisplayRecentEntriesList();
-			m_desc = messages.lpExtDisplayRecentEntriesListDesc();
+			m_displayName = messages.enhancedViewDisplayRecentEntriesList();
+			m_desc = messages.enhancedViewDisplayRecentEntriesListDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted.jsp" ) )
 		{
-			m_displayName = messages.lpExtDisplayRecentEntriesListSorted();
-			m_desc = messages.lpExtDisplayRecentEntriesListSortedDesc();
+			m_displayName = messages.enhancedViewDisplayRecentEntriesListSorted();
+			m_desc = messages.enhancedViewDisplayRecentEntriesListSortedDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )
 		{
-			m_displayName = messages.lpeExtDisplayFileListSorted();
-			m_desc = messages.lpeExtDisplayFileListSortedDesc();
+			m_displayName = messages.enhancedViewDisplayFileListSorted();
+			m_desc = messages.enhancedViewDisplayFileListSortedDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
 		{
-			m_displayName = messages.lpeExtDisplayCalendarFolder();
-			m_desc = messages.lpeExtDisplayCalendarFolderDesc();
+			m_displayName = messages.enhancedViewDisplayCalendarFolder();
+			m_desc = messages.enhancedViewDisplayCalendarFolderDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_task_folder.jsp" ) )
 		{
-			m_displayName = messages.lpeExtDisplayTaskFolder();
-			m_desc = messages.lpeExtDisplayTaskFolderDesc();
+			m_displayName = messages.enhancedViewDisplayTaskFolder();
+			m_desc = messages.enhancedViewDisplayTaskFolderDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_survey.jsp" ) )
 		{
-			m_displayName = messages.lpeExtDisplaySurvey();
-			m_desc = messages.lpeExtDisplaySurveyDesc();
+			m_displayName = messages.enhancedViewDisplaySurvey();
+			m_desc = messages.enhancedViewDisplaySurveyDesc();
 			m_folderRequired = false;
 			m_entryRequired = true;
 		}
@@ -154,7 +154,7 @@ public class LPExtensionInfo
 	}
 	
 	/**
-	 * Does this extension require the user to select an entry?
+	 * Does this view require the user to select an entry?
 	 */
 	public boolean isEntryRequired()
 	{
@@ -162,7 +162,7 @@ public class LPExtensionInfo
 	}
 	
 	/**
-	 * Does this extension require the user to select a folder?
+	 * Does this view require the user to select a folder?
 	 */
 	public boolean isFolderRequired()
 	{

@@ -199,8 +199,8 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorList();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_landing_page_ext.gif")
-	public ImageResource landingPageEditorLPExt();
+	@Source("org/kablink/teaming/gwt/public/images/lpe_enhanced_view.gif")
+	public ImageResource landingPageEditorEnhancedView();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/lpe_table_16.png")
