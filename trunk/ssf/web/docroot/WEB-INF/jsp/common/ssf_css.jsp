@@ -238,7 +238,9 @@ a.ss_download_link {
 .ss_size_28px { font-size: 28px !important;}
 .ss_size_32px { font-size: 32px !important;}
 
-
+.ss_padleft5 label {
+	padding-left: 5px;
+	}
 
 .ss_nowrap {
   white-space: nowrap;
@@ -420,7 +422,6 @@ div.ss_editorHints {
   font-size: ${ss_style_font_largerprint};
   font-family: ${ss_style_title_font_family};
   margin-top: 4px;
-  margin-right: 10px;
   padding-right: 25px;
   }
 .ss_entryTitleFile {
@@ -1230,6 +1231,10 @@ table.ss_mouseOverInfo {
 	font-size: 10px;
 	color: #333;
 	}
+.ss_fixed_TD_unread {
+	border-bottom: solid 1px #D2D5D1;
+	padding: 4px;
+	}
 .ss_fixed_TD{
 	border-bottom: solid 1px #D2D5D1;
 	font-size: 12px !important;
@@ -1265,16 +1270,25 @@ table.ss_mouseOverInfo {
 	border-top: 1px solid #72AEB6;
 	}	
 .ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
-	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;
+	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
 	}
-.ss_tableheader_style th {
+.ss_tableheader_style td {
 	padding: 4px;
+	padding-right: 10px;
 	}	
 .ss_tableheader_style a, th.ss_sliding_table_row0 a, .ss_title_menu {
-	color: #fff;
+	color: #666666;
 	}
+.ss_title_menu:hover {
+	color: #135c8f;
+	}	
+.ss_title_menu_sorted {
+	color: #000;
+	font-weight: bold;
+	font-size: 12px;
+	}	
 
 
 /* Entry */
@@ -2356,7 +2370,7 @@ ul.ss_title_menu li {
   padding-left: 2px;
 } 
 
-div.ss_title_menu {
+div.ss_title_menu, div.ss_title_menu_sorted {
 	display:inline;
 }
 
@@ -3745,10 +3759,8 @@ div.ss_searchContainer div.ssPageNavi {
 	-webkit-border-top-right-radius: 0px;	
 	}
 div.ss_surveyContainer {
-	background: transparent url(<html:imagesPath/>pics/top_border.gif) repeat-x top left;
 	padding:5px 0px 0px 0px;
 	margin: 0px 0px 0px 15px;
-	border-right:1px solid #afc8e3;
 	width:95%;
 <c:if test="<%= isIE %>">
   zoom:1; /* a workaround IE bug */
@@ -3775,6 +3787,9 @@ div.ss_searchContainer #ss_content {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
+#ss_surveyForm {
+	background: transparent;
+}
 #DMGTEST {
     background-color: #ebf5f5;
 }
@@ -3785,7 +3800,7 @@ div.ss_searchFormFooter {
 	background-color: transparent;
 }
 #ss_searchForm table, #ss_surveyForm_main {
-	background-color: #ebf5f5;
+	background-color: transparent;
 }
 #ss_searchForm input { 
 	width: 400px;
@@ -4053,14 +4068,13 @@ input.ss_saveQueryName {
 	margin:0px 0px 0px 0px;
 }
 div.ss_questionContainer {
-	border-bottom: 1px solid #afc8e3;
-	padding: 0px 0px 10px 0px;
-	margin: 0px 0px 5px 0px;
-	background-color:#ffffff;
+	padding: 10px;
+	margin: 10px 0px;
+	background-color:#f6f6f6;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 }
 div.ss_questionContainer h4 {
-	border: 1px solid #afc8e3;
-	background-color:#e8eff7;
 	margin:0px;
 }
 div.ss_questionContainer h4 img, div.ss_questionContainer li img {
@@ -4077,10 +4091,37 @@ div.ss_content_outer table.ss_milestones_list, div.ss_content_outer table.ss_sur
 	empty-cells: show;
 	border-collapse: collapse;
 }
+div.ss_questionContainer ol {margin: 10px 0px;}
+
+div.ss_questionContainer a.ss_tinyButton {
+	background: #949494 none repeat scroll 0 0;
+	color:#FFFFFF !important;
+  	font-size: 11px;
+	margin-right: 10px;
+	padding:2px 10px;
+	text-decoration:none;
+  	cursor: pointer;
+  	white-space: nowrap;
+	-moz-border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	}
+div.ss_questionContainer a.ss_tinyButton:focus,
+div.ss_questionContainer a.ss_tinyButton:hover {
+  	font-size: 11px;
+	color: #fff;
+	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
+	background-position: center;
+  	white-space: nowrap;
+	-moz-border-radius:10px 10px 10px 10px;
+	-webkit-border-radius:10px 10px 10px 10px;
+}
+
+
 
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
 	padding: 0px;
+	border: 1px solid #D2D5D1;
 }
 table.ss_surveys_list th-table.ss_milestones_list th {
 	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend5_28.png) repeat-x;

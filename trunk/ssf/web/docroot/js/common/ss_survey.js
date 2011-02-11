@@ -114,6 +114,7 @@ if (!window.ssSurvey) {
 			dojo.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
 			var removerImg = document.createElement('img');
 			removerImg.setAttribute("src", ss_imagesPath + "pics/delete.png");
+			removerImg.setAttribute("align", "absmiddle");
 			removerLink.appendChild(removerImg);
 			questionHeader.appendChild(removerLink);
 			var label = document.createElement('span');
@@ -192,7 +193,7 @@ if (!window.ssSurvey) {
 		
 		function ss_addDefaultAnswers(index, withDefaultOptions) {
 			var more = document.createElement('a');
-			ss_setClass(more, "ss_button");
+			ss_setClass(more, "ss_tinyButton");
 			dojo.connect(more, "onclick", ss_callAddAnswerOption(that, index));
 			more.appendChild(document.createTextNode(that.locale.moreAnswers));
 			var answersList = document.createElement('ol');

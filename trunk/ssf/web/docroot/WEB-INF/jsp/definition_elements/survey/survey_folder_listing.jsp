@@ -40,7 +40,8 @@ var ss_showingFolder = true;
 
 <table class="ss_surveys_list">
 	<tr class="ss_tableheader_style">
-		<th class="ss_nowrap">
+		<td></td>
+		<td class="ss_nowrap">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -64,20 +65,26 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>	
-			      <div class="ss_title_menu"><ssf:nlt tag="survey.title"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != '_sortTitle'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="survey.title"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.title"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.title"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>
-		</th>
-		<th>
+		</td>
+		<td>
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -101,21 +108,27 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>	
-			      <div class="ss_title_menu"><ssf:nlt tag="survey.creator"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != '_principal'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="survey.creator"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.creator"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.creator"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>		
 		
-		</th>
-		<th colspan="2">
+		</td>
+		<td colspan="2">
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -139,22 +152,29 @@ var ss_showingFolder = true;
 				</c:choose>	
 				 >
 </c:if>
-			      <div class="ss_title_menu"><ssf:nlt tag="survey.dueDate"/> </div>
+
+			    	<c:if test="${ ssFolderSortBy != 'due_date'}">
+			 		  <div class="ss_title_menu"><ssf:nlt tag="survey.dueDate"/> </div>
+					</c:if>
 			    	<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'true'}">
+			 		  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.dueDate"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 					</c:if>
 					<c:if test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
+					  <div class="ss_title_menu_sorted"><ssf:nlt tag="survey.dueDate"/> </div>
 						<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 						value='<%= NLT.get("folder.column.Title") %>' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 					</c:if>
+
 <c:if test="${ssConfigJspStyle != 'template'}">
 			    </a>
 </c:if>		
-	</th>
+		</td>
 	</tr>
 	<c:if test="${empty ssFolderEntries}">
-		<tr><td colspan="3"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
+	<tr>
+		<td colspan="3"><jsp:include page="/WEB-INF/jsp/forum/view_no_entries.jsp" /></td></tr>
 	</c:if>
 	<c:if test="${!empty ssFolderEntries}">
 		<c:forEach var="entry" items="${ssFolderEntries}" >
@@ -166,24 +186,30 @@ var ss_showingFolder = true;
 			</c:if>
 				
 			<tr>
+				<td class="ss_fixed_TD_unread" valign="middle">
+				
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+					
+					  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
+					  title="<ssf:nlt tag="sunburst.click"/>"
+					  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
+					><span 
+					  style="display:${ss_sunburstVisibilityHide};"
+					  id="ss_sunburstShow${renderResponse.namespace}" 
+					  class="ss_fineprint">
+						<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" align="absmiddle" <ssf:alt tag="alt.new"/> />
+					  </span>
+					  </a>
+						
+					<% } %>
+				
+				</td>
 				<td class="ss_fixed_TD ss_nowrap">
-					<span class="ss_entryTitle ss_normalprint">
-					
-		   				<% if (!ssSeenMap.checkIfSeen(entry)) { %>
-										    
-						  <a id="ss_sunburstDiv${entry._binderId}_${entry._docId}" href="javascript: ;" 
-						  title="<ssf:nlt tag="sunburst.click"/>"
-						  onClick="ss_hideSunburst('${entry._docId}', '${entry._binderId}');return false;"
-						><span
-						  style="display:${ss_sunburstVisibilityHide};"
-						  id="ss_sunburstShow${renderResponse.namespace}" 
-						  class="ss_fineprint">
-						  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
-						  </span>
-			    		  </a>
-											    
-						<% } %>
-					
+
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
+					<span class="ss_entryTitle ss_normalprint ss_bold">	
+					<% } %>
+										
 							<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
 							binderId="${entry._binderId}" entityType="${entry._entityType}" 
 							namespace="${renderResponse.namespace}">
@@ -195,7 +221,10 @@ var ss_showingFolder = true;
 							
 								<c:out value="${entry.title}" escapeXml="false"/>
 							</ssf:titleLink>
+					<% if (!ssSeenMap.checkIfSeen(entry)) { %>
 					</span>
+					<% } %>
+
 				</td>
 				<td class="ss_fixed_TD ss_nowrap">
 					<ssf:showUser user="${entry._principal}" />
