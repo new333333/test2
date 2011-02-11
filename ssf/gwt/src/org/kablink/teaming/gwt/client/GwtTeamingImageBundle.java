@@ -183,6 +183,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorHtml();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source( "org/kablink/teaming/gwt/public/images/lpe_iframe.gif" )
+	public ImageResource landingPageEditorIFrame();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
 	public ImageResource landingPageEditorLinkEntry();
 

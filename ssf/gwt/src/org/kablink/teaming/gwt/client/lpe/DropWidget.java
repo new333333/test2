@@ -111,6 +111,9 @@ public abstract class DropWidget extends Composite
 		if ( configItem instanceof EnhancedViewConfig )
 			return new EnhancedViewDropWidget( lpe, (EnhancedViewConfig) configItem );
 		
+		if ( configItem instanceof IFrameConfig )
+			return new IFrameDropWidget( lpe, (IFrameConfig) configItem );
+		
 		//!!! Add new DropWidgets here.
 		
 		// If we get here we didn't recognize the type of widget being requested.
