@@ -107,9 +107,13 @@ public class Palette extends Composite
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
 
-		paletteItem = new GoogleGadgetPaletteItem();
+		paletteItem = new IFramePaletteItem();
 		panel.add( paletteItem );
 		paletteItem.addMouseDownHandler( lpe );
+
+		//paletteItem = new GoogleGadgetPaletteItem();
+		//panel.add( paletteItem );
+		//paletteItem.addMouseDownHandler( lpe );
 
 		// All composites must call initWidget() in their constructors.
 		initWidget( panel );

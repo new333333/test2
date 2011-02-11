@@ -230,6 +230,11 @@ public class ConfigData
 					configItem = new EnhancedViewConfig( itemData[i] );
 					++i;
 				}
+				else if ( itemName.equalsIgnoreCase( "iframe" ) )
+				{
+					configItem = new IFrameConfig( itemData[i] );
+					++i;
+				}
 				else
 				{
 					// We don't know what this item is.  Skip it.

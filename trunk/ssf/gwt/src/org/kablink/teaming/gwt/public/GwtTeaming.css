@@ -1199,6 +1199,13 @@ body, table td, select
 	margin-bottom: 0.5em;
 }
 
+/* Styles for the "IFrame" widget. */
+.lpeIFrameWidget
+{
+	border: 1px solid #AEAEAE;
+	padding: 6px;
+}
+
 /* Styles used for the entry name in the "link to entry" widget */
 .lpeLinkToEntryName
 {

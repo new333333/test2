@@ -115,6 +115,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeAltGoogleGadget();
 	String lpeAltGraphic();
 	String lpeAltHtml();
+	String lpeAltIFrame();
 	String lpeAltLinkEntry();
 	String lpeAltLinkFolderWorkspace();
 	String lpeAltLinkURL();
@@ -131,6 +132,7 @@ public interface GwtTeamingMessages extends Messages
 	String lpeGraphic();
 	String lpeHint();
 	String lpeHtml();
+	String lpeIFrame();
 	String lpeLinkEntry();
 	String lpeLinkFolderWS();
 	String lpeLinkURL();
@@ -170,6 +172,10 @@ public interface GwtTeamingMessages extends Messages
 	String invalidTotalTableWidth();
 	String numColumns();
 	String tableProperties();
+	
+	// String used in the "IFrame" widget properties dialog.
+	String iframeProperties();
+	String urlLabel();
 
 	// Misc strings
 	String _1();
