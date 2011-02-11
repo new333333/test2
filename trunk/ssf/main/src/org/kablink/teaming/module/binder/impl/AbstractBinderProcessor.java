@@ -1809,7 +1809,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	QuotaData qd = null;
 	   	    	try {
 	   	    		bq = getCoreDao().loadBinderQuota(zoneId, b.getId());
-	   	    		qd = new QuotaData(bq.getDiskSpaceUsed(), bq.getDiskSpaceUsedCumulative(), b);
+	   	    		qd = new QuotaData(dsu, bq.getDiskSpaceUsedCumulative(), b);
 	   	    	} catch(NoObjectByTheIdException e) {
 	   	    		binderQuotasToUpdate.add(b.getId());
 	   	    		qd = new QuotaData(dsu, Long.valueOf(0), b);
@@ -1836,9 +1836,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    	   	    	BinderQuota bq = null;
 		    	   	    	try {
 		    	   	    		bq = getCoreDao().loadBinderQuota(zoneId, binderId);
-		    	   	    		if (bq.getDiskSpaceUsed().equals(qd.diskSpaceUsed)) {
+		    	   	    		if (!bq.getDiskSpaceUsed().equals(qd.diskSpaceUsed)) {
 		    	   	    			//The disk space used value was different, so update it
 		    	   	    			bq.setDiskSpaceUsed(qd.diskSpaceUsed);
+		    	   	    			getCoreDao().save(bq);
 		    	   	    		}
 		    	   	    	} catch(NoObjectByTheIdException e) {
 		    	   	    		bq = new BinderQuota();
