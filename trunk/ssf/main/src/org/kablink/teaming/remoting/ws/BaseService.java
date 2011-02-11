@@ -91,9 +91,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.gwt.user.client.rpc.core.java.util.Collections;
-
-
 public class BaseService extends AbstractAllModulesInjected implements ElementBuilder.BuilderContext {
 
 	protected AttachmentHandler attachmentHandler = new AttachmentHandler();
