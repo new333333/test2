@@ -48,7 +48,7 @@ public class SearchFieldResult {
     	values.add(value);	 
 	}
     
- 	public Set getValueSet() {
+ 	public Set<String> getValueSet() {
 		return values;
 	}
  	

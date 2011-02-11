@@ -59,4 +59,5 @@ public class Binder extends DefinableEntity implements Serializable {
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
 	}
+
 }
