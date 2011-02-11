@@ -60,6 +60,17 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	self.location.href = url;
 	return false;
 }
+
+function ss_checkIfQuotaValid(s) {
+	if (ss_trim(s) == '') return true;   //Blank is ok
+	var pattern1 = new RegExp("^[0-9]+$");
+	if (pattern1.test(ss_trim(s))) {
+		return true;
+	}
+	alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");
+	return false;
+}
+
 </script>
 
 <div class="ss_style ss_portlet">
@@ -103,7 +114,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
         <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsed.${type}"/></span>
         <span>
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsed + 500000)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsed + 499999)/1000000}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
@@ -112,12 +123,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
         <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsedCumulative.${type}"/></span>
         <span>
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsedCumulative + 500000)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsedCumulative + 499999)/1000000}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
-      <c:set var="currentQuota"><fmt:formatNumber value="${(BinderQuota.diskQuota + 500000)/1000000}"
+      <c:set var="currentQuota"><fmt:formatNumber value="${(ss_binderQuota.diskQuota + 499999)/1000000}"
 		  maxFractionDigits="0"/></c:set>
 	  <div style="padding:6px 10px 0px 10px;">
         <span class="ss_bold"><ssf:nlt tag="quota.currentQuota"/></span>
@@ -125,7 +136,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
           <c:if test="${empty ss_binderQuota.diskQuota}"><ssf:nlt tag="None"/></c:if>
           <c:if test="${!empty ss_binderQuota.diskQuota}">
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(BinderQuota.diskQuota + 500000)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 499999)/1000000}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
         </span>
       </div>
@@ -135,24 +146,23 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
           <input type="text" name="quota" value="" 
             style="width:50px; text-align:right;"
-            onChange='if (!ss_checkIfInteger(this.value)){alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");this.value="";}'
+            onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
           ><ssf:nlt tag="file.sizeMB"/>
         </c:if>
         <c:if test="${!empty ss_binderQuota.diskQuota}">
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
           <input type="text" name="quota" value="${currentQuota}" 
             style="width:50px; text-align:right;"
-            onChange='if (!ss_checkIfInteger(this.value)){alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");this.value="";}'
+            onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
             /><ssf:nlt tag="file.sizeMB"/>
         </c:if>
 	  </div>
     </fieldset>
-
 <br/>
 <br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
 </ssf:form>

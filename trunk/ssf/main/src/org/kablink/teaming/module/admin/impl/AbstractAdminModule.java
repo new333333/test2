@@ -400,6 +400,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	try {
     		bq = getCoreDao().loadBinderQuota(zoneId, binder.getId());
     		bq = binderQuota;
+    		getCoreDao().save(bq);
     	} catch(NoObjectByTheIdException e) {
     		getCoreDao().save(binderQuota);
     	}

@@ -71,115 +71,117 @@ public class ManageQuotasController extends SAbstractController {
 		Binder topBinder = getWorkspaceModule().getTopWorkspace();
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			if (formData.containsKey("enableQuotas")) {
-				getAdminModule().setQuotaEnabled(true);
-			} else {
-				getAdminModule().setQuotaEnabled(false);
-			}
-			if (formData.containsKey("enableBinderQuotas")) {
-				boolean allowBinderOwner = false;
-				if (formData.containsKey("allowBinderQuotasByOwner")) allowBinderOwner = true;
-				getAdminModule().setBinderQuotasEnabled(true, allowBinderOwner);
-			} else {
-				getAdminModule().setBinderQuotasEnabled(false, false);
-			}
-			Integer defaultQuota;
-			Integer highWaterMark;
-			
-			// Get the default data quota size entered by the user.
-			try
-			{
-				defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota", getAdminModule().getQuotaDefault());
-			}
-			catch (Exception ex)
-			{
-				// The value entered by the user is not valid.  Use default value.
-				defaultQuota = getAdminModule().getQuotaDefault();
-			}
-			
-			// Get the highwater mark entered by the user.
-			try
-			{
-				highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark", getAdminModule().getQuotaHighWaterMark());
-			}
-			catch (Exception ex)
-			{
-				// The value entered by the user is not valid.  Use default value.
-				highWaterMark = getAdminModule().getQuotaHighWaterMark();
-			}
-			if (defaultQuota < 0) defaultQuota = 0;
-			if (highWaterMark > 100) highWaterMark = 100;
-			if (highWaterMark < 0) highWaterMark = 0;
-			
-			getAdminModule().setQuotaDefault(defaultQuota);
-			getAdminModule().setQuotaHighWaterMark(highWaterMark);
-			
-			Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
-			Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
-			String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
-			if (!s_userQuota.equals("")) {
-				try {
-					Long userQuota = Long.valueOf(s_userQuota);
-					if (!userIds.isEmpty() && userQuota != null) {
-						getProfileModule().setUserDiskQuotas(userIds, userQuota);
-					}
-				} catch(Exception e) {}
-			}
-			String s_groupQuota = PortletRequestUtils.getStringParameter(request, "addGroupQuota", "");
-			if (!s_groupQuota.equals("")) {
-				try {
-					Long groupQuota = Long.valueOf(s_groupQuota);
-					if (!groupIds.isEmpty() && groupQuota != null) {
-						getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
-					}
-				} catch(Exception e) {}
-			}
-			//Check for individual group and user changes
-			userIds = new HashSet<Long>();
-			groupIds = new HashSet<Long>();
-			Map<String, Long> quotaValues = new HashMap<String, Long>();
-			Iterator itFormData = formData.keySet().iterator();
-			while (itFormData.hasNext()) {
-				String key = (String)itFormData.next();
-				if (key.indexOf("deleteUser_") == 0) {
-					String userId = key.substring(11, key.length());
-					userIds.add(Long.valueOf(userId));
-					quotaValues.put(userId, Long.valueOf(0));
+			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				if (formData.containsKey("enableQuotas")) {
+					getAdminModule().setQuotaEnabled(true);
+				} else {
+					getAdminModule().setQuotaEnabled(false);
 				}
-				if (key.indexOf("deleteGroup_") == 0) {
-					String groupId = key.substring(12, key.length());
-					groupIds.add(Long.valueOf(groupId));
-					quotaValues.put(groupId, Long.valueOf(0));
+				if (formData.containsKey("enableBinderQuotas")) {
+					boolean allowBinderOwner = false;
+					if (formData.containsKey("allowBinderQuotasByOwner")) allowBinderOwner = true;
+					getAdminModule().setBinderQuotasEnabled(true, allowBinderOwner);
+				} else {
+					getAdminModule().setBinderQuotasEnabled(false, false);
 				}
-				if (key.indexOf("modifyId") == 0) {
-					String id = PortletRequestUtils.getStringParameter(request, "modifyId", "");
-					String newGroupQuota = PortletRequestUtils.getStringParameter(request, "newGroupQuota_"+id, "");
-					if (!newGroupQuota.equals("")) {
-						try {
-							groupIds.add(Long.valueOf(id));
-							quotaValues.put(id, Long.valueOf(newGroupQuota));
-						} catch(Exception e) {}
+				Integer defaultQuota;
+				Integer highWaterMark;
+				
+				// Get the default data quota size entered by the user.
+				try
+				{
+					defaultQuota = PortletRequestUtils.getIntParameter(request, "defaultQuota", getAdminModule().getQuotaDefault());
+				}
+				catch (Exception ex)
+				{
+					// The value entered by the user is not valid.  Use default value.
+					defaultQuota = getAdminModule().getQuotaDefault();
+				}
+				
+				// Get the highwater mark entered by the user.
+				try
+				{
+					highWaterMark = PortletRequestUtils.getIntParameter(request, "highWaterMark", getAdminModule().getQuotaHighWaterMark());
+				}
+				catch (Exception ex)
+				{
+					// The value entered by the user is not valid.  Use default value.
+					highWaterMark = getAdminModule().getQuotaHighWaterMark();
+				}
+				if (defaultQuota < 0) defaultQuota = 0;
+				if (highWaterMark > 100) highWaterMark = 100;
+				if (highWaterMark < 0) highWaterMark = 0;
+				
+				getAdminModule().setQuotaDefault(defaultQuota);
+				getAdminModule().setQuotaHighWaterMark(highWaterMark);
+				
+				Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
+				Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
+				String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
+				if (!s_userQuota.equals("")) {
+					try {
+						Long userQuota = Long.valueOf(s_userQuota);
+						if (!userIds.isEmpty() && userQuota != null) {
+							getProfileModule().setUserDiskQuotas(userIds, userQuota);
+						}
+					} catch(Exception e) {}
+				}
+				String s_groupQuota = PortletRequestUtils.getStringParameter(request, "addGroupQuota", "");
+				if (!s_groupQuota.equals("")) {
+					try {
+						Long groupQuota = Long.valueOf(s_groupQuota);
+						if (!groupIds.isEmpty() && groupQuota != null) {
+							getProfileModule().setGroupDiskQuotas(groupIds, groupQuota);
+						}
+					} catch(Exception e) {}
+				}
+				//Check for individual group and user changes
+				userIds = new HashSet<Long>();
+				groupIds = new HashSet<Long>();
+				Map<String, Long> quotaValues = new HashMap<String, Long>();
+				Iterator itFormData = formData.keySet().iterator();
+				while (itFormData.hasNext()) {
+					String key = (String)itFormData.next();
+					if (key.indexOf("deleteUser_") == 0) {
+						String userId = key.substring(11, key.length());
+						userIds.add(Long.valueOf(userId));
+						quotaValues.put(userId, Long.valueOf(0));
 					}
-					String newUserQuota = PortletRequestUtils.getStringParameter(request, "newUserQuota_"+id, "");
-					if (!newUserQuota.equals("")) {
-						try {
-							userIds.add(Long.valueOf(id));
-							quotaValues.put(id, Long.valueOf(newUserQuota));
-						} catch(Exception e) {}
+					if (key.indexOf("deleteGroup_") == 0) {
+						String groupId = key.substring(12, key.length());
+						groupIds.add(Long.valueOf(groupId));
+						quotaValues.put(groupId, Long.valueOf(0));
+					}
+					if (key.indexOf("modifyId") == 0) {
+						String id = PortletRequestUtils.getStringParameter(request, "modifyId", "");
+						String newGroupQuota = PortletRequestUtils.getStringParameter(request, "newGroupQuota_"+id, "");
+						if (!newGroupQuota.equals("")) {
+							try {
+								groupIds.add(Long.valueOf(id));
+								quotaValues.put(id, Long.valueOf(newGroupQuota));
+							} catch(Exception e) {}
+						}
+						String newUserQuota = PortletRequestUtils.getStringParameter(request, "newUserQuota_"+id, "");
+						if (!newUserQuota.equals("")) {
+							try {
+								userIds.add(Long.valueOf(id));
+								quotaValues.put(id, Long.valueOf(newUserQuota));
+							} catch(Exception e) {}
+						}
 					}
 				}
-			}
-			for (Long id : groupIds) {
-				List ids = new ArrayList();
-				ids.add(id);
-				if (id != null && quotaValues.get(id.toString()) != null) 
-					getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
-			}
-			for (Long id : userIds) {
-				List ids = new ArrayList();
-				ids.add(id);
-				if (id != null && quotaValues.get(id.toString()) != null) 
-					getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
+				for (Long id : groupIds) {
+					List ids = new ArrayList();
+					ids.add(id);
+					if (id != null && quotaValues.get(id.toString()) != null) 
+						getProfileModule().setGroupDiskQuotas(ids, quotaValues.get(id.toString()));
+				}
+				for (Long id : userIds) {
+					List ids = new ArrayList();
+					ids.add(id);
+					if (id != null && quotaValues.get(id.toString()) != null) 
+						getProfileModule().setUserDiskQuotas(ids, quotaValues.get(id.toString()));
+				}
 			}
 
 		} else {
