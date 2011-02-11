@@ -494,11 +494,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL(entry));
 		entryBrief.setPermaLink(PermaLinkUtil.getPermalink(entry));
 		Set<FileAttachment> fileAttachments = entry.getFileAttachments();
-		String[] fileNames = new String[fileAttachments.size()];
-		int i = 0;
-		for(FileAttachment fa:fileAttachments)
-			fileNames[i++] = fa.getFileItem().getName();
-		entryBrief.setFileNames(fileNames);
+		if(fileAttachments.size() > 0) {
+			String[] fileNames = new String[fileAttachments.size()];
+			int i = 0;
+			for(FileAttachment fa:fileAttachments)
+				fileNames[i++] = fa.getFileItem().getName();
+			entryBrief.setFileNames(fileNames);
+		}
 		if(entry.getCreation() != null) {
 			entryBrief.setCreation(toTimestampModel(entry.getCreation()));
 		}
