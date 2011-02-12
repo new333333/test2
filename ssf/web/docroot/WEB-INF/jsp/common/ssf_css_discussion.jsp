@@ -400,10 +400,9 @@ a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_
 	}	
 a.ss_new_thread:hover img {
 /*    background-position:  left -12px; */
-  	outline: dotted 1px gray;
 	}
-a.ss_new_thread:hover {
-  	outline: dotted 1px gray;
+a.ss_new_thread {
+	color: 135c8f;
 	}
 .ss_nowrapFixed {
 	white-space:normal!important;

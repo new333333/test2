@@ -1117,7 +1117,7 @@ div.ss_sliding_table_column1 {
   	background-color: inherit;
 	}
 .ss_sliding_table_column1 * {
-  	color: ${ss_sliding_table_text_color};
+  	color: ${ss_sliding_table_link_color};
   	white-space:nowrap;
   	text-decoration: none;
 	}
@@ -1224,6 +1224,9 @@ table.ss_mouseOverInfo {
 	}
 #ss_folder_table_parent{
 	width:100%;
+	border-top: 1px solid #D2D5D1;
+	border-left: 1px solid #D2D5D1;
+	border-right: 1px solid #D2D5D1;
 	}	
 #ss_fixed_table{
 	border-bottom: 1px solid #BBBBB9;
@@ -1232,11 +1235,11 @@ table.ss_mouseOverInfo {
 	color: #333;
 	}
 .ss_fixed_TD_unread {
-	border-bottom: solid 1px #D2D5D1;
+	border-bottom: 1px solid #D2D5D1;
 	padding: 4px;
 	}
 .ss_fixed_TD{
-	border-bottom: solid 1px #D2D5D1;
+	border-bottom: 1px solid #D2D5D1;
 	font-size: 12px !important;
 	padding: 4px 10px 4px 4px;
 	}
@@ -1279,7 +1282,7 @@ table.ss_mouseOverInfo {
 	padding-right: 10px;
 	}	
 .ss_tableheader_style a, th.ss_sliding_table_row0 a, .ss_title_menu {
-	color: #666666;
+	color: #666666 !important;
 	}
 .ss_title_menu:hover {
 	color: #135c8f;
@@ -1288,6 +1291,14 @@ table.ss_mouseOverInfo {
 	color: #000;
 	font-weight: bold;
 	font-size: 12px;
+	}	
+.ss_col_sorted {
+	color: #000;
+	font-weight: bold;
+	}	
+.ss_col_reg {
+	color: #666;
+	font-weight: normal;
 	}	
 
 
@@ -2799,7 +2810,9 @@ div.ss_cal_todayMarker {
   position: relative;
   width: 100%;
   height: 20px;
-  background-color: ${ss_entry_description_background_color};
+  background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
+  background-position:bottom;
+	
 }
 
 div.ss_cal_gridHeaderText {
@@ -2808,8 +2821,7 @@ div.ss_cal_gridHeaderText {
   font-size: 10px;
   font-family: sans-serif;
   padding-top: 3px;
-  color: #888888;
-
+  color: #666;
 }
 
 div.ss_cal_gridHeaderTextToday {
@@ -3835,7 +3847,6 @@ a.ss_searchButton {
 
 a.ss_searchButton:hover img {
     background-position:  left -16px; 
-  	outline: dotted 1px gray;
 }
 /***  NEW LAYOUT SEARCH BUTTON ***/
 a.ss_searchButton2 img {
@@ -3853,7 +3864,6 @@ a.ss_searchButton2 img, a.ss_searchButton:link img , a.ss_searchButton:focus img
 
 a.ss_searchButton2:hover img {
     background-position:  left -16px; 
-    outline: dotted 1px gray;
 }
 
 a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {

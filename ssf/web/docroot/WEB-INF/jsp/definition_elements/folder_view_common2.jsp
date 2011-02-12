@@ -185,15 +185,20 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  </c:otherwise>
 	</c:choose>	
 	 >
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
-    	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy != '_sortTitle' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
+
     </a>
       
     </ssf:slidingTableColumn>
@@ -227,16 +232,20 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  </c:otherwise>
 	</c:choose>
 	>
-		${ss_colHeaderText}
+	    <c:if test="${ ssFolderSortBy != '_creatorTitle' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    </a>
+   </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -251,7 +260,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['comments']}</c:set>
 	</c:if>
     <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="8%">
-      <div class="ss_title_menu">${ss_colHeaderText}</div>
+      <div class="ss_title_menu ss_col_reg">${ss_colHeaderText}</div>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -281,12 +290,16 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		  </c:otherwise>
 		</c:choose>
 	>
-	    ${ss_colHeaderText}
+	    <c:if test="${ ssFolderSortBy != '_fileSize' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
 			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
@@ -342,15 +355,20 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  </c:otherwise>
 	</c:choose>
 	>
-    	${ss_colHeaderText}
+ 	    <c:if test="${ ssFolderSortBy != '_workflowState' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
+
     </a>
     </ssf:slidingTableColumn>
   </c:if>
@@ -383,15 +401,21 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  </c:otherwise>
 	</c:choose>
 	>
-		${ss_colHeaderText}
+
+ 	    <c:if test="${ ssFolderSortBy != '_lastActivity' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
+
     </a>
     </ssf:slidingTableColumn>
   </c:if>
@@ -458,16 +482,22 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			  </c:otherwise>
 			</c:choose>
 			>
-				${ss_colHeaderText}
-			    <c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'true'}">
-					<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
-					value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
-				</c:if>
-				<c:if test="${ ssFolderSortBy == eleSortName && ssFolderSortDescend == 'false'}">
-					<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
-					value='${ss_colHeaderText}' /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
-				</c:if>
-		    </a>
+
+ 	    <c:if test="${ ssFolderSortBy != 'eleSortName' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == 'eleSortName' && ssFolderSortDescend == 'true'}">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == 'eleSortName' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+		</c:if>
+
+	    </a>
 	    </c:if>
 	  </ssf:slidingTableColumn>
 <%
@@ -502,16 +532,23 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  	</ssf:title>
 	  </c:otherwise>
 	</c:choose>
-	>${ss_colHeaderText}
+	>
+	
+ 	    <c:if test="${ ssFolderSortBy != '_rating' }">
+			<span class="ss_col_reg">${ss_colHeaderText}</span>
+		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" 
+	    <c:if test="${ ssFolderSortBy == '_rating' && ssFolderSortDescend == 'false' }">
+			<span class="ss_col_sorted">${ss_colHeaderText}</span>
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" 
 			value="${ss_colHeaderText}" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
-    </a>
+	
+   </a>
     </ssf:slidingTableColumn>
   </c:if>
 
@@ -740,7 +777,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <%
 	}
 %>
-    </c:if>&nbsp;
+    </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -759,7 +796,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 			    </ssf:url>" title="<ssf:nlt tag="title.open.file.in.html.format" />" 
 			><span <%= seenStyle %>>[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
-    </c:if>&nbsp;
+    </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -781,7 +818,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
-    </c:if>&nbsp;
+    </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -794,7 +831,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		src="<html:imagesPath/>pics/sym_s_caution.gif"
 		<ssf:alt tag="entry.reservedBy"/><ssf:title tag="entry.reservedBy"/>
 	/><% } %>
-    <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+    <span class="ss_nowrap" <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
@@ -1046,7 +1083,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 				</c:forEach>
 			</c:if>
 		</span>
-     </c:if>&nbsp;
+     </c:if>
    </ssf:slidingTableColumn>
  </c:if>
   
