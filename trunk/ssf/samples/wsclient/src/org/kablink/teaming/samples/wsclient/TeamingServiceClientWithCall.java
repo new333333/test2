@@ -76,7 +76,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				}
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "profile_getUsers", new Object[] {null, captive, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
-				wsClient.fetchAndPrintACK("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+				wsClient.fetchAndPrintFEC("TeamingServiceV1", "folder_getEntries", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("getTeamMembers")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "binder_getTeamMembers", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4])});
 			} else if(args[0].equals("getTeams")) {
