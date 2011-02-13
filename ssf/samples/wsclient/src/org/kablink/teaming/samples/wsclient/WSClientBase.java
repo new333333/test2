@@ -62,6 +62,8 @@ import org.kablink.teaming.client.ws.model.FileVersions;
 import org.kablink.teaming.client.ws.model.FolderBrief;
 import org.kablink.teaming.client.ws.model.FolderCollection;
 import org.kablink.teaming.client.ws.model.FolderEntry;
+import org.kablink.teaming.client.ws.model.FolderEntryBrief;
+import org.kablink.teaming.client.ws.model.FolderEntryCollection;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
@@ -392,6 +394,36 @@ public abstract class WSClientBase {
 		printDefinableEntity(entity);
 	}
 
+	void fetchAndPrintFEC(String serviceName, String operation, Object[] args) throws Exception {
+		FolderEntryCollection fec = (FolderEntryCollection) fetch(serviceName, operation, args);
+
+		System.out.println("First: " + fec.getFirst());
+		System.out.println("Total: " + fec.getTotal());
+		FolderEntryBrief[] febs = fec.getEntries();
+		System.out.println("Size: " + febs.length);
+		if(febs != null) {
+			for(FolderEntryBrief feb:febs) {
+				System.out.println();
+				System.out.println("ID: " + feb.getId());
+				System.out.println("Definition ID: " + feb.getDefinitionId());
+				System.out.println("Doc Level: " + feb.getDocLevel());
+				System.out.println("Doc Number: " + feb.getDocNumber());
+				System.out.println("Title: " + feb.getTitle());
+				System.out.println("Href: " + feb.getHref());
+				System.out.println("Permalink: " + feb.getPermaLink());
+				String[] fileNames = feb.getFileNames();
+				if(fileNames != null) {
+					System.out.println("Number of files: " + fileNames.length);
+					for(String fileName:fileNames)
+						System.out.println("    File: " + fileName);
+				}
+				else {
+					System.out.println("No files");
+				}
+			}
+		}
+	}
+
 	void fetchAndPrintDEArray(String serviceName, String operation, Object[] args) throws Exception {
 		Object deArray = fetch(serviceName, operation, args);
 
@@ -462,9 +494,7 @@ public abstract class WSClientBase {
 			else {
 				System.out.println("No attachments field returned");
 			}
-			if(entity instanceof User) {
-				System.out.println("User permaLink: " + ((User)entity).getPermaLink());
-			}
+			System.out.println("PermaLink: " + entity.getPermaLink());
 			if(entity instanceof FolderEntry) {
 				System.out.println("Folder entry href: " + ((FolderEntry)entity).getHref());
 			}
