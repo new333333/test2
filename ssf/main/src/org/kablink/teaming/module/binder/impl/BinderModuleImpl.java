@@ -858,6 +858,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	//Check if this binder is over quota
+	public boolean isBinderDiskHighWaterMarkExceeded(Binder binder) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Long maxQuota = getMaxBinderQuota(binder);
+			Long diskSpaceUsed = getMaxBinderUsed(binder);
+			Integer highWaterMarkPercentage = zoneConf.getDiskQuotasHighwaterPercentage();
+			if (maxQuota != null && diskSpaceUsed != null && 
+					diskSpaceUsed * 100 / highWaterMarkPercentage < diskSpaceUsed) {
+				return true;
+			}
+			return false;
+		} else {
+			return false;
+		}
+	}
+	//Check if this binder is over quota
 	public boolean isBinderDiskQuotaExceeded(Binder binder) {
 		boolean result = isBinderDiskQuotaOk(binder, 0L);
 		return !result;

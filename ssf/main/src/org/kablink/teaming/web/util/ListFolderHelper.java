@@ -2023,9 +2023,10 @@ public class ListFolderHelper {
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry) && 
 				!isAccessible) {
 			qualifiers = new HashMap();
-			if (!folder.isMirrored() && (bs.getProfileModule().isDiskQuotaExceeded() || 
-					!bs.getBinderModule().isBinderDiskQuotaOk((Binder)folder, 0L))) {
+			if (!folder.isMirrored() && bs.getProfileModule().isDiskQuotaExceeded()) {
 				qualifiers.put("onClick", "alert('" + NLT.get("quota.diskQuotaExceeded").replaceAll("'", "''") + "'); return false;");
+			} else if (!folder.isMirrored() && !bs.getBinderModule().isBinderDiskQuotaOk((Binder)folder, 0L)) {
+				qualifiers.put("onClick", "alert('" + NLT.get("quota.diskBinderQuotaExceeded").replaceAll("'", "''") + "'); return false;");
 			} else {
 				String msg = "ss_showFolderAddAttachmentDropbox('" + response.getNamespace() + "', '" + folder.getId() + "','" + Boolean.toString(folder.isLibrary()) + "');";
 				if (bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded() && !folder.isMirrored()) {

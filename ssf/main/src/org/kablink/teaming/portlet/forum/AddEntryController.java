@@ -464,6 +464,7 @@ public class AddEntryController extends SAbstractController {
 			}
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
 			BinderHelper.setupStandardBeans(this, request, response, model, folderId);
+			BinderHelper.setupBinderQuotaBeans(this, request, response, model, folderId);
 			
 			//See if this is an "add entry" or an "add reply" request
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {

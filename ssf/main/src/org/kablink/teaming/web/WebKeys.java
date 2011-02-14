@@ -1105,6 +1105,10 @@ public class WebKeys {
     public static final String BINDER_QUOTA="ss_binderQuota";
     public static final String BINDER_QUOTAS_INITIALIZED="ss_binderQuotasInitialized";
     public static final String BINDER_QUOTAS_ENABLED="ss_binderQuotasEnabled";
+    public static final String BINDER_QUOTAS_EXCEEDED="ss_binderQuotasExceeded";
+    public static final String BINDER_QUOTAS_HIGH_WATER_MARK_EXCEEDED="ss_binderHighWaterMarkExceeded";
+    public static final String BINDER_QUOTAS_MAX_QUOTA="ss_binderMaxQuota";
+    public static final String BINDER_QUOTAS_MAX_USED="ss_binderMaxUsed";
     public static final String BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED="ss_binderQuotasAllowBinderOwnerEnabled";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";

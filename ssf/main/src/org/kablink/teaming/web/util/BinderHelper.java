@@ -438,7 +438,6 @@ public class BinderHelper {
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
 					}
-					model.put(WebKeys.DISK_BINDER_QUOTA_EXCEEDED, bs.getBinderModule().isBinderDiskQuotaExceeded(binder));
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
@@ -513,6 +512,22 @@ public class BinderHelper {
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 	}
+	
+	//Set up the beans needed to warn people of quota issues
+	public static void setupBinderQuotaBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model, Long binderId) {
+		try {
+			Binder binder = bs.getBinderModule().getBinder(binderId);
+			model.put((WebKeys.BINDER_QUOTAS_ENABLED), bs.getAdminModule().isBinderQuotaEnabled());
+			model.put((WebKeys.BINDER_QUOTAS_EXCEEDED), bs.getBinderModule().isBinderDiskQuotaExceeded(binder));
+			model.put((WebKeys.BINDER_QUOTAS_HIGH_WATER_MARK_EXCEEDED), bs.getBinderModule().isBinderDiskHighWaterMarkExceeded(binder));
+			model.put((WebKeys.BINDER_QUOTAS_MAX_QUOTA), bs.getBinderModule().getMaxBinderQuota(binder));
+			model.put((WebKeys.BINDER_QUOTAS_MAX_USED), bs.getBinderModule().getMaxBinderUsed(binder));
+		} catch(Exception e) {
+			//We don't really need these beans, so if there is any problem just exit
+		}
+	}
+	
 	public static Document getSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties) {
 		convertV1Filters(bs, userFolderProperties);  //make sure converted
 		//Determine the Search Filter
