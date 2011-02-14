@@ -45,6 +45,8 @@ import org.dom4j.Element;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -185,6 +187,19 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			if (element.isRootElement()) {
 				//save identifier of tree helper to use on ajax callbacks
 				element.addAttribute("treeKey", helper.getTreeNameKey());
+			}
+			String family = DefinitionUtils.getFamily(binder.getEntryDefDoc());
+			if(Validator.isNotNull(family)) {
+				element.addAttribute("family", family);
+			}
+			String path = binder.getPathName();
+			if(Validator.isNotNull(path)) {
+				element.addAttribute("path", path);
+			}
+			if(binder.isLibrary()) {
+				if(Validator.isNotNull(path)) {
+					element.addAttribute("webdav", SsfsUtil.getLibraryBinderUrl(binder));
+				}
 			}
 			if ((type == DomTreeBuilder.TYPE_WORKSPACE)) {
 				Workspace ws = (Workspace)source;
