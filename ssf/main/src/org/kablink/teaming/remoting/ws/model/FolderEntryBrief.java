@@ -45,6 +45,8 @@ public class FolderEntryBrief implements Serializable {
 	private String href;
 	private Timestamp creation;
 	private Timestamp modification;
+    private String permaLink;
+    private String[] fileNames;
 
 	public Long getBinderId() {
 		return binderId;
@@ -99,6 +101,18 @@ public class FolderEntryBrief implements Serializable {
 	}
 	public void setModification(Timestamp modification) {
 		this.modification = modification;
+	}
+	public String getPermaLink() {
+		return permaLink;
+	}
+	public void setPermaLink(String permaLink) {
+		this.permaLink = permaLink;
+	}
+	public String[] getFileNames() {
+		return fileNames;
+	}
+	public void setFileNames(String[] fileNames) {
+		this.fileNames = fileNames;
 	}
 	
 }

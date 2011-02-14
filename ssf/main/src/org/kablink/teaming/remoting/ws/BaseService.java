@@ -91,7 +91,6 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.web.multipart.MultipartFile;
 
-
 public class BaseService extends AbstractAllModulesInjected implements ElementBuilder.BuilderContext {
 
 	protected AttachmentHandler attachmentHandler = new AttachmentHandler();
@@ -337,9 +336,6 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		userModel.setZonName(user.getZonName());
 		userModel.setWorkspaceId(user.getWorkspaceId());
 		
-		String permaLink = PermaLinkUtil.getPermalink(userModel.getId(), EntityIdentifier.EntityType.user, Boolean.FALSE);
-		userModel.setPermaLink(permaLink);
-
 		Locale locale = user.getLocale();
 		if(locale != null) {
 			userModel.setLocaleLanguage(locale.getLanguage());
@@ -383,6 +379,9 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 		// Handle definable fields
 		fillDefinableEntityModelDefinable(entityModel, entity);
+		
+		// Set permalink
+		entityModel.setPermaLink(PermaLinkUtil.getPermalink(entity));
 	}
 	
 	protected void fillDefinableEntityModelStatic(org.kablink.teaming.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
@@ -490,6 +489,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setDocNumber(entry.getDocNumber());
 		entryBrief.setDocLevel(entry.getDocLevel());
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL(entry));
+		entryBrief.setPermaLink(PermaLinkUtil.getPermalink(entry));
+		Set<FileAttachment> fileAttachments = entry.getFileAttachments();
+		if(fileAttachments.size() > 0) {
+			String[] fileNames = new String[fileAttachments.size()];
+			int i = 0;
+			for(FileAttachment fa:fileAttachments)
+				fileNames[i++] = fa.getFileItem().getName();
+			entryBrief.setFileNames(fileNames);
+		}
 		if(entry.getCreation() != null) {
 			entryBrief.setCreation(toTimestampModel(entry.getCreation()));
 		}
@@ -509,6 +517,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setDocLevel((new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL((String) entry.get(Constants.BINDER_ID_FIELD),
 					(String) entry.get(Constants.DOCID_FIELD)));
+		entryBrief.setPermaLink(PermaLinkUtil.getPermalink
+				(Long.valueOf((String) entry.get(Constants.DOCID_FIELD)), 
+						EntityIdentifier.EntityType.valueOf((String) entry.get(Constants.ENTITY_FIELD))));
+		entryBrief.setFileNames(getValueAsStringArray(entry.get(Constants.FILENAME_FIELD)));
 		
 		UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.CREATORID_FIELD)));
 		UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) entry.get(Constants.MODIFICATIONID_FIELD)));
@@ -525,11 +537,32 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 	
 	private String getValueAsString(Object value) {
-		if(value instanceof String) {
+		if(value == null) {
+			return null;
+		}
+		else if(value instanceof String) {
 			return (String) value;
 		}
 		else if(value instanceof SearchFieldResult) {
 			return ((SearchFieldResult) value).getValueString();
+		}
+		else {
+			return null;
+		}
+	}
+	
+	private String[] getValueAsStringArray(Object value) {
+		if(value == null) {
+			return null;
+		}
+		else if(value instanceof String) {
+			if(!value.equals(""))
+				return new String[] {(String) value};
+			else
+				return null;
+		}
+		else if(value instanceof SearchFieldResult) {
+			return ((SearchFieldResult) value).getValueSet().toArray(new String[0]);
 		}
 		else {
 			return null;

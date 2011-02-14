@@ -52,7 +52,6 @@ public class User extends Principal implements Serializable {
 	private Long diskSpaceUsed;
 	private Long maxGroupsQuota;
 	private Long workspaceId;
-	private String permaLink;
 	
 	public String getFirstName() {
 		return firstName;
@@ -158,12 +157,6 @@ public class User extends Principal implements Serializable {
 	}
 	public Long getWorkspaceId() {
 		return workspaceId;
-	}
-	public String getPermaLink() {
-		return permaLink;
-	}
-	public void setPermaLink(String permaLink) {
-		this.permaLink = permaLink;
 	}
 
 }
