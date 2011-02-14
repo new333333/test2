@@ -90,6 +90,8 @@ import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -128,6 +130,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -160,8 +163,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		this.definitionModule = definitionModule;
 	}
 	
+	private BinderModule binderModule;
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
+	protected BinderModule getBinderModule() {
+		if (binderModule != null) return binderModule;
+		binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
+		return binderModule;
+	}
+	
 	private WorkflowModule workflowModule;
-    
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
 	}
@@ -1015,6 +1027,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (destination.getBinderKey().getSortKey().startsWith(source.getBinderKey().getSortKey())) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     	}
+    	//Check to make sure the target binder has quota enough for this
+    	if (checkMoveBinderQuota(source, destination)) {
+    		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
+    	}
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	moveBinder_setCtx(source, destination, ctx);
@@ -1026,6 +1042,28 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		moveBinder_index(source, ctx);
 
     }
+    
+    //Check to see if destination folder has enough quota
+    public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	Long maxQuota = getBinderModule().getMaxBinderQuota(destination);
+    	Long maxUsed = getBinderModule().getMaxBinderUsed(destination);
+    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
+    	if (maxQuota != null && maxQuota - (maxUsed + sourceBinderQuota.getDiskSpaceUsedCumulative()) < 0L) {
+    		//There is not enough quota in the destination. See if this is a parent binder of the source
+    		Binder parentBinder = source;
+    		while (parentBinder != null) {
+    			if (parentBinder.equals(destination)) {
+    				//This binder is an ancestor, so the quota is not going to change
+    				return true;
+    			}
+    		}
+    		//Destination does not have the quota for this move.
+    		return false;
+    	}
+    	return true;
+    }
+    
     //inside write transaction    
     protected void moveBinder_setCtx(Binder source, Binder destination, Map ctx) {
     }
@@ -1181,6 +1219,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	if (ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()))
          		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+    	//Check to make sure the target binder has quota enough for this
+    	if (checkMoveBinderQuota(source, destination)) {
+    		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
+    	}
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
     	copyBinder_setCtx(source, destination, ctx);
