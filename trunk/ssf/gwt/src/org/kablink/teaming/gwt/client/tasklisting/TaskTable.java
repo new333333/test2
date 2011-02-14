@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -2319,16 +2320,33 @@ public class TaskTable extends Composite implements ActionHandler {
 				m_dueDateBusy.setResource(m_images.spacer());
 				if ((null != updatedTaskInfo) && (!(updatedTaskInfo.isEmpty()))) {
 					// Yes!  Scan them...
+					Date now = new Date();
+					long nowMS = now.getTime();
 					for (Long entryId:  updatedTaskInfo.keySet()) {
 						// ...storing their new logical end dates...
+						TaskDate     dueDate = updatedTaskInfo.get(entryId);
 						TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, entryId);
-						task.getTask().getEvent().setLogicalEnd(updatedTaskInfo.get(entryId));
+						TaskInfo     ti = task.getTask();
+						ti.getEvent().setLogicalEnd(dueDate);
 						
-						// ...and redisplaying the task's due date.
+						// ...if the task's overdue state changed... 
+						long dueMS = (((null == dueDate) || (!(GwtClientHelper.hasString(dueDate.getDateDisplay())))) ? Long.MAX_VALUE : dueDate.getDate().getTime()); 
+						boolean overdue = (nowMS > dueMS);
+						if (overdue != ti.getOverdue()) {
+							// ...track that and redisplay the name...
+							ti.setOverdue(overdue);
+							renderColumnTaskName(
+								task,
+								getUIData(task).getTaskRow(),
+								getColumnIndex(Column.NAME));
+						}
+						
+						// ...and redisplay the task's due date.
 						renderColumnDueDate(
 							task,
 							getUIData(task).getTaskRow(),
 							getColumnIndex(Column.DUE_DATE));
+
 					}
 				}
 			}
