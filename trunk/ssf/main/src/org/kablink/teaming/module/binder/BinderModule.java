@@ -222,6 +222,11 @@ public interface BinderModule {
 	 * Check if the binder quota has been exceeded
 	 * @param binder
 	 */
+	public boolean isBinderDiskHighWaterMarkExceeded(Binder binder);
+	/**
+	 * Check if the binder quota has been exceeded
+	 * @param binder
+	 */
 	public boolean isBinderDiskQuotaExceeded(Binder binder);
 	/**
 	 * Check if adding a file would exceed the binder quota

@@ -48,12 +48,22 @@
 </c:if>
 <c:set var="ss_quotaMessage" value="" />
 <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
+    <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
 	    ><fmt:formatNumber value="${(ss_diskQuotaUserMaximum - ssUser.diskSpaceUsed)/1048576}" 
 	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
 </c:if>
 <c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-<c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+    <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
+</c:if>
+<c:if test="${ss_binderQuotasEnabled && empty ss_quotaMessage && 
+		ss_binderHighWaterMarkExceeded && !ss_binderQuotasExceeded && !ss_isBinderMirroredFolder}">
+    <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.binder.nearLimit"><ssf:param name="value" useBody="true"
+	    ><fmt:formatNumber value="${(ss_binderMaxQuota - ss_binderMaxUsed)/1048576}" 
+	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+</c:if>
+<c:if test="${ss_binderQuotasEnabled && empty ss_quotaMessage && 
+		ss_binderQuotasExceeded && !ss_isBinderMirroredFolder}">
+    <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskBinderQuotaExceeded"/></c:set>
 </c:if>
 <script type="text/javascript">
 function ss_showMoreFiles${property_name}() {
