@@ -34,11 +34,13 @@ package org.kablink.teaming.remoting.ws.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -219,6 +221,15 @@ public class TrashBrief implements Serializable {
 		feb.setDocNumber(fe.getDocNumber());
 		feb.setDocLevel(fe.getDocLevel());
 		feb.setHref(WebUrlUtil.getEntryViewURL(fe));
+		feb.setPermaLink(PermaLinkUtil.getPermalink(fe));
+		Set<FileAttachment> fileAttachments = fe.getFileAttachments();
+		if(fileAttachments.size() > 0) {
+			String[] fileNames = new String[fileAttachments.size()];
+			int i = 0;
+			for(FileAttachment fa:fileAttachments)
+				fileNames[i++] = fa.getFileItem().getName();
+			feb.setFileNames(fileNames);
+		}
 		if(null != fe.getCreation()) {
 			feb.setCreation(getTimestampFromHistory(fe.getCreation()));
 		}
