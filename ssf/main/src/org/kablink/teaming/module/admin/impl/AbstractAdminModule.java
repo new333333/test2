@@ -419,7 +419,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
     public boolean isBinderQuotaEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.isBinderQuotaEnabled(); 		
+  		if (zoneConfig.isBinderQuotaInitialized()) {
+  			return zoneConfig.isBinderQuotaEnabled(); 		
+  		} else {
+  			return false;
+  		}
     }
     public boolean isBinderQuotaAllowBinderOwnerEnabled() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());

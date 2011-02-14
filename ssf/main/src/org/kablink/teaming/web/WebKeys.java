@@ -789,6 +789,7 @@ public class WebKeys {
     public static final String ACTIVE_USER_ACCOUNTS="ss_activeUserAccounts";
     public static final String DISABLED_USER_ACCOUNTS="ss_disabledUserAccounts";
     public static final String DISKQUOTA="diskQuota";
+    public static final String DISK_BINDER_QUOTA_EXCEEDED="ss_diskBinderQuotaExceeded";
     public static final String DISK_QUOTA_EXCEEDED="ss_diskQuotaExceeded";
     public static final String DISK_QUOTA_HIGH_WATER_MARK_EXCEEDED="ss_diskQuotaHighWaterMarkExceeded";
     public static final String DISK_QUOTA_USER_MAXIMUM="ss_diskQuotaUserMaximum";
@@ -1096,6 +1097,7 @@ public class WebKeys {
     public static final String PROFILES_BINDER_ID="ssProfilesBinderId";
     public static final String PROPERTY_ID="ssPropertyId";
     public static final String QUOTAS_ENABLED="ss_quotasEnabled";
+    public static final String QUOTAS_BINDER_ENABLED="ss_quotasBinderEnabled";
     public static final String QUOTAS_DEFAULT="ss_quotasDefault";
     public static final String QUOTAS_GROUPS="ss_quotasGroups";
     public static final String QUOTAS_USERS="ss_quotasUsers";
