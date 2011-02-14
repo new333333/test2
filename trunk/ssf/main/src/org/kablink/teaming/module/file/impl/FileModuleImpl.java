@@ -65,11 +65,13 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
@@ -86,6 +88,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.lucene.Hits;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ContentFilter;
@@ -965,6 +968,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					RequestContextHolder.getRequestContext().getZoneName());
 			user.decrementDiskSpaceUsed(va.getFileItem().getLength());
    		}
+   		if (zoneConf.isBinderQuotaInitialized()) {
+   			//Once the binder quotas have been initialized, we must keep track of the space used
+   			//Decrement the space used all the way up the parent tree.
+   			getBinderModule().decrementDiskSpaceUsed(binder, va.getFileItem().getLength());
+   		}
 
    		// Update the metadata
 		entity.incrLogVersion();
@@ -1222,6 +1230,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    					// Nothing to do here.  This means that we are deleting a file
    					// that is in a deleted user's workspace.
    				}
+   			}
+   		}
+   		if (zoneConf.isBinderQuotaInitialized()) {
+   			//Once the binder quotas have been initialized, we must keep track of the space used
+   			for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+   				VersionAttachment v = (VersionAttachment) i.next();
+   				if (v.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) break;
+   				
+   				//Decrement the space used all the way up the parent tree.
+   				getBinderModule().decrementDiskSpaceUsed(binder, v.getFileItem().getLength());
    			}
    		}
    		
@@ -1586,9 +1604,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	// Check data quota
 		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
+			Long fileSize = fui.makeReentrant();
 			checkQuota(RequestContextHolder.getRequestContext().getUser(),
-					fui.makeReentrant(),
+					fileSize,
 					fui.getOriginalFilename());
+
+			//Check that the binder and its parents aren't over quota
+			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
 		}
     	
     	String versionName = null;
@@ -1785,9 +1807,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// Since we are creating a new file, file locking doesn't concern us.
 		
 		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
+			//Check that the user is not over the user quota
+			Long fileSize = fui.makeReentrant();
 			checkQuota(RequestContextHolder.getRequestContext().getUser(),
-					fui.makeReentrant(),
+					fileSize,
 					fui.getOriginalFilename());
+			
+			//Check that the binder and its parents aren't over quota
+			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
 		}
 				
 		FileAttachment fAtt = createFileAttachment(entry, fui);
@@ -1847,6 +1874,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				if ((userQuota < user.getDiskSpaceUsed()))
 					throw new DataQuotaException("quota.exceeded.error.message", new Object[]{fileName});
 			}
+		}
+	}
+	
+	private void checkBinderQuota(Binder binder, Long fileSize, String fileName) 
+			throws DataQuotaException {
+		if (!getBinderModule().isBinderDiskQuotaOk(binder, fileSize)) {
+			//Adding this file would cause the quota to be exceeded
+			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{fileName});
 		}
 	}
 	
@@ -2285,6 +2320,16 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         		User user = (User) up;
         		user.incrementDiskSpaceUsed(fAtt.getFileItem().getLength());
     		}
+    	} 	
+    	if (zoneConf.isBinderQuotaInitialized() && !fAtt.getRepositoryName().equalsIgnoreCase(ObjectKeys.FI_ADAPTER)) {
+        	DefinableEntity entity = fAtt.getOwner().getEntity();
+        	Binder binder;
+        	if (entity instanceof Entry) {
+        		binder = ((Entry)entity).getParentBinder();
+        	} else {
+        		binder = (Binder) entity;
+        	}
+    		getBinderModule().incrementDiskSpaceUsed(binder, fAtt.getFileItem().getLength());
     	} 	
     }
     

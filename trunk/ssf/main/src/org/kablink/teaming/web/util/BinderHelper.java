@@ -438,6 +438,7 @@ public class BinderHelper {
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(binder, BinderOperation.viewBinderTitle));
 					}
+					model.put(WebKeys.DISK_BINDER_QUOTA_EXCEEDED, bs.getBinderModule().isBinderDiskQuotaExceeded(binder));
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
@@ -501,6 +502,7 @@ public class BinderHelper {
 		}
 
 		model.put(WebKeys.QUOTAS_ENABLED, bs.getAdminModule().isQuotaEnabled());
+		model.put(WebKeys.QUOTAS_BINDER_ENABLED, bs.getAdminModule().isBinderQuotaEnabled());
 		model.put(WebKeys.DISK_QUOTA_EXCEEDED, bs.getProfileModule().isDiskQuotaExceeded());
 		model.put(WebKeys.DISK_QUOTA_HIGH_WATER_MARK_EXCEEDED, bs.getProfileModule().isDiskQuotaHighWaterMarkExceeded());
 		model.put(WebKeys.DISK_QUOTA_USER_MAXIMUM, bs.getProfileModule().getMaxUserQuota());

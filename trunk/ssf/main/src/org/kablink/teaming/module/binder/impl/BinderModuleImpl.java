@@ -75,6 +75,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -87,6 +88,7 @@ import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -110,6 +112,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.Hits;
@@ -851,6 +854,134 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        	processor.indexBinder(binder, true);
 		        }
 			}
+		}
+	}
+
+	//Check if this binder is over quota
+	public boolean isBinderDiskQuotaExceeded(Binder binder) {
+		boolean result = isBinderDiskQuotaOk(binder, 0L);
+		return !result;
+	}
+	//Check if adding a file would exceed the quota
+	public boolean isBinderDiskQuotaOk(Binder binder, long fileSize) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+				if (binderQuota.getDiskQuota() != null) {
+					Long quota = binderQuota.getDiskQuota();
+					Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+					if (diskSpaceUsedCumulative + fileSize > quota) {
+						//This will exceed the quota
+						return false;
+					}
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+		}
+		return true;
+	}
+	
+	//Get the most that this binder will allow for disk usage
+	public Long getMaxBinderQuota(Binder binder) {
+		Long lowestQuota = null;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+				if (binderQuota.getDiskQuota() != null) {
+					Long quota = binderQuota.getDiskQuota();
+					if (lowestQuota == null || quota < lowestQuota) {
+						//A new low
+						lowestQuota = quota;
+					}
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+		}
+		return lowestQuota;
+	}
+	
+	//Get the cumulative spaced used in the binder with the lowest quota
+	public Long getMaxBinderUsed(Binder binder) {
+		Long lowestQuota = null;
+		Long lowestCumulativeDiskSpaceUsed = null;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+				if (binderQuota.getDiskQuota() != null) {
+					Long quota = binderQuota.getDiskQuota();
+					Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+					if (lowestQuota == null || quota < lowestQuota) {
+						//A new low
+						lowestQuota = quota;
+						lowestCumulativeDiskSpaceUsed = diskSpaceUsedCumulative;
+					}
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+		}
+		return lowestCumulativeDiskSpaceUsed;
+	}
+	
+	//Increment the disk space used in this binder. Update the cumulative counts in the parent binders
+	public void incrementDiskSpaceUsed(Binder binder, long fileSize) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		try {
+			BinderQuota bq = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+			Long diskSpaceUsed = bq.getDiskSpaceUsed();
+			diskSpaceUsed += fileSize;
+			bq.setDiskSpaceUsed(diskSpaceUsed);
+		} catch(Exception e) {
+			//Oops, not there. This will have to be cleaned up with a "validate" command
+			return;
+		}
+		Binder parentBinder = binder;
+		while (parentBinder != null) {
+			try {
+				BinderQuota bq = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+				Long diskSpaceUsedCumulative = bq.getDiskSpaceUsedCumulative();
+				diskSpaceUsedCumulative += fileSize;
+				bq.setDiskSpaceUsedCumulative(diskSpaceUsedCumulative);
+			} catch(Exception e) {
+				//Oops, not there. This will have to be cleaned up with a "validate" command
+				break;
+			}
+			parentBinder = parentBinder.getParentBinder();
+		}
+	}
+
+	//Decrement the disk space used in this binder. Update the cumulative counts in the parent binders
+	public void decrementDiskSpaceUsed(Binder binder, long fileSize) {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		try {
+			BinderQuota bq = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+			Long diskSpaceUsed = bq.getDiskSpaceUsed();
+			diskSpaceUsed -= fileSize;
+			bq.setDiskSpaceUsed(diskSpaceUsed);
+		} catch(Exception e) {
+			//Oops, not there. This will have to be cleaned up with a "validate" command
+			return;
+		}
+		Binder parentBinder = binder;
+		while (parentBinder != null) {
+			try {
+				BinderQuota bq = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+				Long diskSpaceUsedCumulative = bq.getDiskSpaceUsedCumulative();
+				diskSpaceUsedCumulative -= fileSize;
+				bq.setDiskSpaceUsedCumulative(diskSpaceUsedCumulative);
+			} catch(Exception e) {
+				//Oops, not there. This will have to be cleaned up with a "validate" command
+				break;
+			}
+			parentBinder = parentBinder.getParentBinder();
 		}
 	}
 

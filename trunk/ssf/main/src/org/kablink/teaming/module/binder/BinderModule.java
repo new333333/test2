@@ -219,6 +219,40 @@ public interface BinderModule {
 	public void deleteBinderFinish();
 		
 	/**
+	 * Check if the binder quota has been exceeded
+	 * @param binder
+	 */
+	public boolean isBinderDiskQuotaExceeded(Binder binder);
+	/**
+	 * Check if adding a file would exceed the binder quota
+	 * @param binder
+	 * @param file size
+	 */
+	public boolean isBinderDiskQuotaOk(Binder binder, long fileSize);
+	/**
+	 * Get the quota allowed for this binder (or any parent)
+	 * @param binder
+	 */
+	public Long getMaxBinderQuota(Binder binder);
+	/**
+	 * Get the cumulative used on the binder or parent binder with the lowest quota
+	 * @param binder
+	 */
+	public Long getMaxBinderUsed(Binder binder);
+	/**
+	 * Increment the disk space used in a binder
+	 * @param binder
+	 * @param file size
+	 */
+	public void incrementDiskSpaceUsed(Binder binder, long fileSize);
+	/**
+	 * Decrement the disk space used in a binder
+	 * @param binder
+	 * @param file size
+	 */
+	public void decrementDiskSpaceUsed(Binder binder, long fileSize);
+
+	/**
 	 * Delete a tag on a binder
 	 * @param binderId
 	 * @param tagId
