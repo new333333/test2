@@ -191,6 +191,8 @@ public class ModifyBinderController extends AbstractBinderController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+		BinderHelper.setupBinderQuotaBeans(this, request, response, model, binderId);
+		
 		if (op.equals(WebKeys.OPERATION_MOVE) || op.equals(WebKeys.OPERATION_COPY)) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);

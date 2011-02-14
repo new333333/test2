@@ -325,6 +325,8 @@ public class ModifyEntryController extends SAbstractController {
 
 		Map model = new HashMap();	
 		BinderHelper.setupStandardBeans(this, request, response, model, folderId);
+		BinderHelper.setupBinderQuotaBeans(this, request, response, model, folderId);
+		
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

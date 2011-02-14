@@ -886,7 +886,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
 			Binder parentBinder = binder;
 			while (parentBinder != null) {
-				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
 				if (binderQuota.getDiskQuota() != null) {
 					Long quota = binderQuota.getDiskQuota();
 					Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
