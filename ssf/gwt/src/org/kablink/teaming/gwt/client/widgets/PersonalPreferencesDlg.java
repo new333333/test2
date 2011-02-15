@@ -359,7 +359,7 @@ public class PersonalPreferencesDlg extends DlgBox
         int keyCode;
 
         // Get the key the user pressed
-        keyCode = event.getCharCode();
+        keyCode = event.getNativeEvent().getKeyCode();
         
         if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
             && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)

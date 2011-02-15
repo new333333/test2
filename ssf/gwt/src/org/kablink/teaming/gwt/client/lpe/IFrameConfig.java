@@ -65,7 +65,6 @@ public class IFrameConfig extends ConfigItem
 			{
 				String[] results2;
 				
-			//!!! Finish
 				results2 = ConfigData.splitConfigItem( results[i] );
 				if ( results2 != null && results2.length == 2 && results2[0] != null && results2[1] != null && results2[1].length() > 0 )
 				{
@@ -73,6 +72,20 @@ public class IFrameConfig extends ConfigItem
 					{
 						if ( results2[0].equalsIgnoreCase( "url" ) )
 							m_properties.setUrl( URL.decodeComponent( results2[1] ) );
+						else if ( results2[0].equalsIgnoreCase( "name" ) )
+							m_properties.setName( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "height" ) )
+							m_properties.setHeight( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "width" ) )
+							m_properties.setWidth( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "marginHeight" ) )
+							m_properties.setMarginHeight( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "marginWidth" ) )
+							m_properties.setMarginWidth( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "frameBorder" ) )
+							m_properties.setShowBorder( results2[1] );
+						else if ( results2[0].equalsIgnoreCase( "scrolling" ) )
+							m_properties.setScrollbarValue( results2[1] );
 					}
 					catch (Exception ex)
 					{

@@ -32,34 +32,76 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<% //Mashup html view %>
+<% //Mashup iFrame view %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%  
 	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
 	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
 	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
-	ss_mashupTableItemCount.put(ss_mashupTableNumber, "html");  
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "iframe");  
 	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
 
 	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
 %>
-
 <% if (ss_mashupListDepth > 0) { %>
-	<c:if test="${!empty mashup_attributes['data']}">
-		<li>
-	</c:if>
+	<li>
 <% } %>
 
 <c:if test="${ssConfigJspStyle != 'form'}">
 	<div class="ss_mashup_url_content">
-		<c:if test="${!empty mashup_attributes['data']}">
-	    	${mashup_attributes['data']}
-	  	</c:if>
+		<c:set var="url" value="" />
+		<c:if test="${!empty mashup_attributes['url']}">
+			<c:set var="url" value="${mashup_attributes['url']}" />
+		</c:if>
+		
+		<c:set var="frameBorder" value="0" />
+		<c:if test="${!empty mashup_attributes['frameBorder']}">
+			<c:set var="frameBorder" value="${mashup_attributes['frameBorder']}" />
+		</c:if>
+		
+		<c:set var="height" value="200" />
+		<c:if test="${!empty mashup_attributes['height']}">
+			<c:set var="height" value="${mashup_attributes['height']}" />
+		</c:if>
+		
+		<c:set var="marginHeight" value="0" />
+		<c:if test="${!empty mashup_attributes['marginHeight']}">
+			<c:set var="marginHeight" value="${mashup_attributes['marginHeight']}" />
+		</c:if>
+		
+		<c:set var="marginWidth" value="0" />
+		<c:if test="${!empty mashup_attributes['marginWidth']}">
+			<c:set var="marginWidth" value="${mashup_attributes['marginWidth']}" />
+		</c:if>
+		
+		<c:set var="name" value="" />
+		<c:if test="${!empty mashup_attributes['name']}">
+			<c:set var="name" value="${mashup_attributes['name']}" />
+		</c:if>
+		
+		<c:set var="scrolling" value="" />
+		<c:if test="${!empty mashup_attributes['scrolling']}">
+			<c:set var="scrolling" value="scrolling='${mashup_attributes['scrolling']}'" />
+		</c:if>
+		
+		<c:set var="width" value="400" />
+		<c:if test="${!empty mashup_attributes['width']}">
+			<c:set var="width" value="${mashup_attributes['width']}" />
+		</c:if>
+		
+		<iframe src="${url}" 
+				frameborder="${frameBorder}"
+				height="${height}"
+				marginheight="${marginHeight}"
+				marginwidth="${marginWidth}"
+				name="${name}"
+				${scrolling}
+				width="${width}">
+		</iframe>
 	</div>
 </c:if>
 
 <% if (ss_mashupListDepth > 0) { %>
-	<c:if test="${!empty mashup_attributes['data']}">
-		</li>
-	</c:if>
+	</li>
 <% } %>

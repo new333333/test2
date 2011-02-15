@@ -44,14 +44,21 @@ import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 public class IFrameProperties
 	implements PropertiesObj
 {
+	public enum ScrollbarValue
+	{
+		ALWAYS,
+		NEVER,
+		AUTO
+	}
+	
 	private String m_url;
 	private String m_name;
 	private int m_height;
 	private int m_width;
-	private int m_borderWidth;
 	private int m_marginHeight;
 	private int m_marginWidth;
-	private boolean m_haveScrollbars;
+	private boolean m_showBorder;
+	private ScrollbarValue m_scrollbarValue;
 	
 	/**
 	 * 
@@ -60,12 +67,12 @@ public class IFrameProperties
 	{
 		m_url = null;
 		m_name = "";
-		m_height = 0;
-		m_width = 0;
-		m_borderWidth = 0;
+		m_height = 200;
+		m_width = 400;
+		m_showBorder = false;
 		m_marginHeight = 0;
 		m_marginWidth = 0;
-		m_haveScrollbars = false;
+		m_scrollbarValue = ScrollbarValue.AUTO;
 	}
 	
 	
@@ -83,10 +90,10 @@ public class IFrameProperties
 			setName( iframeProps.getName() );
 			setHeight( iframeProps.getHeight() );
 			setWidth( iframeProps.getWidth() );
-			setBorderWidth( iframeProps.getBorderWidth() );
+			setShowBorder( iframeProps.getShowBorder() );
 			setMarginHeight( iframeProps.getMarginHeight() );
 			setMarginWidth( iframeProps.getMarginWidth() );
-			setHasScrollbars( iframeProps.getHasScrollbars() );
+			setScrollbarValue( iframeProps.getScrollbarValue() );
 		}
 	}
 	
@@ -98,11 +105,29 @@ public class IFrameProperties
 	{
 		String str;
 		
-		//!!! Finish
 		// The string should look like: "iframe,url=;"
 		str = "iframe,url=";
 		if ( m_url != null )
 			str += ConfigData.encodeConfigData( m_url );
+		
+		if ( m_name != null )
+			str += ",name=" + m_name;
+		
+		str += ",height=" + String.valueOf( m_height );
+		str += ",width=" + String.valueOf( m_width );
+		str += ",marginHeight=" + String.valueOf( m_marginHeight );
+		str += ",marginWidth=" + String.valueOf( m_marginWidth );
+		
+		str += ",frameBorder=";
+		if ( m_showBorder )
+			str += "1";
+		else
+			str += "0";
+		
+		if ( m_scrollbarValue == ScrollbarValue.ALWAYS )
+			str += ",scrolling=yes";
+		else if ( m_scrollbarValue == ScrollbarValue.NEVER )
+			str += ",scrolling=no";
 		
 		str += ";";
 
@@ -113,25 +138,17 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
-	public int getBorderWidth()
-	{
-		return m_borderWidth;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getHasScrollbars()
-	{
-		return m_haveScrollbars;
-	}
-	
-	/**
-	 * 
-	 */
 	public int getHeight()
 	{
 		return m_height;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getHeightAsString()
+	{
+		return String.valueOf( m_height );
 	}
 	
 	/**
@@ -145,9 +162,25 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
+	public String getMarginHeigthAsString()
+	{
+		return String.valueOf( m_marginHeight );
+	}
+	
+	/**
+	 * 
+	 */
 	public int getMarginWidth()
 	{
 		return m_marginWidth;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getMarginWidthAsString()
+	{
+		return String.valueOf( m_marginWidth );
 	}
 	
 	/**
@@ -158,6 +191,36 @@ public class IFrameProperties
 		return m_name;
 	}
 	
+	
+	/**
+	 * 
+	 */
+	public ScrollbarValue getScrollbarValue()
+	{
+		return m_scrollbarValue;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getScrollbarValueAsString()
+	{
+		if ( m_scrollbarValue == ScrollbarValue.ALWAYS )
+			return "yes";
+		
+		if ( m_scrollbarValue == ScrollbarValue.NEVER )
+			return "no";
+		
+		return "auto";
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getShowBorder()
+	{
+		return m_showBorder;
+	}
 	
 	/**
 	 * 
@@ -179,17 +242,9 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
-	public void setBorderWidth( int width )
+	public String getWidthAsString()
 	{
-		m_borderWidth = width;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHasScrollbars( boolean hasScrollbars )
-	{
-		m_haveScrollbars = hasScrollbars;
+		return String.valueOf( m_width );
 	}
 	
 	/**
@@ -203,6 +258,21 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
+	public void setHeight( String height )
+	{
+		try
+		{
+			setHeight( Integer.parseInt( height ) );
+		}
+		catch (Exception ex)
+		{
+			setHeight( 200 );
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	public void setMarginHeight( int height )
 	{
 		m_marginHeight = height;
@@ -211,9 +281,39 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
+	public void setMarginHeight( String height )
+	{
+		try
+		{
+			setMarginHeight( Integer.parseInt( height ) );
+		}
+		catch (Exception ex)
+		{
+			setMarginHeight( 0 );
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	public void setMarginWidth( int width )
 	{
 		m_marginWidth = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setMarginWidth( String width )
+	{
+		try
+		{
+			setMarginWidth( Integer.parseInt( width ) );
+		}
+		catch ( Exception ex )
+		{
+			setMarginWidth( 0 );
+		}
 	}
 	
 	/**
@@ -231,6 +331,53 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
+	public void setScrollbarValue( ScrollbarValue scrollbarValue )
+	{
+		m_scrollbarValue = scrollbarValue;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setScrollbarValue( String scrollbarValue )
+	{
+		ScrollbarValue value;
+		
+		value = ScrollbarValue.AUTO;
+		
+		if ( scrollbarValue != null )
+		{
+			if ( scrollbarValue.equalsIgnoreCase( "yes" ) )
+				value = ScrollbarValue.ALWAYS;
+			else if ( scrollbarValue.equalsIgnoreCase( "no" ) )
+				value = ScrollbarValue.NEVER;
+		}
+		
+		setScrollbarValue( value );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShowBorder( boolean showBorder )
+	{
+		m_showBorder = showBorder;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setShowBorder( String showBorder )
+	{
+		if ( showBorder != null && showBorder.equalsIgnoreCase( "1" ) )
+			setShowBorder( true );
+		else
+			setShowBorder( false );
+	}
+	
+	/**
+	 * 
+	 */
 	public void setUrl( String url )
 	{
 		m_url = url;
@@ -243,6 +390,21 @@ public class IFrameProperties
 	public void setWidth( int width )
 	{
 		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidth( String width )
+	{
+		try
+		{
+			setWidth( Integer.parseInt( width ) );
+		}
+		catch ( Exception ex )
+		{
+			setWidth( 400 );
+		}
 	}
 	
 }

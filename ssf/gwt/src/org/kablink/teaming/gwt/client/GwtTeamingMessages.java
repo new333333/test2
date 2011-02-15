@@ -174,8 +174,20 @@ public interface GwtTeamingMessages extends Messages
 	String tableProperties();
 	
 	// String used in the "IFrame" widget properties dialog.
+	String borderLabel();
+	String frameNameLabel();
+	String heightLabel();
 	String iframeProperties();
+	String marginHeightLabel();
+	String marginWidthLabel();
+	String pxLabel();
+	String showScrollbarsLabel();
+	String showScrollbars_Always();
+	String showScrollbars_Auto();
+	String showScrollbars_Never();
+
 	String urlLabel();
+	String widthLabel();
 
 	// Misc strings
 	String _1();

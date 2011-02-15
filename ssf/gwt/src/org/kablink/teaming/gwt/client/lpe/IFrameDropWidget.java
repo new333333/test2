@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.lpe;
 
-import java.util.ArrayList;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -192,21 +190,37 @@ public class IFrameDropWidget extends DropWidget
 			Element element;
 			
 			iframeProps = (IFrameProperties) props;
+
+			// Save the properties that were passed to us.
+			m_properties.copy( iframeProps );
 			
 			// Get the iframe's element.
 			element = m_iframe.getElement();
 			if ( element instanceof IFrameElement )
 			{
 				IFrameElement iframeElement;
+				String value;
 				
 				iframeElement = (IFrameElement) element;
 				
 				// Update the frame's properties.
-				iframeElement.setFrameBorder( iframeProps.getBorderWidth() );
+				if ( iframeProps.getShowBorder() == true )
+					iframeElement.setFrameBorder( 1 );
+				else
+					iframeElement.setFrameBorder( 0 );
+				
 				iframeElement.setMarginHeight( iframeProps.getMarginHeight() );
 				iframeElement.setMarginWidth( iframeProps.getMarginWidth() );
 				iframeElement.setName( iframeProps.getName() );
-				iframeElement.setScrolling( String.valueOf( iframeProps.getHasScrollbars() ) );
+				
+				value = iframeProps.getScrollbarValueAsString();
+				if ( value != null && value.equalsIgnoreCase( "auto" ) )
+					iframeElement.removeAttribute( "scrolling" );
+				else
+					iframeElement.setScrolling( value );
+				
+				iframeElement.setAttribute( "height", iframeProps.getHeightAsString() );
+				iframeElement.setAttribute( "width", iframeProps.getWidthAsString() );
 				iframeElement.setSrc( iframeProps.getUrl() );
 			}
 		}
