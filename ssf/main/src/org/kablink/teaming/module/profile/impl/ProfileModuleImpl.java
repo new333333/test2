@@ -1204,7 +1204,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileCoreProcessor processor=loadProcessor(binder);
        	processor.deleteEntry(binder, entry, true, options); 
        	boolean delWs = Boolean.FALSE;
-       	if (options != null) delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
+       	if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE)) {
+       		delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
+       	}
        	if (Boolean.TRUE.equals(delWs) && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;
