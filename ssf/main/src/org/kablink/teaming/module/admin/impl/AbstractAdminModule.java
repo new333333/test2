@@ -81,8 +81,10 @@ import org.kablink.teaming.domain.EmailLog.EmailLogType;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
+import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -135,6 +137,9 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  */
 public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
+	
+	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
+	
 	protected MailModule mailModule;
 	/**
 	 * Setup by spring
@@ -1369,5 +1374,37 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			}
 		}
 		return false;
+	}
+	
+	public IndexOptimizationSchedule getIndexOptimizationSchedule() {
+		checkAccess(AdminOperation.manageIndex);
+		ScheduleInfo si = getIndexOptimizationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		return new IndexOptimizationSchedule(si);
+	}
+	
+	public void setIndexOptimizationSchedule(IndexOptimizationSchedule schedule) {
+		checkAccess(AdminOperation.manageIndex);
+		getIndexOptimizationObject().setScheduleInfo(schedule.getScheduleInfo());
+	}
+	
+	protected IndexOptimization getIndexOptimizationObject() {
+		return getIndexOptimizationObject(RequestContextHolder.getRequestContext().getZoneName());
+	}
+	
+	protected IndexOptimization getIndexOptimizationObject(String zoneName) {
+		String jobClass = getIndexProperty(zoneName, INDEX_OPTIMIZATION_JOB);
+		if(Validator.isNotNull(jobClass)) {
+			try {
+				return (IndexOptimization) ReflectHelper.getInstance(jobClass);
+			}
+			catch(Exception e) {
+				logger.error("Cannot instantiate IndexOptimization custom class", e);
+			}
+		}
+		return (IndexOptimization) ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultIndexOptimization.class);
+	}
+	
+	protected String getIndexProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "indexConfiguration/property[@name='" + name + "']");
 	}
 }

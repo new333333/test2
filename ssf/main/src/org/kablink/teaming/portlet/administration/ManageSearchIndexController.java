@@ -52,6 +52,8 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -64,6 +66,7 @@ import org.kablink.teaming.web.tree.SearchTreeHelper;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.teaming.web.util.ScheduleHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebStatusTicket;
 import org.kablink.util.Validator;
@@ -141,18 +144,39 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 			
 			} else if (operation.equals("optimize")) {
-				String[] nodeNames = null;
+				response.setRenderParameters(formData);
+				IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
+				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, "optimize"));
+				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
+				boolean scheduleEnabled = PortletRequestUtils.getBooleanParameter(request, "enabled", false);
 				String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");
 				if(searchNodesPresent.equals("1")) { // H/A environment
-					nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
+					String[] nodeNames = (String[])formData.get(WebKeys.URL_SEARCH_NODE_NAME);
 					if(nodeNames == null || nodeNames.length == 0) {
 						// The user selected no node, probably by mistake.
-						// In this case, there's no work to perform.
-						response.setRenderParameters(formData);
-						return;
+						// In this case, we must not enable the schedule since it won't have any work to do 
+						// when wake up and have no good way of differentiating H/A situation with no node
+						// selected from non-H/A situation (hence ambiguous).
+						schedule.getScheduleInfo().setEnabled(false);
+						schedule.setNodeNames(null);
+						getAdminModule().setIndexOptimizationSchedule(schedule);			
+						// Forget about "run now". Even if it was checked, there's nothing to run.
+					}
+					else { // At least one node is selected.
+						schedule.getScheduleInfo().setEnabled(scheduleEnabled);
+						schedule.setNodeNames(nodeNames);
+						getAdminModule().setIndexOptimizationSchedule(schedule);			
+						if(runNow)
+							getAdminModule().optimizeIndex(nodeNames);						
 					}
 				}
-				getAdminModule().optimizeIndex(nodeNames);
+				else { // non-HA environment
+					schedule.getScheduleInfo().setEnabled(scheduleEnabled);
+					schedule.setNodeNames(null);
+					getAdminModule().setIndexOptimizationSchedule(schedule);			
+					if(runNow)
+						getAdminModule().optimizeIndex(null);						
+				}
 			}
 		} else
 			response.setRenderParameters(formData);
@@ -202,6 +226,9 @@ public class ManageSearchIndexController extends  SAbstractController {
 			model.put(WebKeys.SEARCH_NODES, nodes);
 		}
 			
+		IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
+		model.put(WebKeys.SCHEDULE_INFO, schedule);
+		
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}
 
