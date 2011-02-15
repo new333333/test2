@@ -136,7 +136,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private enum Column {
 		SELECTOR(           "*Unsortable*"),
 		ORDER(              "order"),
-		NAME(               "_sortTitle"),
+		TASK_NAME(          "_sortTitle"),
 		PRIORITY(           "priority"),
 		DUE_DATE(           "start_end#LogicalEndDate"),
 		STATUS(             "status"),
@@ -735,7 +735,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// ...accounting for cases where we don't show the order
 		// ...column...
 		if ((!(showOrderColumn())) && (Column.ORDER == m_sortColumn)) {
-			m_sortColumn = Column.NAME;
+			m_sortColumn = Column.TASK_NAME;
 		}
 
 		// ...and apply it, as necessary.
@@ -1442,9 +1442,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		// styles, ...  We can do that by simply re-rendering the
 		// 'Task Name', 'Due Date' and 'Assigned To' columns.
 		int row = uid.getTaskRow();
-		renderColumnTaskName(  task, row, getColumnIndex(Column.NAME       ));
-		renderColumnDueDate(   task, row, getColumnIndex(Column.DUE_DATE   ));
-		renderColumnAssignedTo(task, row, getColumnIndex(Column.ASSIGNED_TO));
+		renderColumnTaskName(  task, row);
+		renderColumnDueDate(   task, row);
+		renderColumnAssignedTo(task, row);
 	}
 	
 	/*
@@ -1621,24 +1621,23 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders a column of a row based on a task into the TaskTable.
 	 */
 	private void renderColumn(TaskListItem task, int row, Column col) {
-		int colIndex = getColumnIndex(col);
 		switch(col) {
-		case CLOSED_PERCENT_DONE:  renderColumnClosedPercentDone(task, row, colIndex); break;
-		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row, colIndex); break;		
-		case DUE_DATE:             renderColumnDueDate(          task, row, colIndex); break;		
-		case NAME:                 renderColumnTaskName(         task, row, colIndex); break;
-		case ORDER:                renderColumnOrder(            task, row, colIndex); break;
-		case PRIORITY:             renderColumnPriority(         task, row, colIndex); break;		
-		case SELECTOR:             renderColumnSelectCB(         task, row, colIndex); break;
-		case STATUS:               renderColumnStatus(           task, row, colIndex); break;
-		case LOCATION:             renderColumnLocation(         task, row, colIndex); break;
+		case CLOSED_PERCENT_DONE:  renderColumnClosedPercentDone(task, row); break;
+		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row); break;		
+		case DUE_DATE:             renderColumnDueDate(          task, row); break;		
+		case TASK_NAME:            renderColumnTaskName(         task, row); break;
+		case ORDER:                renderColumnOrder(            task, row); break;
+		case PRIORITY:             renderColumnPriority(         task, row); break;		
+		case SELECTOR:             renderColumnSelectCB(         task, row); break;
+		case STATUS:               renderColumnStatus(           task, row); break;
+		case LOCATION:             renderColumnLocation(         task, row); break;
 		}
 	}
 	
 	/*
 	 * Renders the 'Assigned To' column.
 	 */
-	private void renderColumnAssignedTo(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnAssignedTo(final TaskListItem task, int row) {
 		VerticalPanel vp = new VerticalPanel();
 		vp.addStyleName("gwtTaskList_assigneesList");
 
@@ -1669,14 +1668,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		// If there were any assignees...
 		if (0 < assignments) {
 			// ...add the VerticalPanel to the TaskTable.
-			m_flexTable.setWidget(row, colIndex, vp);
+			m_flexTable.setWidget(row, getColumnIndex(Column.ASSIGNED_TO), vp);
 		}
 	}
 
 	/*
 	 * Renders the 'Closed - % Done' column.
 	 */
-	private void renderColumnClosedPercentDone(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnClosedPercentDone(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
@@ -1716,26 +1715,26 @@ public class TaskTable extends Composite implements ActionHandler {
 		FlowPanel fp = new FlowPanel();
 		fp.add(completedLabel);
 		fp.add(percentDoneWidget);
-		m_flexTable.setWidget(row, colIndex, fp);
+		m_flexTable.setWidget(row, getColumnIndex(Column.CLOSED_PERCENT_DONE), fp);
 		
 	}
 	
 	/*
 	 * Renders the 'Due Date' column.
 	 */
-	private void renderColumnDueDate(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnDueDate(final TaskListItem task, int row) {
 		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEnd().getDateDisplay());
 		il.setWordWrap(false);
 		if (task.getTask().isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
 		}
-		m_flexTable.setWidget(row, colIndex, il);
+		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), il);
 	}
 	
 	/*
 	 * Renders the 'Location' column.
 	 */
-	private void renderColumnLocation(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnLocation(final TaskListItem task, int row) {
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
 			// Yes!  Render the column.
@@ -1743,14 +1742,14 @@ public class TaskTable extends Composite implements ActionHandler {
 			if (null == location) {
 				return;
 			}
-			m_flexTable.setHTML(row, colIndex, location);
+			m_flexTable.setHTML(row, getColumnIndex(Column.LOCATION), location);
 		}
 	}
 
 	/*
 	 * Renders the 'Order' column.
 	 */
-	private void renderColumnOrder(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnOrder(final TaskListItem task, int row) {
 		// Are we supposed to show the 'Order' column?
 		if (showOrderColumn()) {
 			// Yes!  Render the column.  Extract the UIData from this
@@ -1762,16 +1761,17 @@ public class TaskTable extends Composite implements ActionHandler {
 			if ((0 == uid.getTaskDepth()) && ((-1) != order))
 			     orderHTML = String.valueOf(order);
 			else orderHTML = "";
-			m_flexTable.setHTML(row, colIndex, orderHTML);
+			int colIndex = getColumnIndex(Column.ORDER);
+			m_flexTable.setHTML(                 row, colIndex, orderHTML);
 			m_flexTableCF.setHorizontalAlignment(row, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
-			m_flexTableCF.setWidth(row, colIndex, "16px");
+			m_flexTableCF.setWidth(              row, colIndex, "16px");
 		}
 	}
 
 	/*
 	 * Renders the 'Priority' column.
 	 */
-	private void renderColumnPriority(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnPriority(final TaskListItem task, int row) {
 		// What's the current priority of this task?
 		String priority = task.getTask().getPriority();
 		if (!(GwtClientHelper.hasString(priority))) {
@@ -1781,7 +1781,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Add an Anchor for it to the TaskTable.
 		m_flexTable.setWidget(
 			row,
-			colIndex,
+			getColumnIndex(Column.PRIORITY),
 			buildOptionColumn(
 				task,
 				m_priorityMenu,
@@ -1792,7 +1792,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Select CheckBox' column.
 	 */
-	private void renderColumnSelectCB(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnSelectCB(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
@@ -1824,6 +1824,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		else {
 			fp.add(buildSpacer());
 		}
+		int colIndex = getColumnIndex(Column.SELECTOR);
 		m_flexTableCF.setWordWrap( row, colIndex, false);
 		m_flexTableCF.setAlignment(row, colIndex, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
 		m_flexTable.setWidget(     row, colIndex, fp);
@@ -1832,7 +1833,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Status' column.
 	 */
-	private void renderColumnStatus(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnStatus(final TaskListItem task, int row) {
 		// What's the current priority of this task?
 		String status = task.getTask().getStatus();
 		if (!(GwtClientHelper.hasString(status))) {
@@ -1842,7 +1843,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Add an Anchor for it to the TaskTable.
 		m_flexTable.setWidget(
 			row,
-			colIndex,
+			getColumnIndex(Column.STATUS),
 			buildOptionColumn(
 				task,
 				m_statusMenu,
@@ -1853,7 +1854,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Task Name' column.
 	 */
-	private void renderColumnTaskName(final TaskListItem task, int row, int colIndex) {
+	private void renderColumnTaskName(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
 		
@@ -1911,31 +1912,30 @@ public class TaskTable extends Composite implements ActionHandler {
 		else                      m_flexTableRF.removeStyleName(row, "disabled");
 		ta.getElement().appendChild(taskLabel.getElement());
 		fp.add(ta);
-		m_flexTable.setWidget(row, colIndex, fp);
+		m_flexTable.setWidget(row, getColumnIndex(Column.TASK_NAME), fp);
 	}
 
 	/*
 	 * Renders a header column in the TaskTable.
 	 */
 	private void renderHeader(Column col) {
-		int colIndex = getColumnIndex(col);
 		switch(col) {
-		case CLOSED_PERCENT_DONE:  renderHeaderClosedPercentDone(colIndex); break;
-		case ASSIGNED_TO:          renderHeaderAssignedTo(       colIndex); break;		
-		case DUE_DATE:             renderHeaderDueDate(          colIndex); break;		
-		case NAME:                 renderHeaderTaskName(         colIndex); break;
-		case ORDER:                renderHeaderOrder(            colIndex); break;
-		case PRIORITY:             renderHeaderPriority(         colIndex); break;		
-		case SELECTOR:             renderHeaderSelectCB(         colIndex); break;
-		case STATUS:               renderHeaderStatus(           colIndex); break;		
-		case LOCATION:             renderHeaderLocation(         colIndex); break;		
+		case CLOSED_PERCENT_DONE:  renderHeaderClosedPercentDone(); break;
+		case ASSIGNED_TO:          renderHeaderAssignedTo();        break;		
+		case DUE_DATE:             renderHeaderDueDate();           break;		
+		case TASK_NAME:            renderHeaderTaskName();          break;
+		case ORDER:                renderHeaderOrder();             break;
+		case PRIORITY:             renderHeaderPriority();          break;		
+		case SELECTOR:             renderHeaderSelectCB();          break;
+		case STATUS:               renderHeaderStatus();            break;		
+		case LOCATION:             renderHeaderLocation();          break;		
 		}
 	}
 	
 	/*
 	 * Renders the 'Assigned To' column header.
 	 */
-	private void renderHeaderAssignedTo(int colIndex) {
+	private void renderHeaderAssignedTo() {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
 		markAsSortKey(a, Column.ASSIGNED_TO);
@@ -1943,13 +1943,13 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.ASSIGNED_TO);}			
 		});
-		m_flexTable.setWidget(0, colIndex, a);
+		m_flexTable.setWidget(0, getColumnIndex(Column.ASSIGNED_TO), a);
 	}
 	
 	/*
 	 * Renders the 'Closed - % Done' column header.
 	 */
-	private void renderHeaderClosedPercentDone(int colIndex) {
+	private void renderHeaderClosedPercentDone() {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
 		markAsSortKey(a, Column.CLOSED_PERCENT_DONE);
@@ -1957,6 +1957,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.CLOSED_PERCENT_DONE);}			
 		});
+		int colIndex = getColumnIndex(Column.CLOSED_PERCENT_DONE);
 		m_flexTable.setWidget(0, colIndex, a);
 		if (m_taskBundle.getIsFromFolder()) {
 			m_flexTableCF.setWidth(0, colIndex, "100%");
@@ -1966,7 +1967,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Due Date' column header.
 	 */
-	private void renderHeaderDueDate(int colIndex) {
+	private void renderHeaderDueDate() {
 		FlowPanel fp = new FlowPanel();
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
@@ -1985,13 +1986,13 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_dueDateBusy.getElement().setAttribute("align", "absmiddle");
 		fp.add(m_dueDateBusy);
 		
-		m_flexTable.setWidget(0, colIndex, fp);
+		m_flexTable.setWidget(0, getColumnIndex(Column.DUE_DATE), fp);
 	}
 
 	/*
 	 * Renders the 'Location' column header.
 	 */
-	private void renderHeaderLocation(int colIndex) {
+	private void renderHeaderLocation() {
 		// Are we displaying tasks assigned to the current user?
 		if (!(m_taskBundle.getIsFromFolder())) {
 			// Yes!  Render the column header.
@@ -2002,7 +2003,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				@Override
 				public void onClick(ClickEvent event) {handleTableResort(Column.LOCATION);}			
 			});
-			m_flexTable.setWidget( 0, colIndex, a     );
+			int colIndex = getColumnIndex(Column.LOCATION);
+			m_flexTable.setWidget( 0, colIndex, a);
 			m_flexTableCF.setWidth(0, colIndex, "100%");
 		}
 	}
@@ -2010,7 +2012,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the 'Order' column header.
 	 */
-	private void renderHeaderOrder(int colIndex) {
+	private void renderHeaderOrder() {
 		// Are we supposed to show the 'Order' column?
 		if (showOrderColumn()) {
 			// Yes!  Render the column header.
@@ -2021,15 +2023,16 @@ public class TaskTable extends Composite implements ActionHandler {
 				@Override
 				public void onClick(ClickEvent event) {handleTableResort(Column.ORDER);}			
 			});
+			int colIndex = getColumnIndex(Column.ORDER);
 			m_flexTableCF.setHorizontalAlignment(0, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
-			m_flexTable.setWidget(0, colIndex, a);
+			m_flexTable.setWidget(               0, colIndex, a);
 		}
 	}
 	
 	/*
 	 * Renders the 'Priority' column header.
 	 */
-	private void renderHeaderPriority(int colIndex) {
+	private void renderHeaderPriority() {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
 		markAsSortKey(a, Column.PRIORITY);
@@ -2037,13 +2040,13 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.PRIORITY);}			
 		});
-		m_flexTable.setWidget(0, colIndex, a);
+		m_flexTable.setWidget(0, getColumnIndex(Column.PRIORITY), a);
 	}
 	
 	/*
 	 * Renders the 'Selector' column header.
 	 */
-	private void renderHeaderSelectCB(int colIndex) {
+	private void renderHeaderSelectCB() {
 		final CheckBox cb = new CheckBox();
 		cb.addStyleName("gwtTaskList_ckbox");
 		cb.getElement().setId("gwtTaskList_taskSelect_All");
@@ -2051,14 +2054,15 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onChange(ChangeEvent event) {handleSelectAll(jsIsCBChecked("gwtTaskList_taskSelect_All"));}			
 		});
+		int colIndex = getColumnIndex(Column.SELECTOR);
 		m_flexTableCF.setAlignment(0, colIndex, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
-		m_flexTable.setWidget(0, colIndex, cb);
+		m_flexTable.setWidget(     0, colIndex, cb);
 	}
 	
 	/*
 	 * Renders the 'Status' column header.
 	 */
-	private void renderHeaderStatus(int colIndex) {
+	private void renderHeaderStatus() {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_status());
 		markAsSortKey(a, Column.STATUS);
@@ -2066,21 +2070,21 @@ public class TaskTable extends Composite implements ActionHandler {
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.STATUS);}			
 		});
-		m_flexTable.setWidget(0, colIndex, a);
+		m_flexTable.setWidget(0, getColumnIndex(Column.STATUS), a);
 	}
 	
 	/*
 	 * Renders the 'Task Name' column header.
 	 */
-	private void renderHeaderTaskName(int colIndex) {
+	private void renderHeaderTaskName() {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_name());
-		markAsSortKey(a, Column.NAME);
+		markAsSortKey(a, Column.TASK_NAME);
 		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
 			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.NAME);}			
+			public void onClick(ClickEvent event) {handleTableResort(Column.TASK_NAME);}			
 		});
-		m_flexTable.setWidget(0, colIndex, a);
+		m_flexTable.setWidget(0, getColumnIndex(Column.TASK_NAME), a);
 	}
 	
 	/*
@@ -2286,7 +2290,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		switch(m_sortColumn) {
 		default:
 		case ORDER:                comparator = new TaskSorter.OrderComparator(            m_sortAscending); break;
-		case NAME:                 comparator = new TaskSorter.NameComparator(             m_sortAscending); break;
+		case TASK_NAME:            comparator = new TaskSorter.NameComparator(             m_sortAscending); break;
 		case PRIORITY:             comparator = new TaskSorter.PriorityComparator(         m_sortAscending); break;
 		case DUE_DATE:             comparator = new TaskSorter.DueDateComparator(          m_sortAscending); break;
 		case STATUS:               comparator = new TaskSorter.StatusComparator(           m_sortAscending); break;
@@ -2332,20 +2336,16 @@ public class TaskTable extends Composite implements ActionHandler {
 						// ...if the task's overdue state changed... 
 						long dueMS = (((null == dueDate) || (!(GwtClientHelper.hasString(dueDate.getDateDisplay())))) ? Long.MAX_VALUE : dueDate.getDate().getTime()); 
 						boolean overdue = (nowMS > dueMS);
+						int row = getUIData(task).getTaskRow();
 						if (overdue != ti.getOverdue()) {
-							// ...track that and redisplay the name...
+							// ...track that fact and redisplay the
+							// ...task's name...
 							ti.setOverdue(overdue);
-							renderColumnTaskName(
-								task,
-								getUIData(task).getTaskRow(),
-								getColumnIndex(Column.NAME));
+							renderColumnTaskName(task, row);
 						}
 						
 						// ...and redisplay the task's due date.
-						renderColumnDueDate(
-							task,
-							getUIData(task).getTaskRow(),
-							getColumnIndex(Column.DUE_DATE));
+						renderColumnDueDate(task, row);
 
 					}
 				}
