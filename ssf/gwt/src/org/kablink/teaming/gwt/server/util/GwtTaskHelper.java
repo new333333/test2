@@ -917,6 +917,40 @@ public class GwtTaskHelper {
 			throw GwtServerHelper.getGwtTeamingException(ex);
 		}
 	}
+
+	/*
+	 * Searches the List<TaskListItem> for the task whose logical start
+	 * date is the earliest and returns that logical start date.
+	 */
+	private static TaskDate findEarliestLogicalStart(List<TaskListItem> taskList) {
+		TaskDate reply = null;		
+		for (TaskListItem task:  taskList) {
+			TaskDate start = task.getTask().getEvent().getLogicalStart();
+			if (hasDateValue(start)) {
+				if ((null == reply) || (start.getDate().getTime() < reply.getDate().getTime())) {
+					reply = start;
+				}
+			}
+		}		
+		return reply;
+	}
+	
+	/*
+	 * Searches the List<TaskListItem> for the task whose logical end
+	 * date is the latest and returns that logical end date.
+	 */
+	private static TaskDate findLatestLogicalEnd(List<TaskListItem> taskList) {
+		TaskDate reply = null;
+		for (TaskListItem task:  taskList) {
+			TaskDate end = task.getTask().getEvent().getLogicalEnd();
+			if (hasDateValue(end)) {
+				if ((null == reply) || (end.getDate().getTime() > reply.getDate().getTime())) {
+					reply = end;
+				}
+			}
+		}
+		return reply;
+	}
 	
 	/*
 	 * Searches a List<TaskInfo> for a task with a specific ID.
@@ -2260,13 +2294,9 @@ public class GwtTaskHelper {
 			if ((!pHasStart) && ((!pHasEnd) || (!pHasDurDays))) {
 				// No start and no end or duration!  It needs a start!
 				// (If it had an end and duration, that would have been
-				// used to calculated the start previously.)  Does the
-				// first subtask have a start that can be used?
-				pNewCalcStart = taskList.get(0).getTask().getEvent().getLogicalStart();
-				if (!hasDateValue(pNewCalcStart)) {
-					// No!
-					pNewCalcStart = null;
-				}
+				// used to calculated the start previously.)  Find the
+				// earliest logical start among all the its subtasks.
+				pNewCalcStart = findEarliestLogicalStart(taskList);
 			}
 			else {
 				// We don't need a start from the subtasks.
@@ -2279,13 +2309,9 @@ public class GwtTaskHelper {
 			if ((!pHasEnd) && ((!pHasStart) || (!pHasDurDays))) {
 				// No end and no start or duration!  It needs an end!
 				// (If it had a start and duration, that would have
-				// been used to calculated the end previously.)  Does
-				// the last subtask have an end that can be used?
-				pNewCalcEnd = taskList.get(taskList.size() - 1).getTask().getEvent().getLogicalEnd();
-				if (!(hasDateValue(pNewCalcEnd))) {
-					// No!
-					pNewCalcEnd = null;
-				}
+				// been used to calculated the end previously.)  Find
+				// the latest logical end among all its subtasks.
+				pNewCalcEnd = findLatestLogicalEnd(taskList);
 			}
 			else {
 				// We don't need an edn from the subtasks.
