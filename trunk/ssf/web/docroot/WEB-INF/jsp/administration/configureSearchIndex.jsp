@@ -245,7 +245,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <ssf:nlt tag="administration.configure.nodes.select.detail"/>
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'offline' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
   </c:forEach>
@@ -284,6 +284,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <div>
   <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
 </div>
+
 </c:if>
 <c:if test="${!empty ssSearchNodes}">
 <br>
@@ -297,13 +298,41 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 <br>
   <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'offline' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" 
+    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
     <br/>
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
 <br>
+
+<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
+	<tr>
+		<td><input type="checkbox" id="enabled" name="enabled"
+			<c:if test="${ssScheduleInfo.enabled}">checked</c:if> /> <label
+			for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+			tag="index.optimization.schedule.enable" /></span><br />
+		</label></td>
+	</tr>
+	<tr>
+		<td>
+			<input type="checkbox" id="runnow" name="runnow"
+			<c:if test="${runnow}"> checked="checked" </c:if> /> <label
+			for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
+			tag="index.optimization.schedule.run.now" /></span><br />
+
+		</label></td>
+	</tr>
+</table>
+
+<div class="margintop2" style="margin-left: 2.5em;"
+	<ssf:expandableArea title='<%= NLT.get("index.optimization.schedule") %>' initOpen="true">
+		<c:set var="schedule" value="${ssScheduleInfo.schedule}" />
+		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+	</ssf:expandableArea>
+</div>	
+
 <br>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 

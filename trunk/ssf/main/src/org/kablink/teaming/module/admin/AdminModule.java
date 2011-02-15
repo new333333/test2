@@ -290,4 +290,7 @@ public interface AdminModule {
 	
 	public List<Condition> getFunctionConditions();
 	
+	public IndexOptimizationSchedule getIndexOptimizationSchedule();
+	
+	public void setIndexOptimizationSchedule(IndexOptimizationSchedule schedule);
  }
