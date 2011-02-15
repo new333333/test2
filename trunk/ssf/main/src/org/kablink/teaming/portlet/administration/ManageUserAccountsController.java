@@ -67,8 +67,9 @@ public class ManageUserAccountsController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			//Get the list of users to disable fro the individual selections
+		if ((formData.containsKey("okBtn") || formData.containsKey("deleteBtn")) && 
+				WebHelper.isMethodPost(request)) {
+			//Get the list of users to disable (or delete) from the individual selections
 			Set<Long> disableUserIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
 			
 			//Also check for selections from the full list
@@ -88,8 +89,16 @@ public class ManageUserAccountsController extends SAbstractController {
 			for (Long id : disableUserIds) {
 				List ids = new ArrayList();
 				ids.add(id);
-				if (id != null) 
-					getProfileModule().disableEntry(id, true);
+				if (id != null) {
+					if (formData.containsKey("deleteBtn")) {
+						//This is a request to delete accounts
+						Map options = new HashMap();
+						getProfileModule().deleteEntry(id, options);
+					} else {
+						//This is a request just to disable the accounts
+						getProfileModule().disableEntry(id, true);
+					}
+				}
 			}
 
 			//Check for individual user changes

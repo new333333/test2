@@ -92,6 +92,29 @@ function hideAllDivs() {
 	userDivObj = self.document.getElementById("allUserDiv");
 	userDivObj.style.display = "none";
 }
+
+function ss_confirmDelete(obj) {
+	var formObj = ss_findOwningElement(obj, "form");
+	//Count the number of selected names
+	var count = 0;
+	for (var i = 0; i < formObj.elements.length; i++) {
+		var child = formObj.elements[i];
+		if (child.name.indexOf("disableUser_") == 0) {
+			if (child.value == 'on') count++;
+		} else if (child.name.indexOf("addUsers") == 0) {
+			var values = child.value.split(" ");
+			for (var j = 0; j < values.length; j++) {
+				if (values[j] != '') count++;
+			}
+		}
+	}
+	if (confirm("<ssf:nlt tag="button.deleteSelectedAccountsConfirm"/> " + count)) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 </script>
 
 <div class="ss_pseudoPortal">
@@ -116,7 +139,8 @@ function hideAllDivs() {
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
 	</div>
-		
+</form>
+
 	<div style="margin: 20px 0 10px 0; padding-right: 50px;">
 		<span>
 		  <input type="button" class="ss_submit" name="addUserBtn" 
@@ -132,6 +156,8 @@ function hideAllDivs() {
 	<!--Add User DIV dialog-->
 	<div>
 	  	<div id="addUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; display: none;">
+		  <form name="form1" class="ss_style ss_form" method="post" 
+			action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>
 			</div>
@@ -145,17 +171,24 @@ function hideAllDivs() {
 					</tr>
 				</table>
 			</div>
-			<div class="ss_diagDivFooter">
-				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+			<div>
+				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.disableSelectedAccounts"/>">
+				<input type="submit" class="ss_submit" name="deleteBtn" 
+				  value="<ssf:nlt tag="button.deleteSelectedAccounts"/>"
+				  onClick="return ss_confirmDelete(this);"
+				>
 				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
 				  onClick="hideAllDivs();return false;"/>
 			</div>
+		  </form>
 	    </div>
 	</div>	
 	<!--END-->
 	<!--All User DIV dialog-->
 	<div>
 	  	<div id="allUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; display: none;">
+		  <form name="form1" class="ss_style ss_form" method="post" 
+			  action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>
 			</div>
@@ -176,15 +209,23 @@ function hideAllDivs() {
 			    </c:forEach>
 				</table>
 			</div>
-			<div class="ss_diagDivFooter">
-				<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+			<div>
+				<input type="submit" class="ss_submit" name="okBtn" 
+				  value="<ssf:nlt tag="button.disableSelectedAccounts"/>">
+				<input type="submit" class="ss_submit" name="deleteBtn" 
+				  value="<ssf:nlt tag="button.deleteSelectedAccounts"/>"
+				  onClick="return ss_confirmDelete(this);"
+				>
 				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>"
 				  onClick="hideAllDivs();return false;"/>
 			</div>
+		  </form>
 	    </div>
 	</div>	
 	<!--END-->
 	<c:if test="${!empty ss_disabledUserAccounts}">
+	<form name="form1" class="ss_style ss_form" method="post" 
+		action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 	  <table class="objlist" width="100%">
 	  	<tr class="title ends">
 		  <td colspan="6"><ssf:nlt tag="administration.userAccounts.disabledAccounts" /></td>
@@ -210,17 +251,21 @@ function hideAllDivs() {
 	    </c:forEach>
 		  <tr class="footrow ends">
 		    <td colspan="6">
-    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.enable"/>"
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.enableSelectedAccounts"/>"
 		  title="<ssf:nlt tag="administration.userAccounts.enableSelectedAccounts"/>"/>
 
 			</td>
 		  </tr>
 	  </table>
+	</form>
 	</c:if>
 
   <div style="margin-top: 50px;">
+	<form name="form1" class="ss_style ss_form" method="post" 
+		action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
 		  onClick="return handleCloseBtn();"/>
+	</form>
   </div>		  
 </form>
 </div>
