@@ -146,7 +146,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			} else if (operation.equals("optimize")) {
 				response.setRenderParameters(formData);
 				IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
-				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, "optimize"));
+				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				boolean runNow = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 				boolean scheduleEnabled = PortletRequestUtils.getBooleanParameter(request, "enabled", false);
 				String searchNodesPresent = PortletRequestUtils.getStringParameter(request, "searchNodesPresent", "");

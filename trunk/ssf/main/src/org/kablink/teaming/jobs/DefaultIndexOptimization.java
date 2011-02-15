@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.jobs;
 
+import java.util.List;
+
+import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
@@ -51,21 +54,55 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 		if(nodes != null && !nodes.equals(""))
 			nodeNames = StringUtil.split(nodes, ",");
 		if(nodeNames != null) { // H/A setup
+			// Invoke index optimization one index at a time, as opposed to invoking them
+			// in parallel. This sequentialization helps minimize potential impact on user 
+			// activities that might exist at the time of executing this operation.
+			List<IndexNode> currentNodes = getAdminModule().retrieveIndexNodes();
 			for(String nodeName:nodeNames) {
-				// Optimize only one index at a time. This way, the optimization operation is
-				// sequentialized on indices, which avoids impacting the entire system simultaneously. 
-				optimize(nodeName);
+				IndexNode currentNode = findNode(currentNodes, nodeName);
+				if(currentNode != null) {
+					String userModeAccess = currentNode.getUserModeAccess();
+					boolean noDeferredUpdateLogRecords = currentNode.getNoDeferredUpdateLogRecords();
+					if(!userModeAccess.equals(IndexNode.USER_MODE_ACCESS_NO_ACCESS) &&
+							noDeferredUpdateLogRecords) {
+						// The node exists and is in a condition that allows this operation.
+						logger.info("Invoking index optimization on node '" + currentNode.toString() + "'");
+						doOptimize(nodeName);
+					}
+					else {
+						// The node exists but is not in a condition that allows this operation.
+						logger.info("Skipping index optimization on node '" + currentNode.toString() 
+								+ "' where userModeAccess=" + userModeAccess + 
+								" and noDeferredUpdateLogRecords=" + noDeferredUpdateLogRecords);
+					}
+				}
+				else {
+					// The selected (and stored) node does not match any of the index nodes 
+					// currently configured in the system. This means that the administrator
+					// has re-configured the indexes and removed the previously selected node
+					// from the system since the node was last stored in the scheduler.
+					logger.warn("Skipping index optimization on node '" + nodeName + 
+							"' because the node is no longer found in the system");
+				}
 			}
 		}
 		else { // non-H/A setup
-			optimize(null);
+			logger.info("Invoking index optimization");
+			doOptimize(null);
 		}		
 	}
 	
-	private void optimize(String nodeName) {
-		AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
+	private IndexNode findNode(List<IndexNode> nodes, String nodeName) {
+		for(IndexNode node:nodes) {
+			if(node.getNodeName().equalsIgnoreCase(nodeName))
+				return node; // found a match
+		}
+		return null; // no match
+	}
+	
+	private void doOptimize(String nodeName) {
 		try {
-			adminModule.optimizeIndex((nodeName == null)? null : new String[]{nodeName});
+			getAdminModule().optimizeIndex((nodeName == null)? null : new String[]{nodeName});
 		}
 		catch(Exception e) {
 			logger.error("Error executing index optimization on '" + nodeName + "'", e);
@@ -86,7 +123,7 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 	 */
 	@Override
 	public ScheduleInfo getScheduleInfo(Long zoneId) {
-		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(),OPTIMIZATION_GROUP, zoneId.toString()));
+		return getScheduleInfo(new CronJobDescription(zoneId, zoneId.toString(),OPTIMIZATION_GROUP, OPTIMIZATION_DESCRIPTION));
 	}
 
 	/* (non-Javadoc)
@@ -94,7 +131,10 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 	 */
 	@Override
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new CronJobDescription(info.getZoneId(), info.getZoneId().toString(),OPTIMIZATION_GROUP, info.getZoneId().toString()), info);
+		setScheduleInfo(new CronJobDescription(info.getZoneId(), info.getZoneId().toString(),OPTIMIZATION_GROUP, OPTIMIZATION_DESCRIPTION), info);
 	}
 
+	private AdminModule getAdminModule() {
+		return (AdminModule) SpringContextUtil.getBean("adminModule");
+	}
 }
