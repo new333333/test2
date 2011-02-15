@@ -760,9 +760,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	public void setDtCalcEnd(Calendar end) {
 		dtCalcEnd = end;
-		if ((null != dtStart) && (null != dtCalcEnd)) {
-			setDurationInterval(duration, dtStart, dtCalcEnd);
-		}
 	}
 
 	/**
