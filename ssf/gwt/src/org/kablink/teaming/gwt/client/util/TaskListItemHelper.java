@@ -186,8 +186,11 @@ public class TaskListItemHelper {
 	public static boolean canMoveTaskLeft(TaskBundle tb, TaskListItem task) {
 		List<TaskListItem> tasks = findTaskList(tb, task);
 		
-		int     index = tasks.indexOf(task);
-		boolean reply = ((0 == index) && tasks != tb.getTasks());
+		boolean reply = (tasks != tb.getTasks());
+		if (reply) {
+			int index = tasks.indexOf(task);
+			reply = ((0 == index) || (index == (tasks.size() - 1)));
+		}
 		
 		return reply;
 	}
@@ -650,23 +653,18 @@ public class TaskListItemHelper {
 			// Left (i.e., decrease its subtask level)!  If it's in
 			// other than the outer most task order list...
 			if (tliList != tb.getTasks()) {
-				// ...move all of the peer subtasks below it to be
-				// ...subtasks of it...
-				for (int i = (tliMoveThisIndex + 1); i < tliSize; tliSize -= 1) {
-					TaskListItem tli2Move = tliList.get(i);
-					tliList.remove(i);
-					tliMoveThis.appendSubtask(tli2Move);
-				}
-				
-				// ...and make it a peer to the task it's a subtask of,
+				// ...make it a peer to the task it's a subtask of,
 				// ...immediately below what was its parent.
+				int tliListSize = tliList.size();
 				tliList.remove(tliMoveThisIndex);
 				TaskListItem tliWithList          = findTaskListItemContainingList(tb, tliList    );
 				TaskListItem tliWithListContainer = findTaskListItemContainingTask(tb, tliWithList);
 				List<TaskListItem> tliTargetList  = ((null == tliWithListContainer) ? tb.getTasks() : tliWithListContainer.getSubtasks());
-				tliTargetList.add(
-					(tliTargetList.indexOf(tliWithList) + 1),
-					tliMoveThis);
+				int tliMoveToIndex = tliTargetList.indexOf(tliWithList);
+				if (tliMoveThisIndex == (tliListSize - 1)) {
+					tliMoveToIndex += 1;
+				}				
+				tliTargetList.add(tliMoveToIndex, tliMoveThis);
 			}
 			
 			break;
