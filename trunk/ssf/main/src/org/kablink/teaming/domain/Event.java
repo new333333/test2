@@ -768,6 +768,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    * @throws IllegalArgumentException If the given string does not describe
    *                          a valid Date-Time.
 	 */
+	public void setDtEnd(String end) {
+		setDtEnd(parseDateTime(end));
+	}
+
 	public void setDtCalcEnd(String end) {
 		setDtCalcEnd(parseDateTime(end));
 	}
