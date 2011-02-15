@@ -274,9 +274,12 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_ENHANCED_VIEW_JSP_NAME = "jspName";
     public static final String MASHUP_ATTR_ZONE_UUID = "zoneUUID";
     public static final String MASHUP_TYPE_CUSTOM_JSP = "customJsp";
+    public static final String MASHUP_TYPE_ENHANCED_VIEW = "enhancedView";
     public static final String MASHUP_TYPE_ENTRY = "entry";
     public static final String MASHUP_TYPE_FOLDER = "folder";
     public static final String MASHUP_TYPE_GRAPHIC = "graphic";
+    public static final String MASHUP_TYPE_HTML = "html";
+    public static final String MASHUP_TYPE_IFRAME = "iframe";
     public static final String MASHUP_TYPE_BINDER_URL = "binderUrl";
     public static final String MASHUP_TYPE_ENTRY_URL = "entryUrl";
     public static final String MASHUP_TYPE_TABLE = "table";

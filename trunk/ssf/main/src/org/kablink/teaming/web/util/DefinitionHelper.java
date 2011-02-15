@@ -818,7 +818,7 @@ public class DefinitionHelper {
 					}
 
 					String type = mashupItemValues[0];
-	        		if ((ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) && 
+	        		if ( (ObjectKeys.MASHUP_TYPE_ENTRY.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type) || ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals( type ) ) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_ENTRY_ID) &&
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRY_ID).equals("")) {
 	        			try {
@@ -844,8 +844,8 @@ public class DefinitionHelper {
 	        				if (bs.getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) 
 	        					entryAccessMap.put("modifyEntry", new Boolean(true));
 	        				
-	        				//If this is a custom jsp, give it the replies, too
-	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) {
+	        				//If this is a custom jsp, or an enhanced view, give it the replies, too
+	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type) || ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals( type ) ) {
 	        					boolean isPreDeleted = entry.isPreDeleted();
 	        					if (!isPreDeleted) {
 	        						Map folderEntries  = bs.getFolderModule().getEntryTree(entry.getParentFolder().getId(), entryId, true);
@@ -855,7 +855,7 @@ public class DefinitionHelper {
 	        			} catch(Exception e) {
 	        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  1:  Ignored");
 	        			}
-	        		} else if ((ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) && 
+	        		} else if ((ObjectKeys.MASHUP_TYPE_FOLDER.equals(type) || ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type) || ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals( type ) ) && 
 	        				mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_FOLDER_ID) && 
 	        				!mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_FOLDER_ID).equals("")) {
 	        			try {
@@ -894,8 +894,8 @@ public class DefinitionHelper {
 	        				if (!zoneBinderId.equals("")) {
 	        					mashupBinderEntries.put(zoneBinderId, folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 	        				}
-	        				//If this is a custom jsp, get the entry replies, too
-	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type)) {
+	        				//If this is a custom jsp, or an enhanced view, get the entry replies, too
+	        				if (ObjectKeys.MASHUP_TYPE_CUSTOM_JSP.equals(type) || ObjectKeys.MASHUP_TYPE_ENHANCED_VIEW.equals( type ) ) {
 	        					List entries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 	        					Iterator itEntries = entries.iterator();
 	        					while (itEntries.hasNext()) {
