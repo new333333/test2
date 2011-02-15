@@ -2167,18 +2167,30 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			if (timeZone != null) {
 				start.setTimeZone(timeZone);
 			}
-
-			Dur duration = null;
-			if (event.getDuration().getWeeks() > 0) {
-				duration = new Dur(event.getDuration().getWeeks());
-			} else {
-				duration = new Dur(event.getDuration().getDays(), event
-						.getDuration().getHours(), event.getDuration()
-						.getMinutes(), event.getDuration().getSeconds());
+			
+			DateTime end = getEndDT(event);
+			boolean hasEnd = (null != end);
+			if (hasEnd) {
+				long endTime = (end.getTime() + org.kablink.util.cal.Duration.MILLIS_PER_DAY);
+				vToDo = new VToDo(start, new DateTime(endTime), entry.getTitle());
 			}
-			vToDo = new VToDo(start, duration, entry.getTitle());
-			vToDo.getProperties().getProperty(Property.DTSTART)
-					.getParameters().add(Value.DATE_TIME);
+			else {
+				Dur duration = null;
+				if (event.getDuration().getWeeks() > 0) {
+					duration = new Dur(event.getDuration().getWeeks());
+				} else {
+					duration = new Dur(
+						event.getDuration().getDays(),
+						event.getDuration().getHours(),
+						event.getDuration().getMinutes(),
+						event.getDuration().getSeconds());
+				}
+				vToDo = new VToDo(start, duration, entry.getTitle());
+			}
+			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE_TIME);
+			if (hasEnd) {
+				vToDo.getProperties().getProperty(Property.DUE).getParameters().add(Value.DATE_TIME);
+			}
 		} else {
 			Date start = new Date(event.getLogicalStart().getTime());
 			Date end = (Date)start.clone();
@@ -2187,10 +2199,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vToDo = new VToDo(start, end, entry.getTitle());
-			vToDo.getProperties().getProperty(Property.DTSTART)
-					.getParameters().add(Value.DATE);
-			vToDo.getProperties().getProperty(Property.DUE)
-					.getParameters().add(Value.DATE);			
+			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
+			vToDo.getProperties().getProperty(Property.DUE    ).getParameters().add(Value.DATE);			
 		}
 		
 		setComponentDescription(vToDo, entry.getDescription().getText());
@@ -2214,6 +2224,14 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		     start = new DateTime();
 		else start = new DateTime(event.getLogicalStart().getTime());
 		return start;
+	}
+	
+	private DateTime getEndDT(Event event) {
+		DateTime end;
+		if (null != event.getLogicalEnd())
+		     end = new DateTime(event.getLogicalEnd().getTime());
+		else end = null;
+		return end;
 	}
 	
 	@SuppressWarnings("unchecked")
