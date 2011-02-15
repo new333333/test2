@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.ui.Anchor;
@@ -124,8 +125,8 @@ public class SearchMenuPanel extends FlowPanel {
 		m_searchInput.addKeyPressHandler(new KeyPressHandler() {
 			public void onKeyPress(KeyPressEvent event) {
 				// Is this the enter key being pressed?
-				char key = event.getCharCode();
-				if ('\r' == key) {
+				int key = event.getNativeEvent().getKeyCode();
+				if ( KeyCodes.KEY_ENTER == key ) {
 					// Yes!  Perform the search.
 					doSearch();
 				}

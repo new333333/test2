@@ -35,12 +35,22 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.lpe.IFrameProperties.ScrollbarValue;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -51,8 +61,16 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class IFrameWidgetDlgBox extends DlgBox
+	implements KeyPressHandler
 {
-	private TextBox	m_urlTxtBox;
+	private TextBox m_urlTxtBox;
+	private TextBox m_frameNameTxtBox;
+	private TextBox m_heightTxtBox;
+	private TextBox m_widthTxtBox;
+	private TextBox m_marginHeightTxtBox;
+	private TextBox m_marginWidthTxtBox;
+	private CheckBox m_frameBorderCkBox;
+	private ListBox m_scrollbarListBox;
 	
 	/**
 	 * 
@@ -80,24 +98,153 @@ public class IFrameWidgetDlgBox extends DlgBox
 	{
 		IFrameProperties properties;
 		Label			label;
+		InlineLabel inlineLabel;
 		VerticalPanel	mainPanel;
 		FlexTable		table;
+		FlowPanel		panel;
+		int row;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
 		
 		properties = (IFrameProperties) props;
 
 		mainPanel = new VerticalPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
-		// Add label and edit control for "URL"
 		table = new FlexTable();
 		table.setCellSpacing( 2 );
-		label = new Label( GwtTeaming.getMessages().urlLabel() );
-		table.setWidget( 2, 0, label );
-		m_urlTxtBox = new TextBox();
-		m_urlTxtBox.setVisibleLength( 30 );
-		table.setWidget( 3, 0, m_urlTxtBox );
-		
+		row = 0;
+
 		mainPanel.add( table );
+		
+		// Add label and edit control for "URL"
+		label = new Label( messages.urlLabel() );
+		table.setWidget( row, 0, label );
+		++row;
+		m_urlTxtBox = new TextBox();
+		m_urlTxtBox.setVisibleLength( 50 );
+		table.setWidget( row, 0, m_urlTxtBox );
+		++row;
+		
+		table = new FlexTable();
+		table.setCellSpacing( 2 );
+		row = 0;
+
+		mainPanel.add( table );
+		
+		// Add label and edit control for frame name.
+		label = new Label( messages.frameNameLabel() );
+		table.setWidget( row, 0, label );
+		m_frameNameTxtBox = new TextBox();
+		m_frameNameTxtBox.setVisibleLength( 30 );
+		table.setWidget( row, 1, m_frameNameTxtBox );
+		++row;
+		
+		// Add an empty div for space.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 10, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 4, Unit.PX );
+			table.setWidget( row, 0, spacer );
+			++row;
+		}
+		
+		// Add label and edit control for height
+		label = new Label( messages.heightLabel() );
+		table.setWidget( row, 0, label );
+		m_heightTxtBox = new TextBox();
+		m_heightTxtBox.setVisibleLength( 4 );
+		m_heightTxtBox.addKeyPressHandler( this );
+		panel = new FlowPanel();
+		panel.add( m_heightTxtBox );
+		inlineLabel = new InlineLabel( messages.pxLabel() );
+		panel.add( inlineLabel );
+		table.setWidget( row, 1, panel );
+		++row;
+
+		// Add a label and edit control for width
+		label = new Label( messages.widthLabel() );
+		table.setWidget( row, 0, label );
+		m_widthTxtBox = new TextBox();
+		m_widthTxtBox.setVisibleLength( 4 );
+		m_widthTxtBox.addKeyPressHandler( this );
+		panel = new FlowPanel();
+		panel.add( m_widthTxtBox );
+		inlineLabel = new InlineLabel( messages.pxLabel() );
+		panel.add( inlineLabel );
+		table.setWidget( row, 1, panel );
+		++row;
+		
+		// Add an empty div for space.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 10, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 4, Unit.PX );
+			table.setWidget( row, 0, spacer );
+			++row;
+		}
+		
+		// Add a label and edit control for margin height
+		label = new Label( messages.marginHeightLabel() );
+		table.setWidget( row, 0, label );
+		m_marginHeightTxtBox = new TextBox();
+		m_marginHeightTxtBox.setVisibleLength( 4 );
+		m_marginHeightTxtBox.addKeyPressHandler( this );
+		panel = new FlowPanel();
+		panel.add( m_marginHeightTxtBox );
+		inlineLabel = new InlineLabel( messages.pxLabel() );
+		panel.add( inlineLabel );
+		table.setWidget( row, 1, panel );
+		++row;
+		
+		// Add a label and edit control for margin width
+		label = new Label( messages.marginWidthLabel() );
+		table.setWidget( row, 0, label );
+		m_marginWidthTxtBox = new TextBox();
+		m_marginWidthTxtBox.setVisibleLength( 4 );
+		m_marginWidthTxtBox.addKeyPressHandler( this );
+		panel = new FlowPanel();
+		panel.add( m_marginWidthTxtBox );
+		inlineLabel = new InlineLabel( messages.pxLabel() );
+		panel.add( inlineLabel );
+		table.setWidget( row, 1, panel );
+		++row;
+		
+		// Add an empty div for space.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 10, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 4, Unit.PX );
+			table.setWidget( row, 0, spacer );
+			++row;
+		}
+		
+		// Add a listbox for the scrollbar value.
+		{
+			label = new Label( messages.showScrollbarsLabel() );
+			table.setWidget( row, 0, label );
+			
+			m_scrollbarListBox = new ListBox();
+			m_scrollbarListBox.setVisibleItemCount( 1 );
+			m_scrollbarListBox.addItem( messages.showScrollbars_Always(), "yes" );
+			m_scrollbarListBox.addItem( messages.showScrollbars_Never(), "no" );
+			m_scrollbarListBox.addItem( messages.showScrollbars_Auto(), "auto" );
+			
+			table.setWidget( row, 1, m_scrollbarListBox );
+			++row;
+		}
+		
+		// Add a label and checkbox for frame border
+		m_frameBorderCkBox = new CheckBox( messages.showBorder() );
+		table.setWidget( row, 0, m_frameBorderCkBox );
+		++row;
 		
 		init( properties );
 		
@@ -116,6 +263,39 @@ public class IFrameWidgetDlgBox extends DlgBox
 		
 		// Save away the url
 		properties.setUrl( getUrlValue() );
+		
+		// Save the frame name.
+		properties.setName( m_frameNameTxtBox.getText() );
+		
+		// Save the height.
+		properties.setHeight( m_heightTxtBox.getText() );
+		
+		// Save the width.
+		properties.setWidth( m_widthTxtBox.getText() );
+		
+		// Save the margin height.
+		properties.setMarginHeight( m_marginHeightTxtBox.getText() );
+		
+		// Save the margin width.
+		properties.setMarginWidth( m_marginWidthTxtBox.getText() );
+		
+		// Save whether or not the frame should have a border
+		properties.setShowBorder( m_frameBorderCkBox.getValue().booleanValue() );
+		
+		// Save whether to scrollbar setting
+		{
+			int index;
+			String value;
+			
+			value = "auto";
+			
+			// Get the selected setting.
+			index = m_scrollbarListBox.getSelectedIndex();
+			if ( index != -1 )
+				value = m_scrollbarListBox.getValue( index );
+			
+			properties.setScrollbarValue( value );
+		}
 		
 		return properties;
 	}
@@ -145,10 +325,91 @@ public class IFrameWidgetDlgBox extends DlgBox
 	public void init( PropertiesObj props )
 	{
 		IFrameProperties properties;
+		String value;
 		
 		properties = (IFrameProperties) props;
 
+		value = properties.getUrl();
+		if ( value == null )
+			value = "";
 		m_urlTxtBox.setText( properties.getUrl() );
+		
+		value = properties.getName();
+		if ( value == null )
+			value = "";
+		m_frameNameTxtBox.setText( value );
+		
+		value = properties.getHeightAsString();
+		if ( value == null )
+			value = "";
+		m_heightTxtBox.setText( value );
+		
+		value = properties.getWidthAsString();
+		if ( value == null )
+			value = "";
+		m_widthTxtBox.setText( value );
+		
+		value = properties.getMarginHeigthAsString();
+		if ( value == null )
+			value = "";
+		m_marginHeightTxtBox.setText( value );
+		
+		value = properties.getMarginWidthAsString();
+		if ( value == null )
+			value = "";
+		m_marginWidthTxtBox.setText( value );
+		
+		// Select the appropriate option in the list box
+		selectScrollbarValue( properties.getScrollbarValue() );
+
+		if ( properties.getShowBorder() )
+			m_frameBorderCkBox.setValue( Boolean.TRUE );
+		else
+			m_frameBorderCkBox.setValue( Boolean.FALSE );
 	}
 	
+	/**
+	 * This method gets called when the user types in the height, width, margin height or margin width text boxes.
+	 * We only want to let the user enter numbers.
+	 */
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+        {
+        	TextBox txtBox;
+        	Object source;
+        	
+        	// Make sure we are dealing with a text box.
+        	source = event.getSource();
+        	if ( source instanceof TextBox )
+        	{
+        		// Suppress the current keyboard event.
+        		txtBox = (TextBox) source;
+        		txtBox.cancelKey();
+        	}
+        }
+	}
+	
+	/**
+	 * 
+	 */
+	public void selectScrollbarValue( ScrollbarValue value )
+	{
+		if ( value == ScrollbarValue.ALWAYS )
+			m_scrollbarListBox.setItemSelected( 0, true );
+		else if ( value == ScrollbarValue.NEVER )
+			m_scrollbarListBox.setItemSelected( 1, true );
+		else if ( value == ScrollbarValue.AUTO )
+			m_scrollbarListBox.setItemSelected( 2, true );
+		else
+			m_scrollbarListBox.setItemSelected( 0, true );
+	}
 }
