@@ -130,7 +130,9 @@ function ss_validationComplete(data) {
 	}
 	ss_validationRunning = false;
 	var statusDiv = document.getElementById("ss_operation_status");
-	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completed"/> " + data.errors + "</span>";
+	statusDiv.innerHTML = "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completed"/></span><br/>\n";
+	statusDiv.innerHTML += "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completedScanned"/> " + data.ids + "</span><br/>\n";
+	statusDiv.innerHTML += "<span class='ss_bold'><ssf:nlt tag="validate.binderQuota.completedCorrections"/> " + data.errors + "</span><br/>\n";
 	<c:if test="${!ss_binderQuotasInitialized}">
 	  var url = "<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
 		name="binderId" value="${ssBinder.id}"/></ssf:url>";
@@ -452,7 +454,7 @@ function ss_getOperationStatus() {
 		    <span class="ss_bold"><ssf:nlt tag="administration.quotas.binder.mustInitialize"/></span>
 		  </c:if>
 		</div>
-	    <div style="margin: 10px;">
+	    <div style="margin: 10px; padding-top:16px;">
 	      <a class="ss_button ss_bold" href="javascript: ;" onClick="ss_validateBinderQuotas();return false;"
 	        title="<ssf:nlt tag="administration.quotas.binder.validateHint"/>"
 	      >

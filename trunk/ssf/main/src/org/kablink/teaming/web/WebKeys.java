@@ -945,6 +945,7 @@ public class WebKeys {
     public static final String HELP_SPOT="helpSpot";
     public static final String HELP_CPANEL_SHOW="help_cpanel_show";
     public static final String HOMEPAGE_CONFIG="ssHomePageConfig";
+    public static final String IDS_COUNT="ss_idsCount";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
     public static final String INLINE_NO_IMAGE="ssInlineNoImage";

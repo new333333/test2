@@ -36,5 +36,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
 {
-errors : ${ss_errorCount}
+errors : ${ss_errorCount},
+ids : ${ss_idsCount}
 }
