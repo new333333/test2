@@ -261,24 +261,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        sp.start("addBinder_create");
 	        final Binder binder = addBinder_create(def, clazz, ctx);
 	        sp.stop("addBinder_create");
-	        
-	 	    //If a binder was created, go create the BinderQuota record
-			sp.start("addBinderQuotaRecord");
-	        // The following part requires update database transaction.
-	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	        		//Create a BinderQuota for this binder
-	        		BinderQuota bq = new BinderQuota();
-	   	    		bq.setZoneId(binder.getZoneId());
-	   	    		bq.setBinderId(binder.getId());
-	   	    		bq.setDiskSpaceUsed(0L);
-	   	    		bq.setDiskSpaceUsedCumulative(0L);
-	   	    		getCoreDao().save(bq);
-	                return null;
-	        	}
-	        });
-	        sp.stop("addBinderQuotaRecord");
-	        
+	        	        
 	    	if (def != null) {
 	    		if ((parent.getDefinitionType() == null) ||
 	    				(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
@@ -328,6 +311,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems,ctx);
 	        sp.stop("addBinder_filterFiles");
 	        
+	 	    //If a binder was created, go create the BinderQuota record
+			sp.start("addBinderQuotaRecord");
+	        // The following part requires update database transaction.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		//Create a BinderQuota for this binder
+	        		BinderQuota bq = new BinderQuota();
+	   	    		bq.setZoneId(binder.getZoneId());
+	   	    		bq.setBinderId(binder.getId());
+	   	    		bq.setDiskSpaceUsed(0L);
+	   	    		bq.setDiskSpaceUsedCumulative(0L);
+	   	    		getCoreDao().save(bq);
+	                return null;
+	        	}
+	        });
+	        sp.stop("addBinderQuotaRecord");
+
 	        sp.start("addBinder_processFiles");
 	        // We must save the entry before processing files because it makes use
 	        // of the persistent id of the entry. 
