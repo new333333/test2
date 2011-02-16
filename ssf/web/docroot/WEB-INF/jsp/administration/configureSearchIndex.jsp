@@ -244,6 +244,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br>
 <ssf:nlt tag="administration.configure.nodes.select.detail"/>
 <br>
+<br>
   <c:forEach var="node" items="${ssSearchNodes}">
     <input type="checkbox" name="searchNodeName" value="${node.nodeName}" <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if>>
     ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
@@ -277,35 +278,14 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm2', 'ss_optimizationDone' );" >
 <input type="hidden" name="operation" value="optimize"/>
 <br>
-<c:if test="${empty ssSearchNodes}">
+<br>
 <div>
   <span class="ss_bold"><ssf:nlt tag="administration.search.index.optimize" /></span>
 </div>
+<br>
 <div>
   <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
 </div>
-
-</c:if>
-<c:if test="${!empty ssSearchNodes}">
-<br>
-<br>
-<div>
-  <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.selectOptimize" /></span>
-</div>
-<div>
-  <span><ssf:nlt tag="administration.search.index.optimize2" /></span>
-</div>
-<br>
-<br>
-  <c:forEach var="node" items="${ssSearchNodes}">
-    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" 
-    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
-    ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
-    <br/>
-  </c:forEach>
-  <input type="hidden" name="searchNodesPresent" value="1"/>
-</c:if>
-<br>
 
 <table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
 	<tr>
@@ -332,6 +312,23 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 	</ssf:expandableArea>
 </div>	
+
+<c:if test="${!empty ssSearchNodes}">
+<br>
+<br>
+<div>
+  <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.selectOptimize" /></span>
+</div>
+<br>
+  <c:forEach var="node" items="${ssSearchNodes}">
+    <input type="checkbox" name="searchNodeName" value="${node.nodeName}" 
+    <c:if test="${node.userModeAccess == 'noaccess' || !node.noDeferredUpdateLogRecords}">disabled</c:if><c:if test="${ssScheduleInfo.nodeSelectionMap[node.nodeName]}">checked</c:if>>
+    ${node.title} (${node.nodeName}) - <ssf:nlt tag="administration.search.node.usermodeaccess.${node.userModeAccess}"/>, <ssf:nlt tag="administration.search.node.deferredupdatelog.enabled.${node.enableDeferredUpdateLog}"/>, <ssf:nlt tag="administration.search.node.nodeferredupdatelogrecords.${node.noDeferredUpdateLogRecords}"/>
+    <br/>
+  </c:forEach>
+  <input type="hidden" name="searchNodesPresent" value="1"/>
+</c:if>
+<br>
 
 <br>
 <div class="ss_buttonBarLeft">

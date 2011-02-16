@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
 import org.quartz.JobExecutionContext;
@@ -50,7 +51,7 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 	protected void doExecute(JobExecutionContext context)
 			throws JobExecutionException {
 		String[] nodeNames = null;
-		String nodes = jobDataMap.getString("nodeNames");
+		String nodes = jobDataMap.getString(IndexOptimizationSchedule.NODES);
 		if(nodes != null && !nodes.equals(""))
 			nodeNames = StringUtil.split(nodes, ",");
 		if(nodeNames != null) { // H/A setup
@@ -66,13 +67,13 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 					if(!userModeAccess.equals(IndexNode.USER_MODE_ACCESS_NO_ACCESS) &&
 							noDeferredUpdateLogRecords) {
 						// The node exists and is in a condition that allows this operation.
-						logger.info("Invoking index optimization on node '" + currentNode.toString() + "'");
+						logger.info("Invoking index optimization on " + currentNode.toString());
 						doOptimize(nodeName);
 					}
 					else {
 						// The node exists but is not in a condition that allows this operation.
-						logger.info("Skipping index optimization on node '" + currentNode.toString() 
-								+ "' where userModeAccess=" + userModeAccess + 
+						logger.info("Skipping index optimization on " + currentNode.toString() 
+								+ " where userModeAccess=" + userModeAccess + 
 								" and noDeferredUpdateLogRecords=" + noDeferredUpdateLogRecords);
 					}
 				}
@@ -81,8 +82,8 @@ public class DefaultIndexOptimization extends SSCronTriggerJob implements IndexO
 					// currently configured in the system. This means that the administrator
 					// has re-configured the indexes and removed the previously selected node
 					// from the system since the node was last stored in the scheduler.
-					logger.warn("Skipping index optimization on node '" + nodeName + 
-							"' because the node is no longer found in the system");
+					logger.warn("Skipping index optimization on " + nodeName + 
+							" because the node is no longer found in the system");
 				}
 			}
 		}
