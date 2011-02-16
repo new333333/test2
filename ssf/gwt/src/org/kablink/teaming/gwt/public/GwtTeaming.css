@@ -2790,6 +2790,10 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	cursor: pointer;
 	margin-left: 16px;
 }
+.gwtTaskList_sortImage
+{
+	vertical-align: middle;
+}
 
 /* Note that the following styles were copied from the prototype's hf_teaming.css stylesheet. */
 .gwtTaskList_objlist2  /*   apply to the object list table tag <table class="objlist">  */ 

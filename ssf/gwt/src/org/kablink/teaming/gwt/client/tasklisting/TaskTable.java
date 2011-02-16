@@ -1497,6 +1497,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			// Yes!  Add the appropriate directional arrow
 			// (i.e., ^/v)...
 			Image i = buildImage(m_sortAscending ? m_images.sortAZ() : m_images.sortZA());
+			i.addStyleName("gwtTaskList_sortImage");
 			a.getElement().appendChild(i.getElement());
 			
 			// ...and style to the <TD>.
@@ -2017,7 +2018,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (showOrderColumn()) {
 			// Yes!  Render the column header.
 			Anchor a = buildAnchor("sort-column");
-			a.getElement().setInnerHTML("#");
+			a.getElement().setInnerHTML(m_messages.taskColumn_order());
 			markAsSortKey(a, Column.ORDER);
 			PassThroughEventsPanel.addHandler(a, new ClickHandler(){
 				@Override

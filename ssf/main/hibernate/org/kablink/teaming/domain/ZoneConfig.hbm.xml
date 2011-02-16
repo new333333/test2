@@ -24,6 +24,10 @@
 		<property name="defaultHomePageId"/>
 		<property name="defaultGuestHomePageId"/>
     </component>
+    <component name="weekendsAndHolidaysConfig" class="org.kablink.teaming.domain.WeekendsAndHolidaysConfig">
+		<property name="holidays"/>
+		<property name="weekendDays"/>
+    </component>
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
  		 <property name="allowLocalLogin" />
  		 <property name="allowAnonymousAccess"/>

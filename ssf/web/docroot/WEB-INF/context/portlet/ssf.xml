@@ -91,6 +91,7 @@
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigurePostingJobController" />
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminConfigureSearchNodesController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageSearchNodesController" />
+	<bean id="adminConfigureScheduleController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ConfigureScheduleController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.LogFileController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageQuotasController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageQuotasController" />
@@ -200,6 +201,7 @@
 						<entry key="configure_mobile_access"><ref bean="adminConfigureMobileAccessController"/></entry>
 						<entry key="configure_home_page"><ref bean="adminConfigureHomePageController"/></entry>
 						<entry key="configure_user_access"><ref bean="adminConfigureUserAccessController"/></entry>
+						<entry key="configure_schedule"><ref bean="adminConfigureScheduleController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
 						<entry key="manage_quotas"><ref bean="adminManageQuotasController"/></entry>
