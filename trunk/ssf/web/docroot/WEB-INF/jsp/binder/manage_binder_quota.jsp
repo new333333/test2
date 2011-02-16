@@ -114,7 +114,7 @@ function ss_checkIfQuotaValid(s) {
         <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsed.${type}"/></span>
         <span>
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsed + 499999)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsed + 524287)/1048576}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
@@ -123,12 +123,12 @@ function ss_checkIfQuotaValid(s) {
         <span class="ss_bold"><ssf:nlt tag="quota.binder.diskSpaceUsedCumulative.${type}"/></span>
         <span>
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsedCumulative + 499999)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskSpaceUsedCumulative + 524287)/1048576}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
 		</span>
       </div>
 
-      <c:set var="currentQuota"><fmt:formatNumber value="${(ss_binderQuota.diskQuota + 499999)/1000000}"
+      <c:set var="currentQuota"><fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
 		  maxFractionDigits="0"/></c:set>
 	  <div style="padding:6px 10px 0px 10px;">
         <span class="ss_bold"><ssf:nlt tag="quota.currentQuota"/></span>
@@ -136,7 +136,7 @@ function ss_checkIfQuotaValid(s) {
           <c:if test="${empty ss_binderQuota.diskQuota}"><ssf:nlt tag="None"/></c:if>
           <c:if test="${!empty ss_binderQuota.diskQuota}">
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 499999)/1000000}"
+		  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
         </span>
       </div>

@@ -46,6 +46,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
@@ -147,12 +148,26 @@ public class ModifyBinderController extends AbstractBinderController {
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
 				Long destinationId = TreeHelper.getSelectedId(formData);
-				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId, null);
-				setupReloadOpener(response, binderId);
+				if (destinationId != null) {
+					try {
+						getBinderModule().moveBinder(binderId, destinationId, null);
+						setupReloadOpener(response, binderId);
+					} catch(NotSupportedException nse) {
+			   			response.setRenderParameters(formData);
+			   			response.setRenderParameter(WebKeys.EXCEPTION, nse.getMessage());
+					}
+				}
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
 				Long destinationId = TreeHelper.getSelectedId(formData);
-				if (destinationId != null) getBinderModule().copyBinder(binderId, destinationId, true, null);
-				setupReloadOpener(response, binderId);
+				if (destinationId != null) {
+					try {
+						getBinderModule().copyBinder(binderId, destinationId, true, null);
+						setupReloadOpener(response, binderId);
+					} catch(NotSupportedException nse) {
+			   			response.setRenderParameters(formData);
+			   			response.setRenderParameter(WebKeys.EXCEPTION, nse.getMessage());
+					}
+				}
 				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
@@ -248,9 +263,9 @@ public class ModifyBinderController extends AbstractBinderController {
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );
 
-			model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 			path = WebKeys.VIEW_MODIFY_BINDER;
 		} 
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		return new ModelAndView(path, model);
 	}
 

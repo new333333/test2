@@ -1223,7 +1223,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		long begin = System.currentTimeMillis();
 		try {
 			Binder binder = (Binder)load(Binder.class, binderId);
-	        if (binder == null) {throw new NoBinderByTheIdException(binderId);};
+	        if (binder == null) {
+	        	throw new NoBinderByTheIdException(binderId);
+	        }
 	        if (!binder.getZoneId().equals(zoneId)) {
 	        	throw new NoBinderByTheIdException(binderId);
 	        }

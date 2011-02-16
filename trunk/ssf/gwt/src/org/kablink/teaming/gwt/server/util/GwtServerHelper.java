@@ -663,7 +663,9 @@ public class GwtServerHelper {
 				Binder subBinder = bm.getBinder(biIT.next());
 				TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
 				childTIList.add(subWsTI);
-			} catch(AccessControlException ace) {}
+			} catch(AccessControlException ace) {
+			} catch(NoBinderByTheIdException nbe) {}
+			
 		}
 	}
 	

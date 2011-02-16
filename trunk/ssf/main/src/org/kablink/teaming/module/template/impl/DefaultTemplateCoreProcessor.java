@@ -83,6 +83,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException("Move", "TemplateBinder");
 	
 	}
+	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+		return false;
+	}
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
    		//nothing to do    	    	
     	return new IndexErrors();

@@ -319,8 +319,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	private Binder loadBinder(Long binderId, Long zoneId) {
 		Binder binder = getCoreDao().loadBinder(binderId, zoneId);
-		if (binder.isDeleted())
+		if (binder.isDeleted()) {
 			throw new NoBinderByTheIdException(binderId);
+		}
 		return binder;
 	}
 
@@ -886,14 +887,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
 			Binder parentBinder = binder;
 			while (parentBinder != null) {
-				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
-				if (binderQuota.getDiskQuota() != null) {
-					Long quota = binderQuota.getDiskQuota();
-					Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
-					if (diskSpaceUsedCumulative + fileSize > quota) {
-						//This will exceed the quota
-						return false;
+				try {
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+					if (binderQuota.getDiskQuota() != null) {
+						Long quota = binderQuota.getDiskQuota();
+						Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+						if (diskSpaceUsedCumulative + fileSize > quota) {
+							//This will exceed the quota
+							return false;
+						}
 					}
+				} catch(NoObjectByTheIdException e) {
+					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
 				}
 				parentBinder = parentBinder.getParentBinder();
 			}
@@ -909,13 +914,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
 			Binder parentBinder = binder;
 			while (parentBinder != null) {
-				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
-				if (binderQuota.getDiskQuota() != null) {
-					Long quota = binderQuota.getDiskQuota();
-					if (lowestQuota == null || quota < lowestQuota) {
-						//A new low
-						lowestQuota = quota;
+				try {
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+					if (binderQuota.getDiskQuota() != null) {
+						Long quota = binderQuota.getDiskQuota();
+						if (lowestQuota == null || quota < lowestQuota) {
+							//A new low
+							lowestQuota = quota;
+						}
 					}
+				} catch(NoObjectByTheIdException e) {
+					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
 				}
 				parentBinder = parentBinder.getParentBinder();
 			}
@@ -932,15 +941,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
 			Binder parentBinder = binder;
 			while (parentBinder != null) {
-				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
-				if (binderQuota.getDiskQuota() != null) {
-					Long quota = binderQuota.getDiskQuota();
-					Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
-					if (lowestQuota == null || quota < lowestQuota) {
-						//A new low
-						lowestQuota = quota;
-						lowestCumulativeDiskSpaceUsed = diskSpaceUsedCumulative;
+				try {
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+					if (binderQuota.getDiskQuota() != null) {
+						Long quota = binderQuota.getDiskQuota();
+						Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+						if (lowestQuota == null || quota < lowestQuota) {
+							//A new low
+							lowestQuota = quota;
+							lowestCumulativeDiskSpaceUsed = diskSpaceUsedCumulative;
+						}
 					}
+				} catch(NoObjectByTheIdException e) {
+					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
 				}
 				parentBinder = parentBinder.getParentBinder();
 			}
@@ -1072,46 +1085,54 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	// inside write transaction
-	public void moveBinder(Long fromId, Long toId, Map options) {
+	public void moveBinder(Long fromId, Long toId, Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.moveBinder);
 		Binder destination = loadBinder(toId);
-		if (source.getEntityType().equals(EntityType.folder)) {
-			getAccessControlManager().checkOperation(destination,
-					WorkAreaOperation.CREATE_FOLDERS);
+		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destination)) {
+			if (source.getEntityType().equals(EntityType.folder)) {
+				getAccessControlManager().checkOperation(destination,
+						WorkAreaOperation.CREATE_FOLDERS);
+			} else {
+				getAccessControlManager().checkOperation(destination,
+						WorkAreaOperation.CREATE_WORKSPACES);
+			}
+			// move whole tree at once
+			loadBinderProcessor(source).moveBinder(source, destination, options);
 		} else {
-			getAccessControlManager().checkOperation(destination,
-					WorkAreaOperation.CREATE_WORKSPACES);
+			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 		}
-		// move whole tree at once
-		loadBinderProcessor(source).moveBinder(source, destination, options);
-
 	}
 
 	// no transaction
 	public Binder copyBinder(Long fromId, Long toId, boolean cascade,
-			Map options) {
+			Map options) throws NotSupportedException {
 		Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
 		Binder destinationParent = loadBinder(toId);
-		if (source.getEntityType().equals(EntityType.folder)) {
-			getAccessControlManager().checkOperation(destinationParent,
-					WorkAreaOperation.CREATE_FOLDERS);
+		//See if there is enough quota to do this
+		if (loadBinderProcessor(source).checkMoveBinderQuota(source, destinationParent)) {
+			if (source.getEntityType().equals(EntityType.folder)) {
+				getAccessControlManager().checkOperation(destinationParent,
+						WorkAreaOperation.CREATE_FOLDERS);
+			} else {
+				getAccessControlManager().checkOperation(destinationParent,
+						WorkAreaOperation.CREATE_WORKSPACES);
+			}
+			Map params = new HashMap();
+			if (options != null)
+				params.putAll(options);
+			params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+			params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
+			// lock top level
+			Binder binder = loadBinderProcessor(source).copyBinder(source,
+					destinationParent, params);
+			if (cascade)
+				doCopyChildren(source, binder);
+			return binder;
 		} else {
-			getAccessControlManager().checkOperation(destinationParent,
-					WorkAreaOperation.CREATE_WORKSPACES);
+			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
 		}
-		Map params = new HashMap();
-		if (options != null)
-			params.putAll(options);
-		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
-		// lock top level
-		Binder binder = loadBinderProcessor(source).copyBinder(source,
-				destinationParent, params);
-		if (cascade)
-			doCopyChildren(source, binder);
-		return binder;
 	}
 
 	private void doCopyChildren(Binder source, Binder destinationParent) {

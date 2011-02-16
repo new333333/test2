@@ -262,6 +262,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        final Binder binder = addBinder_create(def, clazz, ctx);
 	        sp.stop("addBinder_create");
 	        
+	 	    //If a binder was created, go create the BinderQuota record
+			sp.start("addBinderQuotaRecord");
+	        // The following part requires update database transaction.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		//Create a BinderQuota for this binder
+	        		BinderQuota bq = new BinderQuota();
+	   	    		bq.setZoneId(binder.getZoneId());
+	   	    		bq.setBinderId(binder.getId());
+	   	    		bq.setDiskSpaceUsed(0L);
+	   	    		bq.setDiskSpaceUsedCumulative(0L);
+	   	    		getCoreDao().save(bq);
+	                return null;
+	        	}
+	        });
+	        sp.stop("addBinderQuotaRecord");
+	        
 	    	if (def != null) {
 	    		if ((parent.getDefinitionType() == null) ||
 	    				(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
@@ -1048,19 +1065,26 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Long maxQuota = getBinderModule().getMaxBinderQuota(destination);
     	Long maxUsed = getBinderModule().getMaxBinderUsed(destination);
-    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
-    	if (maxQuota != null && maxQuota - (maxUsed + sourceBinderQuota.getDiskSpaceUsedCumulative()) < 0L) {
-    		//There is not enough quota in the destination. See if this is a parent binder of the source
-    		Binder parentBinder = source;
-    		while (parentBinder != null) {
-    			if (parentBinder.equals(destination)) {
-    				//This binder is an ancestor, so the quota is not going to change
-    				return true;
-    			}
-    		}
-    		//Destination does not have the quota for this move.
-    		return false;
-    	}
+    	try {
+	    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
+	    	if (maxQuota != null && maxQuota - (maxUsed + sourceBinderQuota.getDiskSpaceUsedCumulative()) < 0L) {
+	    		//There is not enough quota in the destination. See if this is a parent binder of the source
+	    		Binder parentBinder = source;
+	    		while (parentBinder != null) {
+	    			if (parentBinder.equals(destination)) {
+	    				//This binder is an ancestor, so the quota is not going to change
+	    				return true;
+	    			}
+	    			parentBinder = parentBinder.getParentBinder();
+	    		}
+	    		//Destination does not have the quota for this move.
+	    		return false;
+	    	}
+		} catch(NoObjectByTheIdException e) {
+			//Skip any binders that don't have a quota set up (shouldn't happen, but...)
+			//If there is no quota set up, just let the move be done
+		}
+
     	return true;
     }
     
@@ -1220,7 +1244,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()))
          		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	//Check to make sure the target binder has quota enough for this
-    	if (checkMoveBinderQuota(source, destination)) {
+    	if (!checkMoveBinderQuota(source, destination)) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
     	}
         final Map ctx = new HashMap();
