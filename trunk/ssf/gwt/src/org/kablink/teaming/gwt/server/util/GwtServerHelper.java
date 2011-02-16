@@ -1603,6 +1603,23 @@ public class GwtServerHelper {
 				systemCategory.addAdminOption( adminAction );
 			}
 			
+			// Does the user have rights to "Configure Weekends and Holidays"?
+			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
+			{
+				// Yes
+				title = NLT.get( "administration.configure.schedule" );
+
+				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
+				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_SCHEDULE );
+				url = adaptedUrl.toString();
+				
+				adminAction = new GwtAdminAction();
+				adminAction.init( title, url, AdminAction.CONFIGURE_SCHEDULE );
+				
+				// Add this action to the "system" category
+				systemCategory.addAdminOption( adminAction );
+			}
+			
 			// Does the user have rights to "Configure E-Mail"?
 			if ( adminModule.testAccess( AdminOperation.manageMail ) )
 			{

@@ -886,6 +886,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskColumn_dueDate();
 	String taskColumn_location();
 	String taskColumn_name();
+	String taskColumn_order();
 	String taskColumn_priority();
 	String taskColumn_status();
 	String taskCompleted_c0();

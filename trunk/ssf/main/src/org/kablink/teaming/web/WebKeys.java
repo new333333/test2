@@ -185,6 +185,8 @@ public class WebKeys {
 	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_HOME_PAGE_ID="homePageId";
 	public static final String URL_GUEST_HOME_PAGE_ID="guestHomePageId";
+	public static final String URL_HOLIDAYS="holidays";
+	public static final String URL_WEEKEND_DAYS="weekendDays";
 	public static final String URL_IDS="ids";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MOBILE_URL="url";
@@ -295,6 +297,7 @@ public class WebKeys {
 	//prefix to be used to name custom actions=>action= field in url
 	public static final String CUSTOM_ACTION_PREFIX="EXT_";
     //actions
+    public static final String ADMIN_ACTION_CONFIGURE_SCHEDULE = "configure_schedule";
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
@@ -945,6 +948,7 @@ public class WebKeys {
     public static final String HELP_SPOT="helpSpot";
     public static final String HELP_CPANEL_SHOW="help_cpanel_show";
     public static final String HOMEPAGE_CONFIG="ssHomePageConfig";
+    public static final String SCHEDULE_CONFIG="ssWeekendsAndHolidaysConfig";
     public static final String IDS_COUNT="ss_idsCount";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
@@ -1436,6 +1440,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_NODES="administration/configureSearchNodes";
+    public static final String VIEW_ADMIN_CONFIGURE_SCHEDULE="administration/configureSchedule";
     public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
