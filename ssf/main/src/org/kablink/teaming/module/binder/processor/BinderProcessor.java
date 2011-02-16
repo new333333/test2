@@ -78,6 +78,7 @@ public interface BinderProcessor {
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments, Map options) 
 		throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public void moveBinder(Binder source, Binder destination, Map options);
+    public boolean checkMoveBinderQuota(Binder source, Binder destination);
     /**
      * Fix up a binder after its parent have been moved
      * Needs to be public, since calls cross binders and may be

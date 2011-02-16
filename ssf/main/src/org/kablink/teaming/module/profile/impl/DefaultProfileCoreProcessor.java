@@ -194,6 +194,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		throw new NotSupportedException("errorcode.notsupported.copyBinder");
 	
 	}
+	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+		return false;
+	}
     //*******************************************************************/
     //inside write transaction    
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {

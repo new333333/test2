@@ -79,11 +79,12 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 				Long quota = null;
 				if (!sQuota.equals("") && sQuota.matches("^[0-9]+$")) {
 					quota = Long.valueOf(sQuota);
-					quota = quota * 1000000;
+					quota = quota * 1048576;
 				}
 				BinderQuota bq = getAdminModule().getBinderQuota(binder);
 				bq.setDiskQuota(quota);
 				getAdminModule().setBinderQuota(binder, bq);
+				setupViewBinder(response, binderId, binder.getEntityType().name());
 			}
 
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {

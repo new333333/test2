@@ -48,6 +48,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.DataQuotaException;
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Binder;
@@ -1033,10 +1034,12 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			Map targetMap) throws NoAccessException {
 		try {
 			bs.getBinderModule().moveBinder(getLeafBinder(sourceMap).getId(), getParentBinder(targetMap).getId(), null);
-		}
-		catch(AccessControlException e) {
+		} catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
-		} 
+		} catch(NotSupportedException nse) {
+			throw new NotSupportedException(nse.getLocalizedMessage());
+		}
+		
 	}
 	
 	private void renameResource(Map sourceUri, Map sourceMap, Map targetUri, 

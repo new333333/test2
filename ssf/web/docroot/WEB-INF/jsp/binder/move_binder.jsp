@@ -73,6 +73,11 @@ function ss_submitMoveBinderForm() {
 <ssf:form titleTag="${tag}">
 
 <br/>
+<c:if test="${!empty ssException}">
+	<span class="ss_errorLabel ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span><br>
+<br/>
+<br/>
+</c:if>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="move.currentFolder"/>: </span>
 </c:if>

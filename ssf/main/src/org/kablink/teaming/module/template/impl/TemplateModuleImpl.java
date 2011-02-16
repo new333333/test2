@@ -783,7 +783,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   //don't fail, but log it
  			logger.error("Error creating binder from template: ", e);
  			binder = null;
-	}
+	   }
 	   return binder;
 	}
 	/**
