@@ -146,7 +146,7 @@
 	<c:if test="${colCount > 0}">
 	<tr>
 	<td colspan="${colCount}" align="right">
-	<div id="taskRefreshGraph" class="ss_taskGraphsHidden"><input type="button" class="ss_linkButton ss_fineprint" onClick="self.location.reload(true);"
+	<div id="taskRefreshGraph" class="ss_taskGraphsHidden"><input type="button" class="ss_linkButton ss_smallprint" onClick="self.location.reload(true);"
 	 value="<%= NLT.get("task.refreshChart") %>" /></div>
 	</td>
 	</tr>

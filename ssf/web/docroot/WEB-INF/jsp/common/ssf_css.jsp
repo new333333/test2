@@ -624,7 +624,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   	text-align: center;
   	padding: 2px 10px;
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 12px;
+ 	font-size: 11px;
 	white-space: nowrap;
 	text-decoration: none !important;
 	}	
@@ -632,7 +632,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
 button, input[type="reset"], input[type="button"], input[type="submit"] {	
 	color:#fff;
  	font-family: ${ss_style_folder_view_font_family};
- 	font-size: 12px;
+ 	font-size: 11px;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
 	padding: 2px 10px;
@@ -651,7 +651,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #fff;
     text-align: center !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
@@ -4597,7 +4597,7 @@ div.ssPageNavi table td {
 	}
 
 .ssPageNavi a.ss_linkButton:link, .ssPageNavi a.ss_linkButton:visited, .ssPageNavi a.ss_linkButton:hover {
-	border: 1px solid ${ss_linkbutton_outline_color};
+	border: 0px solid ${ss_linkbutton_outline_color};
 	background-color: ${ss_linkbutton_background_color};
 	background-image: none;
 }

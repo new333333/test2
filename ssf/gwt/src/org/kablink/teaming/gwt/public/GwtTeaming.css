@@ -2286,7 +2286,7 @@ body, table td, select
   background: #949494;
 }
 .gwt-Button:active {
-  border: 1px inset #ccc;
+  border: 0px inset #ccc;
 }
 .gwt-Button:hover {
   border-color: #9cf #69e #69e #7af;
@@ -2958,13 +2958,10 @@ a.sort-column:hover {
 .gwtTaskList_ckbox {
 	display: inline;
 	}
-	
 .gwtTaskList_task-strike {
 	background:url(images/strike_marker_blue.png) no-repeat 15px 2px;
 	}
-	
 .gwtTaskList_task-overdue {
-	background:url(images/strike_bar_yellow.png) no-repeat 15px 0 transparent;
 	}
 .gwtTaskList_task-overdue-color {
 	color: red;
