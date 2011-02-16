@@ -47,6 +47,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.kablink.util.StringUtil;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -58,7 +59,7 @@ import org.springframework.web.portlet.ModelAndView;
 @SuppressWarnings("unchecked")
 public class ConfigureScheduleController extends  SAbstractController {
 	/**
-	 * ?
+	 * Called when the form is submitted to process the results.
 	 * 
 	 * @param request
 	 * @param response
@@ -66,35 +67,21 @@ public class ConfigureScheduleController extends  SAbstractController {
 	 * @throws Exception
 	 */
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-		// Is this the Ok push button getting clicked?
+		// Is this the result of the Ok push button getting clicked?
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			// Yes!  Extract the holiday information... 
-			List<Date> holidays;
-			Boolean deleteHolidays = PortletRequestUtils.getBooleanParameter(request, "deleteHolidays", false);
-			if (deleteHolidays) {
-				holidays = null;
-			}
-			else {
-				long[] holidaysMS     = PortletRequestUtils.getLongParameters(request, WebKeys.URL_HOLIDAYS    );
-				holidays = new ArrayList<Date>();
-				for (int i = 0; i < holidaysMS.length; i += 1) {
-					holidays.add(new Date(holidaysMS[i]));
-				}				
-			}
+			String[]   holidaysMS = StringUtil.unpack(PortletRequestUtils.getStringParameter(request, WebKeys.URL_HOLIDAYS));
+			List<Date> holidays   = new ArrayList<Date>();
+			for (int i = 0; i < holidaysMS.length; i += 1) {
+				holidays.add(new Date(Long.parseLong(holidaysMS[i])));
+			}				
 			
 			// ...extract the weekend days information... 
-			List<Integer> weekendDays;
-			Boolean deleteWeekendDays = PortletRequestUtils.getBooleanParameter(request, "deleteWeekendDays", false);
-			if (deleteWeekendDays) {
-				weekendDays = null;
-			}
-			else {
-				int[]  weekendDayInts = PortletRequestUtils.getIntParameters( request, WebKeys.URL_WEEKEND_DAYS);
-				weekendDays = new ArrayList<Integer>();
-				for (int i = 0; i < weekendDayInts.length; i += 1) {
-					weekendDays.add(new Integer(weekendDayInts[i]));
-				}
+			String[]      weekendDayInts = StringUtil.unpack(PortletRequestUtils.getStringParameter(request, WebKeys.URL_WEEKEND_DAYS));
+			List<Integer> weekendDays    = new ArrayList<Integer>();
+			for (int i = 0; i < weekendDayInts.length; i += 1) {
+				weekendDays.add(new Integer(weekendDayInts[i]));
 			}
 
 			// ...and update the schedule.
@@ -111,7 +98,8 @@ public class ConfigureScheduleController extends  SAbstractController {
 	}
 
 	/**
-	 * ?
+	 * Called as the page is rendering to supply the data need by the
+	 * page.
 	 * 
 	 * @param request
 	 * @param response
