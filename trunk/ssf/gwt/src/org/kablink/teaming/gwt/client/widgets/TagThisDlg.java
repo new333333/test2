@@ -98,6 +98,7 @@ public class TagThisDlg extends DlgBox
 	private RadioButton m_communityRB;
 	private FindCtrl m_findCtrl;
 	private FlexTable m_table;						// Holds a list of tags applied to the given binder/entry.
+	private FlowPanel m_tagTablePanel;
 	private FlexTable.FlexCellFormatter m_cellFormatter;
 	private ImageResource m_deleteImgR;
 
@@ -275,9 +276,39 @@ public class TagThisDlg extends DlgBox
 		
 		// Add the tag to our current list of tags.
 		m_currentListOfTags.add( tagInfo );
+		
+		// Limit the height of the table that holds the tags to 300 pixels.
+		adjustTagTablePanelHeight();
 	}
 	
 	
+	/**
+	 * 
+	 */
+	private void adjustTagTablePanelHeight()
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			public void execute()
+			{
+				int height;
+				
+				// Get the height of the table that holds the list of tags.
+				height = m_table.getOffsetHeight();
+				
+				// If the height is greater than 300 pixels put an overflow auto on the panel
+				// and give the panel a fixed height of 150 pixels.
+				if ( height >= 300 )
+					m_tagTablePanel.addStyleName( "tagThisTagTablePanelHeight" );
+				else
+					m_tagTablePanel.removeStyleName( "tagThisTagTablePanelHeight" );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+
 	/*
 	 * Returns true if a string contains punctuation characters and
 	 * false otherwise.
@@ -419,9 +450,14 @@ public class TagThisDlg extends DlgBox
 		{
 			HTMLTable.RowFormatter rowFormatter;
 			
+			m_tagTablePanel = new FlowPanel();
+			m_tagTablePanel.addStyleName( "tagThisTagTablePanel" );
+
 			m_table = new FlexTable();
 			m_table.addStyleName( "paddingTop8px" );
 			m_table.setCellSpacing( 0 );
+			
+			m_tagTablePanel.add( m_table );
 
 			// Add the column headers.
 			{
@@ -451,7 +487,7 @@ public class TagThisDlg extends DlgBox
 				m_cellFormatter.addStyleName( 0, 2, "oltHeaderPadding" );
 			}
 			
-			mainPanel.add( m_table );
+			mainPanel.add( m_tagTablePanel );
 		}
 
 		// Create an image resource for the delete image.
@@ -503,6 +539,9 @@ public class TagThisDlg extends DlgBox
 				// No, remove this tag from the list of tags to be added.
 				removeTagFromListOfTags( m_toBeAdded, tagInfo );
 			}
+			
+			// Adjust the height of the table that holds the tags.
+			adjustTagTablePanelHeight();
 		}
 	}
 	
@@ -770,6 +809,8 @@ public class TagThisDlg extends DlgBox
 		m_findCtrl.setInitialSearchString( "" );
 		m_personalRB.setValue( Boolean.TRUE );
 
+		adjustTagTablePanelHeight();
+		
 		if ( m_readTagsCallback == null )
 		{
 			// Create a callback that will be used when we read the tags for a binder or entry.

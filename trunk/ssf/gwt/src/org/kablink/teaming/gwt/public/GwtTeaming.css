@@ -1977,6 +1977,13 @@ body, table td, select
 	width: 90%;
 }
 
+.tagThisTagTablePanelHeight
+{
+	height: 300px;
+	overflow: auto;
+}
+
+
 /* Styles for the top ranked dialog. */
 .topRankedDlg
 {
