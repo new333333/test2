@@ -1607,7 +1607,7 @@ public class GwtServerHelper {
 			if ( adminModule.testAccess( AdminOperation.manageFunction ) )
 			{
 				// Yes
-				title = NLT.get( "administration.configure.schedule" );
+				title = NLT.get( "administration.configure.schedule.action" );
 
 				adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
 				adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ADMIN_ACTION_CONFIGURE_SCHEDULE );
