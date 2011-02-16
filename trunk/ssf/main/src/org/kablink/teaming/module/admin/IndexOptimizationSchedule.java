@@ -45,7 +45,7 @@ import org.kablink.util.StringUtil;
 
 public class IndexOptimizationSchedule {
 
-	private static final String NODES = "index.optimization.schedule.nodes";
+	public static final String NODES = "index.optimization.schedule.nodes";
 	
 	private static final String NODE_NAME_DELIMITER = ",";
 	
