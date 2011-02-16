@@ -137,7 +137,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 					id="${ss_mashupPropertyName}__hideMasthead"
 					<c:if test="${ss_mashupHideMasthead}">checked</c:if> >
 				  <label for="${ss_mashupPropertyName}__hideMasthead">
-					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMasthead"/></span>
+					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideMasthead"/></span>
 				  </label>
 				</div>
 				<div>
@@ -145,7 +145,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 					id="${ss_mashupPropertyName}__hideSidebar"
 					<c:if test="${ss_mashupHideSidebar}">checked</c:if> >
 				  <label for="${ss_mashupPropertyName}__hideSidebar">
-					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideSidebar"/></span>
+					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideSidebar"/></span>
 				  </label>
 				</div>
 		
@@ -155,7 +155,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 					id="${ss_mashupPropertyName}__hideToolbar"
 					<c:if test="${ss_mashupHideToolbar}">checked</c:if> >
 				  <label for="${ss_mashupPropertyName}__hideToolbar">
-					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideToolbar"/></span>
+					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideToolbar"/></span>
 				  </label>
 				</div>
 		<% } %>
