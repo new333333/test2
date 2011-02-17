@@ -44,15 +44,20 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TagInfo;
+import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -62,6 +67,8 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -77,13 +84,14 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TagThisDlg extends DlgBox
-	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler
+	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler, KeyPressHandler
 {
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
 	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
 
 	private ActionTrigger m_actionTrigger;			// Interface to use to trigger teaming actions.
 	private String m_binderId;						// Id of the binder we are working with.  This can be null if m_entryId is not null.
+	private BinderType m_binderType;				// Type of binder we are workith with.  This can be null
 	private String m_entryId;						// Id of the entry we are working with.  This can be null if m_binderId is not null.
 	private boolean m_isPublicTagManager;			// true -> The user can manage public tags on the binder.  false -> They can't.
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
@@ -91,16 +99,21 @@ public class TagThisDlg extends DlgBox
 	private AsyncCallback<ArrayList<TagInfo>> m_readTagsCallback = null;
 	private AsyncCallback<Boolean> m_saveTagsCallback = null;
 	private AsyncCallback<Boolean> m_publicTagManagerCallback = null;
-	private ArrayList<TagInfo> m_currentListOfTags;
+	private AsyncCallback<Boolean> m_saveSortOrderCallback = null;
+	private ArrayList<TagInfo> m_currentListOfPersonalTags;
+	private ArrayList<TagInfo> m_currentListOfGlobalTags;
 	private ArrayList<TagInfo> m_toBeAdded;			// List of tags to be added.
 	private ArrayList<TagInfo> m_toBeDeleted;		// List of tags to be deleted.
+	private Label m_titleLabel;
 	private RadioButton m_personalRB;
 	private RadioButton m_communityRB;
 	private FindCtrl m_findCtrl;
+	private Label m_listLabel;
 	private FlexTable m_table;						// Holds a list of tags applied to the given binder/entry.
 	private FlowPanel m_tagTablePanel;
 	private FlexTable.FlexCellFormatter m_cellFormatter;
 	private ImageResource m_deleteImgR;
+	private TagSortOrder m_sortOrder;
 
 	/**
 	 * This widget is used to delete a tag.
@@ -171,7 +184,11 @@ public class TagThisDlg extends DlgBox
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_toBeAdded = new ArrayList<TagInfo>();
 		m_toBeDeleted = new ArrayList<TagInfo>();
-		m_currentListOfTags = new ArrayList<TagInfo>();
+		m_currentListOfPersonalTags = new ArrayList<TagInfo>();
+		m_currentListOfGlobalTags = new ArrayList<TagInfo>();
+		
+		// Read the tag sort order from the user's properties.
+		getSortOrder();
 
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -189,6 +206,7 @@ public class TagThisDlg extends DlgBox
 	private void addNoTagsMessage()
 	{
 		int row;
+		String msg = "";
 		
 		row = 1;
 		m_cellFormatter.setColSpan( row, 0, 3 );
@@ -197,7 +215,20 @@ public class TagThisDlg extends DlgBox
 		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
 		m_cellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
 
-		m_table.setText( row, 0, GwtTeaming.getMessages().noTags() );
+		// Get the appropriate message depending on whether we are working with an entry/folder/workspace.
+		if ( m_binderType != null )
+		{
+			if ( m_binderType == BinderType.FOLDER )
+				msg = m_messages.noTagsForFolder();
+			else if ( m_binderType == BinderType.WORKSPACE )
+				msg = m_messages.noTagsForWorkspace();
+			else
+				msg = "unknown binder type";
+		}
+		else if ( m_entryId != null )
+			msg = m_messages.noTagsForEntry();
+
+		m_table.setText( row, 0, msg );
 	}
 	
 	
@@ -224,11 +255,16 @@ public class TagThisDlg extends DlgBox
 			text = m_table.getText( 1, 0 );
 			
 			// Does the first row contain a message?
-			if ( text != null && text.equalsIgnoreCase( GwtTeaming.getMessages().noTags() ) )
+			if ( text != null )
 			{
-				// Yes
-				m_table.removeRow( 1 );
-				--row;
+				if ( text.equalsIgnoreCase( m_messages.noTagsForEntry() ) ||
+					 text.equalsIgnoreCase( m_messages.noTagsForFolder() ) ||
+					 text.equalsIgnoreCase( m_messages.noTagsForWorkspace() ) )
+				{
+					// Yes
+					m_table.removeRow( 1 );
+					--row;
+				}
 			}
 		}
 		
@@ -275,7 +311,10 @@ public class TagThisDlg extends DlgBox
 		m_cellFormatter.addStyleName( row, 2, "oltContentPadding" );
 		
 		// Add the tag to our current list of tags.
-		m_currentListOfTags.add( tagInfo );
+		if ( tagInfo.getTagType() == TagType.PERSONAL )
+			m_currentListOfPersonalTags.add( tagInfo );
+		else
+			m_currentListOfGlobalTags.add( tagInfo );
 		
 		// Limit the height of the table that holds the tags to 300 pixels.
 		adjustTagTablePanelHeight();
@@ -345,6 +384,12 @@ public class TagThisDlg extends DlgBox
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		mainPanel.addStyleName( "dlgContent" );
 		
+		// Add a label where the entry/folder/workspace title will be displayed.
+		// The title will be filled in in init()
+		m_titleLabel = new Label();
+		m_titleLabel.addStyleName( "tagThisDlg_TitleLabel" );
+		mainPanel.add( m_titleLabel );
+		
 		// Add a "personal" radio button.
 		{
 			m_personalRB = new RadioButton( "tag-type", GwtTeaming.getMessages().personal() );
@@ -410,6 +455,7 @@ public class TagThisDlg extends DlgBox
 			mainPanel.add( table );
 			
 			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PERSONAL_TAGS );
+			m_findCtrl.addKeyPressHandler( this );
 			table.setWidget( 0, 0, m_findCtrl );
 	
 			// Add an "add tag" image.
@@ -446,6 +492,14 @@ public class TagThisDlg extends DlgBox
 			}
 		}
 		
+		// Add a label that says "Tags associated with this entry/folder/workspace"
+		{
+			// The text of the label will be filled in in init().
+			m_listLabel = new Label();
+			m_listLabel.addStyleName( "tagThisDlg_ListOfTagsLabel" );
+			mainPanel.add( m_listLabel );
+		}
+		
 		// Create a table to hold the list of tags that are associated with the given binder/entry.
 		{
 			HTMLTable.RowFormatter rowFormatter;
@@ -461,8 +515,52 @@ public class TagThisDlg extends DlgBox
 
 			// Add the column headers.
 			{
-				m_table.setText( 0, 0, GwtTeaming.getMessages().tagName() );
-				m_table.setText( 0, 1, GwtTeaming.getMessages().tagType() );
+				InlineLabel label;
+				
+				label = new InlineLabel( GwtTeaming.getMessages().tagName() );
+				//!!! label.addStyleName( "cursorPointer" );
+				clickHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// Change the sort order to sort by name
+								handleClickOnNameHeader();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				label.addClickHandler( clickHandler );
+				m_table.setWidget( 0, 0, label );
+				
+				label = new InlineLabel( GwtTeaming.getMessages().tagType() );
+				//!!! label.addStyleName( "cursorPointer" );
+				clickHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// Change the sort order to sort by type
+								handleClickOnTypeHeader();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				label.addClickHandler( clickHandler );
+				m_table.setWidget( 0, 1, label );
+				
 				m_table.setHTML( 0, 2, "&nbsp;" );	// The delete image will go in this column.
 				
 				rowFormatter = m_table.getRowFormatter();
@@ -514,7 +612,10 @@ public class TagThisDlg extends DlgBox
 			
 			// Yes
 			// Remove the tag from our list of tags.
-			removeTagFromListOfTags( m_currentListOfTags, tagInfo );
+			if ( tagInfo.getTagType() == TagType.PERSONAL )
+				removeTagFromListOfTags( m_currentListOfPersonalTags, tagInfo );
+			else
+				removeTagFromListOfTags( m_currentListOfGlobalTags, tagInfo );
 			
 			// Remove the tag from the table.
 			m_table.removeRow( row );
@@ -694,6 +795,39 @@ public class TagThisDlg extends DlgBox
 	}
 	
 	/**
+	 * Issue an ajax request to get the tag sort order from the user's properties.
+	 */
+	private void getSortOrder()
+	{
+		AsyncCallback<TagSortOrder> callback;
+		
+		callback = new AsyncCallback<TagSortOrder>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetTagSortOrder() );
+			}
+
+			/**
+			 * 
+			 */
+			public void onSuccess( TagSortOrder sortOrder )
+			{
+				m_sortOrder = sortOrder;
+			}
+			
+		};
+		
+		// Issue an ajax request to get the tag sort order from the user's properties.
+		GwtTeaming.getRpcService().getTagSortOrder( HttpRequestInfo.createHttpRequestInfo(),  callback );
+	}
+	
+	/**
 	 * This method gets called when the user selects an item from the search results in the "find" control.
 	 */
 	public void handleAction( TeamingAction ta, Object selectedObj )
@@ -796,15 +930,114 @@ public class TagThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Initialize the dialog for the given binderId or entryId.
-	 *
-	 * @param binderId - Id of the binder we are working with.  Can be null if entryId is not null.
-	 * @param entryId - Id of the entry we are working with.  Can be null if binderId is not null.
+	 * This gets called when the user clicks on the name header.  We will change the sort
+	 * order to sort by tag name.
 	 */
-	public void init( String binderId, String entryId )
+	private void handleClickOnNameHeader()
+	{
+		// Are we currently sorting by name ascending?
+		if ( m_sortOrder == TagSortOrder.SORT_BY_NAME_ASCENDING )
+		{
+			// Yes, change to sort by name descending
+			m_sortOrder = TagSortOrder.SORT_BY_NAME_DESCENDING;
+		}
+		// Are we currently sorting by name descending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_NAME_DESCENDING )
+		{
+			// Yes, change to sort by name ascending.
+			m_sortOrder = TagSortOrder.SORT_BY_NAME_ASCENDING;
+		}
+		// Are we currently sorting by type ascending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_TYPE_ASCENDING )
+		{
+			// Yes, change to sort by name ascending.
+			m_sortOrder = TagSortOrder.SORT_BY_NAME_ASCENDING;
+		}
+		// Are we currently sorting by type descending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_TYPE_DESCENDING )
+		{
+			// Yes, change to sort by name descending
+			m_sortOrder = TagSortOrder.SORT_BY_TYPE_DESCENDING;
+		}
+		
+		// Resort the tags with the new sort order.
+		sortTags();
+		
+		// Save the new sort order in the user's properties.
+		saveSortOrder();
+	}
+	
+	
+	/**
+	 * This gets called when the user clicks on the tag type header.  We will change the sort
+	 * order to sort by tag type.
+	 */
+	private void handleClickOnTypeHeader()
+	{
+		// Are we currently sorting by name ascending?
+		if ( m_sortOrder == TagSortOrder.SORT_BY_NAME_ASCENDING )
+		{
+			// Yes, change to sort by type ascending
+			m_sortOrder = TagSortOrder.SORT_BY_TYPE_ASCENDING;
+		}
+		// Are we currently sorting by name descending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_NAME_DESCENDING )
+		{
+			// Yes, change to sort by type descending.
+			m_sortOrder = TagSortOrder.SORT_BY_TYPE_DESCENDING;
+		}
+		// Are we currently sorting by type ascending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_TYPE_ASCENDING )
+		{
+			// Yes, change to sort by type descending.
+			m_sortOrder = TagSortOrder.SORT_BY_TYPE_DESCENDING;
+		}
+		// Are we currently sorting by type descending?
+		else if ( m_sortOrder == TagSortOrder.SORT_BY_TYPE_DESCENDING )
+		{
+			// Yes, change to sort by type ascending
+			m_sortOrder = TagSortOrder.SORT_BY_TYPE_ASCENDING;
+		}
+		
+		// Resort the tags with the new sort order.
+		sortTags();
+		
+		// Save the new sort order in the user's properties.
+		saveSortOrder();
+	}
+	
+	
+	/**
+	 * Initialize the dialog for the given binderId.
+	 */
+	public void init( String binderId, String binderTitle, BinderType binderType )
 	{
 		m_binderId = binderId;
+		m_binderType = binderType;
+		m_entryId = null;
+		
+		init( binderTitle );
+	}
+	
+	/**
+	 * Initialize the dialog for the given entryId
+	 */
+	public void init( String entryId, String entryTitle )
+	{
+		m_binderId = null;
 		m_entryId = entryId;
+		
+		init( entryTitle );
+	}
+	
+	/**
+	 * Initialize the dialog. m_binderId or m_entryId must be set before calling this method.
+	 */
+	private void init( String title )
+	{
+		if ( title != null )
+			m_titleLabel.setText( title );
+		
 		m_isPublicTagManager = false;
 		m_findCtrl.setInitialSearchString( "" );
 		m_personalRB.setValue( Boolean.TRUE );
@@ -898,12 +1131,26 @@ public class TagThisDlg extends DlgBox
 		// Are we working with a binder?
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
+			// Update the label above the list of tags.
+			if ( m_binderType != null )
+			{
+				if ( m_binderType == BinderType.FOLDER )
+					m_listLabel.setText( m_messages.listOfFolderTagsLabel() );
+				else if ( m_binderType == BinderType.WORKSPACE )
+					m_listLabel.setText( m_messages.listOfWorkspaceTagsLabel() );
+				else
+					m_listLabel.setText( "unknown binder type" );
+			}
+			
 			// Yes, Issue a request to see if the user can manage public tags.
 			// The onSuccess() method will issue the call to read the tags.
 			GwtTeaming.getRpcService().canManagePublicBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_publicTagManagerCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
+			// Update the label above the list of tags
+			m_listLabel.setText( m_messages.listOfEntryTagsLabel() );
+			
 			// We are working with an entry.
 			// Issue a request to see if the user can manage public tags.
 			// The onSuccess() method will issue a request to get the tags associated with the given entry.
@@ -917,6 +1164,47 @@ public class TagThisDlg extends DlgBox
 	}
 
 
+	/**
+	 * This method gets called when the user types in the name of a tag.
+	 * We only want to let the user enter numbers.
+	 */
+	public void onKeyPress( KeyPressEvent event )
+	{
+        int keyCode;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+        
+        // Did the user press Enter?
+        if ( keyCode == KeyCodes.KEY_ENTER )
+        {
+			// Yes, try to add a new tag.
+			handleClickOnAddTag();
+        }
+	}
+	
+	/**
+	 * Is the given tag name in the given list.
+	 */
+	private boolean isTagInList( ArrayList<TagInfo> listOfTags, String tagName )
+	{
+		if ( tagName == null )
+			return false;
+		
+		for ( TagInfo nextTag : listOfTags )
+		{
+			String nextTagName;
+				
+			nextTagName = nextTag.getTagName();
+			if ( tagName.equalsIgnoreCase( nextTagName ) )
+				return true;
+		}
+		
+		// If we get here the given tag name is not in the given list.
+		return false;
+	}
+	
+	
 	/**
 	 * Find the given tag in the given list of tags and remove it. 
 	 */
@@ -941,6 +1229,41 @@ public class TagThisDlg extends DlgBox
 		}
 	}
 	
+	
+	/**
+	 * Issue an ajax request to save the sort order.
+	 */
+	private void saveSortOrder()
+	{
+		// Issue an ajax request to save the sort order.
+		if ( m_saveSortOrderCallback == null )
+		{
+			m_saveSortOrderCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_SaveTagSortOrder() );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( Boolean results )
+				{
+					// Nothing to do.
+				}
+			};
+		}
+		
+		// Issue an ajax request to save the sort order
+		GwtTeaming.getRpcService().saveTagSortOrder( HttpRequestInfo.createHttpRequestInfo(), m_sortOrder, m_saveSortOrderCallback );
+	}
+
 	
 	/**
 	 * 
@@ -989,6 +1312,15 @@ public class TagThisDlg extends DlgBox
 	
 	
 	/**
+	 * Sort the list of tags based on the sort order found in m_sortOrder
+	 */
+	private void sortTags()
+	{
+		//!!! Finish
+	}
+	
+	
+	/**
 	 * Update the dialog to reflect the given list of tags associated with the binder/entry. 
 	 */
 	private void updateDlg( ArrayList<TagInfo> tags )
@@ -997,7 +1329,8 @@ public class TagThisDlg extends DlgBox
 		
 		m_toBeDeleted.clear();
 		m_toBeAdded.clear();
-		m_currentListOfTags.clear();
+		m_currentListOfPersonalTags.clear();
+		m_currentListOfGlobalTags.clear();
 		
 		// Remove all of the rows from the table.
 		// We start at row 1 so we don't delete the header.
@@ -1044,7 +1377,7 @@ public class TagThisDlg extends DlgBox
 	 * Implementation logic is based on that in the ss_tagModify()
 	 * method in ss_tags.js.
 	 */
-	private String validateTagName(String tagName, TagType tagType)
+	private String validateTagName( String tagName, TagType tagType )
 	{
 		// Do we have a tag name to validate?
 		String reply = ((null == tagName) ? tagName : tagName.trim());
@@ -1079,19 +1412,21 @@ public class TagThisDlg extends DlgBox
 			}
 
 			// Check to make sure the tag name is not already in our list.
-			for ( TagInfo nextTag : m_currentListOfTags )
 			{
-				if ( tagType == nextTag.getTagType() )
+				boolean alreadyInList;
+				
+				if ( tagType == TagType.PERSONAL )
+					alreadyInList = isTagInList( m_currentListOfPersonalTags, tagName );
+				else
+					alreadyInList = isTagInList( m_currentListOfGlobalTags, tagName );
+				
+				// Is the tag already in the list?
+				if ( alreadyInList )
 				{
-					String nextTagName;
-					
-					nextTagName = nextTag.getTagName();
-					if ( tagName.equalsIgnoreCase( nextTagName ) )
-					{
-						// ...tell the user that's not valid and bail.
-						Window.alert(m_messages.mainMenuTagThisDlgErrorDuplicateTag());
-						return "";
-					}
+					// Yes
+					// ...tell the user that's not valid and bail.
+					Window.alert( m_messages.mainMenuTagThisDlgErrorDuplicateTag() );
+					return "";
 				}
 			}
 		}

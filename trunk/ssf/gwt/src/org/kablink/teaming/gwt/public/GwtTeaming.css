@@ -1983,6 +1983,19 @@ body, table td, select
 	overflow: auto;
 }
 
+.tagThisDlg_ListOfTagsLabel
+{
+	padding-top: 14px;
+	font-size: 14px;
+}
+
+.tagThisDlg_TitleLabel
+{
+	font-size: 12px;
+	font-weight: bold;
+	padding-bottom: 8px;
+}
+
 
 /* Styles for the top ranked dialog. */
 .topRankedDlg

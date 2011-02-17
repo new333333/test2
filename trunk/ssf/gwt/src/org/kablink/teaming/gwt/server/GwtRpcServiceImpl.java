@@ -99,6 +99,7 @@ import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
+import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamDataType;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
@@ -233,6 +234,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtTaskHelper.getGroupMembership( this, groupId );
 	}
 
+    /**
+     * 
+     */
+    public TagSortOrder getTagSortOrder( HttpRequestInfo ri )
+    {
+    	UserProperties userProperties;
+    	ProfileModule profileModule;
+    	TagSortOrder sortOrder;
+    	Object value;
+    	
+    	profileModule = getProfileModule();
+
+    	sortOrder = TagSortOrder.SORT_BY_TYPE_ASCENDING;
+    	
+    	userProperties = profileModule.getUserProperties( null );
+		value = userProperties.getProperty( ObjectKeys.USER_PROPERTY_TAG_SORT_ORDER );
+		if ( value != null && value instanceof TagSortOrder )
+			sortOrder = (TagSortOrder) value;
+
+    	return sortOrder;
+    }
+    
+    
 	/**
 	 * Returns a List<AssignmentInfo> containing information about the
 	 * membership of a team.
@@ -1668,6 +1692,16 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
 	}// end removeTaskLinkage()
 
+	/**
+	 * Save the given tag sort order to the user's properties
+	 */
+	public Boolean saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder )
+	{
+		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_TAG_SORT_ORDER, sortOrder );
+		
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Stores a completed value on the specified tasks.
 	 * 

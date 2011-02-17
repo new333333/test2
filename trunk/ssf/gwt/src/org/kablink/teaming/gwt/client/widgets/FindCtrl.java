@@ -51,6 +51,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -552,6 +553,13 @@ public class FindCtrl extends Composite
 		initWidget( mainPanel );
 	}// end FindCtrl()
 	
+	/**
+	 * Add a key press handler
+	 */
+	public HandlerRegistration addKeyPressHandler( KeyPressHandler handler )
+	{
+		return m_txtBox.addKeyPressHandler( handler );
+	}
 	
 	/**
 	 * Clear the text in the text box.
