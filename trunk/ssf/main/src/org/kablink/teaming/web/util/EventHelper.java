@@ -32,14 +32,18 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -47,11 +51,14 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.cal.Duration;
 
@@ -62,6 +69,8 @@ import org.kablink.util.cal.Duration;
  */
 @SuppressWarnings("unchecked")
 public class EventHelper {
+	private static Log m_logger = LogFactory.getLog(EventHelper.class);
+	
 	// Attribute names used for items related to calendar entries.
 	public static final String ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME        = "attendee";
 	public static final String ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME = "attendee_groups";
@@ -87,11 +96,20 @@ public class EventHelper {
 	 */
 	public static Date adjustDate(Date dateIn, Duration duration, boolean forward) {
 		// If we don't have a duration to adjust the date by...
+		Date dateOut;
 		long dateInMS     = dateIn.getTime();
 		long adjustmentMS = duration.getInterval();
 		if (0 == adjustmentMS) {
 			// ..return a clone of the date we were given.
-			return new Date(dateInMS);
+			dateOut = new Date(dateInMS);
+			if (debugEnabled()) {
+				StringBuffer out = new StringBuffer("EventHelper.adjustDate():");
+				out.append("\n\tDate in:  "  + getDateTimeString(dateIn));
+				out.append("\n\tDate out:  " + getDateTimeString(dateOut));
+				out.append("\n\tAdjustments:  None specified");
+				debugLog(out.toString());
+			}
+			return dateOut;
 		}
 		
 		// If we're adjusting the date backwards...
@@ -101,20 +119,75 @@ public class EventHelper {
 		}
 		
 		// If we're going to end up with an adjusted milliseconds
-		// less than 0...
+		// that's less than 0...
 		long adjustedMS = (dateInMS + adjustmentMS);
 		if (0 > adjustedMS) {
 			// ...just use 0.
 			adjustedMS = 0;
 		}
+		dateOut = new Date(adjustedMS);
 		
-		// We need to account for the weekend/holiday schedule.
-//!		...this needs to be implemented...
+		// Does the duration we were given consist only of a number of
+		// days?
+		if (!(duration.hasDaysOnly())) {
+			// No!  No other adjustments are necessary.
+			if (debugEnabled()) {
+				StringBuffer out = new StringBuffer("EventHelper.adjustDate():");
+				out.append("\n\tDate in:  "  + getDateTimeString(dateIn));
+				out.append("\n\tDate out:  " + getDateTimeString(dateOut));
+				out.append("\n\tAdjustments:");
+				out.append("\n\t\tDuration MS:  " + adjustmentMS);
+				out.append("\n\t\tWeekend Days:  None. Duration not in days.");
+				out.append("\n\t\tHolidays:  None. Duration not in days.");
+				debugLog(out.toString());
+			}
+			return dateOut;
+		}
+		
+		// We may need to account for the weekend/holiday schedule.
+		// Are there any weekend days or holidays defined?
+	    AdminModule adminModule = ((AdminModule) SpringContextUtil.getBean("adminModule"));
+		WeekendsAndHolidaysConfig wahConfig = adminModule.getWeekendsAndHolidaysConfig();
+		List<Integer> weekends = wahConfig.getWeekendDaysList(); boolean hasWeekends = ((null != weekends) && (!(weekends.isEmpty())));
+		List<Date>    holidays = wahConfig.getHolidayList();     boolean hasHolidays = ((null != holidays) && (!(holidays.isEmpty())));
+		if ((!hasWeekends) && (!hasHolidays)) {
+			// No!  No other adjustments are necessary.
+			return dateOut;
+		}
+		
+		// Yes, there are weekend days or holidays defined!
+		int weDays_Total = 0;
+		int hDays_Total  = 0;
+		while (true) {
+			// Adjust for the weekends and holidays.
+			int weDays_New = adjustForWeekends(dateIn, dateOut, forward, weekends, weDays_Total);
+			int hDays_New  = adjustForHolidays(dateIn, dateOut, forward, holidays, hDays_Total );
+			
+			// Did we make any more adjustments?
+			if ((weDays_New == weDays_Total) && (hDays_New == hDays_Total)) {
+				// No!  Then we're done.
+				break;
+			}
 
-		// If we get here, adjustedMS contains the millisecond value
-		// for the adjusted date.  Return a Date object constructed
-		// with it.
-		return new Date(adjustedMS);
+			// Track the new days that we've adjusted for and try again.
+			weDays_Total = weDays_New;
+			hDays_Total  = hDays_New;
+		}
+		
+		if (debugEnabled()) {
+			StringBuffer out = new StringBuffer("EventHelper.adjustDate():");
+			out.append("\n\tDate in:  "  + getDateTimeString(dateIn));
+			out.append("\n\tDate out:  " + getDateTimeString(dateOut));
+			out.append("\n\tAdjustments");
+			out.append("\n\t\tDuration Days:  " + duration.getDays());
+			out.append("\n\t\tWeekend Days:  "  + weDays_Total      );
+			out.append("\n\t\tHolidays:  "      + hDays_Total       );
+			debugLog(out.toString());
+		}
+		
+		// If we get here, dateOut contains the adjusted Date.  Return
+		// it.
+		return dateOut;
 	}
 	
 	public static Date adjustDate(Date dateIn, int days) {
@@ -137,6 +210,90 @@ public class EventHelper {
 		return adjustDate(dateIn, dur, forward);
 	}
 
+	/*
+	 * Adjusts dateOut forwards or backwards to account for holidays
+	 * beyond those accounted for by hDays.
+	 */
+	private static int adjustForHolidays(Date dateIn, Date dateOut, boolean forward, List<Date> holidays, int hDays) {
+		long earlierTime;
+		long laterTime;
+		while (true) {
+			// What's the earlier and later times?
+			if (forward) {earlierTime = dateIn.getTime();  laterTime = dateOut.getTime();}
+			else         {earlierTime = dateOut.getTime(); laterTime = dateIn.getTime(); }
+
+			// Scan the holidays.
+			int adjustmentDays = 0;
+			for (Date holiday:  holidays) {
+				// Does this holiday occur between the earlier and
+				// later times?
+				long hTime = holiday.getTime();
+				if ((hTime >= earlierTime) && (hTime <= laterTime)) {
+					// Yes!  Then we need to adjust for it. 
+					adjustmentDays += 1;
+				}
+			}
+
+			// If we've already adjusted for the correct number of
+			// days...
+			if (adjustmentDays <= hDays) {
+				// ... we're done.
+				break;
+			}
+
+			// Adjust by the new number of days and try again.
+			long adjustmentMS = ((adjustmentDays - hDays) * Duration.MILLIS_PER_DAY);
+			if (forward)
+				 dateOut.setTime(dateOut.getTime() + adjustmentMS);
+			else dateOut.setTime(dateOut.getTime() - adjustmentMS);
+			hDays = adjustmentDays;
+		}
+
+		// If we get here, hDays contains the total number of holidays
+		// that we've adjusted for.  Return it.
+		return hDays;
+	}
+
+	/*
+	 * Adjusts dateOut forwards or backwards to account for weekend
+	 * days beyond those accounted for by weDays.
+	 */
+	private static int adjustForWeekends(Date dateIn, Date dateOut, boolean forward, List<Integer> weekendDays, int weDays) {
+		GregorianCalendar earlierDay = new GregorianCalendar();
+		GregorianCalendar laterDay   = new GregorianCalendar();
+		while (true) {
+			// What's the earlier and later days?
+			if (forward) {earlierDay.setTime(dateIn);  laterDay.setTime(dateOut);}
+			else         {earlierDay.setTime(dateOut); laterDay.setTime(dateIn); }
+
+			// Scan the weekend days.
+			int adjustmentDays = 0;
+			for (Integer weekendDay:  weekendDays) {
+				// Summing up the total number of days we need to
+				// adjust for.
+				adjustmentDays += countNumberOfDays(earlierDay, laterDay, weekendDay.intValue());
+			}
+
+			// If we've already adjusted for the correct number of
+			// days...
+			if (adjustmentDays <= weDays) {
+				// ...we're done.
+				break;
+			}
+			
+			// Adjust by the new number of days and try again.
+			long adjustmentMS = ((adjustmentDays - weDays) * Duration.MILLIS_PER_DAY);
+			if (forward)
+				 dateOut.setTime(dateOut.getTime() + adjustmentMS);
+			else dateOut.setTime(dateOut.getTime() - adjustmentMS);
+			weDays = adjustmentDays;
+		}
+		
+		// If we get here, weDays contains the total number of holidays
+		// that we've adjusted for.  Return it.
+		return weDays;
+	}
+	
     /**
      * @param baseFilter
      * @param request
@@ -230,6 +387,75 @@ public class EventHelper {
         return reply;
     }
 
+    /*
+     * Returns the number of times a particular day occurs between two
+     * given days.
+     */
+    private static int countNumberOfDays(GregorianCalendar first, GregorianCalendar second, int day) {
+    	// Scan the days, starting with the first.
+    	int      count      = 0; 
+    	Calendar currentDay = ((Calendar) first.clone()); 
+    	Calendar lastDay    = ((Calendar) second.clone()); 
+    	lastDay.add(Calendar.DATE, 1);	// Bumped by one so that we count the last day if it's a hit. 
+    	while (!(currentDay.equals(lastDay))) {
+    		// Is this the day in question?
+	    	if (currentDay.get(Calendar.DAY_OF_WEEK) == day) {
+	    		// Yes!  Count it.
+	    		count += 1; 
+	    	}
+	    	
+	    	// Move to the next day.
+	    	currentDay.add(Calendar.DATE, 1); 
+    	}
+    	
+    	// If we get here, count contains the number of times the day
+    	// occurs between the first and second days.  Return it.
+    	return count; 
+    }
+
+    /**
+     * Returns true if EventHelper has debug logging enabled and false
+     * otherwise.
+     * 
+     * @return
+     */
+    public static boolean debugEnabled() {
+    	return m_logger.isDebugEnabled();
+    }
+    
+    /**
+     * Writes a String on behalf of EventHelper to the debug log.
+     *  
+     * @param s
+     */
+    public static void debugLog(String s) {
+    	m_logger.debug(s);
+    }
+    
+	/**
+	 * Returns the String representation for the given date, formatted
+	 * based on the current user's locale and time zone.
+	 * 
+	 * @param date
+	 * 
+	 * @return
+	 */
+	public static String getDateTimeString(Date date) {
+		String reply;
+		if (null == date) {
+			reply = "";
+		}
+		else {
+			User user = RequestContextHolder.getRequestContext().getUser();
+			
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+			df.setTimeZone(user.getTimeZone());
+			
+			reply = df.format(date);
+		}
+		return reply;
+	}
+	
     /**
      * @param inputData
      * @param id
