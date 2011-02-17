@@ -272,9 +272,51 @@ public class TagThisDlg extends DlgBox
 		row = 1;
 		m_table.insertRow( row );
 		
-		// Add the tag name in the first column.
-		m_cellFormatter.setColSpan( row, 0, 1 );
-		m_table.setText( row, 0, tagInfo.getTagName() );
+		// Add the tag name in the first column.  Allow the user to click on the tag name.
+		// This will invoke the "tag search" page.
+		{
+			InlineLabel label;
+			ClickHandler clickHandler;
+			
+			m_cellFormatter.setColSpan( row, 0, 1 );
+			
+			label = new InlineLabel( tagInfo.getTagName() );
+			label.addStyleName( "tagThisDlg_TagName" );
+			clickHandler = new ClickHandler()
+			{
+				/**
+				 * This gets called when the user clicks on the tag name.
+				 */
+				public void onClick( ClickEvent event )
+				{
+					Object source;
+					
+					source = event.getSource();
+					if ( source != null && source instanceof InlineLabel )
+					{
+						final String tagName;
+						Scheduler.ScheduledCommand cmd;
+						
+						tagName = ((InlineLabel) source).getText();
+
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							public void execute()
+							{
+								handleClickOnTag( tagName );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			};
+			label.addClickHandler( clickHandler );
+			
+			m_table.setWidget( row, 0, label );
+		}
 
 		// Add the tag type in the second column.
 		if ( tagInfo.getTagType() == TagType.PERSONAL )
@@ -676,48 +718,7 @@ public class TagThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
-		// Issue an ajax request to save the subscription data.
-		if ( m_saveTagsCallback == null )
-		{
-			m_saveTagsCallback = new AsyncCallback<Boolean>()
-			{
-				/**
-				 * 
-				 */
-				public void onFailure( Throwable t )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_SaveTags() );
-				}
-				
-				/**
-				 * 
-				 */
-				public void onSuccess( Boolean results )
-				{
-					// Nothing to do.
-				}
-			};
-		}
-		
-		// Issue an ajax request to save the tags for the binder/entry we are working with.
-		// Are we working with a binder?
-		if ( m_binderId != null && m_binderId.length() > 0 )
-		{
-			// Yes, Issue a request to update the tags associated with the given binder.
-			GwtTeaming.getRpcService().updateBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
-		}
-		else if ( m_entryId != null && m_entryId.length() > 0 )
-		{
-			// We are working with an entry.
-			// Issue a request to update the tags associated with the given entry.
-			GwtTeaming.getRpcService().updateEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
-		}
-		else
-		{
-			Window.alert( "binderId and entryId are both empty.  This doesn't work!!!" );
-		}
+		saveTags();
 
 		return true;
 	}
@@ -967,6 +968,32 @@ public class TagThisDlg extends DlgBox
 		saveSortOrder();
 	}
 	
+	
+	/**
+	 * This gets called when the user clicks on the name of a tag in the list of tags.
+	 * If the user has made changes to the list of tags we will ask them if they want
+	 * to save their changes.  We will then execute a tag search using the name of
+	 * the selected tag.
+	 */
+	private void handleClickOnTag( String tagName )
+	{
+		// Has the user added/deleted any tags?
+		if ( (m_toBeAdded != null && m_toBeAdded.size() > 0) || (m_toBeDeleted != null && m_toBeDeleted.size() > 0) )
+		{
+			String question;
+			
+			// Yes, ask the user if they want to save their changes?
+			question = m_messages.promptSaveBeforeTagSearch( tagName );
+			if ( Window.confirm( question ) == true )
+				saveTags();
+		}
+		
+		// Execute a tag search using the given tag name.
+		GwtTeaming.getMainPage().handleAction( TeamingAction.TAG_SEARCH, tagName );
+		
+		// Close this dialog.
+		hide();
+	}
 	
 	/**
 	 * This gets called when the user clicks on the tag type header.  We will change the sort
@@ -1264,6 +1291,56 @@ public class TagThisDlg extends DlgBox
 		GwtTeaming.getRpcService().saveTagSortOrder( HttpRequestInfo.createHttpRequestInfo(), m_sortOrder, m_saveSortOrderCallback );
 	}
 
+	
+	/**
+	 * We will issue an ajax request to save the list of tags.
+	 */
+	private void saveTags()
+	{
+		// Issue an ajax request to save the subscription data.
+		if ( m_saveTagsCallback == null )
+		{
+			m_saveTagsCallback = new AsyncCallback<Boolean>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_SaveTags() );
+				}
+				
+				/**
+				 * 
+				 */
+				public void onSuccess( Boolean results )
+				{
+					// Nothing to do.
+				}
+			};
+		}
+		
+		// Issue an ajax request to save the tags for the binder/entry we are working with.
+		// Are we working with a binder?
+		if ( m_binderId != null && m_binderId.length() > 0 )
+		{
+			// Yes, Issue a request to update the tags associated with the given binder.
+			GwtTeaming.getRpcService().updateBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+		}
+		else if ( m_entryId != null && m_entryId.length() > 0 )
+		{
+			// We are working with an entry.
+			// Issue a request to update the tags associated with the given entry.
+			GwtTeaming.getRpcService().updateEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_toBeDeleted, m_toBeAdded, m_saveTagsCallback );
+		}
+		else
+		{
+			Window.alert( "binderId and entryId are both empty.  This doesn't work!!!" );
+		}
+	}
+	
 	
 	/**
 	 * 

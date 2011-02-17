@@ -867,6 +867,7 @@ public interface GwtTeamingMessages extends Messages
 	String listOfFolderTagsLabel(); 
 	String listOfWorkspaceTagsLabel();
 	String personal();
+	String promptSaveBeforeTagSearch( String tagName );
 	String tagHeader();
 	String tagName();
 	String tagThisEntry();

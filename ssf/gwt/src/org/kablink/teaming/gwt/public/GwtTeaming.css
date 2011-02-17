@@ -1996,6 +1996,23 @@ body, table td, select
 	padding-bottom: 8px;
 }
 
+.tagThisDlg_TagName
+{
+	color: #135C8F;
+}
+
+.tagThisDlg_TagName:hover
+{
+	cursor: pointer;
+	background: url(images/H_bg_blend_teal_light.png) repeat-x scroll center bottom;
+	background-position:center;
+	padding-left: 3px;
+	padding-right: 3px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+
 
 /* Styles for the top ranked dialog. */
 .topRankedDlg
