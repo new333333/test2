@@ -622,7 +622,7 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   		padding: 3px 11px;
  </c:if>
   	text-align: center;
-  	padding: 2px 10px;
+  	padding: 1px 10px;
  	font-family: ${ss_style_folder_view_font_family};
  	font-size: 11px;
 	white-space: nowrap;
@@ -635,7 +635,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
  	font-size: 11px;
 	background: #949494 none repeat scroll 0 0;
 	margin-right:3px;
-	padding: 2px 10px;
+	padding: 1px 10px;
 	text-decoration:none;
   	cursor: pointer;
   	white-space: nowrap;
@@ -655,7 +655,7 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 2px 10px !important;
+  	padding: 1px 10px !important;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;
 	border: 0px;
@@ -676,7 +676,7 @@ input[type="button"].n-button {
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-  	padding: 2px 10px 2px 10px !important;
+  	padding: 1px 10px !important;
 	margin-right: 15px;
 	background-color: #81b2bd;
 	border: 0px;
@@ -691,7 +691,7 @@ input[type="button"].n-button {
 input[type="button"].n-button:hover {
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	background-position: center;
-  	padding: 2px 10px 2px 10px !important;
+  	padding: 1px 10px !important;
 	}
 
 .n-buttonright {
@@ -703,7 +703,7 @@ input[type="button"].n-button:hover {
 input.ss_submit:hover, 
 input.ss_linkButton:hover, 
 a.ss_linkButton:hover {
-	padding: 2px 10px;
+	padding: 1px 10px;
 	cursor: pointer;
 	color: #fff;
 	}	
@@ -715,7 +715,7 @@ a.ss_tinyButton:visited {
 	background: #949494 none repeat scroll 0 0;
 	color:#FFFFFF !important;
 	margin-right:3px;
-	padding:2px 10px;
+	padding:1px 10px;
 	text-decoration:none;
   	cursor: pointer;
   	white-space: nowrap;

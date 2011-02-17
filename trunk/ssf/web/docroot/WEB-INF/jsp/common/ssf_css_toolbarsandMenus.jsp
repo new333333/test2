@@ -794,7 +794,6 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	height:auto;
 }
 .ss_actions_bar13 {
-	font-weight: bold;
 	font-size: ${ss_style_font_smallprint};
 	font-family: ${ss_style_title_font_family};
 	padding: 0px 3px;
