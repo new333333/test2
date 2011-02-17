@@ -663,5 +663,20 @@ public class Duration implements Cloneable {
 
     return buffer.toString();
   }
+  
+	/**
+	 * Returns true if the Duration only contains a days value and
+	 * false otherwise.
+	 *
+	 * @return
+	 */
+	public boolean hasDaysOnly() {
+		return
+			((0 == seconds) &&
+			 (0 == minutes) &&
+			 (0 == hours)   &&
+			 (0 != days)    &&
+			 (0 == weeks));
+	}
 }
 

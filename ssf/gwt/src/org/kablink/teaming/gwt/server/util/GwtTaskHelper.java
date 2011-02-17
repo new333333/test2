@@ -1055,26 +1055,6 @@ public class GwtTaskHelper {
 	}
 
 	/*
-	 * Returns the String representation for the given date, formatted
-	 * based on the current user's locale and time zone.
-	 */
-	private static String getDateTimeString(Date date) {
-		String reply;
-		if (null == date) {
-			reply = "";
-		}
-		else {
-			User user = GwtServerHelper.getCurrentUser();
-			
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
-			df.setTimeZone(user.getTimeZone());
-			
-			reply = df.format(date);
-		}
-		return reply;
-	}
-	
-	/*
 	 * Reads an event from a map.
 	 */
 	@SuppressWarnings("unchecked")
@@ -1344,8 +1324,8 @@ public class GwtTaskHelper {
 		}
 		else {
 			reply = new TaskDate();
-			reply.setDate(                         date );
-			reply.setDateDisplay(getDateTimeString(date));
+			reply.setDate(                                     date );
+			reply.setDateDisplay(EventHelper.getDateTimeString(date));
 		}
 		return reply;
 	}
@@ -2151,12 +2131,18 @@ public class GwtTaskHelper {
 				
 				else if (hasActualStart && (!hasActualEnd)) {
 					// Has start, no end!  Calculate an end.
+					if (EventHelper.debugEnabled()) {
+						EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 1:Adjusting Start ):  " + ti.getTitle());
+					}
 					newCalcEnd      = EventHelper.adjustDate(tiSD.getActualStart().getDate(), durDays);
 					removeCalcStart = true;
 				}
 				
 				else if ((!hasActualStart) && hasActualEnd) {
 					// No start, has end!  Calculate a start.
+					if (EventHelper.debugEnabled()) {
+						EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 2:Adjusting End ):  " + ti.getTitle());
+					}
 					newCalcStart  = EventHelper.adjustDate(tiSD.getActualEnd().getDate(), (-durDays));
 					removeCalcEnd = true;
 				}
@@ -2197,6 +2183,9 @@ public class GwtTaskHelper {
 						else {
 							// ...otherwise, use its start to calculate
 							// ...its end.
+							if (EventHelper.debugEnabled()) {
+								EventHelper.debugLog("GwtTaskHelper.updateCalculatedDatesImpl( 3:Adjusting End ):  " + ti.getTitle());
+							}
 							newCalcEnd = EventHelper.adjustDate(newCalcStart, durDays);
 						}
 					}
@@ -2240,7 +2229,7 @@ public class GwtTaskHelper {
 							TaskDate calcTD = new TaskDate();
 							if (!removeCalcStart) {
 								calcTD.setDate(newCalcStart);
-								calcTD.setDateDisplay(getDateTimeString(newCalcStart));
+								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcStart));
 							}
 							tiE.setLogicalStart(calcTD);
 						}
@@ -2250,8 +2239,8 @@ public class GwtTaskHelper {
 							// ...update it in the task...
 							TaskDate calcTD = new TaskDate();
 							if (!removeCalcEnd) {
-								calcTD.setDate(                         newCalcEnd);
-								calcTD.setDateDisplay(getDateTimeString(newCalcEnd));
+								calcTD.setDate(                                     newCalcEnd);
+								calcTD.setDateDisplay(EventHelper.getDateTimeString(newCalcEnd));
 							}
 							tiE.setLogicalEnd(calcTD);
 							
