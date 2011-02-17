@@ -42,6 +42,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -113,6 +114,7 @@ public class ConfigureScheduleController extends  SAbstractController {
 
 		WeekendsAndHolidaysConfig weekendsAndHolidaysConfig = getAdminModule().getWeekendsAndHolidaysConfig();
 		model.put(WebKeys.SCHEDULE_CONFIG, weekendsAndHolidaysConfig);
+		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SCHEDULE, model);		
 	}
