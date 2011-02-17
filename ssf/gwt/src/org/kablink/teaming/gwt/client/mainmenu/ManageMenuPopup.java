@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
@@ -500,6 +501,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		// Is the current binder a folder?
 		String menuText;
 		final String dlgCaption;
+		
 		if (m_currentBinder.isBinderFolder()) {
 			// Yes!  Define the menu and dialog labels to use.
 			menuText = m_messages.mainMenuManageTagThisFolder();
@@ -551,7 +553,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 					m_tagThisDlg.addStyleName("tagThisDlg");
 				}
 				
-				m_tagThisDlg.init( m_currentBinder.getBinderId(), null );
+				m_tagThisDlg.init( m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType() );
 				m_tagThisDlg.showDlg();
 
 			}

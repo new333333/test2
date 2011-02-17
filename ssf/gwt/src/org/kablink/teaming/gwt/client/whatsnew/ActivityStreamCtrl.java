@@ -1115,7 +1115,7 @@ public class ActivityStreamCtrl extends Composite
 			m_tagThisDlg = new TagThisDlg( false, true, null, 0, 0, GwtTeaming.getMessages().tagThisEntry() );
 		}
 		
-		m_tagThisDlg.init( null, entry.getEntryId() );
+		m_tagThisDlg.init( entry.getEntryId(), entry.getEntryTitle() );
 
 		m_tagThisDlg.showDlg( true, Window.getClientWidth() - 75, entry.getAbsoluteTop() );
 	}

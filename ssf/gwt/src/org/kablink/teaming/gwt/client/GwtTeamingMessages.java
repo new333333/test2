@@ -305,6 +305,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
 	String rpcFailure_GetTags();
+	String rpcFailure_GetTagSortOrder();
 	String rpcFailure_GetTaskLinkage();
 	String rpcFailure_GetTaskList();
 	String rpcFailure_GetTeamManagement();
@@ -333,6 +334,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSubscriptionData();
 	String rpcFailure_SaveTags();
+	String rpcFailure_SaveTagSortOrder();
 	String rpcFailure_SaveTaskCompleted();
 	String rpcFailure_SaveTaskLinkage();
 	String rpcFailure_SaveTaskPriority();
@@ -858,7 +860,12 @@ public interface GwtTeamingMessages extends Messages
 	String addTag();
 	String community();
 	String deleteTagHint();
-	String noTags();
+	String noTagsForEntry();
+	String noTagsForFolder();
+	String noTagsForWorkspace();
+	String listOfEntryTagsLabel();
+	String listOfFolderTagsLabel(); 
+	String listOfWorkspaceTagsLabel();
 	String personal();
 	String tagHeader();
 	String tagName();
