@@ -33,6 +33,7 @@
 package org.kablink.teaming.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -91,6 +92,8 @@ public class WeekendsAndHolidaysConfig  {
 			for (int i = 0; i < holidays.length; i += 1) {
 				reply.add(new Date(Long.parseLong(holidays[i])));
 			}
+			
+			Collections.sort(reply);
 		}
 		
 		return reply;
