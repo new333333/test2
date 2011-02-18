@@ -1767,8 +1767,7 @@ public class ListFolderHelper {
 		}
 
 		//Set Binder Quota
-		if (bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled() && 
-				bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
 				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));

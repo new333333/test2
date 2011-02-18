@@ -84,8 +84,8 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 				BinderQuota bq = getAdminModule().getBinderQuota(binder);
 				bq.setDiskQuota(quota);
 				getAdminModule().setBinderQuota(binder, bq);
-				setupViewBinder(response, binderId, binder.getEntityType().name());
 			}
+			setupViewBinder(response, binderId, binder.getEntityType().name());
 
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
