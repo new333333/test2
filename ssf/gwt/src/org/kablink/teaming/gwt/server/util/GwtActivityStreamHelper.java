@@ -48,6 +48,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SeenMap;
@@ -923,15 +924,16 @@ public class GwtActivityStreamHelper {
 		
 		// Then the entry information.
 		String entryId = String.valueOf(entryData.getEntryId());
-		reply.setEntryId(              entryId                                                   );
-		reply.setEntryComments(        entryData.getCommentCount()                               );
-		reply.setEntryDescription(     getEntryDescFromEM(em, request                           ));	
-		reply.setEntryDocNum(          getSFromEM(        em, Constants.DOCNUMBER_FIELD         ));
-		reply.setEntryModificationDate(getSFromEM(        em, Constants.MODIFICATION_DATE_FIELD ));		
-		reply.setEntryTitle(           getSFromEM(        em, Constants.TITLE_FIELD             ));
-		reply.setEntryTopEntryId(      getSFromEM(        em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
-		reply.setEntryType(            getSFromEM(        em, Constants.ENTRY_TYPE_FIELD        ));
-		reply.setEntrySeen(            sm.checkIfSeen(    em                                    ));
+		reply.setEntryId(               entryId                                                         );
+		reply.setEntryComments(         entryData.getCommentCount()                                     );
+		reply.setEntryDescription(      getEntryDescFromEM(      em, request                           ));	
+		reply.setEntryDescriptionFormat(getEntryDescFormatFromEM(em                                    ));	
+		reply.setEntryDocNum(           getSFromEM(              em, Constants.DOCNUMBER_FIELD         ));
+		reply.setEntryModificationDate( getSFromEM(              em, Constants.MODIFICATION_DATE_FIELD ));		
+		reply.setEntryTitle(            getSFromEM(              em, Constants.TITLE_FIELD             ));
+		reply.setEntryTopEntryId(       getSFromEM(              em, Constants.ENTRY_TOP_ENTRY_ID_FIELD));
+		reply.setEntryType(             getSFromEM(              em, Constants.ENTRY_TYPE_FIELD        ));
+		reply.setEntrySeen(             sm.checkIfSeen(          em                                    ));
 
 		// Finally, scan the comment ASEntryData...
 		List<ActivityStreamEntry> commentsASEList = reply.getComments();
@@ -1271,6 +1273,23 @@ public class GwtActivityStreamHelper {
 		
 		// If we get here, reply refers to the description string.
 		// Return it.
+		return reply;
+	}
+	
+	/*
+	 * Extracts a description format from an entry map.  Defaults to
+	 * Description.FORMAT_HTML if a value is not found.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getEntryDescFormatFromEM(Map em) {
+		int reply = Description.FORMAT_HTML;
+		String descFmt = getSFromEM(em, Constants.DESC_FORMAT_FIELD);
+		if (MiscUtil.hasString(descFmt)) {
+			try {
+				reply = Integer.parseInt(descFmt);
+			}
+			catch (Exception ex) {}
+		}
 		return reply;
 	}
 	
@@ -2074,13 +2093,16 @@ public class GwtActivityStreamHelper {
 			
 			// Initialize the entry information
 			{
+				Description desc;
 				String entryId;
 				SeenMap seenMap;
 				
+				desc = folderEntry.getDescription();
 				entryId = String.valueOf( folderEntry.getId() );
 				asEntry.setEntryId( entryId );
 				asEntry.setEntryComments( 0 );
-				asEntry.setEntryDescription( folderEntry.getDescription().getText() );	
+				asEntry.setEntryDescription( desc.getText() );	
+				asEntry.setEntryDescriptionFormat( desc.getFormat() );	
 				asEntry.setEntryDocNum( folderEntry.getDocNumber() );
 				asEntry.setEntryTitle( folderEntry.getTitle() );
 				asEntry.setEntryType( folderEntry.getEntityType().name() );
