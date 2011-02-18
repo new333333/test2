@@ -44,6 +44,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -197,7 +198,7 @@ public class LuceneProvider extends IndexSupport {
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
 				Document doc = (Document) iter.next();
-				if (doc.getField(Constants.UID_FIELD) == null)
+				if (doc.getFieldable(Constants.UID_FIELD) == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
@@ -247,7 +248,7 @@ public class LuceneProvider extends IndexSupport {
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
 				Document doc = (Document) obj;
-				if (doc.getField(Constants.UID_FIELD) == null)
+				if (doc.getFieldable(Constants.UID_FIELD) == null)
 					throw new IllegalArgumentException(
 							"Document must contain a UID with field name "
 									+ Constants.UID_FIELD);
@@ -348,7 +349,7 @@ public class LuceneProvider extends IndexSupport {
 	private String getTastingText(Document doc) {
 		String text = getTastingTextFromAllTextField(doc);
 		if (text == null || text.length() == 0) {
-			Field title = doc.getField(Constants.TITLE_FIELD);
+			Fieldable title = doc.getFieldable(Constants.TITLE_FIELD);
 			if (title != null) 
 				text = title.stringValue();
 		}
@@ -362,9 +363,9 @@ public class LuceneProvider extends IndexSupport {
 	
 	private String getTastingTextFromAllTextField(Document doc) {
 		StringBuilder sb = new StringBuilder();
-		Field[] allTextFields = doc.getFields(Constants.ALL_TEXT_FIELD);
+		Fieldable[] allTextFields = doc.getFieldables(Constants.ALL_TEXT_FIELD);
 		String piece;
-		for(Field allTextField:allTextFields) {
+		for(Fieldable allTextField:allTextFields) {
 			piece = allTextField.stringValue();
 			if(piece != null && piece.length()>0) {
 				if(sb.length() > 0)

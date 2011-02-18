@@ -1161,6 +1161,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_MAX_HITS="data_resultsCount";
     public static final String SEARCH_FORM_SUMMARY_WORDS="data_summaryWordCount";
     public static final String SEARCH_FORM_SORT_BY = "data_sortBy";
+    public static final String SEARCH_FORM_SORT_BY_SECONDARY = "data_sortBy_secondary";
     public static final String SEARCH_FORM_QUICKSEARCH="quickSearch";
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
@@ -1175,6 +1176,7 @@ public class WebKeys {
     public static final String SEARCH_SAVED_QUERY="ss_savedQuery";
     public static final String SEARCH_SAVED_QUERIES="ss_savedQueries";
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
+    public static final String SEARCH_SEARCH_SORT_BY_SECONDARY="sortBySecondary";
     public static final String SEARCH_TEXT="ss_searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
     public static final String SEEN_MAP="ssSeenMap";

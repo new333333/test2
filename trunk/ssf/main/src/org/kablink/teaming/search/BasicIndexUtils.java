@@ -41,6 +41,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.LuceneException;
@@ -106,35 +107,35 @@ public class BasicIndexUtils {
      * @throws LuceneException if validation fails
      */
     public static void validateDocument(Document doc) throws IllegalArgumentException {
-	    Field uidField = doc.getField(UID_FIELD);
+	    Fieldable uidField = doc.getFieldable(UID_FIELD);
 	    if(uidField == null)
 	        throw new IllegalArgumentException("Document must contain a field with name " + UID_FIELD);	  
        
-	    Field docTypeField = doc.getField(DOC_TYPE_FIELD);
+	    Fieldable docTypeField = doc.getFieldable(DOC_TYPE_FIELD);
 	    if(docTypeField == null)
 	        throw new IllegalArgumentException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
 	    
-	    Field classField = doc.getField(THIS_CLASS_FIELD);
+	    Fieldable classField = doc.getFieldable(THIS_CLASS_FIELD);
 	    if(classField == null)
 	        throw new IllegalArgumentException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
     }
     
     public static String getUid(Document doc) {
-	    Field uidField = doc.getField(UID_FIELD);
+	    Fieldable uidField = doc.getFieldable(UID_FIELD);
 	    if(uidField == null)
 	        throw new LuceneException("Document must contain a field with name " + UID_FIELD);	  
 	    return uidField.stringValue();
     }
     
     public static String getDocType(Document doc) {
-	    Field docTypeField = doc.getField(DOC_TYPE_FIELD);
+	    Fieldable docTypeField = doc.getFieldable(DOC_TYPE_FIELD);
 	    if(docTypeField == null)
 	        throw new LuceneException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
 	    return docTypeField.stringValue();
     }
     
     public static String getClassName(Document doc) {
-	    Field classField = doc.getField(THIS_CLASS_FIELD);
+	    Fieldable classField = doc.getFieldable(THIS_CLASS_FIELD);
 	    if(classField == null)
 	        throw new LuceneException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
 	    return classField.stringValue();

@@ -37,6 +37,7 @@ import java.util.Date;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
@@ -79,7 +80,8 @@ public class IndexUtils  {
     }    
     public static void addTotalReplyCount(Document doc, FolderEntry entry, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
-        Field countNumField = new Field(TOTALREPLYCOUNT_FIELD, Integer.toString(entry.getTotalReplyCount()), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    	NumericField countNumField = new NumericField(TOTALREPLYCOUNT_FIELD, Field.Store.YES, true);
+    	countNumField.setIntValue(entry.getTotalReplyCount());
         doc.add(countNumField);
     }    
     public static void addSortNumber(Document doc, FolderEntry entry, boolean fieldsOnly) {
