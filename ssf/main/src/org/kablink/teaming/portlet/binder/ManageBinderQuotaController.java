@@ -106,6 +106,9 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 
 		model.put(WebKeys.BINDER_QUOTA, getAdminModule().getBinderQuota(binder));
+		model.put(WebKeys.BINDER_QUOTAS_INITIALIZED, getAdminModule().isBinderQuotaInitialized());
+		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
+		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		return new ModelAndView(WebKeys.VIEW_MANAGE_BINDER_QUOTA, model);
 	}
 
