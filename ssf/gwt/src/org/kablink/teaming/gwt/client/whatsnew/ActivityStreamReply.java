@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -181,6 +182,15 @@ public class ActivityStreamReply extends Composite
 				Window.alert( GwtTeaming.getMessages().noReplyText() );
 				setFocusToTextArea();
 				return;
+			}
+			
+			// HTML escape the text entered by the user and replace newlines with <br>
+			{
+				SafeHtmlBuilder builder;
+				
+				builder = new SafeHtmlBuilder();
+				builder = builder.appendEscapedLines( replyText );
+				replyText = builder.toSafeHtml().asString();
 			}
 
 			title = m_titleTextBox.getText();
