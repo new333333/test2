@@ -223,13 +223,13 @@ public class SearchUtils {
     	}
 
     	SortField[] fields;
-    	if(sortBySecondary != null)
+    	if(sortBySecondary != null && !sortBySecondary.equals(sortBy))
     		fields = new SortField[2];
     	else
     		fields = new SortField[1];
 
     	fields[0] = toSortField(sortBy, descend);
-    	if(sortBySecondary != null)
+    	if(fields.length > 1)
     		fields[1] = toSortField(sortBySecondary, descendSecondary);
     	
     	return fields;
@@ -238,6 +238,15 @@ public class SearchUtils {
   	private static SortField toSortField(String sortBy, boolean descend) {
   		if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_RELEVANCE)) {
   			return new SortField(null, SortField.SCORE, descend);
+  		}
+  		else if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_DATE)) {
+  			return new SortField(Constants.MODIFICATION_DATE_FIELD, SortField.STRING, descend);
+  		}
+  		else if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_RATING)) {
+  			return new SortField(Constants.RATING_FIELD, SortField.DOUBLE, descend);
+  		}
+  		else if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_REPLY_COUNT)) {
+  			return new SortField(Constants.TOTALREPLYCOUNT_FIELD, SortField.INT, descend);
   		}
   		else if (isDateField(sortBy)) {
     		return new SortField(sortBy, SortField.STRING, descend);

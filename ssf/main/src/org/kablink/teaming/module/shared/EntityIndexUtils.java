@@ -49,6 +49,7 @@ import java.util.Collection;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
@@ -160,7 +161,8 @@ public class EntityIndexUtils {
     	//rating may not exist or not be supported
     	try {
     		if(entry.getAverageRating() != null) {
-	        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
+    			NumericField rateField = new NumericField(RATING_FIELD, Field.Store.YES, true);
+    			rateField.setDoubleValue(entry.getAverageRating().getAverage());
 	        	doc.add(rateField);
     		}
         } catch (Exception ex) {};
@@ -984,13 +986,13 @@ public class EntityIndexUtils {
        	// just in case there wasn't any text from the converted file 
        	// i.e. the file didn't really exist
        	try {
-       		text = doc.getField(Constants.TEMP_FILE_CONTENTS_FIELD).stringValue();
+       		text = doc.getFieldable(Constants.TEMP_FILE_CONTENTS_FIELD).stringValue();
        	} catch (Exception e) {}
        	doc.removeFields(Constants.TEMP_FILE_CONTENTS_FIELD);
-       	text += " " + doc.getField(Constants.FILENAME_FIELD).stringValue();
-       	text += " " + doc.getField(Constants.FILE_DESCRIPTION_FIELD).stringValue();
-       	text += " " + doc.getField(Constants.MODIFICATION_NAME_FIELD).stringValue();
-       	text += " " + doc.getField(Constants.CREATOR_NAME_FIELD).stringValue();
+       	text += " " + doc.getFieldable(Constants.FILENAME_FIELD).stringValue();
+       	text += " " + doc.getFieldable(Constants.FILE_DESCRIPTION_FIELD).stringValue();
+       	text += " " + doc.getFieldable(Constants.MODIFICATION_NAME_FIELD).stringValue();
+       	text += " " + doc.getFieldable(Constants.CREATOR_NAME_FIELD).stringValue();
        	Field allText = new Field(Constants.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.ANALYZED);
        	doc.add(allText);
        	return doc;

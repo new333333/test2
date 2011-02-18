@@ -1090,23 +1090,27 @@ public class BinderHelper {
 	 */
 	public static Map getDefaultSortOrderForSearch( RenderRequest request )
 	{
-		String sortBy;
+		String sortBy, sortBySecondary;
    		Map options = new HashMap();
-		
-		// TODO To be fixed
-		// These four pieces of data (or something equivalent) must come from the browser 
-		// via request object. For now, this information is fixed (hard-coded). 
 
    		// Get the "sort by" value from the request.  If it is not there we default to sort-by-relevence.
-		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, "sortByRelevance" );
+		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE );
+		sortBySecondary = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY_SECONDARY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE );
 
-		options.put( ObjectKeys.SEARCH_SORT_BY, sortBy );
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
-		options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, Constants.MODIFICATION_DATE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.TRUE);
+		options.put(ObjectKeys.SEARCH_SORT_BY, sortBy);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, getDefaultDescend(sortBy));
+		options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY, sortBySecondary);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, getDefaultDescend(sortBySecondary));
 		
 		return options;
 	}// end getDefaultSortOrderForSearch()
+	
+	private static Boolean getDefaultDescend(String sortBy) {
+		if(ObjectKeys.SEARCH_SORT_BY_RELEVANCE.equals(sortBy))
+			return Boolean.FALSE;
+		else
+			return Boolean.TRUE;
+	}
 	
 	public static String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
@@ -3247,7 +3251,8 @@ public class BinderHelper {
 		model.put(WebKeys.SEARCH_FORM_PREDELETED_ONLY, options.get(ObjectKeys.SEARCH_PRE_DELETED));
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
-		model.put( "sortBy", options.get( ObjectKeys.SEARCH_SORT_BY ) );
+		model.put(WebKeys.SEARCH_SEARCH_SORT_BY, options.get( ObjectKeys.SEARCH_SORT_BY ) );
+		model.put(WebKeys.SEARCH_SEARCH_SORT_BY_SECONDARY, options.get( ObjectKeys.SEARCH_SORT_BY_SECONDARY ) );
 
 		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
 		
@@ -3256,7 +3261,8 @@ public class BinderHelper {
 		Map options = prepareSearchOptions(bs, request);
 		Map model = new HashMap();
 		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
-		model.put( "sortBy", options.get( ObjectKeys.SEARCH_SORT_BY ) );
+		model.put(WebKeys.SEARCH_SEARCH_SORT_BY, options.get( ObjectKeys.SEARCH_SORT_BY ) );
+		model.put(WebKeys.SEARCH_SEARCH_SORT_BY_SECONDARY, options.get( ObjectKeys.SEARCH_SORT_BY_SECONDARY ) );
 		model.put("quickSearch", false);
 		
 		model.putAll(prepareSavedQueries(bs));

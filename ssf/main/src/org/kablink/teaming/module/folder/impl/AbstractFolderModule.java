@@ -618,14 +618,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	        	Map<String, Counter> unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
 		        for (int i = 0; i < hits.length(); i++) {
-					String folderIdString = hits.doc(i).getField(Constants.BINDER_ID_FIELD).stringValue();
-					String entryIdString = hits.doc(i).getField(Constants.DOCID_FIELD).stringValue();
+					String folderIdString = hits.doc(i).getFieldable(Constants.BINDER_ID_FIELD).stringValue();
+					String entryIdString = hits.doc(i).getFieldable(Constants.DOCID_FIELD).stringValue();
 					Long entryId = null;
 					if (entryIdString != null && !entryIdString.equals("")) {
 						entryId = new Long(entryIdString);
 					}
 					try {
-						modifyDate = DateTools.stringToDate(hits.doc(i).getField(Constants.LASTACTIVITY_FIELD).stringValue());
+						modifyDate = DateTools.stringToDate(hits.doc(i).getFieldable(Constants.LASTACTIVITY_FIELD).stringValue());
 					} catch (ParseException pe) {} // no need to do anything
 					Counter cnt = unseenCounts.get(folderIdString);
 					if (cnt == null) {
