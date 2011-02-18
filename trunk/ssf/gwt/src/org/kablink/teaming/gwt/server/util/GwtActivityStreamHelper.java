@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -554,12 +555,21 @@ public class GwtActivityStreamHelper {
 			// Read the binders that we're tracking (in a single
 			// database read) and scan them...
 			Map<Long, Binder> reply = new HashMap<Long, Binder>();
-			SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
-			for (Binder b:  binders) {
-				// ...adding each to a Map using their ID as the
-				// ...key.
-				if ((!(b.isDeleted())) && (!(GwtUIHelper.isBinderPreDeleted(b)))) {
-					reply.put(b.getId(), b);
+			if (!(binderIds.isEmpty())) {
+				SortedSet<Binder> binders;
+				try {
+					binders = bs.getBinderModule().getBinders(binderIds);
+				}
+				catch (Exception ex) {
+					m_logger.debug("GwtActivityStreamHelper.readBinders( 1:EXCEPTION ):  ", ex);
+					binders = new TreeSet<Binder>();
+				}
+				for (Binder b:  binders) {
+					// ...adding each to a Map using their ID as the
+					// ...key.
+					if ((!(b.isDeleted())) && (!(GwtUIHelper.isBinderPreDeleted(b)))) {
+						reply.put(b.getId(), b);
+					}
 				}
 			}
 			
@@ -593,7 +603,14 @@ public class GwtActivityStreamHelper {
 			if (!(authorIds.isEmpty())) {
 				// Yes!  Read them (in single database read) and scan
 				// them...
-				SortedSet<Principal> authorPrincipals = bs.getProfileModule().getPrincipals(authorIds);
+				SortedSet<Principal> authorPrincipals;
+				try {
+					authorPrincipals = bs.getProfileModule().getPrincipals(authorIds);
+				}
+				catch (Exception ex) {
+					m_logger.debug("GwtActivityStreamHelper.readUsers( 1:EXCEPTION ):  ", ex);
+					authorPrincipals = new TreeSet<Principal>();
+				}
 				for (Principal p:  authorPrincipals) {
 					// ...adding each as a User to a Map using their ID
 					// ...as the key.
@@ -707,12 +724,21 @@ public class GwtActivityStreamHelper {
 			// Read the binders that we're tracking (in a single
 			// database read) and scan them...
 			Map<Long, Binder> reply = new HashMap<Long, Binder>();
-			SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
-			for (Binder b:  binders) {
-				// ...adding each to a Map using their ID as the
-				// ...key.
-				if ((!(b.isDeleted())) && (!(GwtUIHelper.isBinderPreDeleted(b)))) {
-					reply.put(b.getId(), b);
+			if (!(binderIds.isEmpty())) {
+				SortedSet<Binder> binders;
+				try {
+					binders = bs.getBinderModule().getBinders(binderIds);
+				}
+				catch (Exception ex) {
+					m_logger.debug("GwtActivityStreamHelper.readBinders( 2:EXCEPTION ):  ", ex);
+					binders = new TreeSet<Binder>();
+				}
+				for (Binder b:  binders) {
+					// ...adding each to a Map using their ID as the
+					// ...key.
+					if ((!(b.isDeleted())) && (!(GwtUIHelper.isBinderPreDeleted(b)))) {
+						reply.put(b.getId(), b);
+					}
 				}
 			}
 			
@@ -741,12 +767,21 @@ public class GwtActivityStreamHelper {
 			
 			// Read them (in single database read) and scan them...
 			Map<Long, User> reply = new HashMap<Long, User>();
-			SortedSet<Principal> authorPrincipals = bs.getProfileModule().getPrincipals(userIds);
-			for (Principal p:  authorPrincipals) {
-				// ...adding each as a User to a Map using their ID
-				// ...as the key.
-				if (!(p.isDeleted())) {
-					reply.put(p.getId(), ((User) p));
+			if (!(userIds.isEmpty())) {
+				SortedSet<Principal> authorPrincipals;
+				try {
+					authorPrincipals = bs.getProfileModule().getPrincipals(userIds);
+				}
+				catch (Exception ex) {
+					m_logger.debug("GwtActivityStreamHelper.readUsers( 2:EXCEPTION ):  ", ex);
+					authorPrincipals = new TreeSet<Principal>();
+				}
+				for (Principal p:  authorPrincipals) {
+					// ...adding each as a User to a Map using their ID
+					// ...as the key.
+					if (!(p.isDeleted())) {
+						reply.put(p.getId(), ((User) p));
+					}
 				}
 			}
 			
