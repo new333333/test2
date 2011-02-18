@@ -63,9 +63,9 @@ import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.cal.Duration;
 
 /**
- * Created on Jul 18, 2005
- * 
- * @author billmers
+ * Helper methods for code that services event requests.
+ *
+ * @author drfoster@novell.com
  */
 @SuppressWarnings("unchecked")
 public class EventHelper {
@@ -137,8 +137,8 @@ public class EventHelper {
 				out.append("\n\tDate out:  " + getDateTimeString(dateOut));
 				out.append("\n\tAdjustments:");
 				out.append("\n\t\tDuration MS:  " + adjustmentMS);
-				out.append("\n\t\tWeekend Days:  None. Duration not in days.");
-				out.append("\n\t\tHolidays:  None. Duration not in days.");
+				out.append("\n\t\tWeekend Days:  None.  Duration not in days.");
+				out.append("\n\t\tHolidays:  None.  Duration not in days.");
 				debugLog(out.toString());
 			}
 			return dateOut;
@@ -152,6 +152,16 @@ public class EventHelper {
 		List<Date>    holidays = wahConfig.getHolidayList();     boolean hasHolidays = ((null != holidays) && (!(holidays.isEmpty())));
 		if ((!hasWeekends) && (!hasHolidays)) {
 			// No!  No other adjustments are necessary.
+			if (debugEnabled()) {
+				StringBuffer out = new StringBuffer("EventHelper.adjustDate():");
+				out.append("\n\tDate in:  "  + getDateTimeString(dateIn));
+				out.append("\n\tDate out:  " + getDateTimeString(dateOut));
+				out.append("\n\tAdjustments:");
+				out.append("\n\t\tDuration:  " + duration.getDays() + " days");
+				out.append("\n\t\tWeekend Days:  None No weekends or holidays scheduled.");
+				out.append("\n\t\tHolidays:  None.  No weekends or holidays scheduled.");
+				debugLog(out.toString());
+			}
 			return dateOut;
 		}
 		
@@ -174,19 +184,18 @@ public class EventHelper {
 			hDays_Total  = hDays_New;
 		}
 		
+		// If we get here, dateOut contains the adjusted Date.  Return
+		// it.
 		if (debugEnabled()) {
 			StringBuffer out = new StringBuffer("EventHelper.adjustDate():");
 			out.append("\n\tDate in:  "  + getDateTimeString(dateIn));
 			out.append("\n\tDate out:  " + getDateTimeString(dateOut));
 			out.append("\n\tAdjustments");
-			out.append("\n\t\tDuration Days:  " + duration.getDays());
-			out.append("\n\t\tWeekend Days:  "  + weDays_Total      );
-			out.append("\n\t\tHolidays:  "      + hDays_Total       );
+			out.append("\n\t\tDuration Days:  " + duration.getDays() + " days");
+			out.append("\n\t\tWeekend Days:  "  + weDays_Total);
+			out.append("\n\t\tHolidays:  "      + hDays_Total);
 			debugLog(out.toString());
 		}
-		
-		// If we get here, dateOut contains the adjusted Date.  Return
-		// it.
 		return dateOut;
 	}
 	
@@ -198,16 +207,16 @@ public class EventHelper {
 		}
 
 		// Construct a Duration using the days...
-		Duration dur = new Duration();
+		Duration duration = new Duration();
 		boolean forward = (0 < days);
 		if (!forward) {
 			days = -days;
 		}		
-		dur.setDays(days);
+		duration.setDays(days);
 		
 		// ...and use that to adjust the date forward or backwards, as
 		// ...appropriate.
-		return adjustDate(dateIn, dur, forward);
+		return adjustDate(dateIn, duration, forward);
 	}
 
 	/*
@@ -215,10 +224,10 @@ public class EventHelper {
 	 * beyond those accounted for by hDays.
 	 */
 	private static int adjustForHolidays(Date dateIn, Date dateOut, boolean forward, List<Date> holidays, int hDays) {
-		long earlierTime;
-		long laterTime;
 		while (true) {
 			// What's the earlier and later times?
+			long earlierTime;
+			long laterTime;
 			if (forward) {earlierTime = dateIn.getTime();  laterTime = dateOut.getTime();}
 			else         {earlierTime = dateOut.getTime(); laterTime = dateIn.getTime(); }
 
@@ -271,7 +280,7 @@ public class EventHelper {
 			for (Integer weekendDay:  weekendDays) {
 				// Summing up the total number of days we need to
 				// adjust for.
-				adjustmentDays += countNumberOfDays(earlierDay, laterDay, weekendDay.intValue());
+				adjustmentDays += countDayOccurrences(earlierDay, laterDay, weekendDay.intValue());
 			}
 
 			// If we've already adjusted for the correct number of
@@ -391,15 +400,15 @@ public class EventHelper {
      * Returns the number of times a particular day occurs between two
      * given days.
      */
-    private static int countNumberOfDays(GregorianCalendar first, GregorianCalendar second, int day) {
-    	// Scan the days, starting with the first.
+    private static int countDayOccurrences(GregorianCalendar earlierDay, GregorianCalendar laterDay, int dayToCount) {
+    	// Scan the days, starting with the earliest.
     	int      count      = 0; 
-    	Calendar currentDay = ((Calendar) first.clone()); 
-    	Calendar lastDay    = ((Calendar) second.clone()); 
+    	Calendar currentDay = ((Calendar) earlierDay.clone()); 
+    	Calendar lastDay    = ((Calendar) laterDay.clone()); 
     	lastDay.add(Calendar.DATE, 1);	// Bumped by one so that we count the last day if it's a hit. 
     	while (!(currentDay.equals(lastDay))) {
-    		// Is this the day in question?
-	    	if (currentDay.get(Calendar.DAY_OF_WEEK) == day) {
+    		// Is this the day that we're counting?
+	    	if (currentDay.get(Calendar.DAY_OF_WEEK) == dayToCount) {
 	    		// Yes!  Count it.
 	    		count += 1; 
 	    	}
@@ -408,8 +417,9 @@ public class EventHelper {
 	    	currentDay.add(Calendar.DATE, 1); 
     	}
     	
-    	// If we get here, count contains the number of times the day
-    	// occurs between the first and second days.  Return it.
+    	// If we get here, count contains the number of times
+    	// dayToCount occurs between earlierDay and laterDay.  Return
+    	// it.
     	return count; 
     }
 
