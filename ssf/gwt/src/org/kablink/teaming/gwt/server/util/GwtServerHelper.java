@@ -167,6 +167,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
+import org.kablink.util.Html;
 import org.kablink.util.PropertyNotFoundException;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -525,9 +526,13 @@ public class GwtServerHelper {
 		// Create an empty file map.
 		fileMap = new HashMap();
 
+		// Escape any html characters
+		desc = formatReply( desc );
+			
 		inputMap = new HashMap<String, String>();
 		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
 		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_HTML ) );
 		inputData = new MapInputData( inputMap );
 
     	return folderModule.addReply( binderIdL, entryIdL, replyDefId, inputData, fileMap, null );
@@ -953,6 +958,51 @@ public class GwtServerHelper {
 		// JSONObject or is null.  Return it.
 		return reply;
 	}
+	
+	/**
+	 * Escape html characters. < --> &lt;  > --> &gt; carriage return --> <p> 
+	 */
+	public static String formatReply( String text )
+	{
+		StringBuffer sb = new StringBuffer();
+		char c;
+
+		if ( text == null )
+			return null;
+
+		sb = new StringBuffer();
+
+		for (int i = 0; i < text.length(); i++)
+		{
+			c = text.charAt(i);
+
+			switch (c)
+			{
+				case '&':
+					sb.append( "&amp;" );
+					break;
+	
+				case '<':
+					sb.append( "&lt;" );
+					break;
+	
+				case '>':
+					sb.append( "&gt;" );
+					break;
+					
+				case '\n':
+					sb.append( "<p>" );
+					break;
+	
+				default:
+					sb.append(c);
+					break;
+			}
+		}
+
+		return sb.toString();
+	}
+
 	
 	/**
 	 * Return a list of administration actions the user has rights to perform. 
