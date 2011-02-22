@@ -128,7 +128,7 @@ public class EntryWidgetDlgBox extends DlgBox
 		panel = new FlowPanel();
 		panel.add( m_currentEntryNameLabel );
 		
-		// Add a "Change" button
+		// Add an "Edit" button
 		{
 			ClickHandler clickHandler;
 			
@@ -317,9 +317,6 @@ public class EntryWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected entry.
 				getEntry( m_entryId );
-
-				// Show the edit button.
-				m_editBtn.setVisible( true );
 			}
 		}
 	}// end handleAction()
@@ -356,12 +353,6 @@ public class EntryWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.setText( properties.getEntryName() );
 			m_currentEntryNameLabel.removeStyleName( "noEntrySelected" );
 			m_currentEntryNameLabel.addStyleName( "bold" );
-			
-			// Hide the find control.
-			hideFindControl();
-			
-			// Show the edit button.
-			m_editBtn.setVisible( true );
 		}
 		else
 		{
@@ -369,14 +360,15 @@ public class EntryWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.setText( GwtTeaming.getMessages().noEntrySelected() );
 			m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
 			m_currentEntryNameLabel.removeStyleName( "bold" );
-			
-			// Show the find control and give it the focus.
-			showFindControl();
-			
-			// Hide the edit button.
-			m_editBtn.setVisible( false );
 		}
 		 
+		
+		// Hide the find control.
+		hideFindControl();
+		
+		// Show the edit button.
+		m_editBtn.setVisible( true );
+
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		
 		// Hide the search-results widget.

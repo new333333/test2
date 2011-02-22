@@ -355,12 +355,6 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 
 			m_currentFolderNameLabel.removeStyleName( "noFolderSelected" );
 			m_currentFolderNameLabel.addStyleName( "bold" );
-			
-			// Hide the find control.
-			hideFindControl();
-			
-			// Show the edit button.
-			m_editBtn.setVisible( true );
 		}
 		else
 		{
@@ -368,13 +362,13 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 			m_currentFolderNameLabel.setText( GwtTeaming.getMessages().noFolderSelected() );
 			m_currentFolderNameLabel.addStyleName( "noFolderSelected" );
 			m_currentFolderNameLabel.removeStyleName( "bold" );
-			
-			// Show the find control and give it the focus.
-			showFindControl();
-			
-			// Hide the edit button.
-			m_editBtn.setVisible( false );
 		}
+		
+		// Hide the find control.
+		hideFindControl();
+		
+		// Show the edit button.
+		m_editBtn.setVisible( true );
 
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
@@ -411,9 +405,6 @@ public class LinkToFolderWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected folder.
 				getFolder( m_folderId );
-
-				// Show the edit button.
-				m_editBtn.setVisible( true );
 			}
 		}
 	}// end handleAction()
