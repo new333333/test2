@@ -755,9 +755,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected folder.
 				getFolder( m_folderId );
-
-				// Show the edit button.
-				m_folderEditBtn.setVisible( true );
 			}
 			// Are we dealing with a GwtFolderEntry object?
 			else if ( selectedObj instanceof GwtFolderEntry )
@@ -772,9 +769,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected entry.
 				getEntry( m_entryId );
-
-				// Show the edit button.
-				m_entryEditBtn.setVisible( true );
 			}
 		}
 	}
@@ -849,11 +843,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				
 				num = properties.getNumEntriesToBeShownValue();
 				m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
-
-				hideFolderFindControl();
-				
-				// Show the edit button.
-				m_folderEditBtn.setVisible( true );
 			}
 			else
 			{
@@ -861,20 +850,18 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				m_currentFolderNameLabel.setText( GwtTeaming.getMessages().noFolderSelected() );
 				m_currentFolderNameLabel.addStyleName( "noFolderSelected" );
 				m_currentFolderNameLabel.removeStyleName( "bold" );
-				
-				// Show the find control and give it the focus.
-				showFolderFindControl();
-				
-				// Hide the edit button.
-				m_folderEditBtn.setVisible( false );
 			}
 
 			// Hide the search-results widget.
 			m_folderFindCtrl.hideSearchResults();
-			
 			m_folderFindCtrl.setInitialSearchString( "" );
+
+			hideFolderFindControl();
+			
+			// Show the edit button.
+			m_folderEditBtn.setVisible( true );
 		}
-		
+
 		// Initialize the controls when an entry is required.
 		{
 			// Do we have an entry?
@@ -884,12 +871,6 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				m_currentEntryNameLabel.setText( properties.getEntryName() );
 				m_currentEntryNameLabel.removeStyleName( "noEntrySelected" );
 				m_currentEntryNameLabel.addStyleName( "bold" );
-				
-				// Hide the find control.
-				hideEntryFindControl();
-				
-				// Show the edit button.
-				m_entryEditBtn.setVisible( true );
 				 
 				m_showEntryTitleCkBox.setValue( properties.getShowTitleValue() );
 			}
@@ -899,18 +880,17 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				m_currentEntryNameLabel.setText( GwtTeaming.getMessages().noEntrySelected() );
 				m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
 				m_currentEntryNameLabel.removeStyleName( "bold" );
-				
-				// Show the find control and give it the focus.
-				showEntryFindControl();
-				
-				// Hide the edit button.
-				m_entryEditBtn.setVisible( false );
 			}
 
 			// Hide the search-results widget.
 			m_entryFindCtrl.hideSearchResults();
-			
 			m_entryFindCtrl.setInitialSearchString( "" );
+			
+			// Hide the find control.
+			hideEntryFindControl();
+			
+			// Show the edit button.
+			m_entryEditBtn.setVisible( true );
 		}
 		
 		// Hide/show the appropriate controls on the page based on the selected view.

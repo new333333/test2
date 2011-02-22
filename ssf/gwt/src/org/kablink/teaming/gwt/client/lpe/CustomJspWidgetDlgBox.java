@@ -592,9 +592,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected folder.
 				getFolder( m_folderId );
-
-				// Show the edit button.
-				m_folderEditBtn.setVisible( true );
 			}
 			// Are we dealing with a GwtFolderEntry object?
 			else if ( selectedObj instanceof GwtFolderEntry )
@@ -609,9 +606,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				
 				// Issue an ajax request to get information about the selected entry.
 				getEntry( m_entryId );
-
-				// Show the edit button.
-				m_entryEditBtn.setVisible( true );
 			}
 		}
 	}// end handleAction()
@@ -680,11 +674,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			
 			num = properties.getNumEntriesToBeShownValue();
 			m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
-
-			hideFolderFindControl();
-			
-			// Show the edit button.
-			m_folderEditBtn.setVisible( true );
 		}
 		else
 		{
@@ -692,13 +681,12 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			m_currentFolderNameLabel.setText( GwtTeaming.getMessages().noFolderSelected() );
 			m_currentFolderNameLabel.addStyleName( "noFolderSelected" );
 			m_currentFolderNameLabel.removeStyleName( "bold" );
-			
-			// Show the find control and give it the focus.
-			showFolderFindControl();
-			
-			// Hide the edit button.
-			m_folderEditBtn.setVisible( false );
 		}
+
+		hideFolderFindControl();
+		
+		// Show the edit button.
+		m_folderEditBtn.setVisible( true );
 		
 		// Do we have an entry?
 		if ( m_entryId != null && m_entryId.length() > 0 )
@@ -712,12 +700,6 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.addStyleName( "bold" );
 	 
 			m_showEntryTitleCkBox.setValue( properties.getShowTitleValue() );
-
-			// Hide the find control.
-			hideEntryFindControl();
-			
-			// Show the edit button.
-			m_entryEditBtn.setVisible( true );
 		}
 		else
 		{
@@ -725,13 +707,13 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			m_currentEntryNameLabel.setText( GwtTeaming.getMessages().noEntrySelected() );
 			m_currentEntryNameLabel.addStyleName( "noEntrySelected" );
 			m_currentEntryNameLabel.removeStyleName( "bold" );
-			
-			// Show the find control and give it the focus.
-			showEntryFindControl();
-			
-			// Hide the edit button.
-			m_entryEditBtn.setVisible( false );
 		}
+
+		// Hide the find control.
+		hideEntryFindControl();
+		
+		// Show the edit button.
+		m_entryEditBtn.setVisible( true );
 		
 		// Hide the search-results widget.
 		m_folderFindCtrl.hideSearchResults();
