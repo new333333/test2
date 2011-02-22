@@ -172,7 +172,7 @@ public class TaskListing implements ActionTrigger {
 	 * 
 	 * @return
 	 */
-	public ActionHandler getActoinHandler()   {return m_actionHandler;  }
+	public ActionHandler getActionHandler()   {return m_actionHandler;  }
 	public boolean       getSortDescend()     {return m_sortDescend;    }
 	public InlineLabel   getHintSpan()        {return m_hintSpan;       }
 	public Long          getBinderId()        {return m_binderId;       }
@@ -206,16 +206,6 @@ public class TaskListing implements ActionTrigger {
 		}
 	}
 	
-	/*
-	 * Renders a List<TaskListItem> into the task listing DIV.
-	 */
-	private void render() {
-		boolean newTaskTable = (null == m_taskTable);
-		if (newTaskTable) m_taskTable = new TaskTable(this);
-		m_taskTable.showTasks(m_taskBundle, m_updateCalculatedDates);
-		if (newTaskTable) m_taskListingDIV.appendChild(m_taskTable.getElement());
-	}
-
 	/**
 	 * Called when the TaskListing <DIV> needs to resize itself based
 	 * on the current size of the content frame.
@@ -287,11 +277,11 @@ public class TaskListing implements ActionTrigger {
 				// task list.
 				GwtClientHelper.removeAllChildren(m_taskListingDIV);
 				m_taskBundle = result;
-				render();
+				showTaskBundle();
 			}			
 		});		
 	}
-
+	
 	/**
 	 * Displays a string in the hint <SPAN>.
 	 * 
@@ -310,6 +300,27 @@ public class TaskListing implements ActionTrigger {
 		}
 	}
 	
+	/*
+	 * Shows the TaskBundle into the task listing DIV.
+	 */
+	private void showTaskBundle() {
+		Scheduler.ScheduledCommand showCommand;
+		showCommand = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				showTaskBundleNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(showCommand);
+	}
+	
+	private void showTaskBundleNow() {
+		boolean newTaskTable = (null == m_taskTable);
+		if (newTaskTable) m_taskTable = new TaskTable(this);
+		m_taskTable.showTasks(m_taskBundle, m_updateCalculatedDates);
+		if (newTaskTable) m_taskListingDIV.appendChild(m_taskTable.getElement());
+	}
+
 	/**
 	 * Fires a TeamingAction.
 	 * 
