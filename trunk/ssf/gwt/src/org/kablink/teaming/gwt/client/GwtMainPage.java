@@ -60,6 +60,7 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -333,9 +334,7 @@ public class GwtMainPage extends Composite
 	private native void initTaskListingJS(GwtMainPage gwtMainPage) /*-{
 		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates )
 		{
-			var taskListingDIV = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskListingDIV");
-			var taskToolsDIV   = $wnd.top.gwtContentIframe.document.getElementById("ss_gwtTaskToolsDIV"  );
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Lcom/google/gwt/user/client/Element;Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( taskToolsDIV, taskListingDIV, binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates );
 		}//end ss_initTaskListing()
 	}-*/;
 
@@ -523,12 +522,15 @@ public class GwtMainPage extends Composite
 	/*
 	 * Called when the GWT task listing UI is loading.
 	 */
-	private void initTaskListing( Element taskToolsDIV, Element taskListingDIV, String binderId, String filterType, String mode, String sortBy, String sortDescend, String updateCalculatedDates )
+	private void initTaskListing( String binderId, String filterType, String mode, String sortBy, String sortDescend, String updateCalculatedDates )
 	{
+		Document contentDoc;
+		
 		// Create a TaskListing object...
+		contentDoc = m_contentCtrl.getContentDocument();
 		m_taskListing = new TaskListing(
-			taskToolsDIV,
-			taskListingDIV,
+			contentDoc.getElementById( "ss_gwtTaskToolsDIV"   ),
+			contentDoc.getElementById( "ss_gwtTaskListingDIV" ),
 			this,
 			Long.parseLong( binderId ),
 			filterType,
