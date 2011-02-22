@@ -1901,8 +1901,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		// Add the appropriately styled task name Anchor to the panel.
 		Anchor ta = buildAnchor();
-		PassThroughEventsPanel eventsPanel = new PassThroughEventsPanel(ta.getElement());
-		eventsPanel.addClickHandler(new ClickHandler() {
+		PassThroughEventsPanel.addHandler(ta, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {handleTaskView(task);}
 		});

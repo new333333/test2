@@ -522,7 +522,7 @@ public class GwtClientHelper {
 		if (null != e) {
 			// ...scan its child Node's...
 			Node child = e.getFirstChild(); 
-			while (null !=child) {
+			while (null != child) {
 				// ...removing each from the Element.
 				e.removeChild(child);
 				child = e.getFirstChild();

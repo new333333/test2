@@ -36,21 +36,16 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasChangeHandlers;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.HasMouseOutHandlers;
-import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -61,60 +56,54 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public class PassThroughEventsPanel extends AbsolutePanel implements HasChangeHandlers, HasClickHandlers, HasMouseOutHandlers, HasMouseOverHandlers {
+public class PassThroughEventsPanel extends AbsolutePanel {
 	public PassThroughEventsPanel(Element elem) {
 		super(elem.<com.google.gwt.user.client.Element> cast());
 		onAttach();
 	}
 	
-	@Override
-	public HandlerRegistration addChangeHandler(ChangeHandler handler) {
-		return addDomHandler(handler, ChangeEvent.getType());
-	}
-	
-	@Override
-	public HandlerRegistration addClickHandler(ClickHandler handler) {
-		return addDomHandler(handler, ClickEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addMouseOverHandler(MouseOverHandler handler) {
-		return addDomHandler(handler, MouseOverEvent.getType());
-	}
-
-	@Override
-	public HandlerRegistration addMouseOutHandler(MouseOutHandler handler) {
-		return addDomHandler(handler, MouseOutEvent.getType());
-	}
-
 	/**
 	 * Adds the EventHandler's from a List<EventHandler> to a Widget
 	 * via a PassThroughEventsPanel.
 	 * 
-	 * @param w
+	 * @param we
 	 * @param handlers
+	 * 
+	 * @return
 	 */
-	public static void addHandlers(Widget w, List<EventHandler> handlers) {
-		PassThroughEventsPanel p = new PassThroughEventsPanel(w.getElement());
+	public static PassThroughEventsPanel addHandlers(Widget we, List<EventHandler> handlers) {
+		return addHandlers(we.getElement(), handlers);
+	}
+	
+	public static PassThroughEventsPanel addHandlers(Element we, List<EventHandler> handlers) {
+		PassThroughEventsPanel p = new PassThroughEventsPanel(we);
 		for (EventHandler eh:  handlers) {
 			// Note that we don't 'else if' these since an EventHandler
 			// could conceivably handle multiple event types.
-			if (eh instanceof ChangeHandler)    p.addChangeHandler(   (ChangeHandler)    eh); 
-			if (eh instanceof ClickHandler)     p.addClickHandler(    (ClickHandler)     eh); 
-			if (eh instanceof MouseOverHandler) p.addMouseOverHandler((MouseOverHandler) eh); 
-			if (eh instanceof MouseOutHandler)  p.addMouseOutHandler( (MouseOutHandler)  eh); 
+			if (eh instanceof ChangeHandler)    p.addDomHandler(((ChangeHandler)    eh), ChangeEvent.getType()   ); 
+			if (eh instanceof ClickHandler)     p.addDomHandler(((ClickHandler)     eh), ClickEvent.getType()    ); 
+			if (eh instanceof MouseOverHandler) p.addDomHandler(((MouseOverHandler) eh), MouseOverEvent.getType()); 
+			if (eh instanceof MouseOutHandler)  p.addDomHandler(((MouseOutHandler)  eh), MouseOutEvent.getType() ); 
 		}
+		return p;
 	}
+	
 
 	/**
 	 * Adds an EventHandler to a Widget via a PassThroughEventsPanel.
 	 * 
-	 * @param w
+	 * @param we
 	 * @param ch
+	 * 
+	 * @return
 	 */
-	public static void addHandler(Widget w, EventHandler ch) {
+	public static PassThroughEventsPanel addHandler(Widget we, EventHandler ch) {
+		return addHandler(we.getElement(), ch);
+	}
+	
+	public static PassThroughEventsPanel addHandler(Element we, EventHandler ch) {
 		List<EventHandler> ehList = new ArrayList<EventHandler>();
 		ehList.add(ch);
-		addHandlers(w, ehList);
+		return addHandlers(we, ehList);
 	}	
 }
