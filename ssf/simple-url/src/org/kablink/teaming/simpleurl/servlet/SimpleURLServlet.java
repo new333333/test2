@@ -97,8 +97,8 @@ public class SimpleURLServlet extends HttpServlet {
     }
 
     private boolean knownStaticResource(String resourcePath) {
-    	return resourcePath.equals("/favicon.ico");
-    }
+		return (resourcePath.equals("/favicon.ico") || resourcePath.equals("/robots.txt"));
+	}
     
     private void getKnownStaticResource(String resourcePath, HttpServletResponse resp) throws ServletException, IOException {
  		InputStream in = getServletConfig().getServletContext().getResourceAsStream(resourcePath);
