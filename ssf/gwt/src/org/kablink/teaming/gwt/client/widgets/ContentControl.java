@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,26 +33,27 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
 
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.NamedFrame;
 
-
 /**
- * This widget will display the Teaming content for a given folder/workspace
+ * This widget will display the Teaming content for a given
+ * folder/workspace.
+ * 
+ * @author jwootton@novell.com
  */
 public class ContentControl extends Composite
 {
 	private NamedFrame m_frame;
 	
 	/**
-	 * 
+	 * Constructor method.
 	 */
 	public ContentControl( String name )
 	{
@@ -78,20 +79,48 @@ public class ContentControl extends Composite
 	 */
 	public void clear()
 	{
-		Element element;
+		FrameElement frameElement;
 		
-		element = m_frame.getElement();
-		if ( element instanceof FrameElement )
+		frameElement = getContentFrame();
+		if ( null != frameElement )
 		{
-			FrameElement frameElement;
 			String html;
 			
 			html = "<body><div style=\"text-align: center\">" + GwtTeaming.getMessages().oneMomentPlease() + "</div></body>";
-			frameElement = (FrameElement) element;
 			frameElement.getContentDocument().getBody().setInnerHTML( html );
 		}
 	}
+
+	/**
+	 * Returns the Document encompassing this ContentControl.
+	 * 
+	 * @return
+	 */
+	public Document getContentDocument()
+	{
+		Document reply;
+		FrameElement fe = getContentFrame();
+		if ( null == fe )
+		     reply = null;
+		else reply = fe.getContentDocument();
+		return reply;
+	}//end getContentDocument()
 	
+	/**
+	 * Returns the FrameElement encompassing this ContentControl.
+	 * 
+	 * @return
+	 */
+	public FrameElement getContentFrame()
+	{
+		FrameElement reply;
+		Element e = m_frame.getElement();
+		if ( e instanceof FrameElement )
+		     reply = ((FrameElement) e);
+		else reply = null;
+		return reply;
+	}// end getContentFrame()
+
 	/**
 	 * Reload the page that is currently being displayed.
 	 */
