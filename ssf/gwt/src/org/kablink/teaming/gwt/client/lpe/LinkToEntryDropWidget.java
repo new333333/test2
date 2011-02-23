@@ -110,7 +110,7 @@ public class LinkToEntryDropWidget extends DropWidget
 		if ( m_entryDlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a LinkToEntryDropWidget.
-			m_entryDlgBox = new LinkToEntryWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_entryDlgBox = new LinkToEntryWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{

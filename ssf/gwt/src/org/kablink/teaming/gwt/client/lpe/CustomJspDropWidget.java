@@ -110,7 +110,7 @@ public class CustomJspDropWidget extends DropWidget
 		if ( m_customJspDlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a CustomJspDropWidget.
-			m_customJspDlgBox = new CustomJspWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_customJspDlgBox = new CustomJspWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{

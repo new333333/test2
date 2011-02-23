@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtTag;
@@ -339,6 +340,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		options.put( ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD );
 		options.put( ObjectKeys.SEARCH_SORT_DESCEND, new Boolean( false ) );
 		
+		if ( searchCriteria.getSearchScope() == SearchScope.SEARCH_LOCAL )
+		{
+			String binderId;
+			
+			binderId = searchCriteria.getBinderId();
+			if ( binderId != null && binderId.length() > 0 )
+				options.put( ObjectKeys.SEARCH_ANCESTRY, binderId );;
+		}
+		
 		searchText = searchCriteria.getSearchText();
 	    searchText = searchText.replaceAll(" \\*", "\\*").trim();
 
@@ -348,7 +358,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		switch ( searchCriteria.getSearchType() )
 		{
 		case ENTRIES:
-			String binderId;
+			String binderId = null;
 			
 			//Add the title term
 			if ( searchText.length() > 0 )
@@ -359,19 +369,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			searchTermFilter.addAndNestedTerms( SearchFilterKeys.FilterTypeEntityTypes, SearchFilterKeys.FilterEntityType, searchTerms );
 			searchTermFilter.addAndFilter( SearchFilterKeys.FilterTypeTopEntry );
 			
-			//Add terms to search this folder
-			binderId = searchCriteria.getBinderId();
-			if ( binderId != null && !binderId.equals( "" ) )
-			{
-				if ( searchCriteria.getSearchSubfolders() == false )
-				{
-					searchTermFilter.addAndFolderId( binderId );
-				}
-				else
-				{
-					searchTermFilter.addAncestryId( binderId );
-				}
-			}
 			break;
 
 		case PLACES:

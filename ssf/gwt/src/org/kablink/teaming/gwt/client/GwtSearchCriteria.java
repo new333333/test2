@@ -44,6 +44,15 @@ public class GwtSearchCriteria
 	implements IsSerializable
 {
 	/**
+	 * This class defines the different search scopes
+	 */
+	public enum SearchScope implements IsSerializable
+	{
+		SEARCH_ENTIRE_SITE,
+		SEARCH_LOCAL;
+	}
+	
+	/**
 	 * This class defines all the possible types of searches.
 	 * 
 	 * Note:  There are distinct search types for PERSON and USER.  The
@@ -83,6 +92,7 @@ public class GwtSearchCriteria
 	private boolean m_addCurrentUser = false;
 	private SearchType m_searchType = SearchType.ENTRIES;
 	private boolean m_sendingEmail = false;	// Is the search part of a "sending email" ui?
+	private SearchScope m_searchScope = SearchScope.SEARCH_ENTIRE_SITE;
 
 	/**
 	 * 
@@ -156,6 +166,14 @@ public class GwtSearchCriteria
 		return m_pageNumber;
 	}// end getPageNumber()
 	
+	
+	/**
+	 * 
+	 */
+	public SearchScope getSearchScope()
+	{
+		return m_searchScope;
+	}
 	
 	/**
 	 * 
@@ -247,6 +265,14 @@ public class GwtSearchCriteria
 		m_pageNumber = pageNumber;
 	}// end setPageNumber()
 	
+	
+	/**
+	 * 
+	 */
+	public void setSearchScope( SearchScope scope )
+	{
+		m_searchScope = scope;
+	}
 	
 	/**
 	 * 

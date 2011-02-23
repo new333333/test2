@@ -110,7 +110,7 @@ public class LinkToFolderDropWidget extends DropWidget
 		if ( m_dlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a LinkToFolderDropWidget.
-			m_dlgBox = new LinkToFolderWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_dlgBox = new LinkToFolderWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{

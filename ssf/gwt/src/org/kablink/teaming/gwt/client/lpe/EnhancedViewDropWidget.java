@@ -110,7 +110,7 @@ public class EnhancedViewDropWidget extends DropWidget
 		if ( m_evDlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a EnhancedViewDropWidget.
-			m_evDlgBox = new EnhancedViewWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_evDlgBox = new EnhancedViewWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{

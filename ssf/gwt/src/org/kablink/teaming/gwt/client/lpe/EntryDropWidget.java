@@ -119,7 +119,7 @@ public class EntryDropWidget extends DropWidget
 		if ( m_entryDlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a EntryDropWidget.
-			m_entryDlgBox = new EntryWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_entryDlgBox = new EntryWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{
