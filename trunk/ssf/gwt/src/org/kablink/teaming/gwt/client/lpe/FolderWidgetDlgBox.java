@@ -82,11 +82,13 @@ public class FolderWidgetDlgBox extends DlgBox
 	private String m_folderId = null;
 	private InlineLabel m_currentFolderNameLabel = null;
 	private Button m_editBtn;
+	private LandingPageEditor m_lpe;
 
 	/**
 	 * 
 	 */
 	public FolderWidgetDlgBox(
+		LandingPageEditor lpe,
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
@@ -96,6 +98,8 @@ public class FolderWidgetDlgBox extends DlgBox
 		FolderProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
+		
+		m_lpe = lpe;
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().folderProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
@@ -180,6 +184,7 @@ public class FolderWidgetDlgBox extends DlgBox
 			table.setWidget( 1, 0, m_findLabel );
 			
 			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+			m_findCtrl.enableScope( m_lpe.getBinderId() );
 			m_findCtrl.setSearchForFoldersOnly( true );
 			m_findCtrl.setVisible( false );
 			

@@ -38,6 +38,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
@@ -47,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -68,6 +70,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 
 
@@ -450,6 +453,10 @@ public class FindCtrl extends Composite
 	private GwtSearchCriteria m_searchCriteria;
 	private boolean m_searchInProgress = false;
 	private String m_prevSearchString = null;
+	private FlowPanel m_scopePanel;
+	private RadioButton m_searchSiteRb;
+	private RadioButton m_searchBinderRb;
+	private static int m_count = 0;
 	
 	/**
 	 * 
@@ -471,8 +478,88 @@ public class FindCtrl extends Composite
 	{
 		FlowPanel mainPanel;
 
+		++m_count;
+		
+		m_searchCriteria = new GwtSearchCriteria();
+		m_searchCriteria.setSearchType( searchType );
+		m_searchCriteria.setMaxResults( 10 );
+		m_searchCriteria.setPageNumber( 0 );
+		m_searchCriteria.setSearchScope( SearchScope.SEARCH_ENTIRE_SITE );
+
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "gwtFindCtrl" );
+		
+		// Create a panel where the controls for setting the scope of the search will live.
+		{
+			FlowPanel panel;
+			ClickHandler clickHandler;
+			String rbGroupName;
+			
+			m_scopePanel = new FlowPanel();
+			m_scopePanel.setVisible( false );
+			m_scopePanel.addStyleName( "findCtrlScopePanel" );
+			
+			// Add a "Search entire site" radio button
+			panel = new FlowPanel();
+			rbGroupName = "searchScope" + String.valueOf( m_count );
+			m_searchSiteRb = new RadioButton( rbGroupName, GwtTeaming.getMessages().searchEntireSiteLabel() );
+			panel.add( m_searchSiteRb );
+
+			// Add a click handler for the "search entire site" rb
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Set the search scope to "search entire site"
+							m_searchCriteria.setSearchScope( SearchScope.SEARCH_ENTIRE_SITE );
+							
+							// Hide the search results.
+							hideSearchResults();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_searchSiteRb.addClickHandler( clickHandler );
+			m_scopePanel.add( panel );
+			
+			// Add a "Search current folder/workspace" radio button.
+			panel = new FlowPanel();
+			m_searchBinderRb = new RadioButton( rbGroupName, GwtTeaming.getMessages().searchCurrentFolderWorkspaceLabel() );
+			panel.add( m_searchBinderRb );
+			m_scopePanel.add( panel );
+
+			// Add a click handler for the "search current folder/workspace" rb
+			clickHandler = new ClickHandler()
+			{
+				public void onClick( ClickEvent clickEvent )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Set the search scope to "search local"
+							m_searchCriteria.setSearchScope( SearchScope.SEARCH_LOCAL );
+							
+							// Hide the search results.
+							hideSearchResults();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			};
+			m_searchBinderRb.addClickHandler( clickHandler );
+			
+			mainPanel.add( m_scopePanel );
+		}
 
 		// Create a text box for the user to type in.
 		m_txtBox = new TextBox();
@@ -544,11 +631,6 @@ public class FindCtrl extends Composite
 		};
 		m_searchInProgress = false;
 		
-		m_searchCriteria = new GwtSearchCriteria();
-		m_searchCriteria.setSearchType( searchType );
-		m_searchCriteria.setMaxResults( 10 );
-		m_searchCriteria.setPageNumber( 0 );
-
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end FindCtrl()
@@ -567,6 +649,22 @@ public class FindCtrl extends Composite
 	public void clearText()
 	{
 		m_txtBox.setText( "" );
+	}
+	
+	
+	/**
+	 * Allow the user to specify the scope of the search
+	 */
+	public void enableScope( String binderId )
+	{
+		if ( m_searchCriteria.getSearchScope() == SearchScope.SEARCH_LOCAL )
+			m_searchBinderRb.setValue( true );
+		else
+			m_searchSiteRb.setValue( true );
+		
+		m_scopePanel.setVisible( true );
+		m_searchCriteria.setBinderId( binderId );
+		m_searchCriteria.setSearchSubfolders( true );
 	}
 	
 	

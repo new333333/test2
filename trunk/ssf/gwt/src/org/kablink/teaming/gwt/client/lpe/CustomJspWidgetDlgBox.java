@@ -76,6 +76,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	private TextBox m_jspNameTxtBox = null;
 	private CheckBox m_assocFolderCkBox = null;
 	private CheckBox m_assocEntryCkBox = null;
+	private LandingPageEditor m_lpe;
 	
 	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
 	private String m_folderId = null;
@@ -100,6 +101,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 * 
 	 */
 	public CustomJspWidgetDlgBox(
+		LandingPageEditor lpe,
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
@@ -109,6 +111,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		CustomJspProperties properties ) // Where properties used in the dialog are read from and saved to.
 	{
 		super( autoHide, modal, xPos, yPos );
+		
+		m_lpe = lpe;
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().customJspProperties(), editSuccessfulHandler, editCanceledHandler, properties ); 
@@ -243,6 +247,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			table.setWidget( 1, 0, m_entryFindLabel );
 			
 			m_entryFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+			m_entryFindCtrl.enableScope( m_lpe.getBinderId() );
 			m_entryFindCtrl.setVisible( false );
 			table.setWidget( 1, 1, m_entryFindCtrl );
 		}
@@ -334,6 +339,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 			table.setWidget( 1, 0, m_folderFindLabel );
 			
 			m_folderFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+			m_folderFindCtrl.enableScope( m_lpe.getBinderId() );
 			m_folderFindCtrl.setSearchForFoldersOnly( true );
 			m_folderFindCtrl.setVisible( false );
 			

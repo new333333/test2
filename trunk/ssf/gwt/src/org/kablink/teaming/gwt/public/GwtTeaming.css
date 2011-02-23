@@ -871,6 +871,10 @@ body, table td, select
 	white-space: nowrap;
 }
 
+.findCtrlScopePanel
+{
+}
+
 /* Style used to display the login "authenticating..." message in the login dialog. */
 .loginAuthenticatingMsg
 {

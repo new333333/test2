@@ -81,6 +81,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private ListBox m_evListBox = null;
 	private Label m_descLabel;
 	private ArrayList<EnhancedViewInfo> m_views;
+	private LandingPageEditor m_lpe;
 	
 	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
 	private String m_folderId = null;
@@ -105,6 +106,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 * 
 	 */
 	public EnhancedViewWidgetDlgBox(
+		LandingPageEditor lpe,
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
@@ -116,6 +118,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		super( autoHide, modal, xPos, yPos );
 		
 		EnhancedViewInfo evInfo;
+		
+		m_lpe = lpe;
 		
 		m_views = new ArrayList<EnhancedViewInfo>();
 		evInfo = new EnhancedViewInfo( "landing_page_entry.jsp" );
@@ -299,6 +303,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			table.setWidget( 1, 0, m_entryFindLabel );
 			
 			m_entryFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
+			m_entryFindCtrl.enableScope( m_lpe.getBinderId() );
 			m_entryFindCtrl.setVisible( false );
 			table.setWidget( 1, 1, m_entryFindCtrl );
 		}
@@ -391,6 +396,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			table.setWidget( 1, 0, m_folderFindLabel );
 			
 			m_folderFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
+			m_folderFindCtrl.enableScope( m_lpe.getBinderId() );
 			m_folderFindCtrl.setSearchForFoldersOnly( true );
 			m_folderFindCtrl.setVisible( false );
 			

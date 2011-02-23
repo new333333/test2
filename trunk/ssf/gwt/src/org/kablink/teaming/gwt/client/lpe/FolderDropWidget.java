@@ -119,7 +119,7 @@ public class FolderDropWidget extends DropWidget
 		if ( m_folderDlgBox == null )
 		{
 			// Pass in the object that holds all the properties for a FolderDropWidget.
-			m_folderDlgBox = new FolderWidgetDlgBox( this, this, false, true, xPos, yPos, m_properties );
+			m_folderDlgBox = new FolderWidgetDlgBox( m_lpe, this, this, false, true, xPos, yPos, m_properties );
 		}
 		else
 		{
