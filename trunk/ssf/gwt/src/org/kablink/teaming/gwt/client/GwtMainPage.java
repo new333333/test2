@@ -529,8 +529,8 @@ public class GwtMainPage extends Composite
 		// Create a TaskListing object...
 		contentDoc = m_contentCtrl.getContentDocument();
 		m_taskListing = new TaskListing(
-			contentDoc.getElementById( "ss_gwtTaskToolsDIV"   ),
-			contentDoc.getElementById( "ss_gwtTaskListingDIV" ),
+			contentDoc.getElementById( "ss_gwtTaskToolsDIV"   ).<com.google.gwt.user.client.Element> cast(),
+			contentDoc.getElementById( "ss_gwtTaskListingDIV" ).<com.google.gwt.user.client.Element> cast(),
 			this,
 			Long.parseLong( binderId ),
 			filterType,
