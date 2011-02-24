@@ -78,6 +78,7 @@ import org.kablink.teaming.calendar.OneMonthView;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
@@ -165,6 +166,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddReply(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
 				ajaxMobileDoModifyEntry(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
+				ajaxMobileDoAddUserGroupTeam(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 				ajaxMobileDoFrontPage(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
@@ -226,6 +229,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
 			return ajaxMobileModifyEntry(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
+			return ajaxMobileAddUserGroupTeam(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_USER_GROUP_TEAM)) {
+			return ajaxMobileFindUserGroupTeam(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_WHATS_NEW)) {
 			return ajaxMobileWhatsNew(this, request, response);
@@ -319,6 +328,40 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		} else {
+			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
+			if (!sUrl.equals("")) response.sendRedirect(sUrl);
+		}
+	}
+
+	private void ajaxMobileDoAddUserGroupTeam(ActionRequest request, ActionResponse response) 
+	throws Exception {
+		//Add a user, group, or team to an element in an entry
+		Map formData = request.getParameterMap();
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Long id = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ID);				
+		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
+		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		//See if the modify entry form was submitted
+		if (formData.containsKey("addUserGroupTeamBtn") && WebHelper.isMethodPost(request)) {
+			//The form was submitted. Go process it
+			Map data = new HashMap();
+			CustomAttribute ca = entry.getCustomAttribute(elementName);
+			Set values = new HashSet();
+			if (ca != null) {
+				values = ca.getValueSet();
+			}
+			if (id != null) values.add(id);
+			String ids = "";
+			for (Object thisId : values) {
+				if (!ids.equals("")) ids += " ";
+				ids += String.valueOf(thisId);
+			}
+			data.put(elementName, ids);
+			getFolderModule().modifyEntry(entry.getParentBinder().getId(), entryId, 
+					new MapInputData(data), null, null, null, null);
+			
 		} else {
 			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
 			if (!sUrl.equals("")) response.sendRedirect(sUrl);
@@ -1485,7 +1528,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowFolder(bs, request, response);
+			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
+			if (!addUGT.equals("")) {
+				//This is a request to get a user, group or team name
+				return ajaxMobileAddUserGroupTeam(bs, request, response);
+			} else {
+				return ajaxMobileShowFolder(bs, request, response);
+			}
 		} else {
 			return new ModelAndView("mobile/add_entry", model);
 		}
@@ -1507,10 +1556,128 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
+			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
+			if (!addUGT.equals("")) {
+				//This is a request to get a user, group or team name
+				return ajaxMobileAddUserGroupTeam(bs, request, response);
+			}
 			return ajaxMobileShowEntry(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/modify_entry", model);
 		}
+	}	
+
+	private ModelAndView ajaxMobileAddUserGroupTeam(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
+		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
+		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
+		String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
+		if (!addUGT.equals("")) {
+			//This is a request from the add or modify form
+			String[] ugtData = addUGT.split(",");
+			type = ugtData[0];
+			elementName = ugtData[1];
+		}
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		//Adding an entry; get the specific definition
+		model.put(WebKeys.FOLDER, entry.getParentBinder());
+		model.put(WebKeys.BINDER, entry.getParentBinder());
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.ELEMENT_NAME, elementName);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
+		
+		Map formData = request.getParameterMap();
+		if (formData.containsKey("addUserGroupTeamBtn") || formData.containsKey("closeBtn")) {
+			return ajaxMobileModifyEntry(bs, request, response);
+		} else {
+			return new ModelAndView("mobile/add_user_group_team", model);
+		}
+	}	
+
+	private ModelAndView ajaxMobileFindUserGroupTeam(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
+		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
+		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
+		//Adding an entry; get the specific definition
+		model.put(WebKeys.FOLDER, entry.getParentBinder());
+		model.put(WebKeys.BINDER, entry.getParentBinder());
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.ELEMENT_NAME, elementName);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
+		
+		Map formData = request.getParameterMap();
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		model.put(WebKeys.SEARCH_TEXT, searchText);
+		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
+		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
+		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map options = new HashMap();
+		String view;
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+				
+		//Build the search query
+		SearchFilter searchTermFilter = new SearchFilter();
+				
+		searchText = searchText.replaceAll(" \\*", "\\*");
+	    searchText = searchText.trim() + "*";
+			    
+		searchTermFilter.addTitleFilter(searchText);
+		if (type.equals("group")) {
+			searchTermFilter.addGroupNameFilter(searchText);
+		} else if (type.equals("team")) {
+			searchTermFilter.addPlacesFilter( searchText, false);
+		} else {
+			searchTermFilter.addLoginNameFilter(searchText);
+		}
+			   	
+		//Do a search to find the first few items that match the search text
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+		Map entries = null;
+		if (type.equals("user")) {
+			entries = getProfileModule().getUsers(options);
+		} else if (type.equals("group")) {
+			entries = getProfileModule().getGroups(options);
+		} else if (type.equals("team")) {
+			entries = getBinderModule().executeSearchQuery(searchTermFilter.getFilter(), options);
+		}
+		model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		model.put(WebKeys.PAGE_SIZE, maxEntries);
+		model.put(WebKeys.PAGE_NUMBER, pageNumber);
+
+      	Integer searchCountTotal = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+      	if (searchCountTotal == null) searchCountTotal = 0;
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+      	int pageStart = Integer.parseInt(pageNumber) * pageSize;
+      	int pageEnd = pageStart + pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+      	if (searchCountTotal.intValue() < pageStart) {
+      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	} else if (searchCountTotal.intValue() >= pageEnd) {
+      		nextPage = String.valueOf(Integer.parseInt(pageNumber) + 1);
+      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	} else {
+      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	}
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+
+		return new ModelAndView("mobile/add_user_group_team", model);
 	}	
 
 	private ModelAndView ajaxMobileAddReply(AllModulesInjected bs, RenderRequest request, 
@@ -1562,7 +1729,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		Map formData = request.getParameterMap();
 		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			return ajaxMobileShowEntry(bs, request, response);
+			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
+			if (!addUGT.equals("")) {
+				//This is a request to get a user, group or team name
+				return ajaxMobileAddUserGroupTeam(bs, request, response);
+			} else {
+				return ajaxMobileShowEntry(bs, request, response);
+			}
 		} else {
 			return new ModelAndView("mobile/add_reply", model);
 		}

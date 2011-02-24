@@ -158,6 +158,7 @@ public class WebKeys {
     public static final String URL_DO_TEXT_VERIFICATION = "ssDoTextVerification";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ELEMENT_TO_EDIT = "_element";
+	public static final String URL_ELEMENT = "element";
 	public static final String URL_END_DATE = "ss_endDate";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
@@ -168,6 +169,7 @@ public class WebKeys {
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
+    public static final String URL_ENTRY_UGT="entryUGT";
     public static final String URL_ENTRY_UPLOAD="upload";
     public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_STYLE2="entryViewStyle2";
@@ -187,6 +189,7 @@ public class WebKeys {
 	public static final String URL_GUEST_HOME_PAGE_ID="guestHomePageId";
 	public static final String URL_HOLIDAYS="holidays";
 	public static final String URL_WEEKEND_DAYS="weekendDays";
+	public static final String URL_ID="id";
 	public static final String URL_IDS="ids";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MOBILE_URL="url";
@@ -461,6 +464,8 @@ public class WebKeys {
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
     public static final String OPERATION_MOBILE_ADD_ENTRY="mobile_add_entry"; 
     public static final String OPERATION_MOBILE_ADD_REPLY="mobile_add_reply"; 
+    public static final String OPERATION_MOBILE_ADD_USER_GROUP_TEAM="mobile_add_user_group_team"; 
+    public static final String OPERATION_MOBILE_FIND_USER_GROUP_TEAM="mobile_find_user_group_team"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_FIND_PLACES="mobile_find_places"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 

@@ -70,11 +70,12 @@
 		<tr>	
 			<td>&nbsp;</td>
 			<td style="padding-bottom: 5px;">
-				<span id="${prefix}eventStartTime"
+				<div id="${prefix}eventStartTime"
 					<c:if test="${initEvent.allDayEvent}">
 						style="display: none; "
 					</c:if>
 					>
+				    <div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/></span></div>
 					<input type="text" 
 						id="event_start_time_${prefix}" 
 						name="${dateId}_0_fullTime" 
@@ -108,7 +109,7 @@
 						/>
 					<input type="hidden" name="${dateId}_timeZoneSensitive" id="${dateId}_timeZoneSensitive" value="" />
 					
-				</span>	
+				</div>	
 			</td>
 			<c:if test="${attMap.hasDur}">
 				<td valign="top">
@@ -133,11 +134,12 @@
 			<tr class="ss_eventdateinput2">
 				<td>&nbsp;</td>	
 				<td colspan="2">
-					<span id="${prefix}eventEndTime"
+					<div id="${prefix}eventEndTime"
 						<c:if test="${initEvent.allDayEvent}">
 							style="display: none; "
 						</c:if>			
 						>
+						<div><span class="ss_mobile_small"><ssf:nlt tag="event.time"/></span></div>
 						<input type="text" 
 							id="event_end_time_${prefix}" 
 							name="${dateId2}_0_fullTime" 
@@ -170,7 +172,7 @@
 							</c:choose>
 							/>
 						<input type="hidden" name="${dateId2}_timeZoneSensitive" id="${dateId2}_timeZoneSensitive" value="" />							
-					</span>
+					</div>
 				</td>
 			</tr>
 	</c:if>

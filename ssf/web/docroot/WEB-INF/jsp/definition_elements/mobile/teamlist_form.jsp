@@ -52,8 +52,20 @@
 </c:if>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
-<span><i><ssf:nlt tag="mobile.notSupported"/></i></span>
 <c:forEach var="teamItem" items="<%= teamListSet %>">
-	<div style="margin-left:2em">${teamItem.title}</div>
+	<div style="margin-left:2em">
+	  ${teamItem.title}
+	  <a href="javascript: ;" 
+	    onClick="ss_delete_hidden_field(this, '${ss_form_form_formName}', '${property_name}', '${teamItem.id}');return false;"
+	  ><img src="<html:rootPath/>images/mobile/delete.png"></a>
+	  <input type="hidden" name="${property_name}" value="${teamItem.id}"/>
+	</div>
 </c:forEach>
+
+  <div>
+	<input type="submit" name="okBtn" value="<ssf:nlt tag="userlist.addTeam"/>"
+	  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'team');"
+	/>
+  </div>
+
 </div>

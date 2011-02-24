@@ -280,6 +280,10 @@ public class SearchFilter {
 		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
+	public void addGroupNameFilter(String searchTerm) {
+		addFieldFilter(Constants.GROUPNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	}
+	
 	public void addAndPersonFlagFilter(String searchTerm) {
 		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
