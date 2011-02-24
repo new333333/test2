@@ -875,6 +875,26 @@ body, table td, select
 {
 }
 
+.findCtrlPanel
+{
+	border: 1px solid #D2D5D1;
+	margin-left: 26px;
+	padding-left: 4px;
+	position: relative;
+}
+
+.findCtrlLabel
+{
+}
+
+.findCtrlCloseImg
+{
+	cursor: pointer;
+	position: absolute;
+	right: 2px;
+	top: 2px;
+}
+
 /* Style used to display the login "authenticating..." message in the login dialog. */
 .loginAuthenticatingMsg
 {
