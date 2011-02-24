@@ -1338,7 +1338,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		final TaskId taskId = ti.getTaskId();
 		final List<TaskListItem> affectedTasks;
 		final List<TaskId>       affectedTaskIds;
-		if (("s3".equals(status)) || ("s4".equals(status))) {
+		boolean applyToSubtasks = (("s3".equals(status) || "s4".equals(status)) && (!(task.getSubtasks().isEmpty())));
+		if (applyToSubtasks) {
+			applyToSubtasks = Window.confirm(m_messages.taskConfirmDeepStatus());
+		}
+		if (applyToSubtasks) {
 			affectedTasks   = TaskListItemHelper.getTaskHierarchy(  task                );
 			affectedTaskIds = TaskListItemHelper.getTaskIdsFromList(affectedTasks, false);
 		}

@@ -910,6 +910,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskCompleted_c80();
 	String taskCompleted_c90();
 	String taskCompleted_c100();
+	String taskConfirmDeepStatus();
 	String taskConfirmDelete();
 	String taskConfirmPurge();
 	String taskInternalError_FilteredOrVirtual(String operation);
