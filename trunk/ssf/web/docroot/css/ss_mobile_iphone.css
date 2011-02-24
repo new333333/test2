@@ -23,10 +23,16 @@ input[type=button], input[type=submit], input[type=reset] {
 	font-size: 1em;
 	}
 	
+div.pad-top20 {
+	padding-top: 10px;
+	}	
+div.pad-left20 {
+	padding-left: 10px;
+	}	
 span.pad-left20 {
 	padding-left: 10px;
 	}	
-	
+
 span.pad-left20 select {
 	color: #1C5894;
 	}	
@@ -701,6 +707,11 @@ div.ss_mobile_calendar_no_entries_content span {
 	font-size: .9em;
 }
 
+.ss_dateinput td {
+	padding: 2px 0 0 0 !important;
+	border-top: none !important;
+	border-bottom: none !important;
+}
 .ss_eventdateinput td {
 	padding: 2px 0 5px;
 	border-top: 1px solid #bbbbb6;

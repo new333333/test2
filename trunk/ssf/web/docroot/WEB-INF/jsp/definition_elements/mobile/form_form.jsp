@@ -76,12 +76,19 @@
   </c:when>
 
   <c:otherwise>
+    <c:set var="operationType" value="mobile_add_entry"/>
+    <c:if test="${!empty ssEntry}"><c:set var="operationType" value="mobile_modify_entry"/></c:if>
 	<form style="background: transparent; padding: 10px" 
 	  method="<%= methodName %>" 
 	  enctype="<%= enctype %>" 
 	  name="<%= formName %>" 
 	  id="<%= formName %>" 
-	  action="">
+	  action="<ssf:url adapter="true" portletName="ss_mobile" 
+			action="__ajax_mobile" 
+			operation="${operationType}"
+			actionUrl="true" ><ssf:param name="binderId"
+				value="${ssBinder.id}"/><ssf:param name="entryId"
+				value="${ssEntry.id}"/></ssf:url>">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />

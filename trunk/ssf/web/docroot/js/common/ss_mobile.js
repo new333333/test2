@@ -124,6 +124,17 @@ function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
     return newStr;
 }
 
+function ss_findOwningElement(obj, eleName) {
+	var node = obj;
+	while (node != null && node.tagName.toLowerCase() != eleName.toLowerCase()) {
+		node = node.parentNode;
+		if (node == null || node.tagName == null) node = null;
+		if (node == null || node.tagName == null || node.tagName.toLowerCase() == 'body') break;
+	}
+	return node;
+}
+
+
 //Micro Bolg routines
 function ss_clearStatusMobile(textareaId) {
 	var obj = document.getElementById(textareaId);
@@ -168,5 +179,44 @@ function ss_toggleDivVisibility(id) {
 	} else {
 		divObj.style.display = "block";
 		divObj.style.visibility = "visible";
+	}
+}
+
+//Routine to clear the value of a hidden field in a form and blank the owning div
+function ss_delete_hidden_field(obj, formName, elementName, value) {
+	var formObj = self.document.getElementById(formName);
+	if (formObj != null) {
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0; i < inputs.length; i++) {
+			if (inputs[i].getAttribute('name') == elementName && 
+					inputs[i].getAttribute('value') == value) {
+				inputs[i].setAttribute('value', '');
+			}
+		}
+	}
+	var divObj = ss_findOwningElement(obj, "div");
+	if (divObj != null) {
+		divObj.style.display = "none";
+	}
+}
+
+function ss_setUGT(formName, elementName, type) {
+	var formObj = self.document.getElementById(formName);
+	var found = false;
+	if (formObj != null) {
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0; i < inputs.length; i++) {
+			if (inputs[i].getAttribute('name') == "entryUGT") {
+				inputs[i].setAttribute('value', type + "," + elementName);
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			var ele = document.createElement("input");
+			ele.setAttribute("name", "entryUGT");
+			ele.setAttribute("value", type + "," + elementName);
+			formObj.appendChild(ele);
+		}
 	}
 }

@@ -48,6 +48,14 @@
   <c:set var="initmonth"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="MM" timeZone="${timeZoneID}"/></c:set>
   <c:set var="initYear"><fmt:formatDate value="${ss_dateWidgetDate}" pattern="yyyy" timeZone="${timeZoneID}"/></c:set>
 </c:if>
+<table>
+  <tr class="ss_dateinput">
+   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Day"/></span></th>
+   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Month"/></span></th>
+   <th><span class="ss_mobile_small"><ssf:nlt tag="calendar.Year"/></span></th>
+  </tr>
+  <tr class="ss_dateinput">
+   <td>
 	<select name="${ss_dateWidgetId}_date">
 	  <option value="0" >--</option>
 	  <option value="1" <c:if test="${initDay == '01'}">selected</c:if>>1</option>
@@ -82,7 +90,9 @@
 	  <option value="30" <c:if test="${initDay == '30'}">selected</c:if>>30</option>
 	  <option value="31" <c:if test="${initDay == '31'}">selected</c:if>>31</option>
 	</select>
-	
+   </td>
+   
+   <td>
 	<select name="${ss_dateWidgetId}_month">
 	  <option value="0" >--</option>
 	  <option value="1" <c:if test="${initmonth == '01'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.january"/></option>
@@ -98,7 +108,9 @@
 	  <option value="11" <c:if test="${initmonth == '11'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.november"/></option>
 	  <option value="12" <c:if test="${initmonth == '12'}">selected</c:if>><ssf:nlt tag="calendar.abbreviation.december"/></option>
 	</select>
-	
+   </td>
+   
+   <td>	
 	<select name="${ss_dateWidgetId}_year">
 	  <option value="" >--</option>
 	  <option value="1998" <c:if test="${initYear == '1998'}">selected</c:if>>1998</option>
@@ -125,3 +137,6 @@
 	  <option value="2019" <c:if test="${initYear == '2019'}">selected</c:if>>2019</option>
 	  <option value="2020" <c:if test="${initYear == '2020'}">selected</c:if>>2020</option>
 	</select>
+   </td>
+  </tr>
+</table>
