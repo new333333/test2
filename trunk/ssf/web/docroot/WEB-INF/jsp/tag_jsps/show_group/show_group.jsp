@@ -58,7 +58,9 @@
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <span class="${ss_showGroupTitleStyle}">${ss_showGroupGroup.title}</span>
+  <c:if test="${fn:length(ss_showGroupGroupMembers) <= 10}">
 	<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
 		<div style="margin-left:2em">${member.title}</div>
 	</c:forEach>
+  </c:if>
 </c:if>
