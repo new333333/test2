@@ -497,7 +497,19 @@ public class SearchFilterToSearchBooleanConverter {
 	    	value = filterTerm.getText();
 	    }
 	    
-	    child.setText(value);
+	    if ( value != null )
+	    {
+	    	if ( value.contains( "*" ))
+	    	{
+	    		field.addAttribute( Constants.EXACT_PHRASE_ATTRIBUTE, "false" );
+	    	}
+	    	else
+	    	{
+	    		field.addAttribute( Constants.EXACT_PHRASE_ATTRIBUTE, "true" );
+	    	}
+	    }
+
+		child.setText(value);
 	}
 
 	private static void parseAndAddDocTypesField(Element block, Element filterTerm) {
