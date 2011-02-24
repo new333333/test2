@@ -292,7 +292,7 @@ public class GwtClientHelper {
 	 * @param htmlElement
 	 */
 	public static native void jsAppendDocumentElement(Element htmlElement) /*-{
-		window.top.document.documentElement.appendChild(htmlElement);
+		$wnd.top.document.documentElement.appendChild(htmlElement);
 	}-*/;
 
 	/*
@@ -301,13 +301,13 @@ public class GwtClientHelper {
 	public static native String jsBuildTagSearchUrl(String tag) /*-{
 		// Find the base tag search result URL...
 		var searchUrl;
-	   	                      try {searchUrl =                             ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
-		if (searchUrl == "") {try {searchUrl =                 self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl =                 self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
-		if (searchUrl == "") {try {searchUrl = window.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+	   	                      try {searchUrl =                           ss_tagSearchResultUrl;} catch(e) {searchUrl="";}
+		if (searchUrl == "") {try {searchUrl =               self.parent.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl =               self.opener.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
+		if (searchUrl == "") {try {searchUrl = $wnd.top.gwtContentIframe.ss_tagSearchResultUrl;} catch(e) {searchUrl="";}}
 
 		// ...and return it with the tag patched in.
-		searchUrl = window.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
+		searchUrl = $wnd.top.gwtContentIframe.ss_replaceSubStrAll(searchUrl, "ss_tagPlaceHolder", tag);
 		return searchUrl;
 	}-*/;
 	
@@ -334,7 +334,7 @@ public class GwtClientHelper {
 	 * @param jsString
 	 */
 	public static native void jsEvalString(String url, String jsString) /*-{
-		window.top.jsEvalStringImpl(url, jsString);
+		$wnd.top.jsEvalStringImpl(url, jsString);
 	}-*/;
 
 	
@@ -345,7 +345,7 @@ public class GwtClientHelper {
 	 * @param htmlElement
 	 */
 	public static native void jsExecuteJavaScript( Element htmlElement ) /*-{
-		window.parent.ss_executeJavascript( htmlElement );
+		$wnd.parent.ss_executeJavascript( htmlElement );
 	}-*/;
 
 	/**
@@ -381,9 +381,9 @@ public class GwtClientHelper {
 	 * Called to hide any open entry view DIV that's in new page mode.
 	 */
 	public static native void jsHideNewPageEntryViewDIV() /*-{
-		if (window.top.ss_getUserDisplayStyle() == "newpage") {
-			if (typeof window.top.ss_hideEntryDivOnLoad != "undefined") {
-				window.top.ss_hideEntryDivOnLoad();
+		if ($wnd.top.ss_getUserDisplayStyle() == "newpage") {
+			if (typeof $wnd.top.ss_hideEntryDivOnLoad != "undefined") {
+				$wnd.top.ss_hideEntryDivOnLoad();
 			}
 		}
 	}-*/;
@@ -392,7 +392,7 @@ public class GwtClientHelper {
 	 * Invoke the "define editor overrides" dialog.
 	 */
 	public static native void jsInvokeDefineEditorOverridesDlg() /*-{
-		window.top.ss_editAppConfig();
+		$wnd.top.ss_editAppConfig();
 	}-*/;
 
 	/**
@@ -415,7 +415,7 @@ public class GwtClientHelper {
 	 * @param windowWidth
 	 */
 	public static native void jsLaunchUrlInWindow(String url, String windowName, int windowHeight, int windowWidth) /*-{
-		window.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
+		$wnd.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
 
 	/**
@@ -429,20 +429,29 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Loads a URL into the current window.
+	 * 
+	 * @param url
+	 */
+	public static native void jsLoadUrlInCurrentWindow(String url) /*-{
+		$wnd.location.href = url;
+	}-*/;
+	
+	/**
 	 * Loads a URL into the top window.
 	 * 
 	 * @param url
 	 */
 	public static native void jsLoadUrlInTopWindow(String url) /*-{
-		window.top.location.href = url;
+		$wnd.top.location.href = url;
 	}-*/;
 	
 	/**
 	 * Use Teaming's existing JavaScript to logout of Teaming.
 	 */
 	public static native void jsLogout() /*-{
-		if ( window.top.ss_logoff != null )
-			window.top.ss_logoff();
+		if ( $wnd.top.ss_logoff != null )
+			$wnd.top.ss_logoff();
 	}-*/;
 
 	/**
@@ -450,7 +459,7 @@ public class GwtClientHelper {
 	 * @param requestor
 	 */
 	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
-		window.top.ss_registerActionHandler( requestor );
+		$wnd.top.ss_registerActionHandler( requestor );
 	}-*/;
 
 	/**
@@ -460,7 +469,7 @@ public class GwtClientHelper {
 	 * @param reason
 	 */
 	public static native void jsResizeGwtContent(String reason) /*-{
-		window.top.resizeGwtContent(reason);
+		$wnd.top.resizeGwtContent(reason);
 	}-*/;
 
 
@@ -492,7 +501,7 @@ public class GwtClientHelper {
 	 * @param url
 	 */
 	public static native void jsShowForumEntry(String entryUrl) /*-{
-		window.top.gwtContentIframe.ss_showForumEntry(entryUrl);
+		$wnd.top.gwtContentIframe.ss_showForumEntry(entryUrl);
 	}-*/;
 	
 	/**
@@ -651,5 +660,44 @@ public class GwtClientHelper {
 		// Always use the initial form of the method, defaulting to a
 		// vertical scroll bar only.
 		scrollUIForPopup(popup, ScrollType.VERTICAL);
+	}
+
+	/**
+	 * Replaces all occurrences of oldSub with newSub in s.
+	 * 
+	 * The implementation was copied from StringUtil.replace().
+	 * 
+	 * @param s
+	 * @param oldSub
+	 * @param newSub
+	 * 
+	 * @return
+	 */
+	public static String replace(String s, String oldSub, String newSub) {
+		if ((s == null) || (oldSub == null) || (newSub == null)) {
+			return null;
+		}
+
+		int y = s.indexOf(oldSub);
+
+		if (y >= 0) {
+			StringBuffer sb = new StringBuffer();
+			int length = oldSub.length();
+			int x = 0;
+
+			while (x <= y) {
+				sb.append(s.substring(x, y));
+				sb.append(newSub);
+				x = y + length;
+				y = s.indexOf(oldSub, x);
+			}
+
+			sb.append(s.substring(x));
+
+			return sb.toString();
+		}
+		else {
+			return s;
+		}
 	}
 }
