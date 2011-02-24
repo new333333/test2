@@ -38,7 +38,6 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
@@ -58,20 +57,20 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 	private List<PopupMenuItem>		m_menuItems;	//
 	private List<TaskMenuOption>	m_menuOptions;	//
 	private TaskListItem			m_task;			//
+	private TaskListing				m_taskListing;	//
 	private TaskTable				m_taskTable;	//
 	private TeamingAction			m_taskAction;	//
 	
-	/**
+	/*
 	 * Constructor method.
-	 * 
-	 * @param taskTable
 	 */
-	public TaskPopupMenu(TaskTable taskTable, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
+	private TaskPopupMenu(TaskTable taskTable, TaskListing taskListing, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
 		// Initialize the super class...
 		super(true, true);
 		
 		// ...store the parameters...
 		m_taskTable   = taskTable;
+		m_taskListing = taskListing;
 		m_taskAction  = taskAction;
 		m_menuOptions = menuOptions;
 		
@@ -90,14 +89,44 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 		// ...and add the menu items.
 		m_menuItems = new ArrayList<PopupMenuItem>();
 		for (TaskMenuOption po:  m_menuOptions) {
-			m_menuItems.add(
-				addMenuItem(
-					this,
-					m_taskAction,
-					po.getMenu(),
-					po.buildImage(),
-					po.getMenuAlt()));
+			if (po.isSeparator()) {
+				addSeparator();
+			}
+			else {
+				PopupMenuItem pmi =
+					addMenuItem(
+						this,
+						m_taskAction,
+						po.getMenu(),
+						po.buildImage(),
+						po.getMenuAlt());
+				pmi.setCheckedState(po.isMenuChecked());
+				pmi.adjustSpacingForChecked(true);
+				m_menuItems.add(pmi);
+			}
 		}
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param taskListing
+	 * @param taskAction
+	 * @param menuOptions
+	 */
+	public TaskPopupMenu(TaskListing taskListing, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
+		this(null, taskListing, taskAction, menuOptions);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param taskTable
+	 * @param taskAction
+	 * @param menuOptions
+	 */
+	public TaskPopupMenu(TaskTable taskTable, TeamingAction taskAction, List<TaskMenuOption> menuOptions) {
+		this(taskTable, null, taskAction, menuOptions);
 	}
 
 	/**
@@ -119,10 +148,19 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 	 */
 	@Override
 	public void handleAction(TeamingAction action, Object obj) {
-		// The only action this will ever receive is the option given
-		// during the TaskPopupMenu's creation.  Simply tell the
-		// TaskTable to handle it.
-		m_taskTable.setTaskOption(m_task, m_taskAction, ((String) obj)); 
+		if (null != m_taskTable) {
+			// The only action this will ever receive is the option given
+			// during the TaskPopupMenu's creation.  Simply tell the
+			// TaskTable to handle it.
+			m_taskTable.setTaskOption(m_task, m_taskAction, ((String) obj));
+		}
+		
+		else if (null != m_taskListing) {
+			// The only action this will ever receive is the option given
+			// during the TaskPopupMenu's creation.  Simply tell the
+			// TaskListing to handle it.
+			m_taskListing.setViewOption(m_taskAction, ((String) obj));
+		}
 	}
 
 	/**
@@ -144,9 +182,14 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 		addAutoHidePartner(m_menuPartner);
 		
 		// ...and position and show the popup.
-		int popupLeft = (m_menuPartner.getAbsoluteLeft()   + GwtClientHelper.jsGetContentIFrameLeft());
-		int popupTop  = (m_menuPartner.getAbsoluteBottom() + GwtClientHelper.jsGetContentIFrameTop());
+		int popupLeft = m_menuPartner.getAbsoluteLeft();
+		int popupTop  = m_menuPartner.getAbsoluteBottom();
 		setPopupPosition(popupLeft, popupTop);
 		show();
+	}
+	
+	public void showTaskPopupMenu(Element menuPartner) {
+		// Always use the initial form of the method.
+		showTaskPopupMenu(null, menuPartner);
 	}
 }

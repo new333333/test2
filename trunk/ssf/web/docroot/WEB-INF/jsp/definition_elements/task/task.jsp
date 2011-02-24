@@ -34,6 +34,7 @@
 %>
 <% // Task Folder Listing View %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 <%@ page import="java.util.Date"                                         %>
 <%@ page import="org.kablink.teaming.ObjectKeys"                         %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil"                    %>
@@ -44,17 +45,13 @@
 <jsp:useBean id="ssBinder"                type="org.kablink.teaming.domain.Binder"                      scope="request" />
 <%
 	// Is the GWT based subtasks feature enabled?
-	boolean subtasksEnabled       = SPropsUtil.getBoolean("subtasks.enabled", true);
+	boolean subtasksEnabled = SPropsUtil.getBoolean("subtasks.enabled", true);
 	if (subtasksEnabled) {
-		// Yes!  Are we viewing the task list as 'Entries from Folder'?
-//! 	subtasksEnabled = (ssCurrentFolderModeType == ModeType.PHYSICAL);
-		if (subtasksEnabled) {
-			// Yes!  Is the number of items that we're working with
-			// within our supported limits?
-			subtasksEnabled =
-				((ss_searchTotalHits != null) &&
-				 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
-		}
+		// Yes!  Is the number of items that we're working with
+		// within our supported limits?
+		subtasksEnabled =
+			((ss_searchTotalHits != null) &&
+			 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
 	}
 	
 	boolean updateCalculatedDates = false;
@@ -67,7 +64,12 @@
 	catch (Exception ex) {}
 %>
 
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
+<c:set var="gwtPage" value="taskListing" scope="request"/>	
+<% if (subtasksEnabled) { %>
+	<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
+	<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<% } %>
+	
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <script type="text/javascript">
 	var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
@@ -172,31 +174,23 @@
 </div>
 
 <jsp:include page="/WEB-INF/jsp/forum/add_files_to_folder.jsp" />
-<% if (subtasksEnabled) { %>
-	<div class="gwtTaskTools" id="ss_gwtTaskToolsDIV"></div>
-<% } else {%>
+<% if (!subtasksEnabled) { %>
 	<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <% } %>
 
 <div class="ss_folder" id="ss_task_folder_div">
-	<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp" %>
 	<% if (subtasksEnabled) { %>
 		<% // Generate the GWT UI. %>
-		<div class="gwtTaskListing" id="ss_gwtTaskListingDIV"><br /><span class="wiki-noentries-panel"><%= NLT.get("task.loadingPleaseWait") %></span></div>
-		<script type="text/javascript">
-			function ss_initGwtTaskListing() {
-				if ((typeof window.top.ss_initGwtTaskListing != "undefined") &&
-						(window.name == "gwtContentIframe")) {
-					window.top.ss_initGwtTaskListing("${ssBinder.id}", "${ssCurrentTaskFilterType}", "${ssCurrentFolderModeType}", "${ssFolderSortBy}", "${ssFolderSortDescend}", "<%= updateCalculatedDates %>");
-				}
-				else {
-					alert("*Internal Error* - The GWT Task UI code is missing!!!");
-				}
-			}
-			ss_createOnLoadObj('ss_initGwtTaskListing', ss_initGwtTaskListing());
-		</script>
+		<div class="gwtTasks" id="gwtTasks">
+			<input type="hidden" id="ssCurrentTaskFilterType" value="${ssCurrentTaskFilterType}"   />
+			<input type="hidden" id="ssCurrentFolderModeType" value="${ssCurrentFolderModeType}"   />
+			<input type="hidden" id="ssFolderSortBy"          value="${ssFolderSortBy}"            />
+			<input type="hidden" id="ssFolderSortDescend"     value="${ssFolderSortDescend}"       />
+			<input type="hidden" id="updateCalculatedDates"   value="<%= updateCalculatedDates %>" />
+		</div>
 	<% } else { %>
 		<% // Generate the old. JSP based UI. %>
+		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp"        %>
 		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_folder_listing.jsp" %>
 	<% } %>
 </div>

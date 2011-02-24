@@ -2732,7 +2732,8 @@ top:100px;
 	display: block;
 	padding:  3px 3px 3px 12px;
 	font-family: Arial,Helvetica,sans-serif;
-	font-size: 1.25em; 
+	font-size: 1.25em;
+	position: relative; 
 	white-space: nowrap;
 	-moz-border-radius: 20px;
 	-webkit-border-radius: 20px;
@@ -2750,6 +2751,22 @@ top:100px;
 .gwtTaskTools_HintSpan_Hidden
 {
 	display:  none;
+}
+.gwtTaskTools_ViewMenuAnchor
+{
+	cursor: pointer;
+}
+.gwtTaskTools_ViewMenuDIV
+{
+	position: absolute;
+	right: 5px;
+	top: 3px;
+}
+.gwtTaskTools_ViewMenuSpan
+{
+	color: #333333;
+	font-size: 0.75em;
+	padding: 5px;
 }
 .gwtTaskToolsButton_WidgetAnchor
 {
@@ -2785,6 +2802,10 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	color        #FFFFFF                                              !important;
 }
 
+.gwtTasks
+{
+	width: 100%;
+}
 .gwtTaskListing
 {
 	width: 100%;

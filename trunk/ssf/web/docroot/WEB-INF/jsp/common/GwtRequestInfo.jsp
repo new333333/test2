@@ -89,6 +89,13 @@
 			myWSUrl:						'<ssf:url crawlable="true" adapter="true" portletName="ss_forum" folderId="${ssUser.workspaceId}" action="view_ws_listing" ><ssf:param name="profile" value="1" /></ssf:url>',			
 			userName:						'<ssf:escapeJavaScript><ssf:userTitle user="${ssProfileConfigEntry}"/></ssf:escapeJavaScript>',
 		</c:if>
+			
+		<c:if test="${gwtPage == 'taskListing'}">
+			adaptedUrl:						'<ssf:url folderId="${ssBinder.id}" action="${action}"><ssf:param name="binderId" value="${ssBinder.id}"/><ssf:param name="xxx_operand_xxx" value="xxx_option_xxx"/></ssf:url>',
+			binderId:						'${ssBinder.id}',
+			myWSUrl:						'',
+			userName:						'',
+		</c:if>
 		
 		// The following is used by native methods in RequestInfo.java
 		// to return a Boolean value from one of the above Strings.

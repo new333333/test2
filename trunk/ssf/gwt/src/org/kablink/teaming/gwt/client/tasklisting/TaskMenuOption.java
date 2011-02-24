@@ -33,6 +33,10 @@
 
 package org.kablink.teaming.gwt.client.tasklisting;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.GwtTeaming;
+
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.Image;
 
@@ -43,17 +47,45 @@ import com.google.gwt.user.client.ui.Image;
  * @author drfoster@novell.com
  */
 public class TaskMenuOption  {
+	private boolean			m_menuChecked;	//
+	private boolean			m_separator;	//
 	private ImageResource	m_menuImageRes;	//
 	private String			m_menu;			//
 	private String			m_menuAlt;		//
 	
 	/**
 	 * Class constructor.
+	 * 
+	 * @param menu
+	 * @param menuImageRes
+	 * @param menuAlt
 	 */
-	public TaskMenuOption(String menu, ImageResource menuImageRes, String menuAlt) {
+	public TaskMenuOption(String menu, ImageResource menuImageRes, String menuAlt, boolean menuChecked) {
 		m_menu         = menu;
 		m_menuImageRes = menuImageRes;
 		m_menuAlt      = menuAlt;
+		m_menuChecked  = menuChecked;
+	}
+	
+	public TaskMenuOption(String menu, ImageResource menuImageRes, String menuAlt) {
+		// Always use the initial form of the constructor.
+		this(menu, menuImageRes, menuAlt, false);
+	}
+	
+	public TaskMenuOption(String menu, String menuAlt, boolean menuChecked) {
+		// Always use the initial form of the constructor.
+		this(menu, null, menuAlt, menuChecked);
+	}
+	
+	public TaskMenuOption(String menu, String menuAlt) {
+		// Always use the initial form of the constructor.
+		this(menu, null, menuAlt, false);
+	}
+	
+	public TaskMenuOption() {
+		// Always use the initial form of the constructor.
+		this(null, null, null, false);
+		m_separator = true;
 	}
 
 	/**
@@ -62,9 +94,16 @@ public class TaskMenuOption  {
 	 * @return
 	 */
 	public Image buildImage() {
-		Image reply = new Image(getMenuImageRes());
-		reply.addStyleName("margin-right-5");
-		reply.getElement().setAttribute("align", "absmiddle");
+		Image reply;
+		ImageResource ir = getMenuImageRes();
+		if (null == ir) {
+			reply = null;
+		}
+		else {
+			reply = new Image(ir);
+			reply.addStyleName("margin-right-5");
+			reply.getElement().setAttribute("align", "absmiddle");
+		}
 		return reply;
 	}
 	
@@ -73,7 +112,29 @@ public class TaskMenuOption  {
 	 * 
 	 * @return
 	 */
+	public boolean       isMenuChecked()   {return m_menuChecked; }
+	public boolean       isSeparator()     {return m_separator;   }
 	public ImageResource getMenuImageRes() {return m_menuImageRes;}
 	public String        getMenu()         {return m_menu;        }
 	public String        getMenuAlt()      {return m_menuAlt;     }
+
+	/**
+	 * Searches a List<TaskMenuOption> for the one with the specified
+	 * menu string.
+	 * 
+	 * @param menu
+	 * @param tmoList
+	 * 
+	 * @return
+	 */
+	public static TaskMenuOption getTMOFromList(String menu, List<TaskMenuOption> tmoList) {
+		TaskMenuOption reply = null;
+		for (TaskMenuOption tmo:  tmoList) {
+			if (menu.equals(tmo.getMenu())) {
+				reply = tmo;
+				break;
+			}
+		}
+		return reply;
+	}
 }

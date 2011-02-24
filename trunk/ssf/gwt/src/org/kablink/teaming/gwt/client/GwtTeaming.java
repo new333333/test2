@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -55,7 +56,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
 	
-	private static GwtMainPage	m_mainPage	= null;	
+	private static GwtMainPage	m_mainPage = null;	
 	
 	/**
 	 * Returns the object that is used to retrieve images.
@@ -202,6 +203,16 @@ public class GwtTeaming implements EntryPoint
 			rootPanel.add( userStatus );
 					
 			return;
+		}
+		
+		// Are we loading the task listing?
+		rootPanel = RootPanel.get( "gwtTasks" );
+		if ( rootPanel != null )
+		{
+			TaskListing taskListing;
+			
+			taskListing = new TaskListing();
+			rootPanel.add( taskListing );
 		}
 
 	}// end onModuleLoad()

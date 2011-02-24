@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client;
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -60,7 +59,6 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -96,7 +94,6 @@ public class GwtMainPage extends Composite
 	private MainMenuControl m_mainMenuCtrl;
 	private MastHead m_mastHead;
 	private AdminControl m_adminControl = null;
-	private TaskListing m_taskListing;
 	private TeamingPopupPanel m_breadCrumbBrowser;
 	private String m_selectedBinderId;
 	private WorkspaceTreeControl m_wsTreeCtrl;
@@ -115,10 +112,6 @@ public class GwtMainPage extends Composite
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
-		
-		// Initialize the GWT based task listing UI.  This is called
-		// when a task folder is loaded in the content panel.
-		initTaskListingJS(this);
 		
 		// Initialize the pre context switch handler used by the
 		// traditional UI to tell the GWT UI that a context switch is
@@ -329,17 +322,6 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will be invoked from
-	 * task.jsp when a task listing is loaded.
-	 */
-	private native void initTaskListingJS(GwtMainPage gwtMainPage) /*-{
-		$wnd.ss_initGwtTaskListing = function( binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::initTaskListing(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( binderId, filterType, mode, sortBy, sortDescend, updateCalculatedDates );
-		}//end ss_initTaskListing()
-	}-*/;
-
-	/*
-	 * Called to create a JavaScript method that will be invoked from
 	 * the traditional UI just before a context switch occurs.
 	 */
 	private native void initPreContextSwitchJS(GwtMainPage gwtMainPage) /*-{
@@ -520,30 +502,6 @@ public class GwtMainPage extends Composite
 	}// end contextLoaded()
 
 	/*
-	 * Called when the GWT task listing UI is loading.
-	 */
-	private void initTaskListing( String binderId, String filterType, String mode, String sortBy, String sortDescend, String updateCalculatedDates )
-	{
-		Document contentDoc;
-		
-		// Create a TaskListing object...
-		contentDoc = m_contentCtrl.getContentDocument();
-		m_taskListing = new TaskListing(
-			contentDoc.getElementById( "ss_gwtTaskToolsDIV"   ).<com.google.gwt.user.client.Element> cast(),
-			contentDoc.getElementById( "ss_gwtTaskListingDIV" ).<com.google.gwt.user.client.Element> cast(),
-			this,
-			Long.parseLong( binderId ),
-			filterType,
-			mode,
-			sortBy,
-			( GwtClientHelper.hasString( sortDescend )           ? Boolean.parseBoolean( sortDescend           ) : false ),
-			( GwtClientHelper.hasString( updateCalculatedDates ) ? Boolean.parseBoolean( updateCalculatedDates ) : false ) );
-		
-		// ...and show it.
-		m_taskListing.show();
-	}// end initTaskListing();
-
-	/*
 	 * Called to handle TeamingAction's directed to the GWT task folder
 	 * listing.
 	 */
@@ -551,18 +509,6 @@ public class GwtMainPage extends Composite
 	{
 		Window.alert(GwtTeaming.getMessages().taskInternalError_UnexpectedAction(taskAction.toString()));
 	}// end handleTaskAction()
-	
-	/*
-	 * Called to tell the task folder listing to resize itself based on
-	 * the current size of the content frame.
-	 */
-	private void resizeTaskListing() {
-		// If we're connected to a TaskListing...
-		if (null != m_taskListing) {
-			// ...tell it to resize.
-			m_taskListing.resize();
-		}
-	}
 	
 	/*
 	 * Invoke the "Edit Branding" dialog.
@@ -1184,6 +1130,7 @@ public class GwtMainPage extends Composite
 		case TASK_SET_PERCENT_DONE:
 		case TASK_SET_PRIORITY:
 		case TASK_SET_STATUS:
+		case TASK_VIEW:
 			handleTaskAction( action, obj );
 			break;
 
@@ -1893,10 +1840,6 @@ public class GwtMainPage extends Composite
 			}
 			
 			m_contentCtrl.setDimensions( width, height );
-			
-			// Allow the task folder listing to resize to the content,
-			// as necessary.
-			resizeTaskListing();
 			
 			// Tell the activity stream control to relayout.
 			if ( m_activityStreamCtrl != null )

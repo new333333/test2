@@ -37,7 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
+import org.kablink.teaming.gwt.client.util.EventWrapper;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -171,7 +171,7 @@ public class TaskButton extends Anchor {
 		List<EventHandler> ehs = new ArrayList<EventHandler>();
 		ehs.add(new ButtonSelector());
 		ehs.add(new ButtonHover(m_buttonImage));
-		PassThroughEventsPanel.addHandlers(this, ehs);
+		EventWrapper.addHandlers(this, ehs);
 	}
 	
 	/**
@@ -211,7 +211,7 @@ public class TaskButton extends Anchor {
 		List<EventHandler> ehs = new ArrayList<EventHandler>();
 		ehs.add(new ButtonSelector());
 		ehs.add(new ButtonHover(m_buttonLabel));
-		PassThroughEventsPanel.addHandlers(this, ehs);
+		EventWrapper.addHandlers(this, ehs);
 	}
 	
 	/**

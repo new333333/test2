@@ -145,11 +145,30 @@ public class ContentControl extends Composite
 	 */
 	public void setDimensions( int width, int height )
 	{
-		// Set the width and height
+		// Set the width and height of the frame.
 		setSize( String.valueOf( width ) + "px", String.valueOf( height ) + "px" );
-
 		m_frame.setPixelSize( width, height );
+
+		// Does the content panel contain a task listing?
+		if ( null != getContentDocument().getElementById( "gwtTasks" ) )
+		{
+			// Yes!  Let it resize if it needs to.
+			jsResizeTaskListing();
+		}
 	}// end setDimensions()
+
+	/*
+	 * Uses JSNI to tell the task listing that it may need to be
+	 * resized.
+	 */
+	private static native void jsResizeTaskListing() /*-{
+		// If the method to resize the task listing is defined...
+		if ( $wnd.top.gwtContentIframe.ss_resizeTasks )
+		{
+			// ...call it.
+			$wnd.top.gwtContentIframe.ss_resizeTasks();
+		}
+	}-*/;	
 	
 	/**
 	 * This method will set the url used by the iframe.

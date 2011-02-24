@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
+import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
@@ -58,12 +59,8 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.widgets.PassThroughEventsPanel;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Node;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -101,8 +98,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private Column				m_sortColumn;		//
 	private FlexCellFormatter	m_flexTableCF;		//
 	private FlexTable			m_flexTable;		//
-	private Image 				m_dueDateBusy;	//
-	private int					m_taskCount;		//
+	private Image 				m_dueDateBusy;		//
 	private RowFormatter		m_flexTableRF;		//
 	private TaskBundle			m_taskBundle;		//
 	private TaskListing			m_taskListing;		//
@@ -262,7 +258,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		 */
 		public boolean isTaskCBChecked() {
 			CheckBox cb = getTaskSelectorCB();
-			boolean reply = ((null != cb) && jsIsCBChecked(cb.getElement().getId()));
+			boolean reply = ((null != cb) && cb.getValue());
 			return reply;
 		}
 	}
@@ -375,7 +371,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			pc.addStyleName("verticalAlignTop");
 			pc.setAnchorStyleName("cursorPointer");
 			fp.add(pc);			
-			PassThroughEventsPanel.addHandler(pc, new ClickHandler() {
+			EventWrapper.addHandler(pc, new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					Widget w;					
@@ -412,7 +408,7 @@ public class TaskTable extends Composite implements ActionHandler {
 					handlePresenceSelect(ai, assignee.getElement());
 				}
 			});
-			PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
+			EventWrapper.addHandlers(assignee, eventHandlers);
 			
 			break;
 		
@@ -420,7 +416,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		case TEAM:
 			// Group or team assignee!
 			Image assigneeImg = new Image();
-			assigneeImg.setUrl(m_gwtMainPage.getRequestInfo().getImagesPath() + ai.getPresenceDude());
+			assigneeImg.setUrl(m_taskListing.getRequestInfo().getImagesPath() + ai.getPresenceDude());
 			assigneeImg.getElement().setAttribute("align", "absmiddle");
 			fp.add(assigneeImg);
 
@@ -460,7 +456,7 @@ public class TaskTable extends Composite implements ActionHandler {
 						handleMembershipSelect(assigneeType, ai, expansionFP, showDisabled);
 					}
 				});
-				PassThroughEventsPanel.addHandlers(assignee, eventHandlers);
+				EventWrapper.addHandlers(assignee, eventHandlers);
 			}
 			
 			break;
@@ -499,7 +495,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		vp.add(a);
 
 		// Add a ClickHandler to the <A>.
-		PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+		EventWrapper.addHandler(a, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				// Remove the previous 'More...' link.
@@ -576,7 +572,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
 			aE.appendChild(buildImage(m_images.menu()).getElement());
-			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+			EventWrapper.addHandler(a, new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					taskMenu.showTaskPopupMenu(task, imgElement);
@@ -1214,10 +1210,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called when the user clicks the checkbox on a task.
 	 */
-	private void handleTaskSelect(TaskListItem task) {
+	private void handleTaskSelect(TaskListItem task, boolean checked) {
 		// Track the state of the task's checkbox...
 		UIData uid = getUIData(task);
-		boolean checked = uid.isTaskCBChecked();
 		uid.setTaskSelected(checked);
 
 		// ...and/remove the selected style from the affected rows...
@@ -1471,23 +1466,6 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
-	 * Returns true if the checkbox Element is checked and false
-	 * otherwise.
-	 */
-	private static native boolean jsIsCBChecked(String cbID) /*-{
-		var cbE = $wnd.top.gwtContentIframe.document.getElementById(cbID).firstChild;
-		return cbE.checked;
-	}-*/;
-	
-	/*
-	 * Checks or removes the check from a checkbox Element.
-	 */
-	private static native void jsSetCBCheck(String cbID, boolean selected) /*-{
-		var cbE = $wnd.top.gwtContentIframe.document.getElementById(cbID).firstChild;
-		cbE.checked = selected;
-	}-*/;
-	
-	/*
 	 * If the TaskTable is sorted by the specified column, add the
 	 * appropriate 'sorted by' indicator. 
 	 */
@@ -1603,19 +1581,6 @@ public class TaskTable extends Composite implements ActionHandler {
 				}
 			}			
 		});		
-	}
-	
-	/*
-	 * Removes all the child Node's from a Widget.
-	 */
-	private void removeAllChildren(Widget w) {
-		Element wE = w.getElement();
-		Node child = wE.getFirstChild();
-		while (null != child) {
-			Node nextChild = child.getNextSibling();
-			wE.removeChild(child);
-			child = nextChild;
-		}
 	}
 	
 	/*
@@ -1801,9 +1766,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		uid.setTaskSelectorCB(cb);
 		cb.getElement().setId("gwtTaskList_taskSelect_" + task.getTask().getTaskId().getEntryId());
 		cb.addStyleName("gwtTaskList_ckbox");
-		PassThroughEventsPanel.addHandler(cb, new ChangeHandler(){
+		EventWrapper.addHandler(cb, new ClickHandler(){
 			@Override
-			public void onChange(ChangeEvent event) {handleTaskSelect(task);}			
+			public void onClick(ClickEvent event) {
+				handleTaskSelect(task, ((CheckBox) event.getSource()).getValue());
+			}			
 		});
 		if (uid.getTaskSelected()) {
 			cb.setValue(true);
@@ -1816,7 +1783,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			Anchor a = buildAnchor();
 			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
 			a.getElement().appendChild(i.getElement());
-			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+			EventWrapper.addHandler(a, new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {handleTaskExpander(task);}				
 			});
@@ -1884,7 +1851,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			uid.setTaskUnseenAnchor(a);
 			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
 			a.getElement().appendChild(i.getElement());
-			PassThroughEventsPanel.addHandler(a, new ClickHandler() {
+			EventWrapper.addHandler(a, new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {handleTaskSeen(task);}
 			});
@@ -1901,7 +1868,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		// Add the appropriately styled task name Anchor to the panel.
 		Anchor ta = buildAnchor();
-		PassThroughEventsPanel.addHandler(ta, new ClickHandler() {
+		EventWrapper.addHandler(ta, new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {handleTaskView(task);}
 		});
@@ -1939,7 +1906,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
 		markAsSortKey(a, Column.ASSIGNED_TO);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.ASSIGNED_TO);}			
 		});
@@ -1953,7 +1920,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
 		markAsSortKey(a, Column.CLOSED_PERCENT_DONE);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.CLOSED_PERCENT_DONE);}			
 		});
@@ -1972,7 +1939,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
 		markAsSortKey(a, Column.DUE_DATE);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.DUE_DATE);}			
 		});
@@ -1999,7 +1966,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_location());
 			markAsSortKey(a, Column.LOCATION);
-			PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			EventWrapper.addHandler(a, new ClickHandler(){
 				@Override
 				public void onClick(ClickEvent event) {handleTableResort(Column.LOCATION);}			
 			});
@@ -2019,7 +1986,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_order());
 			markAsSortKey(a, Column.ORDER);
-			PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+			EventWrapper.addHandler(a, new ClickHandler(){
 				@Override
 				public void onClick(ClickEvent event) {handleTableResort(Column.ORDER);}			
 			});
@@ -2036,7 +2003,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
 		markAsSortKey(a, Column.PRIORITY);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.PRIORITY);}			
 		});
@@ -2047,12 +2014,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Selector' column header.
 	 */
 	private void renderHeaderSelectCB() {
-		final CheckBox cb = new CheckBox();
+		CheckBox cb = new CheckBox();
 		cb.addStyleName("gwtTaskList_ckbox");
 		cb.getElement().setId("gwtTaskList_taskSelect_All");
-		PassThroughEventsPanel.addHandler(cb, new ChangeHandler(){
+		EventWrapper.addHandler(cb, new ClickHandler(){
 			@Override
-			public void onChange(ChangeEvent event) {handleSelectAll(jsIsCBChecked("gwtTaskList_taskSelect_All"));}			
+			public void onClick(ClickEvent event) {
+				handleSelectAll(((CheckBox) event.getSource()).getValue());
+			}			
 		});
 		int colIndex = getColumnIndex(Column.SELECTOR);
 		m_flexTableCF.setAlignment(0, colIndex, HasHorizontalAlignment.ALIGN_LEFT, HasVerticalAlignment.ALIGN_MIDDLE);
@@ -2066,7 +2035,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_status());
 		markAsSortKey(a, Column.STATUS);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.STATUS);}			
 		});
@@ -2080,7 +2049,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_name());
 		markAsSortKey(a, Column.TASK_NAME);
-		PassThroughEventsPanel.addHandler(a, new ClickHandler(){
+		EventWrapper.addHandler(a, new ClickHandler(){
 			@Override
 			public void onClick(ClickEvent event) {handleTableResort(Column.TASK_NAME);}			
 		});
@@ -2129,14 +2098,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Validate the task tools for what we've got displayed.
-		Scheduler.ScheduledCommand validator;
-		validator = new Scheduler.ScheduledCommand() {
-			@Override
-			public void execute() {
-				validateTaskTools();
-			}
-		};
-		Scheduler.get().scheduleDeferred(validator);
+		validateTaskTools();
 	}
 	
 	private void renderTaskBundle(TaskBundle tb, boolean updateCalculatedDates) {
@@ -2353,11 +2315,6 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 	}
 	
-	private void updateCalculatedDates(TaskListItem task) {
-		TaskId taskId = task.getTask().getTaskId();
-		updateCalculatedDates(taskId.getBinderId(), taskId.getEntryId());
-	}
-	
 	private void updateCalculatedDatesAsync(final Long binderId, final Long entryId) {
 		Scheduler.ScheduledCommand updater;
 		updater = new Scheduler.ScheduledCommand() {
@@ -2373,12 +2330,23 @@ public class TaskTable extends Composite implements ActionHandler {
 		TaskId taskId = task.getTask().getTaskId();
 		updateCalculatedDatesAsync(taskId.getBinderId(), taskId.getEntryId());
 	}
-	
+
 	/*
 	 * Based on what's selected in the task list, validates the tools
 	 * in the TaskListing.
 	 */
 	private void validateTaskTools() {
+		Scheduler.ScheduledCommand validator;
+		validator = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				validateTaskToolsNow();
+			}
+		};
+		Scheduler.get().scheduleDeferred(validator);
+	}
+	
+	private void validateTaskToolsNow() {
 		boolean enableMoveDown  = false;
 		boolean enableMoveLeft  = false;
 		boolean enableMoveRight = false;

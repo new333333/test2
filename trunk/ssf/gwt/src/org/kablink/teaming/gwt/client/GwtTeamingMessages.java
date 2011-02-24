@@ -914,10 +914,12 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmPurge();
 	String taskInternalError_FilteredOrVirtual(String operation);
 	String taskInternalError_UnexpectedAction(String action);
+	String taskInternalError_UnexpectedViewOption(String viewOption);
 	String taskLabelDelete();
 	String taskLabelOrder();
 	String taskLabelPurge();
 	String taskLabelSubtask();
+	String taskLoadingPleaseWait();
 	String taskMemberCount(String count);
 	String taskNoTasks();
 	String taskPriority_p1();
@@ -931,4 +933,13 @@ public interface GwtTeamingMessages extends Messages
 	String taskStatus_inProcess();
 	String taskStatus_needsAction();
 	String taskUnread();
+	String taskView();
+	String taskViewAllEntries();
+	String taskViewCompleted();
+	String taskViewToday();
+	String taskViewWeek();
+	String taskViewMonth();
+	String taskViewAllActive();
+	String taskViewAssignedTasks();
+	String taskViewFromFolder();
 }// end GwtTeamingMessages
