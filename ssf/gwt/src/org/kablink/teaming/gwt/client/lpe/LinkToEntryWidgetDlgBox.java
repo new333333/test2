@@ -49,6 +49,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -56,6 +57,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -71,11 +73,11 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	implements ActionHandler
 {
 	private FindCtrl m_findCtrl = null;
-	private TextBox	m_titleTxtBox = null;
+	private TextBox 	m_titleTxtBox = null;
 	private CheckBox	m_newWndCkBox = null;
 	private String m_entryId = null;
 	private InlineLabel m_currentEntryNameLabel = null;
-	private InlineLabel m_findLabel;
+	private FlowPanel m_findPanel;
 	private Button m_editBtn;
 	private LandingPageEditor m_lpe;
 	
@@ -174,22 +176,69 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 
 		// Add a "find" control
 		{
-			m_findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
-			m_findLabel.setVisible( false );
-			table.setWidget( 1, 0, m_findLabel );
+			InlineLabel findLabel;
+			FlexTable findTable;
+			
+			m_findPanel = new FlowPanel();
+			m_findPanel.addStyleName( "findCtrlPanel" );
+			m_findPanel.setVisible( false );
+			
+			// Add an image the user can click on to close the find panel.
+			{
+				Image img;
+				ImageResource imageResource;
+				ClickHandler clickHandler;
+				
+				imageResource = GwtTeaming.getImageBundle().closeX();
+				img = new Image( imageResource );
+				img.addStyleName( "findCtrlCloseImg" );
+				img.getElement().setAttribute( "title", GwtTeaming.getMessages().close() );
+				m_findPanel.add( img );
+		
+				// Add a click handler to the "close" image.
+				clickHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// Close the panel that holds find controls.
+								hideFindControl();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				img.addClickHandler( clickHandler );
+			}
+			
+			findTable = new FlexTable();
+			
+			findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
+			findLabel.addStyleName( "findCtrlLabel" );
+			findTable.setWidget( 0, 0, findLabel );
 			
 			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
 			m_findCtrl.enableScope( m_lpe.getBinderId() );
-			m_findCtrl.setVisible( false );
-			table.setWidget( 1, 1, m_findCtrl );
+			findTable.setWidget( 0, 1, m_findCtrl );
+			
+			m_findPanel.add( findTable );
+			mainPanel.add( m_findPanel );
 		}
 		
 		// Add label and edit control for "Title"
+		table = new FlexTable();
+		table.setCellSpacing( 8 );
 		label = new Label( GwtTeaming.getMessages().linkToEntryTitleLabel() );
-		table.setWidget( 2, 0, label );
+		table.setWidget( 0, 0, label );
 		m_titleTxtBox = new TextBox();
 		m_titleTxtBox.setVisibleLength( 30 );
-		table.setWidget( 2, 1, m_titleTxtBox );
+		table.setWidget( 0, 1, m_titleTxtBox );
+		mainPanel.add( table );
 		
 		// Add a checkbox for "Open the entry in a new window"
 		table = new FlexTable();
@@ -330,8 +379,7 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	 */
 	private void hideFindControl()
 	{
-		m_findLabel.setVisible( false );
-		m_findCtrl.setVisible( false );
+		m_findPanel.setVisible( false );
 		m_findCtrl.hideSearchResults();
 	}
 	
@@ -418,8 +466,7 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	{
 		FocusWidget focusWidget;
 
-		m_findLabel.setVisible( true );
-		m_findCtrl.setVisible( true );
+		m_findPanel.setVisible( true );
 
 		focusWidget = m_findCtrl.getFocusWidget();
 		if ( focusWidget != null )

@@ -484,7 +484,7 @@ public class FindCtrl extends Composite
 		m_searchCriteria.setSearchType( searchType );
 		m_searchCriteria.setMaxResults( 10 );
 		m_searchCriteria.setPageNumber( 0 );
-		m_searchCriteria.setSearchScope( SearchScope.SEARCH_ENTIRE_SITE );
+		m_searchCriteria.setSearchScope( SearchScope.SEARCH_LOCAL );
 
 		mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "gwtFindCtrl" );

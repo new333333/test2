@@ -47,11 +47,13 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -59,6 +61,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
@@ -81,7 +84,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
 	private String m_folderId = null;
 	private Panel m_selectFolderPanel = null;
-	private InlineLabel m_folderFindLabel;
+	private FlowPanel m_folderFindPanel;
 	private FindCtrl m_folderFindCtrl = null;
 	private CheckBox m_showFolderTitleCkBox = null;
 	private TextBox m_numEntriesToShowTxtBox = null;
@@ -91,7 +94,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	// The following data members are used if the user has checked the "Associate an entry with this custom jsp"
 	private String m_entryId = null;
 	private Panel m_selectEntryPanel = null;
-	private InlineLabel m_entryFindLabel;
+	private FlowPanel m_entryFindPanel;
 	private FindCtrl m_entryFindCtrl = null;
 	private CheckBox m_showEntryTitleCkBox = null;
 	private InlineLabel m_currentEntryNameLabel = null;
@@ -166,6 +169,17 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		mainPanel.add( table );
 		
 		mainPanel.add( table );
+
+		// Add an empty div that is as wide as the find control.  We do this so when we
+		// show/hide the find control the size of the dialog doesn't change width.
+		{
+			Label spacer;
+			
+			spacer = new Label();
+			spacer.getElement().getStyle().setWidth( 440, Unit.PX );
+			spacer.getElement().getStyle().setHeight( 2, Unit.PX );
+			mainPanel.add( spacer );
+		}
 
 		init( properties );
 		
@@ -242,14 +256,58 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		
 		// Add a "find" control.
 		{
-			m_entryFindLabel = new InlineLabel( GwtTeaming.getMessages().find() );
-			m_entryFindLabel.setVisible( false );
-			table.setWidget( 1, 0, m_entryFindLabel );
+			InlineLabel findLabel;
+			FlexTable findTable;
+			
+			m_entryFindPanel = new FlowPanel();
+			m_entryFindPanel.addStyleName( "findCtrlPanel" );
+			m_entryFindPanel.setVisible( false );
+			
+			// Add an image the user can click on to close the find panel.
+			{
+				Image img;
+				ImageResource imageResource;
+				ClickHandler clickHandler;
+				
+				imageResource = GwtTeaming.getImageBundle().closeX();
+				img = new Image( imageResource );
+				img.addStyleName( "findCtrlCloseImg" );
+				img.getElement().setAttribute( "title", GwtTeaming.getMessages().close() );
+				m_entryFindPanel.add( img );
+		
+				// Add a click handler to the "close" image.
+				clickHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// Close the panel that holds find controls.
+								hideEntryFindControl();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				img.addClickHandler( clickHandler );
+			}
+			
+			findTable = new FlexTable();
+			
+			findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
+			findLabel.addStyleName( "findCtrlLabel" );
+			findTable.setWidget( 0, 0, findLabel );
 			
 			m_entryFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.ENTRIES );
 			m_entryFindCtrl.enableScope( m_lpe.getBinderId() );
-			m_entryFindCtrl.setVisible( false );
-			table.setWidget( 1, 1, m_entryFindCtrl );
+			findTable.setWidget( 0, 1, m_entryFindCtrl );
+			
+			m_entryFindPanel.add( findTable );
+			mainPanel.add( m_entryFindPanel );
 		}
 		
 		// Add a checkbox for "Show title"
@@ -334,16 +392,59 @@ public class CustomJspWidgetDlgBox extends DlgBox
 
 		// Add a "find" control
 		{
-			m_folderFindLabel = new InlineLabel( GwtTeaming.getMessages().find() );
-			m_folderFindLabel.setVisible( false );
-			table.setWidget( 1, 0, m_folderFindLabel );
+			InlineLabel findLabel;
+			FlexTable findTable;
+			
+			m_folderFindPanel = new FlowPanel();
+			m_folderFindPanel.addStyleName( "findCtrlPanel" );
+			m_folderFindPanel.setVisible( false );
+			
+			// Add an image the user can click on to close the find panel.
+			{
+				Image img;
+				ImageResource imageResource;
+				ClickHandler clickHandler;
+				
+				imageResource = GwtTeaming.getImageBundle().closeX();
+				img = new Image( imageResource );
+				img.addStyleName( "findCtrlCloseImg" );
+				img.getElement().setAttribute( "title", GwtTeaming.getMessages().close() );
+				m_folderFindPanel.add( img );
+		
+				// Add a click handler to the "close" image.
+				clickHandler = new ClickHandler()
+				{
+					public void onClick( ClickEvent clickEvent )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								// Close the panel that holds find controls.
+								hideFolderFindControl();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				img.addClickHandler( clickHandler );
+			}
+			
+			findTable = new FlexTable();
+			
+			findLabel = new InlineLabel( GwtTeaming.getMessages().find() );
+			findLabel.addStyleName( "findCtrlLabel" );
+			findTable.setWidget( 0, 0, findLabel );
 			
 			m_folderFindCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PLACES );
 			m_folderFindCtrl.enableScope( m_lpe.getBinderId() );
 			m_folderFindCtrl.setSearchForFoldersOnly( true );
-			m_folderFindCtrl.setVisible( false );
+			findTable.setWidget( 0, 1, m_folderFindCtrl );
 			
-			table.setWidget( 1, 1, m_folderFindCtrl );
+			m_folderFindPanel.add( findTable );
+			mainPanel.add( m_folderFindPanel );
 		}
 
 		// Add controls for "Number of entries to show"
@@ -621,8 +722,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 */
 	private void hideEntryFindControl()
 	{
-		m_entryFindLabel.setVisible( false );
-		m_entryFindCtrl.setVisible( false );
+		m_entryFindPanel.setVisible( false );
 		m_entryFindCtrl.hideSearchResults();
 	}
 	
@@ -632,8 +732,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	 */
 	private void hideFolderFindControl()
 	{
-		m_folderFindLabel.setVisible( false );
-		m_folderFindCtrl.setVisible( false );
+		m_folderFindPanel.setVisible( false );
 		m_folderFindCtrl.hideSearchResults();
 	}
 	
@@ -813,8 +912,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	{
 		FocusWidget focusWidget;
 
-		m_entryFindLabel.setVisible( true );
-		m_entryFindCtrl.setVisible( true );
+		m_entryFindPanel.setVisible( true );
 
 		focusWidget = m_entryFindCtrl.getFocusWidget();
 		if ( focusWidget != null )
@@ -828,8 +926,7 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	{
 		FocusWidget focusWidget;
 
-		m_folderFindLabel.setVisible( true );
-		m_folderFindCtrl.setVisible( true );
+		m_folderFindPanel.setVisible( true );
 
 		focusWidget = m_folderFindCtrl.getFocusWidget();
 		if ( focusWidget != null )
