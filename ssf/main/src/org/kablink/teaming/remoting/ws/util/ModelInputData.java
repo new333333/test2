@@ -59,6 +59,7 @@ import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
+import org.kablink.util.StringUtil;
 
 import net.fortuna.ical4j.data.ParserException;
 
@@ -162,7 +163,27 @@ public class ModelInputData implements InputDataAccessor {
 	    	if(obj != null) {
 	    		return doStringCheck(((CustomStringArrayField)obj).getValues());
 	    	}
-		    return null;	    	
+	    	
+	    	// None prevailed. Let's try if interpreting the key as a graph representation can locate the data.
+	    	if(key.contains(".")) {
+	    		String[] keyElems = StringUtil.split(key, ".");
+	    		if(keyElems != null && keyElems.length > 1) {
+	    			obj = entity;
+	    			for(String keyElem:keyElems) {
+	    				try {
+		    				obj = InvokeUtil.invokeGetter(obj, keyElem);
+		    				if(obj == null)
+		    					break;
+	    				}
+	    				catch(ObjectPropertyNotFoundException exc) {
+	    					obj = null;
+	    					break;
+	    				}
+	    			}
+	    		}
+	    	}
+	    	
+		    return obj;	    	
 	    }	    	
 	}
 
