@@ -5,10 +5,10 @@
 	<property name="project.dir" value=".." />
 	<property file="${project.dir}/app.server.${user.name}.properties" />
 	<property file="${project.dir}/app.server.properties" />
-	<property file="${project.dir}/build.${user.name}.properties" />
-	<property file="${project.dir}/build.properties" />
 	<property file="${project.dir}/release.${user.name}.properties" />
 	<property file="${project.dir}/release.properties" />
+	<property file="${project.dir}/build.${user.name}.properties" />
+	<property file="${project.dir}/build.properties" />
 	<path id="project.classpath">
 		<pathelement path="${classpath}" />
 		<pathelement location="${project.dir}/ws-client/kablink-teaming-wsclient.jar"/>
