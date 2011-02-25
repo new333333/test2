@@ -81,13 +81,11 @@
         <security:intercept-url pattern="/ws/**" filters="none" />
         <security:intercept-url pattern="/rss/**" filters="none" />
         <security:intercept-url pattern="/ical/**" filters="none" />
-        <security:intercept-url pattern="/css/**" filters="none" />
         <security:intercept-url pattern="/ext/**" filters="none" />
         <security:intercept-url pattern="/help/**" filters="none" />
         <security:intercept-url pattern="/help_doc/**" filters="none" />
-        <security:intercept-url pattern="/i/**" filters="none" />
-        <security:intercept-url pattern="/images/**" filters="none" />
-        <security:intercept-url pattern="/js/**" filters="none" />
+        <security:intercept-url pattern="/static/**" filters="none" />
+        <security:intercept-url pattern="/validate/**" filters="none" />
         <security:intercept-url pattern="/redirect/**" filters="none" />
         <security:intercept-url pattern="/bitbucket/**" filters="none" />
         <security:intercept-url pattern="/html/**" filters="none" />
