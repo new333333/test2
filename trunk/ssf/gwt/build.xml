@@ -120,8 +120,8 @@
 	</target>
 	
 	<target name="deploy-gwt" depends="compile-gwt">
-		<mkdir  dir="${app.server.ssf.dir}/js/gwt"/>
-		<copy todir="${app.server.ssf.dir}/js/gwt">
+		<mkdir  dir="${app.server.ssf.dir}/validate/js/gwt"/>
+		<copy todir="${app.server.ssf.dir}/validate/js/gwt">
 		        <fileset dir="www">
 		        	<include name="**/*"/>
 			</fileset>
