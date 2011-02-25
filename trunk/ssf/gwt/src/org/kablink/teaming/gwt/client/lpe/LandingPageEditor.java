@@ -657,119 +657,135 @@ public class LandingPageEditor extends Composite
 	 */
 	public void onMouseUp( MouseUpEvent event )
 	{
-		// Is the user currently dragging an item from the palette?
-		if ( m_paletteItemDragInProgress && m_paletteItemDragProxy != null && m_paletteItemBeingDragged!= null )
+		Scheduler.ScheduledCommand cmd1;
+		final int clientX;
+		final int clientY;
+		final LandingPageEditor lpe;
+
+		clientX = event.getClientX();
+		clientY = event.getClientY();
+		lpe = this;
+		
+		cmd1 = new Scheduler.ScheduledCommand()
 		{
-			// Yes
-			m_paletteItemDragInProgress = false;
-			
-			// Hide the drag proxy widget.
-			m_paletteItemDragProxy.hide();
-			m_paletteItemDragProxy = null;
-			
-			// Remove the mouse-up event handler
-			if ( m_mouseUpHandlerReg != null )
+			/**
+			 * 
+			 */
+			public void execute()
 			{
-				m_mouseUpHandlerReg.removeHandler();
-				m_mouseUpHandlerReg = null;
-			}
-			
-			// Remove the preview event handler
-			if ( m_previewHandlerReg != null )
-			{
-				m_previewHandlerReg.removeHandler();
-				m_previewHandlerReg = null;
-			}
-			
-			// Clear the stack of drop zones.
-			m_enteredDropZones.clear();
-			
-			// Did the user drop the palette item on a drop zone?
-			if ( m_selectedDropZone != null )
-			{
-				DropWidget	dropWidget;
-				int x;
-				int y;
-				
-				// Yes, hide the drop clue.
-				m_selectedDropZone.hideDropClue();
-				
-				// Let the drop zone figure out where to insert the dropped widget.
-				m_selectedDropZone.setDropLocation( event.getClientX(), event.getClientY() );
-				
-				// Create a DropWidget that will be added to the drop zone.
-				dropWidget = m_paletteItemBeingDragged.createDropWidget( this );
-				
-				// Invoke the Edit Properties dialog for the DropWidget.  If the user
-				// cancels the dialog we won't do anything.  If the user presses ok,
-				// our editSuccessful() will be called and we will add the DropWidget to the
-				// selected DropZone.  If the user pressed cancel, our editCanceled() method
-				// will be called.
-				x = event.getClientX();
-				y = event.getClientY();
-				dropWidget.editProperties( this, this, x, y );
-			}
-		}
-		// Is the user currently dragging an item from the palette?
-		else if ( m_existingItemDragInProgress && m_existingItemDragProxy != null && m_existingItemBeingDragged!= null )
-		{
-			// Yes
-			m_existingItemDragInProgress = false;
-			
-			// Hide the drag proxy widget.
-			m_existingItemDragProxy.hide();
-			m_existingItemDragProxy = null;
-			
-			// Remove the mouse-up event handler
-			if ( m_mouseUpHandlerReg != null )
-			{
-				m_mouseUpHandlerReg.removeHandler();
-				m_mouseUpHandlerReg = null;
-			}
-			
-			// Remove the preview event handler
-			if ( m_previewHandlerReg != null )
-			{
-				m_previewHandlerReg.removeHandler();
-				m_previewHandlerReg = null;
-			}
-			
-			// Clear the stack of drop zones.
-			m_enteredDropZones.clear();
-			
-			// Did the user drop the existing item on a drop zone?
-			if ( m_selectedDropZone != null )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				// Yes, hide the drop clue.
-				m_selectedDropZone.hideDropClue();
-				
-				// Let the drop zone figure out where to insert the dropped widget.
-				m_selectedDropZone.setDropLocation( event.getClientX(), event.getClientY() );
-				
-				// Add the DropWidget to the DropZone it was dropped on.
-				m_selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
-				
-				// Did we just drop a Google Gadget widget?
-				if ( m_existingItemBeingDragged instanceof GoogleGadgetDropWidget )
+				// Is the user currently dragging an item from the palette?
+				if ( m_paletteItemDragInProgress && m_paletteItemDragProxy != null && m_paletteItemBeingDragged!= null )
 				{
-					// Yes, for some reason the Google gadget widget needs to be refreshed
-					// after we move it.
-					((GoogleGadgetDropWidget) m_existingItemBeingDragged).refresh();
-				}
-				
-				// Adjust the height of things to make sure everything fits.
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					public void execute()
+					// Yes
+					m_paletteItemDragInProgress = false;
+					
+					// Hide the drag proxy widget.
+					m_paletteItemDragProxy.hide();
+					m_paletteItemDragProxy = null;
+					
+					// Remove the mouse-up event handler
+					if ( m_mouseUpHandlerReg != null )
 					{
-						m_canvas.adjustHeightOfAllTableWidgets();
+						m_mouseUpHandlerReg.removeHandler();
+						m_mouseUpHandlerReg = null;
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+					
+					// Remove the preview event handler
+					if ( m_previewHandlerReg != null )
+					{
+						m_previewHandlerReg.removeHandler();
+						m_previewHandlerReg = null;
+					}
+					
+					// Clear the stack of drop zones.
+					m_enteredDropZones.clear();
+					
+					// Did the user drop the palette item on a drop zone?
+					if ( m_selectedDropZone != null )
+					{
+						DropWidget	dropWidget;
+						
+						// Yes, hide the drop clue.
+						m_selectedDropZone.hideDropClue();
+						
+						// Let the drop zone figure out where to insert the dropped widget.
+						m_selectedDropZone.setDropLocation( clientX, clientY );
+						
+						// Create a DropWidget that will be added to the drop zone.
+						dropWidget = m_paletteItemBeingDragged.createDropWidget( lpe );
+						
+						// Invoke the Edit Properties dialog for the DropWidget.  If the user
+						// cancels the dialog we won't do anything.  If the user presses ok,
+						// our editSuccessful() will be called and we will add the DropWidget to the
+						// selected DropZone.  If the user pressed cancel, our editCanceled() method
+						// will be called.
+						dropWidget.editProperties( lpe, lpe, clientX, clientY );
+					}
+				}
+				// Is the user currently dragging an item from the palette?
+				else if ( m_existingItemDragInProgress && m_existingItemDragProxy != null && m_existingItemBeingDragged!= null )
+				{
+					// Yes
+					m_existingItemDragInProgress = false;
+					
+					// Hide the drag proxy widget.
+					m_existingItemDragProxy.hide();
+					m_existingItemDragProxy = null;
+					
+					// Remove the mouse-up event handler
+					if ( m_mouseUpHandlerReg != null )
+					{
+						m_mouseUpHandlerReg.removeHandler();
+						m_mouseUpHandlerReg = null;
+					}
+					
+					// Remove the preview event handler
+					if ( m_previewHandlerReg != null )
+					{
+						m_previewHandlerReg.removeHandler();
+						m_previewHandlerReg = null;
+					}
+					
+					// Clear the stack of drop zones.
+					m_enteredDropZones.clear();
+					
+					// Did the user drop the existing item on a drop zone?
+					if ( m_selectedDropZone != null )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						// Yes, hide the drop clue.
+						m_selectedDropZone.hideDropClue();
+						
+						// Let the drop zone figure out where to insert the dropped widget.
+						m_selectedDropZone.setDropLocation( clientX, clientY );
+						
+						// Add the DropWidget to the DropZone it was dropped on.
+						m_selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
+						
+						// Did we just drop a Google Gadget widget?
+						if ( m_existingItemBeingDragged instanceof GoogleGadgetDropWidget )
+						{
+							// Yes, for some reason the Google gadget widget needs to be refreshed
+							// after we move it.
+							((GoogleGadgetDropWidget) m_existingItemBeingDragged).refresh();
+						}
+						
+						// Adjust the height of things to make sure everything fits.
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							public void execute()
+							{
+								m_canvas.adjustHeightOfAllTableWidgets();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
 			}
-		}
+		};
+		Scheduler.get().scheduleDeferred( cmd1 );
+		
 	}// end onMouseUp()
 	
 	
