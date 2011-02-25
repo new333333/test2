@@ -54,23 +54,24 @@
 <div class="ss_mashup_element">
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
-	<div class="ss_mashup_folder_header_view">
-		<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-		  action="view_permalink" 
-		  binderId="${mashupBinder.id}">
-		  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
-		  </ssf:url>"><span>${mashupBinder.title}</span></a>
-	</div>
-      </c:if>
-
-	<c:if test="${!empty mashupBinder.description.text}">
-	  <div class="ss_mashup_folder_description">
-		<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
-		<div class="ss_clear"></div>
-	  </div>
-	</c:if>
+		<div class="ss_mashup_folder_header_view">
+			<a href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+			  action="view_permalink" 
+			  binderId="${mashupBinder.id}">
+			  <ssf:param name="entityType" value="${mashupBinder.entityType}"/>
+			  </ssf:url>"><span>${mashupBinder.title}</span></a>
 	
-	<div class="ss_mashup_folder_list_open" style="padding-top:6px;">
+			<c:if test="${!empty mashupBinder.description.text}">
+			  <div class="ss_mashup_folder_description">
+				<ssf:markup entity="${mashupBinder}">${mashupBinder.description.text}</ssf:markup>
+				<div class="ss_clear"></div>
+			  </div>
+			</c:if>
+
+		</div>
+      </c:if>
+	
+	<div class="ss_mashup_folder_list_open">
 <% 
 	TreeMap tm = new java.util.TreeMap(new StringComparator(ssUser.getLocale()));
 %>

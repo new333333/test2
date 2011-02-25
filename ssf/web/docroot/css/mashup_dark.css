@@ -119,10 +119,15 @@ div.ss_mashup_folder_description p {
 div.ss_mashup_folder_list_closed {
   padding:6px;
   }
+	
+div.ss_mashup_folder_list_open span.ss_size_20px {
+  font-size: 15px !important;
+  padding-left: 10px;
+  }
 
 div.ss_mashup_folder_list_open {
   background: #ededed;
-  padding: 0px 6px;
+  padding: 5px 6px;
   margin-bottom: 2px;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
@@ -139,7 +144,10 @@ div.ss_mashup_folder_list_open_title {
 div.ss_mashup_folder_list_open_entry {
   padding: 6px;
   }
-    
+div.ss_mashup_folder_list_open ul {
+  padding-left: 15px;
+  list-style: circle;
+  }        
 div.ss_mashup_folder_list_open_entry p {
   margin-top: -2px !important;
   }
