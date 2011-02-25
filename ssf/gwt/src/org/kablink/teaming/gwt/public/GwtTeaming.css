@@ -832,13 +832,14 @@ body, table td, select
 	border-style: solid solid solid;
 	border-width: 1px;
 	position: relative;
+	margin-left: 5px;
 }
 
 /* Styles for the "search results" in a "find" control. */
 .findSearchResultsContent
 {
 	background-color: white;
-	height: 245px;
+	height: 220px;
 	overflow: auto;
 	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
 }
@@ -870,7 +871,10 @@ body, table td, select
 	margin-right: .5em;
 	white-space: nowrap;
 }
-
+.findSearchResultItemWidget span.gwt-InlineLabel
+{
+	color: #505354;
+}
 .findCtrlScopePanel
 {
 }
@@ -878,8 +882,8 @@ body, table td, select
 .findCtrlPanel
 {
 	border: 1px solid #D2D5D1;
-	margin-left: 26px;
-	padding-left: 4px;
+	margin-left: 8px;
+	padding: 5px;
 	position: relative;
 }
 
@@ -891,9 +895,16 @@ body, table td, select
 {
 	cursor: pointer;
 	position: absolute;
-	right: 2px;
-	top: 2px;
+	right: 5px;
+	top: 5px;
 }
+
+.gwtFindCtrl .gwt-TextBox
+{
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
 
 /* Style used to display the login "authenticating..." message in the login dialog. */
 .loginAuthenticatingMsg
@@ -1415,7 +1426,8 @@ body, table td, select
 /* Styles used in the enhanced view dialog */
 .enhancedViewDescLabel
 {
-	font-size: 10px;
+	color: #949494;
+	font-size: 12px;
 	padding: 5px;
 	width: 375px;
 }
@@ -2357,6 +2369,9 @@ body, table td, select
 	font-size: 12px;
 }
 
+.gwt-CheckBox label {
+	font-size: 12px !important;
+	}
 
 /* Styles for dialog boxes */
 .teamingDlgBox

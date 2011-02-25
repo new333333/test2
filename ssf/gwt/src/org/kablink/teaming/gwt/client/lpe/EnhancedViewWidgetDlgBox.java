@@ -163,7 +163,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
 		// Add label and list box for the view
-		label = new Label( GwtTeaming.getMessages().enhancedViewNameLabel() );
+		label = new Label( GwtTeaming.getMessages().enhancedViewLabel() );
 		mainPanel.add( label );
 		
 		// Create a listbox that holds the names of all the view.
