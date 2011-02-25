@@ -124,7 +124,7 @@
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl,js/dojo.changes/**"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl,css/**,js/**,images/**,themes/**"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<!-- No longer necessary
@@ -133,20 +133,47 @@
 			</manifest>-->
 		</war>
 		
+		<antcall target="add-static-files"/>
+		<antcall target="add-release-info"/>
+		<antcall target="add-messages-files"/>
+	</target>
+
+	<target name="add-static-files">
+		<delete dir="temp"/>
+	
+		<copy todir="temp/${web.static.path}/css" overwrite="true">
+			<fileset dir="${web.dir}/css" />
+		</copy>
+		<copy todir="temp/${web.static.path}/js" overwrite="true">
+			<fileset dir="${web.dir}/js" excludes="js/dojo.changes/**"/>
+		</copy>
+		<copy todir="temp/${web.static.path}/images" overwrite="true">
+			<fileset dir="${web.dir}/images" />
+		</copy>
+		<copy todir="temp/${web.static.path}/themes" overwrite="true">
+			<fileset dir="${web.dir}/themes" />
+		</copy>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
 		<antcall target="add-dojo-changes"/>
 		<antcall target="add-tinymce-changes"/>
-	
 		<antcall target="add-image-themes"/>
-	
-		<antcall target="add-release-info"/>
-	
-		<antcall target="add-messages-files"/>
+
+		<war
+			basedir="temp"
+			destfile="${war.file}"
+			update="true"/>
+
 	</target>
 
 	<target name="add-dojo-changes">
 		<delete dir="temp"/>
 		
-		<copy todir="temp/js/dojo" overwrite="true">
+		<copy todir="temp/${web.static.path}/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes" />
 		</copy>
 		
@@ -159,7 +186,7 @@
 	<target name="add-tinymce-changes">
 		<delete dir="temp"/>
 		
-		<copy todir="temp/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
+		<copy todir="temp/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
 			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes" />
 		</copy>
 		
@@ -172,19 +199,19 @@
 	<target name="add-image-themes">
 		<delete dir="temp"/>
 	
-		<copy todir="temp/i/icib" overwrite="true">
+		<copy todir="temp/${web.static.path}/i/icib" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="temp/i/iccg" overwrite="true">
+		<copy todir="temp/${web.static.path}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="temp/i/iccg" overwrite="true">
+		<copy todir="temp/${web.static.path}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/themes/iccg" />
 		</copy>
-		<copy todir="temp/i/icwg" overwrite="true">
+		<copy todir="temp/${web.static.path}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="temp/i/icwg" overwrite="true">
+		<copy todir="temp/${web.static.path}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/themes/icwg" />
 		</copy>
 
@@ -243,17 +270,36 @@
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
 			<fileset dir="${web.dir}">
 				<include name="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml,WEB-INF/context/security.xml" />
-				<exclude name="js/dojo.changes/**" />
+				<exclude name="js/**" />
+				<exclude name="css/**" />
+				<exclude name="images/**" />
+				<exclude name="themes/**" />
+				<exclude name="i/**" />
 			</fileset>
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}">
 				<exclude name="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl" />
-				<exclude name="js/dojo.changes/**" />
+				<exclude name="js/**" />
+				<exclude name="css/**" />
+				<exclude name="images/**" />
+				<exclude name="themes/**" />
+				<exclude name="i/**" />
 			</fileset>
 		</copy>
-		<antcall target="deploy-dojo-changes" />
-		<antcall target="deploy-tinymce-changes" />
+		<antcall target="deploy-static-files" />
+	</target>
+	
+	<target name="deploy-static-files">
+		<antcall target="deploy-css-only" />
+		<antcall target="deploy-js-only" />
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/images">
+			<fileset dir="${web.dir}/images"/>
+		</copy>
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/themes">
+			<fileset dir="${web.dir}/themes"/>
+		</copy>
+		<antcall target="deploy-image-themes" />
 	</target>
 	
 	<target name="deploy-jsp-only">
@@ -264,10 +310,16 @@
 		</copy>
 	</target>
 	
+	<target name="deploy-css-only">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/css">
+			<fileset dir="${web.dir}/css"/>
+		</copy>
+	</target>
+	
 	<target name="deploy-js-only">
-		<copy todir="${app.server.ssf.dir}/js">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js">
 			<fileset dir="${web.dir}/js">
-				<include name="**/*.js" />
+				<include name="**/*.*" />
 				<exclude name="dojo.changes/**" />
 			</fileset>
 		</copy>
@@ -276,7 +328,7 @@
 	</target>
 	
 	<target name="deploy-dojo-changes">
-		<copy todir="${app.server.ssf.dir}/js/dojo" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes">
 				<include name="**/*.*" />
 			</fileset>
@@ -284,7 +336,7 @@
 	</target>
 	
 	<target name="deploy-tinymce-changes">
-		<copy todir="${app.server.ssf.dir}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
 			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes">
 				<include name="**/*.*" />
 			</fileset>
@@ -465,19 +517,19 @@
 	</target>
 
 	<target name="deploy-image-themes">
-		<copy todir="${app.server.ssf.dir}/i/icib" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icib" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.ssf.dir}/i/iccg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.ssf.dir}/i/iccg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/iccg" overwrite="true">
 			<fileset dir="${web.dir}/themes/iccg" />
 		</copy>
-		<copy todir="${app.server.ssf.dir}/i/icwg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
-		<copy todir="${app.server.ssf.dir}/i/icwg" overwrite="true">
+		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icwg" overwrite="true">
 			<fileset dir="${web.dir}/themes/icwg" />
 		</copy>
 	</target>
