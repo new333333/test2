@@ -64,14 +64,11 @@
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
 
-<br>
-<div class="ss_buttonBarLeft">
+<div class="ss_buttonBarRight margintop3 marginbottom3">
 <input type="submit" class="ss_submit" name="okBtn" 
-  value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">&nbsp;&nbsp;&nbsp;
+  value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">
 <input type="submit" class="ss_submit" name="cancelBtn" 
   value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
-<br>
-<br>
 </div>
 </form>
 </ssf:form>

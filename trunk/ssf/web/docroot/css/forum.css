@@ -407,6 +407,11 @@ table.ss_sortableList {
 
 /* rules around the table and under the headers (ss_headerRow), but not between rows */
 /* used for folder listings of entries, usually with alternating shaded rows  */
+
+.discussionView .descriptionRegionBut {
+	display: none;
+	}
+
 .discussionView table.ss_borderTable {
   border-left: .01em solid #CCCCCC; 
   border-right: .01em solid #CCCCCC; 

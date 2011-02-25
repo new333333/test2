@@ -105,7 +105,12 @@ div.ss_mashup_folder_list_closed {
   }
 
 div.ss_mashup_folder_list_open {
-  padding: 0px;
+  padding: 8px 0 0 0;
+  }
+
+div.ss_mashup_folder_list_open span.ss_size_20px {
+  font-size: 15px !important;
+  padding-left: 10px;
   }
 div.ss_mashup_folder_list_open_title {
   background-color:#ededed; 
@@ -117,7 +122,9 @@ div.ss_mashup_folder_list_open_title {
 div.ss_mashup_folder_list_open_entry {
   padding: 2px 10px;
   }
-    
+div.ss_mashup_folder_list_open ul {
+  padding-left: 15px;
+  }    
 div.ss_mashup_entry_header {
   background-color:#ededed; 
   padding:6px;
