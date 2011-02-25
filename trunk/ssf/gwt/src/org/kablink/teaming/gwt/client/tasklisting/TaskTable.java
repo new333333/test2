@@ -275,32 +275,32 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		// ...create the popup menus we'll need for the TaskTable.
 		List<TaskMenuOption> pOpts = new ArrayList<TaskMenuOption>();
-		pOpts.add(new TaskMenuOption("p1", m_images.p1(), m_messages.taskPriority_p1()));
-		pOpts.add(new TaskMenuOption("p2", m_images.p2(), m_messages.taskPriority_p2()));
-		pOpts.add(new TaskMenuOption("p3", m_images.p3(), m_messages.taskPriority_p3()));
-		pOpts.add(new TaskMenuOption("p4", m_images.p4(), m_messages.taskPriority_p4()));
-		pOpts.add(new TaskMenuOption("p5", m_images.p5(), m_messages.taskPriority_p5()));
+		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_CRITICAL, m_images.p1(), m_messages.taskPriority_p1()));
+		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_HIGH,     m_images.p2(), m_messages.taskPriority_p2()));
+		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_MEDIUM,   m_images.p3(), m_messages.taskPriority_p3()));
+		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_LOW,      m_images.p4(), m_messages.taskPriority_p4()));
+		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_LEAST,    m_images.p5(), m_messages.taskPriority_p5()));
 		m_priorityMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PRIORITY, pOpts);
 
 		List<TaskMenuOption> sOpts = new ArrayList<TaskMenuOption>();
-		sOpts.add(new TaskMenuOption("s3", m_images.completed(),   m_messages.taskStatus_completed()));
-		sOpts.add(new TaskMenuOption("s2", m_images.inProcess(),   m_messages.taskStatus_inProcess()));
-		sOpts.add(new TaskMenuOption("s1", m_images.needsAction(), m_messages.taskStatus_needsAction()));
-		sOpts.add(new TaskMenuOption("s4", m_images.cancelled(),   m_messages.taskStatus_cancelled()));
+		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_COMPLETED,    m_images.completed(),   m_messages.taskStatus_completed()));
+		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_IN_PROCESS,   m_images.inProcess(),   m_messages.taskStatus_inProcess()));
+		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_NEEDS_ACTION, m_images.needsAction(), m_messages.taskStatus_needsAction()));
+		sOpts.add(new TaskMenuOption(TaskInfo.STATUS_CANCELED,     m_images.cancelled(),   m_messages.taskStatus_cancelled()));
 		m_statusMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_STATUS, sOpts);
 
 		List<TaskMenuOption> pdOpts = new ArrayList<TaskMenuOption>();
-		pdOpts.add(new TaskMenuOption("c000", m_images.c0(),   m_messages.taskCompleted_c0()));
-		pdOpts.add(new TaskMenuOption("c010", m_images.c10(),  m_messages.taskCompleted_c10()));
-		pdOpts.add(new TaskMenuOption("c020", m_images.c20(),  m_messages.taskCompleted_c20()));
-		pdOpts.add(new TaskMenuOption("c030", m_images.c30(),  m_messages.taskCompleted_c30()));
-		pdOpts.add(new TaskMenuOption("c040", m_images.c40(),  m_messages.taskCompleted_c40()));
-		pdOpts.add(new TaskMenuOption("c050", m_images.c50(),  m_messages.taskCompleted_c50()));
-		pdOpts.add(new TaskMenuOption("c060", m_images.c60(),  m_messages.taskCompleted_c60()));
-		pdOpts.add(new TaskMenuOption("c070", m_images.c70(),  m_messages.taskCompleted_c70()));
-		pdOpts.add(new TaskMenuOption("c080", m_images.c80(),  m_messages.taskCompleted_c80()));
-		pdOpts.add(new TaskMenuOption("c090", m_images.c90(),  m_messages.taskCompleted_c90()));
-		pdOpts.add(new TaskMenuOption("c100", m_images.c100(), m_messages.taskCompleted_c100()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_0,   m_images.c0(),   m_messages.taskCompleted_c0()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_10,  m_images.c10(),  m_messages.taskCompleted_c10()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_20,  m_images.c20(),  m_messages.taskCompleted_c20()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_30,  m_images.c30(),  m_messages.taskCompleted_c30()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_40,  m_images.c40(),  m_messages.taskCompleted_c40()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_50,  m_images.c50(),  m_messages.taskCompleted_c50()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_60,  m_images.c60(),  m_messages.taskCompleted_c60()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_70,  m_images.c70(),  m_messages.taskCompleted_c70()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_80,  m_images.c80(),  m_messages.taskCompleted_c80()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_90,  m_images.c90(),  m_messages.taskCompleted_c90()));
+		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_100, m_images.c100(), m_messages.taskCompleted_c100()));
 		m_percentDoneMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PERCENT_DONE, pdOpts);
 
 		// ...create the FlexTable that's to hold everything...
@@ -1236,11 +1236,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// If we're marking the task 100% complete...
-		if (percentDone.equals("c100")) {
+		if (percentDone.equals(TaskInfo.COMPLETED_100)) {
 			// ...simply change its status to complete.  That change
 			// ...will take care of any mucking that has to occur with
 			// ...subtasks, ...
-			handleTaskSetStatus(task, "s3");
+			handleTaskSetStatus(task, TaskInfo.STATUS_COMPLETED);
 			return;
 		}
 		
@@ -1257,16 +1257,18 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(String completedDate) {
-				handleTaskSetPercentDoneImpl(task, percentDone);
+				handleTaskSetPercentDoneImpl(task, percentDone, true);
 			}
 		});
 	}
 	
-	private void handleTaskSetPercentDoneImpl(TaskListItem task, String percentDone) {
+	private void handleTaskSetPercentDoneImpl(final TaskListItem task, String percentDone, boolean reflectInStatus) {
 		// Store the new percent done value in the task.
+		String newStatus = null;
 		TaskInfo ti = task.getTask();
 		ti.setCompleted(percentDone);
-		if (!("c100".equals(percentDone))) {
+		boolean c100 = TaskInfo.COMPLETED_100.equals(percentDone);
+		if (!c100) {
 			ti.setCompletedDate(new TaskDate());
 		}
 		
@@ -1277,6 +1279,43 @@ public class TaskTable extends Composite implements ActionHandler {
 			if (tmo.getMenu().equals(percentDone)) {
 				img.setTitle(   tmo.getMenuAlt());
 				img.setResource(tmo.getMenuImageRes());
+			}
+		}
+
+		// Do we need to reflect the change in the status field?
+		if (reflectInStatus) {
+			// Maybe!  If we're changing the '% Done' to >0% and
+			// <100%...
+			boolean c000 = TaskInfo.COMPLETED_0.equals(percentDone);
+			if ((!c000) && (!c100)) {
+				// ...and the task's status is other than 'In Progress'...
+				if (!(TaskInfo.STATUS_IN_PROCESS.equals(ti.getStatus()))) {
+					// ...set it to 'In Progress'.
+					newStatus = TaskInfo.STATUS_IN_PROCESS;
+				}
+			}
+	
+			// If we're changing the '% Done' to 0%...
+			else if (c000) {
+				// ...and the task's status is other than 'Needs Action'...
+				if (!(TaskInfo.STATUS_NEEDS_ACTION.equals(ti.getStatus()))) {
+					// ...set it to 'Needs Action'.
+					newStatus = TaskInfo.STATUS_NEEDS_ACTION;
+				}
+			}
+	
+			// Do we have a new status value to put into affect?
+			if (null != newStatus) {
+				// Yes!  Apply it.
+				Scheduler.ScheduledCommand statusUpdater;
+				final String finalNewStatus = newStatus;
+				statusUpdater = new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute() {
+						handleTaskSetStatus(task, finalNewStatus);
+					}
+				};
+				Scheduler.get().scheduleDeferred(statusUpdater);
 			}
 		}
 	}
@@ -1338,7 +1377,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		final TaskId taskId = ti.getTaskId();
 		final List<TaskListItem> affectedTasks;
 		final List<TaskId>       affectedTaskIds;
-		boolean applyToSubtasks = false; //! (("s3".equals(status) || "s4".equals(status)) && (!(task.getSubtasks().isEmpty())));
+		boolean applyToSubtasks = false; //! ((TaskInfo.STATUS_COMPLETED.equals(status) || TaskInfo.STATUS_CANCELED.equals(status)) && (!(task.getSubtasks().isEmpty())));
 		if (applyToSubtasks) {
 			affectedTasks   = TaskListItemHelper.getTaskHierarchy(  task                );
 			affectedTaskIds = TaskListItemHelper.getTaskIdsFromList(affectedTasks, false);
@@ -1415,7 +1454,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			// ...and update the task.
 			TaskDate completedDate = new TaskDate();
 			completedDate.setDateDisplay(completedDateDisplay);
-			ti.setCompleted(    "c100"     );
+			ti.setCompleted(TaskInfo.COMPLETED_100);
 			ti.setCompletedDate(completedDate);
 		}
 		
@@ -1428,9 +1467,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			if (completedWasVisible || (!percentDoneWasVisible)) {
 				// Yes!  Hide the completed date widget and show the
 				// percent done widget, now at 90%.
-				completedLabel.setVisible(   false       );
-				percentDoneWidget.setVisible(true        );
-				handleTaskSetPercentDoneImpl(task, "c090");
+				completedLabel.setVisible(false);
+				percentDoneWidget.setVisible(true);
+				handleTaskSetPercentDoneImpl(task, TaskInfo.COMPLETED_90, false);
 			}
 		}
 
@@ -1610,7 +1649,7 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// Scan the individual assignees...
 		TaskInfo ti = task.getTask();
-		boolean isCancelled = ti.getStatus().equals("s4");;
+		boolean isCancelled = ti.getStatus().equals(TaskInfo.STATUS_CANCELED);;
 		int assignments = 0;
 		for (final AssignmentInfo ai:  ti.getAssignments()) {
 			// ...adding a PresenceControl for each.
@@ -1653,9 +1692,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		TaskInfo ti = task.getTask();
 		String percentDone = ti.getCompleted();
 		if (!(GwtClientHelper.hasString(percentDone))) {
-			percentDone = "c000";
+			percentDone = TaskInfo.COMPLETED_0;
 		}
-		boolean complete = ("c100".equals(percentDone));
+		boolean c100 = TaskInfo.COMPLETED_100.equals(percentDone);
 
 		// Generate a completed date label...
 		String completedDateDisplay = ti.getCompletedDate().getDateDisplay();
@@ -1673,9 +1712,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		uid.setTaskPercentDoneWidget(percentDoneWidget);
 
 		// ...and hide whichever one we don't need.
-		if (complete)
+		if (c100)
 		     percentDoneWidget.setVisible(false);
-		else completedLabel.setVisible(     false);
+		else completedLabel.setVisible(   false);
 
 		// Finally, construct a FlowPanel containing both and add that
 		// to the TaskTable.
@@ -1742,7 +1781,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// What's the current priority of this task?
 		String priority = task.getTask().getPriority();
 		if (!(GwtClientHelper.hasString(priority))) {
-			priority = "p1";
+			priority = TaskInfo.PRIORITY_CRITICAL;
 		}
 		
 		// Add an Anchor for it to the TaskTable.
@@ -1806,7 +1845,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// What's the current priority of this task?
 		String status = task.getTask().getStatus();
 		if (!(GwtClientHelper.hasString(status))) {
-			status = "s1";
+			status = TaskInfo.STATUS_NEEDS_ACTION;
 		}
 		
 		// Add an Anchor for it to the TaskTable.

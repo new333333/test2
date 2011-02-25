@@ -1734,7 +1734,7 @@ public class GwtTaskHelper {
 	@SuppressWarnings("unchecked")
 	public static String saveTaskCompleted(AllModulesInjected bs, List<TaskId> taskIds, String completed) throws GwtTeamingException {
 		// Are we marking the tasks completed?
-		boolean nowCompleted = ("c100".equals(completed));
+		boolean nowCompleted = (TaskInfo.COMPLETED_100.equals(completed));
 		
 		// Scan the tasks whose completed value is changing.
 		for (TaskId taskId:  taskIds) {
@@ -1745,13 +1745,13 @@ public class GwtTaskHelper {
 				Map formData = new HashMap();
 				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {completed});
 				if (nowCompleted) {
-					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s3"});
+					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_COMPLETED});
 				}				
 				else {				
 					FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
 					String currentStatus = TaskHelper.getTaskStatusValue(   fe);
-					if ("s3".equals(currentStatus)) {
-						formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"s2"});
+					if (TaskInfo.STATUS_COMPLETED.equals(currentStatus)) {
+						formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_IN_PROCESS});
 					}
 				}
 
@@ -1902,7 +1902,7 @@ public class GwtTaskHelper {
 	@SuppressWarnings("unchecked")
 	public static String saveTaskStatus(AllModulesInjected bs, List<TaskId> taskIds, String status) throws GwtTeamingException {
 		// Are we marking the tasks completed?
-		boolean nowCompleted = ("s3".equals(status));
+		boolean nowCompleted = (TaskInfo.STATUS_COMPLETED.equals(status));
 		
 		// Scan the tasks whose status is changing.
 		for (TaskId taskId:  taskIds) {
@@ -1913,15 +1913,15 @@ public class GwtTaskHelper {
 				Map formData = new HashMap();
 				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {status});
 				if (nowCompleted) {
-					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c100"});
+					formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.COMPLETED_100});
 				}				
 				else {				
-					if (("s1".equals(status)) || ("s2".equals(status))) {
+					if ((TaskInfo.STATUS_NEEDS_ACTION.equals(status)) || (TaskInfo.STATUS_IN_PROCESS.equals(status))) {
 						FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
 						String currentStatus    = TaskHelper.getTaskStatusValue(   fe);
 						String currentCompleted = TaskHelper.getTaskCompletedValue(fe);
-						if (("s3".equals(currentStatus)) && ("c100".equals(currentCompleted))) {
-							formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {"c090"});
+						if ((TaskInfo.STATUS_COMPLETED.equals(currentStatus)) && (TaskInfo.COMPLETED_100.equals(currentCompleted))) {
+							formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.COMPLETED_90});
 						}
 					}
 				}
