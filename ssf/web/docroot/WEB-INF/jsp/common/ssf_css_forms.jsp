@@ -401,7 +401,7 @@ fieldset a:hover {
 	}
 	
 .ss_surveyForm {
-	margin: 5px;
+	margin: 5px 5px 20px 5px;
 }	
  /**********MINIBLOG******/	
 .ss_labelminiBlog {
