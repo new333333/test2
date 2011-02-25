@@ -138,9 +138,9 @@
 			</c:if>
 		</ssf:ifAuthorizedByLicense>
 
-		<div class="ss_buttonBarLeft">
+		<div class="ss_buttonBarRight">
 			<input type="submit" class="ss_submit" name="okBtn" 
-  				value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">&nbsp;&nbsp;&nbsp;
+  				value="<ssf:nlt tag="button.ok" text="  OK  "/>"  onClick="ss_buttonSelect('okBtn');">
 			<input type="submit" class="ss_submit" name="cancelBtn" 
   				value="<ssf:nlt tag="button.cancel" text="Cancel"/>"  onClick="ss_buttonSelect('cancelBtn');">
 		</div>

@@ -31,6 +31,10 @@ table.ss_mashup {
 div.ss_mashup_element {
   padding:6px;
 }
+div.ss_mashup_element #ss_calendar_container,
+div.ss_mashup_element .tasks {
+	background-color: #fafafa;
+}
 
 div.ss_mashup_element_content {
   background-color:#ffffff; 
@@ -145,7 +149,6 @@ div.ss_mashup_folder_list_open_entry {
   padding: 6px;
   }
 div.ss_mashup_folder_list_open ul {
-  padding-left: 15px;
   list-style: circle;
   }        
 div.ss_mashup_folder_list_open_entry p {
