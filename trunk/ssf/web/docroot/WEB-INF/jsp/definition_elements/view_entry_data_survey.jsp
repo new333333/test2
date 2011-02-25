@@ -100,7 +100,7 @@
 </c:if>
 
 
-<form id="ssSurveyForm_${property_name}${ss_surveyFormCounter}" method="post"
+<form class="ss_surveyForm" id="ssSurveyForm_${property_name}${ss_surveyFormCounter}" method="post"
   action="<ssf:url adapter="true" portletName="ss_forum"    
 	actionUrl="true"
 	action="view_folder_entry" 
@@ -291,28 +291,29 @@
 				</c:if>
 			</div>
 		</c:forEach>
-		
-		
-		<c:if test="${(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)}">
-			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
-						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="viewResults" /></ssf:url>"><ssf:nlt tag="survey.title.results"/></a>
-		</c:if>	
-		
+				
 		<c:choose>
 			<c:when test="${!hasAnyQuestion}">
 				<ssf:nlt tag="survey.vote.notAllowed.empty"/>
 			</c:when>
 			<c:otherwise>
-				<input type="button" value="<ssf:nlt tag="survey.vote"/>"
+				<input class="marginleft1" type="button" value="<ssf:nlt tag="survey.vote"/>"
 					onclick="ssSurvey.vote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id}, {<% int qraCount = 0; %><c:forEach var="question" items="${surveyModel.questions}"><c:if test="${question.requiredAnswer}"><% qraCount += 1; if (1 < qraCount) { %>,<% } %>${question.index}:[<c:if test="${question.type != 'input'}"><c:forEach var="answer" items="${question.answers}" varStatus="status">${answer.index}<c:if test="${!status.last}">,</c:if></c:forEach></c:if>]</c:if></c:forEach>}, '${ss_survey_prefix}_${property_name}');"/>
 					
 				<c:if test="${showSurveyModifyForm}">
-					<input type="button" value="<ssf:nlt tag="survey.vote.remove"/>" 
+					<input class="marginleft1" type="button" value="<ssf:nlt tag="survey.vote.remove"/>" 
 						onclick="ssSurvey.removeVote('ssSurveyForm_${property_name}${ss_surveyFormCounter}', ${ssBinder.id}, ${ssDefinitionEntry.id});"/>
 					
 				</c:if>
 			</c:otherwise>		
 		</c:choose>
+
+		<c:if test="${(surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)}">
+			<span style="padding-left: 15px;"><a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
+						action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="viewResults" /></ssf:url>"><ssf:nlt tag="survey.title.results"/></a></span>
+		</c:if>	
+
+
 	</c:if>
 
 </form>
