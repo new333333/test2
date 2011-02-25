@@ -736,8 +736,8 @@ body, table td, select
 /* Styles used with the panel that wraps a drop widget. */
 .dropWidgetWrapperPanel
 {
-	padding-top: .5em;
-	padding-bottom: .5em;
+	padding-top: 12px;
+	padding-bottom: 12px;
 }
 
 /* Style used for the "Advanced" link in the "edit branding" dialog. */
@@ -1077,6 +1077,7 @@ body, table td, select
 	height: 500px;
 	
 	margin-left: 5px;
+	padding: 15px;
 	position: relative;
 	width: 850px;
 }
