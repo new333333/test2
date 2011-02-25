@@ -170,7 +170,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				pageContext.getOut().print(webUrl);
 			
 			} else if (!Validator.isNull(rootPath)) {
-				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req) + "/" + MiscUtil.getStaticPath());
+				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req) + MiscUtil.getStaticPath());
 			
 			} else if (this.adapter) {
 				if (!Validator.isNull(action)) {
