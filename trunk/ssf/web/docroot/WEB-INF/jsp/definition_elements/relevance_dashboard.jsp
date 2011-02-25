@@ -225,7 +225,7 @@ if (ss_getUserDisplayStyle() != "accessible") {
 </div>
 <script type="text/javascript">
 var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceInitialTab${renderResponse.namespace}');
-ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>");
+ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </script>
 
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>

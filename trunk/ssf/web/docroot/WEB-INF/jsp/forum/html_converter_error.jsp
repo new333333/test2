@@ -38,7 +38,7 @@
   <head>
     <title>HTML Conversion Error</title>
 	<!--
-	<link rel="stylesheet" type="text/css" href="styles.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>">
+	<link rel="stylesheet" type="text/css" href="styles.css">
 	-->
   </head>
   <body>

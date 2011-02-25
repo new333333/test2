@@ -68,7 +68,7 @@
 %>
 <c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 
-<script type="text/javascript" src="<html:rootPath/>js/binder/ss_trash.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/binder/ss_trash.js"></script>
 <script type="text/javascript">
 	<% /* Store the namespace and binder ID for use in */ %>
 	<% /* ss_trash.js.                                 */ %> 

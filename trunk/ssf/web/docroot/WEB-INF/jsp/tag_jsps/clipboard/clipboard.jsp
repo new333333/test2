@@ -36,7 +36,7 @@
 
 <c:set var="prefix" value="${instanceCount}" />
 
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/clipboard/clipboard.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/clipboard/clipboard.js"></script>
 
 <div class="ss_ClipboardUsersPane">
 	<span onclick="if (window.ss_loadClipboardUsersList) ss_loadClipboardUsersList('${prefix}');"

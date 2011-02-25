@@ -70,7 +70,7 @@
             --%><c:set var="wikiLinkBinderId" value="${ssBinderId}" scope="request" /><%--
     --%></c:if><%--
 --%></c:if><%--
---%><script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+--%><script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <script type="text/javascript">
 <c:if test="${!empty ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 var ss_diskQuotaExceeded = ${ss_diskQuotaExceeded};

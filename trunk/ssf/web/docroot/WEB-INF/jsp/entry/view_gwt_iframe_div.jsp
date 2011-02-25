@@ -67,7 +67,7 @@
 	}
 
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <div id="ss_showentrydiv" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"

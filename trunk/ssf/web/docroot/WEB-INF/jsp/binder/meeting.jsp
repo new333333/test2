@@ -36,8 +36,8 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 
 <style type="text/css">
-        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>";
-        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
 </style>
 <script type="text/javascript">
 	dojo.require("dojo.parser");
@@ -49,8 +49,8 @@
 <ssf:ifadapter>
 	<body class="tundra">
 </ssf:ifadapter>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
-<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 
 <c:set var="timeZoneID" value="${ssUser.timeZone.ID}" />
 <jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />

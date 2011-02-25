@@ -45,7 +45,7 @@
 
 <body class="ss_style_body tundra">
 
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <c:set var="ssBinderMarker" value="true" scope="request"/>
 <c:if test="${!empty ssException}">

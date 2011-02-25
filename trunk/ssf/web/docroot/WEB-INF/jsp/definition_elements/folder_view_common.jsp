@@ -41,7 +41,7 @@ boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "";
 if (isIECheck) strBrowserType = "ie";
 %>
-<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 
 <c:set var="slidingTableStyle" value="sliding"/>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">

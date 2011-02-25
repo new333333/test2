@@ -207,7 +207,7 @@ try
 		</STYLE>
 
 		<!-- Include the JavaScript used to interact with the flash plugin. -->
-	    <script type="text/javascript" src="<html:rootPath/>js/swfobject/swfobject.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>">
+	    <script type="text/javascript" src="<html:rootPath/>js/swfobject/swfobject.js">
 		</script>
 
 	    <script type="text/javascript">

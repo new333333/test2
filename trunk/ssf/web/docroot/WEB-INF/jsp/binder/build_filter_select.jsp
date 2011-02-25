@@ -36,7 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <body class="ss_style_body">
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 
 <div class="ss_style ss_portlet">
 <div style="margin:10px;">

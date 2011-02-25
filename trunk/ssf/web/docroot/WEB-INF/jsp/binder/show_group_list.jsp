@@ -38,7 +38,7 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <div class="ss_style ss_portlet" style="padding:10px;">
   
 <ssf:form title="${ssGroup.title} (${ssGroup.name})">

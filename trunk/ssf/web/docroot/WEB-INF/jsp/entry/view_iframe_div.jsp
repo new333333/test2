@@ -59,7 +59,7 @@
 	</c:if>
 	var ss_entryBackgroundColor = "${ss_style_background_color}";
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <div id="ss_showentrydiv${renderResponse.namespace}" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"

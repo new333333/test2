@@ -50,12 +50,12 @@
 
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
 
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery-1.3.2.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/ui.core.js"></script>
 <script type="text/javascript" 
   src="<html:rootPath/>js/common/ss_mobile.js?startTime=<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>"></script>
-<link href="<html:rootPath/>css/ss_mobile_common.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>css/ss_mobile_teaming_live.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_teaming_live.css" rel="stylesheet" type="text/css" />
 
 </head>
 <body>

@@ -81,7 +81,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		</c:if>
 		var ss_entryBackgroundColor = "${ss_style_background_color}";
 	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <ssf:skipLink tag='<%= NLT.get("skip.header.toContent") %>' id="headerToContent_${renderResponse.namespace}"
   linkOnly="true"/>

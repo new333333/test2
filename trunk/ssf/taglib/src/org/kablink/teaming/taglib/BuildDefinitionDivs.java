@@ -69,6 +69,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -132,7 +133,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 		    User user = RequestContextHolder.getRequestContext().getUser();
-			contextPath = req.getContextPath();
+			contextPath = MiscUtil.getFullStaticPath(req);
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 			
 			String color_theme = user.getTheme();

@@ -62,7 +62,7 @@
 <c:set var="gwtPage" value="profile" scope="request"/>	
 <%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
 	
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:validatePath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <div id="gwtProfileDiv">
 	<div id="profilePhoto" style="display:none;">
 	  <div class="ss_thumbnail_standalone ss_thumbnail_profile">

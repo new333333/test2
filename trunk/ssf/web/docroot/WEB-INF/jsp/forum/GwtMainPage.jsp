@@ -270,7 +270,7 @@
 	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-	<script type="text/javascript" language="javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
+	<script type="text/javascript" language="javascript" src="<html:validatePath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= ReleaseInfo.getContentVersion() %>"></script>
   </head>
 
   <body>

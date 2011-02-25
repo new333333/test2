@@ -58,7 +58,7 @@
 	request.setAttribute("ss_mashupListDepth", ss_mashupListDepth);
 %>
 <c:set var="ss_mashupPropertyName" value="${property_name}" scope="request"/>
-<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:validatePath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 
 <c:if test="${ssConfigJspStyle == 'form'}">
 <script type="text/javascript">

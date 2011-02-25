@@ -63,7 +63,7 @@
 	}// end handleCloseBtn()
 </script>
 
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 function showAddUsersDiv() {
 	var userDivObj = self.document.getElementById("addUserDiv");

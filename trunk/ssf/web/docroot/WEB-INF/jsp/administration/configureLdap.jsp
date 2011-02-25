@@ -274,11 +274,11 @@
 	</div>
 
 
-<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jquery/jquery.js"></script>
 <script type="text/javascript">
      jQuery.noConflict();
 </script> <script type="text/javascript"
-	src="<html:rootPath/>js/jquery/jquery-ui-personalized.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+	src="<html:rootPath/>js/jquery/jquery-ui-personalized.js"></script>
 
 <style type="text/css">
 .ui-tabs-hide {

@@ -33,4 +33,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>

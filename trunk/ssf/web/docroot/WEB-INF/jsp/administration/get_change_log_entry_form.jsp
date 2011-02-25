@@ -56,7 +56,7 @@ function ss_saveChangeLogEntryId(id) {
 
 </head>
 <body class="tundra">
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <c:if test="${empty ssBinderId}">
   <span class="ss_fineprint"><ssf:nlt tag="changeLog.selectFolder"/></span>
 </c:if>

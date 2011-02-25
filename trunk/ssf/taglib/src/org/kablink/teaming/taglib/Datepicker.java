@@ -45,6 +45,7 @@ import javax.servlet.jsp.JspWriter;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.web.util.MiscUtil;
 
 
 import java.util.Date;
@@ -111,7 +112,7 @@ public class Datepicker extends TagSupport {
 	    
 	    try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-			contextPath = req.getContextPath();
+			contextPath = MiscUtil.getFullStaticPath(req);
 			String[] monthnames = { 
 					NLT.get("calendar.january"),
 					NLT.get("calendar.february"),

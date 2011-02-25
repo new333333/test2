@@ -39,7 +39,7 @@
 <c:set var="prefix" value="${ssComponentId}${renderResponse.namespace}" />
 	<script type="text/javascript">
 		<% //needs its own script section to endure loaded before accessed below %>
- 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>");
+ 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 	</script>
 
 <script type="text/javascript">

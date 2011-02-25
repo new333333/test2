@@ -7,4 +7,4 @@
 --%><c:if test="${empty ssCssTheme && !empty ssUser.theme}"><%--
     --%><c:set var="ss_color_theme" value="${ssUser.theme}" scope="request"/><%--
 --%></c:if><%--
---%>${pageContext.request.contextPath}/i/${ss_color_theme}/
+--%>${pageContext.request.contextPath}/<%= org.kablink.teaming.ObjectKeys.STATIC_DIR %>/<%= org.kablink.teaming.util.ReleaseInfo.getVersion() %>/i/${ss_color_theme}/

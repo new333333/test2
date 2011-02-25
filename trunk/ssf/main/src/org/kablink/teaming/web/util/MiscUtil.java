@@ -44,6 +44,7 @@ import java.util.Map;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.portlet.RenderRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
@@ -375,6 +376,26 @@ public final class MiscUtil
 		return ((null != s) && (0 < s.length()));
 	}
 
+	/**
+	 * Returns the path to static files
+	 * 
+	 * @return
+	 */
+	public static String getStaticPath() {
+		return ObjectKeys.STATIC_DIR + "/" + ReleaseInfo.getVersion() + "/";
+	}
+	
+	/**
+	 * Returns the full path to static files
+	 * 
+	 * @return
+	 */
+	public static String getFullStaticPath(HttpServletRequest request) {
+		String contextPath = request.getContextPath();
+		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
+		return request.getContextPath() + "/" + ObjectKeys.STATIC_DIR + "/" + ReleaseInfo.getVersion() + "/";
+	}
+	
 	/**
 	 * Returns true if we're in captive mode, based on the
 	 * RenderRequest and false otherwise.

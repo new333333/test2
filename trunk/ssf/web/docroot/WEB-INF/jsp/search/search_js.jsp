@@ -39,7 +39,7 @@
 dojo.require("dijit.form.DateTextBox");
 dojo.require("dijit.form.TimeTextBox");
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js"></script>
 <script type="text/javascript">
 
 var ss_nlt_searchFormLabelWorkflow = "<ssf:nlt tag="searchForm.label.workflow"/>";

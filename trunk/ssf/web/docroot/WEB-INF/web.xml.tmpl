@@ -56,6 +56,15 @@
   		<filter-name>publicResourcesFilter</filter-name>
   		<filter-class>org.kablink.teaming.asmodule.servlet.filter.ResponseHeaderFilter</filter-class>
   		<init-param>
+    		<param-name>Expires</param-name>
+    		<param-value>Wed, 01 Jan 2020 00:00:00 GMT</param-value>
+  		</init-param>
+	</filter>
+
+	<filter>
+  		<filter-name>publicResourcesFilterValidate</filter-name>
+  		<filter-class>org.kablink.teaming.asmodule.servlet.filter.ResponseHeaderFilter</filter-class>
+  		<init-param>
     		<param-name>Cache-Control</param-name>
     		<param-value>must-revalidate</param-value>
   		</init-param>
@@ -128,7 +137,7 @@
 
 	<filter-mapping>
 		<filter-name>publicResourcesFilter</filter-name>
-		<url-pattern>/css/*</url-pattern>
+		<url-pattern>/static/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>publicResourcesFilter</filter-name>
@@ -143,20 +152,8 @@
 		<url-pattern>/help_doc/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>publicResourcesFilter</filter-name>
-		<url-pattern>/i/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>publicResourcesFilter</filter-name>
-		<url-pattern>/images/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>publicResourcesFilter</filter-name>
-		<url-pattern>/js/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>publicResourcesFilter</filter-name>
-		<url-pattern>/themes/*</url-pattern>
+		<filter-name>publicResourcesFilterValidate</filter-name>
+		<url-pattern>/validate/*</url-pattern>
 	</filter-mapping>
 	
 	<filter-mapping>

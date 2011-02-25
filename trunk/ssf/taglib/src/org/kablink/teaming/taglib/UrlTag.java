@@ -51,7 +51,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 
@@ -168,7 +170,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				pageContext.getOut().print(webUrl);
 			
 			} else if (!Validator.isNull(rootPath)) {
-				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req));
+				pageContext.getOut().print(WebUrlUtil.getSSFContextRootURL(req) + "/" + MiscUtil.getStaticPath());
 			
 			} else if (this.adapter) {
 				if (!Validator.isNull(action)) {

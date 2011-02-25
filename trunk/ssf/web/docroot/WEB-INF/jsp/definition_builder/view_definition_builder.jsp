@@ -60,7 +60,7 @@
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
 <script type="text/javascript">
-	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>");
+	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
 </script> 
 <script type="text/javascript">
 

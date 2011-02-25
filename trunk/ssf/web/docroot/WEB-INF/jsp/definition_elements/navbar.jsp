@@ -38,8 +38,8 @@
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
-<!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script> -->
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse.namespace}');

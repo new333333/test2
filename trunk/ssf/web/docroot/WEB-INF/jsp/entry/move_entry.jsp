@@ -39,7 +39,7 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(forum, obj, action) {

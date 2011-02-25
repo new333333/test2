@@ -68,7 +68,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		var ss_folderTableId = 'ss_folder_table';
 		var ss_iframe_box_div_name = 'ss_iframe_box_div';
 	</script>
-	<script type="text/javascript" src="<html:rootPath/>js/forum/view_vertical.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+	<script type="text/javascript" src="<html:rootPath/>js/forum/view_vertical.js"></script>
 
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
