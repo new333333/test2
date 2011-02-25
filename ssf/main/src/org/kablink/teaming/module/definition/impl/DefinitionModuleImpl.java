@@ -2184,16 +2184,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				v.setValue(valuesList.toArray(new String[0]));
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) entryData.put(nameValue, v);
 			}
-		} else if (itemName.equals("email_list")) {
-			String[] ids = inputData.getSingleValue(nameValue).split("[\\s,]");
-			Set<String> v = new HashSet();
-			for (int i = 0; i < ids.length; i++) {
-				if (!ids[i].trim().equals("")) {
-					v.add(ids[i].trim());
+		} else if (itemName.equals("email_list") && inputData.exists(nameValue)) {
+			String val = inputData.getSingleValue(nameValue);
+			if (val != null) {
+				String[] ids = val.split("[\\s,]");
+				Set<String> v = new HashSet();
+				for (int i = 0; i < ids.length; i++) {
+					if (!ids[i].trim().equals("")) {
+						v.add(ids[i].trim());
+					}
 				}
-			}
-			if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
-				entryData.put(nameValue, v);
+				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
+					entryData.put(nameValue, v);
+				}
 			}
 		} else if (itemName.equals("places")) {
 			Set<Long> longIdsToRemove = new HashSet();
