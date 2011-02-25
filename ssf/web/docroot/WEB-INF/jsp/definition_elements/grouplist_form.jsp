@@ -44,7 +44,7 @@
     <c:set var="ss_fieldModifyDisabled" value="true"/>
   </c:if>
 </c:if>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String propertyName = (String) request.getAttribute("property_name");

@@ -37,7 +37,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <c:if test="${!empty ssPageCount}">
 
-<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript">
 var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param 
 	name="action" value="ssActionPlaceHolder"/><ssf:param 

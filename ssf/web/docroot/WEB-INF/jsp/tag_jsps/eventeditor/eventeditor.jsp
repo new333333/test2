@@ -43,8 +43,8 @@
 <c:set var="endrangeId" value="endRange_${evid}" />
 
 <style type="text/css">
-        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>";
-        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"
+        @import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
+        @import "<html:rootPath />js/dojo/dojo/resources/dojo.css"
 </style>
 
 <script type="text/javascript">
@@ -55,7 +55,7 @@
 	dojo.require("dijit.form.TimeTextBoxEventEditor");
 </script>
 
-<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 <c:set var="prefix" value="${evid}" />
 
 <%

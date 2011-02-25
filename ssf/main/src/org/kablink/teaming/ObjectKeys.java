@@ -57,6 +57,11 @@ public interface ObjectKeys {
 	public static final String ADMIN = "admin";
 	public static final String GUEST = "guest";
 	
+	//Directory name for static files
+	public static final String STATIC_DIR = "static";
+	//Directory name for files that need to have their last modify date validated
+	public static final String VALIDATE_DIR = "validate";
+	
 	//Reserved template and definition names
 	public static final String DEFAULT_TEMPLATE_NAME_BLOG="_folder_blog";
 	public static final String DEFAULT_TEMPLATE_NAME_MINIBLOG="_folder_miniblog";

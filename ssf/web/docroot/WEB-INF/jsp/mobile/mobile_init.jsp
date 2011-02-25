@@ -59,16 +59,16 @@ ss_createOnLoadObj("ss_scrollToTop", function() {
 <c:if test="${!empty ss_mashupCss}">
   <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>
-<link href="<html:rootPath/>css/ss_mobile_common.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>css/ss_mobile_iphone.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_common.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_iphone.css" rel="stylesheet" type="text/css" />
 <%
 	if (isWap) {
 %>
-<link href="<html:rootPath/>css/ss_mobile_wap.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
 <%
 	} else {
 %>
-<link href="<html:rootPath/>css/ss_mobile_browser.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/ss_mobile_browser.css" rel="stylesheet" type="text/css" />
 <%
 	}
 %>

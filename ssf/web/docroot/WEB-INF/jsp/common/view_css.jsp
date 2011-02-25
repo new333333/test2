@@ -198,22 +198,22 @@ if (self != self.parent) {
 	%><%--
 
 --%>
-<script type="text/javascript" src="<ssf:url rootPath="true"/>js/dojo/dojo/dojo.js?<%= ReleaseInfo.getContentVersion() %>" 
+<script type="text/javascript" src="<ssf:url rootPath="true"/>js/dojo/dojo/dojo.js" 
   djConfig="isDebug: false, locale: '<ssf:convertLocaleToDojoStyle />', parseOnLoad: true"></script>
 <script type="text/javascript" 
-  src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-<script type="text/javascript" src="<html:rootPath/>js/swfobject/swfobject.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js?<%= ReleaseInfo.getContentVersion() %>"></script>
-<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js?<%= ReleaseInfo.getContentVersion() %>"></script>
+  src="<html:rootPath/>js/common/ss_common.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/swfobject/swfobject.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-client.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/taconite-parser.js"></script>
 <script type="text/javascript">
 if (typeof ss_hideEntryDivOnLoad != "undefined") ss_hideEntryDivOnLoad();
 </script>
 
-<link href="<html:rootPath/>css/forum.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
 <c:if test="${!empty ss_mashupCss}">
-  <link href="<html:rootPath/>${ss_mashupCss}?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+  <link href="<html:rootPath/>${ss_mashupCss}" rel="stylesheet" type="text/css" />
 </c:if>
-<link href="<html:rootPath/>css/slider_swing.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/slider_swing.css" rel="stylesheet" type="text/css" />
 <link href="<ssf:url webPath="viewCss"> <ssf:param name="theme" value=""/><ssf:param 
 		name="startTime" value="<%= org.kablink.teaming.util.ReleaseInfo.getStartTime() %>" /></ssf:url>"
 	    rel="stylesheet" type="text/css" />
@@ -246,8 +246,8 @@ function ss_defineColorValues() {
 </script>
 
 <%--
-<link href="<html:rootPath/>css/hf_style.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
-<link href="<html:rootPath/>css/hf_teaming.css?<%= ReleaseInfo.getContentVersion() %>" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/hf_style.css" rel="stylesheet" type="text/css" />
+<link href="<html:rootPath/>css/hf_teaming.css" rel="stylesheet" type="text/css" />
 --%>
 
 <%--

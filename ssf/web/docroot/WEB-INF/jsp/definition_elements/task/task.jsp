@@ -70,7 +70,7 @@
 	<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
 <% } %>
 	
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
 <script type="text/javascript">
 	var ss_noEntryTitleLabel = "<ssf:nlt tag="entry.noTitle" />";
 	

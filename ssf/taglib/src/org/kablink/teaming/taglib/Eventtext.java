@@ -80,12 +80,6 @@ public class Eventtext extends TagSupport {
 			if (ctx == null) {
 				ctx = pageContext.getServletContext();
 			}
-			HttpServletRequest req2 = (HttpServletRequest) pageContext
-					.getRequest();
-			contextPath = req2.getContextPath();
-			if (contextPath.endsWith("/"))
-				contextPath = contextPath
-						.substring(0, contextPath.length() - 1);
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest((HttpServletRequest) pageContext

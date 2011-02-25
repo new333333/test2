@@ -33,7 +33,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 <div class="ss_portlet_style ss_portlet">
 <div align="right">
 		<c:if test="${ss_windowState != 'maximized'}">

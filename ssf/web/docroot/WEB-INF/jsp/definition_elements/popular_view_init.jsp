@@ -53,6 +53,6 @@ ss_ratings_info[3] = "<ssf:nlt tag="popularity.rating.3stars" />"
 ss_ratings_info[4] = "<ssf:nlt tag="popularity.rating.4stars" />"
 ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/ss_entry.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_entry.js"></script>
 </c:if>
 </c:if>

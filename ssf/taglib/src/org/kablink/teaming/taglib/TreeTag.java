@@ -61,6 +61,7 @@ import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
@@ -141,7 +142,7 @@ public class TreeTag extends TagSupport {
 			this.userDisplayStyle = user.getDisplayStyle();
 	        if (this.userDisplayStyle == null) this.userDisplayStyle = "";
 
-			this.contextPath = req.getContextPath();
+			this.contextPath = MiscUtil.getFullStaticPath(req);
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/i/" + colorTheme);
 			AdaptedPortletURL adapterUrl;

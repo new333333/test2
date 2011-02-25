@@ -72,7 +72,7 @@
 	</c:if>
 	var ss_entryBackgroundColor = "${ss_style_background_color}";
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/view_portlet_iframe.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_portlet_iframe.js"></script>
 
 
 <div id="<%= portletOverlayDiv %>" name="<%= portletOverlayDiv %>" 

@@ -87,7 +87,7 @@
 <c:set var="formType" value="<%= formType %>"/>
 
 <c:if test="${formType == 'task'}">
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
 </c:if>
 
 <div class="ss_entryContent ${ss_fieldModifyStyle}">

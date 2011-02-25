@@ -90,7 +90,7 @@
 	}
 %>
 <style type="text/css">
-	@import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>";
+	@import "<html:rootPath />js/dojo/dijit/themes/tundra/tundra.css";
 	@import "<html:rootPath />js/dojo/dojo/resources/dojo.css?<%=        org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"
 </style>
 

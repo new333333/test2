@@ -84,13 +84,6 @@ public class Eventeditor extends TagSupport {
 				throw new JspException("You must provide a form name");
 			}
 
-			HttpServletRequest httpReq = (HttpServletRequest) pageContext
-					.getRequest();
-			contextPath = httpReq.getContextPath();
-			if (contextPath.endsWith("/"))
-				contextPath = contextPath
-						.substring(0, contextPath.length() - 1);
-
 			ServletRequest req = null;
 			req = new DynamicServletRequest((HttpServletRequest) pageContext
 					.getRequest());

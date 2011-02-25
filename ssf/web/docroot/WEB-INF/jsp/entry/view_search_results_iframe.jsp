@@ -68,7 +68,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</c:if>
 	var ss_entryBackgroundColor = "${ss_style_background_color}";
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>

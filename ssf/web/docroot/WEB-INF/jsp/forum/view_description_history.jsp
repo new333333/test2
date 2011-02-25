@@ -47,7 +47,7 @@
 del { font-weight: normal; text-decoration: line-through; color: #000; background-color: #e0e0e0; -moz-border-radius: 3px; -webkit-border-radius: 3px;}
 ins { font-weight: normal; text-decoration: none; color: #fff; background-color: #83bf30;-moz-border-radius: 3px; -webkit-border-radius: 3px; }
 </style>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
   var wDiffStyleDelete = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #990033;';
   var wDiffStyleInsert = 'font-weight: normal; text-decoration: none; color: #fff; background-color: #009933;';

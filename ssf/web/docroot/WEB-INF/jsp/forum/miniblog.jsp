@@ -39,7 +39,7 @@
 <ssf:ifadapter>
 <body class="tundra">
 </ssf:ifadapter>
-<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 function ss_showMiniblog${renderResponse.namespace}(id, obj) {
 	ss_viewMiniBlog(id, '0', false);

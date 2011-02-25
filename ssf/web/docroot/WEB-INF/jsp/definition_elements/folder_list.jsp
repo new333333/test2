@@ -35,7 +35,7 @@
 <% // Folder listing - select the style that the folder should be displayed in %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
 
 <c:choose>
 <c:when test="${ss_folderViewStyle == 'event'}">

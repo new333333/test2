@@ -40,7 +40,7 @@
 // Team memmbers text
 ss_noTeamMembersText = "<ssf:nlt tag='teamMembers.noUsers'/>";
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/team/team_members.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/team/team_members.js"></script>
 <script type="text/javascript">
 function ss_loadTeamMembers_${prefix}() {
 	ss_setTeamMembersVariables('${prefix}', '${formElement}');

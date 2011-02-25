@@ -35,7 +35,7 @@
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <div class="ss_clear"></div>
 <script type="text/javascript"> 
-	ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>");
+	ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </script>
 <div>
   <ssHelpSpot helpId="workspaces_folders/misc_tools/tasks_tools" offsetX="0" 

@@ -46,7 +46,7 @@
 </c:if>
 
 <script type="text/javascript" src="<html:rootPath />js/timeline/timeline-api.js?bundle=false"></script>
-<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath />js/common/ss_event.js"></script>
 
 <script type="text/javascript">
 dojo.addOnLoad(function() {

@@ -59,7 +59,7 @@
 <c:set var="dueDate" value="<%= dueDate %>" />
 <c:set var="overdue" value="<%= overdue %>" />
 
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
 <script type="text/javascript">
 	var ss_survey_requiredMissingWarning = "<ssf:nlt tag='survey.required.missing.warning'/>";
 </script>

@@ -54,7 +54,7 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 </script>
   <c:if test="${empty ss_tags_loaded}">
 	<script type="text/javascript">
-	  ss_loadJsFile(ss_rootPath, "js/forum/ss_tags.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>");
+	  ss_loadJsFile(ss_rootPath, "js/forum/ss_tags.js");
 	</script> 
 	<c:set var="ss_tags_loaded" value="1" scope="request"/>
   </c:if>

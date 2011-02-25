@@ -44,7 +44,7 @@
   </c:if>
 </c:if>
 
-<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js?<%= org.kablink.teaming.util.ReleaseInfo.getContentVersion() %>"></script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_survey.js"></script>
 
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
 	<div class="ss_labelAbove ss_normal margintop2" style="font-size: 18px; border-bottom: 1px solid #b8b8b8;"><c:out value="${property_caption}"/></div>
