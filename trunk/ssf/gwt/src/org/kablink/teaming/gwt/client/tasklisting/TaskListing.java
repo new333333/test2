@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
  */
 public class TaskListing extends Composite implements ActionTrigger {
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
+	private boolean			m_showModeSelect;			// true -> Show the 'All Entries vs. From Folder' options.  false -> Don't.
 	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending. 
 	private FlowPanel		m_taskListingDIV;			// The <DIV> in the content pane that's to contain the task listing.
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
@@ -112,6 +113,9 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_sortBy                =                 jsGetElementValue("ssFolderSortBy"         );
 		m_sortDescend           = Boolean.valueOf(jsGetElementValue("ssFolderSortDescend"   ));
 		m_updateCalculatedDates = Boolean.valueOf(jsGetElementValue("updateCalculatedDates" ));
+		
+		String showMode = jsGetElementValue("ssShowFolderModeSelect");
+		m_showModeSelect = (GwtClientHelper.hasString(showMode) && Boolean.valueOf(showMode));
 
 		// ...create the panels that are to contain the task tools and
 		// ...listing...
@@ -351,23 +355,27 @@ public class TaskListing extends Composite implements ActionTrigger {
 
 		// ...create a popup menu for the view options...
 		List<TaskMenuOption> vOpts = new ArrayList<TaskMenuOption>();
-		vOpts.add(new TaskMenuOption("ALL",      m_messages.taskViewAllEntries(),    m_filterType.equals("ALL"     )));
-		vOpts.add(new TaskMenuOption("CLOSED",   m_messages.taskViewCompleted(),     m_filterType.equals("CLOSED"  )));
-		vOpts.add(new TaskMenuOption("DAY",      m_messages.taskViewToday(),         m_filterType.equals("DAY"     )));
-		vOpts.add(new TaskMenuOption("WEEK",     m_messages.taskViewWeek(),          m_filterType.equals("WEEK"    )));
-		vOpts.add(new TaskMenuOption("MONTH",    m_messages.taskViewMonth(),         m_filterType.equals("MONTH"   )));
-		vOpts.add(new TaskMenuOption("ACTIVE",   m_messages.taskViewAllActive(),     m_filterType.equals("ACTIVE"  )));
-		vOpts.add(new TaskMenuOption());
-		vOpts.add(new TaskMenuOption("VIRTUAL",  m_messages.taskViewAssignedTasks(), m_mode.equals(      "VIRTUAL" )));
-		vOpts.add(new TaskMenuOption("PHYSICAL", m_messages.taskViewFromFolder(),    m_mode.equals(      "PHYSICAL")));
+		vOpts.add(new TaskMenuOption("ALL",          m_messages.taskViewAllEntries(),    m_filterType.equals("ALL"     )));
+		vOpts.add(new TaskMenuOption("CLOSED",       m_messages.taskViewCompleted(),     m_filterType.equals("CLOSED"  )));
+		vOpts.add(new TaskMenuOption("DAY",          m_messages.taskViewToday(),         m_filterType.equals("DAY"     )));
+		vOpts.add(new TaskMenuOption("WEEK",         m_messages.taskViewWeek(),          m_filterType.equals("WEEK"    )));
+		vOpts.add(new TaskMenuOption("MONTH",        m_messages.taskViewMonth(),         m_filterType.equals("MONTH"   )));
+		vOpts.add(new TaskMenuOption("ACTIVE",       m_messages.taskViewAllActive(),     m_filterType.equals("ACTIVE"  )));
+		if (m_showModeSelect) {
+			vOpts.add(new TaskMenuOption());
+			vOpts.add(new TaskMenuOption("VIRTUAL",  m_messages.taskViewAssignedTasks(), m_mode.equals(      "VIRTUAL" )));
+			vOpts.add(new TaskMenuOption("PHYSICAL", m_messages.taskViewFromFolder(),    m_mode.equals(      "PHYSICAL")));
+		}
 		m_viewMenu = new TaskPopupMenu(this, TeamingAction.TASK_VIEW, vOpts);
 
 		// ...generate the string to display on the menu...
 		StringBuffer menuBuf = new StringBuffer(m_messages.taskView());
 		menuBuf.append("  ");
 		menuBuf.append(TaskMenuOption.getTMOFromList(m_filterType, vOpts).getMenuAlt());
-		menuBuf.append(" | ");
-		menuBuf.append(TaskMenuOption.getTMOFromList(m_mode,       vOpts).getMenuAlt());
+		if (m_showModeSelect) {
+			menuBuf.append(" | ");
+			menuBuf.append(TaskMenuOption.getTMOFromList(m_mode,   vOpts).getMenuAlt());
+		}
 		
 		// ...and create the <A> that activates the menu.
 		Anchor a = new Anchor();
