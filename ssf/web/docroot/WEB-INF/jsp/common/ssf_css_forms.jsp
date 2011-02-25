@@ -399,6 +399,10 @@ fieldset a:hover {
   	display: block;
   	font-weight: bold;
 	}
+	
+.ss_surveyForm {
+	margin: 5px;
+}	
  /**********MINIBLOG******/	
 .ss_labelminiBlog {
   	padding-top: 10px;

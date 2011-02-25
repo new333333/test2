@@ -747,7 +747,7 @@ a.ss_tinyButton:hover {
   font-weight: bold;
   font-size: ${ss_style_font_normalprint};
   display: inline-block;
-  padding-right: 5px;
+  padding-right: 10px;
   padding-top: 10px;
 }
 
