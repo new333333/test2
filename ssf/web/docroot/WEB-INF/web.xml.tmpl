@@ -92,6 +92,11 @@
 		<filter-class>org.kablink.teaming.web.servlet.filter.DefaultCharacterEncodingFilter</filter-class>
 	</filter>
 
+	<filter>
+		<filter-name>noEtagFilter</filter-name>
+		<filter-class>org.kablink.teaming.web.servlet.filter.NoEtagFilter</filter-class>
+	</filter>
+
 	<filter-mapping>
 		<filter-name>defaultCharacterEncodingFilter</filter-name>
 		<servlet-name>dispatcher</servlet-name>
@@ -167,6 +172,11 @@
 	<filter-mapping>
 		<filter-name>privateResourcesFilter</filter-name>
 		<url-pattern>/s/*</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
+		<filter-name>noEtagFilter</filter-name>
+		<url-pattern>/static/*</url-pattern>
 	</filter-mapping>
 
 	<listener>
