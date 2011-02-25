@@ -311,6 +311,34 @@ public class TaskListItem implements IsSerializable {
 		private TaskDate				m_completedDate    = new TaskDate();	
 		private TaskEvent				m_event            = new TaskEvent();
 		private TaskId					m_taskId           = new TaskId();	
+
+		// The following are the values used for task completion
+		// percentages.
+		public final static String COMPLETED_0   = "c000";
+		public final static String COMPLETED_10  = "c010";
+		public final static String COMPLETED_20  = "c020";
+		public final static String COMPLETED_30  = "c030";
+		public final static String COMPLETED_40  = "c040";
+		public final static String COMPLETED_50  = "c050";
+		public final static String COMPLETED_60  = "c060";
+		public final static String COMPLETED_70  = "c070";
+		public final static String COMPLETED_80  = "c080";
+		public final static String COMPLETED_90  = "c090";
+		public final static String COMPLETED_100 = "c100";
+		
+		// The following are the values used for task priorities.
+		public final static String PRIORITY_NONE     = "p0";
+		public final static String PRIORITY_CRITICAL = "p1";
+		public final static String PRIORITY_HIGH     = "p2";
+		public final static String PRIORITY_MEDIUM   = "p3";
+		public final static String PRIORITY_LOW      = "p4";
+		public final static String PRIORITY_LEAST    = "p5";
+		
+		// The following are the values used for task statuses.
+		public final static String STATUS_NEEDS_ACTION = "s1";
+		public final static String STATUS_IN_PROCESS   = "s2";
+		public final static String STATUS_COMPLETED    = "s3";
+		public final static String STATUS_CANCELED     = "s4";
 		
 		/**
 		 * Constructor method.
@@ -373,7 +401,7 @@ public class TaskListItem implements IsSerializable {
 		 * @return
 		 */
 		public boolean isTaskCancelled() {
-			return getStatus().equals("s4");
+			return getStatus().equals(STATUS_CANCELED);
 		}
 		
 		public boolean isTaskClosed() {
@@ -381,7 +409,7 @@ public class TaskListItem implements IsSerializable {
 		}
 		
 		public boolean isTaskCompleted() {
-			return getCompleted().equals("c100");
+			return getCompleted().equals(COMPLETED_100);
 		}
 		
 		public boolean isTaskOverdue() {
