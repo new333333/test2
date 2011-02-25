@@ -186,10 +186,11 @@
 	<% if (subtasksEnabled) { %>
 		<% // Generate the GWT UI. %>
 		<div class="gwtTasks" id="gwtTasks">
-			<input type="hidden" id="ssCurrentTaskFilterType" value="${ssCurrentTaskFilterType}"   />
 			<input type="hidden" id="ssCurrentFolderModeType" value="${ssCurrentFolderModeType}"   />
+			<input type="hidden" id="ssCurrentTaskFilterType" value="${ssCurrentTaskFilterType}"   />
 			<input type="hidden" id="ssFolderSortBy"          value="${ssFolderSortBy}"            />
 			<input type="hidden" id="ssFolderSortDescend"     value="${ssFolderSortDescend}"       />
+			<input type="hidden" id="ssShowFolderModeSelect"  value="${ssShowFolderModeSelect}"    />
 			<input type="hidden" id="updateCalculatedDates"   value="<%= updateCalculatedDates %>" />
 		</div>
 	<% } else { %>
