@@ -134,4 +134,6 @@ public interface BinderService {
 
 	public long binder_getTopWorkspaceId(String accessToken);
 	
+    public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent);
+
 }

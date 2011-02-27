@@ -663,4 +663,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	public long binder_getTopWorkspaceId(String accessToken) {
 		return getWorkspaceModule().getTopWorkspaceId();
 	}
+	
+    public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent) {
+    	getBinderModule().setDefinitionsInherited(binderId, inheritFromParent);
+    }
 }
