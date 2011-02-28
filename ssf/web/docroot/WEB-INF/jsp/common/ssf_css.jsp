@@ -173,8 +173,8 @@ img { -ms-interpolation-mode: bicubic; }
   	color: ${ss_style_link_hover_color} !important;
 	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
     background-position:  left center;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	}
 .ss_title_link {
   	text-decoration:underline;
@@ -4025,14 +4025,16 @@ div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0p
 div.ss_options {padding: 6px 0px 6px 0px;}
 div.ss_options_container h4 {margin:6px 0px 6px 0px;}
 a.ss_button {
-	background-color: #dbe6f2;
-	border: 1px solid #afc8e3;
-	padding: 0px 6px 0px 12px;
+	background: url(<html:imagesPath/>pics/trans10_black_blend.png) repeat;
+	background-position:bottom;
+	border: 1px solid #ccc;
+	padding: 2px 10px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
 }
-a:hover.ss_button {
-	background-color: #dbe6f2;
-	border: 1px dotted #888;
-	padding: 0px 6px 0px 12px;
+a.ss_button:hover {
+	color: #FFFFFF;
+	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
 }
 #ss_filterSummary_content {float:left;}
 #ss_filterSummary_content p, #ss_searchForm_changeBox p {

@@ -322,7 +322,6 @@ td.rightend
 	font-family: ${ss_style_font_family};
 	font-size: 10px;
 	text-align: left;
-	border: dotted 1px #5691A6;
 	padding: 3px;
 	margin: 6px;
 	}
@@ -353,7 +352,6 @@ fieldset{
  	padding-bottom:12px;
   	padding-top: 18px;
   	display: block;
-  	border: 1px dotted #5691A6;
   	background-image: url(<html:imagesPath/>pics/login_bk.png);
   	background-repeat: repeat;
   	width: 480px;
@@ -362,7 +360,6 @@ fieldset{
 	} 
 .ss_fieldset_mashup {
   	display: inline;
-  	border: 1px dotted #5691A6;
 	} 
 fieldset.ss_fieldset_square {
   	border: 1px solid #5691A6;
@@ -372,7 +369,6 @@ fieldset.ss_fieldset_square {
 fieldset a {
 	}
 fieldset a:hover {
-	border: dotted 1px #000;
 	}
 .ss_legend {
   	font-size:12px !important;
@@ -453,7 +449,6 @@ fieldset a:hover {
 	margin:2px 0 0 0;
 	}
 .ss_inlineButton:hover, input[type="reset"].ss_inlineButton:hover, input[type="button"].ss_inlineButton:hover, input[type="submit"].ss_inlineButton:hover, button.ss_inlineButton:hover {
-  border: 1px dotted #333;
   color: #135c8f;
 }
 .ss_inlineButton span {
@@ -487,7 +482,6 @@ fieldset a:hover {
 	margin:2px 0 0 0;
 	}
 .ss_inlineButtonSmall:hover, input[type="reset"].ss_inlineButtonSmall:hover, input[type="button"].ss_inlineButtonSmall:hover, input[type="submit"].ss_inlineButtonSmall:hover, button.ss_inlineButtonSmall:hover {
-  border: 1px dotted #333;
   color: #135c8f;
 }
 .ss_inlineButtonSmall span {

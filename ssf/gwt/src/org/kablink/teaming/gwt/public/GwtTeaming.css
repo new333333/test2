@@ -2,6 +2,16 @@
 
 /* ########################################################################################################### */
 
+
+/* Collaboration Branding colors - darkest is gray1 */
+
+.gray1 { color: #1f1f1f !important;}
+.gray2 { color: #353838 !important;}
+.gray3 { color: #505354 !important;}
+.gray4 { color: #949494 !important;}
+.gray5 { color: #b8b8b8 !important;}
+.gray6 { color: #c4c4c4 !important;}
+
 /* Styles used with the activity stream control */
 .activityStreamCtrl
 {
@@ -136,8 +146,6 @@
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
 	background-position:center;
-	padding-left: 3px;
-	padding-right: 3px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -497,7 +505,7 @@ a, a:visited, a:hover {
 /* Style used for the AdminActionControl. */
 .adminActionControl
 {
-	margin-left: 7px;
+	margin: 5px;
 	padding: 2px;
 }
 
@@ -505,7 +513,6 @@ a, a:visited, a:hover {
 {
 	background: #E6F2F7;
 	color: #3E6978;
-	margin-right: 5px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
@@ -716,12 +723,13 @@ body, table td, select
 /* Styles used for the error panel in a dialog. */
 .dlgErrorPanel
 {
-	font-size: 14px;
+	font-size: 12px;
 	background-color: #EBECA5;
 	border-color: #BABDB6;
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
+	margin: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
@@ -1582,8 +1590,9 @@ body, table td, select
 }
 .mainMenuBar_BoxHover
 {
-	background: url(images/teal_slice.png) repeat-x center;
-	color: #3e6978;
+	color: #135c8f !important; /* black */
+	background: url(images/teal_slice.png) repeat-x;
+	background-position: center;
 }
 .mainMenuBar_BoxImg
 {
@@ -2041,12 +2050,10 @@ body, table td, select
 .tagThisDlg_TagName:hover
 {
 	cursor: pointer;
-	background: url(images/H_bg_blend_teal_light.png) repeat-x scroll center bottom;
+	background: url(images/teal_slice.png) repeat-x center;
 	background-position:center;
-	padding-left: 3px;
-	padding-right: 3px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 
