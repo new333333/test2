@@ -465,7 +465,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
-    		long begin = System.currentTimeMillis();
+    		long begin = System.nanoTime();
     		try {
     			contentFilters[i].filter(binder, entity, fileName, is);
     		}
@@ -481,7 +481,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     
 	private void endFiltering(long begin, String fileName, ContentFilter filter) {
 		if(debugEnabled) {
-			long diff = System.currentTimeMillis() - begin;
+			double diff = (System.nanoTime() - begin)/1000000.0;
 			logger.debug(diff + " ms, " + fileName + " filtered with " + filter.getClass().getSimpleName());
 		}	
 	}

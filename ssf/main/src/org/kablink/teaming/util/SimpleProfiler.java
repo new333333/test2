@@ -51,11 +51,11 @@ public class SimpleProfiler {
 	private String title = null;
 	private boolean active = true; // defaults to true 
     private Map<String,Event> events;
-    private long beginTime; // time in ms
+    private long beginTime; // time in nanoseconds
     
     public SimpleProfiler() {
     	events = new TreeMap<String,Event>();
-    	beginTime = System.currentTimeMillis();
+    	beginTime = System.nanoTime();
     }
     public SimpleProfiler(String title) {
     	this();
@@ -98,11 +98,11 @@ public class SimpleProfiler {
     public String toString() {
     	if(active) {
     		StringBuilder sb = new StringBuilder();
-    		long currTime = System.currentTimeMillis();
+    		long currTime = System.nanoTime();
     		if(title != null)
     			sb.append(title).append(": "); 
-    		sb.append("Elapsed time (sec) = ")
-    		.append((double) (currTime - beginTime)/1000.0);
+    		sb.append("Elapsed time (ms) = ")
+    		.append((double) (currTime - beginTime)/1000000.0);
     		for(Map.Entry entry : events.entrySet()) {
     			if(sb.length() > 0)
     				sb.append(Constants.NEWLINE);

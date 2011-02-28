@@ -193,7 +193,7 @@ public class LuceneProvider extends IndexSupport {
 	}
 	
 	public void addDocuments(ArrayList docs) throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		try {
 			for (Iterator iter = docs.iterator(); iter.hasNext();) {
@@ -222,7 +222,7 @@ public class LuceneProvider extends IndexSupport {
 	}
 
 	public void deleteDocuments(Term term) throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		try {
 			getIndexingResource().getIndexWriter().deleteDocuments(term);
@@ -243,7 +243,7 @@ public class LuceneProvider extends IndexSupport {
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
@@ -336,16 +336,20 @@ public class LuceneProvider extends IndexSupport {
 	 * @throws LuceneException
 	 */
 	public void clearIndex() throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		closeIndexingResource();
 		
 		// Open a new index writer overwriting the existing index
 		openIndexingResource(true);
 				
-		logInfo("clearIndex completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+		logInfo("clearIndex completed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 	}
 
+	private double elapsedTimeInMs(long startTimeInNanoseconds) {
+		return (System.nanoTime() - startTimeInNanoseconds)/1000000.0;
+	}
+	
 	private String getTastingText(Document doc) {
 		String text = getTastingTextFromAllTextField(doc);
 		if (text == null || text.length() == 0) {
@@ -447,7 +451,7 @@ public class LuceneProvider extends IndexSupport {
 	
 	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
 			int size) throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -479,7 +483,7 @@ public class LuceneProvider extends IndexSupport {
 
 	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
@@ -515,7 +519,7 @@ public class LuceneProvider extends IndexSupport {
 
 	public ArrayList getTags(Query query, String tag, String type, String userId, boolean isSuper)
 	throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		
 		ArrayList<String> resultTags = new ArrayList<String>();
 		ArrayList tagObjects = getTagsWithFrequency(query, tag, type, userId, isSuper);
@@ -542,7 +546,7 @@ public class LuceneProvider extends IndexSupport {
 	 */
 	public ArrayList getTagsWithFrequency(Query query, String tag, String type, String userId, boolean isSuper)
 			throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		String tagOrig = tag;
 		int prefixLength = 0;
 		tag = tag.toLowerCase();
@@ -656,7 +660,7 @@ public class LuceneProvider extends IndexSupport {
 	
 	public String[] getNormTitles(Query query, String start, String end, int skipsize)
 			throws LuceneException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
@@ -769,7 +773,7 @@ public class LuceneProvider extends IndexSupport {
 	}
 
 	public void close() {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		// Shutdown commit thread
 		try {
@@ -790,40 +794,40 @@ public class LuceneProvider extends IndexSupport {
 			logError("Error closing directory", e);
 		}
 		
-		logInfo("Closed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+		logInfo("Closed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 	}
 	
 	private void end(long begin, String methodName) {
 		if(logger.isDebugEnabled()) {
-			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName);
 		}
 	}
 	
 	private void end(long begin, String methodName, int length) {
 		if(logger.isDebugEnabled()) {
-			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", input=" + length);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", input=" + length);
 		}
 	}
 	
 	private void end(long begin, String methodName, Query query, int length) {
 		if(logger.isTraceEnabled()) {
-			logTrace((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length + 
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + "]");			
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
 		}
 	}
 	
 	private void end(long begin, String methodName, Query query, String tagBefore, String tagAfter, int length) {
 		if(logger.isTraceEnabled()) {
-			logTrace((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length + 
+			logTrace(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length + 
 					", query=[" + ((query==null)? "" : query.toString()) + 
 					"], tag-before=[" + ((tagBefore==null)? "" : tagBefore) + 
 					"], tag-after=[" + ((tagAfter==null)? "" : tagAfter) + "]");
 		}
 		else if(logger.isDebugEnabled()) {
-			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length);
+			logDebug(elapsedTimeInMs(begin) + " ms, " + methodName + ", result=" + length);
 		}
 	}
 	
@@ -915,7 +919,7 @@ public class LuceneProvider extends IndexSupport {
 		}
 		
 		void commit() throws LuceneException {
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 
 			// save these values before resetting it
 			long firstOpTimeSinceLastCommit = this.getCommitStat().getFirstOpTimeSinceLastCommit();
@@ -950,13 +954,13 @@ public class LuceneProvider extends IndexSupport {
 			
 			logInfo("Committed, firstOpTimeSinceLastCommit=" + firstOpTimeSinceLastCommit + 
 					", numberOfOpsSinceLastCommit=" + numberOfOpsSinceLastCommit + 
-					". It took " + (System.currentTimeMillis()-startTime) + " milliseconds");		
+					". It took " + elapsedTimeInMs(startTime) + " milliseconds");		
 		}
 		
 		void optimize() throws LuceneException {
 			// optimize and commit are independent of each other.
 			
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			logInfo("Optimize started...");
 
 			try {
@@ -970,13 +974,13 @@ public class LuceneProvider extends IndexSupport {
 				throw e;
 			} 
 			
-			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+			logInfo("Optimize completed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 		}
 		
 		void optimize(int maxNumSegments) throws LuceneException {
 			// optimize and commit are independent of each other.
 			
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			logInfo("Optimize(" + maxNumSegments + ") started...");
 
 			try {
@@ -990,11 +994,11 @@ public class LuceneProvider extends IndexSupport {
 				throw e;
 			} 
 			
-			logInfo("Optimize completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+			logInfo("Optimize completed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 		}
 		
 		void expungeDeletes() throws LuceneException {
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			logInfo("ExpungeDeletes started...");
 
 			try {
@@ -1008,7 +1012,7 @@ public class LuceneProvider extends IndexSupport {
 				throw e;
 			} 
 			
-			logInfo("ExpungeDeletes completed. It took " + (System.currentTimeMillis()-startTime) + " milliseconds");
+			logInfo("ExpungeDeletes completed. It took " + elapsedTimeInMs(startTime) + " milliseconds");
 		}
 		
 		void close() {
@@ -1064,4 +1068,5 @@ public class LuceneProvider extends IndexSupport {
 			return manager;
 		}
 	}
+
 }

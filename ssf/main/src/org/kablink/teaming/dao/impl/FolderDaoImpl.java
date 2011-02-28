@@ -91,7 +91,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * @throws DataAccessException
 	 */
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	       return loadEntry(parentFolderId, entryId, zoneId);
     	}
@@ -101,7 +101,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     }
       
 	public FolderEntry loadFolderEntry(final String sortKey, final Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        FolderEntry entry = (FolderEntry)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -128,7 +128,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 
 	}
 	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadEntry(null, entryId, zoneId);
     	}
@@ -152,7 +152,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * not pre-loaded.
      */
     public SFQuery queryEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
@@ -180,7 +180,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Load child entries of a folder 
      */
     public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
@@ -209,7 +209,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Load the ancestors and descendants of an entry.  Entry will be included in List
      */
     public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        List result;
 	        final String[] keys = entry.getHKey().getAncestorKeys();  
@@ -252,7 +252,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Given a folder entry, pre-load its chain of FolderEntry ancestors 
      */
     public List loadEntryAncestors(final FolderEntry entry) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	             new HibernateCallback() {
@@ -278,7 +278,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Given a FolderEntry, pre-load all descendents of the entry.
      */
     public List loadEntryDescendants(final FolderEntry entry) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	             new HibernateCallback() {
@@ -316,7 +316,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
      */
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadFolderTreeUpdates(folder, since, before, new OrderBy(Constants.ID), -1);
     	}
@@ -329,7 +329,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	 * See <code>loadFolderTreeUpdates</code>. Order results as specified.
 	 */
 	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order, final int maxResults) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        List entries = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -359,7 +359,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	 * Load 1 folder
 	 */
     public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
 	       
@@ -385,7 +385,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	 * Folder entries and child binders should already have been deleted
 	 */
    public void delete(final Folder folder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   //cleanup entries - 
 	       	getHibernateTemplate().execute(
@@ -446,7 +446,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
    //to exclude some from future queries
    //entries evicted from cache
    public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   if (entries.isEmpty()) return;
 		   getHibernateTemplate().execute(
@@ -473,7 +473,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
              		 
    }
     public void deleteEntries(final Folder folder, final Collection<FolderEntry> entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (entries.isEmpty()) return;
 	 
@@ -559,7 +559,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Sub folder and their entries must be handled separetly
      */
     public void move(final Folder folder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	getCoreDao().move(folder);  //handles most generic associations
 		   	getHibernateTemplate().execute(
@@ -586,7 +586,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * 
      */
     public void moveEntries(final Folder folder, final List<Long> ids) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (ids.isEmpty()) return;
 		   	getHibernateTemplate().execute(
@@ -676,7 +676,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     //load public and private tags for a list of folder entries
     //order by id and name
     public List<Tag> loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (ids.isEmpty()) return new ArrayList();
 		   	return (List<Tag>)getHibernateTemplate().execute(
@@ -803,7 +803,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * @return List of folder entry ids
      */
     public List<Long> findFolderIdsFromWorkflowState(final String defId, final String stateValue) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	       	final String thisZoneId = String.valueOf(RequestContextHolder.getRequestContext().getZoneId());
 	       	return (List<Long>)getHibernateTemplate().execute(

@@ -397,7 +397,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //no transaction by default
     public FolderEntry addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws AccessControlException, WriteFilesException, WriteEntryDataException {
-    	long begin = System.currentTimeMillis();
+    	long begin = System.nanoTime();
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
@@ -424,7 +424,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	public FolderEntry addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	arCount.incrementAndGet();
         //load parent entry
         FolderEntry entry = loadEntry(folderId, parentId);    	
@@ -477,7 +477,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     throws AccessControlException, WriteFilesException, WriteEntryDataException, ReservedByAnotherUserException {
-    	long begin = System.currentTimeMillis();
+    	long begin = System.nanoTime();
     	meCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
 		try {

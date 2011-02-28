@@ -214,11 +214,11 @@ public class SearchObject {
 	
 	private Query parse(QueryParser parser, String qStr) {
 		try {
-			long startTime = System.currentTimeMillis();
+			long startTime = System.nanoTime();
 			Query retQ = parser.parse(qStr);
-			long endTime = System.currentTimeMillis();
+			long endTime = System.nanoTime();
 			if(logger.isDebugEnabled())
-				logger.debug("QueryParser instantiating new QP took " + (endTime - startTime) + " milliseconds");
+				logger.debug("QueryParser instantiating new QP took " + (endTime - startTime)/1000000.0 + " milliseconds");
 			return retQ;
 		} catch (ParseException pe){ 
 			logger.warn("Parser exception, can't parse: " + qStr);

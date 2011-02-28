@@ -42,13 +42,13 @@ public abstract class KablinkDao extends HibernateDaoSupport {
 	protected boolean debugEnabled = logger.isDebugEnabled();
 	
 	private boolean inited = false;
-	private long floor = 0;
+	private long floor = 0; // in milliseconds
 
-	protected void end(long begin, String methodName) {
+	protected void end(long beginInNanoseconds, String methodName) {
 		init();
 		if(debugEnabled) {
-			long diff = System.currentTimeMillis() - begin;
-			if(diff >= floor)
+			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
+			if(diff >= (double) floor)
 				logger.debug(diff + " ms, " + methodName);
 		}	
 	}

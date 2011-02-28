@@ -212,7 +212,7 @@ public class Definition extends PersistentTimestampObject  {
     }
     
     public void setDefinition(Document doc) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		if(DefinitionCache.isCachedDocument(getId(), doc))
 			throw new InternalException("Bug: Application has directly modified shared cached definition document");
        	try {
@@ -241,7 +241,7 @@ public class Definition extends PersistentTimestampObject  {
      * IMPORTANT: Don't ever make this method public!!!
      */
     protected Document getDocument() {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		Document doc = null;
     	try {
     		InputStream ois = new ByteArrayInputStream(xmlencoding);

@@ -290,21 +290,21 @@ public class Utils {
 		}
 	}
 	
-	public static void end(Log logger, long startTime, String methodName) {
+	public static void end(Log logger, long startTimeInNanoseconds, String methodName) {
 		if(logger.isDebugEnabled()) {
-			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName);
+			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName);
 		}
 	}
 
-	public static void end(Log logger, long startTime, String methodName, String arg) {
+	public static void end(Log logger, long startTimeInNanoseconds, String methodName, String arg) {
 		if(logger.isDebugEnabled()) {
-			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName + " [" + arg + "]");
+			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName + " [" + arg + "]");
 		}
 	}
 
-	public static void end(Log logger, long startTime, String methodName, String arg1, String arg2) {
+	public static void end(Log logger, long startTimeInNanoseconds, String methodName, String arg1, String arg2) {
 		if(logger.isDebugEnabled()) {
-			logger.debug((System.currentTimeMillis()-startTime) + " ms, " + methodName + " [" + arg1 + "," + arg2 + "]");
+			logger.debug((System.nanoTime()-startTimeInNanoseconds)/1000000.0 + " ms, " + methodName + " [" + arg1 + "," + arg2 + "]");
 		}
 	}
 
