@@ -863,14 +863,7 @@ public class GwtMainPage extends Composite
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					relayoutPage( true );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			relayoutPage( false );
 			break;
 			
 		case EDIT_BRANDING:
