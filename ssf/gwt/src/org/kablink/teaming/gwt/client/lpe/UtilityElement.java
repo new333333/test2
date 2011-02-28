@@ -43,10 +43,10 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
  */
 public enum UtilityElement
 {
-	LINK_TO_ADMIN_PAGE( GwtTeaming.getMessages().utilityElementLinkToAdminPage(), "siteAdmin" ),
+	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace(), "trackThis" ),
 	LINK_TO_MYWORKSPACE( GwtTeaming.getMessages().utilityElementLinkToMyWorkspace(), "myWorkspace" ),
 	LINK_TO_SHARE_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToShareFolderOrWorkspace(), "shareThis" ),
-	LINK_TO_TRACK_FOLDER_OR_WORKSPACE( GwtTeaming.getMessages().utilityElementLinkToTrackFolderOrWorkspace(), "trackThis" ),
+	LINK_TO_ADMIN_PAGE( GwtTeaming.getMessages().utilityElementLinkToAdminPage(), "siteAdmin" ),
 	SIGNIN_FORM( GwtTeaming.getMessages().utilityElementSignInForm(), "signInForm" );
 
 	private final String m_localizedText;

@@ -156,6 +156,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		EnhancedViewProperties properties;
 		Label			label;
 		VerticalPanel	mainPanel;
+		FlexTable table;
 		
 		properties = (EnhancedViewProperties) props;
 
@@ -163,8 +164,10 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
 		// Add label and list box for the view
+		table = new FlexTable();
+		mainPanel.add( table );
 		label = new Label( GwtTeaming.getMessages().enhancedViewLabel() );
-		mainPanel.add( label );
+		table.setWidget( 0, 0, label );
 		
 		// Create a listbox that holds the names of all the view.
 		{
@@ -202,7 +205,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				m_evListBox.addItem( evInfo.getDisplayName(), evInfo.getJspName() );
 			}
 			
-			mainPanel.add( m_evListBox );
+			table.setWidget( 0, 1, m_evListBox );
 		}
 		
 		// Create a panel where we will display the description of the selected view.
