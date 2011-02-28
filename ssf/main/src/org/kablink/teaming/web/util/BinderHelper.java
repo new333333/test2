@@ -1095,7 +1095,16 @@ public class BinderHelper {
 
    		// Get the "sort by" value from the request.  If it is not there we default to sort-by-relevence.
 		sortBy = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE );
-		sortBySecondary = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY_SECONDARY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE );
+		if(ObjectKeys.SEARCH_SORT_BY_RELEVANCE.equals(sortBy)) {
+			// Primary sort is by relevance. In this case, if the caller hasn't specified an explicit value
+			// for the secondary sort order, default it to order by date.
+			sortBySecondary = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY_SECONDARY, ObjectKeys.SEARCH_SORT_BY_DATE );
+		}
+		else {
+			// Primary sort order is something other than relevance. In this case, default the secondary
+			// sort order to relevance, unless the caller has specified an explicit value.
+			sortBySecondary = PortletRequestUtils.getStringParameter( request, WebKeys.SEARCH_FORM_SORT_BY_SECONDARY, ObjectKeys.SEARCH_SORT_BY_RELEVANCE );
+		}
 
 		options.put(ObjectKeys.SEARCH_SORT_BY, sortBy);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, getDefaultDescend(sortBy));
