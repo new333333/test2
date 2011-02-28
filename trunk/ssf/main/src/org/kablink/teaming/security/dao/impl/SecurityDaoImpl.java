@@ -87,7 +87,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
         getHibernateTemplate().delete(obj);
     }
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        Function f = (Function)getHibernateTemplate().get(Function.class, id);
 	        if (f != null && zoneId.equals(f.getZoneId())) return f;
@@ -99,7 +99,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     }
 
     public List findFunctions(final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -127,7 +127,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     }
 
     public Condition loadFunctionCondition(Long zoneId, Long functionConditionId) throws NoObjectByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        Condition c = (Condition)getHibernateTemplate().get(Condition.class, functionConditionId);
 	        if (c != null && zoneId.equals(c.getZoneId())) 
@@ -141,7 +141,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     }
     
     public List<Condition> findFunctionConditions(final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -162,7 +162,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 
 	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final Long zoneId, 
 			final Long workAreaId, final String workAreaType, final Long functionId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -191,7 +191,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
 	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (List<WorkAreaFunctionMembership>) getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -213,7 +213,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 	public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(final Long zoneId,
             final Long workAreaId, final String workAreaType) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	       return (List<WorkAreaFunctionMembership>)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -239,7 +239,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	 }
 	
     public void deleteWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List members = findWorkAreaFunctionMemberships(zoneId, workAreaId, workAreaType);
 	    	for (int i=0; i<members.size(); ++i) {
@@ -266,7 +266,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     public List<Long> checkWorkAreaFunctionMembership(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	return (List) getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -298,7 +298,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMembershipsByOperation(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		
 		int retryCount = 0;
 		//The loop will retry up to 5 times if it fails the first time
@@ -347,7 +347,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     
     public List<WorkAreaFunctionMembership> findWorkAreaByOperation(final Long zoneId,
                       final String workAreaOperationName, final Set<Long> membersToLookup) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<WorkAreaFunctionMembership> matches = (List) getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -374,7 +374,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
     }
 
 	public void deleteAll(final Class clazz) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().execute(new HibernateCallback() {
 				public Object doInHibernate(Session session)
@@ -391,7 +391,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
 	public TokenInfoRequest loadTokenInfoRequest(Long zoneId, String infoId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			TokenInfoRequest info = (TokenInfoRequest) getHibernateTemplate().get
 			(TokenInfoRequest.class, infoId);
@@ -409,7 +409,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
 	public TokenInfoApplication loadTokenInfoApplication(Long zoneId, String infoId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			TokenInfoApplication info = (TokenInfoApplication) getHibernateTemplate().get
 			(TokenInfoApplication.class, infoId);
@@ -427,7 +427,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
 	public TokenInfoSession loadTokenInfoSession(Long zoneId, String infoId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			TokenInfoSession info = (TokenInfoSession) getHibernateTemplate().get
 			(TokenInfoSession.class, infoId);
@@ -445,7 +445,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
 	public void deleteUserTokenInfoSession(final Long userId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
@@ -464,7 +464,7 @@ public class SecurityDaoImpl extends KablinkDao implements SecurityDao {
 	}
 
     public void deleteTokenInfoOlderThan(final Date thisDate) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().execute(new HibernateCallback() {
 				public Object doInHibernate(Session session)

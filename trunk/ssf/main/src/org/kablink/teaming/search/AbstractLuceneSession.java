@@ -39,21 +39,21 @@ import org.kablink.teaming.util.SPropsUtil;
 public class AbstractLuceneSession {
 	
 	private boolean inited = false;
-	private long readFloor = 0;
-	private long writeFloor = 0;
+	private long readFloor = 0; // in milliseconds
+	private long writeFloor = 0; // in milliseconds
 	
 	// Used for read
 	protected void endRead(Log logger, long begin, String methodName, Query query, int length) {
 		init();
 		if(logger.isTraceEnabled()) {
-			long diff = System.currentTimeMillis() - begin;
-			if(diff >= readFloor)
-				logger.trace((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length + ", query=[" + query.toString() + "]");			
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.trace(diff + " ms, " + methodName + ", result=" + length + ", query=[" + query.toString() + "]");			
 		}
 		else if(logger.isDebugEnabled()) {
-			long diff = System.currentTimeMillis() - begin;
-			if(diff >= readFloor)
-				logger.debug((System.currentTimeMillis()-begin) + " ms, " + methodName + ", result=" + length);
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.debug(diff + " ms, " + methodName + ", result=" + length);
 		}
 	}
 
@@ -61,9 +61,9 @@ public class AbstractLuceneSession {
 	protected void endWrite(Log logger, long begin, String methodName) {
 		init();
 		if(logger.isDebugEnabled()) {
-			long diff = System.currentTimeMillis() - begin;
-			if(diff >= writeFloor)
-				logger.debug((System.currentTimeMillis()-begin) + " ms, " + methodName);
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) writeFloor)
+				logger.debug(diff + " ms, " + methodName);
 		}
 	}
 

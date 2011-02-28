@@ -413,7 +413,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Binder addBinder(Long parentBinderId, String definitionId,
 			InputDataAccessor inputData, Map fileItems, Map options)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		Binder binder = null;
 		Binder parentBinder = loadBinder(parentBinderId);
 		Definition def = null;
@@ -482,7 +482,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames, IndexErrors errors) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		try {
 			// make list of binders we have access to first
@@ -573,7 +573,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					IndexSynchronizationManager.clearNodeNames();
 				}
 			}
-			logger.info("indexTree took " + (System.currentTimeMillis()-startTime) + " ms");
+			logger.info("indexTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no
@@ -604,13 +604,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	//Routine to look through all binders and validate that the quota data is correct
 	public Set<Long> validateBinderQuotaTree(Binder binder, StatusTicket statusTicket, List<Long> errorIds) 
 			throws AccessControlException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		try {
 			Set<Long> done = new HashSet();
 			done.addAll(loadBinderProcessor(binder).validateBinderQuotasTree(binder,
 								statusTicket, errorIds));
-			logger.info("validateBinderQuotasTree took " + (System.currentTimeMillis()-startTime) + " ms");
+			logger.info("validateBinderQuotasTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no

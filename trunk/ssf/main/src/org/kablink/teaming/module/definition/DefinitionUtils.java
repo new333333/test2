@@ -72,7 +72,7 @@ public class DefinitionUtils {
 	private static Log logger = LogFactory.getLog(DefinitionUtils.class);
 	
    public static String getPropertyValue(Element element, String name) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
 		String value = null;
 		if (variableEle != null) 
@@ -81,7 +81,7 @@ public class DefinitionUtils {
 		return value;
     }
    public static String getPropertyValue(Element element, String name, String attribute) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
 		String value = null;
 		if (variableEle != null) 
@@ -90,7 +90,7 @@ public class DefinitionUtils {
 		return value;
    }
     public static List getPropertyValueList(Element element, String name) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		List resultElements = element.selectNodes("./properties/property[@name='" + name + "']");
     	List results = new ArrayList();
     	for (int i=0; i<resultElements.size(); ++i) {
@@ -101,7 +101,7 @@ public class DefinitionUtils {
 		return results;   	
     }
     public static boolean isSourceItem(Document definitionTree, String itemSource, String itemTarget) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
     	if (definitionTree == null) return false;
 		Element root = definitionTree.getRootElement();
 		

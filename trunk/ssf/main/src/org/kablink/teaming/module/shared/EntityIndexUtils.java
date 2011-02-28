@@ -43,13 +43,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.Collection;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.NumericField;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.kablink.teaming.ObjectKeys;
@@ -68,12 +66,10 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IPrincipal;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WfAcl;
-import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
@@ -160,9 +156,12 @@ public class EntityIndexUtils {
    public static void addRating(Document doc, DefinableEntity entry, boolean fieldsOnly) {
     	//rating may not exist or not be supported
     	try {
-    		if(entry.getAverageRating() != null) {
-    			NumericField rateField = new NumericField(RATING_FIELD, Field.Store.YES, true);
-    			rateField.setDoubleValue(entry.getAverageRating().getAverage());
+    		if(entry.getAverageRating() != null && entry.getAverageRating().getAverage() != null) {
+    			//NumericField rateField = new NumericField(RATING_FIELD, Field.Store.YES, true);
+    			//rateField.setDoubleValue(entry.getAverageRating().getAverage());
+    			// With rating, there is always only one digit to the left of the decimal point.
+    			// So we don't need to pad the number.
+    			Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        	doc.add(rateField);
     		}
         } catch (Exception ex) {};

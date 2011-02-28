@@ -43,13 +43,17 @@ public class LoggingInterceptor implements MethodInterceptor {
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		try {
-			if(logger.isDebugEnabled())
-				logger.debug(invocation.toString());
+			long startTime = System.nanoTime();
 			
-			return invocation.proceed();
+			Object result = invocation.proceed();
+			
+			if(logger.isDebugEnabled())
+				logger.debug("(" + ((System.nanoTime()-startTime)/1000000.0) + " ms) " + invocation.toString());
+			
+			return result;
 		}
 		catch(Throwable t) {
-			logger.error(t.getLocalizedMessage(), t);
+			logger.error(invocation.proceed(), t);
 			throw t;
 		}
 	}

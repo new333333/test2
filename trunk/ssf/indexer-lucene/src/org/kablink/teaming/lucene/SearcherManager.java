@@ -34,7 +34,6 @@ package org.kablink.teaming.lucene;
 
 import java.io.IOException;
 
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.search.IndexSearcher;
@@ -79,7 +78,7 @@ public class SearcherManager extends IndexSupport {
 	}
 
 	private IndexReader reopenReader(IndexReader reader) throws IOException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		IndexReader newReader = reader.reopen();
 
@@ -176,7 +175,7 @@ public class SearcherManager extends IndexSupport {
 	
 	private void end(long begin, String methodName) {
 		if(logger.isDebugEnabled()) {
-			logDebug((System.currentTimeMillis()-begin) + " ms, " + methodName);
+			logDebug((System.nanoTime()-begin)/1000000.0 + " ms, " + methodName);
 		}
 	}
 

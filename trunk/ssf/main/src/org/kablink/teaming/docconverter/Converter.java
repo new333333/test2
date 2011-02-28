@@ -187,7 +187,7 @@ public abstract class Converter<T>
 				checkAndConvertEncoding(copyOfOriginalFile);
 			}
 			
-    		long begin = System.currentTimeMillis();
+    		long begin = System.nanoTime();
 			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), conversionTimeoutMS, parameters);
 			end(begin, relativeFilePath);
 			
@@ -217,7 +217,7 @@ public abstract class Converter<T>
 
 	private void end(long begin, String fileName) {
 		if(logger.isDebugEnabled()) {
-			long diff = System.currentTimeMillis() - begin;
+			double diff = (System.nanoTime() - begin)/1000000.0;
 			logger.debug(diff + " ms, converting " + fileName);
 		}	
 	}

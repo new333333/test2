@@ -184,9 +184,9 @@ public abstract class CommonDependencyInjection {
     	this.relevanceManager = relevanceManager;
     }
 
-	protected void end(long begin, String methodName) {
+	protected void end(long beginInNanoseconds, String methodName) {
 		if(debugEnabled) {
-			long diff = System.currentTimeMillis() - begin;
+			double diff = (System.nanoTime() - beginInNanoseconds)/1000000.0;
 			logger.debug(diff + " ms, " + methodName);
 		}	
 	}

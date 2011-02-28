@@ -147,7 +147,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * This code assumes all users/groups are stored
 	 */	
 	public void delete(final ProfileBinder binder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			//cleanup entries - the delete of the folder in coreDao will handle associations through owningBinderId + LibraryEntries
 		    getHibernateTemplate().execute(
@@ -293,7 +293,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * @param entry
      */
     public void delete(Principal entry) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List entries = new ArrayList();
 	    	entries.add(entry);
@@ -310,7 +310,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * there associations are deleted
      */
     public void deleteEntries(final Collection<Principal> entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (entries == null || entries.size() == 0) return;
 	      	getHibernateTemplate().execute(
@@ -449,7 +449,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
         
     public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	getHibernateTemplate().execute(
 	        	new HibernateCallback() {
@@ -471,7 +471,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
     //used for login
     public User findUserByName(final String userName, String zoneName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
 	    	return findUserByName(userName, top.getId());
@@ -482,7 +482,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
     
     public User findUserByNameDeadOrAlive(final String userName, String zoneName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final Binder top = getCoreDao().findTopWorkspace(zoneName);
 	    	return findUserByNameDeadOrAlive(userName, top.getId());
@@ -494,7 +494,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     
  	public User findUserByName(final String userName, final Long zoneId) 
 	throws NoUserByTheNameException {
-	   long begin = System.currentTimeMillis();
+	   long begin = System.nanoTime();
 	   try {
 	       User user = (User)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -529,7 +529,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	public User findUserByLdapGuid( final String ldapGuid, final Long zoneId ) 
 		throws NoPrincipalByTheNameException
 	{
-	   long begin = System.currentTimeMillis();
+	   long begin = System.nanoTime();
 	   try
 	   {
 	       User user = (User)getHibernateTemplate().execute(
@@ -576,7 +576,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  			return loadPrincipal(id, zoneId, false);
  		}
  		else {
-			long begin = System.currentTimeMillis();
+			long begin = System.nanoTime();
 			try {
 		        Principal principal = (Principal)getHibernateTemplate().execute(
 		                new HibernateCallback() {
@@ -624,7 +624,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
 
     public ProfileBinder getProfileBinder(Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
     	}
@@ -638,7 +638,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * @see org.kablink.teaming.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
      */
     public UserPrincipal loadUserPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        UserPrincipal principal = (UserPrincipal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -670,7 +670,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
               
     }
     public List<UserPrincipal> loadUserPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<UserPrincipal> result = loadPrincipals(ids, zoneId, UserPrincipal.class, true, checkActive);
 			//remove proxies
@@ -692,7 +692,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public List<Principal> loadPrincipalByEmail(final String email, final String emailType, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	               	new HibernateCallback() {
@@ -805,7 +805,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }    
   
 	public Group loadGroup(final Long groupId, Long zoneId)  {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Group group = (Group)getHibernateTemplate().get(Group.class, groupId);
 			if (group == null) {throw new NoGroupByTheIdException(groupId);}
@@ -820,7 +820,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
 	}
 	public ApplicationGroup loadApplicationGroup(final Long groupId, Long zoneId)  {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			ApplicationGroup group = (ApplicationGroup)getHibernateTemplate().get(ApplicationGroup.class, groupId);
 			if (group == null) {throw new NoGroupByTheIdException(groupId);}
@@ -835,7 +835,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
 	}
 	public List<Group> loadGroups(Collection<Long> ids, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(ids, zoneId, Group.class, false, true);
     	}
@@ -845,7 +845,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
     public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(filter, zoneId, Group.class);
     	}
@@ -854,7 +854,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }  
 	public User loadUser(Long userId, String zoneName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Binder top = getCoreDao().findTopWorkspace(zoneName);
 			return loadUser(userId, top.getZoneId());
@@ -864,7 +864,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public User loadUser(Long userId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	try {
     		User user = (User)getHibernateTemplate().get(User.class, userId);
     		if (user == null) {throw new NoUserByTheIdException(userId);}
@@ -884,7 +884,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
     }
     public User loadUserDeadOrAlive(Long userId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	// STOP!!! THIS METHOD IS FOR INTERNAL/SPECIAL USE ONLY. USE THE REGULAR loadUser() METHOD INSTEAD.
     	try {
     		User user = (User)getHibernateTemplate().get(User.class, userId);
@@ -903,7 +903,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
     
 	public List<User> loadUsers(Collection<Long> ids, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(ids, zoneId, User.class, false, true);
     	}
@@ -912,7 +912,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public List<User> loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(filter, zoneId, User.class);
     	}
@@ -923,7 +923,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
      
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, User.class);
     	}
@@ -932,7 +932,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, Group.class);
     	}
@@ -941,7 +941,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }  
     public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return queryPrincipals(filter, zoneId, Principal.class);
     	}
@@ -972,7 +972,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        return new SFQuery(query);
     }    
  	public void bulkLoadCollections(final Collection<Principal> entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
 	  	    getHibernateTemplate().execute(
@@ -1053,7 +1053,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
  	
     public UserProperties loadUserProperties(Long userId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	UserPropertiesPK id = new UserPropertiesPK(userId);
 	    	UserProperties uProps=null;
@@ -1085,7 +1085,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
  
     public UserProperties loadUserProperties(Long userId, Long binderId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	UserPropertiesPK id = new UserPropertiesPK(userId, binderId);
 	    	UserProperties uProps=null;
@@ -1140,7 +1140,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 	}
     public Group getReservedGroup(String internalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
 	    	if (id == null) {
@@ -1157,7 +1157,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public Long getReservedGroupId(String internalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
 	    	if (id == null) {
@@ -1174,7 +1174,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
 	    	if (id == null) {
@@ -1191,7 +1191,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
     }
     public User getReservedUser(String internalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
 	    	if (id == null) {
@@ -1210,7 +1210,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
    }
     public User getReservedUserDeadOrAlive(String internalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	Long id = getReservedId(internalId, zoneId);
 	    	if (id == null) {
@@ -1228,7 +1228,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
    }
     
     public Set<Long> getPrincipalIds(Principal p) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (p instanceof IndividualPrincipal) {
 		    	if(((IndividualPrincipal)p).isAllIndividualMember()) {
@@ -1265,7 +1265,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	return explodeGroups(ids, zoneId, true);
     }
 	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId, boolean allowAllUsersGroup) {   
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if ((ids == null) || ids.isEmpty()) return new TreeSet();
 			Set users = (Set)getHibernateTemplate().execute(
@@ -1335,7 +1335,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @result List of <code>Membership</code>
 	 */
 	public List<Long> getMembership(final Long groupId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (groupId == null) return new ArrayList();
 		    List membership = (List)getHibernateTemplate().execute(
@@ -1356,7 +1356,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	public List<Long> getOwnedBinders(final Set<Principal> users) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (users == null || (users.size() < 1)) return new ArrayList<Long>();
 		    List membership = (List)getHibernateTemplate().execute(
@@ -1386,7 +1386,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	 * @return Set of groupIds
 	 */
 	public Set<Long> getAllGroupMembership(final Long principalId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (principalId == null)  return new TreeSet();
 			return (Set)getHibernateTemplate().execute(
@@ -1421,7 +1421,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	public SeenMap loadSeenMap(Long userId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	   		SeenMap seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);
 	   		if (seen == null) {
@@ -1441,7 +1441,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	public Visits loadVisit(Long userId, EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	UserEntityPK id = new UserEntityPK(userId, entityId);
 	        return (Visits)getHibernateTemplate().get(Visits.class, id);	
@@ -1451,7 +1451,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	public Rating loadRating(Long userId, EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	UserEntityPK id = new UserEntityPK(userId, entityId);
 	        return (Rating)getHibernateTemplate().get(Rating.class, id);	
@@ -1461,7 +1461,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	UserEntityPK id = new UserEntityPK(userId, entityId);
 	        return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
@@ -1474,7 +1474,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	//to exclude some from future queries
 	//entries evicted from cache
 	public void markEntriesDeleted(final ProfileBinder binder, final Collection<Principal> entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (entries.isEmpty()) return;
 			getHibernateTemplate().execute(
@@ -1499,7 +1499,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 	}
 	public Application loadApplication(Long applicationId, Long zoneId) throws NoApplicationByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	try {
     		Application application = (Application)getHibernateTemplate().get(Application.class, applicationId);
     		if (application == null) {throw new NoApplicationByTheIdException(applicationId);}
@@ -1516,7 +1516,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		}	        
 	}
 	public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Binder top = getCoreDao().findTopWorkspace(zoneName);
 			return loadApplication(applicationId, top.getZoneId());
@@ -1527,7 +1527,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
     public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        Principal principal = (Principal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1557,7 +1557,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
     
 	public List<ApplicationGroup> loadApplicationGroups(Collection<Long> groupsIds, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadPrincipals(groupsIds, zoneId, ApplicationGroup.class, false, true);
     	}
@@ -1567,7 +1567,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
 	public ApplicationPrincipal loadApplicationPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			ApplicationPrincipal principal = (ApplicationPrincipal)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1597,7 +1597,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	public List<ApplicationPrincipal> loadApplicationPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<ApplicationPrincipal> result = loadPrincipals(ids, zoneId, ApplicationPrincipal.class, true, checkActive);
 			//remove proxies
@@ -1620,7 +1620,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	public List loadGroupPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, false, checkActive);
 			//remove proxies
@@ -1653,7 +1653,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 	
 	public List loadIndividualPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, false, checkActive);
 			//remove proxies
@@ -1686,7 +1686,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
     public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	// If applicationIds is null, load all principals of the specified type rather
 	    	// than returning an empty list. This symantics differs from the counterpart 
@@ -1705,7 +1705,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     }
     
     public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
 			//remove proxies
@@ -1766,7 +1766,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
     //get list representing entities that have been shared with ids and binderIds
     public List<SharedEntity> loadSharedEntities(final Collection ids, final Collection binderIds, final Date after, Long zoneId) {   	
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	      	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1833,7 +1833,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 	//If this user cannot see all users, then filter out the ones not allowed
 	public Principal filterInaccessiblePrincipal(Principal principal) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			List principals = new ArrayList();
 			principals.add(principal);
@@ -1848,7 +1848,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	public List filterInaccessiblePrincipals(List principals) {
 		if (RequestContextHolder.getRequestContext() == null) return principals;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			User user = null;
 			try {
@@ -1917,7 +1917,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	
 	//Initialize (or reset) the disk space used by each user
 	public void resetDiskUsage(Long zone) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final Long zoneId = zone;
 			getHibernateTemplate().execute(
@@ -1946,7 +1946,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 	// this returns non-zero quotas (any quota which has been set by the admin)
 	public List getNonDefaultQuotas(String type, final long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final String principalType = type;
 			List userList = new ArrayList();
@@ -1986,7 +1986,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 
 	// This returns a list of all disabled user accounts
 	public List<Long> getDisabledUserAccounts(final long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final String principalType = ObjectKeys.PRINCIPAL_TYPE_USER;
 			List<Long> userList = new ArrayList<Long>();

@@ -135,7 +135,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public boolean isDirty() {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return getSession().isDirty();
     	}
@@ -144,7 +144,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void flush() {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getSession().flush();
     	}
@@ -153,7 +153,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void clear() {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getSession().clear();
     	}
@@ -162,7 +162,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void evict(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (obj instanceof Collection) {
 				final Collection objs = (Collection)obj;
@@ -185,7 +185,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void refresh(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getSession().refresh(obj);
     	}
@@ -194,7 +194,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void lock(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getSession().refresh(obj, LockMode.UPGRADE);
 			//getSession().lock(obj, LockMode.WRITE);
@@ -204,7 +204,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void save(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (obj instanceof Collection) {
 				final Collection objs = (Collection)obj;
@@ -228,7 +228,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 
 	//re-attach object, this does not force a sql update
 	public void update(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().update(obj);
     	}
@@ -237,7 +237,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public Object merge(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return getHibernateTemplate().merge(obj);
     	}
@@ -246,7 +246,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void replicate(final Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	      getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -262,7 +262,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public SFQuery queryObjects(final ObjectControls objs, FilterControls filter, final Long zoneId) { 
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final FilterControls myFilter = filter==null?new FilterControls():filter;
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -292,7 +292,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * We are forced to do it ourselves
 	 */
  	public void deleteEntityAssociations(final String whereClause) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
@@ -329,7 +329,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		
 	}	
 	public void delete(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().delete(obj);
     	}
@@ -344,7 +344,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * to query.  Also deleted entries associated by parentBinderId
 	 */	
 	public void delete(final Binder binder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			delete(binder, null);
     	}
@@ -353,7 +353,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void delete(final Binder binder, final Class entryClass) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	new HibernateCallback() {
@@ -507,7 +507,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public void move(final Binder binder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			//this should handle entries also
 			getHibernateTemplate().execute(
@@ -564,7 +564,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 
 
     public Object load(Class clazz, String id) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return getHibernateTemplate().get(clazz, id);
     	}
@@ -573,7 +573,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public Object load(Class clazz, Long id) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return getHibernateTemplate().get(clazz, id);         
     	}
@@ -586,7 +586,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * This is used to return a subset of object attributes
 	 */
 	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjects(objs, filter, zoneId, false);
     	}
@@ -595,7 +595,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjects(objs, filter, zoneId, true);
     	}
@@ -613,7 +613,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjects(query, values, null);
     	}
@@ -623,7 +623,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public List loadObjects(final String query, final Map values, final Integer maxResults) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 			        new HibernateCallback() {
@@ -661,7 +661,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * Return a list ob objects
 	 */
 	public List loadObjects(Class className, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjects(new ObjectControls(className), filter, zoneId);
     	}
@@ -670,7 +670,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public List loadObjectsCacheable(Class className, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjectsCacheable(new ObjectControls(className), filter, zoneId);
     	}
@@ -685,7 +685,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @return
 	 */
    public List loadObjects(final Collection ids, final Class className, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        if ((ids == null) || ids.isEmpty()) return new ArrayList();
 	        List result = (List)getHibernateTemplate().execute(
@@ -725,7 +725,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
         
     }	
    public List loadObjects(final Collection ids, final Class className, final Long zoneId, final List collections) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	       if ((ids == null) || ids.isEmpty()) return new ArrayList();
 	       List result = (List)getHibernateTemplate().execute(
@@ -762,7 +762,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
        
    }	
    public long countObjects(final Class clazz, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final FilterControls myFilter = filter==null?new FilterControls():filter;
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -792,7 +792,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
    
    public long countObjects(final Class clazz, FilterControls filter, Long zoneId, final StringBuffer sbuf) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final FilterControls myFilter = filter==null?new FilterControls():filter;
 			if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -823,7 +823,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public double averageColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -858,7 +858,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public long sumColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -903,7 +903,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	// necessarily cancel the running transaction.
 	// It assumes the combination of binderId and entityId is enough to identify an entry
     public void registerFileName(Binder binder, DefinableEntity entity, String name) throws TitleException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
 	        if (Validator.isNull(name)) throw new TitleException("");
@@ -922,7 +922,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	// necessarily cancel the running transaction.
 	// It assumes the combination of binderId and entityId is enough to identify an entry
     public void registerTitle(Binder binder, DefinableEntity entity) throws TitleException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
 	    	String name = entity.getNormalTitle();
@@ -949,7 +949,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
     //attachments or foldernames
     public void unRegisterFileName(Binder binder, String name) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.FILE, name));
     	} catch (Exception ex) {
@@ -961,7 +961,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
     //normalized titles in parentbinder
     public void unRegisterTitle(Binder binder, String name) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
     	try {
     		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.TITLE, name));
     	} catch (Exception ex) {
@@ -986,7 +986,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
     //done in the current transaction on a binder title rename or remove attachment
     public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
 	       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
@@ -1008,7 +1008,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
      }
     //done in the current transaction on a binder title rename or remove attachment
     public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
 	       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
@@ -1033,7 +1033,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public Long getEntityIdForMatchingTitle(Long binderId, String title) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
 			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
@@ -1047,7 +1047,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public LibraryEntry getRegisteredTitle(Long binderId, String title) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
 			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
@@ -1058,7 +1058,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public LibraryEntry getRegisteredFileName(Long binderId, String fileName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.FILE, fileName);
 			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
@@ -1069,7 +1069,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public boolean isTitleRegistered(Long binderId, String title) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return(null != getRegisteredTitle(binderId, title));
     	}
@@ -1078,7 +1078,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public boolean isFileNameRegistered(Long binderId, String fileName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return(null != getRegisteredFileName(binderId, fileName));
     	}
@@ -1121,7 +1121,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	
     }
     public void addExistingName(LibraryEntry le, DefinableEntity entity) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
 			if (exist != null) {
@@ -1135,7 +1135,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
     }
     public  Long findFileNameEntryId(Binder binder, String name) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(),LibraryEntry.FILE, name));
 	    	if (le == null) throw new NoObjectByTheIdException("errorcode.no.library.entry.by.the.id", new Object[]{binder.getId(), name});
@@ -1148,7 +1148,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 	//Clears only folderentries. sub-folder remain since they must always be unique for webdav to traverse the tree
     public void clearFileNames(Binder binder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	executeUpdate("delete from org.kablink.teaming.domain.LibraryEntry where binderId=" +
 	    			binder.getId() + " and type=" + LibraryEntry.FILE.toString() + " and not entityId is null", null);
@@ -1160,7 +1160,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
     //Clear all titles, don't need if uniqueTitles not enabled.
     public void clearTitles(Binder binder) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	executeUpdate("delete from org.kablink.teaming.domain.LibraryEntry where binderId=" +
 	    			binder.getId() + " and type=" + LibraryEntry.TITLE.toString(), null);
@@ -1171,7 +1171,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	
     }
     public List<Workspace> findCompanies() {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 			    new HibernateCallback() {
@@ -1189,7 +1189,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public Workspace findTopWorkspace(final String zoneName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (Workspace)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1220,7 +1220,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @return
 	 */
     public Binder loadBinder(Long binderId, Long zoneId) {  
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Binder binder = (Binder)load(Binder.class, binderId);
 	        if (binder == null) {
@@ -1237,7 +1237,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 
     public Binder loadReservedBinder(final String reservedId, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (Binder)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1261,7 +1261,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
  
     public Definition loadReservedDefinition(final String reservedId, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (Definition)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -1285,7 +1285,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
    	
     }
 	public Definition loadDefinition(String defId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	 		Definition def = (Definition)load(Definition.class, defId);
 	        if (def == null) {throw new NoDefinitionByTheIdException(defId);}
@@ -1299,7 +1299,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public Definition loadDefinitionByName(final Binder binder, final String name, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (Definition)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1321,7 +1321,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
  	}
 	public List loadDefinitions(FilterControls filter, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			List list = loadObjects(new ObjectControls(Definition.class), filter, zoneId);
 			filterDefinitions(list);
@@ -1332,7 +1332,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public List loadDefinitions(Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			OrderBy order = new OrderBy();
 			order.addColumn("type");
@@ -1362,7 +1362,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	
 	// return top level configurations
 	public List loadTemplates(final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1383,7 +1383,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public List loadTemplates(final Long zoneId, final int type) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1412,7 +1412,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			TemplateBinder template = (TemplateBinder)load(TemplateBinder.class, templateId);
 	        if (template == null) {throw new NoBinderByTheIdException(templateId);}
@@ -1426,7 +1426,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public TemplateBinder loadTemplateByName(final String name, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (TemplateBinder)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1449,7 +1449,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	//associations not maintained from definition to binders, only from
 	//binders to definitions
 	public void delete(final Definition def) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			getHibernateTemplate().execute(
 		        new HibernateCallback() {
@@ -1511,7 +1511,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public boolean checkInUse(final Definition def){
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Boolean inUse = (Boolean) getHibernateTemplate().execute(
 			        new HibernateCallback() {
@@ -1544,7 +1544,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	 * @param obj
 	 */
 	public Object saveNewSession(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			obj = saveNewSessionWithoutUpdate(obj);
 	    	//attach to current session. This will fail if read only
@@ -1561,7 +1561,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		
 	}
     public Object saveNewSessionWithoutUpdate(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	      	SessionFactory sf = getSessionFactory();
 	    	Session s = sf.openSession();
@@ -1579,7 +1579,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 
     public Object updateNewSessionWithoutUpdate(Object obj) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	      	SessionFactory sf = getSessionFactory();
 	    	Session s = sf.openSession();
@@ -1597,7 +1597,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 
 	public List loadPostings(Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return loadObjects(new ObjectControls(PostingDef.class), null, zoneId);
     	}
@@ -1606,7 +1606,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public PostingDef loadPosting(String postingId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			PostingDef post = (PostingDef)load(PostingDef.class, postingId);
 	        if (post == null) {throw new NoObjectByTheIdException("errorcode.no.posting.by.the.id", postingId);}
@@ -1619,7 +1619,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        		
 	}
 	public PostingDef findPosting(final String emailAddress, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (PostingDef)getHibernateTemplate().execute(
 			        new HibernateCallback() {
@@ -1640,7 +1640,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	//evict from session cache, so no longer available to everyone else
 	//The entries must be of the same type
 	public void bulkLoadCollections(Collection entries) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if ((entries == null) || entries.isEmpty())  return;
 	 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
@@ -1759,7 +1759,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public List<Long> findZoneEntityIds(Long entityId, String zoneUUID, String entityType) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	if (Validator.isNull(zoneUUID)) return new ArrayList<Long>();
 	    	//Load customAttributes
@@ -1800,7 +1800,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}	
 	
 	public Tag loadTag(final String tagId, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
 	        if (t != null && t.getZoneId().equals(zoneId)) return t;
@@ -1814,7 +1814,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	//Used by indexing bulk load
 
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(final Collection<EntityIdentifier> entityIds) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			if (entityIds.isEmpty()) return new HashMap();
 			if (entityIds.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
@@ -1858,7 +1858,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	//Used by indexing
 	public List<Tag> loadAllTagsByEntity(final EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1878,7 +1878,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public List<Tag> loadCommunityTagsByEntity(final EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1898,7 +1898,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		
 	}
 	public List<Tag> loadPersonalTagsByEntity(final EntityIdentifier entityId, final EntityIdentifier ownerId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1920,7 +1920,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		
 	}
 	public List<Tag> loadPersonalTagsByOwner(final EntityIdentifier ownerId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List<Tag>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -1941,7 +1941,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}	
     //load public and personal private tags for an entity.
     public List<Tag> loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   	return (List<Tag>)getHibernateTemplate().execute(
 			     	new HibernateCallback() {
@@ -1968,7 +1968,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 	
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (List<Subscription>)getHibernateTemplate().execute(
 		            new HibernateCallback() {
@@ -2006,7 +2006,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	     );
 	}
 	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {		
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (UserDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
@@ -2041,7 +2041,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public EntityDashboard loadEntityDashboard(final EntityIdentifier ownerId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (EntityDashboard)getHibernateTemplate().execute(
 					new HibernateCallback() {
@@ -2078,7 +2078,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public Dashboard loadDashboard(String id, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			Dashboard d=null;
 			try {
@@ -2124,7 +2124,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	//Don't use , only for special cases
 	public void executeUpdate(final String queryStr) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			executeUpdate(queryStr, null);
     	}
@@ -2133,7 +2133,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public void executeUpdate(final String queryStr, final Map values) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	    	getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
@@ -2171,7 +2171,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	
 	public int daysSinceInstallation()
 	{
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			final long MILLIS_PER_DAY = 1000 * 60 * 60 * 24;
 			List dates = (List) getHibernateTemplate().execute(
@@ -2201,7 +2201,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			//currently only the id is used in the key cause folderEntries are the only users
 			NotifyStatus status = (NotifyStatus)getHibernateTemplate().get(NotifyStatus.class, entity.getEntityIdentifier().getEntityId());
@@ -2221,7 +2221,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
      * End date is needed to exclude for updates that happen inbetween calls or get looping
      */
     public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
-		long beginMS = System.currentTimeMillis();
+		long beginMS = System.nanoTime();
 		try {
 	       	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -2253,7 +2253,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
      * End date is needed to exclude for updates that happen inbetween calls or get looping
     */
     public List<NotifyStatus> loadNotifyStatus(final Binder binder, final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
-		long beginMS = System.currentTimeMillis();
+		long beginMS = System.nanoTime();
 		try {
 	       	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -2282,7 +2282,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     }
 
 	public SimpleName loadSimpleName(String name, Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name));
     	}
@@ -2292,7 +2292,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public SimpleName loadSimpleNameByEmailAddress(final String emailAddress, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (SimpleName)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -2313,7 +2313,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public List<SimpleName> loadSimpleNames(final Long binderId, final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 	        return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
@@ -2336,7 +2336,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 
 	public IndexNode findIndexNode(final String nodeName, final String indexName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			return (IndexNode)getHibernateTemplate().execute(
 			        new HibernateCallback() {
@@ -2354,7 +2354,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public void purgeIndexNodeByIndexName(final String indexName) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   	getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
@@ -2372,7 +2372,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(final Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 		   return (List<LdapConnectionConfig>)getHibernateTemplate().execute(
 		    	   	new HibernateCallback() {
@@ -2389,7 +2389,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        
 	}
 	public ZoneConfig loadZoneConfig(Long zoneId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			ZoneConfig zoneConfig = (ZoneConfig)load(ZoneConfig.class, zoneId);
 			if (zoneConfig != null) return zoneConfig;
@@ -2419,7 +2419,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public List<String> getLoginInfoIds(final Long zoneId, final Long userId, final String authenticatorName, final Date startDate, final Integer maxResult) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			List result = new ArrayList();
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
@@ -2443,7 +2443,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public Long computeDiskSpaceUsed(final Long zoneId, final Long binderId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			List<Long> result = (List) getHibernateTemplate().execute(new HibernateCallback() {
 				public Object doInHibernate(Session session) throws HibernateException {
@@ -2465,7 +2465,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	
 	public BinderQuota loadBinderQuota(Long zoneId, Long binderId) {
-		long begin = System.currentTimeMillis();
+		long begin = System.nanoTime();
 		try {
 			BinderQuota bq = (BinderQuota) load(BinderQuota.class, binderId);
 			if(bq == null)
