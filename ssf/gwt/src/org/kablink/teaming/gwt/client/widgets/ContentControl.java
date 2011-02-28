@@ -91,12 +91,10 @@ public class ContentControl extends Composite
 		}
 	}
 
-	/**
+	/*
 	 * Returns the Document encompassing this ContentControl.
-	 * 
-	 * @return
 	 */
-	public Document getContentDocument()
+	private Document getContentDocument()
 	{
 		Document reply;
 		FrameElement fe = getContentFrame();
