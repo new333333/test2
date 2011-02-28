@@ -964,7 +964,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleSelectAll(Boolean checked) {
 		// Perform the selection and validate the TaskListing tools.
 		selectAllTasks(checked);
-		validateTaskTools();
+		validateTaskToolsAsync();
 	}
 
 	/*
@@ -1013,7 +1013,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean success) {
-				handleTaskPostRemove(taskIds);
+				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
 	}
@@ -1133,18 +1133,69 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void handleTaskPostMove(TaskListItem task) {	
 		initializeUIData();	// Forces the order and depths to be reset.
-		renderTaskBundle(m_taskBundle);
-		persistLinkageChangeNow(task, true);
+		renderTaskBundle(m_taskBundle);		
+
+		// Persist whatever changed in the linkage information.
+		final TaskId taskId = task.getTask().getTaskId();
+		persistLinkageChangeAsync(
+			task,
+			new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					updateCalculatedDatesNow(
+						taskId.getBinderId(),
+						taskId.getEntryId());
+				}
+		});
 	}
 
 	/*
 	 * Does what's necessary after a task is deleted or purged to put
 	 * the change into affect.
 	 */
-	private void handleTaskPostRemove(List<TaskId> taskIds) {
-		// Simply refresh the TaskTable and we'll reread the
-		// tasks and display them in the appropriate hierarchy. 
-		refreshTaskTable(false, true);
+	private void handleTaskPostRemoveAsync(final List<TaskId> taskIds) {
+		Scheduler.ScheduledCommand postRemover;
+		postRemover = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				handleTaskPostRemoveNow(taskIds);
+			}
+		};
+		Scheduler.get().scheduleDeferred(postRemover);
+	}
+	
+	private void handleTaskPostRemoveNow(List<TaskId> taskIds) {
+		// Scan the tasks that were removed...
+		for (TaskId taskId:  taskIds) {
+			// ...scan the task's subtasks...
+			List<TaskListItem> taskList = TaskListItemHelper.findTaskList(m_taskBundle, taskId.getEntryId());
+			TaskListItem       task     = TaskListItemHelper.findTask(    taskList,     taskId.getEntryId());
+			int taskIndex = taskList.indexOf(task);
+			List<TaskListItem> subtaskList = task.getSubtasks();
+			int tasks = subtaskList.size();
+			for (int i = tasks - 1; i >= 0; i -= 1) {
+				// ...moving each subtask into the hierarchy where it's parent task was. 
+				TaskListItem subtask = subtaskList.get(i);
+				subtaskList.remove(i);
+				taskList.add(taskIndex, subtask);
+			}
+		}
+
+		// After we're done mucking with the task linkage information,
+		// we need to persist it and then use it to refresh the
+		// TaskTable.
+		persistLinkageChangeNow(
+			null,	// null  -> No task.  We don't need one when not updating the calculated dates.
+			new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					// Refreshing the TaskTable will reread the tasks
+					// and display them in the appropriate hierarchy. 
+					refreshTaskTableAsync(
+						false,	// false -> Don't preserve checks.
+						true);	// true  -> Persist the task linkage again AFTER rereading the tasks.
+				}
+		});
 	}
 	
 	/*
@@ -1177,7 +1228,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean success) {
-				handleTaskPostRemove(taskIds);
+				handleTaskPostRemoveAsync(taskIds);
 			}
 		});
 	}
@@ -1228,7 +1279,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		else m_flexTableRF.removeStyleName(row, "selected");
 		
 		// ...and validate the TaskListing tools.
-		validateTaskTools();
+		validateTaskToolsAsync();
 	}
 	
 	/*
@@ -1532,18 +1583,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to write the change in linkage to the folder preferences.
 	 */
-	private void persistLinkageChange(final TaskListItem task, final boolean updateCalculatedDates) {
+	private void persistLinkageChangeAsync(final TaskListItem task, final Scheduler.ScheduledCommand postChangeCommand) {
 		Scheduler.ScheduledCommand persistor;
 		persistor = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				persistLinkageChangeNow(task, updateCalculatedDates);
+				persistLinkageChangeNow(task, postChangeCommand);
 			}
 		};
 		Scheduler.get().scheduleDeferred(persistor);
 	}
 	
-	private void persistLinkageChangeNow(final TaskListItem task, final boolean updateCalculatedDates) {
+	private void persistLinkageChangeNow(final TaskListItem task, final Scheduler.ScheduledCommand postChangeCommand) {
 		// If we're not in a state were link changes can be saved...
 		if (!(canPersistLinkage())) {
 			// ...bail.
@@ -1567,13 +1618,10 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean result) {
-				// If we were requested to do so, update the calculated
-				// dates, based on the given task having changed.
-				if (updateCalculatedDates) {
-					// Note that we run this asynchronously so that we 
-					// don't invoke one RPC method while processing the
-					// results of another.
-					updateCalculatedDatesAsync(task);
+				// If we have a post change command...
+				if (null != postChangeCommand) {
+					// ...schedule it.
+					Scheduler.get().scheduleDeferred(postChangeCommand);
 				}
 			}
 		});
@@ -1604,7 +1652,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
-	private void refreshTaskTable(final boolean preserveChecks, final boolean persistLinkage) {
+	private void refreshTaskTableAsync(final boolean preserveChecks, final boolean persistLinkage) {
 		Scheduler.ScheduledCommand refresher;
 		refresher = new Scheduler.ScheduledCommand() {
 			@Override
@@ -1643,9 +1691,9 @@ public class TaskTable extends Composite implements ActionHandler {
 				if (persistLinkage) {
 					// ...persist the current state of things as the
 					// ...new task linkage.
-					persistLinkageChange(
+					persistLinkageChangeAsync(
 						null,	// null  -> No task.  We don't need one when not updating the calculated dates.
-						false);	// false -> Don't update calculated dates. 
+						null);	// null  -> No post change commands.
 				}
 			}			
 		});		
@@ -2166,7 +2214,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Validate the task tools for what we've got displayed.
-		validateTaskTools();
+		validateTaskToolsAsync();
 	}
 	
 	private void renderTaskBundle(TaskBundle tb, boolean updateCalculatedDates) {
@@ -2337,7 +2385,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * the RPC call succeeds any modified end dates will be reflected
 	 * in the task table.
 	 */
-	private void updateCalculatedDates(final Long binderId, final Long entryId) {
+	private void updateCalculatedDatesNow(final Long binderId, final Long entryId) {
 		m_dueDateBusy.setResource(m_images.busyAnimation());
 		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
@@ -2388,22 +2436,17 @@ public class TaskTable extends Composite implements ActionHandler {
 		updater = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				updateCalculatedDates(binderId, entryId);
+				updateCalculatedDatesNow(binderId, entryId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(updater);
 	}
 	
-	private void updateCalculatedDatesAsync(TaskListItem task) {
-		TaskId taskId = task.getTask().getTaskId();
-		updateCalculatedDatesAsync(taskId.getBinderId(), taskId.getEntryId());
-	}
-
 	/*
 	 * Based on what's selected in the task list, validates the tools
 	 * in the TaskListing.
 	 */
-	private void validateTaskTools() {
+	private void validateTaskToolsAsync() {
 		Scheduler.ScheduledCommand validator;
 		validator = new Scheduler.ScheduledCommand() {
 			@Override
