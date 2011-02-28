@@ -1002,7 +1002,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Delete the selected tasks.
-		List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 		m_rpcService.deleteTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1013,9 +1013,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean success) {
-				// Simply refresh the TaskTable and we'll reread the
-				// tasks and display them in the appropriate hierarchy. 
-				refreshTaskTable(false, true);
+				handleTaskPostRemove(taskIds);
 			}
 		});
 	}
@@ -1136,9 +1134,19 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskPostMove(TaskListItem task) {	
 		initializeUIData();	// Forces the order and depths to be reset.
 		renderTaskBundle(m_taskBundle);
-		persistLinkageChange(task, true);
+		persistLinkageChangeNow(task, true);
 	}
 
+	/*
+	 * Does what's necessary after a task is deleted or purged to put
+	 * the change into affect.
+	 */
+	private void handleTaskPostRemove(List<TaskId> taskIds) {
+		// Simply refresh the TaskTable and we'll reread the
+		// tasks and display them in the appropriate hierarchy. 
+		refreshTaskTable(false, true);
+	}
+	
 	/*
 	 * Called when the user presses the purge button on the task tool
 	 * bar.
@@ -1158,7 +1166,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Purge the selected tasks.
-		List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
+		final List<TaskId> taskIds = TaskListItemHelper.getTaskIdsFromList(tasksChecked, false);
 		m_rpcService.purgeTasks(HttpRequestInfo.createHttpRequestInfo(), taskIds, new AsyncCallback<Boolean>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -1169,9 +1177,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(Boolean success) {
-				// Simply refresh the TaskTable and we'll reread the
-				// tasks and display them in the appropriate hierarchy. 
-				refreshTaskTable(false, true);
+				handleTaskPostRemove(taskIds);
 			}
 		});
 	}
@@ -1527,6 +1533,17 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called to write the change in linkage to the folder preferences.
 	 */
 	private void persistLinkageChange(final TaskListItem task, final boolean updateCalculatedDates) {
+		Scheduler.ScheduledCommand persistor;
+		persistor = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				persistLinkageChangeNow(task, updateCalculatedDates);
+			}
+		};
+		Scheduler.get().scheduleDeferred(persistor);
+	}
+	
+	private void persistLinkageChangeNow(final TaskListItem task, final boolean updateCalculatedDates) {
 		// If we're not in a state were link changes can be saved...
 		if (!(canPersistLinkage())) {
 			// ...bail.
@@ -1588,6 +1605,17 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
 	private void refreshTaskTable(final boolean preserveChecks, final boolean persistLinkage) {
+		Scheduler.ScheduledCommand refresher;
+		refresher = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				refreshTaskTableNow(preserveChecks, persistLinkage);
+			}
+		};
+		Scheduler.get().scheduleDeferred(refresher);
+	}
+	
+	private void refreshTaskTableNow(final boolean preserveChecks, final boolean persistLinkage) {
 		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_taskListing.getBinderId(), m_taskListing.getFilterType(), m_taskListing.getMode(), new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {

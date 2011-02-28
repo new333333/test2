@@ -268,8 +268,8 @@ public class GwtMainPage extends Composite
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			handleAction(TeamingAction.HIDE_MASTHEAD, null);
-			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, null);
+			handleAction(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
+			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
 		}
 	}// end GwtMainPage()
 
@@ -1011,7 +1011,10 @@ public class GwtMainPage extends Composite
 		case HIDE_MASTHEAD:
 			m_mastHead.setVisible( false );
 			m_mainMenuCtrl.setMastheadSliderMenuItemState( TeamingAction.SHOW_MASTHEAD );
-			relayoutPage( true );
+			if ( getBooleanActionParam( obj, true ) )
+			{
+				relayoutPage( true );
+			}
 			break;
 			
 		case SHOW_MASTHEAD:
@@ -1039,8 +1042,11 @@ public class GwtMainPage extends Composite
 
 			m_mainMenuCtrl.setWorkspaceTreeSliderMenuItemState( TeamingAction.SHOW_LEFT_NAVIGATION );
 			
-			// Relayout the content panel.
-			relayoutPage( false );
+			if ( getBooleanActionParam( obj, true ) )
+			{
+				// Relayout the content panel.
+				relayoutPage( false );
+			}
 			break;
 			
 		case SHOW_LEFT_NAVIGATION:
@@ -1963,4 +1969,17 @@ public class GwtMainPage extends Composite
 		// the binder.  Return true.
 		return true;
 	}// end validateOSBI()
+
+	/*
+	 * Returns defaultValue if actionParam is null or not a Boolean.
+	 * Otherwise, returns the boolean value.
+	 */
+	private static boolean getBooleanActionParam( Object actionParam, boolean defaultValue )
+	{
+		boolean reply;
+		if ( ( null != actionParam ) && ( actionParam instanceof Boolean ))
+		     reply = ((Boolean) actionParam).booleanValue();
+		else reply = defaultValue;
+		return reply;
+	}// end getBooleanActionParam()
 }// end GwtMainPage
