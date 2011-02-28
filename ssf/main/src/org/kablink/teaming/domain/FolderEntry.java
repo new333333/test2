@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,15 +38,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 import org.kablink.teaming.security.function.WorkArea;
-
-import com.sun.org.apache.bcel.internal.generic.ISTORE;
-
-
-
 
 /**
  * @hibernate.class table="SS_FolderEntries" dynamic-update="true" lazy="true"
@@ -273,21 +267,17 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     }
 
     public void preDeleteReply(FolderEntry child) {
-    	if (1 == 0) {   //This is turned off until we can determine the performance implications (see bug #641442)
-	        if (!child.getParentEntry().getId().equals(this.getId())) {
-	            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
-	        }
-	        removeAncestor(child);
-    	}
+        if (!child.getParentEntry().getId().equals(this.getId())) {
+            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
+        }
+        removeAncestor(child);
     }
 
     public void restorePreDeletedReply(FolderEntry child) {
-    	if (1 == 0) {   //This is turned off until we can determine the performance implications (see bug #641442)
-	        if (!child.getParentEntry().getId().equals(this.getId())) {
-	            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
-	        }
-	        addAncestor(child);
-    	}
+        if (!child.getParentEntry().getId().equals(this.getId())) {
+            throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
+        }
+        addAncestor(child);
     }
     
     //Currently, this is not called from anywhere.
