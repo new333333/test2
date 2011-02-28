@@ -41,36 +41,26 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.event.dom.client.BlurEvent;
-import com.google.gwt.event.dom.client.BlurHandler;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.FocusEvent;
-import com.google.gwt.event.dom.client.FocusHandler;
-import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -82,14 +72,9 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
  *
  */
 public class LoginDlg extends DlgBox
-	implements BlurHandler, FocusHandler, KeyUpHandler
 {
 	private FormPanel m_formPanel = null;
 	private TextBox m_userIdTxtBox = null;
-	private PasswordTextBox m_pwdTxtBox = null;
-	private HandlerRegistration m_userIdKeyUpHandlerReg = null;
-	private HandlerRegistration m_pwdKeyUpHandlerReg = null;
-	private Button m_okBtn = null;
 	private Button m_cancelBtn = null;
 	private Label m_loginFailedMsg = null;
 	private Label m_authenticatingMsg = null;
@@ -98,8 +83,22 @@ public class LoginDlg extends DlgBox
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private InlineLabel m_selfRegLink = null;
 	private AsyncCallback<GwtLoginInfo> m_rpcGetLoginInfoCallback = null;
-	private int m_submitCount;
 
+	/**
+	 * 
+	 */
+	private class LoginFormPanel extends FormPanel
+	{
+		/**
+		 * 
+		 */
+		public LoginFormPanel( Element formElement )
+		{
+			super( formElement );
+		}
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -178,93 +177,68 @@ public class LoginDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
-		FlexTable table;
-		FlexTable.FlexCellFormatter cellFormatter;
-		int row = 0;
 		Element formElement;
 		
 		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
-		m_formPanel = new FormPanel( "" );
-		formElement = m_formPanel.getElement();
-		if ( formElement != null )
-		{
-			formElement.setAttribute( "name","loginFormName" );
-			DOM.setElementAttribute( formElement, "autocomplete", "off" );
-		}
-		m_formPanel.setAction( m_loginUrl );
-		m_formPanel.setMethod( FormPanel.METHOD_POST );
+		// Get the <form ...> element that was created by GwtMainPage.jsp
+		formElement = Document.get().getElementById( "loginFormId" );
+		m_formPanel = new LoginFormPanel( formElement );
+		m_formPanel.setVisible( true );
 		
-		// Chrome will submit the form when the user presses enter.  Our key-up handler will also
-		// submit the form when we see the enter key.  Add an addSubmitHandler() to prevent
-		// the form from being submitted twice.
-		m_submitCount = 0;
 		m_formPanel.addSubmitHandler( new FormPanel.SubmitHandler()
 		{
+			/**
+			 * 
+			 */
 			public void onSubmit(SubmitEvent event)
 			{
-				++m_submitCount;
-				if ( m_submitCount > 1 )
-				{
-					event.cancel();
-				}
+				// Hide the "login failed" message.
+				hideLoginFailedMsg();
+				
+				// Show the the "authenticating..." message.
+				showAuthenticatingMsg();
 			}
 		});
 		
-		table = new FlexTable();
-		table.setCellSpacing( 4 );
-		table.addStyleName( "dlgContent" );
-		cellFormatter = table.getFlexCellFormatter();
-
 		// Add a row for the "user id" controls.
 		{
-			table.setText( row, 0, GwtTeaming.getMessages().loginDlgUserId() );
+			Element userIdLabelElement;
+			Element userIdElement;
 			
-			m_userIdTxtBox = new TextBox();
-			m_userIdTxtBox.setName( "j_username" );
-			m_userIdTxtBox.addFocusHandler( this );
-			m_userIdTxtBox.addBlurHandler( this );
-			m_userIdTxtBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, m_userIdTxtBox );
+			userIdLabelElement = Document.get().getElementById( "userIdLabel" );
+			userIdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgUserId() );
 			
-			++row;
+			userIdElement = Document.get().getElementById( "j_usernameId" );
+			m_userIdTxtBox = TextBox.wrap( userIdElement );
 		}
 		
 		// Add a row for the "password" controls.
 		{
-			table.setText( row, 0, GwtTeaming.getMessages().loginDlgPassword() );
+			Element pwdLabelElement;
 			
-			m_pwdTxtBox = new PasswordTextBox();
-			m_pwdTxtBox.setName( "j_password" );
-			m_pwdTxtBox.addFocusHandler( this );
-			m_pwdTxtBox.addBlurHandler( this );
-			m_pwdTxtBox.setVisibleLength( 20 );
-			table.setWidget( row, 1, m_pwdTxtBox );
-			
-			++row;
+			pwdLabelElement = Document.get().getElementById( "pwdLabel" );
+			pwdLabelElement.setInnerText( GwtTeaming.getMessages().loginDlgPassword() );
 		}
 		
 		// Add a "login failed" label to the dialog.
 		{
-			m_loginFailedMsg = new Label( GwtTeaming.getMessages().loginDlgLoginFailed() );
-			m_loginFailedMsg.addStyleName( "loginFailedMsg" );
-			m_loginFailedMsg.setVisible( false );
+			Element loginFailedElement;
 			
-			cellFormatter.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_RIGHT );
-			table.setWidget( row, 1, m_loginFailedMsg );
-			++row;
+			loginFailedElement = Document.get().getElementById( "loginFailedMsgDiv" );
+			loginFailedElement.setInnerText( GwtTeaming.getMessages().loginDlgLoginFailed() );
+			m_loginFailedMsg = Label.wrap( loginFailedElement );
+			m_loginFailedMsg.setVisible( false );
 		}
 		
 		// Add a "Authenticating..." label to the dialog.
 		{
-			m_authenticatingMsg = new Label( GwtTeaming.getMessages().loginDlgAuthenticating() );
-			m_authenticatingMsg.addStyleName( "loginAuthenticatingMsg" );
-			m_authenticatingMsg.setVisible( false );
+			Element authenticatingElement;
 			
-			cellFormatter.setHorizontalAlignment( row, 0, HasHorizontalAlignment.ALIGN_RIGHT );
-			table.setWidget( row, 1, m_authenticatingMsg );
-			++row;
+			authenticatingElement = Document.get().getElementById( "authenticatingDiv" );
+			authenticatingElement.setInnerText( GwtTeaming.getMessages().loginDlgAuthenticating() );
+			m_authenticatingMsg = Label.wrap( authenticatingElement );
+			m_authenticatingMsg.setVisible( false );
 		}
 		
 		// Add a hidden input for the "spring security redirect" which tells Teaming what page to go
@@ -276,12 +250,25 @@ public class LoginDlg extends DlgBox
 			hiddenInput = new Hidden();
 			hiddenInput.setName( "spring-security-redirect" );
 			hiddenInput.setValue( m_springSecurityRedirect );
-			
-			table.setWidget( row, 0, hiddenInput );
-			++row;
+			m_formPanel.add( hiddenInput );
 		}
 		
-		m_formPanel.add( table );
+		// Create the ok and cancel buttons
+		{
+			Element okElement;
+			Element cancelElement;
+			Button okBtn;
+			
+			okElement = Document.get().getElementById( "loginOkBtn" );
+			okBtn = Button.wrap( okElement );
+			okBtn.setText( GwtTeaming.getMessages().ok() );
+			
+			cancelElement = Document.get().getElementById( "loginCancelBtn" );
+			m_cancelBtn = Button.wrap( cancelElement );
+			m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
+			m_cancelBtn.addClickHandler( this );
+			m_cancelBtn.setVisible( false );
+		}
 		
 		// Create a "Create new account" link that will initially be hidden.
 		// We will show this link later when we get the response to our request to get
@@ -290,13 +277,11 @@ public class LoginDlg extends DlgBox
 			ClickHandler clickHandler;
 			MouseOverHandler mouseOverHandler;
 			MouseOutHandler mouseOutHandler;
+			Element selfRegElement;
 			
-			m_selfRegLink = new InlineLabel( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
-			m_selfRegLink.addStyleName( "margintop3" );
-			m_selfRegLink.addStyleName( "selfRegLink1" );
-			m_selfRegLink.addStyleName( "selfRegLink2" );
-			m_selfRegLink.addStyleName( "subhead-control-bg1" );
-			m_selfRegLink.addStyleName( "roundcornerSM" );
+			selfRegElement = Document.get().getElementById( "createNewAccountSpan" );
+			selfRegElement.setInnerText( GwtTeaming.getMessages().loginDlgCreateNewAccount() );
+			m_selfRegLink = InlineLabel.wrap( selfRegElement );
 			m_selfRegLink.setVisible( false );
 			
 			// Add a clickhandler to the "Create new account" link.  When the user clicks on the link we
@@ -353,10 +338,6 @@ public class LoginDlg extends DlgBox
 				}// end onMouseOut()
 			};
 			m_selfRegLink.addMouseOutHandler( mouseOutHandler );
-			
-			cellFormatter.setColSpan( row, 0, 2 );
-			table.setWidget( row, 0, m_selfRegLink );
-			++row;
 		}
 		
 		mainPanel.add( m_formPanel );
@@ -372,25 +353,7 @@ public class LoginDlg extends DlgBox
 	 */
 	public Panel createFooter()
 	{
-		FlowPanel panel;
-		
-		panel = new FlowPanel();
-		
-		// Associate this panel with its stylesheet.
-		panel.setStyleName( "teamingDlgBoxFooter" );
-		
-		m_okBtn = new Button( GwtTeaming.getMessages().ok() );
-		m_okBtn.addClickHandler( this );
-		m_okBtn.addStyleName( "teamingButton" );
-		panel.add( m_okBtn );
-		
-		m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
-		m_cancelBtn.addClickHandler( this );
-		m_cancelBtn.addStyleName( "teamingButton" );
-		m_cancelBtn.setVisible( false );
-		panel.add( m_cancelBtn );
-		
-		return panel;
+		return null;
 	}// end createFooter()
 	
 	
@@ -485,37 +448,6 @@ public class LoginDlg extends DlgBox
 	}// end init()
 
 	
-	/**
-	 * This method gets called when the user id field or the password field loses the focus.
-	 * For some browsers if the user types in the browser's address bar and presses enter we
-	 * still see the key up.
-	 */
-	public void onBlur( BlurEvent blurEvent )
-	{
-		Object src;
-		
-		src = blurEvent.getSource();
-		if ( src == m_userIdTxtBox )
-		{
-			// Remove the key up handler from the user id field.
-			if ( m_userIdKeyUpHandlerReg != null )
-			{
-				m_userIdKeyUpHandlerReg.removeHandler();
-				m_userIdKeyUpHandlerReg = null;
-			}
-		}
-		else if ( src == m_pwdTxtBox )
-		{
-			// Remove the key up handler from the password field.
-			if ( m_pwdKeyUpHandlerReg != null )
-			{
-				m_pwdKeyUpHandlerReg.removeHandler();
-				m_pwdKeyUpHandlerReg = null;
-			}
-		}
-	}
-	
-	
 	/*
 	 * This method gets called when the user clicks on a button in the footer.
 	 */
@@ -526,14 +458,6 @@ public class LoginDlg extends DlgBox
 		// Get the object that was clicked on.
 		source = event.getSource();
 		
-		// Did the user click on ok?
-		if ( source == m_okBtn )
-		{
-			// Yes
-			submitLoginRequest();
-			return;
-		}
-		
 		if ( source == m_cancelBtn )
 		{
 			hide();
@@ -542,42 +466,6 @@ public class LoginDlg extends DlgBox
 	}// end onClick()
 	
 
-	/**
-	 * This method gets called when the user id field or the password field get the focus.
-	 */
-	public void onFocus( FocusEvent focusEvent )
-	{
-		Object src;
-		
-		src = focusEvent.getSource();
-		if ( src == m_userIdTxtBox )
-		{
-			// Add the key up handler to the user id field.
-			m_userIdKeyUpHandlerReg = m_userIdTxtBox.addKeyUpHandler( this );
-		}
-		else if ( src == m_pwdTxtBox )
-		{
-			// Add the key up handler to the password field.
-			m_pwdKeyUpHandlerReg = m_pwdTxtBox.addKeyUpHandler( this );
-		}
-	}
-	
-	
-	/**
-	 * This method gets called when the user presses a key in the "user id" field or in the "password" field.
-	 * If the user pressed the "enter" key we will submit the form.
-	 */
-	public void onKeyUp( KeyUpEvent event )
-	{
-		// Did the user press enter?
-		if ( event.getNativeKeyCode() == KeyCodes.KEY_ENTER )
-		{
-			// Yes
-			submitLoginRequest();
-		}
-	}// end onKeyPress()
-
-	
 	/**
 	 * Should we allow the user to cancel the login dialog.
 	 */
@@ -596,8 +484,6 @@ public class LoginDlg extends DlgBox
 		Scheduler.ScheduledCommand cmd;
 		
 		super.show();
-		
-		m_submitCount = 0;
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
@@ -628,31 +514,6 @@ public class LoginDlg extends DlgBox
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
 
-	
-	/**
-	 * Submit the form to do the login request.
-	 */
-	private void submitLoginRequest()
-	{
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
-				// Hide the "login failed" message.
-				hideLoginFailedMsg();
-				
-				// Show the the "authenticating..." message.
-				showAuthenticatingMsg();
-				
-				// Submit the form requesting authentication.
-				m_formPanel.submit();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}// end submitLoginRequest()
-	
 	
 	/**
 	 * Show or hide the controls dealing with self registration depending on the values in
