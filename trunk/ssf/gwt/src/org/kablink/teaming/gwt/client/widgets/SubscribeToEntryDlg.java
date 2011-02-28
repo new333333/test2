@@ -135,6 +135,7 @@ public class SubscribeToEntryDlg extends DlgBox
 			
 			label = new Label( messages.sendEmailTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "gray3" );
 			label.addStyleName( "smalltext" );
 			m_sendEmailToPanel1.add( label );
 			
@@ -169,6 +170,7 @@ public class SubscribeToEntryDlg extends DlgBox
 		
 			label = new Label( messages.sendEmailWithoutAttachmentsTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "gray3" );
 			label.addStyleName( "smalltext" );
 			m_sendEmailToPanel2.add( label );
 			
@@ -203,6 +205,7 @@ public class SubscribeToEntryDlg extends DlgBox
 		
 			label = new Label( messages.sendTextTo() );
 			label.addStyleName( "bold" );
+			label.addStyleName( "gray3" );
 			label.addStyleName( "smalltext" );
 			m_sendTextToPanel.add( label );
 			
