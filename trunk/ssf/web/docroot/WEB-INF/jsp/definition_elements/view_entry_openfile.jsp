@@ -69,12 +69,12 @@ OpenFile Applet
 	</c:if>
 	<c:if test="<%= !isIE %>">
 	<applet name="fileopenobj${ssEntryId}${ss_namespace}" id="fileopenobj${ssEntryId}${ss_namespace}" CODE = "org.kablink.teaming.applets.fileopen.FileOpen" 
-	  JAVA_CODEBASE = "<html:rootPath/>applets" 
+	  JAVA_CODEBASE = "<html:appletPath/>applets" 
 	  ARCHIVE = "fileopen/kablink-teaming-fileopen-applet.jar" 
 	  WIDTH = "1" HEIGHT = "1" MAYSCRIPT="true">
 	</c:if>
 	    <PARAM NAME="CODE" value = "org.kablink.teaming.applets.fileopen.FileOpen" />
-	    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
+	    <PARAM NAME ="CODEBASE" value = "<html:appletPath/>applets" />
 	    <PARAM NAME ="ARCHIVE" value = "fileopen/kablink-teaming-fileopen-applet.jar" />
 	    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
 	    <param name = "scriptable" value="true" />
