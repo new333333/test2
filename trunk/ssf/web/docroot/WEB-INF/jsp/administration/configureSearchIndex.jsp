@@ -190,13 +190,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
     onMouseOver="ss_hoverOverIndexTab('manageIndex');"
     onMouseOut="ss_hoverOverStoppedIndexTab('manageIndex');"
     onClick="ss_showIndexTab('manageIndex');">
-    <ssf:nlt tag="administration.search.manage.index.tab"/>
+    <span><ssf:nlt tag="administration.search.manage.index.tab"/></span>
   </div></td><td>
   <div id="manageOptimizeTab" class="wg-tab roundcornerSM" 
     onMouseOver="ss_hoverOverIndexTab('manageOptimize');"
     onMouseOut="ss_hoverOverStoppedIndexTab('manageOptimize');"
     onClick="ss_showIndexTab('manageOptimize');">
-    <ssf:nlt tag="administration.search.manage.optimize.tab"/>
+    <span><ssf:nlt tag="administration.search.manage.optimize.tab"/></span>
   </div></td></tr></table>
 </div>
 <div class="ss_clear"></div>

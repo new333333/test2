@@ -120,7 +120,7 @@ function ss_confirmDelete(obj) {
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.manage.userAccounts">
+<ssf:form titleTag="administration.userAccounts.manageUserAccounts">
 
 <div style="padding:10px;" id="ss_manageUserAccounts">
 <br>
@@ -132,6 +132,32 @@ function ss_confirmDelete(obj) {
   <br/>
 </c:if>
 
+<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+  class="wg-tabs margintop3 marginbottom2">
+  <table>
+    <tr>
+	  <td>
+		  <div class="wg-tab roundcornerSM" >
+			  <a href="<ssf:url action="add_profile_entry" actionUrl="true">
+			    <ssf:param name="binderId" value="${ssFolder.id}" />
+			    <ssf:param name="entryType" value="${ssEntryType}" />
+			    <ssf:param name="context" value="adminMenu" />
+			  </ssf:url>"
+			  ><ssf:nlt tag="administration.userAccounts.addUserAccount"/></a>
+		  </div>
+	  </td>
+	  <td>
+		  <div class="wg-tab roundcornerSM on" >
+			  <a href="<ssf:url action="manage_user_accounts" actionUrl="true"/>"
+			  ><ssf:nlt tag="administration.userAccounts.disableUserAccount"/></a>
+		  </div>
+	  </td>
+    </tr>
+  </table>
+</div>
+<div class="ss_clear"></div>
+
+<div id="manageIndexDiv" style="display:block;" class="wg-tab-content">
 <form name="form1" class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 	
@@ -186,12 +212,55 @@ function ss_confirmDelete(obj) {
 	<!--END-->
 	<!--All User DIV dialog-->
 	<div>
-	  	<div id="allUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; display: none;">
+	  	<div id="allUserDiv" style="border:1px solid #babdb6; margin-bottom:20px; 
+	  	  <c:if test="${!ss_showUserList}"> display: none; </c:if>">
 		  <form name="form1" class="ss_style ss_form" method="post" 
 			  action="<ssf:url action="manage_user_accounts" actionUrl="true"/>">
 			<div class="ss_diagDivTitle">
 		  		<ssf:nlt tag="administration.userAccounts.selectAccountsToDisable"/>
 			</div>
+			
+			<c:if test="${ss_searchTotalHits > ss_pageSize}">
+			  <table>
+			  <tr>
+			    <th colspan="2" align="center">
+				  <div>
+				    <span><ssf:nlt tag="title.page.n_of_m"><ssf:param 
+				    	name="value" value="${ss_pageNumber}"/><ssf:param
+				    	name="value" useBody="true"><fmt:formatNumber value="${ss_searchTotalHits / ss_pageSize}" 
+		    				maxFractionDigits="0"/></ssf:param></ssf:nlt></span>
+				  </div>
+			    </th>
+			  </tr>
+			  <tr>
+			    <td>
+			      <c:if test="${ss_pageNumber <= 0}">
+				    <span class="ss_light"><ssf:nlt tag="general.previousPage"/></span>
+				  </c:if>
+			      <c:if test="${ss_pageNumber > 0}">
+				    <a href="<ssf:url action="manage_user_accounts" actionUrl="true">
+				        <ssf:param name="page" value="${ss_pageNumber - 1}" />
+				        </ssf:url>"
+				    ><span><ssf:nlt tag="general.previousPage"/></span></a>
+				  </c:if>
+				</td>
+				<td style="padding-left:20px;">
+				  <c:if test="${(ss_pageNumber + 1) * ss_pageSize >= ss_searchTotalHits}">
+					    <ssf:nlt tag="general.nextPage"/>
+				  </c:if>
+				  <c:if test="${(ss_pageNumber + 1) * ss_pageSize < ss_searchTotalHits}">
+					  <a href="<ssf:url action="manage_user_accounts" actionUrl="true">
+					      <ssf:param name="page" value="${ss_pageNumber + 1}" />
+					    </ssf:url>"
+					  >
+					    <ssf:nlt tag="general.nextPage"/>
+					  </a>
+				  </c:if>
+				</td>
+			  </tr>
+			  </table>
+			</c:if>
+			
 			<div class="ss_diagDivContent">
 				<table>
 			    <c:forEach var="user" items="${ss_activeUserAccounts}">
@@ -209,6 +278,7 @@ function ss_confirmDelete(obj) {
 			    </c:forEach>
 				</table>
 			</div>
+			
 			<div>
 				<input type="submit" class="ss_submit" name="okBtn" 
 				  value="<ssf:nlt tag="button.disableSelectedAccounts"/>">
@@ -268,6 +338,7 @@ function ss_confirmDelete(obj) {
 	</form>
   </div>		  
 </form>
+</div>
 </div>
 </ssf:form>
 </div>
