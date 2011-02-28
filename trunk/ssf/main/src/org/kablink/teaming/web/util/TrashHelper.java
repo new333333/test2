@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1026,7 +1026,7 @@ public class TrashHelper {
 				}
 				else {
 					logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
-					bs.getFolderModule().indexEntry(((FolderEntry) de), true);
+					reindexEntry(  bs, ((FolderEntry) de));
 					refreshRssFeed(bs, ((FolderEntry) de));
 				}
 			}
@@ -1309,7 +1309,7 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.preDeleteEntry(" + folderId + "," + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				bs.getFolderModule().indexEntry(fe, true);
+				reindexEntry(  bs, fe);
 				refreshRssFeed(bs, fe);
 			}
 			catch (AccessControlException e) {
@@ -1744,6 +1744,16 @@ public class TrashHelper {
     }
 
     /*
+     * Re-indexes a FolderEntry.  If the given FolderEntry is NOT a top
+     * entry, the top entry is indexed instead.
+     */
+    private static void reindexEntry(AllModulesInjected bs, FolderEntry fe) {
+    	FolderEntry feTop       = fe.getTopEntry();
+    	FolderEntry feToReindex = ((null == feTop) ? fe : feTop);
+		bs.getFolderModule().indexEntry(feToReindex, true);
+    }
+    
+    /*
      * Returns true if the Binder requires filenames be unique within
      * its namespace and false otherwise. 
      */
@@ -1826,7 +1836,7 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.restoreEntry(" + folderId + ", " + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				bs.getFolderModule().indexEntry(fe, true);
+				reindexEntry(  bs, fe);
 				refreshRssFeed(bs, fe);
 			}
 			catch (AccessControlException e) {
