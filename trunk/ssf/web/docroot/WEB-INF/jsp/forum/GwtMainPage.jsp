@@ -289,6 +289,52 @@
     <!-- The value of the action attribute will be filled in at runtime. -->
 	<form name="logoutForm" id="logoutForm" method="post" action="" >
 	</form> 
-    
+	
+	<!--  This form is used for logging in. -->
+	<form name="loginFormName" id="loginFormId" method="post" action="${ss_loginPostUrl}" style="display: none;">
+		<table cellspacing="4" class="dlgContent" style="margin: 10px;">
+			<colgroup>
+				<col>
+			</colgroup>
+			<tbody>
+				<tr>
+					<td><span id="userIdLabel"></span></td>
+					<td>
+						<input type="text" size="20" id="j_usernameId" name="j_username" class="gwt-TextBox">
+					</td>
+				</tr>
+				<tr>
+					<td><span id="pwdLabel"></span></td>
+					<td>
+						<input type="password" size="20" id="j_passwordId" name="j_password" class="gwt-PasswordTextBox">
+					</td>
+				</tr>
+				<tr>
+					<td align="right"></td>
+					<td>
+						<div class="gwt-Label loginFailedMsg" style="display: none;" id="loginFailedMsgDiv"></div>
+					</td>
+				</tr>
+				<tr>
+					<td align="right"></td>
+					<td>
+						<div class="gwt-Label loginAuthenticatingMsg" style="display: none;" id="authenticatingDiv"></div>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<span class="gwt-InlineLabel margintop3 selfRegLink1 selfRegLink2 subhead-control-bg1 roundcornerSM" style="display: none;" id="createNewAccountSpan"></span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="teamingDlgBoxFooter" id="loginDlgFooterId" style="margin: 0px !important;">
+			<button type="submit" class="gwt-Button teamingButton" id="loginOkBtn" >okxxx</button>
+			<button type="button" class="gwt-Button teamingButton" style="" id="loginCancelBtn"></button>
+		</div>
+
+	</form>
+
   </body>
 </html>

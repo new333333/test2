@@ -154,7 +154,8 @@ public abstract class DlgBox extends PopupPanel
 		
 		// Create the footer.
 		footer = createFooter();
-		panel.add( footer );
+		if ( footer != null )
+			panel.add( footer );
 		
 		// Initialize the handlers
 		initHandlers( editSuccessfulHandler, editCanceledHandler );
