@@ -39,7 +39,7 @@
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%>
  
-<c:if test="${empty ss_formTagBottomApplied}">
+<c:if test="${empty ss_do_not_show_form_wrapper && empty ss_formTagBottomApplied}">
 </div>
 </td></tr></table>
 <div style="display:none;">

@@ -49,8 +49,11 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
@@ -131,11 +134,25 @@ public class ManageUserAccountsController extends SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			//return new ModelAndView("forum/close_window", model);
 		}
+		
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "");
+		boolean showUserList = false;
+		if (page.equals("")) {
+			page = "0";
+		} else {
+			showUserList = true;
+		}
+		Integer pageNumber = Integer.valueOf(page);
+		Integer maxHits = new Integer(ObjectKeys.SEARCH_MAX_HITS_ALL_USERS);
+		model.put(WebKeys.PAGE_NUMBER, pageNumber);
+		model.put(WebKeys.PAGE_SIZE, maxHits);
+		model.put(WebKeys.SHOW_USER_USER_LIST, new Boolean(showUserList));
 
 		List users = getProfileModule().getDisabledUserAccounts();
 		
     	Map options = new HashMap();
-    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.SEARCH_MAX_HITS_ALL_USERS));
+    	options.put(ObjectKeys.SEARCH_OFFSET, pageNumber * maxHits);
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, maxHits);
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		Map allUsers = getProfileModule().getUsers(options);
@@ -143,6 +160,22 @@ public class ManageUserAccountsController extends SAbstractController {
 		SortedSet<Principal> principals = getProfileModule().getPrincipals(users);
 		model.put(WebKeys.DISABLED_USER_ACCOUNTS, principals);
 		model.put(WebKeys.ACTIVE_USER_ACCOUNTS, allUsers.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.SEARCH_TOTAL_HITS, allUsers.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+
+		try {
+			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			if (entryType.equals("")) {
+				List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
+				if (!defaultEntryDefinitions.isEmpty()) {
+					// Only one option
+					Definition def = (Definition) defaultEntryDefinitions.get(0);
+					entryType = def.getId();
+				}
+			}
+			model.put(WebKeys.FOLDER, profilesBinder);
+			model.put(WebKeys.ENTRY_TYPE, entryType);
+		} catch(AccessControlException e) {}
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_USER_ACCOUNTS, model);
 

@@ -844,6 +844,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
     public static final String ENTRY_HAS_ENTRY_ACL="ssEntryHasEntryAcl";
     public static final String ENTRY_TITLE="ssEntryTitle";
+    public static final String ENTRY_TYPE="ssEntryType";
     public static final String ENTRY_USER_LIST="assignedUsers";
     public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";
     public static final String ENTRY_VIEW_STYLE2="ss_entryViewStyle2";
@@ -1278,6 +1279,7 @@ public class WebKeys {
     public static final String SHOW_USER_SHOW_HINT="ss_showUserShowHint";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_PROFILE_ENTRY="ss_showUserProfileEntry";
+    public static final String SHOW_USER_USER_LIST="ss_showUserList";
     public static final String SHOW_USER_INACTIVE_ACCOUNTS="ss_showUserInactiveAccounts";
     public static final String SHOW_USER_WORKSPACE_PREDELETED="ss_showUserWorkspacePredeleted";
     public static final String SHOW_USER_TARGET="ss_showUserTarget";
@@ -1435,6 +1437,7 @@ public class WebKeys {
     public static final String VIEW_ACCESS_CONTROL_ENTRY = "binder/access_control_entry";
     public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
+    public static final String VIEW_ADD_USER_ACCOUNT = "administration/manage_users_add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
     public static final String VIEW_ADD_TEAM_MEMBERS = "binder/add_team_members";

@@ -33,6 +33,7 @@
 package org.kablink.teaming.portlet.profile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -51,9 +52,11 @@ import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
+import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -192,31 +195,47 @@ public class AddEntryController extends SAbstractController {
 	}
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		String context = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CONTEXT, "");				
 		Map model = new HashMap();
 		//Adding an entry; get the specific definition
-		Map folderEntryDefs = getProfileModule().getProfileBinderEntryDefsAsMap();
-		String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 		try {
-			model.put(WebKeys.FOLDER, getProfileModule().getProfileBinder());
+			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+			Map folderEntryDefs = getProfileModule().getProfileBinderEntryDefsAsMap();
+			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			if (entryType.equals("")) {
+				List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
+				if (!defaultEntryDefinitions.isEmpty()) {
+					// Only one option
+					Definition def = (Definition) defaultEntryDefinitions.get(0);
+					entryType = def.getId();
+				}
+			}
+			model.put(WebKeys.FOLDER, profilesBinder);
+			model.put(WebKeys.ENTRY_TYPE, entryType);
+			model.put(WebKeys.BINDER_ID, getProfileModule().getProfileBinderId());
+			model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
+			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
+	
+			// Are we dealing with the Guest user?
+			if ( isGuestUser() )
+			{
+				// Yes, set the flag that will enable the text verification controls in the page.
+				model.put( WebKeys.URL_DO_TEXT_VERIFICATION, "true" );
+			}
+			
+			//Make sure the requested definition is legal
+			if (folderEntryDefs.containsKey(entryType)) {
+				DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+			} else {
+				DefinitionHelper.getDefinition((Document) null, model, "//item[@name='profileEntryForm']");
+			}
 		} catch(AccessControlException e) {}
-		model.put(WebKeys.BINDER_ID, getProfileModule().getProfileBinderId());
-		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
-
-		// Are we dealing with the Guest user?
-		if ( isGuestUser() )
-		{
-			// Yes, set the flag that will enable the text verification controls in the page.
-			model.put( WebKeys.URL_DO_TEXT_VERIFICATION, "true" );
-		}
 		
-		//Make sure the requested definition is legal
-		if (folderEntryDefs.containsKey(entryType)) {
-			DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
+		if (context.equals("adminMenu")) {
+			return new ModelAndView(WebKeys.VIEW_ADD_USER_ACCOUNT, model);
 		} else {
-			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='profileEntryForm']");
+			return new ModelAndView(WebKeys.VIEW_ADD_ENTRY, model);
 		}
-		return new ModelAndView(WebKeys.VIEW_ADD_ENTRY, model);
 	}
 	
 	
