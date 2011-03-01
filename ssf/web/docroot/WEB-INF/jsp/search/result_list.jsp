@@ -135,6 +135,30 @@
 										    	(<ssf:nlt tag="entry.noTitle"/>)
 										    </c:if>
 									    	<c:out value="${entry.title}"/>
+									    	
+										     <c:if test="${!empty entry._rating}">				    	
+												<span class = "ss_nowrap">
+													<%
+														String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry.get("_rating").toString())));
+													%>
+													<c:set var="sRating" value="<%= iRating %>"/>
+													<c:if test="${sRating > 0}">
+														<c:forEach var="i" begin="0" end="${sRating - 1}" step="1">
+
+														  <img border="0" 
+														    <ssf:alt tag="alt.goldStar"/>
+														    src="<html:imagesPath/>pics/star_gold.png"/>
+														</c:forEach>
+													</c:if>
+													<c:if test="${sRating < 5}">
+														<c:forEach var="i" begin="${sRating}" end="4" step="1">
+														  <img <ssf:alt tag="alt.grayStar"/> border="0" 
+															    src="<html:imagesPath/>pics/star_gray.png" />
+														</c:forEach>
+													</c:if>
+												</span>
+										     </c:if>
+										     
 										</ssf:titleLink>
 	
 									</div>
