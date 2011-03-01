@@ -2138,6 +2138,17 @@ span.ss_tabs_title {
 }
 
 /* breadcrumbs */
+
+div.ss_entryContent .ss_comment_breadcrumb {
+	font-size: 10px;
+	white-space: nowrap;
+}
+div.ss_entryContent .ss_comment_breadcrumb a {
+	color: #505354 !important;
+}
+div.ss_entryContent .ss_comment_breadcrumb a:hover {
+	color: #135c8f !important;
+}
 .ss_breadcrumb {
 	margin:0px;
 	padding:0px 5px 0px 0px;
