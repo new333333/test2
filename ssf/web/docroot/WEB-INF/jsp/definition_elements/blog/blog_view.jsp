@@ -37,8 +37,8 @@
 <jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 
 <div class="ss_style ss_portlet">
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" 
-  entry="${ssDefinitionEntry}" />
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}" 
+	  entry="${ssDefinitionEntry}" />
 </div>

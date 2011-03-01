@@ -42,24 +42,22 @@
 <div class="ss_replies">
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
 <jsp:useBean id="reply" type="org.kablink.teaming.domain.Entry" />
- <div>
-<c:if test="${!empty reply.entryDefId}">
- 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
-		configElement='<%= (Element) reply.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name=\'entryBlogView\']") %>'
-		configJspStyle="view" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-</c:if>
-<c:if test="${empty reply.entryDefId}">
- 	  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
-		configElement="${ssConfigElement}" 
-		configJspStyle="view" 
-		processThisItem="false" 
-		entry="<%= reply %>" />
-</c:if>
- 
- </div>
- <div class="ss_divider"></div>
+	<div class="ss_reply_item">
+		<c:if test="${!empty reply.entryDefId}">
+			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
+				configElement='<%= (Element) reply.getEntryDefDoc().getRootElement().selectSingleNode("//item[@name=\'entryBlogView\']") %>'
+				configJspStyle="view" 
+				processThisItem="false" 
+				entry="<%= reply %>" />
+		</c:if>
+		<c:if test="${empty reply.entryDefId}">
+			  <ssf:displayConfiguration configDefinition='<%= (Document) reply.getEntryDefDoc() %>' 
+				configElement="${ssConfigElement}" 
+				configJspStyle="view" 
+				processThisItem="false" 
+				entry="<%= reply %>" />
+		</c:if> 
+	</div>
 </c:forEach>
 </div>
 </c:if>
