@@ -565,8 +565,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 							if (parent == null) parent = entry;
 							
 							// Set the X-* fields required for GW integration.
-							mHelper.setEntryPermalinkUrl(PermaLinkUtil.getPermalink(entry ));
-							mHelper.setRootPermalinkUrl( PermaLinkUtil.getPermalink(parent));
+							mHelper.setEntryPermalinkUrl(PermaLinkUtil.getPermalink(entry,  true));
+							mHelper.setRootPermalinkUrl( PermaLinkUtil.getPermalink(parent, true));
 							
 							//Handle subscriptions plus notifications for 3 types 
 							List subscriptions;
