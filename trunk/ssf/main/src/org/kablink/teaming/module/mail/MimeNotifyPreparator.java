@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.module.mail;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -45,6 +46,7 @@ import java.util.TimeZone;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -90,6 +92,8 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	IcalModule icalModule;
 	Notify notify;
 	EmailLog emailLog;
+	String entryPermalinkUrl;
+	String rootPermalinkUrl;
 	
 	/**
 	 * Class constructor.
@@ -221,6 +225,40 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	}
 	
 	/**
+	 * Stores the entry permalink URL to send as the X-Vibe-OnPrem.
+	 * 
+	 * @param entryPermalinkUrl
+	 */
+	public void setEntryPermalinkUrl(String entryPermalinkUrl) {
+		this.entryPermalinkUrl = mimeEncodePermalinkUrl(entryPermalinkUrl); 
+	}
+	
+	/**
+	 * Stores the root permalink URL to send as the X-RootVibe-OnPrem.
+	 * 
+	 * @param rootPermalinkUrl
+	 */
+	public void setRootPermalinkUrl(String rootPermalinkUrl) {
+		this.rootPermalinkUrl = mimeEncodePermalinkUrl(rootPermalinkUrl); 
+	}
+	
+	/*
+	 * Uses MimeUtil.encodeText() to encode a permalink URL for
+	 * inclusion as part of an email header.
+	 */
+	private String mimeEncodePermalinkUrl(String permalinkUrl) {
+		String reply;
+		try {
+			reply = MimeUtility.encodeText(permalinkUrl);
+		}
+		catch (UnsupportedEncodingException uee) {
+			logger.error("MimeNotifyPreparotor.mimeEncodePermalinkUrl( EXCEPTION ):  ", uee);
+			reply = null;
+		}
+		return reply;
+	}
+	
+	/**
 	 * Stores the subject to include in the notification.
 	 * 
 	 * @param helper
@@ -301,7 +339,11 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			// add ones to email as alternative content.
 			multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 		}
-		
+
+		// Set any X-* fields required for GW integration.
+		if (MiscUtil.hasString(entryPermalinkUrl)) mimeMessage.addHeader(MailModule.HEADER_X_VIBE_ONPREM,     entryPermalinkUrl);
+		if (MiscUtil.hasString(rootPermalinkUrl )) mimeMessage.addHeader(MailModule.HEADER_X_ROOTVIBE_ONPREM, rootPermalinkUrl );
+
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		setSubject(helper);
@@ -309,7 +351,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		setBccAddrs(helper);
 		setToAddrs(helper);
 		setFrom(helper);
-
+		
 		// Are we sending a text message?
 		if (textMessage) {
 			// Yes!  We only send a plain text MIME part that contains
