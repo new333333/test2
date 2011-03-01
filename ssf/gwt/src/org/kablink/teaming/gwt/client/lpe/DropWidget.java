@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.EditHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -193,6 +194,13 @@ public abstract class DropWidget extends Composite
 						m_dlgX -= overlap;
 						if ( m_dlgX < 0 )
 							m_dlgX = m_lpe.getCanvasLeft();
+					}
+					
+					// For some unknown reason the tiny mce dialog does not position correctly.  Alway
+					// place its left edge on the left edge of the canvas.
+					if ( m_dlgBox instanceof TinyMCEDlg )
+					{
+						m_dlgX = m_lpe.getCanvasLeft();
 					}
 					
 					canvasBottomEdge = m_lpe.getCanvasTop() + m_lpe.getCanvasHeight();

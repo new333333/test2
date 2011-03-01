@@ -48,7 +48,6 @@ import com.google.gwt.user.client.ui.FlowPanel;
  */
 public class HtmlDropWidget extends DropWidget
 {
-	private static TinyMCEDlg m_tinyMCEDlg = null;		// For efficiency sake, we only create one dialog box.
 	private HtmlProperties	m_properties = null;
 	private FlowPanel m_htmlPanel;
 	
@@ -106,53 +105,45 @@ public class HtmlDropWidget extends DropWidget
 	 */
 	public DlgBox getPropertiesDlgBox( int x, int y )
 	{
-		// Have we already created a dialog box?
-		if ( m_tinyMCEDlg == null )
-		{
-			LPETinyMCEConfiguration tinyMCEConfig;
-			FileAttachments fileAttachments;
-			ArrayList<String> listOfFileNames = null;
-			
-			// No, create one.
-			tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, m_lpe.getBinderId() );
-			
-			// Get the file attachments for the landing page.
-			listOfFileNames = new ArrayList<String>();
-			fileAttachments = m_lpe.getFileAttachments();
-			if ( fileAttachments != null )
-			{
-				int i;
-				
-				for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
-				{
-					String fileName;
-					
-					fileName = fileAttachments.getFileName( i );
-					listOfFileNames.add( fileName );
-				}
-			}
-			tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
-
-			// No, create a "Edit Advanced Branding" dialog.
-			m_tinyMCEDlg = new TinyMCEDlg(
-										GwtTeaming.getMessages().lpeEditHtml(),
-										tinyMCEConfig,
-										this,
-										this,
-										false,
-										true,
-										x,
-										y,
-										null );
-		}
-		else
-		{
-			// Yes, update the controls in the dialog with the values from the properties.
-			m_tinyMCEDlg.init( m_properties.getHtml() );
-			m_tinyMCEDlg.initHandlers( this, this );
-		}
+		TinyMCEDlg tinyMCEDlg;
+		LPETinyMCEConfiguration tinyMCEConfig;
+		FileAttachments fileAttachments;
+		ArrayList<String> listOfFileNames = null;
 		
-		return m_tinyMCEDlg;
+		tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, m_lpe.getBinderId() );
+		
+		// Get the file attachments for the landing page.
+		listOfFileNames = new ArrayList<String>();
+		fileAttachments = m_lpe.getFileAttachments();
+		if ( fileAttachments != null )
+		{
+			int i;
+			
+			for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
+			{
+				String fileName;
+				
+				fileName = fileAttachments.getFileName( i );
+				listOfFileNames.add( fileName );
+			}
+		}
+		tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
+
+		// No, create a "Edit Advanced Branding" dialog.
+		tinyMCEDlg = new TinyMCEDlg(
+									GwtTeaming.getMessages().lpeEditHtml(),
+									tinyMCEConfig,
+									this,
+									this,
+									false,
+									true,
+									x,
+									y,
+									null );
+		
+		tinyMCEDlg.init( m_properties.getHtml() );
+
+		return tinyMCEDlg;
 	}
 	
 	
