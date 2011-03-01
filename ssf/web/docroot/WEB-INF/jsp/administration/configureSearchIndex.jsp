@@ -184,9 +184,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <ssf:form titleTag="administration.configure_search_index">
 <br/>
 <br/>
-<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+<div style="text-align: left; margin: 0 10px 0 0; border: 0px none;" 
   class="wg-tabs margintop3 marginbottom2">
-  <table><tr><td><div id="manageIndexTab" class="wg-tab roundcornerSM on" 
+  <table cellpadding="0" cellspacing="0"><tr><td><div id="manageIndexTab" class="wg-tab roundcornerSM on" 
     onMouseOver="ss_hoverOverIndexTab('manageIndex');"
     onMouseOut="ss_hoverOverStoppedIndexTab('manageIndex');"
     onClick="ss_showIndexTab('manageIndex');">
@@ -212,10 +212,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	onSubmit="return ss_submitIndexingForm('${renderResponse.namespace}fm', 'ss_indexingDone' );" >
 <input type="hidden" name="operation" value="index"/>
 
-<div class="ss_buttonBarRight">
+<div class="margintop3 ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 		  onClick="return handleCloseBtn();"/>
 </div>
@@ -228,19 +227,18 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <span class="ss_largeprint ss_bold"><ssf:nlt tag="administration.configure.index.select"/></span>
 <br>
 <span class="ss_smallprint" style="padding-left:10px;"><ssf:nlt tag="administration.configure_search_index_hint"/></span>
-<br>
-<br>
 
-<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
-  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
-
-<br>
+<div class="marginleft1 ss_subsection"
+	<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
+	  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
+	  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
+</div>
+<div class="margintop2">
 <c:if test="${!empty ssSearchNodes}">
-<br>
-<br>
+</div>
+<div class="margintop2">
 <span class="ss_bold"><ssf:nlt tag="administration.configure.nodes.select" text="Select the nodes to apply the re-indexing to:"/></span>
-<br>
+</div>
 <br>
 <ssf:nlt tag="administration.configure.nodes.select.detail"/>
 <br>
@@ -252,12 +250,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
-<br>
-<br>
-<div class="ss_buttonBarLeft">
+<div class="margintop3 ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" 
  value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 </div>
@@ -289,13 +284,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 <table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
 	<tr>
-		<td><input type="checkbox" id="enabled" name="enabled"
-			<c:if test="${ssScheduleInfo.enabled}">checked</c:if> /> <label
-			for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-			tag="index.optimization.schedule.enable" /></span><br />
-		</label></td>
-	</tr>
-	<tr>
 		<td>
 			<input type="checkbox" id="runnow" name="runnow"
 			<c:if test="${runnow}"> checked="checked" </c:if> /> <label
@@ -304,9 +292,16 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 		</label></td>
 	</tr>
+	<tr>
+		<td><input type="checkbox" id="enabled" name="enabled"
+			<c:if test="${ssScheduleInfo.enabled}">checked</c:if> /> <label
+			for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+			tag="index.optimization.schedule.enable" /></span><br />
+		</label></td>
+	</tr>
 </table>
 
-<div class="margintop2" style="margin-left: 2.5em;"
+<div class="margintop2 ss_subsection" style="margin-left: 2.5em;">
 	<ssf:expandableArea title='<%= NLT.get("index.optimization.schedule") %>' initOpen="true">
 		<c:set var="schedule" value="${ssScheduleInfo.schedule}" />
 		<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
@@ -328,13 +323,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
   </c:forEach>
   <input type="hidden" name="searchNodesPresent" value="1"/>
 </c:if>
-<br>
 
-<br>
-<div class="ss_buttonBarLeft">
+<div class="margintop3 ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" 
  value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 </div>
@@ -346,19 +338,24 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </table>
 </div>
 
-<div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;">
-	<span><ssf:nlt tag="index.finished"/></span>
-	<br/>
-	<br/>
-	<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
+<div id="ss_indexing_done_div" class="teamingDlgBox" style="position:absolute;display:none;">
+	<div class="popupContent" style="padding: 20px;">
+		<span class="ss_bold"><ssf:nlt tag="index.finished"/></span>
+		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
+	</div>
 </div>
 
-<div id="ss_optimization_done_div" style="position:absolute;display:none;background-color:#fff;">
-	<span><ssf:nlt tag="index.optimization.finished"/></span>
-	<br/>
-	<br/>
-	<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
+<div id="ss_optimization_done_div" class="teamingDlgBox" style="position:absolute; display:none;">
+	<div class="popupContent" style="padding: 20px;">
+		<span><ssf:nlt tag="index.optimization.finished"/></span>
+		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
+	</div>
 </div>
+
+
+
+
+
 
 </ssf:form>
 </div>
