@@ -2,6 +2,20 @@
 
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
+
+	<if>
+		<isset property="default.static.dir" />
+		<then>
+			<property name="release.static.dir" value="${default.static.dir}" />
+		</then>
+		<else>
+			<tstamp>
+	    		<format property="release.static.dir" pattern="dd-MM-yyyy-hhmm" />
+			</tstamp>
+		</else>
+	</if>
+	<property name="web.static.path" value="static/${release.static.dir}" />
+	<property name="web.static.dir" value="${web.dir}/${web.static.path}" />
 	
 	<property name="war.file" value="ssf-web.war" />
 		
@@ -133,8 +147,9 @@
 			</manifest>-->
 		</war>
 		
-		<antcall target="add-static-files"/>
+		<!-- Adding the release info must be done before adding the static files to make the static directory setting correct -->
 		<antcall target="add-release-info"/>
+		<antcall target="add-static-files"/>
 		<antcall target="add-messages-files"/>
 	</target>
 
@@ -257,6 +272,9 @@
 			<replacefilter
 				token="release.build.date="
 				value="release.build.date=${build.timestamp}"/>
+			<replacefilter
+				token="release.static.dir="
+				value="release.static.dir=${release.static.dir}"/>
 		</replace>
 
 		<war
@@ -291,6 +309,10 @@
 	</target>
 	
 	<target name="deploy-static-files">
+		<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+                         match="release.static.dir=(.*)"
+                         replace="release.static.dir=${release.static.dir}"
+                         byline="true"/>
 		<antcall target="deploy-css-only" />
 		<antcall target="deploy-js-only" />
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/images">
