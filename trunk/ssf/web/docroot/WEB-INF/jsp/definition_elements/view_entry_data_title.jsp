@@ -59,21 +59,22 @@
 <c:if test="${empty ss_title_breadcrumbs_seen && 
                     ssDefinitionEntry.entityType == 'folderEntry' && 
                     !empty ssDefinitionEntry.parentEntry}">
+
 <div style="padding-bottom:2px;">
-<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
-<jsp:useBean id="parentEntry" type="java.lang.Object" />
-<%
-	Stack parentEntryTree = new Stack();
-	while (parentEntry != null) {
-		parentEntryTree.push(parentEntry);
-		parentEntry = ((FolderEntry)parentEntry).getParentEntry();
-	}
-	while (!parentEntryTree.empty()) {
-		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
-%>
-<c:set var="nextEntry" value="<%= nextEntry %>"/>
-<div style="padding-bottom:8px;">
-<span style="ss_fineprint ss_light">
+
+	<c:set var="parentEntry" value="${ssDefinitionEntry.parentEntry}"/>
+	<jsp:useBean id="parentEntry" type="java.lang.Object" />
+	<%
+		Stack parentEntryTree = new Stack();
+		while (parentEntry != null) {
+			parentEntryTree.push(parentEntry);
+			parentEntry = ((FolderEntry)parentEntry).getParentEntry();
+		}
+		while (!parentEntryTree.empty()) {
+			FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
+	%>
+	<c:set var="nextEntry" value="<%= nextEntry %>"/>
+<span class="ss_comment_breadcrumb">
 <a
   href="<ssf:url crawlable="true" adapter="true" portletName="ss_forum"
   folderId="${ssDefinitionEntry.parentBinder.id}" 
@@ -86,38 +87,37 @@ ${nextEntry.docNumber}.
 <c:if test="${empty nextEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${nextEntry.title}" escapeXml="true" /><img border="0" <ssf:alt/>
-  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+<c:out value="${nextEntry.title}" escapeXml="true" /><img src="<html:rootPath/>images/pics/breadspace.gif" border="0" align="absmiddle"></a>
 </span>
-<br/>
+	
 <%
 	}
 %>
-</div>
 </c:if>
-<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
-<span class="ss_entryTitle ss_link_7">
-	<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
-	  	!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
-	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
-	</c:if>
-		<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
-		binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
-		namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
-	
-			<ssf:param name="url" useBody="true">
-				<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
-				folderId="${ssDefinitionEntry.parentFolder.id}" 
-				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
-				name="namespace" value="${ss_title_namespace}"/></ssf:url>
-			</ssf:param>
-			<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
-		</ssf:titleLink>
-		<% if (entryInTrash) { %>
-		  <div style="display: inline; margin:0px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="entry.inTheTrash"/></span></div>
-		<% } %>
-</span>
-
+	<div>
+	<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
+	<span class="ss_entryTitle ss_link_7">
+		<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
+			!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
+		  <c:out value="${ssDefinitionEntry.docNumber}"/>.
+		</c:if>
+			<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
+			binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+			namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
+		
+				<ssf:param name="url" useBody="true">
+					<ssf:url crawlable="true" adapter="true" portletName="ss_forum" 
+					folderId="${ssDefinitionEntry.parentFolder.id}" 
+					action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
+					name="namespace" value="${ss_title_namespace}"/></ssf:url>
+				</ssf:param>
+				<c:out value="${ssDefinitionEntry.title}" escapeXml="true"/>
+			</ssf:titleLink>
+			<% if (entryInTrash) { %>
+			  <div style="display: inline; margin:0px 30px;"><span class="wiki-noentries-panel"><ssf:nlt tag="entry.inTheTrash"/></span></div>
+			<% } %>
+	</span>
+	</div>
 </div>
 
 <script type="text/javascript">
