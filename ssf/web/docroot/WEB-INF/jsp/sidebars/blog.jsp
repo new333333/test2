@@ -49,7 +49,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		  <tr>
 			  <td><a href="${ssBlogMonthUrls[monthYear.key]}"
 			  <c:if test="${monthYear.key == ss_yearMonth}">
-		        class="ss_bold" style="background-color:#e5e5e5;" 
+		        class="ss_bold" 
 		      </c:if>
 			  <ssf:title tag="title.entries.archived.on">
 			  	<ssf:param name="value" value="${ssBlogMonthTitles[monthYear.key]}" />
@@ -65,8 +65,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		      <c:if test="${!empty ssBlogMonthFolderHits[monthFolder]}">
 		       <tr>
 		        <td style="padding-left:10px;">
-		         <a style="background-color:#e5e5e5;"
-		           href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
+		         <a href="<ssf:url action="view_folder_listing" binderId="${blogPage.id}"><ssf:param 
 		           name="yearMonth" value="${ss_yearMonth}" /></ssf:url>"
 		         >${blogPage.title}</a>
 		        </td>
