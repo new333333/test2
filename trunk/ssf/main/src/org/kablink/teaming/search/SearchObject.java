@@ -43,6 +43,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.util.Version;
 import org.kablink.teaming.lucene.ChineseAnalyzer;
 import org.kablink.teaming.lucene.analyzer.NullAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
@@ -83,10 +84,10 @@ public class SearchObject {
 		BooleanQuery.setMaxClauseCount(SPropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES));
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
-			QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, VibeQueryAnalyzer.getInstance());
+			QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, VibeQueryAnalyzer.getInstance());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
-			qp = new QueryParser(Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
+			qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());
 			queryParserWSA.set(qp);
 		}
 	}
@@ -160,7 +161,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, getCJKAnalyzer());
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, getCJKAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -181,7 +182,7 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
 				return qp;
@@ -202,7 +203,7 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);
 				return qp;
