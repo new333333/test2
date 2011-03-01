@@ -944,8 +944,8 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	}
 .teamingDlgBox .popupContent {
 	background-color: #f6f6f6;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 /* Styles for the content of a dialog box. */
 .teamingDlgBoxContent{

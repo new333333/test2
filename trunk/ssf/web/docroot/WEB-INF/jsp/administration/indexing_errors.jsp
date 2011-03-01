@@ -40,14 +40,15 @@
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
 <taconite-replace contextNodeID="ss_indexing_done_div" parseInBrowser="true">
-	<div id="ss_indexing_done_div" style="position:absolute;display:none;background-color:#fff;padding: 12px; -moz-border-radius: 5px; -webkit-border-radius: 5px;">
+
+<div id="ss_indexing_done_div" class="teamingDlgBox" style="position:absolute;display:none;">
+	<div class="popupContent" style="padding: 20px;">
 		<span class="ss_bold"><ssf:nlt tag="index.finished"/></span>
-		<br/>
-		<span><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></span>
-		<br/>
-		<br/>
-		<input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" />
+		<div class="margintop1"><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></div>
+		<div class="margintop3" style="text-align: center;"><input type="button" value="<ssf:nlt tag="button.close"/>" onClick="return handleCloseBtn();" /></div>
 	</div>
+</div>
+
 </taconite-replace>
 
 </taconite-root>
