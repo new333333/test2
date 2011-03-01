@@ -47,7 +47,7 @@ var ss_showingFolder = true;
 	<c:if test="${!empty ssFolderEntries}">
 	  <c:forEach var="entry" items="${ssFolderEntries}" >
 		<div class="ss_blog_content">
-		 <div class="ss_blog_content2"
+		 <div class="ss_blog_content2">
 		  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
 		  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
 		  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>

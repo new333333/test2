@@ -111,9 +111,18 @@ div.ss_blog_content2 {
 div.ss_blog_content2 .ss_entryContent {
 	margin: 2px 5px 5px 27px;
 	}
-div.ss_blog_content2 .ss_replies {
-	background-color: #ebf5f5; 
-	}	
+div.ss_blog_content2 .ss_reply_item {
+	background-color: #ebf5f5;
+	padding-bottom: 5px;
+	border-top: 1px solid #c4c4c4;
+	
+	}
+	.ss_reply_item	span.ss_header_bar_title_text {
+	font-size: 13px;
+	}
+	.ss_reply_item .ss_entryContent {
+	margin: 2px 5px 5px 46px !important;
+	}
 div.ss_blog_sidebar {
     padding: 10px;
     background-color:${ss_style_background_color_side_panel_featured};
@@ -134,13 +143,12 @@ div.ss_blog_sidebar_box {
 	padding: 3px 5px 5px 0px;
 }
 a.ss_displaytag {
-	color: ${ss_style_metadata_color};
 	font-size: ${ss_style_font_smallprint} !important;
 	}
 .ss_blog_sidebar table {
 	background-color: transparent;
 }
-.ss_blog_content, .ss_blog_content table {
+.ss_blog_content table {
   background-color:${ss_blog_content_background_color};
 }
 .ss_blog_summary_title, .ss_blog_summary_title table {
