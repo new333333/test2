@@ -97,8 +97,11 @@
 					widgetId="event_start_${prefix}"
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
-					endDateWidgetId="event_end_${prefix}"
-					endTimeWidgetId="event_end_time_${prefix}" />
+					<c:if test="${!attMap.hasDurDays}">						
+						endDateWidgetId="event_end_${prefix}"
+						endTimeWidgetId="event_end_time_${prefix}"
+					</c:if>
+					/>
 			</td>
 			<td>
 				<span id="${prefix}eventStartTime"
@@ -123,8 +126,11 @@
 						widgetId="event_start_time_${prefix}"
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
-						endDateWidgetId="event_end_${prefix}"
-						endTimeWidgetId="event_end_time_${prefix}" />
+						<c:if test="${!attMap.hasDurDays}">						
+							endDateWidgetId="event_end_${prefix}"
+							endTimeWidgetId="event_end_time_${prefix}"
+						</c:if>
+						/>
 						
 					<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
 					<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
