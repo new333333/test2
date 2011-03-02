@@ -201,6 +201,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		getBinderService().binder_setDefinitions(accessToken, binderId, definitionIds, workflowAssociations);
 	}
+	public FunctionMembership[] binder_getFunctionMembership(String accessToken, long binderId) {
+		return getBinderService().binder_getFunctionMembership(accessToken, binderId);
+	}
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		getBinderService().binder_setFunctionMembership(accessToken, binderId, functionMemberships);
 	}

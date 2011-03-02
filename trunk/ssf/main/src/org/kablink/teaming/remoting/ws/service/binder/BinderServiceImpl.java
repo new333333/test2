@@ -87,6 +87,7 @@ import org.kablink.teaming.remoting.ws.util.ModelInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
@@ -371,6 +372,29 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 
 	}
 
+	public FunctionMembership[] binder_getFunctionMembership(String accessToken, long binderId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		List<WorkAreaFunctionMembership> wafml = getAdminModule().getWorkAreaFunctionMemberships(binder);
+		List<Function> functions = getAdminModule().getFunctions();
+		List<FunctionMembership> fml = new ArrayList<FunctionMembership>();
+		for(WorkAreaFunctionMembership wafm:wafml) {
+			Function func = null;
+			for(Function f:functions) {
+				if(f.isZoneWide()) continue;
+				if(f.getId().equals(wafm.getFunctionId())) {
+					func = f;
+					break;
+				}
+			}
+			if(func == null) continue;
+			FunctionMembership fm = new FunctionMembership();
+			fm.setFunctionName(func.getName());
+			fm.setMemberIds(wafm.getMemberIds().toArray(new Long[wafm.getMemberIds().size()]));
+			fml.add(fm);
+		}
+		return fml.toArray(new FunctionMembership[fml.size()]);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
