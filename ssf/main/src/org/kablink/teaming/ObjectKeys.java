@@ -58,6 +58,7 @@ public interface ObjectKeys {
 	public static final String GUEST = "guest";
 	
 	//Directory name for static files
+	public static final String STATIC_DIR_PROPERTY = "release.static.dir";
 	public static final String STATIC_DIR = "static";
 	//Directory name for files that need to have their last modify date validated
 	public static final String VALIDATE_DIR = "validate";
