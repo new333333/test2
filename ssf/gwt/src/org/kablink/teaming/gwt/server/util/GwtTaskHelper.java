@@ -1605,7 +1605,7 @@ public class GwtTaskHelper {
 			HttpSession session = WebHelper.getRequiredSession(request);
 			GwtUISessionData optionsObj = ((GwtUISessionData) session.getAttribute(TaskHelper.CACHED_FIND_TASKS_OPTIONS_KEY));
 			Map options = ((Map) optionsObj.getData());
-			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
+			options.put(ObjectKeys.SEARCH_MAX_HITS, (Integer.MAX_VALUE - 1));
 			options.put(ObjectKeys.SEARCH_OFFSET,   0);
 	
 			// ...and read them.

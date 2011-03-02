@@ -1068,7 +1068,7 @@ public class TrashHelper {
 		Binder binder = bs.getBinderModule().getBinder(binderId);
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(0));
-		options.put(ObjectKeys.SEARCH_MAX_HITS,  Integer.MAX_VALUE);
+		options.put(ObjectKeys.SEARCH_MAX_HITS,  (Integer.MAX_VALUE - 1));
 		options.put(ObjectKeys.SEARCH_SORT_NONE, Boolean.TRUE);
 		Map trashSearchMap = getTrashEntries(bs, binder, options);
 		ArrayList trashSearchAL = ((ArrayList) trashSearchMap.get(ObjectKeys.SEARCH_ENTRIES));
