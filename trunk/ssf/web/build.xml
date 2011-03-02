@@ -2,21 +2,44 @@
 
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
+	
+	<tstamp>
+	    <format property="new.static.dir" pattern="dd-MM-yyyy-hhmm" />
+	</tstamp>
 
 	<if>
 		<isset property="default.static.dir" />
 		<then>
-			<property name="release.static.dir" value="${default.static.dir}" />
+			<property name="web.static.dir" value="${default.static.dir}" />
 		</then>
 		<else>
-			<tstamp>
-	    		<format property="release.static.dir" pattern="dd-MM-yyyy-hhmm" />
-			</tstamp>
+    		<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
+      			<filterchain>
+        			<linecontains>
+          				<contains value="release.static.dir"/>
+        			</linecontains>
+      			</filterchain>
+    		</loadproperties>
+    		<if>
+    			<not>
+    				<isset property="release.static.dir" />
+    			</not>
+    			<then>
+	    			<property name="web.static.dir" value="${new.static.dir}" />
+    			</then>
+    		</if>
+    		<if>
+    			<equals arg1="${release.static.dir}" arg2="" />
+    			<then>
+					<property name="web.static.dir" value="${new.static.dir}" />
+    			</then>
+    			<else>
+    				<property name="web.static.dir" value="${release.static.dir}" />
+    			</else>
+    		</if>
 		</else>
 	</if>
-	<property name="web.static.path" value="static/${release.static.dir}" />
-	<property name="web.static.dir" value="${web.dir}/${web.static.path}" />
-	
+
 	<property name="war.file" value="ssf-web.war" />
 		
 	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
@@ -154,6 +177,8 @@
 	</target>
 
 	<target name="add-static-files">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<delete dir="temp"/>
 	
 		<copy todir="temp/${web.static.path}/css" overwrite="true">
@@ -186,6 +211,8 @@
 	</target>
 
 	<target name="add-dojo-changes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<delete dir="temp"/>
 		
 		<copy todir="temp/${web.static.path}/js/dojo" overwrite="true">
@@ -199,6 +226,8 @@
 	</target>
 	
 	<target name="add-tinymce-changes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<delete dir="temp"/>
 		
 		<copy todir="temp/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
@@ -212,6 +241,8 @@
 	</target>
 	
 	<target name="add-image-themes">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<delete dir="temp"/>
 	
 		<copy todir="temp/${web.static.path}/i/icib" overwrite="true">
@@ -257,9 +288,17 @@
 	</target>
 
 	<target name="add-release-info">
+  		<property name="web.static.path" value="static/${new.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<tstamp>
 	    	<format property="build.timestamp" pattern="MMMM dd, yyyy" />
 	    </tstamp>
+		<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+                         match="release.static.dir=(.*)"
+                         replace="release.static.dir=${new.static.dir}"
+                         byline="true"/>
+		<echo>********* static file directory changed *********</echo>
+		<echo>The static files will now be put in "${web.static.path}"</echo>
 	
 		<delete dir="temp"/>
 	
@@ -274,7 +313,7 @@
 				value="release.build.date=${build.timestamp}"/>
 			<replacefilter
 				token="release.static.dir="
-				value="release.static.dir=${release.static.dir}"/>
+				value="release.static.dir=${new.static.dir}"/>
 		</replace>
 
 		<war
@@ -309,9 +348,11 @@
 	</target>
 	
 	<target name="deploy-static-files">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
                          match="release.static.dir=(.*)"
-                         replace="release.static.dir=${release.static.dir}"
+                         replace="release.static.dir=${web.static.dir}"
                          byline="true"/>
 		<antcall target="deploy-css-only" />
 		<antcall target="deploy-js-only" />
@@ -333,12 +374,16 @@
 	</target>
 	
 	<target name="deploy-css-only">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/css">
 			<fileset dir="${web.dir}/css"/>
 		</copy>
 	</target>
 	
 	<target name="deploy-js-only">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/js">
 			<fileset dir="${web.dir}/js">
 				<include name="**/*.*" />
@@ -350,6 +395,8 @@
 	</target>
 	
 	<target name="deploy-dojo-changes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/dojo" overwrite="true">
 			<fileset dir="${web.dir}/js/dojo.changes">
 				<include name="**/*.*" />
@@ -358,6 +405,8 @@
 	</target>
 	
 	<target name="deploy-tinymce-changes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/js/tiny_mce_3_2_7/tiny_mce" overwrite="true">
 			<fileset dir="${web.dir}/js/tiny_mce_3_2_7/teaming_changes">
 				<include name="**/*.*" />
@@ -539,6 +588,8 @@
 	</target>
 
 	<target name="deploy-image-themes">
+  		<property name="web.static.path" value="static/${web.static.dir}" />
+		<echo>The static files will be put in "${web.static.path}"</echo>
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/i/icib" overwrite="true">
 			<fileset dir="${web.dir}/images" />
 		</copy>
