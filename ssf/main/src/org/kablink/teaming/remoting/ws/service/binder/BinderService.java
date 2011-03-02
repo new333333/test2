@@ -90,6 +90,7 @@ public interface BinderService {
 	public void binder_setOwner(String accessToken, long binderId, long userId);
 	
 	
+	public FunctionMembership[] binder_getFunctionMembership(String accessToken, long binderId);
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
 
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords);	
