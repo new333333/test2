@@ -131,11 +131,14 @@ public class TeamingServiceClientWithStub {
 		
 		//fetchCalendarEntriesModifiedBetweenTwoDates();
 		
-		fetchCalendarEntriesCreatedOrModifiedOrEventDatedBetweenTwoDates();
+		//fetchCalendarEntriesCreatedOrModifiedOrEventDatedBetweenTwoDates();
 		
 		// addFileEntry();
 		
 		// addTaskEntry();
+		
+		//getFunctionMembership();
+		//setFunctionMembership();
 		
 /*		try {
 			getEntryFileVersions(9, "debug.doc");
@@ -1051,5 +1054,41 @@ public class TeamingServiceClientWithStub {
 		long entryId = stub.folder_addEntry(null, fe, null);
 		
 		System.out.println("Successfully created a task entry with ID = " + entryId);		
+	}
+	
+	public static void getFunctionMembership() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		long binderId = 251;
+		FunctionMembership[] fma = stub.binder_getFunctionMembership(null, binderId);
+		for(int i = 0; i < fma.length; i++) {
+			FunctionMembership fm = fma[i];
+			System.out.println("");
+			System.out.println("Function Membership (" + i + ")");
+			System.out.println("\tFunction Name: " + fm.getFunctionName());
+			System.out.println("\tMember IDs: " + toString(fm.getMemberIds()));
+			System.out.println("\tMember Names: " + toString(fm.getMemberNames()));
+		}
+	}
+	
+	public static void setFunctionMembership() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		long binderId = 682;
+		FunctionMembership fm = new FunctionMembership();
+		fm.setFunctionName("__role.visitor");
+		fm.setMemberIds(new Long[] {-1L});
+		FunctionMembership[] fma = new FunctionMembership[]{fm};
+		stub.binder_setFunctionMembership(null, binderId, fma);
+	}
+	
+	private static String toString(Object[] objs) {
+		if(objs == null)
+			return null;
+		StringBuilder sb = new StringBuilder();
+		for(Object obj:objs) {
+			if(sb.length() > 0)
+				sb.append(", ");
+			sb.append(obj.toString());
+		}
+		return sb.toString();
 	}
 }
