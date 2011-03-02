@@ -137,7 +137,7 @@
 									    	<c:out value="${entry.title}"/>
 									    	
 										     <c:if test="${!empty entry._rating}">				    	
-												<span class = "ss_nowrap">
+												<span class="ss_nowrap marginleft1">
 													<%
 														String iRating = String.valueOf(java.lang.Math.round(Float.valueOf(entry.get("_rating").toString())));
 													%>
