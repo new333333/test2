@@ -459,7 +459,7 @@ public class GwtActivityStreamHelper {
 
 			// Are there any comments posted to any of these entries?
 			Criteria searchCriteria = SearchUtils.entryReplies(entryIds, true);	// true -> All replies, at any level.
-			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, Integer.MAX_VALUE);
+			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, 0, (Integer.MAX_VALUE - 1));
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
