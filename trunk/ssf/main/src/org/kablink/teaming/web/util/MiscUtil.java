@@ -382,7 +382,7 @@ public final class MiscUtil
 	 * @return
 	 */
 	public static String getStaticPath() {
-		return ObjectKeys.STATIC_DIR + "/" + ReleaseInfo.getVersion() + "/";
+		return ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + "/";
 	}
 	
 	/**
@@ -393,7 +393,8 @@ public final class MiscUtil
 	public static String getFullStaticPath(HttpServletRequest request) {
 		String contextPath = request.getContextPath();
 		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
-		return request.getContextPath() + "/" + ObjectKeys.STATIC_DIR + "/" + ReleaseInfo.getVersion() + "/";
+		return request.getContextPath() + "/" + ObjectKeys.STATIC_DIR + "/" + 
+				SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + "/";
 	}
 	
 	/**
