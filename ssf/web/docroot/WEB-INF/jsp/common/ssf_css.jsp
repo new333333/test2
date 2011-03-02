@@ -3776,10 +3776,9 @@ div.ss_searchContainer ul.ss_nobullet {
 	}
 
 div.ss_searchContainer div.ssPageNavi {
-	-moz-border-radius-topleft: 0px;
-	-moz-border-radius-topright: 0px;
-	-webkit-border-top-left-radius: 0px;
-	-webkit-border-top-right-radius: 0px;	
+	border-bottom: 1px solid #d2d5d1;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
 	}
 div.ss_surveyContainer {
 	padding:5px 0px 0px 0px;
@@ -3927,8 +3926,13 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 }
 
 .ss_searchResult_header_bottom {
+	border-bottom: 0px !important;
 	border-top: 1px solid #d2d5d1;
 	margin-bottom: 3px;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 }
 
 .ss_searchResult_numbers {
