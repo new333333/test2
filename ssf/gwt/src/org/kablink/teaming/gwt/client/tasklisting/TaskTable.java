@@ -1842,7 +1842,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			String orderHTML;
 			if ((0 == uid.getTaskDepth()) && ((-1) != order))
 			     orderHTML = String.valueOf(order);
-			else orderHTML = "";
+			else orderHTML = "&nbsp;";
 			int colIndex = getColumnIndex(Column.ORDER);
 			m_flexTable.setHTML(                 row, colIndex, orderHTML);
 			m_flexTableCF.setHorizontalAlignment(row, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
