@@ -78,7 +78,6 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.DefinitionHelper;
-import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
@@ -134,7 +133,15 @@ public class AddEntryController extends SAbstractController {
 							}
 						}
 					}
-					entryId = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
+
+					boolean createTestTasks = TaskHelper.TASK_DEBUG_ENABLED;
+					if (createTestTasks) {
+						entryId = createDebugTasks(request, response, formData, folderId, entryType, fileMap);						
+						createTestTasks = (null != entryId);
+					}
+					if (!createTestTasks){
+						entryId = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
+					}
 				} catch(WriteFilesException e) {
 		    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 		    		return;
@@ -614,4 +621,61 @@ public class AddEntryController extends SAbstractController {
     	throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	return getFolderModule().addReply(folderId, parentId, definitionId, inputData, fileItems, options);
     }
+
+    /*
+     * The following method is used to aid in testing the new task
+     * folder implementation.  It allows one to easily generate an
+     * arbitrary number of task entries in the given folder.
+     * 
+     * Conditions:
+     * 1. subtasks.debug.enabled=true in some ssf*.properties file.
+     * 2. An entry titled 'create.tasks.<nnn>' is being created where
+     *    '<nnn>' is some integer value.
+     * 
+     * If these conditions are met, <nnn> tasks named task.1, task.1,
+     * ... task.nnn will be created with the entry ID of the last task
+     * created being returned.  If these conditions are not met, null
+     * is returned.
+     */
+	private Long createDebugTasks(ActionRequest request, ActionResponse response, Map formData, Long folderId, String entryType, Map fileMap) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		// Is task debugging enabled?
+		Long reply = null; 
+		if (TaskHelper.TASK_DEBUG_ENABLED) {
+			// Yes!  Does the entry being created have the magic name?
+			String title = "";
+			Object titleObject = formData.get(WebKeys.URL_ENTRY_TITLE);
+			if (titleObject instanceof String) {
+				title = ((String) titleObject);
+			}
+			else if (titleObject instanceof String[]) {
+				String[] titles = ((String[]) titleObject);
+				if (1 == titles.length){
+					title = titles[0];
+				}
+			}
+			if (title.startsWith(TaskHelper.TASK_MAGIC_TITLE)) {
+				// Yes!  Are we being asked to create 1 or more tasks?
+				String countS = title.substring(TaskHelper.TASK_MAGIC_TITLE.length());
+				int count;
+				try                  {count = Integer.parseInt(countS);}
+				catch (Exception ex) {count = 0;}
+				if (0 < count) {
+					// Yes!  Create them.
+					logger.info("AddEntryController.createDebugTasks():  Creating " + count + " tasks.");
+					Map clonedFormData = new HashMap(); 
+					clonedFormData.putAll(formData);
+					for (int i = 1; i <= count; i += 1) {
+						logger.info("...creating task " + i + " of " + count);
+						clonedFormData.put(WebKeys.URL_ENTRY_TITLE, new String[]{"task." + i});
+						MapInputData inputData = new MapInputData(clonedFormData);
+						reply = addEntry(request, response, folderId, entryType, inputData, fileMap, null).getId();
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply is null or refers to the ID of the
+		// last task created.  Return it.
+		return reply;
+	}	
 }
