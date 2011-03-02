@@ -243,10 +243,14 @@ public class SearchUtils {
   			return new SortField(Constants.MODIFICATION_DATE_FIELD, SortField.STRING, descend);
   		}
   		else if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_RATING)) {
-  			return new SortField(Constants.RATING_FIELD, SortField.DOUBLE, descend);
+  			//Use this when using NumericField for this field.
+  			//return new SortField(Constants.RATING_FIELD, SortField.DOUBLE, descend);
+  			return new SortField(Constants.RATING_FIELD, SortField.STRING, descend);
   		}
   		else if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_REPLY_COUNT)) {
-  			return new SortField(Constants.TOTALREPLYCOUNT_FIELD, SortField.INT, descend);
+  			// Use this when using NumericField for this field.
+  			//return new SortField(Constants.TOTALREPLYCOUNT_FIELD, SortField.INT, descend);
+  			return new SortField(Constants.TOTALREPLYCOUNT_FIELD, SortField.STRING, descend);
   		}
   		else if (isDateField(sortBy)) {
     		return new SortField(sortBy, SortField.STRING, descend);
