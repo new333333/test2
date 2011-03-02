@@ -63,6 +63,7 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -81,6 +82,11 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
  * @author drfoster@novell.com
  */
 public class TaskHelper {
+	// The following control aspects of code in Vibe OnPrem that has
+	// been added to assist in debugging task handling.
+	public static final boolean TASK_DEBUG_ENABLED = SPropsUtil.getBoolean("subtasks.debug.enabled", false);
+	public static final String  TASK_MAGIC_TITLE   = "create.tasks.";
+	
 	// Attribute names used for items related to tasks.
 	public static final String ASSIGNMENT_EXTERNAL_ENTRY_ATTRIBUTE_NAME		= "responsible_external";
 	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME	= "assignment_groups";
@@ -304,7 +310,7 @@ public class TaskHelper {
 	private static boolean canModifyTaskLinkageImpl(AllModulesInjected bs, Binder binder) {
 		return bs.getBinderModule().testAccess(binder, BinderOperation.setProperty);
 	}
-	
+
 	/**
 	 * Called to read task entries.
 	 * 
