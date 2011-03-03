@@ -642,8 +642,10 @@ div.ss_replies_indent {
 	}
 td.ss_replies_indent_picture {
 	width: 140px;
+	overflow: hidden;
 	}
 td.ss_replies_indent_picture div {
+	width: 140px;
 	overflow: hidden;
 	}
 	
@@ -658,11 +660,13 @@ td.ss_replies_indent_picture div {
 	}
 
 .ss_clipped_signature div.ss_entrySignatureUser {
-    width: 140px;
+    margin: 0px;
+	font-weight: bold;
+    }
+.wg-comment td.ss_clipped_signature div.ss_entrySignatureUser {
+	width: 140px;
     overflow: hidden;
-    margin: 0px 10px;
     }
-td.ss_clipped_signature {
-    width: 140px;
-    }
-    
+.wg-comment .ss_thumbnail_standalone_signature img {
+	width: 25px;
+	}	

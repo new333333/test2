@@ -477,11 +477,15 @@ div.ss_entryContent a:hover {
   background-color:inherit;
   	}
 .ss_entrySignature, .ss_entrySignatureUser {
-  	font-size: 11px;
+  	font-size: 10px;
   	padding-right: 5px;
   	color: ${ss_style_metadata_color};
 	white-space: nowrap;
   	}
+.ss_entryDate {
+	color: #666666;
+	font-size: 10px;
+	}	
 .ss_entryDescription {
   	color: #333;
 	font-family: ${ss_style_title_font_family};
@@ -4830,7 +4834,9 @@ span.ss_infoDivValue {
 /* Note: The "ss_muster_users" style is used to find all user names on a page. 
    It should not be used to style user names. Specifically, do not "bold" this. It will break folder listings.
 */
-.ss_muster_users {  
+.ss_muster_users { 
+	font-size: 11px !important;
+	font-weight: bold; 
 	color: #353838;
 }
 .ss_muster_users:hover {
