@@ -40,6 +40,7 @@
 <body class="ss_style_body tundra">
 </ssf:ifadapter>
 <div class="ss_pseudoPortal">
+<ssf:form titleTag="administration.userAccounts.addUserAccount">
 
 <div class="ss_style ss_portlet">
 	<div style="padding:10px;" id="ss_manageUserAccounts">
@@ -84,9 +85,11 @@
 		  configElement="${ssConfigElement}" 
 		  configJspStyle="${ssConfigJspStyle}"
 		  processThisItem="true" />
+		<c:set var="ss_do_not_show_form_wrapper" value="" scope="request" />
 		</div>
 	</div>
 </div>
+</ssf:form>
 </div>
 <ssf:ifadapter>
 </body>

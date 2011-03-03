@@ -235,15 +235,15 @@ public interface BinderModule {
 	 */
 	public boolean isBinderDiskQuotaOk(Binder binder, long fileSize);
 	/**
-	 * Get the quota allowed for this binder (or any parent)
+	 * Get the minimum amount left for this binder (or any parent)
 	 * @param binder
 	 */
-	public Long getMaxBinderQuota(Binder binder);
+	public Long getMinBinderQuotaLeft(Binder binder);
 	/**
-	 * Get the cumulative used on the binder or parent binder with the lowest quota
+	 * Get the binder with the minimum quota amount left
 	 * @param binder
 	 */
-	public Long getMaxBinderUsed(Binder binder);
+	public Binder getMinBinderQuotaLeftBinder(Binder binder);
 	/**
 	 * Increment the disk space used in a binder
 	 * @param binder

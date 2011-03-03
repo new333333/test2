@@ -521,8 +521,8 @@ public class BinderHelper {
 			model.put((WebKeys.BINDER_QUOTAS_ENABLED), bs.getAdminModule().isBinderQuotaEnabled());
 			model.put((WebKeys.BINDER_QUOTAS_EXCEEDED), bs.getBinderModule().isBinderDiskQuotaExceeded(binder));
 			model.put((WebKeys.BINDER_QUOTAS_HIGH_WATER_MARK_EXCEEDED), bs.getBinderModule().isBinderDiskHighWaterMarkExceeded(binder));
-			model.put((WebKeys.BINDER_QUOTAS_MAX_QUOTA), bs.getBinderModule().getMaxBinderQuota(binder));
-			model.put((WebKeys.BINDER_QUOTAS_MAX_USED), bs.getBinderModule().getMaxBinderUsed(binder));
+			model.put((WebKeys.BINDER_QUOTAS_MIN_QUOTA_LEFT), bs.getBinderModule().getMinBinderQuotaLeft(binder));
+			model.put((WebKeys.BINDER_QUOTAS_MIN_QUOTA_LEFT_BINDER), bs.getBinderModule().getMinBinderQuotaLeftBinder(binder));
 		} catch(Exception e) {
 			//We don't really need these beans, so if there is any problem just exit
 		}

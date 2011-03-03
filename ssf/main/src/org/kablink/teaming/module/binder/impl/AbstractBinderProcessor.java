@@ -1063,11 +1063,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //Check to see if destination folder has enough quota
     public boolean checkMoveBinderQuota(Binder source, Binder destination) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	Long maxQuota = getBinderModule().getMaxBinderQuota(destination);
-    	Long maxUsed = getBinderModule().getMaxBinderUsed(destination);
+    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
     	try {
 	    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
-	    	if (maxQuota != null && maxQuota - (maxUsed + sourceBinderQuota.getDiskSpaceUsedCumulative()) < 0L) {
+	    	if (minQuotaLeft != null && minQuotaLeft < sourceBinderQuota.getDiskSpaceUsedCumulative()) {
 	    		//There is not enough quota in the destination. See if this is a parent binder of the source
 	    		Binder parentBinder = source;
 	    		while (parentBinder != null) {

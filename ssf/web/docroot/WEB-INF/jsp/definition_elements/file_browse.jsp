@@ -58,8 +58,10 @@
 <c:if test="${ss_binderQuotasEnabled && empty ss_quotaMessage && 
 		ss_binderHighWaterMarkExceeded && !ss_binderQuotasExceeded && !ss_isBinderMirroredFolder}">
     <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.binder.nearLimit"><ssf:param name="value" useBody="true"
-	    ><fmt:formatNumber value="${(ss_binderMaxQuota - ss_binderMaxUsed)/1048576}" 
-	    maxFractionDigits="2"/></ssf:param></ssf:nlt></c:set>
+	    ><fmt:formatNumber value="${ss_binderMinQuotaLeft/1048576}" 
+	    maxFractionDigits="2"/></ssf:param><ssf:param name="value" useBody="true"
+	    >${ss_binderMinQuotaLeftBinder.title}</ssf:param>
+	    </ssf:nlt></c:set>
 </c:if>
 <c:if test="${ss_binderQuotasEnabled && empty ss_quotaMessage && 
 		ss_binderQuotasExceeded && !ss_isBinderMirroredFolder}">
@@ -167,7 +169,7 @@ var ${eName}_ok = 1;
       onchange="ss_hideCreateFileLink${property_name}();ss_ajaxValidate(ss_findEntryForFileUrl, this,'${elementName}_label', 'ss_duplicateFileCheck_${eName}', '${repositoryName}');"
 	</c:if>
 	<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-	  onClick='alert("${ss_quotaMessage}");return false;'
+	  onClick='alert("<ssf:escapeJavaScript>${ss_quotaMessage}</ssf:escapeJavaScript>");return false;'
 	</c:if>
   /> 
   <a href="javascript: ;" onClick="ss_showHide('addCommentDiv_${eName}');return false;">
@@ -184,7 +186,7 @@ var ${eName}_ok = 1;
   <input type="file" class="ss_text ${ss_fieldModifyStyle}" ${ss_fieldModifyInputAttribute} 
     name="${eName}" id="${eName}" 
 	<c:if test="${ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
-	  onClick='alert("${ss_quotaMessage}");return false;'
+	  onClick='alert("<ssf:escapeJavaScript>${ss_quotaMessage}</ssf:escapeJavaScript>");return false;'
 	</c:if>
     ${width}/>
   <a href="javascript: ;" onClick="ss_showHide('addCommentDiv_${eName}');return false;">
