@@ -137,7 +137,7 @@
 		  </td>
 		 </tr>
 		 <tr>
-		  <td style="padding-left: 30px;">
+		  <td style="padding-left: 19px;">
 		  <c:set var="property_caption" value=""/>
 			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 		  </td>
