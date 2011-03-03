@@ -13,13 +13,19 @@
 			<property name="web.static.dir" value="${default.static.dir}" />
 		</then>
 		<else>
-    		<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
-      			<filterchain>
-        			<linecontains>
-          				<contains value="release.static.dir"/>
-        			</linecontains>
-      			</filterchain>
-    		</loadproperties>
+    		<if>
+    			<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+    			<then>
+    				<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
+      					<filterchain>
+        					<linecontains>
+          						<contains value="release.static.dir"/>
+        					</linecontains>
+      					</filterchain>
+    				</loadproperties>
+    			</then>
+    		</if>
+    				
     		<if>
     			<not>
     				<isset property="release.static.dir" />
@@ -293,10 +299,15 @@
 		<tstamp>
 	    	<format property="build.timestamp" pattern="MMMM dd, yyyy" />
 	    </tstamp>
-		<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+	    <if>
+	    	<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+	    	<then>
+				<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
                          match="release.static.dir=(.*)"
                          replace="release.static.dir=${new.static.dir}"
                          byline="true"/>
+            </then>
+        </if>
 		<echo>********* static file directory changed *********</echo>
 		<echo>The static files will now be put in "${web.static.path}"</echo>
 	
