@@ -69,7 +69,9 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -94,17 +96,26 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TaskTable extends Composite implements ActionHandler {
-	private boolean				m_sortAscending;	//
-	private Column				m_sortColumn;		//
-	private FlexCellFormatter	m_flexTableCF;		//
-	private FlexTable			m_flexTable;		//
-	private Image 				m_dueDateBusy;		//
-	private RowFormatter		m_flexTableRF;		//
-	private TaskBundle			m_taskBundle;		//
-	private TaskListing			m_taskListing;		//
-	private TaskPopupMenu		m_percentDoneMenu;	//
-	private TaskPopupMenu		m_priorityMenu;		//
-	private TaskPopupMenu		m_statusMenu;		//
+	private boolean				m_sortAscending;			//
+	private Column				m_sortColumn;				//
+	private EventHandler		m_assigneeMouseOutEvent;	//
+	private EventHandler		m_assigneeMouseOverEvent;	//
+	private EventHandler		m_cbClickHandler;			//
+	private EventHandler		m_expanderClickHandler;		//
+	private EventHandler		m_taskOptionClickHandler;	//
+	private EventHandler		m_taskSeenClickHandler;		//
+	private EventHandler		m_taskViewClickHandler;		//
+	private FlexCellFormatter	m_flexTableCF;				//
+	private FlexTable			m_flexTable;				//
+	private FlowPanel			m_processActiveDIV;			//
+	private Image 				m_dueDateBusy;				//
+	private InlineLabel 		m_processActiveLabel;		//
+	private RowFormatter		m_flexTableRF;				//
+	private TaskBundle			m_taskBundle;				//
+	private TaskListing			m_taskListing;				//
+	private TaskPopupMenu		m_percentDoneMenu;			//
+	private TaskPopupMenu		m_priorityMenu;				//
+	private TaskPopupMenu		m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
 	private final GwtMainPage						m_gwtMainPage  = GwtTeaming.getMainPage();					// 
@@ -115,6 +126,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	// The following defines the number of entries we show before
 	// adding an ellipse to show more.
 	private final int MEMBERSHIP_ELLIPSE_COUNT	= 10;
+
+	// The following defines the number of milliseconds before a
+	// process active message will be delayed for those operations that
+	// display one.
+	private final int PROCESS_ACTIVE_DELAY = 500;
+	
+	// The following defines the name of the attribute added to various
+	// task table widgets to enable backtracking to their related task.
+	private final String ATTR_ENTRY_ID		= "n_entryId";
+	private final String ATTR_OPTION_MENU	= "n_optionMenu";
 
 	/*
 	 * Enumeration used to represent the type of an AssignmentInfo.
@@ -181,6 +202,67 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 
+	/*
+	 * Inner class used to show a popup message while a potentially
+	 * long running process is in progress.
+	 */
+	private class ProcessActive {
+		private boolean m_processActive;		// true -> The process is still active.  false -> It's no longer active.  
+		private Timer   m_processActiveTimer;	// Timer used to delay showing the process active message.
+
+		/**
+		 * Class constructor.
+		 * 
+		 * @param processActiveMessage
+		 */
+		public ProcessActive(String processActiveMessage) {
+			m_processActiveLabel.setText(processActiveMessage);
+			m_processActive = true;
+		}
+
+		/**
+		 * Kills the process active message.
+		 */
+		public void killIt() {
+			m_processActive = false;
+			m_processActiveDIV.setVisible(false);
+			m_processActiveLabel.setText("");
+		}
+
+		/**
+		 * Runs the process active message.
+		 */
+		public void runIt() {
+			if (null == m_processActiveTimer) {
+				m_processActiveTimer = new Timer() {
+					@Override
+					public void run() {
+						// If the process is still active...
+						if (m_processActive) {
+							// ...show the message.
+							showIt();
+						}
+					}
+				};
+			}			
+			m_processActiveTimer.schedule(PROCESS_ACTIVE_DELAY);
+		}
+		
+		/*
+		 * Shows the process active message.
+		 */
+		private void showIt()
+		{
+			// Center the message...
+			int width = getWidget().getOffsetWidth();
+			int left  = (((width - m_processActiveDIV.getOffsetWidth()) / 2) - 40);
+			DOM.setStyleAttribute(m_processActiveDIV.getElement(), "left", Integer.toString(left) + "px");
+			
+			// ...and show it.
+			m_processActiveDIV.setVisible(true);
+		}
+	}
+	
 	/*
 	 * Inner class to used to track information attached to a
 	 * TaskListItem for managing the user interface. 
@@ -311,6 +393,21 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_flexTable.setCellPadding(0);
 		m_flexTable.setCellSpacing(0);
 
+		// ...create a panel to hold a process active message...
+		m_processActiveDIV = new FlowPanel();
+		m_processActiveDIV.addStyleName("gwtTaskList_processActive");
+		m_taskListing.getTaskListingDIV().add(m_processActiveDIV);
+		m_processActiveLabel = new InlineLabel();
+		m_processActiveDIV.add(m_processActiveLabel);
+		Image busyImg = new Image(m_images.busyAnimation());
+		busyImg.getElement().setAttribute("align", "absmiddle");
+		m_processActiveDIV.add(busyImg);
+		m_processActiveDIV.setVisible(false);
+		
+		// ...create the event handlers that we'll need repeatedly in
+		// ...the rows rendered in the table.
+		createEventHandlers();
+		
 		// ...and use it to initialize the TaskTable Composite.
 		super.initWidget(m_flexTable);
 	}
@@ -389,18 +486,8 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			// ...and add the event handlers for it.
 			eventHandlers = new ArrayList<EventHandler>();
-			eventHandlers.add(new MouseOverHandler() {
-				@Override
-				public void onMouseOver(MouseOverEvent event) {
-					assignee.addStyleName("gwtTaskList_assigneeHover");
-				}
-			});
-			eventHandlers.add(new MouseOutHandler() {
-				@Override
-				public void onMouseOut(MouseOutEvent event) {
-					assignee.removeStyleName("gwtTaskList_assigneeHover");
-				}
-			});
+			eventHandlers.add(m_assigneeMouseOverEvent);
+			eventHandlers.add(m_assigneeMouseOutEvent );
 			eventHandlers.add(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
@@ -437,18 +524,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				
 				// Add event handlers so the user can see them.
 				eventHandlers = new ArrayList<EventHandler>();
-				eventHandlers.add(new MouseOverHandler() {
-					@Override
-					public void onMouseOver(MouseOverEvent event) {
-						assignee.addStyleName("gwtTaskList_assigneeHover");
-					}
-				});
-				eventHandlers.add(new MouseOutHandler() {
-					@Override
-					public void onMouseOut(MouseOutEvent event) {
-						assignee.removeStyleName("gwtTaskList_assigneeHover");
-					}
-				});
+				eventHandlers.add(m_assigneeMouseOverEvent);
+				eventHandlers.add(m_assigneeMouseOutEvent );
 				eventHandlers.add(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
@@ -559,7 +636,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			selectedOption = taskOptions.get(0);
 		}
 		Image img = buildImage(selectedOption.getMenuImageRes(), selectedOption.getMenuAlt());
-		final Element imgElement = img.getElement();		
+		final Element imgElement = img.getElement();
 		if      (taskMenu == m_priorityMenu)    uid.setTaskPriorityImage(   img);
 		else if (taskMenu == m_statusMenu)      uid.setTaskStatusImage(     img);
 		else if (taskMenu == m_percentDoneMenu) uid.setTaskPercentDoneImage(img);
@@ -572,12 +649,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			Element aE = a.getElement();
 			aE.appendChild(imgElement);
 			aE.appendChild(buildImage(m_images.menu()).getElement());
-			EventWrapper.addHandler(a, new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					taskMenu.showTaskPopupMenu(task, imgElement);
-				}
-			});
+			aE.setAttribute(ATTR_ENTRY_ID, String.valueOf(task.getTask().getTaskId().getEntryId()));
+			aE.setAttribute(ATTR_OPTION_MENU, taskMenu.getTaskAction().toString());
+			EventWrapper.addHandler(a, m_taskOptionClickHandler);
 			reply = a;
 		}
 		
@@ -642,10 +716,93 @@ public class TaskTable extends Composite implements ActionHandler {
 		addHeaderRow();
 	}
 
-	/**
+	/*
+	 * Creates the event handlers that we'll need repeatedly as we
+	 * render rows in the table.
+	 */
+	private void createEventHandlers() {
+		// Even handler used on mouse outs of an assignee.
+		m_assigneeMouseOutEvent = new MouseOutHandler() {
+			@Override
+			public void onMouseOut(MouseOutEvent event) {
+				((Widget) event.getSource()).removeStyleName("gwtTaskList_assigneeHover");
+			}
+		};
+		
+		// Even handler used on mouse overs of an assignee.
+		m_assigneeMouseOverEvent = new MouseOverHandler() {
+			@Override
+			public void onMouseOver(MouseOverEvent event) {
+				((Widget) event.getSource()).addStyleName("gwtTaskList_assigneeHover");
+			}
+		};
+		
+		// Event handler used when the user clicks on a task's
+		// selection check box.
+		m_cbClickHandler = new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				CheckBox cb;					
+				cb = ((CheckBox) event.getSource());
+				handleTaskSelect(getTaskFromEventWidget(cb), cb.getValue());
+			}			
+		};
+
+		// Event handler used when the user clicks on a task's
+		// expand / collapse widget.
+		m_expanderClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleTaskExpander(getTaskFromEventWidget((Widget) event.getSource()));
+			}				
+		};
+		
+
+		// Event handler used when the user clicks on one of a task's
+		// option menus.
+		m_taskOptionClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				// Find the task from the event...
+				Widget w = ((Widget) event.getSource());
+				TaskListItem task = getTaskFromEventWidget(w);
+				UIData uid = getUIData(task);
+				
+				// ...decide on the appropriate menu for the event...
+				TaskPopupMenu taskMenu;
+				Image taskMenuImg;
+				String optionAction = w.getElement().getAttribute(ATTR_OPTION_MENU);
+				if      (optionAction.equals(TeamingAction.TASK_SET_PRIORITY.toString()))     {taskMenu = m_priorityMenu;    taskMenuImg = uid.getTaskPriorityImage();   }
+				else if (optionAction.equals(TeamingAction.TASK_SET_PERCENT_DONE.toString())) {taskMenu = m_percentDoneMenu; taskMenuImg = uid.getTaskPercentDoneImage();}
+				else if (optionAction.equals(TeamingAction.TASK_SET_STATUS.toString()))       {taskMenu = m_statusMenu;      taskMenuImg = uid.getTaskStatusImage();     }
+				else                                                                          {return;}
+				
+				// ...and run the menu.
+				taskMenu.showTaskPopupMenu(task, taskMenuImg.getElement());
+			}
+		};
+		
+		// Event handler used when the user clicks on a task's unseen
+		// star burst.
+		m_taskSeenClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleTaskSeen(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+		
+		// Event handler used when the user clicks on a task's name
+		// link to run the entry viewer.
+		m_taskViewClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleTaskView(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+	}
+
+	/*
 	 * Returns in the index to display a column at.
-	 * 
-	 * @return
 	 */
 	private int getColumnIndex(Column col) {
 		int reply = col.ordinal();
@@ -655,17 +812,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		return reply;
 	}
 	
-	/**
-	 * Returns the order number from the given TaskListItem.
-	 * 
-	 * @param task
-	 * 
-	 * @return
+	/*
+	 * Given a Widget from an event, returns it's corresponding task.
 	 */
-	public static int getTaskOrder(TaskListItem task) {
-		return getUIData(task).m_taskOrder;
+	private TaskListItem getTaskFromEventWidget(Widget w) {
+		String entryId = w.getElement().getAttribute(ATTR_ENTRY_ID);
+		return TaskListItemHelper.findTask(m_taskBundle, Long.parseLong(entryId));
 	}
-
+	
 	/*
 	 * Returns a List<Long> of the IDs of the tasks in the TaskTable
 	 * that are currently checked.
@@ -685,6 +839,17 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 	
+	/**
+	 * Returns the order number from the given TaskListItem.
+	 * 
+	 * @param task
+	 * 
+	 * @return
+	 */
+	public static int getTaskOrder(TaskListItem task) {
+		return getUIData(task).m_taskOrder;
+	}
+
 	/*
 	 * Returns a List<TaskListItem> of the tasks in the TaskTable that
 	 * are currently checked.
@@ -1079,9 +1244,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
+			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
+			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskDown(m_taskBundle, task);
-			handleTaskPostMove(task);
+			handleTaskPostMove(pa, task);
 		}
 	}
 	
@@ -1093,9 +1260,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
+			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
+			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskLeft(m_taskBundle, task);
-			handleTaskPostMove(task);
+			handleTaskPostMove(pa, task);
 		}
 	}
 	
@@ -1107,9 +1276,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
+			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
+			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskRight(m_taskBundle, task);
-			handleTaskPostMove(task);
+			handleTaskPostMove(pa, task);
 		}
 	}
 	
@@ -1121,9 +1292,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
+			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
+			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskUp(m_taskBundle, task);
-			handleTaskPostMove(task);
+			handleTaskPostMove(pa, task);
 		}
 	}
 
@@ -1131,7 +1304,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Does what's necessary after a task is moved to put the change
 	 * into affect.
 	 */
-	private void handleTaskPostMove(TaskListItem task) {	
+	private void handleTaskPostMove(final ProcessActive pa, TaskListItem task) {	
 		initializeUIData();	// Forces the order and depths to be reset.
 		renderTaskBundle(m_taskBundle);		
 
@@ -1143,6 +1316,7 @@ public class TaskTable extends Composite implements ActionHandler {
 				@Override
 				public void execute() {
 					updateCalculatedDatesNow(
+						pa,
 						taskId.getBinderId(),
 						taskId.getEntryId());
 				}
@@ -1877,17 +2051,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void renderColumnSelectCB(final TaskListItem task, int row) {
 		// Extract the UIData from this task.
 		UIData uid = getUIData(task);
-		
+
+		String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
 		CheckBox cb = new CheckBox();
 		uid.setTaskSelectorCB(cb);
-		cb.getElement().setId("gwtTaskList_taskSelect_" + task.getTask().getTaskId().getEntryId());
+		cb.getElement().setId("gwtTaskList_taskSelect_" + entryId);
 		cb.addStyleName("gwtTaskList_ckbox");
-		EventWrapper.addHandler(cb, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {
-				handleTaskSelect(task, ((CheckBox) event.getSource()).getValue());
-			}			
-		});
+		cb.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
+		EventWrapper.addHandler(cb, m_cbClickHandler);
 		if (uid.getTaskSelected()) {
 			cb.setValue(true);
 			uid.setTaskSelected(true);
@@ -1898,11 +2069,10 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (0 < task.getSubtasks().size()) {
 			Anchor a = buildAnchor();
 			Image  i = buildImage(task.getExpandSubtasks() ? m_images.task_closer() : m_images.task_opener());
-			a.getElement().appendChild(i.getElement());
-			EventWrapper.addHandler(a, new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {handleTaskExpander(task);}				
-			});
+			Element aE = a.getElement();
+			aE.appendChild(i.getElement());
+			aE.setAttribute(ATTR_ENTRY_ID, entryId);
+			EventWrapper.addHandler(a, m_expanderClickHandler);
 			fp.add(a);
 		}
 		else {
@@ -1957,6 +2127,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Add the closed/unseen marker Widget to the panel.
 		Widget marker;
 		TaskInfo ti = task.getTask();
+		String entryId = String.valueOf(ti.getTaskId().getEntryId());
 		if (ti.isTaskClosed()) {
 			fp.addStyleName("gwtTaskList_task-strike");
 			Image i = buildImage(m_images.completed(), m_messages.taskAltTaskClosed());
@@ -1966,11 +2137,10 @@ public class TaskTable extends Composite implements ActionHandler {
 			final Anchor a = buildAnchor();
 			uid.setTaskUnseenAnchor(a);
 			Image i = buildImage(m_images.unread(), m_messages.taskAltTaskUnread());
-			a.getElement().appendChild(i.getElement());
-			EventWrapper.addHandler(a, new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {handleTaskSeen(task);}
-			});
+			Element aE = a.getElement();
+			aE.appendChild(i.getElement());
+			aE.setAttribute(ATTR_ENTRY_ID, entryId);
+			EventWrapper.addHandler(a, m_taskSeenClickHandler);
 			marker = a;
 		}
 		else {
@@ -1984,10 +2154,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		
 		// Add the appropriately styled task name Anchor to the panel.
 		Anchor ta = buildAnchor();
-		EventWrapper.addHandler(ta, new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {handleTaskView(task);}
-		});
+		ta.getElement().setAttribute(ATTR_ENTRY_ID, entryId);
+		EventWrapper.addHandler(ta, m_taskViewClickHandler);
 		InlineLabel taskLabel = new InlineLabel(task.getTask().getTitle());
 		uid.setTaskLabel(taskLabel);
 		if (ti.isTaskUnseen())    taskLabel.addStyleName(             "bold"   );	// Unseen:     Bold.
@@ -2205,7 +2373,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			m_flexTableCF.setColSpan(row, 0, 8);
 			m_flexTableCF.addStyleName(row, 0, "paddingTop10px");
 			InlineLabel il = new InlineLabel(m_messages.taskNoTasks());
-			il.addStyleName("wiki-noentries-panel");
+			il.addStyleName("wiki-noentries-panel marginleft5px");
 			m_flexTable.setWidget(row, 0, il);
 		}
 		else {
@@ -2227,7 +2395,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			// Yes!  Perform the update.  Note that we run this
 			// asynchronously so that the user is able to view and
 			// interact with the task table while we're updating.
-			updateCalculatedDatesAsync(tb.getBinderId(), null);
+			updateCalculatedDatesAsync(null, tb.getBinderId(), null);
 		}
 	}
 	
@@ -2385,7 +2553,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * the RPC call succeeds any modified end dates will be reflected
 	 * in the task table.
 	 */
-	private void updateCalculatedDatesNow(final Long binderId, final Long entryId) {
+	private void updateCalculatedDatesNow(final ProcessActive pa, final Long binderId, final Long entryId) {
 		m_dueDateBusy.setResource(m_images.busyAnimation());
 		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override
@@ -2394,6 +2562,12 @@ public class TaskTable extends Composite implements ActionHandler {
 				if (null == entryId)
 				     GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesBinder(), String.valueOf(binderId));
 				else GwtClientHelper.handleGwtRPCFailure(t, GwtTeaming.getMessages().rpcFailure_UpdateCalculatedDatesTask(),   String.valueOf(entryId ));
+
+				// If we have a ProcessActive message going...
+				if (null != pa) {
+					// ...kill it.
+					pa.killIt();
+				}
 			}
 			
 			@Override
@@ -2424,19 +2598,24 @@ public class TaskTable extends Composite implements ActionHandler {
 						
 						// ...and redisplay the task's due date.
 						renderColumnDueDate(task, row);
-
 					}
+				}
+				
+				// If we have a ProcessActive message going...
+				if (null != pa) {
+					// ...kill it.
+					pa.killIt();
 				}
 			}
 		});
 	}
 	
-	private void updateCalculatedDatesAsync(final Long binderId, final Long entryId) {
+	private void updateCalculatedDatesAsync(final ProcessActive pa, final Long binderId, final Long entryId) {
 		Scheduler.ScheduledCommand updater;
 		updater = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				updateCalculatedDatesNow(binderId, entryId);
+				updateCalculatedDatesNow(pa, binderId, entryId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(updater);

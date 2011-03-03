@@ -74,6 +74,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private FlowPanel		m_taskToolsDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private InlineLabel		m_hintSpan;					// The <SPAN> containing the reason why the movement buttons are disabled.
+	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
 	private RequestInfo		m_requestInfo;				//
 	private String			m_filterType;				// The current filtering in affect, if any.
@@ -127,9 +128,14 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_taskListingDIV = new FlowPanel();
 		m_taskListingDIV.addStyleName("gwtTaskListing");
 		m_taskListingDIV.getElement().setId("ss_gwtTaskListingDIV");
-		InlineLabel il = new InlineLabel(m_messages.taskLoadingPleaseWait());
-		il.addStyleName("wiki-noentries-panel");
-		m_taskListingDIV.add(il);
+		FlowPanel pleaseWaitPanel = new FlowPanel();
+		pleaseWaitPanel.addStyleName("wiki-noentries-panel gwtTaskList_loading");
+		m_pleaseWaitLabel = new InlineLabel(m_messages.taskPleaseWait_Loading());
+		pleaseWaitPanel.add(m_pleaseWaitLabel);
+		Image busyImg = new Image(m_images.busyAnimation());
+		busyImg.getElement().setAttribute("align", "absmiddle");
+		pleaseWaitPanel.add(busyImg);
+		m_taskListingDIV.add(pleaseWaitPanel);
 		m_taskRootDIV.add(m_taskListingDIV);
 		
 		// ...populate the task panels...
@@ -152,6 +158,9 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * @return
 	 */
 	public boolean     getSortDescend()     {return m_sortDescend;    }
+	public FlowPanel   getTaskListingDIV()  {return m_taskListingDIV; }
+	public FlowPanel   getTaskRootDIV()     {return m_taskRootDIV;    }
+	public FlowPanel   getTaskToolsDIV()    {return m_taskToolsDIV;   }
 	public InlineLabel getHintSpan()        {return m_hintSpan;       }
 	public Long        getBinderId()        {return m_binderId;       }
 	public RequestInfo getRequestInfo()     {return m_requestInfo;    }
@@ -287,7 +296,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 			public void onSuccess(TaskBundle result) {
 				// Clear the task listing DIV's contents and render the
 				// task list.
-				m_taskListingDIV.clear();
+				m_pleaseWaitLabel.setText(m_messages.taskPleaseWait_Rendering());
 				m_taskBundle = result;
 				showTaskBundle();
 			}			
@@ -498,10 +507,21 @@ public class TaskListing extends Composite implements ActionTrigger {
 	}
 	
 	private void showTaskBundleNow() {
+		m_taskListingDIV.clear();
 		boolean newTaskTable = (null == m_taskTable);
 		if (newTaskTable) m_taskTable = new TaskTable(this);
-		m_taskTable.showTasks(m_taskBundle, m_updateCalculatedDates);
+		final long showTime = m_taskTable.showTasks(m_taskBundle, m_updateCalculatedDates);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
+		if (m_taskBundle.getIsDebug()) {
+			Scheduler.ScheduledCommand showTimeCommand;
+			showTimeCommand = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					Window.alert(m_messages.taskShowTime(String.valueOf(showTime)));
+				}
+			};
+			Scheduler.get().scheduleDeferred(showTimeCommand);
+		}
 	}
 
 	/**

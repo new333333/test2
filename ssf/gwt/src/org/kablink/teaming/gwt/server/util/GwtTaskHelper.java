@@ -226,6 +226,7 @@ public class GwtTaskHelper {
 	private static TaskBundle buildBaseTaskBundle(HttpServletRequest request, AllModulesInjected bs, Binder binder, String filterTypeParam, String modeTypeParam) throws GwtTeamingException {
 		// Allocate a new TaskBundle. 
 		TaskBundle reply = new TaskBundle();
+		reply.setIsDebug(TaskHelper.TASK_DEBUG_ENABLED);
 		
 		// Store information about the Binder.
 		reply.setBinderId(        binder.getId()     );
