@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+
 import com.google.gwt.http.client.URL;
 
 
@@ -71,7 +72,12 @@ public class HtmlConfig extends ConfigItem
 					try
 					{
 						if ( results2[0].equalsIgnoreCase( "data" ) )
-							m_properties.setHtml( URL.decodeComponent( results2[1] ) );
+						{
+							String html;
+							
+							html = URL.decodeComponent( results2[1] );
+							m_properties.setHtmlWithMarkup( html );
+						}
 					}
 					catch (Exception ex)
 					{

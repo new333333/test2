@@ -286,4 +286,9 @@ public interface GwtRpcServiceAsync
 
 	// See if this group is the "all users" group
 	public void isAllUsersGroup( HttpRequestInfo ri, String groupId, AsyncCallback<Boolean> callback );
+
+	// Take the given html and replace any Vibe markup with the appropriate html.
+	// For example, replace {{attachmentUrl: someimagename}} with the url to the image.
+	public void markupStringReplacement( HttpRequestInfo ri, String binderId, String html, AsyncCallback<String> callback );
+	
 }// end GwtRpcServiceAsync

@@ -294,4 +294,8 @@ public interface GwtRpcService extends RemoteService
 	// See if this group is the "all users" group
 	public Boolean isAllUsersGroup( HttpRequestInfo ri, String groupId ) throws GwtTeamingException;
 
+	// Take the given html and replace any Vibe markup with the appropriate html.
+	// For example, replace {{attachmentUrl: someimagename}} with the url to the image.
+	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html ) throws GwtTeamingException;
+	
 }// end GwtRpcService
