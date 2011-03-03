@@ -150,6 +150,7 @@ import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -2375,6 +2376,47 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		return reply;
 	}// end getVerticalNode()
+	
+	
+	/**
+	 * Parse the given html and replace any markup with the appropriate url.  For example,
+	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+	 */
+	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html ) throws GwtTeamingException
+	{
+		String newHtml;
+		
+		newHtml = "";
+		if ( html != null && html.length() > 0 )
+		{
+			try
+			{
+				Long binderIdL;
+				
+				binderIdL = new Long( binderId );
+				
+				if ( binderIdL != null )
+				{
+					BinderModule binderModule;
+					Binder binder;
+					
+					binderModule = getBinderModule();
+					binder = binderModule.getBinder( binderIdL );
+
+					// Parse the given html and replace any markup with the appropriate url.  For example,
+					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, "view" );
+				}
+			}
+			catch (Exception e)
+			{
+				throw GwtServerHelper.getGwtTeamingException( e );
+			}
+		}
+		
+		return newHtml;
+	}
+	
 	
 	/**
 	 * Saves the fact that the Binder for the given ID should be

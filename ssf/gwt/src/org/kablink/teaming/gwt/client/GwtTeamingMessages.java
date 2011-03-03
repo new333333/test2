@@ -324,6 +324,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetViewFolderEntryUrl();
 	String rpcFailure_IsAllUsersGroup();
 	String rpcFailure_IsPersonTracked();
+	String rpcFailure_markupStringReplacement();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
 	String rpcFailure_PurgeTasks();

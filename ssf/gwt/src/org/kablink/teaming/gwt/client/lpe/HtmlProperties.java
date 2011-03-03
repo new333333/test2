@@ -33,7 +33,12 @@
 
 package org.kablink.teaming.gwt.client.lpe;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -45,6 +50,8 @@ public class HtmlProperties
 	implements PropertiesObj
 {
 	private String m_html;
+	private String m_markedUpHtml;		// html that has markup still in it.
+	private boolean m_isRpcInProgress;
 	
 	/**
 	 * 
@@ -52,6 +59,8 @@ public class HtmlProperties
 	public HtmlProperties()
 	{
 		m_html = null;
+		m_markedUpHtml = null;
+		m_isRpcInProgress = false;
 	}
 	
 	
@@ -65,7 +74,10 @@ public class HtmlProperties
 			HtmlProperties htmlProps;
 			
 			htmlProps = (HtmlProperties) props;
+
 			setHtml( htmlProps.getHtml() );
+			m_markedUpHtml = htmlProps.getMarkedUpHtml();
+			m_isRpcInProgress = false;
 		}
 	}
 	
@@ -96,6 +108,68 @@ public class HtmlProperties
 		return m_html;
 	}
 	
+	/**
+	 * 
+	 */
+	public String getMarkedUpHtml()
+	{
+		return m_markedUpHtml;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean isRpcInProgress()
+	{
+		return m_isRpcInProgress;
+	}
+	
+	/**
+	 * Issue an ajax request to parse the html and replace any markup with the appropriate html.
+	 * For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
+	 * http://somehost/ssf/s/readFile.../somename.png
+	 */
+	public void replaceMarkup( String binderId )
+	{
+		// Do we have html that has any markup in it?
+		if ( m_markedUpHtml != null && m_markedUpHtml.length() > 0 && binderId != null && binderId.length() > 0 )
+		{
+			AsyncCallback<String> callback;
+		
+			// Yes
+			callback = new AsyncCallback<String>()
+			{
+				/**
+				 * 
+				 */
+				public void onFailure( Throwable t )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_markupStringReplacement() );
+					m_isRpcInProgress = false;
+					m_markedUpHtml = null;
+				}
+	
+				/**
+				 * 
+				 */
+				public void onSuccess( String newHtml )
+				{
+					setHtml( newHtml );
+					m_isRpcInProgress = false;
+					m_markedUpHtml = null;
+				}
+			};
+
+			// Issue an ajax request to parse the html and replace any markup with the appropriate html.
+			// For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
+			// http://somehost/ssf/s/readFile/.../somename.png.
+			m_isRpcInProgress = true;
+			GwtTeaming.getRpcService().markupStringReplacement( HttpRequestInfo.createHttpRequestInfo(), binderId, m_markedUpHtml, callback );
+		}
+	}
+	
 	
 	/**
 	 * 
@@ -103,5 +177,13 @@ public class HtmlProperties
 	public void setHtml( String html )
 	{
 		m_html = html;
+	}
+	
+	/**
+	 * Call this method with html that may contain markup such as {{attachmentUrl: somename.png}}
+	 */
+	public void setHtmlWithMarkup( String html )
+	{
+		m_markedUpHtml = html;
 	}
 }
