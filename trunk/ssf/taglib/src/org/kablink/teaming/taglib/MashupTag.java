@@ -33,15 +33,11 @@
 package org.kablink.teaming.taglib;
 
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -51,21 +47,11 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.util.servlet.StringServletResponse;
 
 
@@ -80,7 +66,7 @@ public class MashupTag extends BodyTagSupport {
 
 	protected static final Log logger = LogFactory.getLog(MashupTag.class);
 	
-	private String id = "";
+	private DefinableEntity entity = null;
 	private String type = "";
 	private String value = "";
 	private String view = "";
@@ -156,6 +142,32 @@ public class MashupTag extends BodyTagSupport {
 								}
 							}
 						}
+						// Are we working with an html element?
+						else if ( type.equalsIgnoreCase( "html" ) && !view.equals( "form" ) )
+						{
+							String html;
+							RenderRequest renderRequest;
+							RenderResponse renderResponse;
+							
+							// Yes
+							renderRequest = (RenderRequest) httpReq.getAttribute("javax.portlet.request");
+							renderResponse = (RenderResponse) httpReq.getAttribute("javax.portlet.response");
+
+							// Get the html for this element.
+							html = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_DATA );
+							if ( html != null && html.length() > 0 )
+							{
+								String translatedString;
+
+								// Parse the html and replace any markup with the appropriate url.  For example,
+								// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+								if ( entity != null )
+								{
+									translatedString = MarkupUtil.markupStringReplacement( renderRequest, renderResponse, httpReq, httpRes, entity, html, view );
+									mashupItemAttributes.put( ObjectKeys.MASHUP_ATTR_DATA, translatedString );
+								}
+							}
+						}
 						
 						RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 						ServletRequest req = pageContext.getRequest();
@@ -182,11 +194,20 @@ public class MashupTag extends BodyTagSupport {
 			id = "";
 			value = "";
 			view = "";
+			entity = null;
 		}
 
 		return EVAL_PAGE;
 	}
 
+	/**
+	 * 
+	 */
+	public void setEntity( DefinableEntity entity )
+	{
+		this.entity = entity;
+	}
+	
 	public void setId(String id) {
 	    this.id = id;
 	}

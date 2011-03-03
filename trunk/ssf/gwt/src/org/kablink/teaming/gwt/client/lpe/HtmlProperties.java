@@ -80,7 +80,7 @@ public class HtmlProperties
 		// The string should look like: "html,data=;"
 		str = "html,data=";
 		if ( m_html != null )
-			str += ConfigData.encodeConfigData( m_html );
+			str += ConfigData.encodeSeparators( m_html );
 		
 		str += ";";
 

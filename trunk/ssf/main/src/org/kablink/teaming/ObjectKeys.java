@@ -271,6 +271,7 @@ public interface ObjectKeys {
     public static final String MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE = "pathType";
     public static final String MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_CUSTOM_JSP = "custom_jsp";
     public static final String MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION = "extension";
+    public static final String MASHUP_ATTR_DATA = "data";
     public static final String MASHUP_ATTR_ENTRY_ID = "entryId";
     public static final String MASHUP_ATTR_ENTRIES_TO_SHOW = "entriesToShow";
     public static final String MASHUP_ATTR_FOLDER_ID = "folderId";

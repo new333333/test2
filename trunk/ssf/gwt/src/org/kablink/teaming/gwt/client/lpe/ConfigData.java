@@ -259,18 +259,30 @@ public class ConfigData
 	public static String encodeConfigData( String configData )
 	{
 		String encodedStr;
-		StringBuffer finalStr;
-		int i;
 		
 		encodedStr = URL.encode( configData );
 		
-		// Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b". 
+		// Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b".
+		encodedStr = ConfigData.encodeSeparators( encodedStr );
+
+		return encodedStr;
+	}// end encodeConfigData()
+	
+	
+	/**
+	 * Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b".
+	 */
+	public static String encodeSeparators( String configData )
+	{
+		StringBuffer finalStr;
+		int i;
+		
 		finalStr = new StringBuffer();
-		for (i = 0; i < encodedStr.length(); ++i)
+		for (i = 0; i < configData.length(); ++i)
 		{
 			char nextCh;
 			
-			nextCh = encodedStr.charAt( i );
+			nextCh = configData.charAt( i );
 			if ( nextCh == ',' )
 				finalStr.append( "%2c" );
 			else if ( nextCh == ';' )
@@ -280,7 +292,7 @@ public class ConfigData
 		}
 
 		return finalStr.toString();
-	}// end encodeConfigData()
+	}
 
 
 	/**

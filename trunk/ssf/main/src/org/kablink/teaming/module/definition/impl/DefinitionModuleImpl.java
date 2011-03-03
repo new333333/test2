@@ -2454,9 +2454,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 				
 				// Get the landing page mashup configuration string.
-				if ( inputData.exists( nameValue ) ) {
+				if ( inputData.exists( nameValue ) )
+				{
 					value = inputData.getSingleValue( nameValue );
-					value = DefinitionHelper.fixUpMashupConfiguration(value);
+					value = DefinitionHelper.fixUpMashupConfiguration( value, nameValue, fileData );
 				}
 	
 				if ( !inputData.isFieldsOnly() || fieldModificationAllowed )
