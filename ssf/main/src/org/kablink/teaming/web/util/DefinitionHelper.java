@@ -70,6 +70,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -1012,6 +1013,7 @@ public class DefinitionHelper {
 			//This user can do site admin functions
 			model.put(WebKeys.MASHUP_SITE_ADMINISTRATOR, true);
 		}
+		model.put( WebKeys.MASHUP_BINDER, entity );
     	model.put(WebKeys.MASHUP_BINDERS, mashupBinders);
     	model.put(WebKeys.MASHUP_BINDER_ENTRIES, mashupBinderEntries);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
@@ -1029,7 +1031,7 @@ public class DefinitionHelper {
 	}
 	
     //Routine to perform any translations on the mashup config string
-    public static String fixUpMashupConfiguration(String mashupValue) {
+    public static String fixUpMashupConfiguration( String mashupValue, String nameValue, List fileData ) {
     	String[] mashupValues = mashupValue.split(";");
     	for (int i = 0; i < mashupValues.length; i++) {
     		String	attrValue;
@@ -1063,6 +1065,31 @@ public class DefinitionHelper {
     				if (f.isFile()) pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION;
     			}
     			mashupValues[i] = mashupValues[i].replaceFirst(",", ",pathType="+pathType+",");
+    		}
+    		
+    		// Is this an html configuration?
+    		if ( ObjectKeys.MASHUP_TYPE_HTML.equalsIgnoreCase( type ) )
+    		{
+    			String html;
+    			
+    			// Yes
+    			// Get the html this html widget uses.
+    			html = (String) mashupItemAttributes.get( ObjectKeys.MASHUP_ATTR_DATA );
+    			if ( html != null && html.length() > 0 )
+    			{
+    				Description desc;
+    				
+    				desc = new Description( html, Description.FORMAT_HTML );
+    				
+					// Deal with any markup language transformations before storing the html
+					MarkupUtil.scanDescriptionForUploadFiles( desc, nameValue, fileData);
+					MarkupUtil.scanDescriptionForAttachmentFileUrls( desc );
+					MarkupUtil.scanDescriptionForICLinks( desc );
+					MarkupUtil.scanDescriptionForYouTubeLinks( desc );
+					MarkupUtil.scanDescriptionForExportTitleUrls( desc );
+						
+					mashupValues[i] = ObjectKeys.MASHUP_TYPE_HTML + ",data=" + desc.getText();
+    			}
     		}
     	}
     	String result = "";

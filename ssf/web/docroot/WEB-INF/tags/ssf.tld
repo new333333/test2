@@ -1085,6 +1085,12 @@
 		<tag-class>org.kablink.teaming.taglib.MashupTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<name>entity</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>org.kablink.teaming.domain.DefinableEntity</type>
+		</attribute>
+		<attribute>
 			<name>id</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>

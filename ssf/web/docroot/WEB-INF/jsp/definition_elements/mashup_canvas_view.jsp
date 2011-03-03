@@ -73,7 +73,7 @@
 	    	  String type = "";
 	    	  if (mashupItemValues.length > 0) type = mashupItemValues[0];
 	      %>
-	      <ssf:mashup id="${ss_mashupItemId}" value="${mashupItem}" view="${ssConfigJspStyle}"/>
+	      <ssf:mashup entity="${ss_mashupBinder}" id="${ss_mashupItemId}" value="${mashupItem}" view="${ssConfigJspStyle}"/>
 	      <c:set var="ss_mashupItemId" value="${ss_mashupItemId + 1}" scope="request"/>
 	    </c:if>
      </c:forEach>
