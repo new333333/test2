@@ -130,13 +130,12 @@ public class TaskPopupMenu extends PopupMenu implements ActionHandler {
 	}
 
 	/**
-	 * Get'er method.
+	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public 	List<TaskMenuOption> getMenuOptions() {
-		return m_menuOptions;
-	}
+	public List<TaskMenuOption> getMenuOptions() {return m_menuOptions;}
+	public TeamingAction        getTaskAction()  {return m_taskAction; }
 
 	/**
 	 * Called by the PopupMenu when one of the menu items is selected.

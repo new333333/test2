@@ -48,6 +48,7 @@ public class TaskBundle implements IsSerializable {
 	private boolean				m_canModifyEntry;		// Based on FolderOperation.modifyEntry.
 	private boolean				m_canPurgeEntry;		// Based on FolderOperation.deleteEntry.
 	private boolean				m_canTrashEntry;		// Based on FolderOperation.preDeleteEntry.
+	private boolean				m_isDebug;				//
 	private boolean				m_isFiltered;			//
 	private boolean				m_isFromFolder;			//
 	private int					m_totalTasks;			//
@@ -76,6 +77,7 @@ public class TaskBundle implements IsSerializable {
 	public boolean            getCanModifyEntry()       {return m_canModifyEntry;      }
 	public boolean            getCanPurgeEntry()        {return m_canPurgeEntry;       }
 	public boolean            getCanTrashEntry()        {return m_canTrashEntry;       }
+	public boolean            getIsDebug()              {return m_isDebug;             }
 	public boolean            getIsFiltered()           {return m_isFiltered;          }
 	public boolean            getIsFromFolder()         {return m_isFromFolder;        }
 	public int                getTotalTasks()			{return m_totalTasks;          }
@@ -95,6 +97,7 @@ public class TaskBundle implements IsSerializable {
 	public void setCanModifyEntry(      boolean            canModifyEntry)       {m_canModifyEntry       = canModifyEntry;      }
 	public void setCanPurgeEntry(       boolean            canPurgeEntry)        {m_canPurgeEntry        = canPurgeEntry;       }
 	public void setCanTrashEntry(       boolean            canTrashEntry)        {m_canTrashEntry        = canTrashEntry;       }
+	public void setIsDebug(             boolean            isDebug)              {m_isDebug              = isDebug;             }
 	public void setIsFiltered(          boolean            isFiltered)           {m_isFiltered           = isFiltered;          }
 	public void setIsFromFolder(        boolean            isFromFolder)         {m_isFromFolder         = isFromFolder;        }
 	public void setTotalTasks(          int                totalTasks)           {m_totalTasks           = totalTasks;          }
