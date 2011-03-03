@@ -862,13 +862,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public boolean isBinderDiskHighWaterMarkExceeded(Binder binder) {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		Integer highWaterMarkPercentage = zoneConf.getDiskQuotasHighwaterPercentage();
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
-			Long maxQuota = getMaxBinderQuota(binder);
-			Long diskSpaceUsed = getMaxBinderUsed(binder);
-			Integer highWaterMarkPercentage = zoneConf.getDiskQuotasHighwaterPercentage();
-			if (maxQuota != null && diskSpaceUsed != null && 
-					diskSpaceUsed * 100 / highWaterMarkPercentage < diskSpaceUsed) {
-				return true;
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+				Long quota = binderQuota.getDiskQuota();
+				Long diskSpaceUsed = binderQuota.getDiskSpaceUsedCumulative();
+				if (quota != null && diskSpaceUsed != null && 
+						diskSpaceUsed > quota * highWaterMarkPercentage / 100) {
+					return true;
+				}
+				parentBinder = parentBinder.getParentBinder();
 			}
 			return false;
 		} else {
@@ -907,49 +912,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	//Get the most that this binder will allow for disk usage
-	public Long getMaxBinderQuota(Binder binder) {
-		Long lowestQuota = null;
+	public Long getMinBinderQuotaLeft(Binder binder) {
+		Long leastQuotaLeft = null;
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
 			Binder parentBinder = binder;
 			while (parentBinder != null) {
 				try {
-					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
-					if (binderQuota.getDiskQuota() != null) {
-						Long quota = binderQuota.getDiskQuota();
-						if (lowestQuota == null || quota < lowestQuota) {
-							//A new low
-							lowestQuota = quota;
-						}
-					}
-				} catch(NoObjectByTheIdException e) {
-					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
-				}
-				parentBinder = parentBinder.getParentBinder();
-			}
-		}
-		return lowestQuota;
-	}
-	
-	//Get the cumulative spaced used in the binder with the lowest quota
-	public Long getMaxBinderUsed(Binder binder) {
-		Long lowestQuota = null;
-		Long lowestCumulativeDiskSpaceUsed = null;
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
-		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
-			Binder parentBinder = binder;
-			while (parentBinder != null) {
-				try {
-					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, binder.getId());
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
 					if (binderQuota.getDiskQuota() != null) {
 						Long quota = binderQuota.getDiskQuota();
 						Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
-						if (lowestQuota == null || quota < lowestQuota) {
+						if (leastQuotaLeft == null || quota - diskSpaceUsedCumulative < leastQuotaLeft) {
 							//A new low
-							lowestQuota = quota;
-							lowestCumulativeDiskSpaceUsed = diskSpaceUsedCumulative;
+							leastQuotaLeft = quota - diskSpaceUsedCumulative;
+							if (leastQuotaLeft < 0) {
+								leastQuotaLeft = 0L;
+								break;
+							}
 						}
 					}
 				} catch(NoObjectByTheIdException e) {
@@ -958,7 +939,40 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				parentBinder = parentBinder.getParentBinder();
 			}
 		}
-		return lowestCumulativeDiskSpaceUsed;
+		return leastQuotaLeft;
+	}
+	
+	//Get the most that this binder will allow for disk usage
+	public Binder getMinBinderQuotaLeftBinder(Binder binder) {
+		Long leastQuotaLeft = null;
+		Binder result = null;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				try {
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+					if (binderQuota.getDiskQuota() != null) {
+						Long quota = binderQuota.getDiskQuota();
+						Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+						if (leastQuotaLeft == null || quota - diskSpaceUsedCumulative < leastQuotaLeft) {
+							//A new low
+							result = parentBinder;
+							leastQuotaLeft = quota - diskSpaceUsedCumulative;
+							if (leastQuotaLeft < 0) {
+								leastQuotaLeft = 0L;
+								break;
+							}
+						}
+					}
+				} catch(NoObjectByTheIdException e) {
+					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+		}
+		return result;
 	}
 	
 	//Increment the disk space used in this binder. Update the cumulative counts in the parent binders
