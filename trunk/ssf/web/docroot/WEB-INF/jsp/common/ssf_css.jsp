@@ -2014,10 +2014,12 @@ div.ss_content_outer {		/* also see ss_pseudoPortal */
 }
 .ss_content_window_content {
 	padding:4px 10px;
-	border-left: 1px solid ${ss_style_border_color_dark_hue};
-	border-right: 1px solid ${ss_style_border_color_dark_hue};
-	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
-	border-top: none;
+	border: 1px solid #b8b8b8;
+	background-color: #fff;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 }
 .ss_content_window_content_off {
 	padding: 0px;
@@ -2205,7 +2207,7 @@ div.ss_sidebar_panel_featured {
 	}
 /* titlebar */
 .ss_base_title_bar {
-	background-color: ${ss_toolbar1_background_color};
+	background-color: #c4c4c4;
 	color: #333;
 	font-size: ${ss_style_font_normalprint};
 	font-weight: bold;
@@ -2214,6 +2216,10 @@ div.ss_sidebar_panel_featured {
 	padding-top: 5px;
 	padding-left: 5px;
 	padding-right: 5px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 	}
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.png);
@@ -2826,7 +2832,7 @@ table.ss_cal_gridTable td {
  * is visible.
  */
 div.ss_cal_todayMarker {
-  background-color: #AFC8E3;
+  background-color: #EBF5F5;
   position: absolute;
 }
 
@@ -2849,13 +2855,13 @@ div.ss_cal_gridHeaderText {
   text-align: center;
   font-size: 10px;
   font-family: sans-serif;
-  padding-top: 3px;
+  padding-top: 4px;
   color: #666;
 }
 
 div.ss_cal_gridHeaderTextToday {
-  background-color: #E8EFF7;
-  color: #666666;
+  background: url(<html:imagesPath/>pics/trans50_black.png) repeat;
+  color: #fff !important;
 }
 
 div.ss_cal_gridHeaderText a {
@@ -3002,12 +3008,13 @@ div.ss_cal_monthHRule {
 div.ss_cal_monthGridDayBadgeCurrent, div.ss_cal_monthGridDayBadge {
   background-color: #ECECEC;
   position: absolute;
-  height: 11px;
+  font-size: 12px;
+  height: 12px;
   width: 14.2857%;
   border-top: 1px solid #DDDDDD;
   border-left: 1px solid #DDDDDD;
   text-align: right;
-  font-size: 9px;
+  padding-right: 5px;
   font-family: sans-serif;
 }
 
@@ -3015,7 +3022,8 @@ div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
 }
 
 div.ss_cal_monthGridDayBadgeOverHighlight {
-  background-color: #E8EFF7;
+  background: #abced1 url(<html:imagesPath/>pics/trans_white_blend_az.png) repeat;
+  background-position: top;
 }
 
 div.ss_cal_monthGridDayBadgeDateAdd {
@@ -3028,7 +3036,7 @@ div.ss_cal_monthGridDayBadgeDateAdd {
 
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
-  background-color: #E8EFF7;
+  background-color: #abced1;
   color: #FFFFFF;
 }
 
@@ -3454,11 +3462,11 @@ span.ss_cal_eventTime {
 ul.ss_calendarNaviBar {	
 	display: table;
 	font-family: Arial;
-	border: 1px solid #CCCCCC;
-	background-color: #AFC8E3;
+	border: 1px solid #c4c4c4;
+	background-color: #c4c4c4;
 	list-style-type: none;
 	padding: 0px;
-	margin: 0px 0px 5px 0px;
+	margin: 0px;
 	width: 100%;
 }
 
@@ -3490,7 +3498,7 @@ ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 }
 
 ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
-	background-color: #AFC8E3;
+	background-color: #ccc;
 	color: #333333;
 	text-decoration: none;
 	border: 1px solid #FFFFFF;
@@ -3520,6 +3528,8 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
 
 ul.ss_calendarNaviBar li.ss_calViewDatesDescriptions td {	
 	color: #FFFFFF;
+	font-weight: bold;
+	font-size: 14px;
 }
 
 ul.ss_calendarNaviBar li.ss_calSelectDate {

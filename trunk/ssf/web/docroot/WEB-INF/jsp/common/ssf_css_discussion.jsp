@@ -467,7 +467,7 @@ a.ss_new_thread {
 /******* PAGINATION STYLES *************/
 .ss_pagination {
 	font-size: ${ss_style_font_fineprint} !important;
-	background-color: #CCDFDE !important;
+	background-color: #ccc !important;
 /*	height:38px !important;		*/
 	margin-bottom: 0px;
 	width: 100%;
@@ -481,7 +481,7 @@ a.ss_new_thread {
 	}
 .ss_pagination_goTable {
 /*	height:38px !important;		*/
-	background-color: #CCDFDE !important;
+	background-color: #ccc !important;
 	padding:4px 0px;
 	white-space: nowrap !important;
 	}
@@ -566,7 +566,7 @@ a.ss_new_thread {
 	margin-right:2px; */
 	}
 .ss_pageActive{
-	color: #3e6978 !important;
+	color: #505354 !important;
 	font-weight: bold;
 	vertical-align:middle;
 	padding:2px 4px 0px 6px;

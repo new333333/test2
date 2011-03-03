@@ -99,8 +99,8 @@
 --%><c:set var="ss_style_border_color_light" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_style_text_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_style_gray_color" value="#333333" scope="request"/><%--
---%><c:set var="ss_style_light_color" value="#135c8f" scope="request"/><%--
---%><c:set var="ss_style_border_color_dark_hue" value="#AFC8E3" scope="request"/><%--
+--%><c:set var="ss_style_light_color" value="#cccccc" scope="request"/><%--
+--%><c:set var="ss_style_border_color_dark_hue" value="#949494" scope="request"/><%--
 --%><%--
   --
   -- BOX
