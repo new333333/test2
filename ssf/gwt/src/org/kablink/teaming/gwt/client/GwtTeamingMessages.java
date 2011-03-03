@@ -912,6 +912,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskCompleted_c100();
 	String taskConfirmDelete();
 	String taskConfirmPurge();
+	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
 	String taskInternalError_FilteredOrVirtual(String operation);
 	String taskInternalError_UnexpectedAction(String action);
 	String taskInternalError_UnexpectedViewOption(String viewOption);
@@ -930,7 +931,6 @@ public interface GwtTeamingMessages extends Messages
 	String taskPriority_p5();
 	String taskProcess_move();
 	String taskShowMore();
-	String taskShowTime(String showTime);
 	String taskStatus_cancelled();
 	String taskStatus_completed();
 	String taskStatus_inProcess();
