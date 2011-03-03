@@ -50,7 +50,7 @@
 	}
 	ss_createOnLoadObj("saveLocation_sendMail", saveLocation);
 </script>
-<div class="ss_style ss_portlet" style="padding:10px;">
+<div class="ss_style ss_portlet ss_subsection2" style="padding: 0; margin: 0;">
   
 <ssf:form title='<%= NLT.get("sendMail.title") %>'>
 
@@ -60,117 +60,112 @@
 <input type="hidden" id="sendMailLocation" name="sendMailLocation" value=""                   />
 <input type="hidden" id="ssUsersIdsToAdd"  name="ssUsersIdsToAdd"  value="${ssUsersIdsToAdd}" />
 
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="sendMail.recipients" /></legend>
-<table class="ss_style" border ="0" cellspacing="4" cellpadding="4">
- <tr><td>
-   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/>:</span>
-   <input class="ss_style" type="text" name="addresses" id="addresses" size="86" value="">
- </td></tr>
- <tr><td>
- <input class="ss_style" type="checkbox" name="self" id="self" >&nbsp;<span class="ss_labelRight">
-  <label for="self"><ssf:userTitle user="${ssUser}"/> (${ssUser.emailAddress})</label></span>
- </td></tr>
-</table>
-<br/>
+<div>
+	<table class="ss_style margintop2" border="0" cellspacing="4" cellpadding="4">
+		 <tr><td>
+		   <span class="ss_bold"><ssf:nlt tag="sendMail.to"/>:</span><span class="marginleft1"><ssf:nlt tag="sendMail.addresses"/></span>
+		   <div><input class="ss_style" type="text" name="addresses" id="addresses" size="86" value=""></div>
+		 </td></tr>
+		 <tr><td>
+		 <input class="ss_style" type="checkbox" name="self" id="self" >&nbsp;<span class="ss_labelRight">
+		  <label for="self"><ssf:userTitle user="${ssUser}"/> (${ssUser.emailAddress})</label></span>
+		 </td></tr>
+	</table>
 
-<table class="ss_style" border ="0" cellspacing="4" cellpadding="4">
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinder.id}" sendingEmail="true" width="150px"/>
-</td>
-</tr>
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
-</td>
-</tr>
-</table>
-<br/>
+	<table class="ss_style margintop2" style="margin-left: 30px;" border="0" cellspacing="4" cellpadding="4">
+		<tr>
+		<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.users" text="Users"/></td>
+		<td valign="top">
+		  <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
+			type="user" userList="${ssUsers}" binderId="${ssBinder.id}" sendingEmail="true" width="150px"/>
+		</td>
+		</tr>
+		<tr>
+		<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.groups" text="Groups"/></td>
+		<td valign="top">
+		  <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
+			type="group" userList="${ssGroups}" sendingEmail="true" width="150px"/>
+		</td>
+		</tr>
+	</table>
 
-<table class="ss_style" border ="0" cellspacing="4" cellpadding="4" width="95%">
-<tr><td>
-	<ssf:clipboard type="user" formElement="users" />
-	<c:if test="${!empty ssBinder}">
-		<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
+	<table class="ss_style margintop2" border ="0" cellspacing="4" cellpadding="4" width="95%">
+		<tr><td>
+			<ssf:clipboard type="user" formElement="users" />
+			<c:if test="${!empty ssBinder}">
+				<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
+			</c:if>
+		</td></tr>
+	</table>
+
+	<ssf:expandableArea title='<%= NLT.get("mail.cc") %>'>
+		<table class="ss_style" style="margin-left: 30px;" border="0" cellspacing="4" cellpadding="4">
+			<tr>
+			<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.users" text="Users"/></td>
+			<td valign="top">
+			  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
+				type="user" sendingEmail="true" width="150px" />
+			</td>
+			</tr>
+			<tr>
+			<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.groups" text="Groups"/></td>
+			<td valign="top">
+			  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
+				type="group" sendingEmail="true" width="150px"/>
+			</td>
+			</tr>
+		</table>
+	</ssf:expandableArea>
+
+	<ssf:expandableArea title='<%= NLT.get("mail.bcc") %>'>
+		<table class="ss_style" style="margin-left: 30px;" border="0" cellspacing="4" cellpadding="4">
+			<tr>
+			<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.users" text="Users"/></td>
+			<td valign="top">
+			  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
+				type="user" sendingEmail="true" width="150px" />
+			</td>
+			</tr>
+			<tr>
+			<td class="ss_bold" valign="top" style="padding-top: 9px;"><ssf:nlt tag="general.groups" text="Groups"/></td>
+			<td valign="top">
+			  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
+				type="group" sendingEmail="true" width="150px"/>
+			</td>
+			</tr>
+		</table>
+	</ssf:expandableArea>
+</div>
+
+
+<div class="ss_subsection"> 
+	<table class="ss_style"  border ="0" cellspacing="4" cellpadding="4" width="95%">
+	 <tr><td>
+	   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.subject"/></span>
+	   <!-- just use title, not docNumber so calendar entries contain summary -->
+	   <input class="ss_style" type="text" name="subject" id="subject" size="86" 
+		 <c:if test="${!empty ssEntry}">value="<ssf:escapeQuotes>${ssEntry.title}</ssf:escapeQuotes>" </c:if>
+	   >
+	</td></tr>
+	<tr><td>
+	   <span class="ss_labelAbove ss_bold"><c:if test="${!empty ssEntry}"><ssf:nlt tag="sendMail.message"/></c:if><c:if test="${empty ssEntry}"><ssf:nlt tag="sendMail.message"/></c:if></span>
+		<div align="left">
+	<%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> 
+	</td></tr>
+	<c:if test="${!empty ssEntry}">
+	
+	<tr><td>
+	 <input type="checkbox" name="attachments" id="attachments" class="ss_style" >&nbsp;<span class="ss_labelRight">
+	  <ssf:nlt tag="sendMail.includeAttachments"/></span></td>
+	</td></tr>
 	</c:if>
-</td></tr>
-</table>
-
-<ssf:expandableArea title='<%= NLT.get("mail.cc") %>'>
-<table class="ss_style" border="0" cellspacing="4" cellpadding="4">
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccusers" 
-    type="user" sendingEmail="true" width="150px" />
-</td>
-</tr>
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="ccgroups" 
-    type="group" sendingEmail="true" width="150px"/>
-</td>
-</tr>
-</table>
-</ssf:expandableArea>
-
-<ssf:expandableArea title='<%= NLT.get("mail.bcc") %>'>
-<table class="ss_style" border="0" cellspacing="4" cellpadding="4">
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccusers" 
-    type="user" sendingEmail="true" width="150px" />
-</td>
-</tr>
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
-<td valign="top">
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="bccgroups" 
-    type="group" sendingEmail="true" width="150px"/>
-</td>
-</tr>
-</table>
-</ssf:expandableArea>
-
-</fieldset>
-
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="sendMail.message" /></legend>
- 
-<table class="ss_style"  border ="0" cellspacing="4" cellpadding="4" width="95%">
- <tr><td>
-   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.subject"/></span>
-   <!-- just use title, not docNumber so calendar entries contain summary -->
-   <input class="ss_style" type="text" name="subject" id="subject" size="86" 
-     <c:if test="${!empty ssEntry}">value="<ssf:escapeQuotes>${ssEntry.title}</ssf:escapeQuotes>" </c:if>
-   >
-</td></tr>
-<tr><td>
-   <span class="ss_labelAbove ss_bold"><c:if test="${!empty ssEntry}"><ssf:nlt tag="entry.sendMail.body"/></c:if><c:if test="${empty ssEntry}"><ssf:nlt tag="sendMail.message"/></c:if></span>
-    <div align="left">
-<%@ include file="/WEB-INF/jsp/binder/sendMail_htmlTextarea.jsp" %> 
-</td></tr>
-<c:if test="${!empty ssEntry}">
-
-<tr><td>
- <input type="checkbox" name="attachments" id="attachments" class="ss_style" >&nbsp;<span class="ss_labelRight">
-  <ssf:nlt tag="sendMail.includeAttachments"/></span></td>
-</td></tr>
-</c:if>
-</table>
-</fieldset>
-
-<br/>
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+	</table>
+</div>
+<div class="margintop3"
+	<div class="ss_buttonBarRight">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.send"/>">
+		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
+	</div>
 </div>
 </form>
 </ssf:form>

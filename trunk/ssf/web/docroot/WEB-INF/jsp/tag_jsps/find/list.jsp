@@ -125,7 +125,7 @@
 							<a href="javascript: ;" 
 								onclick="window['findMultiple${prefix}'].removeValueByElement(this, '${item.id}', '<ssf:escapeJavaScript value="${item.title}"/>'); return false;"
 								><img <ssf:alt tag="alt.delete"/> 
-									src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
+									src="<html:imagesPath/>pics/delete.png" border="0"/></a>
 						</li>
 					</c:forEach>
 				</ul>

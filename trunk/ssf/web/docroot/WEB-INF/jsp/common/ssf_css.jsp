@@ -115,6 +115,20 @@ boolean isIE6 = BrowserSniffer.is_ie_6(request);
 <c:if test="<%= isIE %>">
 html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); } 
 </c:if>
+<%
+// Collaboration Branding colors - darkest is gray1
+%>
+
+.gray1 { color: #1f1f1f !important;}
+.gray2 { color: #353838 !important;}
+.gray3 { color: #505354 !important;}
+.gray4 { color: #949494 !important;}
+.gray5 { color: #b8b8b8 !important;}
+.gray6 { color: #c4c4c4 !important;}
+.gray7 { color: #cccccc !important;}
+.gray8 { color: #e0e0e0 !important;}
+.gray9 { color: #ededed !important;}
+
 
 p {
   margin:8px 0px 8px 0px;
@@ -4106,6 +4120,13 @@ div.ss_subsection {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 }
+div.ss_subsection2 {
+	padding: 10px;
+	margin: 10px 0px;
+	background-color:#ededed;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
+}
 div.ss_questionContainer h4 {
 	margin:0px;
 }
@@ -4776,9 +4797,12 @@ ul.placesForm, ul.placesForm li {
 	}
 .ss_combobox_autocomplete_list ul {
 	list-style-type: none;
+	background-color: #f6f6f6;
 	padding: 6px 10px;
 	margin: 1px 4px 4px 4px;
-	border: solid black 1px;
+	border: 1px solid #949494;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 .ss_combobox_autocomplete_list ul li {
 	padding: 0px;
