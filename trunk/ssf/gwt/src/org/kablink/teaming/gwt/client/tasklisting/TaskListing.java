@@ -280,6 +280,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		resizeNow();
 		
 		// ...and display the tasks in it.
+		final long start = System.currentTimeMillis();
 		m_rpcService.getTaskBundle(HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_filterType, m_mode, new AsyncCallback<TaskBundle>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -296,9 +297,10 @@ public class TaskListing extends Composite implements ActionTrigger {
 			public void onSuccess(TaskBundle result) {
 				// Clear the task listing DIV's contents and render the
 				// task list.
+				long end = System.currentTimeMillis();
 				m_pleaseWaitLabel.setText(m_messages.taskPleaseWait_Rendering());
 				m_taskBundle = result;
-				showTaskBundle();
+				showTaskBundle(end - start);
 			}			
 		});		
 	}
@@ -495,18 +497,18 @@ public class TaskListing extends Composite implements ActionTrigger {
 	/*
 	 * Shows the TaskBundle into the task listing DIV.
 	 */
-	private void showTaskBundle() {
+	private void showTaskBundle(final long readTime) {
 		Scheduler.ScheduledCommand showCommand;
 		showCommand = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				showTaskBundleNow();
+				showTaskBundleNow(readTime);
 			}
 		};
 		Scheduler.get().scheduleDeferred(showCommand);
 	}
 	
-	private void showTaskBundleNow() {
+	private void showTaskBundleNow(final long readTime) {
 		m_taskListingDIV.clear();
 		boolean newTaskTable = (null == m_taskTable);
 		if (newTaskTable) m_taskTable = new TaskTable(this);
@@ -517,7 +519,11 @@ public class TaskListing extends Composite implements ActionTrigger {
 			showTimeCommand = new Scheduler.ScheduledCommand() {
 				@Override
 				public void execute() {
-					Window.alert(m_messages.taskShowTime(String.valueOf(showTime)));
+					Window.alert(m_messages.taskDebug_times(
+						String.valueOf(m_taskBundle.getTotalTasks()),
+						String.valueOf(readTime),
+						String.valueOf(showTime),
+						String.valueOf(readTime + showTime)));
 				}
 			};
 			Scheduler.get().scheduleDeferred(showTimeCommand);
