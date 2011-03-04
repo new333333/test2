@@ -2065,7 +2065,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Due Date' column.
 	 */
 	private void renderColumnDueDate(final TaskListItem task, int row) {
-		InlineLabel il = new InlineLabel(task.getTask().getEvent().getLogicalEnd().getDateDisplay());
+		String dueDate = task.getTask().getEvent().getLogicalEnd().getDateDisplay();
+		InlineLabel il = new InlineLabel();
+		il.getElement().setInnerHTML(GwtClientHelper.hasString(dueDate) ? dueDate : "&nbsp;");
 		il.setWordWrap(false);
 		if (task.getTask().isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
