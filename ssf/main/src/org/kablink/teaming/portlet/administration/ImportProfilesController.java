@@ -60,6 +60,7 @@ public class ImportProfilesController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
@@ -76,11 +77,6 @@ public class ImportProfilesController extends  SAbstractController {
 					
 			    	getProfileModule().addEntries(doc, null);
 
-	    			// Are we running the new GWT UI and doing a self registration?
-	    			if ( GwtUIHelper.isGwtUIActive( request ) ) {
-	    				// Yes, set up the response to close the window.
-	    				response.setRenderParameter( WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW );
-	    			}
 		    	}
 		    	catch ( DocumentException docEx )
 		    	{
@@ -103,6 +99,7 @@ public class ImportProfilesController extends  SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
+		Map formData = request.getParameterMap();
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getProfileModule().getProfileBinder();
 		Map model = new HashMap();
@@ -111,7 +108,11 @@ public class ImportProfilesController extends  SAbstractController {
 		// Pass back any error information.
 		model.put( WebKeys.EXCEPTION, request.getParameter( WebKeys.EXCEPTION ) );
 		
-		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_PROFILES, model);
+		if (formData.containsKey("okBtn")) {
+			return new ModelAndView("forum/close_window", model);
+		} else {
+			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_PROFILES, model);
+		}
 	}
 
 }
