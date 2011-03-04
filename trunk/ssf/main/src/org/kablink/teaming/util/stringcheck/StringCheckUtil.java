@@ -32,10 +32,16 @@
  */
 package org.kablink.teaming.util.stringcheck;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.beans.factory.InitializingBean;
@@ -76,6 +82,24 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input, checkOnly);
 	}
 	
+	public static Set<String> check(Set<String> stringSet) throws StringCheckException {
+		if (stringSet == null ) return stringSet;
+		Set<String> result = new HashSet<String>();
+		for (String s : stringSet) {
+			result.add(getInstance().checkAll(s, false));
+		}
+		return result;
+	}
+
+	public static List<String> check(List<String> stringList) throws StringCheckException {
+		if (stringList == null ) return stringList;
+		List<String> result = new ArrayList<String>();
+		for (String s : stringList) {
+			result.add(getInstance().checkAll(s, false));
+		}
+		return result;
+	}
+
 	public static Map<String,?> check(Map<String,?> input) throws StringCheckException {
 		return getInstance().checkAll(input, false);
 	}
@@ -85,10 +109,27 @@ public class StringCheckUtil implements InitializingBean {
 	}
 
 	public static String[] check(String[] input) throws StringCheckException {
+		if (input == null) return input;
 		String[] result = new String[input.length];
 		for(int i = 0; i < input.length; i++)
 			result[i] = getInstance().checkAll(input[i], false);
 		return result;
+	}
+	
+	public static Description check(Description desc) throws StringCheckException {
+		if (desc != null) {
+			desc.setText(getInstance().checkAll(desc.getText(), false));
+		}
+		return desc;
+	}
+	
+	public static Survey check(Survey survey) throws StringCheckException {
+		if (survey != null) {
+			if (!survey.toString().equals(getInstance().checkAll(survey.toString(), false))) {
+				throw new StringCheckException();
+			}
+		}
+		return survey;
 	}
 	
 	private String checkAll(String input, boolean checkOnly) throws StringCheckException {
