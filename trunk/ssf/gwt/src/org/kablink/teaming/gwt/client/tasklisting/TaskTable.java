@@ -96,26 +96,26 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TaskTable extends Composite implements ActionHandler {
-	private boolean				m_sortAscending;			//
-	private Column				m_sortColumn;				//
-	private EventHandler		m_assigneeMouseOutEvent;	//
-	private EventHandler		m_assigneeMouseOverEvent;	//
-	private EventHandler		m_cbClickHandler;			//
-	private EventHandler		m_expanderClickHandler;		//
-	private EventHandler		m_taskOptionClickHandler;	//
-	private EventHandler		m_taskSeenClickHandler;		//
-	private EventHandler		m_taskViewClickHandler;		//
-	private FlexCellFormatter	m_flexTableCF;				//
-	private FlexTable			m_flexTable;				//
-	private FlowPanel			m_processActiveDIV;			//
-	private Image 				m_dueDateBusy;				//
-	private InlineLabel 		m_processActiveLabel;		//
-	private RowFormatter		m_flexTableRF;				//
-	private TaskBundle			m_taskBundle;				//
-	private TaskListing			m_taskListing;				//
-	private TaskPopupMenu		m_percentDoneMenu;			//
-	private TaskPopupMenu		m_priorityMenu;				//
-	private TaskPopupMenu		m_statusMenu;				//
+	private boolean					m_sortAscending;			//
+	private Column					m_sortColumn;				//
+	private EventHandler			m_assigneeMouseOutEvent;	//
+	private EventHandler			m_assigneeMouseOverEvent;	//
+	private EventHandler			m_cbClickHandler;			//
+	private EventHandler			m_expanderClickHandler;		//
+	private EventHandler			m_taskOptionClickHandler;	//
+	private EventHandler			m_taskSeenClickHandler;		//
+	private EventHandler			m_taskViewClickHandler;		//
+	private FlexCellFormatter		m_flexTableCF;				//
+	private FlexTable				m_flexTable;				//
+	private Image 					m_dueDateBusy;				//
+	private long					m_renderTime;				//
+	private ProcessActiveWidgets	m_processActiveWidgets;		//
+	private RowFormatter			m_flexTableRF;				//
+	private TaskBundle				m_taskBundle;				//
+	private TaskListing				m_taskListing;				//
+	private TaskPopupMenu			m_percentDoneMenu;			//
+	private TaskPopupMenu			m_priorityMenu;				//
+	private TaskPopupMenu			m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
 	private final GwtMainPage						m_gwtMainPage  = GwtTeaming.getMainPage();					// 
@@ -123,20 +123,25 @@ public class TaskTable extends Composite implements ActionHandler {
 	private final GwtTeamingMessages				m_messages     = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
 	
+	// The following defines attributes added to various task table
+	// widgets to enable backtracking to their related task, ...
+	private final static String ATTR_ENTRY_ID		= "n_entryId";
+	private final static String ATTR_OPTION_MENU	= "n_optionMenu";
+
 	// The following defines the number of entries we show before
 	// adding an ellipse to show more.
-	private final int MEMBERSHIP_ELLIPSE_COUNT	= 10;
+	private final static int MEMBERSHIP_ELLIPSE_COUNT	= 10;
 
 	// The following defines the number of milliseconds before a
 	// process active message will be delayed for those operations that
 	// display one.
-	private final int PROCESS_ACTIVE_DELAY = 500;
+	private final static int PROCESS_ACTIVE_DELAY = 250;	// This is the same value used by the activity streams.
 	
-	// The following defines the name of the attribute added to various
-	// task table widgets to enable backtracking to their related task.
-	private final String ATTR_ENTRY_ID		= "n_entryId";
-	private final String ATTR_OPTION_MENU	= "n_optionMenu";
-
+	// The following defines the minimum time it must take for the
+	// initial rendering of the tasks in the task table before we'll
+	// display process active messages.
+	private final static long PROCESS_ACTIVE_RENDER_TIME = 500l; 
+	
 	/*
 	 * Enumeration used to represent the type of an AssignmentInfo.
 	 */
@@ -190,7 +195,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		 * @return
 		 */
 		static Column mapSortKeyToColumn(String sortKey) {
-			Column reply = Column.ORDER;
+			Column reply = null;
 			for (Column column:  Column.values()) {
 				String columnKey = column.getSortKey();
 				if (sortKey.equals(columnKey)) {
@@ -207,45 +212,82 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * long running process is in progress.
 	 */
 	private class ProcessActive {
-		private boolean m_processActive;		// true -> The process is still active.  false -> It's no longer active.  
-		private Timer   m_processActiveTimer;	// Timer used to delay showing the process active message.
+		private boolean					m_processActive;		// true -> The process is still active.  false -> It's no longer active.
+		private ProcessActiveWidgets	m_processActiveWidgets;	// The widgets used to hold the process active message.
+		private Timer   				m_processActiveTimer;	// Timer used to delay showing the process active message.
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param processActiveMessage
 		 */
-		public ProcessActive(String processActiveMessage) {
-			m_processActiveLabel.setText(processActiveMessage);
-			m_processActive = true;
+		ProcessActive(ProcessActiveWidgets widgets, String processActiveMessage, int delay) {
+			m_processActive        = true;
+			m_processActiveWidgets = widgets;
+			setMessage(processActiveMessage);
+			runIt(delay);
 		}
-
+		
+		@SuppressWarnings("unused")
+		ProcessActive(ProcessActiveWidgets widgets, String processActiveMessage) {
+			// Always use the initial form of the constructor.
+			this(widgets, processActiveMessage, PROCESS_ACTIVE_DELAY);
+		}
+		
 		/**
 		 * Kills the process active message.
 		 */
 		public void killIt() {
+			if (null != m_processActiveTimer) {
+				m_processActiveTimer.cancel();
+				m_processActiveTimer = null;
+			}
 			m_processActive = false;
-			m_processActiveDIV.setVisible(false);
-			m_processActiveLabel.setText("");
+			m_processActiveWidgets.getProcessActiveDIV().setVisible(false);
 		}
 
 		/**
 		 * Runs the process active message.
 		 */
-		public void runIt() {
-			if (null == m_processActiveTimer) {
-				m_processActiveTimer = new Timer() {
-					@Override
-					public void run() {
-						// If the process is still active...
-						if (m_processActive) {
-							// ...show the message.
-							showIt();
+		public void runIt(int delay) {
+			// If we don't have a delay...
+			if (0 == delay) {
+				// ...simply show it.
+				showIt();
+			}
+			else {
+				// ...otherwise, delay showing it for the give number
+				// ...of milliseconds.
+				if (null == m_processActiveTimer) {
+					m_processActiveTimer = new Timer() {
+						@Override
+						public void run() {
+							// If the process is still active...
+							if (m_processActive) {
+								// ...show the message.
+								showIt();
+							}
 						}
-					}
-				};
-			}			
-			m_processActiveTimer.schedule(PROCESS_ACTIVE_DELAY);
+					};
+				}			
+				m_processActiveTimer.schedule(delay);
+			}
+		}
+		
+		@SuppressWarnings("unused")
+		public void runIt() {
+			runIt(PROCESS_ACTIVE_DELAY);
+		}
+
+		/**
+		 * Called to change the text being displayed in the process
+		 * active message.
+		 * 
+		 * @param text
+		 */
+		public void setMessage(String processActiveMessage) {
+			// Simply store the message in the process active label.
+			m_processActiveWidgets.getProcessActiveLabel().setText(processActiveMessage);
 		}
 		
 		/*
@@ -254,13 +296,45 @@ public class TaskTable extends Composite implements ActionHandler {
 		private void showIt()
 		{
 			// Center the message...
+			FlowPanel fp = m_processActiveWidgets.getProcessActiveDIV();
 			int width = getWidget().getOffsetWidth();
-			int left  = (((width - m_processActiveDIV.getOffsetWidth()) / 2) - 40);
-			DOM.setStyleAttribute(m_processActiveDIV.getElement(), "left", Integer.toString(left) + "px");
+			int left  = (((width - fp.getOffsetWidth()) / 2) - 40);
+			DOM.setStyleAttribute(fp.getElement(), "left", Integer.toString(left) + "px");
 			
 			// ...and show it.
-			m_processActiveDIV.setVisible(true);
+			fp.setVisible(true);
 		}
+	}
+
+	/*
+	 * Inner class used to encapsulate the widgets for the
+	 * ProcessActive object. 
+	 */
+	private class ProcessActiveWidgets {
+		private FlowPanel	m_processActiveDIV;		// The <DIV>  containing the process active message.
+		private InlineLabel m_processActiveLabel;	// The <SPAN> containing the actual text.
+		
+		/**
+		 * Class constructor.
+		 */
+		ProcessActiveWidgets() {
+			m_processActiveDIV   = new FlowPanel();
+			m_processActiveLabel = new InlineLabel();
+			m_processActiveDIV.add(m_processActiveLabel);
+			m_processActiveDIV.addStyleName("gwtTaskList_processActive");
+			Image busyImg = new Image(m_images.busyAnimation());
+			busyImg.getElement().setAttribute("align", "absmiddle");
+			m_processActiveDIV.add(busyImg);
+			m_processActiveDIV.setVisible(false);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public FlowPanel   getProcessActiveDIV()   {return m_processActiveDIV;  }
+		public InlineLabel getProcessActiveLabel() {return m_processActiveLabel;}
 	}
 	
 	/*
@@ -393,16 +467,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_flexTable.setCellPadding(0);
 		m_flexTable.setCellSpacing(0);
 
-		// ...create a panel to hold a process active message...
-		m_processActiveDIV = new FlowPanel();
-		m_processActiveDIV.addStyleName("gwtTaskList_processActive");
-		m_taskListing.getTaskListingDIV().add(m_processActiveDIV);
-		m_processActiveLabel = new InlineLabel();
-		m_processActiveDIV.add(m_processActiveLabel);
-		Image busyImg = new Image(m_images.busyAnimation());
-		busyImg.getElement().setAttribute("align", "absmiddle");
-		m_processActiveDIV.add(busyImg);
-		m_processActiveDIV.setVisible(false);
+		// ...create the widgets to hold a process active message...
+		m_processActiveWidgets = new ProcessActiveWidgets();
+		m_taskListing.getTaskListingDIV().add(m_processActiveWidgets.getProcessActiveDIV());
 		
 		// ...create the event handlers that we'll need repeatedly in
 		// ...the rows rendered in the table.
@@ -670,6 +737,30 @@ public class TaskTable extends Composite implements ActionHandler {
 		// column.  Return it.
 		return reply;
 	}
+
+	/*
+	 * Constructs and returns a ProcessActive object containing the
+	 * given message.  The message will be delayed being show for the
+	 * given number of milliseconds.
+	 */
+	private ProcessActive buildProcessActive(String processActiveMessage, int delay) {
+		ProcessActive reply;
+		if (PROCESS_ACTIVE_RENDER_TIME <= m_renderTime) {
+			reply = new ProcessActive(
+				m_processActiveWidgets,
+				processActiveMessage,
+				delay);
+		}
+		else {
+			reply = null;
+		}		
+		return reply;
+	}
+	
+	private ProcessActive buildProcessActive(String processActiveMessage) {
+		// Always use the initial form of the method.
+		return buildProcessActive(processActiveMessage, PROCESS_ACTIVE_DELAY);
+	}
 	
 	/*
 	 * Returns a spacer Image.
@@ -889,7 +980,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Process the sort criteria from the TaskList...
 		m_sortAscending = (!(m_taskListing.getSortDescend()));
 		m_sortColumn    = Column.mapSortKeyToColumn(m_taskListing.getSortBy());
-		if ((Column.LOCATION == m_sortColumn) && m_taskBundle.getIsFromFolder()) {
+		if (null == m_sortColumn) {
+			m_sortColumn    = Column.ORDER;
+			m_sortAscending = true;
+		}
+		else if ((Column.LOCATION == m_sortColumn) && m_taskBundle.getIsFromFolder()) {
 			m_sortColumn = Column.ORDER;
 		}
 
@@ -1127,9 +1222,8 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Called when the user clicks the select all checkbox.
 	 */
 	private void handleSelectAll(Boolean checked) {
-		// Perform the selection and validate the TaskListing tools.
-		selectAllTasks(checked);
-		validateTaskToolsAsync();
+		// Perform the selection.
+		selectAllTasksAsync(checked);
 	}
 
 	/*
@@ -1244,11 +1338,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
-			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
-			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskDown(m_taskBundle, task);
-			handleTaskPostMove(pa, task);
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
 		}
 	}
 	
@@ -1260,11 +1352,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
-			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
-			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskLeft(m_taskBundle, task);
-			handleTaskPostMove(pa, task);
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
 		}
 	}
 	
@@ -1276,11 +1366,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
-			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
-			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskRight(m_taskBundle, task);
-			handleTaskPostMove(pa, task);
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
 		}
 	}
 	
@@ -1292,11 +1380,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
 		if (1 == tasksCheckedCount) {
-			ProcessActive pa = new ProcessActive(m_messages.taskProcess_move());
-			pa.runIt();
 			TaskListItem task = tasksChecked.get(0);
 			TaskListItemHelper.moveTaskUp(m_taskBundle, task);
-			handleTaskPostMove(pa, task);
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
 		}
 	}
 
@@ -2343,7 +2429,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Renders the tasks in the TaskBundle.
 	 */
-	private void renderTaskBundle(TaskBundle taskBundle, List<Long> checkedTaskIds) {
+	private long renderTaskBundle(TaskBundle taskBundle, List<Long> checkedTaskIds) {
+		// Save the time when we start.
+		long start = System.currentTimeMillis();
+
 		// Decide how the table should be sorted...
 		m_taskBundle = taskBundle;
 		if (m_newTaskTable) {
@@ -2383,11 +2472,15 @@ public class TaskTable extends Composite implements ActionHandler {
 
 		// Validate the task tools for what we've got displayed.
 		validateTaskToolsAsync();
+		
+		// Finally, return how long we took to render the task bundle.
+		long end = System.currentTimeMillis();
+		return (end - start);
 	}
 	
-	private void renderTaskBundle(TaskBundle tb, boolean updateCalculatedDates) {
+	private long renderTaskBundle(TaskBundle tb, boolean updateCalculatedDates) {
 		// Always use the initial form of the method.
-		renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
+		long reply = renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
 
 		// After displaying the table, are we supposed to update the
 		// calculated dates?
@@ -2397,11 +2490,13 @@ public class TaskTable extends Composite implements ActionHandler {
 			// interact with the task table while we're updating.
 			updateCalculatedDatesAsync(null, tb.getBinderId(), null);
 		}
+		
+		return reply;
 	}
 	
-	private void renderTaskBundle(TaskBundle tb) {
+	private long renderTaskBundle(TaskBundle tb) {
 		// Always use the initial form of the method.
-		renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
+		return renderTaskBundle(tb, null);	// null -> No checked tasks to preserve.
 	}
 
 	/*
@@ -2441,8 +2536,29 @@ public class TaskTable extends Composite implements ActionHandler {
 	/*
 	 * Checks or removes the check from all the tasks in the TaskTable.
 	 */
-	private void selectAllTasks(boolean select) {
+	private void selectAllTasksAsync(final boolean select) {
+		final ProcessActive pa = buildProcessActive(
+			(select                                ?
+				m_messages.taskProcess_selectAll() :
+				m_messages.taskProcess_unSelectAll()),
+			0);
+		
+		Scheduler.ScheduledCommand selector;
+		selector = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				selectAllTasksNow(pa, select);
+			}
+		};
+		Scheduler.get().scheduleDeferred(selector);
+	}
+	
+	private void selectAllTasksNow(ProcessActive pa, boolean select) {
 		selectAllTasksImpl(m_taskBundle.getTasks(), select);
+		if (null != pa) {
+			pa.killIt();
+		}
+		validateTaskToolsAsync();
 	}
 	
 	private void selectAllTasksImpl(List<TaskListItem> tasks, boolean selected) {
@@ -2484,23 +2600,16 @@ public class TaskTable extends Composite implements ActionHandler {
 	/**
 	 * Shows the tasks in the TaskBundle.
 	 * 
-	 * Returns the time, in milliseconds, that it took to show them.
-	 * 
 	 * @param taskBundle
 	 * @param updateCalculatedDates
 	 * 
-	 * @return
+	 * @return	The time, in milliseconds, it took to show the tasks.
 	 */
 	public long showTasks(TaskBundle tb, boolean updateCalculatedDates) {
-		// Save when we start...
-		long start = System.currentTimeMillis();
-
-		// ...render the tasks from the bundle...
-		renderTaskBundle(tb, updateCalculatedDates);
-		
-		// ...and return how long we took to do it.
-		long end = System.currentTimeMillis();
-		return (end - start);
+		// Render the tasks from the bundle, returning the time it
+		// took to render them.
+		m_renderTime = renderTaskBundle(tb, updateCalculatedDates);
+		return m_renderTime;
 	}
 	
 	/*
@@ -2554,6 +2663,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * in the task table.
 	 */
 	private void updateCalculatedDatesNow(final ProcessActive pa, final Long binderId, final Long entryId) {
+		if (null != pa) {
+			pa.setMessage(m_messages.taskProcess_updatingDates());
+		}
+		
 		m_dueDateBusy.setResource(m_images.busyAnimation());
 		m_rpcService.updateCalculatedDates(HttpRequestInfo.createHttpRequestInfo(), binderId, entryId, new AsyncCallback<Map<Long, TaskDate>>() {
 			@Override

@@ -931,6 +931,9 @@ public interface GwtTeamingMessages extends Messages
 	String taskPriority_p4();
 	String taskPriority_p5();
 	String taskProcess_move();
+	String taskProcess_selectAll();
+	String taskProcess_unSelectAll();
+	String taskProcess_updatingDates();
 	String taskShowMore();
 	String taskStatus_cancelled();
 	String taskStatus_completed();
