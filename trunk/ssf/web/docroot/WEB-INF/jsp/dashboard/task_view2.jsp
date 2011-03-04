@@ -1,7 +1,7 @@
 <%
 // The dashboard "search" component
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -17,10 +17,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -114,18 +114,18 @@
 		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
 		<td>
 			<c:choose>
-				<c:when test="${!empty entry['start_end#EndDate']}">
+				<c:when test="${!empty entry['start_end#LogicalEndDate']}">
 					<c:choose>
 						<c:when test="${!empty entry['start_end#TimeZoneID']}">
 							<fmt:formatDate 
 									timeZone="${ssUser.timeZone.ID}"
-									value="${entry['start_end#EndDate']}" type="both" 
+									value="${entry['start_end#LogicalEndDate']}" type="both" 
 									dateStyle="short" timeStyle="short" />						
 						</c:when>	
 						<c:otherwise>
 							<fmt:formatDate 
 									timeZone="GMT"
-									value="${entry['start_end#EndDate']}" type="date" 
+									value="${entry['start_end#LogicalEndDate']}" type="date" 
 									dateStyle="short"/>
 						</c:otherwise>
 					</c:choose>

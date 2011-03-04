@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -450,7 +450,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  <c:set var="eleSortName" value="${eleName}"/>
 	  <c:if test="${eleType == 'selectbox' || eleType == 'radio'}"><c:set var="eleSortName" value="_caption_${eleName}"/></c:if>
 	  <c:if test="${eleType == 'text' || eleType == 'hidden'}"><c:set var="eleSortName" value="_sort_${eleName}"/></c:if>
-	  <c:if test="${eleType == 'event'}"><c:set var="eleSortName" value="${eleName}#StartDate"/></c:if>
+	  <c:if test="${eleType == 'event'}"><c:set var="eleSortName" value="${eleName}#LogicalStartDate"/></c:if>
   	  <c:set var="ss_colHeaderText">${eleCaption}</c:set>
   	  <c:if test="${!empty ssFolderColumnTitles[colName]}">
   	    <c:set var="ss_colHeaderText">${ssFolderColumnTitles[colName]}</c:set>
@@ -973,8 +973,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 					String eventTimeZoneId = (String) entry1.get(eleName2 + "#TimeZoneID");
 					try {
 						boolean showTime = false;
-						Date startDate = (Date) entry1.get(eleName2 + "#StartDate");
-						Date endDate = (Date) entry1.get(eleName2 + "#EndDate");
+						Date startDate = (Date) entry1.get(eleName2 + "#LogicalStartDate");
+						Date endDate = (Date) entry1.get(eleName2 + "#LogicalEndDate");
 						if (startDate != null && endDate != null) {
 							SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 							if (sdf.format(startDate).equals(sdf.format(endDate))) {
