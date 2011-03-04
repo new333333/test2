@@ -76,6 +76,7 @@ import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -496,9 +497,16 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 //		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		if (descInfo.saveDesc(DescInfo.Type.PLAIN)) {
 			String[] val = new String[1];
-			val[0] = (String)content;
+			String text = (String)content;
+			text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+			//Get the body text and turn it into html
+			TextToHtml textToHtml = new TextToHtml();
+			textToHtml.setBreakOnLines(true);
+			textToHtml.setStripHtml(false);
+			textToHtml.parseText(text);
+			val[0] = textToHtml.toString();
 			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
-			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));
+			inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
 			descInfo.descSaved(DescInfo.Type.PLAIN);
 		}
 	}
