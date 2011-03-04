@@ -1343,7 +1343,6 @@ table.ss_mouseOverInfo {
   color: ${ss_toolbar_text_color};
   }
 .ss_toolbar_color {
-  background-color: ${ss_toolbar_background_color};
   color: ${ss_toolbar_text_color};
   }
 
@@ -3166,20 +3165,19 @@ a.ss_calDateUpButton:hover img {
 
 
 a.ss_calendarButton img {
-	width: 14px;
+	width: 16px;
 	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_calendarButton img, a.ss_calendarButton:link img , a.ss_calendarButton:focus img, a.ss_calendarButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/calendar.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>pics/date_picker_btn.png) no-repeat top left; 
 }
 
 a.ss_calendarButton:hover img {
-    background-position:  left -16px; 
+	background: transparent url(<html:imagesPath/>pics/date_picker_over_btn.png) no-repeat top left; 
 }
  
  
@@ -3526,7 +3524,6 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption  {
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
-	background-color: #AFC8E3;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
