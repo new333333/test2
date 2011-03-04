@@ -277,10 +277,10 @@ public class ViewController extends  SAbstractController {
 			elements.put(element.attributeValue("title"), element);
 		}
 		
-		//Add user
+		//User Accounts: Add User Account, Disable/Delete Accounts, Import Profiles
 		try {
 			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profilesBinder, ProfileOperation.addEntry)) {
+			if (getProfileModule().testAccess(profilesBinder, ProfileOperation.manageEntries)) {
 				List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
 				if (!defaultEntryDefinitions.isEmpty()) {
 					// Only one option
@@ -290,8 +290,7 @@ public class ViewController extends  SAbstractController {
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profilesBinder.getId().toString());
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
 					adapterUrl.setParameter(WebKeys.URL_CONTEXT, "adminMenu");
-					String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-					String title = NLT.get("toolbar.new_with_arg", nltArgs);
+					String title = NLT.get("administration.manage.userAccounts");
 					element = DocumentHelper.createElement("child");
 					element.addAttribute("title", title);
 					element.addAttribute("image", "bullet");
@@ -392,23 +391,6 @@ public class ViewController extends  SAbstractController {
 			}
 		} catch(AccessControlException e) {}
 	
-		//Manage user accounts
-		try {
-			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
-				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				element.addAttribute("title", NLT.get("administration.manage.userAccounts"));
-				element.addAttribute("image", "bullet");
-				element.addAttribute("id", String.valueOf(nextId++));
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_ACCOUNTS);
-				url.setWindowState(WindowState.MAXIMIZED);
-				url.setPortletMode(PortletMode.VIEW);
-				element.addAttribute("url", url.toString());
-				elements.put(element.attributeValue("title"), element);
-			}
-		} catch(AccessControlException e) {}
-	
 		//Manage quotas
 		try {
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
@@ -425,24 +407,6 @@ public class ViewController extends  SAbstractController {
 			}
 		} catch(AccessControlException e) {}
 	
-		//Import profiles
-		try {
-			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			if (getProfileModule().testAccess(profiles, ProfileOperation.manageEntries)) {
-				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-				element.addAttribute("title", NLT.get("administration.import.profiles"));
-				element.addAttribute("image", "bullet");
-				element.addAttribute("id", String.valueOf(nextId++));
-				element.addAttribute("target", "_blank");
-				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
-				element.addAttribute("url", adapterUrl.toString());
-				elements.put(element.attributeValue("title"), element);
-			}
-		} catch(AccessControlException e) {}
-	
-
-		
 		//templates
 		if (getAdminModule().testAccess(AdminOperation.manageTemplate)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);

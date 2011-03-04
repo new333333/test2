@@ -82,11 +82,13 @@ public class AddEntryController extends SAbstractController {
 	throws Exception {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+		Long binderId = profilesBinder.getId();
 		String context = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CONTEXT, "");				
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
+			//If no entryType is given, then the default definition will be used when adding the user account
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {

@@ -49,6 +49,7 @@ import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
@@ -74,6 +75,12 @@ public class ImportProfilesController extends  SAbstractController {
 		    		fIn.close();
 					
 			    	getProfileModule().addEntries(doc, null);
+
+	    			// Are we running the new GWT UI and doing a self registration?
+	    			if ( GwtUIHelper.isGwtUIActive( request ) ) {
+	    				// Yes, set up the response to close the window.
+	    				response.setRenderParameter( WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW );
+	    			}
 		    	}
 		    	catch ( DocumentException docEx )
 		    	{
@@ -96,6 +103,7 @@ public class ImportProfilesController extends  SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getProfileModule().getProfileBinder();
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);

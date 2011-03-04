@@ -1012,10 +1012,11 @@ public class GwtServerHelper {
 	 		managementCategory.setCategoryType( GwtAdminCategory.GwtAdminCategoryType.MANAGEMENT );
 			adminCategories.add( managementCategory );
 			
-			// Does the user have rights to "Add user"?
+			// Does the user have rights to "Manage User Accounts"?
+			//   This function covers: Add Account, Disable/Delete Accounts, Import Profiles.
 			try
 			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.addEntry ) )
+				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
 				{
 					List defaultEntryDefinitions;
 
@@ -1024,9 +1025,7 @@ public class GwtServerHelper {
 					if ( !defaultEntryDefinitions.isEmpty() )
 					{
 						Definition def = (Definition) defaultEntryDefinitions.get( 0 );
-						String[] nltArgs = new String[] {NLT.getDef(def.getTitle())};
-
-						title = NLT.get( "toolbar.new_with_arg", nltArgs );
+						title = NLT.get( "administration.manage.userAccounts" );
 
 						adaptedUrl = new AdaptedPortletURL( request, "ss_forum", true );
 						adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY );
@@ -1125,27 +1124,6 @@ public class GwtServerHelper {
 					
 					adminAction = new GwtAdminAction();
 					adminAction.init( title, url, AdminAction.MANAGE_GROUPS );
-					
-					// Add this action to the "management" category
-					managementCategory.addAdminOption( adminAction );
-				}
-			}
-			catch( AccessControlException e ) {}
-
-			// Does the user have rights to "Manage user accounts"?
-			try
-			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
-				{
-					// Yes
-					title = NLT.get( "administration.manage.userAccounts" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_MANAGE_USER_ACCOUNTS );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.MANAGE_USER_ACCOUNTS );
 					
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
@@ -1638,27 +1616,6 @@ public class GwtServerHelper {
 				// Add this action to the "system" category
 				systemCategory.addAdminOption( adminAction );
 			}
-
-			// Does the user have rights to "Import profiles"?
-			try
-			{
-				if ( profileModule.testAccess( profilesBinder, ProfileOperation.manageEntries ) )
-				{
-					// Yes
-					title = NLT.get( "administration.import.profiles" );
-
-					adaptedUrl = new AdaptedPortletURL( request, "ss_forum", false );
-					adaptedUrl.setParameter( WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT );
-					url = adaptedUrl.toString();
-					
-					adminAction = new GwtAdminAction();
-					adminAction.init( title, url, AdminAction.IMPORT_PROFILES );
-					
-					// Add this action to the "system" category
-					systemCategory.addAdminOption( adminAction );
-				}
-			}
-			catch(AccessControlException e) {}
 
 			// Does the user have rights to "Access Control for Zone Administration functions"?
 			if ( adminModule.testAccess( AdminOperation.manageFunctionMembership ) )

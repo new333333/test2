@@ -530,11 +530,11 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 
 // Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj, showInParent) {
-	ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
 	if (typeof ss_showAsWiki != "undefined" && ss_showAsWiki) {
 		self.location.href = obj.href;
 		return false;  //This is a wiki, just let the URL be executed in place
 	}
+	//ss_debug("**** ss_openTitleUrl - ss_showAsWiki: "+ss_showAsWiki)
 	if (showInParent != null && showInParent) {
 		try {
 			// This is a request to just open the url in the parent (if it

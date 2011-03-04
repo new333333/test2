@@ -102,6 +102,46 @@ function ss_checkForFileSelected() {
 
 </script>
 
+	<div style="padding:10px;">
+		<br>
+		
+		<c:if test="${!empty ssException}">
+		  <font color="red">
+		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
+		  </font>
+		  <br/>
+		</c:if>
+	
+		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+		  class="wg-tabs margintop3 marginbottom2">
+		  <table>
+		    <tr>
+			  <td>
+				  <div class="wg-tab roundcornerSM" >
+					  <a href="<ssf:url action="add_profile_entry" actionUrl="true">
+					    <ssf:param name="context" value="adminMenu" />
+					  </ssf:url>"
+					  ><ssf:nlt tag="administration.userAccounts.addUserAccount"/></a>
+				  </div>
+			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM" >
+					  <a href="<ssf:url action="manage_user_accounts" actionUrl="true"/>"
+					  ><ssf:nlt tag="administration.userAccounts.disableUserAccount"/></a>
+				  </div>
+			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM on" >
+					  <a href="<ssf:url action="import_profiles" actionUrl="true"/>"
+					  ><ssf:nlt tag="administration.import.profiles"/></a>
+				  </div>
+			  </td>
+		    </tr>
+		  </table>
+		</div>
+		<div class="ss_clear"></div>
+
+<div id="manageIndexDiv" style="display:block;" class="wg-tab-content">
 <form name="form1" class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" 
 			portletName="ss_administration" 
@@ -130,6 +170,15 @@ function ss_checkForFileSelected() {
 	</div>
 
 </form>
+</div>
+
+<div style="padding-top:20px;">
+  <a href="<html:ssfPath/>html/sample_users.txt" target="_blank">
+    <span><ssf:nlt tag="administration.import.profiles.viewSample"/></span>
+  </a>
+</div>
+
+</div>
 </ssf:form>
 </div>
 </div>
