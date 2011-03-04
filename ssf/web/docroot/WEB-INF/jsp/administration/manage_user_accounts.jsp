@@ -139,8 +139,6 @@ function ss_confirmDelete(obj) {
 	  <td>
 		  <div class="wg-tab roundcornerSM" >
 			  <a href="<ssf:url action="add_profile_entry" actionUrl="true">
-			    <ssf:param name="binderId" value="${ssFolder.id}" />
-			    <ssf:param name="entryType" value="${ssEntryType}" />
 			    <ssf:param name="context" value="adminMenu" />
 			  </ssf:url>"
 			  ><ssf:nlt tag="administration.userAccounts.addUserAccount"/></a>
@@ -150,6 +148,12 @@ function ss_confirmDelete(obj) {
 		  <div class="wg-tab roundcornerSM on" >
 			  <a href="<ssf:url action="manage_user_accounts" actionUrl="true"/>"
 			  ><ssf:nlt tag="administration.userAccounts.disableUserAccount"/></a>
+		  </div>
+	  </td>
+	  <td>
+		  <div class="wg-tab roundcornerSM" >
+			  <a href="<ssf:url action="import_profiles" actionUrl="true"/>"
+			  ><ssf:nlt tag="administration.import.profiles"/></a>
 		  </div>
 	  </td>
     </tr>

@@ -73,6 +73,12 @@
 					  ><ssf:nlt tag="administration.userAccounts.disableUserAccount"/></a>
 				  </div>
 			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM" >
+					  <a href="<ssf:url action="import_profiles" actionUrl="true"/>"
+					  ><ssf:nlt tag="administration.import.profiles"/></a>
+				  </div>
+			  </td>
 		    </tr>
 		  </table>
 		</div>
