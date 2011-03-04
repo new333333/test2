@@ -616,7 +616,7 @@ div.ss_popup_top {
 	}
 div.ss_popup_topLg {
   	position: relative;
-  	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
+  	background-image: url(<html:imagesPath/>pics/dialog_header_tile.png);
   	background-repeat: repeat-x;
   	height: 22px; 
   	width: 100%!important;
@@ -636,12 +636,12 @@ div.ss_popup_title {
 	}
 div.ss_popup_close {
   	position: relative;
-  	background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
+  	background-image: url(<html:imagesPath/>icons/close_gray16.png);
  	background-repeat: no-repeat;
-  	width: 12px;
-  	height: 13px;
-  	top: 1px;
-  	left: -1px;
+  	width: 18px;
+  	height: 20px;
+  	top: 2px;
+  	left: 0px;
 	}
 div.ss_popup_body {
   	position: relative;

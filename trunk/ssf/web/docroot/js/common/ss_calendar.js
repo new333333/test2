@@ -2776,18 +2776,17 @@ if (!window.ss_calendar_settings) {
 			var htmlCode = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
 	         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title">' + this.locale.title + '</div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_configure_close" class="ss_popup_close"></div></div>' +
 	         '</td></tr><tr><td colspan="3"><div class="ss_popup_body"><form id="ss_calendar_settings_form">'+
-			 '<ul>' +
-			 '<li>' + this.locale.weekStartsOnLabel + ' <select name="weekFirstDay"><option value="7"' + (weekFirstDay==7?'selected="true"':'') + '>' + this.locale.dayNames[6] + '</option><option value="1"' + (weekFirstDay==1?'selected="true"':'') + '>' + this.locale.dayNames[0] + '</option><option value="2" ' + (weekFirstDay==2?'selected="true"':'') + '>' + this.locale.dayNames[1] + '</option></select></li>' +
-			 '<li>' + this.locale.workDayStartsAtLabel + ' <select name="workDayStart">';
+			 '<div class="marginleft2">' +
+			 '<div class="margintop2"><label class="ss_event_editor">' + this.locale.weekStartsOnLabel + ':</label><div><select name="weekFirstDay"><option value="7"' + (weekFirstDay==7?'selected="true"':'') + '>' + this.locale.dayNames[6] + '</option><option value="1"' + (weekFirstDay==1?'selected="true"':'') + '>' + this.locale.dayNames[0] + '</option><option value="2" ' + (weekFirstDay==2?'selected="true"':'') + '>' + this.locale.dayNames[1] + '</option></select></div></div>' +
+			 '<div class="margintop2"><label class="ss_event_editor">' + this.locale.workDayStartsAtLabel + ':</label><div><select name="workDayStart">';
 			
 			for (var hour = 0; hour <=12; hour++) {
 				htmlCode += ('<option value="' + hour + '" ' + (workDayStart==hour?'selected="true"':'') + '>' + ss_calendar_formatHour(hour, this.locale.lang) + '</option>');
 			}
 			
-			htmlCode += '</select></li>' +
-			 '</ul>' +
-			 '<br/>' + 
-			 '<input type="button" value="' + this.locale.submitLabel + '" onclick="ss_calendar_settings.save();"/>' +
+			htmlCode += '</select></div></div>' +
+			 '</div>' +
+			 '<div class="margintop3" style="text-align: right;"><input type="button" value="' + this.locale.submitLabel + '" onclick="ss_calendar_settings.save();"/>' +
 			 '</form></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
 	         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
 			
