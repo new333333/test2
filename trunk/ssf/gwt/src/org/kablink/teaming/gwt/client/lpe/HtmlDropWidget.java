@@ -110,29 +110,17 @@ public class HtmlDropWidget extends DropWidget
 	{
 		TinyMCEDlg tinyMCEDlg;
 		LPETinyMCEConfiguration tinyMCEConfig;
-		FileAttachments fileAttachments;
-		ArrayList<String> listOfFileNames = null;
-		
-		tinyMCEConfig = new LPETinyMCEConfiguration( m_lpe, m_lpe.getBinderId() );
-		
-		// Get the file attachments for the landing page.
-		listOfFileNames = new ArrayList<String>();
-		fileAttachments = m_lpe.getFileAttachments();
-		if ( fileAttachments != null )
-		{
-			int i;
-			
-			for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
-			{
-				String fileName;
-				
-				fileName = fileAttachments.getFileName( i );
-				listOfFileNames.add( fileName );
-			}
-		}
-		tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
 
-		// No, create a "Edit Advanced Branding" dialog.
+		tinyMCEConfig = m_lpe.getTinyMCEConfig();
+		
+		// Is the configuration waiting for an ajax request to finish?
+		if ( tinyMCEConfig.isRpcInProgress() )
+		{
+			// Yes, this should never happen
+			Window.alert( "m_tinyMCEConfig.isRpcInProgress() returned true" );
+		}
+		
+		// Create a tinyMCE dialog.
 		tinyMCEDlg = new TinyMCEDlg(
 									GwtTeaming.getMessages().lpeEditHtml(),
 									tinyMCEConfig,

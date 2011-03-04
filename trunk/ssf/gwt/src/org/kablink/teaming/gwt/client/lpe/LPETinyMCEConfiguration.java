@@ -54,6 +54,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	private AsyncCallback<String> m_rpcCallback = null;
 	private ArrayList<String> m_listOfFileAttachments = null;
 	private LandingPageEditor m_lpe;
+	private boolean m_rpcInProgress;
 	
 	/**
 	 * 
@@ -62,6 +63,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	{
 		m_lpe = lpe;
 		m_binderId = binderId;
+		m_rpcInProgress = false;
 
 		// Create the callback that will be used when we issue an ajax call to get
 		// the base url for the given binder.
@@ -76,6 +78,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetGeneric(),
 					m_binderId );
+				m_rpcInProgress = false;
 			}// end onFailure()
 	
 			/**
@@ -86,6 +89,7 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			{
 				// Update the url that is used for the document base url when initializing the tinyMCE editor.
 				setDocumentBaseUrl( documentBaseUrl );
+				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
 
@@ -231,8 +235,17 @@ public class LPETinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			rpcService = GwtTeaming.getRpcService();
 			
 			// Issue an ajax request to get the base url for the binder.
+			m_rpcInProgress = true;
 			rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
 		}
+	}
+	
+	/**
+	 * Return whether we are waiting for an rpc request to finish.
+	 */
+	public boolean isRpcInProgress()
+	{
+		return m_rpcInProgress;
 	}
 	
 	

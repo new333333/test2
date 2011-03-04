@@ -90,6 +90,7 @@ public class LandingPageEditor extends Composite
 	private Hidden m_configResultsInputCtrl = null;
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
+	private LPETinyMCEConfiguration m_tinyMCEConfig = null;
 	private static TextArea m_textBox = null;//!!!
 	
 	/**
@@ -104,7 +105,7 @@ public class LandingPageEditor extends Composite
 		int				i;
 		int				numItems;
 		boolean			doLog;
-		
+
 		// Create an ArrayList that will hold all DropZones that are created.
 		m_dropZones = new ArrayList<DropZone>();
 		
@@ -114,6 +115,9 @@ public class LandingPageEditor extends Composite
 		
 		// Parse the configuration data.
 		configData.parse();
+		
+		// Initialize a tinyMCE configuration in case we need one.
+		initTinyMCEConfig();
 		
 		// Create a stack that will keep track of when we enter and leave drop zones.
 		m_enteredDropZones = new Stack<DropZone>();
@@ -492,6 +496,14 @@ public class LandingPageEditor extends Composite
 	
 	
 	/**
+	 * Get the configuration that can be used to create a TinyMCEDlg 
+	 */
+	public LPETinyMCEConfiguration getTinyMCEConfig()
+	{
+		return m_tinyMCEConfig;
+	}
+	
+	/**
 	 * 
 	 */
 	public void handleMouseMove( int clientX, int clientY )
@@ -530,6 +542,40 @@ public class LandingPageEditor extends Composite
 			}
 		}
 	}// end handleMouseMove()
+	
+	/**
+	 * Initialize a tinyMCE configuration
+	 */
+	private void initTinyMCEConfig()
+	{
+		// Create the configuration object used by the tinyMCE dialog.  We need to do this
+		// here because the LPETinyMCEConfiguration() class makes an ajax request and we need
+		// time for it to complete before we invoke the tinyMCE dialog.
+		if ( m_tinyMCEConfig == null )
+		{
+			FileAttachments fileAttachments;
+			ArrayList<String> listOfFileNames = null;
+
+			m_tinyMCEConfig = new LPETinyMCEConfiguration( this, getBinderId() );
+			
+			// Get the file attachments for the landing page.
+			listOfFileNames = new ArrayList<String>();
+			fileAttachments = getFileAttachments();
+			if ( fileAttachments != null )
+			{
+				int i;
+				
+				for (i = 0; i < fileAttachments.getNumAttachments(); ++i)
+				{
+					String fileName;
+					
+					fileName = fileAttachments.getFileName( i );
+					listOfFileNames.add( fileName );
+				}
+			}
+			m_tinyMCEConfig.setListOfFileAttachments( listOfFileNames );
+		}
+	}
 	
 
 	/**
