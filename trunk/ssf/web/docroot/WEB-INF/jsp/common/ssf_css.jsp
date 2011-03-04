@@ -725,7 +725,7 @@ a.ss_linkButton:hover {
 	cursor: pointer;
 	color: #fff;
 	}	
-input.ss_tinyButton, 
+input.ss_tinyButton,
 a.ss_tinyButton:link, 
 a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
@@ -2855,13 +2855,16 @@ div.ss_cal_gridHeaderText {
   text-align: center;
   font-size: 10px;
   font-family: sans-serif;
-  padding-top: 4px;
+  padding: 5px 0;
   color: #666;
 }
 
 div.ss_cal_gridHeaderTextToday {
   background: url(<html:imagesPath/>pics/trans50_black.png) repeat;
-  color: #fff !important;
+}
+div.ss_cal_gridHeaderTextToday a {
+	color: #fff !important;
+	font-weight: bold;
 }
 
 div.ss_cal_gridHeaderText a {
@@ -2870,8 +2873,6 @@ div.ss_cal_gridHeaderText a {
 }
 
 div.ss_cal_gridHeaderText a:hover {
-  color: #888888;
-  text-decoration: underline;
 }
 
 
@@ -2903,9 +2904,9 @@ div.ss_cal_dayGridAllDay {
 
 /* A visual divider between the all-day grid and the hour grid */
 div.ss_cal_dayGridDivider {
-  height: 3px;
+  height: 2px;
   width: 100%;
-  background-color: ${ss_entry_description_background_color};
+  background-color: #c4c4c4;
 }
 
 
@@ -3022,8 +3023,8 @@ div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
 }
 
 div.ss_cal_monthGridDayBadgeOverHighlight {
-  background: #abced1 url(<html:imagesPath/>pics/trans_white_blend_az.png) repeat;
-  background-position: top;
+  background-color: #fafad5;
+  cursor: pointer;
 }
 
 div.ss_cal_monthGridDayBadgeDateAdd {
@@ -3031,7 +3032,7 @@ div.ss_cal_monthGridDayBadgeDateAdd {
 	top: 0%;
 	left: 0%;
 	height: 11px;
-	width: 90%;
+	width: 85%;
 }
 
 /* Highlight for today */
@@ -3128,37 +3129,35 @@ a.ss_calDaySelectButton:hover img,
 }
 
 a.ss_calDateDownButton img {
-	width: 12px;
-	height: 28px;
+	width: 16px;
+	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_calDateDownButton img, a.ss_calDateDownButton:link img , a.ss_calDateDownButton:focus img, a.ss_calDateDownButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/date_down.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>pics/slide_left_btn.png) no-repeat top left; 
 }
 
 a.ss_calDateDownButton:hover img {
-    background-position:  left -28px; 
+	background: transparent url(<html:imagesPath/>pics/slide_left_over_btn.png) no-repeat top left; 
 }
 
 a.ss_calDateUpButton img {
-	width: 12px;
-	height: 28px;
+	width: 16px;
+	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_calDateUpButton img, a.ss_calDateUpButton:link img , a.ss_calDateUpButton:focus img, a.ss_calDateUpButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/date_up.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>pics/slide_right_btn.png) no-repeat top left; 
 }
 
 a.ss_calDateUpButton:hover img {
-    background-position:  left -28px; 
+	background: transparent url(<html:imagesPath/>pics/slide_right_over_btn.png) no-repeat top left; 
 }
 
 
@@ -3462,12 +3461,16 @@ span.ss_cal_eventTime {
 ul.ss_calendarNaviBar {	
 	display: table;
 	font-family: Arial;
-	border: 1px solid #c4c4c4;
 	background-color: #c4c4c4;
 	list-style-type: none;
-	padding: 0px;
+	padding: 3px;
 	margin: 0px;
 	width: 100%;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+
 }
 
 ul.ss_calendarNaviBar li {
