@@ -2133,23 +2133,27 @@ a:hover img.ss_print_button {
 }
 
 img.ss_accessory_modify {
-    background:url(<html:imagesPath/>icons/accessory_modify.gif) no-repeat left 0px;
+    background:url(<html:imagesPath/>pics/config_options_btn.png) no-repeat left 0px;
     width:16px;
     height: 16px;
 }
 
 a:hover img.ss_accessory_modify {
-    background-position:  left -16px;
+    background:url(<html:imagesPath/>pics/config_options_over_btn.png) no-repeat left 0px;
+    width:16px;
+    height: 16px;
 }
 
 img.ss_accessory_delete {
-    background:url(<html:imagesPath/>icons/accessory_delete.png) no-repeat left 0px;
-    width:12px;
-    height: 12px;
+    background:url(<html:imagesPath/>icons/close_gray16.png) no-repeat left 0px;
+    width:16px;
+    height:16px;
 }
 
 a:hover img.ss_accessory_delete {
-    background-position:  left -12px;
+    background:url(<html:imagesPath/>icons/close_teal16.png) no-repeat left 0px;
+    width:16px;
+    height:16px;
 }
 
 
