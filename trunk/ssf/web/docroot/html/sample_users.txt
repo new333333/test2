@@ -23,6 +23,7 @@
     <attribute name="lastName" type="string">User</attribute>
   </user>
 
+  <!-- Add a group -->
   <group>
     <attribute name="name" type="string">acme_employees</attribute>
     <property name="memberName">charlie</property>
