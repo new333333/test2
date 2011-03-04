@@ -358,7 +358,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	}
 .ss_actions_bar_submenu ul.ss_actions_bar3 li  {
 	float:none;
-	border-bottom:1px solid #AFC8E3;
 	border-right-style:none;
     line-height:18px;
 	}

@@ -3067,59 +3067,58 @@ a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img,
 	a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img,
 	a.ss_calModeSelectButton img, a.ss_calModeSelectButtonActive img {
 	width: 25px;
-	height: 24px;
+	height: 25px;
 	margin: 0px;
 	padding: 0 5px 0 0;
 	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelectButton:focus img, a.ss_calDaySelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/day_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_1day_btn.png) no-repeat top left; 
 }
 
 a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss_calDaySelectButtonActive:focus img, a.ss_calDaySelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_1day_over_btn.png) no-repeat top left; 
 }
 
 a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButton:link img , a.ss_cal3DaysSelectButton:focus img, a.ss_cal3DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/3_day_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_3day_btn.png) no-repeat top left; 
 }
 
 a.ss_cal3DaysSelectButtonActive img, a.ss_cal3DaysSelectButtonActive:link img , a.ss_cal3DaysSelectButtonActive:focus img, a.ss_cal3DaysSelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/3_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_3day_over_btn.png) no-repeat top left; 
 }
 
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButton:link img , a.ss_cal5DaysSelectButton:focus img, a.ss_cal5DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/5_day_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_5day_btn.png) no-repeat top left; 
 }
 
 a.ss_cal5DaysSelectButtonActive img, a.ss_cal5DaysSelectButtonActive:link img , a.ss_cal5DaysSelectButtonActive:focus img, a.ss_cal5DaysSelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_5day_over_btn.png) no-repeat top left; 
 }
 
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButton:link img , a.ss_cal7DaysSelectButton:focus img, a.ss_cal7DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/7_day_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_week_btn.png) no-repeat top left; 
 }
 
 a.ss_cal7DaysSelectButtonActive img, a.ss_cal7DaysSelectButtonActive:link img , a.ss_cal7DaysSelectButtonActive:focus img, a.ss_cal7DaysSelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/7_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_week_over_btn.png) no-repeat top left; 
 }
 
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButton:link img , a.ss_cal14DaysSelectButton:focus img, a.ss_cal14DaysSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/14_day_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_2week_btn.png) no-repeat top left; 
 }
 
 a.ss_cal14DaysSelectButtonActive img, a.ss_cal14DaysSelectButtonActive:link img , a.ss_cal14DaysSelectButtonActive:focus img, a.ss_cal14DaysSelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/14_day.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_2week_over_btn.png) no-repeat top left; 
 }
 
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButton:link img , a.ss_calMonthSelectButton:focus img, a.ss_calMonthSelectButton:visited img { 
-	background: transparent url(<html:imagesPath/>icons/month_u.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_month_btn.png) no-repeat top left; 
 }
 
 a.ss_calMonthSelectButtonActive img, a.ss_calMonthSelectButtonActive:link img , a.ss_calMonthSelectButtonActive:focus img, a.ss_calMonthSelectButtonActive:visited img { 
-	background: transparent url(<html:imagesPath/>icons/month.gif) no-repeat top left; 
+	background: transparent url(<html:imagesPath/>icons/calView_month_over_btn.png) no-repeat top left; 
 }
 
 a.ss_calDaySelectButton:hover img, 
@@ -3507,13 +3506,17 @@ ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
 	color: #333333;
 	text-decoration: none;
 	border: 1px solid #FFFFFF;
-	font-size: 11px;
+	font-size: 12px !important;
 }
 
 ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
 	padding-top: 5px;
  </c:if>
+}
+
+ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu img {
+	vertical-align: middle;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
@@ -3548,7 +3551,6 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 
 .ss_hoursSelectorList li  {
 	float:none;
-	border-bottom:1px solid #CCCCCC;
 	border-right-style:none;
     line-height:18px;
 }
@@ -3563,9 +3565,10 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	top:-8px;
 	left:-24px;
  </c:if>	
-	border:1px solid #907FA3;
 	border-top:none;
 	padding: 4px 1px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 
 .ss_hoursSelectorList li a {
