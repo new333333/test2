@@ -623,10 +623,16 @@ span.ss_required {
 div.ss_calPopupDiv {
   position:absolute; 
   visibility:hidden; 
-  background-color:#E8EFF7; 
-  border-right:solid 2px #CCCCCC;
-  border-bottom:solid 2px #CCCCCC;
+  background: url(../images/pics/trans30_black.png) repeat; 
+  padding: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   }
+div.ss_calPopupDiv .ss_cpBorder {
+	background-color: #fff;	
+	border: 1px solid #949494;
+	padding: 5px;
+	}
 
 .ss_cpYearNavigation,
 .ss_cpMonthNavigation {
@@ -690,10 +696,11 @@ TD.ss_cpDayColumnHeader
 	}
 TD.ss_cpCurrentDate
 	{
-	color:#666666;
-	background-color: #cecece;
-	border-width:1px;
-	border:solid thin #000000;
+	color:#000;
+	background-color: #EBF5F5;
+	border:1px solid #abced1;
+	-moz-border-radius: 2px;
+	-webkit-border-radius: 2px;
 	}
 TD.ss_cpCurrentDateDisabled
 	{

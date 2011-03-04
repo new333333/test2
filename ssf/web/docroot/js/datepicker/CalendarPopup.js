@@ -468,7 +468,7 @@ function getCalendarStyles() {
 	result += "A."+p+"cpTodayText, SPAN."+p+"cpTodayTextDisabled { height:20px; }\n";
 	result += "A."+p+"cpTodayText { color:black; }\n";
 	result += "."+p+"cpTodayTextDisabled { color:#D0D0D0; }\n";
-	result += "."+p+"cpBorder { border:solid thin #808080; }\n";
+	result += "."+p+"cpBorder { border: 1px solid #949494; }\n";
 	result += "</STYLE>\n";
 	return result;
 	}
@@ -486,7 +486,7 @@ function CP_getCalendar() {
 		result += '<CENTER><TABLE WIDTH=100% BORDER=0 BORDERWIDTH=0 CELLSPACING=0 CELLPADDING=0>\n';
 		}
 	else {
-		result += '<TABLE CLASS="'+this.cssPrefix+'cpBorder" WIDTH=144 BORDER=1 CELLSPACING=0 CELLPADDING=1>\n';
+		result += '<TABLE CLASS="'+this.cssPrefix+'cpBorder" WIDTH=144 BORDER=0 CELLSPACING=0 CELLPADDING=1>\n';
 		result += '<TR><TD ALIGN=CENTER>\n';
 		result += '<CENTER>\n';
 		}
@@ -644,7 +644,7 @@ function CP_getCalendar() {
 			result += '		<SPAN CLASS="'+this.cssPrefix+'cpTodayTextDisabled">'+this.todayText+'</SPAN>\n';
 			}
 		else {
-			result += '		<A CLASS="'+this.cssPrefix+'cpTodayText" HREF="javascript:'+windowref+this.returnFunction+'(\''+now.getFullYear()+'\',\''+(now.getMonth()+1)+'\',\''+now.getDate()+'\');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'+this.todayText+'</A>\n';
+			result += '		<A CLASS="'+this.cssPrefix+'cpTodayText ss_tinyButton" HREF="javascript:'+windowref+this.returnFunction+'(\''+now.getFullYear()+'\',\''+(now.getMonth()+1)+'\',\''+now.getDate()+'\');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'+this.todayText+'</A>\n';
 			}
 		result += '		<BR>\n';
 		result += '	</TD>'
@@ -652,13 +652,13 @@ function CP_getCalendar() {
         result += '</TR></TABLE></CENTER></TD></TR>'
         result += '<tr>'
         result += '<td align="center">'
-        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
+        result += '<A CLASS="'+this.cssPrefix+'cpTodayText ss_tinyButton" '
         result += 'HREF="javascript:'+windowref+this.returnFunction
 		result += '('+display_year_current+','+display_month_current+','+display_date_current+');'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
 		result += this.okText+'</A>'
 		if (this.showCancelButton) {
 	        result += '&nbsp;&nbsp;&nbsp;'
-	        result += '<A CLASS="'+this.cssPrefix+'cpTodayText" '
+	        result += '<A CLASS="'+this.cssPrefix+'cpTodayText ss_tinyButton" '
 	        result += 'HREF="javascript:'+windowref+'CP_hideCalendar(\''+this.index+'\');">'
 			result += this.cancelText+'</A>'
 		}
