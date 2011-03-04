@@ -44,7 +44,7 @@
 				<ssf:menu title='<%= NLT.get("calendar.hours.workday") %>' 
 							titleId="ss_selectCalendarHours${prefix}" 
 							titleClass="ss_hoursSelectorTitle ss_tinyControl" 
-							menuClass="ss_actions_bar5 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+							menuClass="ss_actions_bar5 ss_actions_bar_submenu" menuImage="pics/menu_sm.png">
 					<ul class="ss_actions_bar3 ss_hoursSelectorList ss_nobullet" style="width: 100px; ">
 						<li>
 							<a href="javascript: ;" onClick="ss_calendar_${prefix}.fullDayGrid(); return false;">
