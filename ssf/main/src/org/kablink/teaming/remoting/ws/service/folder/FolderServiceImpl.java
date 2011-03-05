@@ -713,6 +713,19 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
+	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, Calendar startTime, Calendar endTime) {
+		List<Long> ids = getReportModule().getRestoredFolderEntryIds(folderIds, startTime.getTime(), endTime.getTime());
+		if(ids != null) {
+			long[] result = new long[ids.size()];
+			for(int i = 0; i < result.length; i++)
+				result[i] = ids.get(i);
+			return result;
+		}
+		else {
+			return new long[0];
+		}
+	}
+
 	@Override
 	public byte[] folder_getFileVersionAsByteArray(String accessToken,
 			long entryId, String attachmentId, String fileVersionId) {
