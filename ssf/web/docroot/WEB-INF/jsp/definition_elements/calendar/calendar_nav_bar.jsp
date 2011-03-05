@@ -96,7 +96,7 @@
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
 				    title="<ssf:nlt tag="calendar.settings.link"/>" align="absmiddle" border="0" /></a></li>			
 		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg" style="padding: 0 15px;">
+		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 15px;">
 				<a class="ss_calDaySelectButton" id="ss_calDaySelectButton${prefix}" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('daydelta'); return false;"><img <ssf:alt tag="alt.view1Day"/> title="<ssf:nlt tag="alt.view1Day"/>" 
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
 				
