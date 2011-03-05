@@ -1908,7 +1908,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return ids;
 	}
 
-	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final Date startDate, final Date endDate) {
+	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
@@ -1919,6 +1919,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				.add(Restrictions.eq("transactionType", AuditType.restore.name()))
 				.add(Restrictions.ge("startDate", startDate))
 				.add(Restrictions.lt("startDate", endDate));
+				if(Validator.isNotNull(family))
+					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
 				if(folderIds != null && folderIds.length > 0) {
 					Long[] fIds = new Long[folderIds.length];
 					for(int i = 0; i < fIds.length; i++)
