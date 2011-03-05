@@ -2716,9 +2716,7 @@ top:100px;
 .popupMenu
 {
 	-moz-border-radius: 5px;
-	-moz-box-shadow: 0 2px 4px #505354;
 	-webkit-border-radius: 5px;
-	-webkit-box-shadow: 0 2px 4px #505354;
 	background-color: #3A3E40;
 	position: absolute;
 	left: 0px;
