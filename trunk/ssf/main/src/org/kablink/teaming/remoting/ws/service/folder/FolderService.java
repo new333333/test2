@@ -125,7 +125,7 @@ public interface FolderService {
 	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime);
 
 	/**
-	 * Return a list of IDs of the entries that have been deleted between the start and end times 
+	 * Return a list of IDs of the entries that have been deleted or pre-deleted between the start and end times 
 	 * and whose parent folder is in the specified folder IDs.
 	 * 
 	 * @param accessToken
@@ -136,6 +136,18 @@ public interface FolderService {
 	 * @return
 	 */
 	public long[] folder_getDeletedEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime);
+
+	/**
+	 * Return a list of IDs of the entries that have been restored between the start and end times 
+	 * and whose parent folder is in the specified folder IDs.
+	 * 
+	 * @param accessToken
+	 * @param folderIds a list of parent folder IDs; if null or empty, the match is not confined by parent folder
+	 * @param startTime the start time, inclusive; this argument is optional
+	 * @param endTime the end time, exclusive; this argument is required
+	 * @return
+	 */
+	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, Calendar startTime, Calendar endTime);
 
 	/**
 	 * Test if the calling user has the right to execute the specified operation on each of the folders specified.
