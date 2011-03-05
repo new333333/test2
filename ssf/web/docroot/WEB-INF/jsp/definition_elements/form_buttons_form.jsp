@@ -39,7 +39,7 @@
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
 %>
-<c:set var="divClass" value="ss_buttonBarLeft"/>
+<c:set var="divClass" value="ss_buttonBarRight"/>
 <c:if test="${propertyValues_alignment[0] == 'right'}"><c:set var="divClass" value="ss_buttonBarRight"/></c:if>
 <div class="${divClass}" width="100%">
 <%
