@@ -39,12 +39,15 @@ import javax.servlet.ServletContextListener;
 
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class ContextListenerPostSpring implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent sce) {
+		/// For access token manager ///
+		
 		// Do not destroy all tokens when a node starts up because -
 		// (a) Currently we have no way to identify only those tokens that belong to this particular node.
 		// Blindly destroying all tokens within the installation can end up wiping out all active tokens 
@@ -76,9 +79,19 @@ public class ContextListenerPostSpring implements ServletContextListener {
 		Date thisDate = new Date(System.currentTimeMillis() - timeoutDays * 24 * 60 * 60 * 1000);
 
 		accessTokenManager.destroyTokenInfoOlderThan(thisDate);
+		
+		/// For simple profiler ///
+		boolean simpleProfilerEnable = SPropsUtil.getBoolean("simple.profiler.enable", false);
+		if(simpleProfilerEnable)
+			SimpleProfiler.enable();
+		else
+			SimpleProfiler.disable();
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {
+		/// For simple profiler ///
+		SimpleProfiler.dump();
+		SimpleProfiler.clear();
 	}
 
 }

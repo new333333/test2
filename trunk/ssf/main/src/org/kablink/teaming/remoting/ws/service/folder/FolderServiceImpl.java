@@ -182,9 +182,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return xml;
 	}
 	
-	static int count = 0;
-	static SimpleProfiler profiler = null;
-	
 	@SuppressWarnings("unchecked")
 	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
 	{
@@ -198,11 +195,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	protected long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 
 		Document doc = getDocument(inputDataAsXML);
-		if(profiler == null) {
-			profiler = new SimpleProfiler("webServices");
-			count = 0;
-		}
-		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
 				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
@@ -212,12 +204,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 		catch(WriteEntryDataException e) {
 				throw new RemotingException(e);
-		} finally {
-			if(++count == 10000) {
-				logger.info(SimpleProfiler.toStr());
-				profiler = null;
-				SimpleProfiler.clearProfiler();
-			}
 		}
 	}
 	
@@ -427,9 +413,12 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	@SuppressWarnings("unchecked")
 	public long folder_addEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName) {
+		SimpleProfiler.start("folderService_addEntry");
 		HashMap options = new HashMap();
  		getTimestamps(options, entry);
-		return addFolderEntry(accessToken, entry, attachedFileName, options);	
+		long entryId = addFolderEntry(accessToken, entry, attachedFileName, options);	
+		SimpleProfiler.stop("folderService_addEntry");			
+		return entryId;
 	}
 	@SuppressWarnings("unchecked")
 	public long folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
@@ -471,11 +460,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	@SuppressWarnings("unchecked")
 	protected long addFolderEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName, Map options) {
-		if(profiler == null) {
-			profiler = new SimpleProfiler("webServices");
-			count = 0;
-		}
-		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(entry.getParentBinderId(), entry.getDefinitionId(), 
 				new ModelInputData(entry), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).getId().longValue();
@@ -485,12 +469,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
-		} finally {
-			if(++count == 10000) {
-				logger.info(SimpleProfiler.toStr());
-				profiler = null;
-				SimpleProfiler.clearProfiler();
-			}
 		}
 	}
 
@@ -516,6 +494,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 
 	@SuppressWarnings("unchecked")
 	public void folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
+		SimpleProfiler.start("folderService_modifyEntry");
 		try {
 			HashMap options = new HashMap();
 	 		getTimestamps(options, entry);
@@ -528,6 +507,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
+		SimpleProfiler.stop("folderService_modifyEntry");
 	}
 
 	public void folder_deleteEntry(String accessToken, long entryId) {
@@ -630,6 +610,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	
 	public void folder_uploadFileAsByteArray(String accessToken, long entryId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
+		SimpleProfiler.start("folderService_uploadFileAsByteArray");
 		File originalFile = new File(fileName);
 		fileName = originalFile.getName();
 		
@@ -651,6 +632,7 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
+		SimpleProfiler.stop("folderService_uploadFileAsByteArray");
 	}
 	
 	@SuppressWarnings("unchecked")

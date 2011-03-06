@@ -2806,7 +2806,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
-		SimpleProfiler.startProfiler("DefinitionModuleImpl.walkDefinition");
+		SimpleProfiler.start("DefinitionModuleImpl.walkDefinition");
 		//access check not needed = assumed okay from entry
 		if(entry.getEntryDefId() == null)
 			return;
@@ -2847,7 +2847,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                 }
             }
         }
-		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
+		SimpleProfiler.stop("DefinitionModuleImpl.walkDefinition");
     }
 
 	private List<Definition> filterDefinitions(List<Definition> definitions) {

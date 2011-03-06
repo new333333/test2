@@ -337,12 +337,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 */
 	public synchronized void updateRssFeed(Entry entry) {
 
-		SimpleProfiler.startProfiler("RssModule.updateRssFeed");
+		SimpleProfiler.start("RssModule.updateRssFeed");
 		File indexPath = getRssIndexPath(entry.getParentBinder());
 
 		// See if the feed already exists
 		if (!indexPath.exists()) {
-			SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
+			SimpleProfiler.stop("RssModule.updateRssFeed");
 			return; // if it doesn't already exist, then don't update it.
 		}
 
@@ -406,7 +406,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		} finally {
 			rfl.releaseLockIfValid();
 		}
-		SimpleProfiler.stopProfiler("RssModule.updateRssFeed");
+		SimpleProfiler.stop("RssModule.updateRssFeed");
 	}
 
 	private String getRssDisabledString(HttpServletRequest request) {

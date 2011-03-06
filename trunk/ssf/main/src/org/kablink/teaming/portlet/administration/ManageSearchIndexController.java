@@ -104,11 +104,6 @@ public class ManageSearchIndexController extends  SAbstractController {
 				
 				// Create a new status ticket
 				StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
-				SimpleProfiler profiler = null; 
-				if (logger.isDebugEnabled()) {
-					profiler = new SimpleProfiler("manageSearchIndex");
-					SimpleProfiler.setProfiler(profiler);
-				}
 				IndexErrors errors = new IndexErrors();
 				Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket, nodeNames, errors);
 				//if people selected and not yet index; index content only, not the whole ws tree
@@ -120,10 +115,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 					}
 				}
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
-				if (logger.isDebugEnabled()) {
-					logger.debug(SimpleProfiler.toStr());
-					SimpleProfiler.clearProfiler();
-				}
+				//SimpleProfiler.done(logger);
 				response.setRenderParameters(formData);
 				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
 				if (errors.getErrorCount() > 0) {

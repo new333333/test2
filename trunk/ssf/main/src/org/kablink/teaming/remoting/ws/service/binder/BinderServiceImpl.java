@@ -91,6 +91,7 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
@@ -271,11 +272,14 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	
 	@SuppressWarnings("unchecked")
 	public long binder_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
+		SimpleProfiler.start("binderService_addBinder");
 		try {
 			Map options = new HashMap();
 			getTimestamps(options, binder);
-			return getBinderModule().addBinder(binder.getParentBinderId(), binder.getDefinitionId(), 
+			long binderId = getBinderModule().addBinder(binder.getParentBinderId(), binder.getDefinitionId(), 
 					new ModelInputData(binder), new HashMap(), options).getId().longValue();
+			SimpleProfiler.stop("binderService_addBinder");			
+			return binderId;
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		} catch (AccessControlException e) {

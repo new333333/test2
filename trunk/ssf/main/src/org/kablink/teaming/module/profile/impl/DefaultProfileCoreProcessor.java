@@ -718,7 +718,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	Map options,
     	PartialLdapSyncResults syncResults ) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
-	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
+	   SimpleProfiler.start("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
    		if (options != null) ctx.putAll(options);
@@ -776,7 +776,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		for (Principal p:ps) {
 			addEntry_indexAdd(p.getParentBinder(), p, newEntries.get(p), null, ctx);
 		}
-		SimpleProfiler.stopProfiler("DefaultProfileCoreProcessor.syncNewEntries");
+		SimpleProfiler.stop("DefaultProfileCoreProcessor.syncNewEntries");
 	    return ps; 
 		
 	}
