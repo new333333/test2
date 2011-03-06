@@ -1453,8 +1453,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
     		FileUploadItem fui, FilesErrors errors) {
     	
-    	SimpleProfiler sp = new SimpleProfiler("writeFileTransactional", false);
-    	
     	/// Work Flow:
     	/// step1: write primary file
     	/// step2: update metadata in database
@@ -1523,21 +1521,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    		// files unless we could successfully store the primary file first. 
 	    		
 	    		if(fAtt == null) { // New file for the entry
-	    			sp.start("createFile");
+	    			SimpleProfiler.start("writeFile_createFile");
 	    			isNew = true;
 	    			fAtt = createFile(session, binder, entry, fui);
 	    			versionCreated = true;
-	    			sp.stop("createFile");
+	    			SimpleProfiler.stop("writeFile_createFile");
 	    		}
 	    		else { // Existing file for the entry
-	    			sp.start("writeExistingFile");
+	    			SimpleProfiler.start("wtieFile_writeExistingFile");
 	    			// Bug #637636 - In order to treat the files that only differ in case as a single
 	    			// file, we normalize the file names of all versions of a single file to the file name 
 	    			// of the initial version. 
 	    			fui.setOriginalFilename(fAtt.getFileItem().getName());
 	    			if(writeExistingFile(session, binder, entry, fui) != null)
 	    				versionCreated = true;
-	    			sp.stop("writeExistingFile");
+	    			SimpleProfiler.stop("writeFile_writeExistingFile");
 	    		}
     		}
     		catch(DataQuotaException e) {
@@ -1566,11 +1564,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// When a repository supports JCA, this should be possible to do
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
-    		sp.start("writeFileMetadataTransactional");
+    		SimpleProfiler.start("writeFile_MetadataTransactional");
 	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
-    		sp.stop("writeFileMetadataTransactional");
+    		SimpleProfiler.stop("writeFile_MetadataTransactional");
 	    	
-        	sp.print();
+        	//SimpleProfiler.done(logger);
 
 	    	return true;
     	}

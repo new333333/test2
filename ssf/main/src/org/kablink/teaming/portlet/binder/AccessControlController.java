@@ -99,7 +99,6 @@ public class AccessControlController extends AbstractBinderController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
-				SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 				Map functionMemberships = new HashMap();
 				getAccessResults(request, functionMemberships);
 				if (workArea instanceof Entry) {
@@ -107,9 +106,7 @@ public class AccessControlController extends AbstractBinderController {
 					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 				}
 				getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
-				if(logger.isDebugEnabled())
-					logger.debug(SimpleProfiler.toStr());
-				SimpleProfiler.clearProfiler();
+				//SimpleProfiler.done(logger);
 				if (EntityIdentifier.EntityType.zone.name().equals(type)) {
 					getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
 				}
@@ -118,12 +115,9 @@ public class AccessControlController extends AbstractBinderController {
 			if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
 				if (workArea instanceof Entry) {
 					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
-					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 					Map functionMemberships = new HashMap();
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
-					if(logger.isDebugEnabled())
-						logger.debug(SimpleProfiler.toStr());
-					SimpleProfiler.clearProfiler();
+					//SimpleProfiler.done(logger);
 				}
 			}
 			setupCloseWindow(response);
@@ -136,23 +130,17 @@ public class AccessControlController extends AbstractBinderController {
 				String aclType = PortletRequestUtils.getStringParameter(request, "aclSelection", "entry");	
 				if (aclType.equals("folder")) {
 					getAdminModule().setEntryHasAcl(workArea, Boolean.FALSE, Boolean.TRUE);
-					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 					Map functionMemberships = new HashMap();
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
-					if(logger.isDebugEnabled())
-						logger.debug(SimpleProfiler.toStr());
-					SimpleProfiler.clearProfiler();
+					//SimpleProfiler.done(logger);
 				} else if (aclType.equals("entry")) {
 					//Set the entry acl
 					Boolean includeFolderAcl = PortletRequestUtils.getBooleanParameter(request, "includeFolderAcl", true);
-					SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 					Map functionMemberships = new HashMap();
 					getAccessResults(request, functionMemberships);
 					getAdminModule().setEntryHasAcl(workArea, Boolean.TRUE, includeFolderAcl);
 					getAdminModule().setWorkAreaFunctionMemberships(workArea, functionMemberships);
-					if(logger.isDebugEnabled())
-						logger.debug(SimpleProfiler.toStr());
-					SimpleProfiler.clearProfiler();
+					//SimpleProfiler.done(logger);
 				}
 			}
 		

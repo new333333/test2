@@ -85,12 +85,12 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		String result = "";
 		String tmp = "," + excludedExtensions + ",";
 		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()).toLowerCase() + ",")) {
-			SimpleProfiler.startProfiler("TextConverter.convert");
+			SimpleProfiler.start("TextConverter.convert");
 			InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
 			StringWriter textWriter = new StringWriter();
 			FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
 			result = textWriter.toString();
-			SimpleProfiler.stopProfiler("TextConverter.convert");
+			SimpleProfiler.stop("TextConverter.convert");
 		}
 		return result;
 		

@@ -875,21 +875,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String ticketId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none");
 		StatusTicket statusTicket = WebStatusTicket.newStatusTicket(ticketId, request);
 		statusTicket.setStatus("<span class='ss_bold'>" + NLT.get("validate.binderQuota.starting") + "</span>");
-		SimpleProfiler profiler = null; 
-		if (logger.isDebugEnabled()) {
-			profiler = new SimpleProfiler("validateBinderQuotas");
-			SimpleProfiler.setProfiler(profiler);
-		}
 		List<Long> errors = new ArrayList<Long>();
 		Collection idsIndexed = getBinderModule().validateBinderQuotaTree(topBinder, statusTicket, errors);
 		String msg = "<span class='ss_bold'>" + NLT.get("validate.binderQuota.completedScanned") + " " + String.valueOf(idsIndexed.size()) + "</span><br/>";
 		msg += "<span class='ss_bold'>" + NLT.get("validate.binderQuota.completedCorrections") + " " + String.valueOf(errors.size()) + "</span><br/>";
 		statusTicket.setStatus(msg);
 		statusTicket.done();
-		if (logger.isDebugEnabled()) {
-			logger.debug(SimpleProfiler.toStr());
-			SimpleProfiler.clearProfiler();
-		}
+		//SimpleProfiler.done(logger);
 		if (!getAdminModule().isBinderQuotaInitialized()) {
 			getAdminModule().setBinderQuotasInitialized(Boolean.TRUE);
 		}

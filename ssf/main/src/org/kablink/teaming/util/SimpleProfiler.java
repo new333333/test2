@@ -34,144 +34,154 @@ package org.kablink.teaming.util;
 
 import java.util.TreeMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class provides very simple profiling functionality.
- * The object is not re-usable and not thread-safe.
- *  
- * @author Jong Kim
  *
  */
 public class SimpleProfiler {
 	
-	private static final ThreadLocal<SimpleProfiler> TL = new ThreadLocal();
+	private static Log logger = LogFactory.getLog(SimpleProfiler.class);
 	
-	private String title = null;
-	private boolean active = true; // defaults to true 
+	// Per thread profilers
+	private static final ConcurrentHashMap<String,SimpleProfiler> profilers = new ConcurrentHashMap<String,SimpleProfiler>();
+	
+	// We can only enable/disable entire profilers. We can not enable/disable individual profilers. 
+	private static boolean enabled = false;
+	
+	private String name = null;
     private Map<String,Event> events;
     private long beginTime; // time in nanoseconds
     
-    public SimpleProfiler() {
+    private SimpleProfiler(String name) {
     	events = new TreeMap<String,Event>();
     	beginTime = System.nanoTime();
-    }
-    public SimpleProfiler(String title) {
-    	this();
-    	this.title = title;
-    }
-    public SimpleProfiler(boolean active) {
-    	this();
-    	this.active = active;
-    }
-    public SimpleProfiler(String title, boolean active) {
-    	this(title);
-    	this.active = active;
+    	this.name = name;
     }
     
-    public SimpleProfiler start(String eventName) {
-    	if(active){
-    		//System.out.println("*** " + new java.util.Date().toString() + ": start: " + ((title != null)? (title + "/") : "") + eventName);			
-    		
-    		Event event = events.get(eventName);
-    		if(event == null) {
-    			event = new Event();
-    			events.put(eventName, event);
-    		}
-    		event.start();
-    	}
+    private SimpleProfiler startEvent(String eventName) {
+		Event event = events.get(eventName);
+		if(event == null) {
+			event = new Event();
+			events.put(eventName, event);
+		}
+		event.start();
     	return this;
     }
     
-    public SimpleProfiler stop(String eventName) {
-    	if(active) {
-    		//System.out.println("*** " + new java.util.Date().toString() + ": stop : " + ((title != null)? (title + "/") : "") + eventName);			
-    		
-    		Event event = events.get(eventName);
-    		if(event != null)
-    			event.stop();
-    	}
+    private SimpleProfiler stopEvent(String eventName) {
+		Event event = events.get(eventName);
+		if(event != null)
+			event.stop();
         return this;
     }
 
     public String toString() {
-    	if(active) {
-    		StringBuilder sb = new StringBuilder();
-    		long currTime = System.nanoTime();
-    		if(title != null)
-    			sb.append(title).append(": "); 
-    		sb.append("Elapsed time (ms) = ")
-    		.append((double) (currTime - beginTime)/1000000.0);
-    		for(Map.Entry entry : events.entrySet()) {
-    			if(sb.length() > 0)
-    				sb.append(Constants.NEWLINE);
-    			sb.append(entry.getKey())
-    			.append(": ")
-    			.append(entry.getValue().toString());
-    		}
-    		return sb.toString();
-    	}
-    	else {
-    		return "";
-    	}
+		StringBuilder sb = new StringBuilder();
+		long currTime = System.nanoTime();
+		if(name != null)
+			sb.append(name).append(": ");
+		sb.append("profile time = ")
+		.append((double) (currTime - beginTime)/1000000.0)
+		.append(" (ms)");
+		for(Map.Entry entry : events.entrySet()) {
+			if(sb.length() > 0)
+				sb.append(Constants.NEWLINE);
+			sb.append(entry.getKey())
+			.append(": ")
+			.append(entry.getValue().toString());
+		}
+		return sb.toString();
+    }
+    
+    private void logInfo(Log logger) {
+		if(logger.isInfoEnabled())
+			logger.info(toString());
+    }
+    
+    public static boolean isEnabled() {
+    	return enabled;
+    }
+    
+    public static void enable() {
+    	enabled = true;
+    }
+    
+    public static void disable() {
+    	enabled = false;
+    }
 
-    }
-    public void logDebug(Log logger) {
-    	if(active) {
-    		if(logger.isDebugEnabled())
-    			logger.debug(toString());
-    	}
-    }
-    public void logInfo(Log logger) {
-    	if(active) {
-    		if(logger.isInfoEnabled())
-    			logger.info(toString());
-    	}
-    }
-    public void print() {
-    	if(active) {
-    		System.out.println("*** " + toString());
+    public static void start(String eventName) {
+    	if(enabled) {
+    		String name = Thread.currentThread().getName();
+    		SimpleProfiler sp = getProfiler(name);
+    		if(sp == null) {
+    			sp = new SimpleProfiler(Thread.currentThread().getName());
+    			setProfiler(name, sp);
+    		}
+    		sp.startEvent(eventName);
     	}
     }
     
-    public static void setProfiler(SimpleProfiler profiler) {
-    	TL.set(profiler);
-    }
-    public static SimpleProfiler getProfiler() {
-    	return (SimpleProfiler) TL.get();
-    }
-    
-    public static void startProfiler(String eventName) {
-    	if(getProfiler() != null)
-    		getProfiler().start(eventName);
+    public static void stop(String eventName) {
+    	if(enabled) {
+    		SimpleProfiler sp = getProfiler(Thread.currentThread().getName());
+    		if(sp != null)
+    			sp.stopEvent(eventName);
+    	}
     }
     
-    public static void stopProfiler(String eventName) {
-    	if(getProfiler() != null)
-    		getProfiler().stop(eventName);
+    public static void clear() {
+    	profilers.clear();
     }
     
-    public static String toStr() {
-    	if(getProfiler() != null)
-    		return getProfiler().toString();
-    	else
-    		return null;
+    public static void dump() {
+    	if(enabled) {
+    		try {
+	    		for(SimpleProfiler sp:profilers.values()) {
+	    			sp.logInfo(logger);
+	    		}
+    		}
+    		catch(Exception ignore) {}
+    	}
     }
     
-    public static void printProfiler() {
-    	if(getProfiler() != null)
-    		getProfiler().print();
+    /*
+    public static String asString() {
+    	if(enabled) {
+    		SimpleProfiler sp = getProfiler();
+    		if(sp != null)
+    			return sp.toString();
+    	}
+    	return "";
     }
     
-    public static void clearProfiler() {
-    	TL.set(null);
+    public static void done(Log logger) {
+    	if(enabled) {
+    		SimpleProfiler sp = getProfiler();
+    		if(sp != null)
+    			sp.logInfo(logger);
+    	}
+    	setProfiler(null);
+    }
+    */
+    
+    private static void setProfiler(String name, SimpleProfiler profiler) {
+    	profilers.put(name, profiler);
+    }
+    
+    private static SimpleProfiler getProfiler(String name) {
+    	return profilers.get(name);
     }
     
     public class Event {
         private long t1; // nano time
         private long t2; // nano time
-        private long total;
+        private long total; // in nano
         private int count;
 
         public void start() {
@@ -182,20 +192,20 @@ public class SimpleProfiler {
 	        total += (t2-t1);
 	        count++;
         }
-        public long totalNSTime() {
-        	return total;
-        }
-        public double averageNSTime() {
+        public long averageNSTime() {
 	    	if(count > 0)
-	    		return ((double)total) / count;
+	    		return total / count;
 	    	else
 	    		return 0;
         }
         public double totalMSTime() {
-        	return totalNSTime() / 1000000.0;
+        	return total / 1000000.0;
         }
         public double averageMSTime() {
-        	return averageNSTime() / 1000000.0;
+        	if(count > 0)
+        		return totalMSTime() / count;
+        	else
+        		return 0;
         }
         public double totalSTime() {
         	return totalMSTime() / 1000.0;
@@ -206,6 +216,5 @@ public class SimpleProfiler {
         public String toString() {
         	return new StringBuilder().append("count = ").append(count).append(" total = ").append(totalMSTime()).append(" (ms) average = ").append(averageMSTime()).append(" (ms)").toString();
         }
-
     }
 }

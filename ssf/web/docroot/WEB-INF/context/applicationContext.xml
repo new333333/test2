@@ -440,7 +440,7 @@
 			<bean class="org.kablink.teaming.lucene.LuceneProviderManager" 
 				depends-on="sPropsUtil" init-method="initialize" destroy-method="close">
 				<property name="indexRootDirPath"><value>${data.luceneindex.root.dir}/lucene</value></property>
-				<property name="mbeanObjectName"><value>Teaming:type=Indexing,name=luceneProviderManager</value></property>
+				<property name="mbeanObjectName"><value>Vibe:type=Indexing,name=luceneProviderManager</value></property>
 			</bean>
 		</property>
 	</bean>
@@ -1272,48 +1272,54 @@ text/calendar											  ics
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 	</bean>
 	
+	<bean id="runtimeHelper" class="org.kablink.teaming.util.RuntimeHelper">
+	</bean>
+	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
 	      <map>
-	        <entry key="Teaming:type=Indexing,name=luceneSessionFactory">
+	        <entry key="Vibe:type=Indexing,name=luceneSessionFactory">
 	          <ref bean="luceneSessionFactory"/>
 	        </entry>
-	        <entry key="Teaming:type=Converter,name=htmlOpenOfficeConverter">
+	        <entry key="Vibe:type=Converter,name=htmlOpenOfficeConverter">
 	          <ref bean="htmlOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="Teaming:type=Converter,name=textOpenOfficeConverter">
+	        <entry key="Vibe:type=Converter,name=textOpenOfficeConverter">
 	          <ref bean="textOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="Teaming:type=Converter,name=imageOpenOfficeConverter">
+	        <entry key="Vibe:type=Converter,name=imageOpenOfficeConverter">
 	          <ref bean="imageOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="Teaming:type=Module,name=rssModule">
+	        <entry key="Vibe:type=Module,name=rssModule">
 	          <ref bean="rssModule"/>
 	        </entry>
-			<entry key="Teaming:type=Repository,name=simpleFileRepository">
+			<entry key="Vibe:type=Repository,name=simpleFileRepository">
 	          <ref bean="simpleFileRepository"/>
 	        </entry>
-	        <entry key="Teaming:type=Repository,name=jackrabbitRepository">
+	        <entry key="Vibe:type=Repository,name=jackrabbitRepository">
 	          <ref bean="jackrabbitRepository"/>
 	        </entry>
-	        <!--<entry key="Teaming:type=Repository,name=webdavRepository">
+	        <!--<entry key="Vibe:type=Repository,name=webdavRepository">
 	          <ref bean="webdavRepository"/>
 	        </entry>-->
-	        <entry key="Teaming:type=Realtime,name=presenceService">
+	        <entry key="Vibe:type=Realtime,name=presenceService">
 	          <ref bean="presenceService"/>
 	        </entry>
-	        <entry key="Teaming:type=Module,name=conferencingModule">
+	        <entry key="Vibe:type=Module,name=conferencingModule">
 	          <ref bean="conferencingModule"/>
 	        </entry>
-	        <entry key="Teaming:type=Hibernate,name=hibernateStatisticsService">
+	        <entry key="Vibe:type=Hibernate,name=hibernateStatisticsService">
 	          <ref bean="hibernateStatisticsService"/>
 	        </entry>
-	        <entry key="Teaming:type=Module,name=folderModule">
+	        <entry key="Vibe:type=Module,name=folderModule">
 	          <ref bean="folderModuleTarget"/>
 	        </entry>
-	        <entry key="Teaming:type=Server,name=smtpService">
+	        <entry key="Vibe:type=Server,name=smtpService">
 	          <ref bean="smtpService"/>
+	        </entry>
+	        <entry key="Vibe:type=Other,name=runtimeHelper">
+	          <ref bean="runtimeHelper"/>
 	        </entry>
 	      </map>
 	    </property>

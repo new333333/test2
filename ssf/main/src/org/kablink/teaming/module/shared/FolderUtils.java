@@ -420,7 +420,7 @@ public class FolderUtils {
 
 	private static String[] getDefinitionElementNameForMirroredFile(Definition definition) 
 	throws ConfigurationException {
-		SimpleProfiler.startProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
+		SimpleProfiler.start("FolderUtils.getDefinitionElementNameForMirroredFile");
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
 		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
@@ -462,7 +462,7 @@ public class FolderUtils {
 			} else {		
 				result = new String[] {elementName, null};
 			}
-			SimpleProfiler.stopProfiler("FolderUtils.getDefinitionElementNameForMirroredFile");
+			SimpleProfiler.stop("FolderUtils.getDefinitionElementNameForMirroredFile");
 			return result;
 		}
 		else {	

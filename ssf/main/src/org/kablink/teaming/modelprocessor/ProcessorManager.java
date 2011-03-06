@@ -73,11 +73,9 @@ public class ProcessorManager {
     
     public Object getProcessor(Object model, String processorKey) 
     	throws ConfigurationException {
-		SimpleProfiler.startProfiler("ProcessorManager.getProcessor");
         String processorClassName = getProcessorClassName(model, processorKey);
         
         Object result = getProcessor(processorClassName);
-		SimpleProfiler.stopProfiler("ProcessorManager.getProcessor");
 		return result;
     }
     

@@ -124,9 +124,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	Map entryDataAll;
     	EntryDataErrors entryDataErrors = new EntryDataErrors();
     	
-    	SimpleProfiler.startProfiler("addEntry_toEntryData");
+    	SimpleProfiler.start("addEntry_toEntryData");
         entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
-        SimpleProfiler.stopProfiler("addEntry_toEntryData");
+        SimpleProfiler.stop("addEntry_toEntryData");
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -138,41 +138,41 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Entry newEntry = null;
         try {
         	
-        	SimpleProfiler.startProfiler("addEntry_create");
+        	SimpleProfiler.start("addEntry_create");
         	final Entry entry = addEntry_create(def, clazz, ctx);
         	newEntry = entry;
-        	SimpleProfiler.stopProfiler("addEntry_create");
+        	SimpleProfiler.stop("addEntry_create");
         
-        	SimpleProfiler.startProfiler("addEntry_transactionExecute");
+        	SimpleProfiler.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
         			//need to set entry/binder information before generating file attachments
         			//Attachments/Events need binder info for AnyOwner
-                	SimpleProfiler.startProfiler("addEntry_fillIn");
+                	SimpleProfiler.start("addEntry_fillIn");
         			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stopProfiler("addEntry_fillIn");
-                	SimpleProfiler.startProfiler("addEntry_preSave");
+                	SimpleProfiler.stop("addEntry_fillIn");
+                	SimpleProfiler.start("addEntry_preSave");
         			addEntry_preSave(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stopProfiler("addEntry_preSave");
-                	SimpleProfiler.startProfiler("addEntry_save");
+                	SimpleProfiler.stop("addEntry_preSave");
+                	SimpleProfiler.start("addEntry_save");
         			addEntry_save(binder, entry, inputData, entryData,ctx);
-        			SimpleProfiler.stopProfiler("addEntry_save");
-                	SimpleProfiler.startProfiler("addEntry_postSave");
+        			SimpleProfiler.stop("addEntry_save");
+                	SimpleProfiler.start("addEntry_postSave");
          			addEntry_postSave(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stopProfiler("addEntry_postSave");
+                	SimpleProfiler.stop("addEntry_postSave");
        			return null;
         		}
         	});
-        	SimpleProfiler.stopProfiler("addEntry_transactionExecute");
+        	SimpleProfiler.stop("addEntry_transactionExecute");
         	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-            SimpleProfiler.startProfiler("addEntry_filterFiles");
+            SimpleProfiler.start("addEntry_filterFiles");
         	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-        	SimpleProfiler.stopProfiler("addEntry_filterFiles");
+        	SimpleProfiler.stop("addEntry_filterFiles");
 
-        	SimpleProfiler.startProfiler("addEntry_processFiles");
+        	SimpleProfiler.start("addEntry_processFiles");
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
@@ -200,29 +200,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		        	return null;
         		}
         	});
-        	SimpleProfiler.stopProfiler("addEntry_processFiles");
+        	SimpleProfiler.stop("addEntry_processFiles");
         
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
                     	//After the entry is successfully added, start up any associated workflows
-        			SimpleProfiler.startProfiler("addEntry_startWorkflow");
+        			SimpleProfiler.start("addEntry_startWorkflow");
                 	addEntry_startWorkflow(entry, ctx);
-                	SimpleProfiler.stopProfiler("addEntry_startWorkflow");
+                	SimpleProfiler.stop("addEntry_startWorkflow");
        			return null;
         		}
         	});
  
-        	SimpleProfiler.startProfiler("addEntry_indexAdd");
+        	SimpleProfiler.start("addEntry_indexAdd");
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
-        	SimpleProfiler.stopProfiler("addEntry_indexAdd");
+        	SimpleProfiler.stop("addEntry_indexAdd");
         	
-        	SimpleProfiler.startProfiler("addEntry_done");
+        	SimpleProfiler.start("addEntry_done");
         	addEntry_done(binder, entry, inputData, ctx);
-        	SimpleProfiler.stopProfiler("addEntry_done");
+        	SimpleProfiler.stop("addEntry_done");
         	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
@@ -500,9 +500,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	Map entryDataAll;
     	EntryDataErrors entryDataErrors = new EntryDataErrors();
 
-    	SimpleProfiler.startProfiler("modifyEntry_toEntryData");
+    	SimpleProfiler.start("modifyEntry_toEntryData");
     	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
-	    SimpleProfiler.stopProfiler("modifyEntry_toEntryData");
+	    SimpleProfiler.stop("modifyEntry_toEntryData");
     	
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -513,36 +513,36 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         
 	    try {	    	
-	    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
+	    	SimpleProfiler.start("modifyEntry_transactionExecute");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
-	    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
+	    			SimpleProfiler.start("modifyEntry_fillIn");
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
-	    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
-	    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
+	    			SimpleProfiler.stop("modifyEntry_fillIn");
+	    			SimpleProfiler.start("modifyEntry_startWorkflow");
 	    			modifyEntry_startWorkflow(entry, ctx);
-	    			SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
-	    			SimpleProfiler.startProfiler("modifyEntry_postFillIn");
+	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
+	    			SimpleProfiler.start("modifyEntry_postFillIn");
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
-	    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
+	    			SimpleProfiler.stop("modifyEntry_postFillIn");
 	    			return null;
 	    		}});
-	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
+	    	SimpleProfiler.stop("modifyEntry_transactionExecute");
 		    	
 	    	//handle outside main transaction so main changeLog doesn't reflect attachment changes
-	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
+	        SimpleProfiler.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
             modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
-	        SimpleProfiler.stopProfiler("modifyBinder_removeAttachments");
+	        SimpleProfiler.stop("modifyBinder_removeAttachments");
 	    	
-	    	SimpleProfiler.startProfiler("modifyEntry_filterFiles");
+	    	SimpleProfiler.start("modifyEntry_filterFiles");
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
-	    	SimpleProfiler.stopProfiler("modifyEntry_filterFiles");
+	    	SimpleProfiler.stop("modifyEntry_filterFiles");
 
-           	SimpleProfiler.startProfiler("modifyEntry_processFiles");
+           	SimpleProfiler.start("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
@@ -567,24 +567,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		        	return null;
 	    		}
 	    	});
-	    	SimpleProfiler.stopProfiler("modifyEntry_processFiles");
+	    	SimpleProfiler.stop("modifyEntry_processFiles");
 
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
-	    	SimpleProfiler.startProfiler("modifyEntry_indexRemoveFiles");
+	    	SimpleProfiler.start("modifyEntry_indexRemoveFiles");
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
-	    	SimpleProfiler.stopProfiler("modifyEntry_indexRemoveFiles");
+	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
 	    	
-	    	SimpleProfiler.startProfiler("modifyEntry_indexAdd");
+	    	SimpleProfiler.start("modifyEntry_indexAdd");
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
-	    	SimpleProfiler.stopProfiler("modifyEntry_indexAdd");
+	    	SimpleProfiler.stop("modifyEntry_indexAdd");
 	    	
-	    	SimpleProfiler.startProfiler("modifyEntry_done");
+	    	SimpleProfiler.start("modifyEntry_done");
 	    	modifyEntry_done(binder, entry, inputData,ctx);
-	    	SimpleProfiler.stopProfiler("modifyEntry_done");
+	    	SimpleProfiler.stop("modifyEntry_done");
 	    	
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occurred during the operation. 
@@ -760,15 +760,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
  
     public void disableEntry(final Principal entry, final boolean disable) {
-		SimpleProfiler.startProfiler("deleteEntry_transactionExecute");
+		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getTransactionTemplate().execute(new TransactionCallback() {
     		public Object doInTransaction(TransactionStatus status) {
-    			SimpleProfiler.startProfiler("disableEntry");
+    			SimpleProfiler.start("deleteEntry_disableEntry");
     			entry.setDisabled(disable);
-    			SimpleProfiler.stopProfiler("disableEntry");
+    			SimpleProfiler.stop("deleteEntry_disableEntry");
     			return null;
     		}});
-    	SimpleProfiler.stopProfiler("deleteEntry_transactionExecute");
+    	SimpleProfiler.stop("deleteEntry_transactionExecute");
     }
     //***********************************************************************************************************   
     //no transaction expected
@@ -780,40 +780,40 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//setup change logs, so have a complete picture of the entry.
     	//don't commit until transaction
     	deleteEntry_processChangeLogs(parentBinder, entry, ctx, changeLogs);
-		SimpleProfiler.startProfiler("deleteEntry_processFiles");
+		SimpleProfiler.start("deleteEntry_processFiles");
 		//do outside transation cause archiveing takes a long time
 		deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
-		SimpleProfiler.stopProfiler("deleteEntry_processFiles");
+		SimpleProfiler.stop("deleteEntry_processFiles");
 		//	may have taken awhile to remove attachments	
-		SimpleProfiler.startProfiler("deleteEntry_transactionExecute");
+		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getCoreDao().refresh(parentBinder);
 		getTransactionTemplate().execute(new TransactionCallback() {
     		public Object doInTransaction(TransactionStatus status) {
-    			SimpleProfiler.startProfiler("deleteEntry_preDelete");
+    			SimpleProfiler.start("deleteEntry_preDelete");
     			deleteEntry_preDelete(parentBinder, entry, ctx);
-    			SimpleProfiler.stopProfiler("deleteEntry_preDelete");
+    			SimpleProfiler.stop("deleteEntry_preDelete");
         
-    			SimpleProfiler.startProfiler("deleteEntry_workflow");
+    			SimpleProfiler.start("deleteEntry_workflow");
     			deleteEntry_workflow(parentBinder, entry, ctx);
-    			SimpleProfiler.stopProfiler("deleteEntry_workflow");
+    			SimpleProfiler.stop("deleteEntry_workflow");
                  
-    			SimpleProfiler.startProfiler("deleteEntry_delete");
+    			SimpleProfiler.start("deleteEntry_delete");
     			deleteEntry_delete(parentBinder, entry, ctx);
-    			SimpleProfiler.stopProfiler("deleteEntry_delete");
+    			SimpleProfiler.stop("deleteEntry_delete");
         
-    			SimpleProfiler.startProfiler("deleteEntry_postDelete");
+    			SimpleProfiler.start("deleteEntry_postDelete");
     			deleteEntry_postDelete(parentBinder, entry, ctx);
-    			SimpleProfiler.stopProfiler("deleteEntry_postDelete");
+    			SimpleProfiler.stop("deleteEntry_postDelete");
     			for (ChangeLog changeLog:changeLogs) {
     				getCoreDao().save(changeLog);
     			}
         
     			return null;
     		}});
-    	SimpleProfiler.stopProfiler("deleteEntry_transactionExecute");
-    	SimpleProfiler.startProfiler("deleteEntry_indexDel");
+    	SimpleProfiler.stop("deleteEntry_transactionExecute");
+    	SimpleProfiler.start("deleteEntry_indexDel");
     	deleteEntry_indexDel(parentBinder, entry, ctx);
-    	SimpleProfiler.stopProfiler("deleteEntry_indexDel");
+    	SimpleProfiler.stop("deleteEntry_indexDel");
    }
     //no transaction
     protected void deleteEntry_setCtx(Entry entry, Map ctx) {
@@ -1049,12 +1049,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //hibernate loading of collections and goes to database directly.
     protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries) {
     	IndexErrors errors = new IndexErrors();
-    	SimpleProfiler.startProfiler("indexEntries");
+    	SimpleProfiler.start("indexEntries");
     	//may already have been handled with an optimized query
     	if (deleteIndex && !deleteEntries) {
-        	SimpleProfiler.startProfiler("indexEntries_preIndex");
+        	SimpleProfiler.start("indexEntries_preIndex");
     		indexEntries_preIndex(binder);
-        	SimpleProfiler.stopProfiler("indexEntries_preIndex");
+        	SimpleProfiler.stop("indexEntries_preIndex");
     	}
   		//flush any changes so any exiting changes don't get lost on the evict
  //   	SimpleProfiler.startProfiler("indexEntries_flush");
@@ -1081,13 +1081,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			}
        			total += count;
        			//have 1000 entries, manually load their collections
-       			SimpleProfiler.startProfiler("indexEntries_load");
+       			SimpleProfiler.start("indexEntries_load");
        			indexEntries_load(binder, batch);
-       			SimpleProfiler.stopProfiler("indexEntries_load");
+       			SimpleProfiler.stop("indexEntries_load");
        			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
-       			SimpleProfiler.startProfiler("indexEntries_loadTags");
+       			SimpleProfiler.start("indexEntries_loadTags");
        			Map tags = indexEntries_loadTags(binder, batch);
-       			SimpleProfiler.stopProfiler("indexEntries_loadTags");
+       			SimpleProfiler.stop("indexEntries_loadTags");
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
        				if (deleteEntries) {
@@ -1097,7 +1097,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				if (indexEntries_validate(binder, entry)) {
        					// 	Create an index document from the entry object. 
        					// Entry already deleted from index, so pretend we are new
-       	       			SimpleProfiler.startProfiler("indexEntries_indexEntryWithAttachments");
+       	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
        				   	try {
        				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
        				   		errors.add(entryErrors);
@@ -1105,15 +1105,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
        				   		errors.addError(entry);
        				   	}
-       	       			SimpleProfiler.stopProfiler("indexEntries_indexEntryWithAttachments");
+       	       			SimpleProfiler.stop("indexEntries_indexEntryWithAttachments");
        				   	indexEntries_postIndex(binder, entry);
        				}
            			getCoreDao().evict(entryTags);
        				getCoreDao().evict(entry);
           	  		//apply after we have gathered a few
-   	       			SimpleProfiler.startProfiler("indexEntries_applyChanges");
+   	       			SimpleProfiler.start("indexEntries_applyChanges");
            	   		IndexSynchronizationManager.applyChanges(threshhold);
-   	       			SimpleProfiler.stopProfiler("indexEntries_applyChanges");
+   	       			SimpleProfiler.stop("indexEntries_applyChanges");
        			}
        	 	            	            
        			// Register the index document for indexing.
@@ -1124,7 +1124,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         } finally {
         	//clear out anything remaining
         	query.close();
-        	SimpleProfiler.stopProfiler("indexEntries");
+        	SimpleProfiler.stop("indexEntries");
         }
         return errors;
     }
@@ -1365,6 +1365,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  	}
 
     public org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
+    	SimpleProfiler.start("buildIndexDocumentFromEntry");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         boolean fieldsOnly = false;
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, fieldsOnly);
@@ -1387,15 +1388,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add attached files to entry only
         EntityIndexUtils.addAttachedFileIds(indexDoc, entry, fieldsOnly);
         
+    	SimpleProfiler.stop("buildIndexDocumentFromEntry");
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, Collection tags) {
+    	SimpleProfiler.start("buildIndexDocumentFromEntryFile");
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
         BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
   		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
+    	SimpleProfiler.stop("buildIndexDocumentFromEntryFile");
    		return indexDoc;
  
     }

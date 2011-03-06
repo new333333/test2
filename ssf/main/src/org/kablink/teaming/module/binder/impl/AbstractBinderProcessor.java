@@ -240,14 +240,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       	if (parent.isZone())
       		throw new NotSupportedException("errorcode.notsupported.addbinder");
                
-    	SimpleProfiler sp = new SimpleProfiler(false);
-    	
-    	sp.start("addBinder_toEntryData");
+      	SimpleProfiler.start("addBinder_toEntryData");
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
         addBinder_setCtx(parent, ctx);
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems,ctx);
-        sp.stop("addBinder_toEntryData");
+        SimpleProfiler.stop("addBinder_toEntryData");
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -258,9 +256,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
        
     	try {
-	        sp.start("addBinder_create");
+    		SimpleProfiler.start("addBinder_create");
 	        final Binder binder = addBinder_create(def, clazz, ctx);
-	        sp.stop("addBinder_create");
+	        SimpleProfiler.stop("addBinder_create");
 	        	        
 	    	if (def != null) {
 	    		if ((parent.getDefinitionType() == null) ||
@@ -282,7 +280,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
-	        sp.start("addBinder_transactionExecute");
+	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -303,16 +301,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                return null;
 	        	}
 	        });
-	        sp.stop("addBinder_transactionExecute");
+	        SimpleProfiler.stop("addBinder_transactionExecute");
 	           
-	        sp.start("addBinder_filterFiles");
+	        SimpleProfiler.start("addBinder_filterFiles");
 	        //Need to do filter here after binder is saved cause it makes use of
 	        // the id of binder
 	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems,ctx);
-	        sp.stop("addBinder_filterFiles");
+	        SimpleProfiler.stop("addBinder_filterFiles");
 	        
 	 	    //If a binder was created, go create the BinderQuota record
-			sp.start("addBinderQuotaRecord");
+	        SimpleProfiler.start("addBinderQuotaRecord");
 	        // The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -326,21 +324,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                return null;
 	        	}
 	        });
-	        sp.stop("addBinderQuotaRecord");
+	        SimpleProfiler.stop("addBinderQuotaRecord");
 
-	        sp.start("addBinder_processFiles");
+	        SimpleProfiler.start("addBinder_processFiles");
 	        // We must save the entry before processing files because it makes use
 	        // of the persistent id of the entry. 
 	        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors,ctx);
-	        sp.stop("addBinder_processFiles");
+	        SimpleProfiler.stop("addBinder_processFiles");
 	        
-	        sp.start("addBinder_indexAdd");
+	        SimpleProfiler.start("addBinder_indexAdd");
 	        // This must be done in a separate step after persisting the entry,
 	        // because we need the entry's persistent ID for indexing. 
 	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems, ctx);
-	        sp.stop("addBinder_indexAdd");
+	        SimpleProfiler.stop("addBinder_indexAdd");
 	        
-	    	sp.print();
+	        //SimpleProfiler.done(logger);
 
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -638,14 +636,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		Map fileItems, final Collection deleteAttachments, Map options) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	
-    	SimpleProfiler sp = new SimpleProfiler(false);
-    	
-    	sp.start("modifyBinder_toEntryData");
+    	SimpleProfiler.start("modifyBinder_toEntryData");
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
     	modifyBinder_setCtx(binder, ctx);
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems, ctx);
-	    sp.stop("modifyBinder_toEntryData");
+	    SimpleProfiler.stop("modifyBinder_toEntryData");
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -657,11 +653,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 	    try {
 		    
-	    	sp.start("modifyBinder_filterFiles");
+	    	SimpleProfiler.start("modifyBinder_filterFiles");
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems, ctx);
-		    sp.stop("modifyBinder_filterFiles");
+		    SimpleProfiler.stop("modifyBinder_filterFiles");
 	
-	    	sp.start("modifyBinder_transactionExecute");
+		    SimpleProfiler.start("modifyBinder_transactionExecute");
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -689,32 +685,32 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			}
         			return null;
 	        	}});
-	        sp.stop("modifyBinder_transactionExecute");
+	        SimpleProfiler.stop("modifyBinder_transactionExecute");
 	        
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
-	        sp.start("modifyBinder_removeAttachments");
+	        SimpleProfiler.start("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 	        modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex, ctx);    
-	        sp.stop("modifyBinder_removeAttachments");
+	        SimpleProfiler.stop("modifyBinder_removeAttachments");
 	        
-	        sp.start("modifyBinder_processFiles");
+	        SimpleProfiler.start("modifyBinder_processFiles");
 		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors, ctx);
-		    sp.stop("modifyBinder_processFiles");
+		    SimpleProfiler.stop("modifyBinder_processFiles");
 		    
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
-	    	sp.start("modifyBinder_indexRemoveFiles");
+	    	SimpleProfiler.start("modifyBinder_indexRemoveFiles");
 	        modifyBinder_indexRemoveFiles(binder, filesToDeindex, ctx);
-	        sp.stop("modifyBinder_indexRemoveFiles");
+	        SimpleProfiler.stop("modifyBinder_indexRemoveFiles");
 	        
-	        sp.start("modifyBinder_indexAdd");
+	        SimpleProfiler.start("modifyBinder_indexAdd");
 		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex, ctx);
-		    sp.stop("modifyBinder_indexAdd");
+		    SimpleProfiler.stop("modifyBinder_indexAdd");
 		    
-		    sp.print();
+		    //SimpleProfiler.done(logger);
 		    
 	    	if (filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -899,22 +895,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
-    	SimpleProfiler sp = new SimpleProfiler(false);
-    	
-    	sp.start("deleteBinder_preDelete");
+    	SimpleProfiler.start("deleteBinder_preDelete");
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
         deleteBinder_preDelete(binder,ctx);
-        sp.stop("deleteBinder_preDelete");
+        SimpleProfiler.stop("deleteBinder_preDelete");
         
-        sp.start("deleteBinder_processFiles");
+        SimpleProfiler.start("deleteBinder_processFiles");
         deleteBinder_processFiles(binder, ctx);
-        sp.stop("deleteBinder_processFiles");
+        SimpleProfiler.stop("deleteBinder_processFiles");
         
-        sp.start("deleteBinder_mirrored");
+        SimpleProfiler.start("deleteBinder_mirrored");
         deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
-        sp.stop("deleteBinder_mirrored");
+        SimpleProfiler.stop("deleteBinder_mirrored");
         
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
@@ -923,19 +917,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				getCoreDao().updateTitle(binder.getParentBinder(), binder, binder.getNormalTitle(), null);
     	}
 
-        sp.start("deleteBinder_delete");
+        SimpleProfiler.start("deleteBinder_delete");
         deleteBinder_delete(binder, deleteMirroredSource, ctx);
-        sp.stop("deleteBinder_delete");
+        SimpleProfiler.stop("deleteBinder_delete");
        
-        sp.start("deleteBinder_postDelete");
+        SimpleProfiler.start("deleteBinder_postDelete");
         deleteBinder_postDelete(binder, ctx);
-        sp.stop("deleteBinder_postDelete");
+        SimpleProfiler.stop("deleteBinder_postDelete");
         
-        sp.start("deleteBinder_indexDel");
+        SimpleProfiler.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
-        sp.stop("deleteBinder_indexDel");
+        SimpleProfiler.stop("deleteBinder_indexDel");
      
-        sp.print();
+        //SimpleProfiler.done(logger);
     }
     //inside write transaction    
     protected void deleteBinder_setCtx(Binder binder, Map ctx) {
@@ -1889,8 +1883,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 			//Next, make sure each of these binders has a BinderQuota row in the database
 			if (!binderQuotasToUpdate.isEmpty()) {
-				SimpleProfiler sp = new SimpleProfiler(false);
-				sp.start("validateBinderQuotasTree");
+				SimpleProfiler.start("validateBinderQuotasTree");
 		        // The following part requires update database transaction.
 		        getTransactionTemplate().execute(new TransactionCallback() {
 		        	public Object doInTransaction(TransactionStatus status) {
@@ -1917,7 +1910,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		                return null;
 		        	}
 		        });
-		        sp.stop("validateBinderQuotasTree");
+		        SimpleProfiler.stop("validateBinderQuotasTree");
 			}
 		}
 		//At this point, all binders in the zone have been analyzed and a complete map exists
