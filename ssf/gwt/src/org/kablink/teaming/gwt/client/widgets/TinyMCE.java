@@ -99,7 +99,9 @@ public class TinyMCE extends Composite
     	var editor;
     	
     	editor = $wnd.tinyMCE.get( id );
-		return editor.getContent();
+
+		//!!!return editor.getContent();
+		return editor.getContent( {format: 'raw'} );
     }-*/;
     
     
