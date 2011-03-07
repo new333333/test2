@@ -236,6 +236,14 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 </td></tr></table>
 
 </c:if>
+
+<div style="padding:20px 0 0 20px;">
+  <a href="http://www.novell.com/products/vibe-onprem/resource-library/" 
+      title="<ssf:nlt tag="administration.definition.libraryHint"/>" target="_blank">
+    <span><ssf:nlt tag="administration.definition.library"/></span>
+  </a>
+</div>
+
 </ssf:form>
 </div>
 </div>
