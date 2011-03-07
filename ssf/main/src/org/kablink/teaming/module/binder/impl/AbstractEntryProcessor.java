@@ -513,7 +513,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         
 	    try {	    	
-	    	SimpleProfiler.start("modifyEntry_transactionExecute");
+	    	SimpleProfiler.start("modifyEntry_transactionExecute1");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
@@ -529,7 +529,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			SimpleProfiler.stop("modifyEntry_postFillIn");
 	    			return null;
 	    		}});
-	    	SimpleProfiler.stop("modifyEntry_transactionExecute");
+	    	SimpleProfiler.stop("modifyEntry_transactionExecute1");
 		    	
 	    	//handle outside main transaction so main changeLog doesn't reflect attachment changes
 	        SimpleProfiler.start("modifyBinder_removeAttachments");
@@ -544,6 +544,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
            	SimpleProfiler.start("modifyEntry_processFiles");
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
+	    	SimpleProfiler.stop("modifyEntry_processFiles");
+	    	
+	    	SimpleProfiler.start("modifyEntry_transactionExecute2");
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
 		        	//See if there were any file notes added
@@ -567,8 +570,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		        	return null;
 	    		}
 	    	});
-	    	SimpleProfiler.stop("modifyEntry_processFiles");
-
+	    	SimpleProfiler.stop("modifyEntry_transactionExecute2");
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add

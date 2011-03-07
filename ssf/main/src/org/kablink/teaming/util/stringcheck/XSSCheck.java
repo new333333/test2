@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.HTMLInputFilter;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.StringPool;
 
 
@@ -153,8 +154,12 @@ public class XSSCheck implements StringCheck {
 	}
 	
 	public String checkFile(String fileContentAsString) throws XSSCheckException {
-		if(enable)
-			return doCheck(fileContentAsString, TYPE_CHECK_FILE, modeFile);
+		if(enable) {
+			SimpleProfiler.start("XSSCheck.checkFile");
+			String result = doCheck(fileContentAsString, TYPE_CHECK_FILE, modeFile);
+			SimpleProfiler.stop("XSSCheck.checkFile");
+			return result;
+		}
 		else
 			return fileContentAsString;
 	}
