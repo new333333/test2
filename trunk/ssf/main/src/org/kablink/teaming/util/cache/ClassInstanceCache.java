@@ -78,4 +78,8 @@ public class ClassInstanceCache {
 		}
 		return entry;
 	}
+	
+	public static int size() {
+		return cache.size();
+	}
 }

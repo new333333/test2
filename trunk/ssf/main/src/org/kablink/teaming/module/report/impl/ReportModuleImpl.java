@@ -272,6 +272,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}
 		}
 	}
+	public static int getLoginInfoLastDaySize() {
+		return loginInfoLastDays.size();
+	}
 	private Integer getLoginInfoLastDay(Long zoneId, Long userId, String authenticatorName) {
 		return loginInfoLastDays.get(zoneId + "." + userId + "." + authenticatorName);
 	}
