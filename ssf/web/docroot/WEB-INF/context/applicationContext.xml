@@ -777,7 +777,7 @@
 		<property name="validating"><value>true</value></property>
 	</bean>
 
-	<bean id="definitionModule" parent="moduleTransactionProxy" depends-on="sPropsUtil" >
+	<bean id="definitionModule" parent="moduleTransactionProxy" depends-on="sPropsUtil,stringCheckUtil" >
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
