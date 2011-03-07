@@ -1292,22 +1292,31 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		Map<String,Map> result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
 		Map transitionData = new LinkedHashMap();
-		if (testTransitionOutStateAllowed(entry, stateId)) {
-			for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry me = (Map.Entry)iter.next();
-					Map data = (Map)me.getValue();
-					try {
-						//access check
-						Element accessEle = (Element)data.get("transitionAccessElement");
+		for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+				Map data = (Map)me.getValue();
+				try {
+					//access check
+					Element accessEle = (Element)data.get("transitionAccessElement");
+					if (AccessUtils.doesManualTransitionAclExist(entry.getParentBinder(), entry, ws, accessEle)) {
+						//There is amanual transition acl, so check it.
 						AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
-						AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+						if (AccessUtils.checkIfTransitionInAclExists(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey())) {
+							//If there is an acl guarding transition in, test it
+							AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+						}
 						transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
-					} catch (AccessControlException ac) {};
-			}
-			return transitionData;
-		} 
-		//cannot transition out, so don't return anyting
-		return Collections.EMPTY_MAP;
+					} else {
+						//There is no manual transition acl, so do the default check
+						if (testTransitionOutStateAllowed(entry, stateId)) {
+							AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
+							AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+							transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
+						}
+					}
+				} catch (AccessControlException ac) {};
+		}
+		return transitionData;
 		
     }		
 

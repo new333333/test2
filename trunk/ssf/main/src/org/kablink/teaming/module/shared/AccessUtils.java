@@ -694,17 +694,44 @@ public class AccessUtils  {
     	 ws.setOwner((Entry)entry);
     	 checkTransitionAcl(binder, (WorkflowSupport)entry, ws, WfAcl.AccessType.transitionIn);
      }
+     public static boolean checkIfTransitionInAclExists(Binder binder, Entry entry, Definition definition, String toState)  
+  			throws AccessControlException {
+    	if (!(entry instanceof WorkflowSupport)) return false;
+	 	//build a fake state
+	 	WorkflowState ws = new WorkflowState();
+	 	ws.setDefinition(definition);
+	 	ws.setState(toState);
+	 	ws.setOwner((Entry)entry);
+	 	WfAcl acl = ws.getAcl(WfAcl.AccessType.transitionIn);
+	 	if (acl != null && !acl.isUseDefault()) {
+	 		return true;
+	 	} else {
+	 		return false;
+	 	}
+     }
+     
      public static void checkTransitionOut(Binder binder, Entry entry, Definition definition, WorkflowState ws)  
      	throws AccessControlException {
     	 if (!(entry instanceof WorkflowSupport)) return;
     	 checkTransitionAcl(binder, (WorkflowSupport)entry, ws, WfAcl.AccessType.transitionOut);
      }
  	 public static void checkManualTransitionAccess(Binder binder, WorkflowSupport entry, WorkflowState state, 
-			Element accessEle) throws AccessControlException {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		WfAcl acl = WorkflowProcessUtils.getAcl(accessEle, (DefinableEntity)entry, WfAcl.AccessType.manualTransition);
-		checkTransitionAcl(binder, entry, acl);
-	 }
+ 			Element accessEle) throws AccessControlException {
+ 		User user = RequestContextHolder.getRequestContext().getUser();
+ 		WfAcl acl = WorkflowProcessUtils.getAcl(accessEle, (DefinableEntity)entry, WfAcl.AccessType.manualTransition);
+ 		checkTransitionAcl(binder, entry, acl);
+ 	 }
+
+ 	 public static boolean doesManualTransitionAclExist(Binder binder, WorkflowSupport entry, WorkflowState state, 
+ 			Element accessEle) throws AccessControlException {
+ 		User user = RequestContextHolder.getRequestContext().getUser();
+ 		WfAcl acl = WorkflowProcessUtils.getAcl(accessEle, (DefinableEntity)entry, WfAcl.AccessType.manualTransition);
+ 		if (acl != null) {
+ 			return true;
+ 		} else {
+ 			return false;
+ 		}
+ 	 }
 
      private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WorkflowState state, WfAcl.AccessType type)  
       	throws AccessControlException {
