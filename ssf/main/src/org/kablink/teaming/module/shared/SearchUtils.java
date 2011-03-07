@@ -197,9 +197,13 @@ public class SearchUtils {
 
     	if (fieldName.endsWith(Constants.EVENT_FIELD_CALC_START_DATE)) return true;
 
+    	if (fieldName.endsWith(Constants.EVENT_FIELD_LOGICAL_START_DATE)) return true;
+
 	    if (fieldName.endsWith(Constants.EVENT_FIELD_END_DATE)) return true;
 	    
 	    if (fieldName.endsWith(Constants.EVENT_FIELD_CALC_END_DATE)) return true;
+	    
+	    if (fieldName.endsWith(Constants.EVENT_FIELD_LOGICAL_END_DATE)) return true;
 	    
 	    if (fieldName.equals("due_date")) return true;
 	    	

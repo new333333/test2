@@ -579,9 +579,9 @@ public class MarkupUtil {
 									}
 								} else if ("event".equals(dataType)) {
 									Date startDate = (Date)searchResults.get(dataName + 
-											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_START_DATE);
+											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_LOGICAL_START_DATE);
 									Date endDate = (Date)searchResults.get(dataName + 
-											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_END_DATE);
+											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_LOGICAL_END_DATE);
 									String timeZoneSensitive = (String)searchResults.get(dataName + 
 											BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE);
 									boolean allDayEvent = false;
