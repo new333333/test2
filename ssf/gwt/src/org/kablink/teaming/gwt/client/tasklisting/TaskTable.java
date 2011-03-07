@@ -101,6 +101,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private EventHandler			m_assigneeMouseOutEvent;	//
 	private EventHandler			m_assigneeMouseOverEvent;	//
 	private EventHandler			m_cbClickHandler;			//
+	private EventHandler			m_columnClickHandler;		//
 	private EventHandler			m_expanderClickHandler;		//
 	private EventHandler			m_taskOptionClickHandler;	//
 	private EventHandler			m_taskSeenClickHandler;		//
@@ -124,9 +125,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
 	
 	// The following defines attributes added to various task table
-	// widgets to enable backtracking to their related task, ...
-	private final static String ATTR_ENTRY_ID		= "n_entryId";
-	private final static String ATTR_OPTION_MENU	= "n_optionMenu";
+	// widgets to enable backtracking to their related object, ...
+	private final static String ATTR_COLUMN_SORT_KEY	= "n_columnSortKey";
+	private final static String ATTR_ENTRY_ID			= "n_entryId";
+	private final static String ATTR_OPTION_MENU		= "n_optionMenu";
 
 	// The following defines the number of entries we show before
 	// adding an ellipse to show more.
@@ -836,6 +838,17 @@ public class TaskTable extends Composite implements ActionHandler {
 				CheckBox cb;					
 				cb = ((CheckBox) event.getSource());
 				handleTaskSelect(getTaskFromEventWidget(cb), cb.getValue());
+			}			
+		};
+
+		// Event handler used when the user clicks on a column header.
+		m_columnClickHandler = new ClickHandler(){
+			@Override
+			public void onClick(ClickEvent event) {
+				Widget w = ((Widget) event.getSource());
+				String colSortKey = w.getElement().getAttribute(ATTR_COLUMN_SORT_KEY);
+				Column col = Column.mapSortKeyToColumn(colSortKey);
+				handleTableResort(col);
 			}			
 		};
 
@@ -2278,10 +2291,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_assignedTo());
 		markAsSortKey(a, Column.ASSIGNED_TO);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.ASSIGNED_TO);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ASSIGNED_TO.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		m_flexTable.setWidget(0, getColumnIndex(Column.ASSIGNED_TO), a);
 	}
 	
@@ -2292,10 +2303,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_closedPercentDone());
 		markAsSortKey(a, Column.CLOSED_PERCENT_DONE);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.CLOSED_PERCENT_DONE);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.CLOSED_PERCENT_DONE.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		int colIndex = getColumnIndex(Column.CLOSED_PERCENT_DONE);
 		m_flexTable.setWidget(0, colIndex, a);
 		if (m_taskBundle.getIsFromFolder()) {
@@ -2311,10 +2320,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_dueDate());
 		markAsSortKey(a, Column.DUE_DATE);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.DUE_DATE);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.DUE_DATE.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		fp.add(a);
 
 		// Add a 'Due Date' busy Image that we'll use when calculating
@@ -2338,10 +2345,8 @@ public class TaskTable extends Composite implements ActionHandler {
 			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_location());
 			markAsSortKey(a, Column.LOCATION);
-			EventWrapper.addHandler(a, new ClickHandler(){
-				@Override
-				public void onClick(ClickEvent event) {handleTableResort(Column.LOCATION);}			
-			});
+			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.LOCATION.m_sortKey);
+			EventWrapper.addHandler(a, m_columnClickHandler);
 			int colIndex = getColumnIndex(Column.LOCATION);
 			m_flexTable.setWidget( 0, colIndex, a);
 			m_flexTableCF.setWidth(0, colIndex, "100%");
@@ -2358,10 +2363,8 @@ public class TaskTable extends Composite implements ActionHandler {
 			Anchor a = buildAnchor("sort-column");
 			a.getElement().setInnerHTML(m_messages.taskColumn_order());
 			markAsSortKey(a, Column.ORDER);
-			EventWrapper.addHandler(a, new ClickHandler(){
-				@Override
-				public void onClick(ClickEvent event) {handleTableResort(Column.ORDER);}			
-			});
+			a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.ORDER.m_sortKey);
+			EventWrapper.addHandler(a, m_columnClickHandler);
 			int colIndex = getColumnIndex(Column.ORDER);
 			m_flexTableCF.setHorizontalAlignment(0, colIndex, HasHorizontalAlignment.ALIGN_CENTER);
 			m_flexTable.setWidget(               0, colIndex, a);
@@ -2375,10 +2378,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_priority());
 		markAsSortKey(a, Column.PRIORITY);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.PRIORITY);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.PRIORITY.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		m_flexTable.setWidget(0, getColumnIndex(Column.PRIORITY), a);
 	}
 	
@@ -2407,10 +2408,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_status());
 		markAsSortKey(a, Column.STATUS);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.STATUS);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.STATUS.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		m_flexTable.setWidget(0, getColumnIndex(Column.STATUS), a);
 	}
 	
@@ -2421,10 +2420,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		Anchor a = buildAnchor("sort-column");
 		a.getElement().setInnerHTML(m_messages.taskColumn_name());
 		markAsSortKey(a, Column.TASK_NAME);
-		EventWrapper.addHandler(a, new ClickHandler(){
-			@Override
-			public void onClick(ClickEvent event) {handleTableResort(Column.TASK_NAME);}			
-		});
+		a.getElement().setAttribute(ATTR_COLUMN_SORT_KEY, Column.TASK_NAME.m_sortKey);
+		EventWrapper.addHandler(a, m_columnClickHandler);
 		m_flexTable.setWidget(0, getColumnIndex(Column.TASK_NAME), a);
 	}
 	
