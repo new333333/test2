@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.util;
 
-public interface RuntimeHelperMBean {
+public interface RuntimeStatisticsMBean {
 	
 	public boolean isSimpleProfilerEnabled();
 	

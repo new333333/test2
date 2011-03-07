@@ -36,7 +36,7 @@ import org.kablink.teaming.module.report.impl.ReportModuleImpl;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 
-public class RuntimeHelper implements RuntimeHelperMBean {
+public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#clearSimpleProfiler()
