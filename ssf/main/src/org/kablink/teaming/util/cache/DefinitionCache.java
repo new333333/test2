@@ -183,6 +183,10 @@ public class DefinitionCache {
 		cache.clear();
 	}
 	
+	public static int size() {
+		return cache.size();
+	}
+	
 	private static Document generateDocument(Definition def) {
 		if(logger.isDebugEnabled())
 			logger.debug("generateDocument [" + def.getId() + "]");

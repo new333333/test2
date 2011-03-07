@@ -32,6 +32,10 @@
  */
 package org.kablink.teaming.util;
 
+import org.kablink.teaming.module.report.impl.ReportModuleImpl;
+import org.kablink.teaming.util.cache.ClassInstanceCache;
+import org.kablink.teaming.util.cache.DefinitionCache;
+
 public class RuntimeHelper implements RuntimeHelperMBean {
 
 	/* (non-Javadoc)
@@ -72,5 +76,29 @@ public class RuntimeHelper implements RuntimeHelperMBean {
 	@Override
 	public boolean isSimpleProfilerEnabled() {
 		return SimpleProfiler.isEnabled();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeHelperMBean#getLoginInfoLastDaySize()
+	 */
+	@Override
+	public int getLoginInfoLastDaySize() {
+		return ReportModuleImpl.getLoginInfoLastDaySize();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeHelperMBean#getClassInstanceCacheSize()
+	 */
+	@Override
+	public int getClassInstanceCacheSize() {
+		return ClassInstanceCache.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.util.RuntimeHelperMBean#getDefinitionCacheSize()
+	 */
+	@Override
+	public int getDefinitionCacheSize() {
+		return DefinitionCache.size();
 	}
 }

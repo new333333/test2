@@ -43,4 +43,10 @@ public interface RuntimeHelperMBean {
 	public void clearSimpleProfiler();
 	
 	public void dumpSimpleProfiler();
+	
+	public int getLoginInfoLastDaySize();
+	
+	public int getClassInstanceCacheSize();
+	
+	public int getDefinitionCacheSize();
 }
