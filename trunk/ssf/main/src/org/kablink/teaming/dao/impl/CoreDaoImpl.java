@@ -2263,7 +2263,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                    	.add(Expression.ge("lastModified", begin))
 	                    	.add(Expression.lt("lastModified", end))
 	                    	.add(Expression.geProperty("lastModified", sinceField))
-	                    	.add(Expression.like("owningBinderKey", binder.getBinderKey().getSortKey()))
+	                    	.add(Expression.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
 	                    	.addOrder(Order.asc("owningBinderKey"));
 	                    	
 	                    	if (maxResults > 0) {
