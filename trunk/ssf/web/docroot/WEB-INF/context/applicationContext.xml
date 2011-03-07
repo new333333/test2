@@ -1272,7 +1272,7 @@ text/calendar											  ics
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 	</bean>
 	
-	<bean id="runtimeHelper" class="org.kablink.teaming.util.RuntimeStatistics">
+	<bean id="runtimeStatistics" class="org.kablink.teaming.util.RuntimeStatistics">
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
@@ -1318,8 +1318,8 @@ text/calendar											  ics
 	        <entry key="Vibe:type=Server,name=smtpService">
 	          <ref bean="smtpService"/>
 	        </entry>
-	        <entry key="Vibe:type=Other,name=runtimeHelper">
-	          <ref bean="runtimeHelper"/>
+	        <entry key="Vibe:type=Other,name=runtimeStatistics">
+	          <ref bean="runtimeStatistics"/>
 	        </entry>
 	      </map>
 	    </property>
