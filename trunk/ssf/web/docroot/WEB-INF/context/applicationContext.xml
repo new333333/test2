@@ -1272,7 +1272,7 @@ text/calendar											  ics
 		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 	</bean>
 	
-	<bean id="runtimeHelper" class="org.kablink.teaming.util.RuntimeHelper">
+	<bean id="runtimeHelper" class="org.kablink.teaming.util.RuntimeStatistics">
 	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
