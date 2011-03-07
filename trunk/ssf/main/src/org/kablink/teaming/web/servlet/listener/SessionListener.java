@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,6 +42,7 @@ import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.Tabs;
 
 
 public class SessionListener implements HttpSessionListener {
@@ -52,9 +53,9 @@ public class SessionListener implements HttpSessionListener {
 	public void sessionDestroyed(HttpSessionEvent se) {
 		// This listener is invoked in the same thread executing portal-side code
 		// as side effect of the portal session being invalidated. Consequently,
-		// the context classloader is that of the portal web app, which is
+		// the context class loader is that of the portal web application, which is
 		// inappropriate for executing Teaming side code. Therefore, we need
-		// to switch the context classloader for the duration of this call.
+		// to switch the context class loader for the duration of this call.
 		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
 		
 		try {
@@ -67,22 +68,22 @@ public class SessionListener implements HttpSessionListener {
 	}
 		
 	private void doSessionDestroyed(HttpSessionEvent se) {
-		HttpSession ses = se.getSession();
+		final HttpSession ses = se.getSession();
 		
 		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+		final Long   userId = (Long)   ses.getAttribute(WebKeys.USER_ID);
+		final Long   zoneId = (Long)   ses.getAttribute(WebKeys.ZONE_ID);
 		
-		if(infoId != null) {
-			Long userId = (Long) ses.getAttribute(WebKeys.USER_ID);
-			final AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
-			Long zoneId = (Long) ses.getAttribute(WebKeys.ZONE_ID);
-			// Make sure to run it in the user's context.	
-			RunasTemplate.runas(new RunasCallback() {
-				public Object doAs() {
+		// Make sure to run it in the user's context.	
+		RunasTemplate.runas(new RunasCallback() {
+			public Object doAs() {
+				Tabs.saveUserTabs(ses, userId);
+				if(infoId != null) {
+					AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
 					accessTokenManager.destroyTokenInfoSession(infoId);
-					return null;
 				}
-			}, zoneId, userId);
-		}
+				return null;
+			}
+		}, zoneId, userId);
 	}
-
 }
