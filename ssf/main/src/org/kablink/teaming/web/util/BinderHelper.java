@@ -4139,7 +4139,7 @@ public class BinderHelper {
 				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
 				descriptionMap.put(ws.getTokenId(), WorkflowUtils.getStateDescription(ws.getDefinition(), ws.getState()));
 				//See if user can transition out of this state
-				if (!entry.isPreDeleted() && bs.getFolderModule().testTransitionOutStateAllowed(entry, ws.getTokenId())) {
+				if (!entry.isPreDeleted()) {
 					//get all manual transitions
 					Map trans = bs.getFolderModule().getManualTransitions(entry, ws.getTokenId());
 					transitionMap.put(ws.getTokenId(), trans);
