@@ -501,9 +501,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	for(int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
+    			SimpleProfiler.start("filterFiles_makeReentrant");
         		fui.makeReentrant();
+    			SimpleProfiler.stop("filterFiles_makeReentrant");
         		
+    			SimpleProfiler.start("filterFiles_executeContentFilters");
         		executeContentFilters(binder, entity, fui.getOriginalFilename(), fui);
+    			SimpleProfiler.stop("filterFiles_executeContentFilters");
     			
     			//Only advance on success
     			++i;
