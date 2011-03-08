@@ -611,6 +611,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();
    		
+   		SimpleProfiler.start("modifyEntry_filterFiles_validate");
    		checkInputFileNames(fileUploadItems, nameErrors);
    		
    		if(!binder.isMirrored()) {
@@ -641,7 +642,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	  			}   				
    			}
    		}
+   		SimpleProfiler.stop("modifyEntry_filterFiles_validateInput");
    		
+   		SimpleProfiler.start("modifyEntry_filterFiles_registerFileName");
     	// 	Make sure the file name is unique if requested		
     	for (int i=0; i<fileUploadItems.size(); ) {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
@@ -666,9 +669,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
     		}
     	}
+   		SimpleProfiler.stop("modifyEntry_filterFiles_registerFileName");
    		
+   		SimpleProfiler.start("modifyEntry_filterFiles_filterFiles");
     	FilesErrors filterErrors = getFileModule().filterFiles(binder, entry, fileUploadItems);
-    	filterErrors.getProblems().addAll(nameErrors.getProblems());
+   		SimpleProfiler.stop("modifyEntry_filterFiles_filterFiles");
+
+   		filterErrors.getProblems().addAll(nameErrors.getProblems());
     	return filterErrors;
     }
 
