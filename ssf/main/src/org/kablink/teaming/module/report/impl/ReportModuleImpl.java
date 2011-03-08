@@ -68,6 +68,7 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
@@ -1774,9 +1775,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
                                                           .add(Projections.property("entityId"))))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.eq("transactionType", AuditType.delete.name()))
-				.add(Restrictions.ge("startDate", startDate))
+				.add(Restrictions.in("transactionType", new String[]{AuditType.delete.name(), AuditType.preDelete.name()}))
 				.add(Restrictions.lt("startDate", endDate));
+				if(startDate != null)
+					crit.add(Restrictions.ge("startDate", startDate));
 				if(Validator.isNotNull(family))
 					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
 				return crit.list();
@@ -1792,9 +1794,10 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
                                                           .add(Projections.property("entityId"))))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.eq("transactionType", AuditType.delete.name()))
-				.add(Restrictions.ge("startDate", startDate))
+				.add(Restrictions.in("transactionType", new String[]{AuditType.delete.name(), AuditType.preDelete.name()}))
 				.add(Restrictions.lt("startDate", endDate));
+				if(startDate != null)
+					crit.add(Restrictions.ge("startDate", startDate));
 				if(Validator.isNotNull(family))
 					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
 				if(folderIds != null && folderIds.length > 0) {
@@ -1803,6 +1806,48 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						fIds[i] = Long.valueOf(folderIds[i]);
 					crit.add(Restrictions.in("owningBinderId", fIds));
 				}
+				return crit.list();
+			}});
+		return ids;
+	}
+
+	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+                                                          .add(Projections.property("entityId"))))
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
+				.add(Restrictions.eq("transactionType", AuditType.restore.name()))
+				.add(Restrictions.lt("startDate", endDate));
+				if(startDate != null)
+					crit.add(Restrictions.ge("startDate", startDate));
+				if(Validator.isNotNull(family))
+					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
+				if(folderIds != null && folderIds.length > 0) {
+					Long[] fIds = new Long[folderIds.length];
+					for(int i = 0; i < fIds.length; i++)
+						fIds[i] = Long.valueOf(folderIds[i]);
+					crit.add(Restrictions.in("owningBinderId", fIds));
+				}
+				return crit.list();
+			}});
+		return ids;
+	}
+	
+	public List<Long> getMovedFolderEntryIds(final Date startDate, final Date endDate) {
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(ChangeLog.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+                                                          .add(Projections.property("entityId"))))
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
+				.add(Restrictions.eq("operation", ChangeLog.MOVEENTRY))
+				.add(Restrictions.lt("operationDate", endDate));
+				if(startDate != null)
+					crit.add(Restrictions.ge("operationDate", startDate));
 				return crit.list();
 			}});
 		return ids;

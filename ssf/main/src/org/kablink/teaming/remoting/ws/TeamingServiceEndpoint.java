@@ -401,6 +401,14 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_getDeletedEntriesInFolders(accessToken, folderIds, family, startTime, endTime);
 	}	
 
+	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime) {
+		return getFolderService().folder_getRestoredEntriesInFolders(accessToken, folderIds, family, startTime, endTime);
+	}	
+
+	public long[] folder_getMovedEntries(String accessToken, Calendar startTime, Calendar endTime) {
+		return getFolderService().folder_getMovedEntries(accessToken, startTime, endTime);
+	}	
+
 	public boolean[] folder_testFolderOperation(String accessToken, String operationName, long[] folderIds) {
 		return getFolderService().folder_testFolderOperation(accessToken, operationName, folderIds);
 	}
