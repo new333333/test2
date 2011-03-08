@@ -424,7 +424,7 @@ public class Tabs {
 	
 	private static void saveUserTabsImpl(PortletSession ps, HttpSession hs, Long userId) {
 		ProfileModule pm = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
-		pm.setUserProperty(null, ObjectKeys.USER_PROPERTY_TABS, getTabsImpl(ps, hs).getSerializationMap());
+		pm.setUserProperty(userId, ObjectKeys.USER_PROPERTY_TABS, getTabsImpl(ps, hs).getSerializationMap());
 	}
 	
 	/**
