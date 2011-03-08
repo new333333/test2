@@ -307,14 +307,21 @@
 		<tstamp>
 	    	<format property="build.timestamp" pattern="MMMM dd, yyyy" />
 	    </tstamp>
-	    <if>
-	    	<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
-	    	<then>
-				<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
-                         match="release.static.dir=(.*)"
-                         replace="release.static.dir=${new.static.dir}"
-                         byline="true"/>
-            </then>
+		<if>
+			<not>
+				<isset property="doing-release-build" />
+			</not>
+			<then>
+	    		<if>
+	    			<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+	    			<then>
+						<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+                         	match="release.static.dir=(.*)"
+                         	replace="release.static.dir=${new.static.dir}"
+                         	byline="true"/>
+            		</then>
+        		</if>
+        	</then>
         </if>
 		<echo>********* static file directory changed *********</echo>
 		<echo>The static files will now be put in "${web.static.path}"</echo>
