@@ -71,7 +71,7 @@
    </c:if>
    <c:if test="${!empty ssProfileUser.txtEmailAddress}">
      <div class="email">
-       <span><ssf:mailto email="${ssProfileUser.emailAddress}"/></span>
+       <span><ssf:mailto email="${ssProfileUser.txtEmailAddress}"/></span>
        <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.txtEmailAddress"/>)</span>
      </div>
    </c:if>
