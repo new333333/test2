@@ -32,12 +32,19 @@
  */
 package org.kablink.teaming.util;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.report.impl.ReportModuleImpl;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 import org.kablink.teaming.util.cache.DefinitionCache;
 
 public class RuntimeStatistics implements RuntimeStatisticsMBean {
 
+	private Log logger = LogFactory.getLog(getClass());
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#clearSimpleProfiler()
 	 */
@@ -100,5 +107,45 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	@Override
 	public int getDefinitionCacheSize() {
 		return DefinitionCache.size();
+	}
+	
+	public void dumpAll() {
+		String str = asString();
+		logger.info(str);
+		this.dumpSimpleProfiler();
+	}
+	
+	private String asString() {
+		StringBuilder sb = new StringBuilder();
+		
+		Method[] methods = getClass().getDeclaredMethods();
+		for(Method method:methods) {
+			int modifiers = method.getModifiers();
+			if(!Modifier.isPublic(modifiers))
+				continue;
+			String methodName = method.getName();
+			Class[] paramTypes = method.getParameterTypes();
+			if((methodName.startsWith("get") || 
+					(methodName.startsWith("is") && (method.getReturnType().equals(boolean.class) || method.getReturnType().equals(Boolean.class)))) && 
+					paramTypes.length == 0) {
+				// This is a getter.
+				try {
+					Object returnValue = method.invoke(this);
+					sb.append(Constants.NEWLINE);
+					String propertyName = methodName.substring(methodName.startsWith("get")? 3:2);
+					sb.append(propertyName).append(": ").append(returnValue.toString());
+				} catch (Exception e) {/*skip this property*/}
+			}
+		}
+		
+		/*
+		sb.
+		append("SimpleProfilerEnabled: ").append(isSimpleProfilerEnabled()).append(Constants.NEWLINE).
+		append("LoginInfoLastDaySize: " ).append(getLoginInfoLastDaySize()).append(Constants.NEWLINE).
+		append("ClassInstanceCacheSize: ").append(getClassInstanceCacheSize()).append(Constants.NEWLINE).
+		append("DefinitionCacheSize: ").append(getDefinitionCacheSize());
+		*/
+		
+		return sb.toString();
 	}
 }

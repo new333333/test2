@@ -30,25 +30,38 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util;
+package org.kablink.teaming.portlet.administration;
 
-public interface RuntimeStatisticsMBean {
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.portlet.SAbstractController;
+import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.springframework.web.portlet.ModelAndView;
+
+public class ManageRuntimeController extends SAbstractController {
+
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
+	throws Exception {
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if(WebKeys.OPERATION_DUMP_STATISTICS_TO_LOG.equals(op)) {
+			getAdminModule().dumpRuntimeStatisticsToLog();
+		}
+		else if(WebKeys.OPERATION_ENABLE_SIMPLE_PROFILER.equals(op)) {
+			getAdminModule().enableSimpleProfiler();
+		}
+		else if(WebKeys.OPERATION_DISABLE_SIMPLE_PROFILER.equals(op)) {
+			getAdminModule().disableSimpleProfiler();
+		}
+	}
 	
-	public boolean isSimpleProfilerEnabled();
-	
-	public void enableSimpleProfiler();
-	
-	public void disableSimpleProfiler();
-	
-	public void clearSimpleProfiler();
-	
-	public void dumpSimpleProfiler();
-	
-	public int getLoginInfoLastDaySize();
-	
-	public int getClassInstanceCacheSize();
-	
-	public int getDefinitionCacheSize();
-	
-	public void dumpAll();
+	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		// Right now, this controller does not render anything to browser (headless controller). 
+		// It only accepts request and processes it.
+		return null;
+	}
 }

@@ -76,7 +76,8 @@ public interface AdminModule {
 		manageErrorLogs,
 		manageExtensions,
 		manageIndex,
-		manageFunctionCondition
+		manageFunctionCondition,
+		manageRuntime
 	}
 	/**
 	 * The method name to be called is used as the operation.   This
@@ -296,4 +297,10 @@ public interface AdminModule {
 	public IndexOptimizationSchedule getIndexOptimizationSchedule();
 	
 	public void setIndexOptimizationSchedule(IndexOptimizationSchedule schedule);
+	
+	public void dumpRuntimeStatisticsToLog();
+	
+	public void enableSimpleProfiler();
+	
+	public void disableSimpleProfiler();
  }

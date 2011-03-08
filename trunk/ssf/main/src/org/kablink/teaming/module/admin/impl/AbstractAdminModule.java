@@ -115,6 +115,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -327,6 +328,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			case manageTemplate:
 			case manageErrorLogs:
   			case manageFunctionMembership:
+  			case manageRuntime:
   				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:
@@ -1413,4 +1415,23 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	protected String getIndexProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "indexConfiguration/property[@name='" + name + "']");
 	}
+	
+	public void dumpRuntimeStatisticsToLog() {
+		checkAccess(AdminOperation.manageRuntime);
+		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
+		rs.dumpAll();
+	}
+	
+	public void enableSimpleProfiler() {
+		checkAccess(AdminOperation.manageRuntime);
+		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
+		rs.enableSimpleProfiler();
+	}
+	
+	public void disableSimpleProfiler() {
+		checkAccess(AdminOperation.manageRuntime);
+		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
+		rs.disableSimpleProfiler();
+	}
+
 }
