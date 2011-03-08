@@ -60,6 +60,7 @@ import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
+import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -409,12 +410,19 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		UserProperties uProps=null;
 		if (user.isShared()) { //better be the current user
 			UserPropertiesPK key = new UserPropertiesPK(user.getId());
-			uProps = (UserProperties)RequestContextHolder.getRequestContext().getSessionContext().getProperty(key);
-			if (uProps == null) {
-				//load any saved props
-				UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
-				uProps = new GuestProperties(gProps);
-				RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
+			SessionContext sc = RequestContextHolder.getRequestContext().getSessionContext();
+			if(sc != null) {
+				uProps = (UserProperties)sc.getProperty(key);
+				if (uProps == null) {
+					//load any saved props
+					UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
+					uProps = new GuestProperties(gProps);
+					RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
+				}
+			}
+			else {
+				// For whatever reason, there is no session context for the user
+				uProps = getProfileDao().loadUserProperties(user.getId());
 			}
 		} else {
 			uProps = getProfileDao().loadUserProperties(user.getId());
