@@ -246,7 +246,6 @@ public class NullReportModule implements ReportModule {
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.report.ReportModule#getDeletedFolderEntryIds(long[], java.util.Date, java.util.Date)
 	 */
-	@Override
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family,
 			Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
@@ -256,7 +255,6 @@ public class NullReportModule implements ReportModule {
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.report.ReportModule#addEmailLog(org.kablink.teaming.domain.EmailLog)
 	 */
-	@Override
 	public void addEmailLog(EmailLog emailLog) {
 		// TODO Auto-generated method stub
 		
@@ -265,8 +263,12 @@ public class NullReportModule implements ReportModule {
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.report.ReportModule#getRestoredFolderEntryIds(long[], java.lang.String, java.util.Date, java.util.Date)
 	 */
-	@Override
 	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate) {
 		// TODO Auto-generated method stub
 		return null;
 	}
