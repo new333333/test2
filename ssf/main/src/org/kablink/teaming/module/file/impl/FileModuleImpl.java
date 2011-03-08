@@ -1532,7 +1532,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    			SimpleProfiler.stop("writeFile_createFile");
 	    		}
 	    		else { // Existing file for the entry
-	    			SimpleProfiler.start("wtieFile_writeExistingFile");
+	    			SimpleProfiler.start("writeFile_writeExistingFile");
 	    			// Bug #637636 - In order to treat the files that only differ in case as a single
 	    			// file, we normalize the file names of all versions of a single file to the file name 
 	    			// of the initial version. 

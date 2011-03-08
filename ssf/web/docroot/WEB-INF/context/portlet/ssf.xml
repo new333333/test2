@@ -105,6 +105,9 @@
 	<bean id="playTutorialController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.PlayTutorialController" />
 
 	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
+	
+	<bean id="manageRuntimeController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeController" />
+	
  	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -212,6 +215,7 @@
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
+						<entry key="manage_runtime"><ref bean="manageRuntimeController"/></entry>
 
 					</map>
 				</entry>
