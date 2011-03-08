@@ -167,4 +167,6 @@ public interface ReportModule {
 	public List<Map<String,Object>> getUsersStatuses(Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 	public List<Long> getDeletedFolderEntryIds(String family, Date startDate, Date endDate);
 	public List<Long> getDeletedFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
+	public List<Long> getRestoredFolderEntryIds(long[] folderIds, String family, Date startDate, Date endDate);
+	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate);
 }
