@@ -151,6 +151,17 @@ public interface FolderService {
 	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime);
 
 	/**
+	 * Return a list of IDs of the entries that have been moved from one folder to another
+	 * between the start and end times.
+	 * 
+	 * @param accessToken
+	 * @param startTime the start time, inclusive; this argument is optional
+	 * @param endTime the end time, exclusive; this argument is required
+	 * @return
+	 */
+	public long[] folder_getMovedEntries(String accessToken, Calendar startTime, Calendar endTime);
+
+	/**
 	 * Test if the calling user has the right to execute the specified operation on each of the folders specified.
 	 * 
 	 * <p>If an folder does not exist, the result will be set to <code>false</code> for that specific folder.

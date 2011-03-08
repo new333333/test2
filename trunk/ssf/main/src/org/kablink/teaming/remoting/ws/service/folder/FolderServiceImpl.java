@@ -670,7 +670,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime) {
-		List<Long> ids = getReportModule().getDeletedFolderEntryIds(family, startTime.getTime(), endTime.getTime());
+		List<Long> ids = getReportModule().getDeletedFolderEntryIds(family,
+				(startTime != null)? startTime.getTime():null,
+				endTime.getTime());
 		if(ids != null) {
 			long[] result = new long[ids.size()];
 			for(int i = 0; i < result.length; i++)
@@ -683,7 +685,10 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 	
 	public long[] folder_getDeletedEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime) {
-		List<Long> ids = getReportModule().getDeletedFolderEntryIds(folderIds, family, startTime.getTime(), endTime.getTime());
+		List<Long> ids = getReportModule().getDeletedFolderEntryIds(folderIds, 
+				family, 
+				(startTime != null)? startTime.getTime():null,
+				endTime.getTime());
 		if(ids != null) {
 			long[] result = new long[ids.size()];
 			for(int i = 0; i < result.length; i++)
@@ -696,7 +701,23 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime) {
-		List<Long> ids = getReportModule().getRestoredFolderEntryIds(folderIds, family, startTime.getTime(), endTime.getTime());
+		List<Long> ids = getReportModule().getRestoredFolderEntryIds(folderIds, 
+				family, 
+				(startTime != null)? startTime.getTime():null, 
+				endTime.getTime());
+		if(ids != null) {
+			long[] result = new long[ids.size()];
+			for(int i = 0; i < result.length; i++)
+				result[i] = ids.get(i);
+			return result;
+		}
+		else {
+			return new long[0];
+		}
+	}
+
+	public long[] folder_getMovedEntries(String accessToken, Calendar startTime, Calendar endTime) {
+		List<Long> ids = getReportModule().getMovedFolderEntryIds((startTime != null)? startTime.getTime():null, endTime.getTime());
 		if(ids != null) {
 			long[] result = new long[ids.size()];
 			for(int i = 0; i < result.length; i++)

@@ -37,6 +37,7 @@ import static org.kablink.util.search.Restrictions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
@@ -159,6 +160,8 @@ public class TeamingServiceClientWithStub {
 			e.printStackTrace();
 		}
 */
+		
+		getMovedEntries();
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -1078,6 +1081,14 @@ public class TeamingServiceClientWithStub {
 		fm.setMemberIds(new Long[] {-1L});
 		FunctionMembership[] fma = new FunctionMembership[]{fm};
 		stub.binder_setFunctionMembership(null, binderId, fma);
+	}
+	
+	public static void getMovedEntries() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		long[] entryIds = stub.folder_getMovedEntries(null, null, Calendar.getInstance());
+		System.out.println("Number of moved entries = " + entryIds.length);
+		for(int i = 0; i < entryIds.length; i++)
+			System.out.println("(" + i + ") ID = " + entryIds[i]);
 	}
 	
 	private static String toString(Object[] objs) {
