@@ -53,6 +53,7 @@ public class TextToHtml {
 	private static final String PATTERN_LINE = "([^\\n]*)\\n(.*)";
 	private static final String PATTERN_INDENT = "((?:\\s*|\\s*[>]*\\s+))([^\\s]?.*)";
 	private static final String PATTERN_LIST_LINE = "^\\s*(?:o |- |\\* |[0-9]+\\)|[0-9]+\\.|[0-9]+ |>>).*$";
+	private static final String PATTERN_LIST_LINE2 = "^\\s*[^\\s]+:.*$";
 	private static final String PATTERN_URL = "(?:^|[^\"'])\\s*(https*://[^ ]+)";
 	private static final String PATTERN_URL2 = "(https*://[^ ]+)";
 	private static final int  INDENTATION_FACTOR = 4;  // Translation between spaces and "px". i.e., 4px = 1 space
@@ -225,12 +226,13 @@ public class TextToHtml {
 		public String toString() {
 			boolean firstLine = true;
 			StringBuffer buf = new StringBuffer();
-			buf.append("<div style=\"padding:0px 0px 6px "+getIndentationPx(indentation)+";\">\n");
+			buf.append("<div style=\"padding:0px 0px 10px "+getIndentationPx(indentation)+";\">\n");
 			for (String line : lines) {
 				if (!buf.toString().equals("")) buf.append("\n");
 				if (!firstLine) {
 					//See if this is a list line
-					if (line.matches(PATTERN_LIST_LINE) || breakOnLines) {
+					//  If the line also starts with "xxx:" then add a break. (This is primarially for mail headers)
+					if (line.matches(PATTERN_LIST_LINE) || line.matches(PATTERN_LIST_LINE2) || breakOnLines) {
 						buf.append("\n<br/>\n");
 					}
 				}

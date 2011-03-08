@@ -501,7 +501,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 			//Get the body text and turn it into html
 			TextToHtml textToHtml = new TextToHtml();
-			textToHtml.setBreakOnLines(true);
+			textToHtml.setBreakOnLines(false);
 			textToHtml.setStripHtml(false);
 			textToHtml.parseText(text);
 			val[0] = textToHtml.toString();
