@@ -41,7 +41,7 @@
 	--%><c:if test="${empty ssf_support_files_loaded}"><%--
 	    --%><c:set var="ssf_support_files_loaded_flag" value="1"/><%--
 --%><c:if test="${empty ssf_snippet}"><%--
-    --%><!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+    --%><!DOCTYPE html<% if (org.kablink.teaming.web.util.MiscUtil.isHtmlQuirksMode()) { %> PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"<% } %>>
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <head>
 <c:if test="${ss_GWT_main_page}">

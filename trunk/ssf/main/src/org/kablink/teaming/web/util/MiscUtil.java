@@ -757,4 +757,18 @@ public final class MiscUtil
 		// Perform the Kablink Vibe specific fixups.
 		return StringUtil.replace(helpUrl, CHANGE_THIS, TO_THIS_FOR_KABLINK);
 	}
+	
+	/**
+	 * Returns true if we're to run in HTML standards mode and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isHtmlStandardsMode() {
+		return SPropsUtil.getBoolean("html.standards.mode", false);
+	}
+	
+	public static boolean isHtmlQuirksMode() {
+		return (!(isHtmlStandardsMode()));
+	}
 }// end MiscUtil
