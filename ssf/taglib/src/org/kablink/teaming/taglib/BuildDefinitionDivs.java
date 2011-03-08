@@ -726,7 +726,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						} else if (type.equals("radio")) {
-							sb.append("<table>");
+							sb.append("<table><tbody>");
 						}
 						//See if there are any built-in options
 						Iterator  itSelections = propertyConfig.elementIterator("option");
@@ -844,7 +844,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							}
 							sb.append("</select><br/><br/>\n");
 						} else if (type.equals("radio")) {
-							sb.append("</table><br/>\n");
+							sb.append("</tbody></table><br/>\n");
 						}
 					
 					} else if (type.equals("itemSelect")) {
