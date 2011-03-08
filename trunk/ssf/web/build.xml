@@ -8,41 +8,49 @@
 	</tstamp>
 
 	<if>
-		<isset property="default.static.dir" />
+		<isset property="doing-release-build" />
 		<then>
-			<property name="web.static.dir" value="${default.static.dir}" />
+			<property name="web.static.dir" value="${new.static.dir}" />
 		</then>
 		<else>
-    		<if>
-    			<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
-    			<then>
-    				<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
-      					<filterchain>
-        					<linecontains>
-          						<contains value="release.static.dir"/>
-        					</linecontains>
-      					</filterchain>
-    				</loadproperties>
-    			</then>
-    		</if>
+			<if>
+				<isset property="default.static.dir" />
+				<then>
+					<property name="web.static.dir" value="${default.static.dir}" />
+				</then>
+				<else>
+    				<if>
+    					<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+    					<then>
+    						<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
+      							<filterchain>
+        							<linecontains>
+          								<contains value="release.static.dir"/>
+        							</linecontains>
+      							</filterchain>
+    						</loadproperties>
+    					</then>
+    				</if>
     				
-    		<if>
-    			<not>
-    				<isset property="release.static.dir" />
-    			</not>
-    			<then>
-	    			<property name="web.static.dir" value="${new.static.dir}" />
-    			</then>
-    		</if>
-    		<if>
-    			<equals arg1="${release.static.dir}" arg2="" />
-    			<then>
-					<property name="web.static.dir" value="${new.static.dir}" />
-    			</then>
-    			<else>
-    				<property name="web.static.dir" value="${release.static.dir}" />
-    			</else>
-    		</if>
+    				<if>
+    					<not>
+    						<isset property="release.static.dir" />
+    					</not>
+    					<then>
+	    					<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    				</if>
+    				<if>
+    					<equals arg1="${release.static.dir}" arg2="" />
+    					<then>
+							<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    					<else>
+    						<property name="web.static.dir" value="${release.static.dir}" />
+    					</else>
+    				</if>
+				</else>
+			</if>
 		</else>
 	</if>
 
@@ -361,10 +369,17 @@
 	<target name="deploy-static-files">
   		<property name="web.static.path" value="static/${web.static.dir}" />
 		<echo>The static files will be put in "${web.static.path}"</echo>
-		<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
+		<if>
+			<not>
+				<isset property="doing-release-build" />
+			</not>
+			<then>
+				<replaceregexp file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"
                          match="release.static.dir=(.*)"
                          replace="release.static.dir=${web.static.dir}"
                          byline="true"/>
+        	</then>
+        </if>
 		<antcall target="deploy-css-only" />
 		<antcall target="deploy-js-only" />
 		<copy todir="${app.server.ssf.dir}/${web.static.path}/images">
