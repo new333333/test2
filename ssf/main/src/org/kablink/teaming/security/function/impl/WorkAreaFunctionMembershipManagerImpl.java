@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.security.function.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -92,6 +93,7 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     }
 
     public List<WorkAreaFunctionMembership> findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {
+    	if (workArea == null) return new ArrayList<WorkAreaFunctionMembership>();
         return getSecurityDao().findWorkAreaFunctionMemberships
         	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
