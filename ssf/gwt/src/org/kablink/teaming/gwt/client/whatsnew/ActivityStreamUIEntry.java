@@ -970,7 +970,12 @@ public abstract class ActivityStreamUIEntry extends Composite
 	public void viewEntry()
 	{
 		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
+		{
+			// Tell the activity stream to mark this entry as read.
+			m_activityStreamCtrl.handleAction( TeamingAction.MARK_ENTRY_READ, this );
+			
 			m_actionHandler.handleAction( TeamingAction.SHOW_FORUM_ENTRY, m_viewEntryUrl );
+		}
 		else
 			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
 	}
