@@ -443,7 +443,11 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 		if (stateEle == null) return response;
 		List<Element> transitionsOnResponse = stateEle.selectNodes("./item[@name='transitions']/item[@name='transitionOnResponse']");
 		for (Element tor : transitionsOnResponse) {
-			if ("true".equals(DefinitionUtils.getPropertyValue(tor, "everyone"))) {
+			if ("one".equals(DefinitionUtils.getPropertyValue(tor, "transition_rule")) ||
+					"all".equals(DefinitionUtils.getPropertyValue(tor, "transition_rule")) ||
+					"one".equals(DefinitionUtils.getPropertyValue(tor, "transition_rule")) ||
+					"one_other".equals(DefinitionUtils.getPropertyValue(tor, "transition_rule")) ||
+					"majority".equals(DefinitionUtils.getPropertyValue(tor, "transition_rule"))) {
 				//Found one transition where everyone must respond
 				response = true;
 				break;
