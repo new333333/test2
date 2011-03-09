@@ -142,6 +142,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -179,7 +180,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean collapseSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		return GwtTaskHelper.collapseSubtasks( this, binderId, entryId );
+		SimpleProfiler.start("GwtRpcServiceImpl.collapseSubtasks()");
+		try {
+			return GwtTaskHelper.collapseSubtasks( this, binderId, entryId );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.collapseSubtasks()");
+		}
 	}
 
 	/**
@@ -193,7 +200,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean deleteTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
-		return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
+		SimpleProfiler.start("GwtRpcServiceImpl.deleteTasks()");
+		try {
+			return GwtTaskHelper.deleteTasks( getRequest( ri ), this, taskIds );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.deleteTasks()");
+		}
 	}
 	
 	public Boolean deleteTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
@@ -218,7 +231,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean expandSubtasks( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		return GwtTaskHelper.expandSubtasks( this, binderId, entryId );
+		SimpleProfiler.start("GwtRpcServiceImpl.expandSubtasks()");
+		try {
+			return GwtTaskHelper.expandSubtasks( this, binderId, entryId );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.expandSubtasks()");
+		}
 	}
 
 	/**
@@ -233,7 +252,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public List<AssignmentInfo> getGroupMembership( HttpRequestInfo ri, Long groupId ) throws GwtTeamingException {
-		return GwtTaskHelper.getGroupMembership( this, groupId );
+		SimpleProfiler.start("GwtRpcServiceImpl.getGroupMembership()");
+		try {
+			return GwtTaskHelper.getGroupMembership( this, groupId );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.getGroupMembership()");
+		}
 	}
 
     /**
@@ -271,7 +296,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public List<AssignmentInfo> getTeamMembership( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
-		return GwtTaskHelper.getTeamMembership( this, binderId );
+		SimpleProfiler.start("GwtRpcServiceImpl.getTeamMembership()");
+		try {
+			return GwtTaskHelper.getTeamMembership( this, binderId );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.getTeamMembership()");
+		}
 	}
 
 	/**
@@ -285,7 +316,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean purgeTasks( HttpRequestInfo ri, List<TaskId> taskIds ) throws GwtTeamingException {
-		return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );
+		SimpleProfiler.start("GwtRpcServiceImpl.purgeTasks()");
+		try {
+			return GwtTaskHelper.purgeTasks( getRequest( ri ), this, taskIds );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.purgeTasks()");
+		}
 	}
 	
 	public Boolean purgeTask( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
@@ -1634,7 +1671,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public List<TaskListItem> getTaskList( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
+		SimpleProfiler.start("GwtRpcServiceImpl.getTaskList()");
+		try {
+			return GwtTaskHelper.getTaskList( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), filterType, modeType );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskList()");
+		}
 	}// end getTaskList()
 
 	/**
@@ -1652,13 +1695,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TaskBundle getTaskBundle( HttpRequestInfo ri, Long binderId, String filterType, String modeType ) throws GwtTeamingException
 	{
-		return
-			GwtTaskHelper.getTaskBundle(
-				getRequest( ri ),
-				this,
-				GwtTaskHelper.getTaskBinder( this, binderId ),
-				filterType,
-				modeType );
+		SimpleProfiler.start("GwtRpcServiceImpl.getTaskBundle()");
+		try {
+			return
+				GwtTaskHelper.getTaskBundle(
+					getRequest( ri ),
+					this,
+					GwtTaskHelper.getTaskBinder( this, binderId ),
+					filterType,
+					modeType );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskBundle()");
+		}
 	}// end getTaskBundle()
 
 	/**
@@ -1673,7 +1722,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public TaskLinkage getTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException
 	{
-		return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+		SimpleProfiler.start("GwtRpcServiceImpl.getTaskLinkage()");
+		try {
+			return GwtTaskHelper.getTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.getTaskLinkage()");
+		}
 	}// end getTaskLinkage()
 
 	/**
@@ -1687,7 +1742,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean removeTaskLinkage( HttpRequestInfo ri, Long binderId ) throws GwtTeamingException {
-		return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+		SimpleProfiler.start("GwtRpcServiceImpl.removeTaskLinkage()");
+		try {
+			return GwtTaskHelper.removeTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ) );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.removeTaskLinkage()");
+		}
 	}// end removeTaskLinkage()
 
 	/**
@@ -1712,7 +1773,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public String saveTaskCompleted( HttpRequestInfo ri, List<TaskId> taskIds, String completed ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskCompleted( this, taskIds, completed );
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskCompleted()");
+		try {
+			return GwtTaskHelper.saveTaskCompleted( this, taskIds, completed );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskCompleted()");
+		}
 	}
 	
 	public String saveTaskCompleted( HttpRequestInfo ri, Long binderId, Long entryId, String completed ) throws GwtTeamingException {
@@ -1736,7 +1803,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean saveTaskLinkage( HttpRequestInfo ri, Long binderId, TaskLinkage taskLinkage ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskLinkage()");
+		try {
+			return GwtTaskHelper.saveTaskLinkage( this, GwtTaskHelper.getTaskBinder( this, binderId ), taskLinkage );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskLinkage()");
+		}
 	}// end saveTaskLinkage()
 
 	/**
@@ -1752,7 +1825,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean saveTaskPriority( HttpRequestInfo ri, Long binderId, Long entryId, String priority ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskPriority( this, binderId, entryId, priority );
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskPriority()");
+		try {
+			return GwtTaskHelper.saveTaskPriority( this, binderId, entryId, priority );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskPriority()");
+		}
 	}
 	
 	/**
@@ -1768,7 +1847,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Boolean saveTaskSort( HttpRequestInfo ri, Long binderId, String sortKey, boolean sortAscending ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskSort( this, binderId, sortKey, sortAscending );
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskSort()");
+		try {
+			return GwtTaskHelper.saveTaskSort( this, binderId, sortKey, sortAscending );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskSort()");
+		}
 	}
 	
 	/**
@@ -1783,7 +1868,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public String saveTaskStatus( HttpRequestInfo ri, List<TaskId> taskIds, String status ) throws GwtTeamingException {
-		return GwtTaskHelper.saveTaskStatus( this, taskIds, status );
+		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskStatus()");
+		try {
+			return GwtTaskHelper.saveTaskStatus( this, taskIds, status );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.saveTaskStatus()");
+		}
 	}
 	
 	public String saveTaskStatus( HttpRequestInfo ri, Long binderId, Long entryId, String status ) throws GwtTeamingException {
@@ -1812,7 +1903,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * @throws GwtTeamingException
 	 */
 	public Map<Long, TaskDate> updateCalculatedDates( HttpRequestInfo ri, Long binderId, Long entryId ) throws GwtTeamingException {
-		return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
+		SimpleProfiler.start("GwtRpcServiceImpl.updateCalculatedDates()");
+		try {
+			return GwtTaskHelper.updateCalculatedDates( getRequest( ri ), this, GwtTaskHelper.getTaskBinder( this, binderId ), entryId );
+		}
+		finally {
+			SimpleProfiler.stop("GwtRpcServiceImpl.updateCalculatedDates()");
+		}
 	}
 
 	/**
