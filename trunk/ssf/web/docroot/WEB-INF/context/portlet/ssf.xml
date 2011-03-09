@@ -106,7 +106,7 @@
 
 	<bean id="loginController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.forum.LoginController" />
 	
-	<bean id="manageRuntimeController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeController" />
+	<bean id="manageRuntimeStatisticsController" parent="dependOnAllModulesTemplate" class="org.kablink.teaming.portlet.administration.ManageRuntimeStatisticsController" />
 	
  	<!-- Handlers -->
 
@@ -215,7 +215,7 @@
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 						<entry key="manage_extensions"><ref bean="extensionsController"/></entry>
-						<entry key="manage_runtime"><ref bean="manageRuntimeController"/></entry>
+						<entry key="manage_runtime_statistics"><ref bean="manageRuntimeStatisticsController"/></entry>
 
 					</map>
 				</entry>

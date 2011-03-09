@@ -65,10 +65,14 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#dumpSimpleProfiler()
 	 */
 	@Override
-	public void dumpSimpleProfiler() {
-		SimpleProfiler.dump();
+	public void dumpSimpleProfilerToLog() {
+		SimpleProfiler.dumpToLog();
 	}
 
+	public String dumpSimpleProfilerAsString() {
+		return SimpleProfiler.dumpAsString();
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.util.RuntimeHelperMBean#enableSimpleProfiler()
 	 */
@@ -109,13 +113,19 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 		return DefinitionCache.size();
 	}
 	
-	public void dumpAll() {
-		String str = asString();
-		logger.info(str);
-		this.dumpSimpleProfiler();
+	public void dumpAllToLog() {
+		String str = propertiesAsString();
+		logger.info(Constants.NEWLINE + str);
+		this.dumpSimpleProfilerToLog();
+	}
+
+	public String dumpAllAsString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(propertiesAsString()).append(Constants.NEWLINE).append(Constants.NEWLINE).append(dumpSimpleProfilerAsString());
+		return sb.toString();
 	}
 	
-	private String asString() {
+	private String propertiesAsString() {
 		StringBuilder sb = new StringBuilder();
 		
 		Method[] methods = getClass().getDeclaredMethods();
@@ -131,7 +141,8 @@ public class RuntimeStatistics implements RuntimeStatisticsMBean {
 				// This is a getter.
 				try {
 					Object returnValue = method.invoke(this);
-					sb.append(Constants.NEWLINE);
+					if(sb.length() > 0)
+						sb.append(Constants.NEWLINE);
 					String propertyName = methodName.substring(methodName.startsWith("get")? 3:2);
 					sb.append(propertyName).append(": ").append(returnValue.toString());
 				} catch (Exception e) {/*skip this property*/}

@@ -90,7 +90,7 @@ public class ContextListenerPostSpring implements ServletContextListener {
 
 	public void contextDestroyed(ServletContextEvent sce) {
 		/// For simple profiler ///
-		SimpleProfiler.dump();
+		SimpleProfiler.dumpToLog();
 		SimpleProfiler.clear();
 	}
 

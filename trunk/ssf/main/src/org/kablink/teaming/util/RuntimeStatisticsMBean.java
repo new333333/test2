@@ -34,21 +34,61 @@ package org.kablink.teaming.util;
 
 public interface RuntimeStatisticsMBean {
 	
+	/*
+	 * Returns whether simple profiler facility is enabled or not.
+	 */
 	public boolean isSimpleProfilerEnabled();
 	
+	/*
+	 * Enable simple profiler.
+	 */
 	public void enableSimpleProfiler();
 	
+	/*
+	 * Disable simple profiler.
+	 */
 	public void disableSimpleProfiler();
 	
+	/*
+	 * Clear simple profiler.
+	 */
 	public void clearSimpleProfiler();
 	
-	public void dumpSimpleProfiler();
+	/*
+	 * Dump a snapshot of simple profiler to logger.
+	 */
+	public void dumpSimpleProfilerToLog();
 	
+	/*
+	 * Dump a snapshot of simple profiler as string.
+	 */
+	public String dumpSimpleProfilerAsString();
+	
+	/*
+	 * Returns the number of entries in the cache used to keep track of the last time 
+	 * login info record was created for each user/authenticator combination.
+	 */
 	public int getLoginInfoLastDaySize();
 	
+	/*
+	 * Returns the number of entries in the cache used to keep track of singleton
+	 * instances for classes.
+	 */
 	public int getClassInstanceCacheSize();
 	
+	/*
+	 * Returns the number of entries in the cache used to keep track of XML document
+	 * representations of definitions.
+	 */
 	public int getDefinitionCacheSize();
 	
-	public void dumpAll();
+	/*
+	 * Dump a snapshot of all statistics to logger.
+	 */
+	public void dumpAllToLog();
+	
+	/*
+	 * Dump a snapshot of all statistics as string.
+	 */
+	public String dumpAllAsString();
 }

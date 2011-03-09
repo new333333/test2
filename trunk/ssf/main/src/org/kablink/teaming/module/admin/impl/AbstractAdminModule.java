@@ -1416,10 +1416,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return SZoneConfig.getString(zoneName, "indexConfiguration/property[@name='" + name + "']");
 	}
 	
+	public String dumpRuntimeStatisticsAsString() {
+		checkAccess(AdminOperation.manageRuntime);
+		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
+		return rs.dumpAllAsString();
+	}
+	
 	public void dumpRuntimeStatisticsToLog() {
 		checkAccess(AdminOperation.manageRuntime);
 		RuntimeStatistics rs = (RuntimeStatistics) SpringContextUtil.getBean("runtimeStatistics");
-		rs.dumpAll();
+		rs.dumpAllToLog();
 	}
 	
 	public void enableSimpleProfiler() {
