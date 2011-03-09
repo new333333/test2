@@ -32,36 +32,71 @@
  */
 package org.kablink.teaming.portlet.administration;
 
+import java.io.IOException;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.springframework.web.portlet.ModelAndView;
 
-public class ManageRuntimeController extends SAbstractController {
+public class ManageRuntimeStatisticsController extends SAbstractController {
 
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if(WebKeys.OPERATION_DUMP_STATISTICS_TO_LOG.equals(op)) {
-			getAdminModule().dumpRuntimeStatisticsToLog();
-		}
-		else if(WebKeys.OPERATION_ENABLE_SIMPLE_PROFILER.equals(op)) {
-			getAdminModule().enableSimpleProfiler();
-		}
-		else if(WebKeys.OPERATION_DISABLE_SIMPLE_PROFILER.equals(op)) {
-			getAdminModule().disableSimpleProfiler();
-		}
+		Map formData = request.getParameterMap();
+		response.setRenderParameters(formData);
 	}
 	
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		// Right now, this controller does not render anything to browser (headless controller). 
-		// It only accepts request and processes it.
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if(WebKeys.OPERATION_DUMP.equals(op)) {
+			String data = getAdminModule().dumpRuntimeStatisticsAsString();
+			reportData(response, data);
+		}
+		else if(WebKeys.OPERATION_DUMP_TO_LOG.equals(op)) {
+			getAdminModule().dumpRuntimeStatisticsToLog();
+			reportSuccess(response);
+		}
+		else if(WebKeys.OPERATION_ENABLE_SIMPLE_PROFILER.equals(op)) {
+			getAdminModule().enableSimpleProfiler();
+			reportSuccess(response);
+		}
+		else if(WebKeys.OPERATION_DISABLE_SIMPLE_PROFILER.equals(op)) {
+			getAdminModule().disableSimpleProfiler();
+			reportSuccess(response);
+		}
+		else if(op.equals("")) {
+			reportNoop(response);
+		}
+		else {
+			reportUnrecognized(response);
+		}
+		// Right now, this controller renders very little.
 		return null;
+	}
+	
+	protected void reportData(RenderResponse response, String data) throws IOException {
+		data = data.replace(Constants.NEWLINE, "<br/>");
+		response.getWriter().write("<html><head></head><body>" + data + "</body></html>");
+	}
+	
+	protected void reportSuccess(RenderResponse response) throws IOException {
+		response.getWriter().write("<html><head></head><body>Success!</body></html>");
+	}
+	
+	protected void reportNoop(RenderResponse response) throws IOException {
+		response.getWriter().write("<html><head></head><body>No operation specified</body></html>");
+	}
+	
+	protected void reportUnrecognized(RenderResponse response) throws IOException {
+		response.getWriter().write("<html><head></head><body>Unrecognized operation</body></html>");
 	}
 }

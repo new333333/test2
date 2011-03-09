@@ -84,7 +84,7 @@ public class SimpleProfiler {
 		StringBuilder sb = new StringBuilder();
 		long currTime = System.nanoTime();
 		if(name != null)
-			sb.append(name).append(": ");
+			sb.append("(").append(name).append(") ");
 		sb.append("profile time = ")
 		.append((double) (currTime - beginTime)/1000000.0)
 		.append(" (ms)");
@@ -139,7 +139,7 @@ public class SimpleProfiler {
     	profilers.clear();
     }
     
-    public static void dump() {
+    public static void dumpToLog() {
     	if(enabled) {
     		try {
 	    		for(SimpleProfiler sp:profilers.values()) {
@@ -148,6 +148,19 @@ public class SimpleProfiler {
     		}
     		catch(Exception ignore) {}
     	}
+    }
+    
+    public static String dumpAsString() {
+    	StringBuilder sb = new StringBuilder();
+    	if(enabled) {
+    		try {
+	    		for(SimpleProfiler sp:profilers.values()) {
+	    			sb.append(sp.toString());
+	    		}
+    		}
+    		catch(Exception ignore) {}
+    	}
+    	return sb.toString();
     }
     
     /*

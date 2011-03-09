@@ -298,6 +298,8 @@ public interface AdminModule {
 	
 	public void setIndexOptimizationSchedule(IndexOptimizationSchedule schedule);
 	
+	public String dumpRuntimeStatisticsAsString();
+	
 	public void dumpRuntimeStatisticsToLog();
 	
 	public void enableSimpleProfiler();
