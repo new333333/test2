@@ -49,7 +49,6 @@ import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
-import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TaskDate;
 import org.kablink.teaming.gwt.client.util.TaskId;
@@ -1222,15 +1221,12 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * assignment's presence dude.
 	 */
 	private void handlePresenceSelect(AssignmentInfo ai, Element element) {
-		SimpleProfileParams params;
-		
 		// Invoke the Simple Profile dialog.
 		Long wsId = ai.getPresenceUserWSId();
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
-		params = new SimpleProfileParams(element, wsIdS, ai.getTitle());
-		m_gwtMainPage.handleAction(TeamingAction.INVOKE_SIMPLE_PROFILE, params);
+		GwtClientHelper.invokeSimpleProfile(element, wsIdS, ai.getTitle());
 	}
-		
+	
 	/*
 	 * Called when the user clicks the select all checkbox.
 	 */
