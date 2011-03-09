@@ -287,6 +287,17 @@ public class GwtClientHelper {
 	}
 
 	/**
+	 * Invokes the simple profile dialog off an HTML Element.
+	 * 
+	 * @param htmlElement
+	 * @param binderId
+	 * @param userName
+	 */
+	public static native void invokeSimpleProfile(Element htmlElement, String binderId, String userName) /*-{
+		$wnd.top.ss_invokeSimpleProfile(htmlElement, binderId, userName);
+	}-*/;
+	
+	/**
 	 * Appends an HTML element to the top document.
 	 * 
 	 * @param htmlElement
