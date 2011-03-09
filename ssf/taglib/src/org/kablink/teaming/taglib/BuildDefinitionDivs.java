@@ -663,7 +663,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					String propertyName = propertyConfig.attributeValue("name", "");
 					String readonly = "";
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
-						readonly = "readonly=\"true\"";
+						readonly = "readonly=\"true\" disabled=\"disabled\"";
 					}
 					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", ""))
 						.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
