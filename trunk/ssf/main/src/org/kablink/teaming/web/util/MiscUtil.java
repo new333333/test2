@@ -672,8 +672,8 @@ public final class MiscUtil
 	
 	// The following defines the portion of a documentation URL that
 	// may need patching for a locale.
-	private final static String CHANGE_THIS 		= "documentation/vibe_onprem3";
-	private final static String TO_THIS_FOR_KABLINK	= "documentation/kablinkvibe_onprem3";
+	private final static String CHANGE_THIS 		= "documentation/vibe_onprem31";
+	private final static String TO_THIS_FOR_KABLINK	= "documentation/kablinkvibe_onprem31";
 	
 	/*
 	 * Tweaks a help URL to account for localization specifics.

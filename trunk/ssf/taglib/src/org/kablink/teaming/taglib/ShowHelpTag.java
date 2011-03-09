@@ -39,8 +39,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.servlet.StringServletResponse;
 
 
@@ -57,7 +58,32 @@ public class ShowHelpTag extends BodyTagSupport
 	private String className;
 	@SuppressWarnings("unused")
 	private String _bodyContent;
-    
+
+	public static final String USER_GUIDE = "user";
+	public static final String ADV_USER_GUIDE = "adv_user";
+	public static final String ADMIN_GUIDE = "admin";
+
+	// The following holds the language codes for all the languages that the online
+	// documentation supports (except English, English does not need a language code)
+	private final static String[] DOC_LANGS =
+	{
+		"da-dk",
+		"de-de",
+		"es-es",
+		"fr-fr",
+		"hu-hu",
+		"it-it",
+		"ja-jp",
+		"nl-nl",
+		"pl-pl",
+		"pt-br",
+		"ru-ru",
+		"sv-se",
+		"zh-cn",
+		"zh-tw",		
+	};
+	
+	
 	/**
 	 * 
 	 */
@@ -99,58 +125,7 @@ public class ShowHelpTag extends BodyTagSupport
 				
 				// Construct a url that points to the appropriate documentation for the
 				// given guide name, page id and section id.
-				
-				if ( this.guideName.equalsIgnoreCase( "user" ) )
-				{
-					// Get the url to the user guide.
-					url = SPropsUtil.getString( "help.userGuide", "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_user/data/" );
-				}
-				else if ( this.guideName.equalsIgnoreCase( "adv_user" ) )
-				{
-					// Get the url to the advanced user guide.
-					url = SPropsUtil.getString( "help.advancedUserGuide", "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_useradv/data/" );
-				}
-				else if ( this.guideName.equalsIgnoreCase( "admin" ) )
-				{
-					// Get the url to the administration guide.
-					url = SPropsUtil.getString( "help.adminGuide", "http://www.novell.com/documentation/vibe_onprem3/vibeprem3_admin/data/" );
-				}
-				else
-					url = null;
-				
-				if ( url != null )
-				{
-					// Do we have a specific page to go to in the documentation?
-					if ( this.pageId != null )
-					{
-						// Yes, each page has its own html file.
-						url += this.pageId + ".html";
-						
-						// Do we have a specific section within the page to go to?
-						if ( this.sectionId != null )
-						{
-							// Yes
-							url += "#" + this.sectionId;
-						}
-					}
-					else
-					{
-						// No, take the user to the start of the guide.
-						url += "bookinfo.html";
-					}
-				}
-				else
-				{
-					// If we get here we didn't recognize the name of the guide.  Take the user
-					// to the main Teaming documentation site.
-					url = "http://www.novell.com/documentation/vibe_onprem3";
-				}
-
-				// If we have a help URL...
-				if (MiscUtil.hasString(url)) {
-					// ...make sure it contains any required localizations.
-					url = MiscUtil.fixupHelpUrl(url);
-				}
+				url = getHelpUrl( guideName, pageId, sectionId );
 				
 				jsp = "/WEB-INF/jsp/tag_jsps/inline_help/show_help.jsp";				
 				rd = httpReq.getRequestDispatcher( jsp );	
@@ -176,6 +151,139 @@ public class ShowHelpTag extends BodyTagSupport
 		}
 	}// end doEndTag()
 
+	/**
+	 * Return the url that points to the appropriate help documentation.
+	 */
+	public String getHelpUrl( String guideName, String pageId, String sectionId )
+	{
+		String url;
+		String lang;
+		String guideComponent = null;
+		
+		// Get the base help url from ssf-ext.properties.
+		url = SPropsUtil.getString( "help.hostName", "http://www.novell.com" );
+		
+		// Do we have a language code to put on the url?
+		lang = getHelpLangCode();
+		if ( lang != null && lang.length() > 0 )
+		{
+			// Yes
+			url +=  "/" + lang;
+		}
+		
+		url += "/documentation";
+		
+		// Are we running Novell Teaming?
+		if ( ReleaseInfo.isLicenseRequiredEdition())
+		{
+			// Yes
+			url += "/vibe_onprem31";
+		}
+		else
+			url += "/kablinkvibe_onprem31";
+		
+		if ( guideName != null && guideName.length() > 0 )
+		{
+			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
+			{
+				// Get the url to the user guide.
+				guideComponent = "/vibeprem31_user/data/";
+			}
+			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
+			{
+				// Get the url to the advanced user guide.
+				guideComponent = "/vibeprem31_useradv/data/";
+			}
+			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
+			{
+				// Get the url to the administration guide.
+				guideComponent = "/vibeprem31_admin/data/";
+			}
+			else
+				guideComponent = null;
+			
+			// Did we recognize the name of the guide?
+			if ( guideComponent != null )
+			{
+				// Yes, add the guide component to the url.
+				url += guideComponent;
+				
+				// Do we have a specific page to go to in the documentation?
+				if ( pageId != null )
+				{
+					// Yes, each page has its own html file.
+					url += pageId + ".html";
+					
+					// Do we have a specific section within the page to go to?
+					if ( sectionId != null )
+					{
+						// Yes
+						url += "#" + sectionId;
+					}
+				}
+				else
+				{
+					// No, take the user to the start of the guide.
+					url += "bookinfo.html";
+				}
+			}
+		}
+
+		return url;
+	}
+
+	/**
+	 * Return the language code that should be put on the help url.
+	 */
+	private String getHelpLangCode()
+	{
+		String lang;
+		int i;
+		
+		// Get the language the user is running in
+		lang = NLT.get( "Teaming.Lang", "" );
+		
+		// Do we know the language? 
+		if ( lang == null || lang.length() == 0 )
+		{
+			// No
+			return null;
+		}
+		
+		// Is the language English?
+		if ( lang.indexOf( "en" ) == 0 )
+		{
+			// Yes, we don't need to put a language code on the url.
+			return null;
+		}
+
+		// We only need the first two characters of the language to
+		// localize the documentation URLs.
+		if ( lang.length() > 2 )
+		{
+			lang = lang.substring( 0, 2 ); 
+		}
+
+		// Look for the appropriate language code.
+		for (i = 0; i < DOC_LANGS.length; ++i)
+		{
+			if ( DOC_LANGS[i].indexOf( lang ) == 0 )
+			{
+				break;
+			}
+		}		
+
+		// Do we have a language code for this language?
+		if ( i == DOC_LANGS.length )
+		{
+			// No
+			return null;
+		}
+
+		return DOC_LANGS[i];
+	}
+	
+	
 	/**
 	 * 
 	 */
