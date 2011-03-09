@@ -51,7 +51,7 @@
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
-		jsPath:								'<ssf:escapeJavaScript>${pageContext.request.contextPath}/js/</ssf:escapeJavaScript>',
+		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',
 		language:							'${ssUser.locale.language}',
 		locale:								'${ssUser.locale}',
 		timeZone:							'${ssUser.timeZone.ID}',
