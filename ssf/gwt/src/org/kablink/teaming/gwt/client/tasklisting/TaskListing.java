@@ -67,6 +67,8 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class TaskListing extends Composite implements ActionTrigger {
+	public static RequestInfo m_requestInfo;			//
+	
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
 	private boolean			m_showModeSelect;			// true -> Show the 'All Entries vs. From Folder' options.  false -> Don't.
 	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending. 
@@ -76,7 +78,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 	private InlineLabel		m_hintSpan;					// The <SPAN> containing the reason why the movement buttons are disabled.
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
-	private RequestInfo		m_requestInfo;				//
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String			m_sortBy;					// The column the tasks are currently sorted by.

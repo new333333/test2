@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -67,6 +68,7 @@ public class HttpRequestInfo implements IsSerializable {
 		String userLoginId;
 		if      (null != GwtMainPage.m_requestInfo)         userLoginId = GwtMainPage.m_requestInfo.getUserLoginId();
 		else if (null != GwtProfilePage.profileRequestInfo) userLoginId = GwtProfilePage.profileRequestInfo.getUserLoginId();
+		else if (null != TaskListing.m_requestInfo)         userLoginId = TaskListing.m_requestInfo.getUserLoginId();
 		else                                                userLoginId = null;
 
 		// Construct, initialize and return an HttpRequestInfo object
