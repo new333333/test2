@@ -37,6 +37,9 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
@@ -131,6 +134,23 @@ public class GwtClientHelper {
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 		}
+	}
+
+	/**
+	 * Returns the RequestInfo object from whatever component we're
+	 * running as.
+	 *
+	 * Returns null if a RequestInfo cannot be determined.
+	 * 
+	 * @return
+	 */
+	public static RequestInfo getRequestInfo() {
+		RequestInfo reply;
+		if      (null != GwtMainPage.m_requestInfo)         reply = GwtMainPage.m_requestInfo;
+		else if (null != GwtProfilePage.profileRequestInfo) reply = GwtProfilePage.profileRequestInfo;
+		else if (null != TaskListing.m_requestInfo)         reply = TaskListing.m_requestInfo;
+		else                                                reply = null;
+		return reply;
 	}
 
 	/*
