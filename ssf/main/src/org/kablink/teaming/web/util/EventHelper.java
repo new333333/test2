@@ -170,6 +170,7 @@ public class EventHelper {
 		int hDays_Total  = 0;
 		while (true) {
 			// Adjust for the weekends and holidays.
+			weedWeekendsOutOfHolidays(weekends, holidays);
 			int weDays_New = adjustForWeekends(dateIn, dateOut, forward, weekends, weDays_Total);
 			int hDays_New  = adjustForHolidays(dateIn, dateOut, forward, holidays, hDays_Total );
 			
@@ -762,5 +763,30 @@ public class EventHelper {
             }
             e.setByDay(dpa);
         }
+	}
+	
+	/*
+	 * Scan the List<Date> of holidays and any that fall on one of the
+	 * weekend days are discarded.
+	 */
+	private static void weedWeekendsOutOfHolidays(List<Integer> weekends, List<Date> holidays) {
+		// If we don't have any weekend days or holidays...
+		if (weekends.isEmpty() || holidays.isEmpty()) {
+			// ...there's nothing to weed out.
+			return;
+		}
+
+		// Scan the holidays.
+		GregorianCalendar gc = new GregorianCalendar();;
+		int c = holidays.size();
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			// Is this holiday on a weekend day?
+			gc.setTime(holidays.get(i));
+			int dayOfWeek = gc.get(Calendar.DAY_OF_WEEK);
+			if (weekends.contains(dayOfWeek)) {
+				// Yes!  Remove it from the holidays list.
+				holidays.remove(i);
+			}
+		}
 	}
 }
