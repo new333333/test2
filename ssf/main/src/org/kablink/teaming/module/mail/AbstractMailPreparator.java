@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.ByteArrayResource;
+import org.kablink.teaming.util.Utils;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -123,14 +124,19 @@ public class AbstractMailPreparator implements MimeMessagePreparator {
 
 
 	protected void prepareAttachments(Collection<FileAttachment> fileAttachments, MimeMessageHelper helper) throws MessagingException {
-		for (FileAttachment fAtt: fileAttachments) {
-			FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-			DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
-						entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
-
-			try {
-				helper.addAttachment(MimeUtility.encodeText(fAtt.getFileItem().getName()), ds);
-			} catch (java.io.UnsupportedEncodingException  ignore) {}
+		if (Utils.testSendMailAttachmentsSize(fileAttachments)) {
+			for (FileAttachment fAtt: fileAttachments) {
+				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
+				DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
+							entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
+				//See if this file attachment is too large to send
+				if (Utils.testSendMailAttachmentSize(fAtt)) {
+					//Files size is ok to send
+					try {
+						helper.addAttachment(MimeUtility.encodeText(fAtt.getFileItem().getName()), ds);
+					} catch (java.io.UnsupportedEncodingException  ignore) {}
+				}
+			}
 		}
 	}
 	/**

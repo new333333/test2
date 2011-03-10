@@ -33,6 +33,7 @@
 package org.kablink.teaming.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
@@ -325,6 +327,33 @@ public class Utils {
 		}
 		else {
 			return null;
+		}
+	}
+	
+	//Routine to check send mail quota on attachments
+	public static boolean testSendMailAttachmentSize(FileAttachment fAtt) {
+		//Get the quota (if any)
+		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSize", -1);
+		if (maxSize < 0 || maxSize >= fAtt.getFileItem().getLength()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	//Routine to check send mail quota on a set of attachments
+	//  The sum of the attachments must not exceed the limit
+	public static boolean testSendMailAttachmentsSize(Collection<FileAttachment> fileAttachments) {
+		//Get the quota (if any)
+		Long maxSize = SPropsUtil.getLong("mail.maxAttachmentSumSize", -1);
+		Long sum = 0L;
+		for (FileAttachment fAtt : fileAttachments) {
+			sum += fAtt.getFileItem().getLength();
+		}
+		if (maxSize < 0 || maxSize >= sum) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 }

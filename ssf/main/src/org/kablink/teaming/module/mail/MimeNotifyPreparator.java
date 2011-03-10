@@ -62,6 +62,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
@@ -452,9 +453,15 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	
 	private void logFileAttachments(Set<FileAttachment> fileAttachments) {
 		List<String> fileNames = new ArrayList<String>();
-		for (FileAttachment fAtt: fileAttachments) {
-			fileNames.add(fAtt.getFileItem().getName());
+		if (Utils.testSendMailAttachmentsSize(fileAttachments)) {
+			for (FileAttachment fAtt: fileAttachments) {
+				if (Utils.testSendMailAttachmentSize(fAtt)) {
+					fileNames.add(fAtt.getFileItem().getName());
+				}
+			}
 		}
-		emailLog.setFileAttachments(fileNames);
+		if (emailLog != null) {
+			emailLog.setFileAttachments(fileNames);
+		}
 	}
 }
