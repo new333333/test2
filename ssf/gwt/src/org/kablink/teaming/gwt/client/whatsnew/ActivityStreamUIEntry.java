@@ -54,6 +54,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -71,7 +72,10 @@ import com.google.gwt.user.client.ui.Widget;
 public abstract class ActivityStreamUIEntry extends Composite
 	implements ClickHandler, MouseOverHandler, MouseOutHandler
 {
-	private ActivityStreamCtrl m_activityStreamCtrl;
+    public static final int FORMAT_HTML = 1;
+    public static final int FORMAT_NONE = 2;
+
+    private ActivityStreamCtrl m_activityStreamCtrl;
 	protected ActionHandler m_actionHandler;
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
@@ -457,6 +461,38 @@ public abstract class ActivityStreamUIEntry extends Composite
 	
 	
 	/**
+	 * Return the description for the given entry.  If the format of the description is not html we will
+	 * create safe html by escaping any html markup in the description.
+	 */
+	public String getEntryDesc( ActivityStreamEntry entry )
+	{
+		String desc;
+		int format;
+		
+		desc = entry.getEntryDescription();
+		
+		// Get the format of the description.
+		format = entry.getEntryDescriptionFormat();
+		
+		// Is the format plain text?
+		if ( format == FORMAT_NONE && desc != null && desc.length() > 0 )
+		{
+			SafeHtmlBuilder builder;
+
+			// Yes
+			builder = new SafeHtmlBuilder();
+			builder = builder.appendEscaped( desc );
+			desc = builder.toSafeHtml().asString();
+		}
+		
+		if ( desc == null )
+			desc = "";
+		
+		return desc;
+	}
+
+	
+	/**
 	 * Return the name of the style used with the header.
 	 */
 	public abstract String getEntryHeaderStyleName();
@@ -518,7 +554,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 				title = entry.getEntryTitle();
 		}
 		else
+		{
 			title = entry.getEntryTitle();
+		}
 		
 		return title;
 	}
@@ -922,7 +960,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorId = entryItem.getAuthorId();
 		m_authorWSId = entryItem.getAuthorWorkspaceId();
 		m_date.setText( entryItem.getEntryModificationDate() );
-		m_desc.getElement().setInnerHTML( entryItem.getEntryDescription() );
+		m_desc.getElement().setInnerHTML( getEntryDesc( entryItem ) );
 		m_entryId = entryItem.getEntryId();
 		
 		// Has the author's workspace been deleted?
