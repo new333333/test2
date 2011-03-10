@@ -81,6 +81,15 @@ public class ResponseHeaderFilter implements Filter {
 					response.setHeader( "Pragma", "no-cache" );
 					response.setHeader( "Cache-control", "no-cache, no-store, must-revalidate" );
 				}
+				// Are we dealing with a file that has ".cache." in its name?
+				else if ( requestURI.contains( ".cache." ) )
+				{
+					// Yes
+					// GWT constructs files that have ".cache." in it name.  This
+					// tells us the browser can cache this file.
+					response.setHeader( "Cache-control", "public,max-age=31536000,no-check" );
+					response.setHeader( "Expires", "Wed, 01 Jan 2020 00:00:00 GMT" );
+				}
 			}
 			
 			// Set the provided HTTP response parameters
