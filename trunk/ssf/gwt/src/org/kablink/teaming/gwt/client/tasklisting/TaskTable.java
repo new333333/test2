@@ -38,7 +38,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
@@ -118,7 +117,6 @@ public class TaskTable extends Composite implements ActionHandler {
 	private TaskPopupMenu			m_statusMenu;				//
 	
 	private       boolean							m_newTaskTable = true;										//
-	private final GwtMainPage						m_gwtMainPage  = GwtTeaming.getMainPage();					// 
 	private final GwtRpcServiceAsync				m_rpcService   = GwtTeaming.getRpcService();				// 
 	private final GwtTeamingMessages				m_messages     = GwtTeaming.getMessages();					//
 	private final GwtTeamingTaskListingImageBundle	m_images       = GwtTeaming.getTaskListingImageBundle();	//
@@ -1824,9 +1822,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			
 			@Override
 			public void onSuccess(String viewFolderEntryUrl) {
-				m_gwtMainPage.handleAction(
-					TeamingAction.SHOW_FORUM_ENTRY,
-					viewFolderEntryUrl);
+				GwtClientHelper.jsShowForumEntry(viewFolderEntryUrl);
 			}
 		});
 	}

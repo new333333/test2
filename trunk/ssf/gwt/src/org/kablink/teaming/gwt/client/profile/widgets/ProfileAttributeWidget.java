@@ -35,11 +35,10 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
-import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.user.client.ui.Anchor;
@@ -53,7 +52,6 @@ import com.google.gwt.user.client.ui.Widget;
 public class ProfileAttributeWidget  {
 	
 	private Widget widget;
-	private final String IDBASE = "myAttrs_";
 	private boolean isEditMode = false;
 
 	public ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
@@ -111,26 +109,22 @@ public class ProfileAttributeWidget  {
 				widget.addStyleName("profile-anchor");
 			} else if (attr.getDataName().equals("skypeId")) {
 				String label = "..";
-				String uri = "";
 				if(attr.getValue() != null) {
 					label = attr.getValue().toString();
-					if(GwtClientHelper.hasString(label)){
-						String skypeAlt   = GwtTeaming.getMessages().profileCallMe();
-						
-						String pathToJs = "";
-						String pathToImage = "";
-						
-						if(GwtProfilePage.profileRequestInfo != null) {
-							pathToJs = GwtProfilePage.profileRequestInfo.getJSPath();
-							pathToImage = GwtProfilePage.profileRequestInfo.getImagesPath();
-						} else if (GwtMainPage.m_requestInfo != null) {
-							pathToJs = GwtMainPage.m_requestInfo.getJSPath();
-							pathToImage = GwtMainPage.m_requestInfo.getImagesPath();
-						} else if (TaskListing.m_requestInfo != null) {
-							pathToJs = TaskListing.m_requestInfo.getJSPath();
-							pathToImage = TaskListing.m_requestInfo.getImagesPath();
+					if(GwtClientHelper.hasString(label)){						
+						String pathToJs;
+						String pathToImage;
+						RequestInfo ri = GwtClientHelper.getRequestInfo();
+						if (null != ri) {
+							pathToJs    = ri.getJSPath();
+							pathToImage = ri.getImagesPath();
+						}
+						else {
+							pathToJs    =
+							pathToImage = "";
 						}
 						
+						String skypeAlt   = GwtTeaming.getMessages().profileCallMe();
 						String skypeCheck = (pathToJs  + "skype/skypeCheck.js"); 
 						String skypeImage = (pathToImage + "pics/skypeCallMe.png");
 						
@@ -159,6 +153,7 @@ public class ProfileAttributeWidget  {
 						break;
 					case ProfileAttribute.LIST:
 						if(attr.getValue() != null) {
+							@SuppressWarnings("unchecked")
 							List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
 							if(value != null){
 								widget = new FlowPanel();
