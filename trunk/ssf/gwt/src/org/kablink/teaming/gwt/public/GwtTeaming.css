@@ -357,6 +357,7 @@
 	font-size: 14px;
 	height: 100px;
 	padding: 5px;
+	resize: none;
 	width: 440px;
 }
 
