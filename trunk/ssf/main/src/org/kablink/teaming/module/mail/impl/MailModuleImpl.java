@@ -1065,6 +1065,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		helper.setLocale(user.getLocale());
 	 		helper.setType(Notify.NotifyType.interactive);
 	 		helper.setSendAttachments(sendAttachments);
+	  		helper.setEmailLog(emailLog);
+
 	 		try {
 	 			mailSender.send(helper);
 	 		} catch (MailSendException sx) {
