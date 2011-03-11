@@ -162,7 +162,7 @@ public class FilterController extends AbstractBinderController {
 				if (searchFilters == null) searchFilters = new HashMap();
 				if (searchFilters.containsKey(selectedSearchFilter)) {
 					searchFilters.remove(selectedSearchFilter);
-					binder.setProperty(ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+					getBinderModule().setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
 				}
 			}
 			setupViewBinder(response, binderId, binderType);
