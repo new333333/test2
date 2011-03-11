@@ -43,6 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * Class used to represent order and hierarchy for the tasks within a
  * task folder.
  *  
+ * Note:
+ *    This class is copied as the ExportHelper.ExportTaskLinkage class.
+ *    Changes done to to one must be reflected in the other.
+ * 
  * @author drfoster
  */
 public class TaskLinkage implements IsSerializable {
@@ -55,6 +59,11 @@ public class TaskLinkage implements IsSerializable {
 	
 	/**
 	 * Inner class used to track individual tasks within a TaskLinkage.
+	 * 
+	 * Note:
+	 *    This class is copied as the ExportHelper.ExportTaskLink
+	 *    class.  Changes done to to one must be reflected in the
+	 *    other.
 	 */
 	public static class TaskLink implements IsSerializable {
 		private List<TaskLink>	m_subtasks = new ArrayList<TaskLink>();	// List<TaskLink> of the subtasks of this task.

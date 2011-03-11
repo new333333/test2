@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -139,10 +139,11 @@ import org.springframework.util.FileCopyUtils;
 import static org.kablink.util.search.Restrictions.in;
 
 /**
- * @author Janet McCann
+ * ?
  * 
+ * @author Janet McCann
  */
-
+@SuppressWarnings({"unchecked", "unused"})
 public class ExportHelper {
 	protected static final Log logger = LogFactory.getLog(ExportHelper.class);
 	private static BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
@@ -188,6 +189,185 @@ public class ExportHelper {
 	// for folders and workspaces
 	private static String binderPrefix = "b_";
 
+	/*
+	 * Inner class used to track individual tasks within a
+	 * ExportTaskLinkage.
+	 * 
+	 * Note:
+	 *    This class is a copy of the TaskLinkage.TaskLink class.
+	 *    Changes done to to one must be reflected in the other.
+	 */
+	private static class ExportTaskLink {
+		private List<ExportTaskLink>	m_subtasks = new ArrayList<ExportTaskLink>();	// List<ExportTaskLink> of the subtasks of this task.
+		private Long					m_entryId;										// ID of the FolderEntry of this task
+
+		/**
+		 * Class constructor.
+		 */
+		public ExportTaskLink() {
+			// Nothing to do.
+		}
+
+		/**
+		 * Returns the List<ExportTaskLink> of subtasks from this
+		 * ExportTaskLink.
+		 * 
+		 * @return
+		 */
+		public List<ExportTaskLink> getSubtasks() {
+			return m_subtasks;
+		}
+		
+		/**
+		 * Returns the entry ID from this ExportTaskLink.
+		 * 
+		 * @return
+		 */
+		public Long getEntryId() {
+			return m_entryId;
+		}
+
+		/**
+		 * Returns true if this ExportTaskLink has subtasks and false
+		 * otherwise.
+		 * @return
+		 */
+		public boolean hasSubtasks() {
+			return (!(m_subtasks.isEmpty()));
+		}
+
+		/**
+		 * Stores a new List<ExportTaskLink> of subtasks on this
+		 * ExportTaskLink.
+		 * 
+		 * @param subtasks
+		 */
+		public void setSubtasks(List<ExportTaskLink> subtasks) {
+			m_subtasks = subtasks;
+		}
+		
+		/**
+		 * Stores an entry ID of a task in this ExportTaskLink.
+		 * 
+		 * @param entryId
+		 */
+		public void setEntryId(Long entryId) {
+			m_entryId = entryId;
+		}
+	}
+	
+	/*
+	 * Inner class used to represent order and hierarchy for the tasks
+	 * within a task folder.
+	 * 
+	 * Note:
+	 *    This class is a copy of the TaskLinkage class.  Changes done
+	 *    to to one must be reflected in the other.
+	 */
+	private static class ExportTaskLinkage {
+		private List<ExportTaskLink> m_taskOrder = new ArrayList<ExportTaskLink>();	// Ordered list of the ExportTaskLink's of task FolderEntry's tracked by this ExportTaskLinkage.
+		
+		// The following are used as keys for the information stored in a
+		// Map representation of a ExportTaskLinkage object.
+		private final static String SERIALIZED_ENTRY_IDS		= "taskIds";
+		private final static String SERIALIZED_SUBTASKS_BASE	= "subtasks.";
+		
+		/**
+		 * Class constructor.
+		 */
+		public ExportTaskLinkage() {
+			// Nothing to do.
+		}
+
+		/**
+		 * Returns a Map that that represents the serialization of this
+		 * task linkage.
+		 * 
+		 * @return
+		 */
+		public Map getSerializationMap() {
+			// Simply serialize the List<ExportTaskLink> order list.
+			return getSerializationMapImpl(m_taskOrder);
+		}
+		
+		/*
+		 * Builds a serialization map for the given
+		 * List<ExportTaskLink>.
+		 */
+		private static Map getSerializationMapImpl(List<ExportTaskLink> links) {
+			Map reply = new HashMap();
+			
+			List<Long> entryIds = new ArrayList<Long>();
+			for (ExportTaskLink tl:  links) {
+				Long entryId = tl.getEntryId();
+				entryIds.add(entryId);
+				reply.put(
+					(SERIALIZED_SUBTASKS_BASE + String.valueOf(entryId)),
+					getSerializationMapImpl(
+						tl.getSubtasks()));
+			}		
+			reply.put(SERIALIZED_ENTRY_IDS, entryIds);
+					
+			return reply;
+		}
+		
+		/**
+		 * Returns the List<ExportTaskLink> of order from this
+		 * ExportTaskLinkage.
+		 * 
+		 * @return
+		 */
+		public List<ExportTaskLink> getTaskOrder() {
+			return m_taskOrder;
+		}
+
+		/**
+		 * Constructs and returns a ExportTaskLinkage from a
+		 * serialization Map.
+		 * 
+		 * @param serializationMap
+		 * 
+		 * @return
+		 */
+		public static ExportTaskLinkage loadSerializationMap(Map serializationMap) {
+			ExportTaskLinkage reply = new ExportTaskLinkage();
+			if ((null != serializationMap) && (!(serializationMap.isEmpty()))) {
+				reply.setTaskOrder(loadSerializationMapImpl(serializationMap));
+			}
+			return reply;
+		}
+
+		/*
+		 * Constructs and returns a List<ExportTaskLink> from a
+		 * serialization Map.
+		 */
+		private static List<ExportTaskLink> loadSerializationMapImpl(Map serializationMap) {
+			List<ExportTaskLink> reply = new ArrayList<ExportTaskLink>();
+			if ((null != serializationMap) && (!(serializationMap.isEmpty()))) {
+				List<Long> entryIds = ((List<Long>) serializationMap.get(SERIALIZED_ENTRY_IDS));
+				for (Long entryId:  entryIds) {
+					ExportTaskLink taskLink = new ExportTaskLink();
+					taskLink.setEntryId(entryId);
+					taskLink.setSubtasks(
+						loadSerializationMapImpl(
+							((Map) serializationMap.get(SERIALIZED_SUBTASKS_BASE + String.valueOf(entryId)))));
+					reply.add(taskLink);
+				}
+			}
+			return reply;
+		}
+		
+		/**
+		 * Stores a new List<ExportTaskLink> task ordering in this
+		 * ExportTaskLinkage.
+		 * 
+		 * @param taskOrder
+		 */
+		public void setTaskOrder(List<ExportTaskLink> taskOrder) {
+			m_taskOrder = taskOrder;
+		}
+	}
+	
 	public static void export(Long binderId, Long entityId, OutputStream out,
 			Map options, Collection<Long> binderIds, Boolean noSubBinders, 
 			StatusTicket statusTicket, Map reportMap) throws Exception {
@@ -351,11 +531,16 @@ public class ExportHelper {
 				//Add any definitions used by this folder
 				addBinderDefinitions(zipOut, binder, defListAlreadyAdded, reportMap);
 				
+				List<Long> entryIds;
+				if (binderIdsToExport.get(binderId))
+				     entryIds = getFolderEntryIds(binderId, options);
+				else entryIds = null;
+	
 				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 				zipOut.putNextEntry(new ZipEntry(pathName + binderPrefix + "f"
 						+ nft.format(binderId) + "/" + "."
 						+ binderPrefix + "f" + nft.format(binderId) + ".xml"));
-				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, false,
+				XmlFileUtil.writeFile(getFolderAsDoc(null, binderId, entryIds, false,
 						pathName + binderPrefix + "f" + nft.format(binderId)),
 						zipOut);
 				zipOut.closeEntry();
@@ -365,13 +550,7 @@ public class ExportHelper {
 	
 				//Only output entries if folder is selected (or is a sub-folder being output)
 				if (binderIdsToExport.get(binderId)) {
-					Map folderEntries = folderModule.getEntries(binderId, options);
-					List searchEntries = (List) folderEntries.get("search_entries");
-		
-					for (int i = 0; i < searchEntries.size(); i++) {
-						Map searchEntry = (Map) searchEntries.get(i);
-						Long entryId = Long.valueOf(searchEntry.get("_docId")
-								.toString());
+					for (Long entryId:  entryIds) {
 						try {
 							FolderEntry entry = folderModule.getEntry(binderId,
 									entryId);
@@ -627,7 +806,7 @@ public class ExportHelper {
 		return doc;
 	}
 
-	private static Document getFolderAsDoc(String accessToken, long folderId,
+	private static Document getFolderAsDoc(String accessToken, long folderId, List<Long> entryIds,
 			boolean includeAttachments, String pathName) {
 		Long fId = new Long(folderId);
 
@@ -656,6 +835,9 @@ public class ExportHelper {
 
 		// workflows
 		addWorkflows(doc.getRootElement(), folder);
+		
+		// task linkage
+		addTaskLinkage(doc.getRootElement(), folder, entryIds);
 
 		return doc;
 	}
@@ -1119,10 +1301,14 @@ public class ExportHelper {
 		// during import
 		HashMap<Long, Long> binderIdMap = new HashMap<Long, Long>();
 
+		// key-value pairs:  new exported binder id - associated
+		// ExportTaskLinkage.
+		HashMap<Long, ExportTaskLinkage> taskLinkageMap = new HashMap<Long, ExportTaskLinkage>();
+		
 		// key-value pairs: old exported definition id - new definition id assigned
 		// during import
 		HashMap<String, Definition> definitionIdMap = new HashMap<String, Definition>();
-		
+
 		//List of new definitions added during this import
 		List<String> newDefIds = new ArrayList<String>();
 
@@ -1132,7 +1318,7 @@ public class ExportHelper {
 
 		try {
 			File tempDirFile = new File(tempDir);
-			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, definitionIdMap, newDefIds,
+			importDir(tempDirFile, tempDir, binderId, entryIdMap, binderIdMap, taskLinkageMap, definitionIdMap, newDefIds,
 					statusTicket, reportMap, nameCache);
 		} catch(Exception e) {
 				if (e instanceof ExportException)
@@ -1144,7 +1330,7 @@ public class ExportHelper {
 		}
 		
 		//After importing binders and entries, perform a final fix-up of mappings (landing pages and markup)
-		fixUpLinks(binderIdMap, entryIdMap);
+		fixUpLinks(binderIdMap, taskLinkageMap, entryIdMap);
 		//Make sure the principal mappings and internal defIds are handled
 		for (String defId : newDefIds) {
 			definitionModule.updateDefinitionReferences(defId);
@@ -1152,7 +1338,7 @@ public class ExportHelper {
 	}
 
 	private static void importDir(File currentDir, String tempDir, Long topBinderId,
-			Map entryIdMap, Map binderIdMap, Map<String, Definition> definitionIdMap, List<String> newDefIds, 
+			Map entryIdMap, Map binderIdMap, Map<Long, ExportTaskLinkage> taskLinkageMap, Map<String, Definition> definitionIdMap, List<String> newDefIds, 
 			StatusTicket statusTicket, Map reportMap, Map<String, Principal> nameCache) throws IOException {
 
 		Binder topBinder = loadBinder(topBinderId);
@@ -1171,7 +1357,7 @@ public class ExportHelper {
 			File child = (File) sortMap.get(keyIter.next());
 
 			if (child.isDirectory())
-				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, definitionIdMap, newDefIds,
+				importDir(child, tempDir, topBinderId, entryIdMap, binderIdMap, taskLinkageMap, definitionIdMap, newDefIds,
 						statusTicket, reportMap, nameCache);
 			else {
 				String fileExt = EntityIndexUtils.getFileExtension(child
@@ -1375,7 +1561,7 @@ public class ExportHelper {
 						if (entType.equals("workspace")) {
 							try {
 								binder_addBinderWithXML(null, newParentId, def,
-										xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap,
+										xmlStr, binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap,
 										statusTicket, nameCache);
 								Integer count = (Integer)reportMap.get(workspaces);
 								reportMap.put(workspaces, ++count);
@@ -1433,7 +1619,7 @@ public class ExportHelper {
 						if (entType.equals("folder")) {
 							try {
 								binder_addBinderWithXML(null, newParentId, def,
-										xmlStr, binderId, topBinderId, binderIdMap, definitionIdMap, tempDir, reportMap, 
+										xmlStr, binderId, topBinderId, binderIdMap, taskLinkageMap, definitionIdMap, tempDir, reportMap, 
 										statusTicket, nameCache);
 								Integer count = (Integer)reportMap.get(folders);
 								reportMap.put(folders, ++count);
@@ -1450,7 +1636,7 @@ public class ExportHelper {
 		}
 	}
 	
-	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, Long> entryIdMap) {
+	private static void fixUpLinks(Map<Long, Long> binderIdMap, Map<Long, ExportTaskLinkage> taskLinkageMap, Map<Long, Long> entryIdMap) {
 		Iterator itBinders = binderIdMap.entrySet().iterator();
 		while (itBinders.hasNext()) {
 			Map.Entry me = (Map.Entry) itBinders.next();
@@ -1462,6 +1648,12 @@ public class ExportHelper {
 			Map.Entry me = (Map.Entry) itEntries.next();
 			FolderEntry entry = folderModule.getEntry(null, (Long) me.getValue());
 			MarkupUtil.fixupImportedLinks(entry, (Long)me.getKey(), binderIdMap, entryIdMap);
+		}
+		Iterator itTaskLinkages = taskLinkageMap.entrySet().iterator();
+		while (itTaskLinkages.hasNext()) {
+			Map.Entry me = (Map.Entry) itTaskLinkages.next();
+			Binder binder = binderModule.getBinder((Long) me.getKey());
+			fixupAndStoreTaskLinage(binder, ((ExportTaskLinkage) me.getValue()), entryIdMap);
 		}
 	}
 
@@ -1529,7 +1721,7 @@ public class ExportHelper {
 	}
 
 	private static long binder_addBinderWithXML(String accessToken, long parentId, Definition def,
-			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, 
+			String inputDataAsXML, long binderId, Long topBinderId, Map binderIdMap, Map<Long, ExportTaskLinkage> taskLinkageMap, 
 			Map<String, Definition> definitionIdMap, String tempDir, Map reportMap, 
 			StatusTicket statusTicket, Map<String, Principal> nameCache) {
 
@@ -1585,6 +1777,9 @@ public class ExportHelper {
 					return null;
 				}
 			});
+			
+			// task linkage
+			importTaskLinkage(doc, newBinderId, taskLinkageMap);
 
 			// Don't evict the binder, since we need to reference it repeatedly while processing entries contained in the binder.
 			return newBinderId;
@@ -2493,5 +2688,189 @@ public class ExportHelper {
 
 	public static ZoneInfo getZoneInfo() {
 		return zoneModule.getZoneInfo(RequestContextHolder.getRequestContext().getZoneId());
+	}
+
+	/*
+	 * Exports any task linkage attached to the folder.
+	 */
+	private static void addTaskLinkage(Element element, DefinableEntity entity, List<Long> entryIds) {
+		// If the folder doesn't contain any entries...
+		if ((null == entryIds) || entryIds.isEmpty()) {
+			// ...we don't care about the linkage.
+			return;
+		}
+		
+		// If the folder doesn't have any task linkage...
+		Folder folder = ((Folder) entity);
+		Map serializationMap = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		if ((null == serializationMap) || serializationMap.isEmpty()) {
+			// ...there's nothing to export.
+			return;
+		}
+
+		// Parse the serialized task linkage...
+		ExportTaskLinkage tl = ExportTaskLinkage.loadSerializationMap(serializationMap);
+		
+		// ...strip out any entry IDs that we don't have entries for...
+		validateTaskLinkage(tl, entryIds);
+
+		// ...and export the linkage.
+		Element tlElement = element.addElement("task-linkage");
+		addTaskLinkList(tlElement, tl.getTaskOrder());
+	}
+
+	/*
+	 * Recursively exports the ExportTaskLink's in a
+	 * List<ExportTaskLink> to an Element in the export file.
+	 */
+	private static void addTaskLinkList(Element e, List<ExportTaskLink> tlList) {
+		for (ExportTaskLink link:  tlList) {
+			Element linkElement = e.addElement("task-link");
+			linkElement.addAttribute("entryId", String.valueOf(link.getEntryId()));
+			addTaskLinkList(linkElement, link.getSubtasks());
+		}
+	}
+
+	/*
+	 * Returns a List<Long> of the IDs of the entries contained in a
+	 * binder.
+	 */
+	private static List<Long> getFolderEntryIds(Long binderId, Map options) {
+		Map folderEntries = folderModule.getEntries(binderId, options);
+		List searchEntries = ((List) folderEntries.get("search_entries"));
+		List<Long> entryIds = new ArrayList<Long>();
+		int c = searchEntries.size();
+		for (int i = 0; i < c; i += 1) {
+			Map searchEntry = ((Map) searchEntries.get(i));
+			Long entryId = Long.valueOf(searchEntry.get(Constants.DOCID_FIELD).toString());
+			entryIds.add(entryId);
+		}
+		return entryIds;
+	}
+	
+	/*
+	 * Validates the task entry IDs referenced by a ExportTaskLinkage.
+	 */
+	private static void validateTaskLinkage(ExportTaskLinkage tl, List<Long> entryIds) {
+		// Simply validate the List<ExportTaskLink> of the task ordering.
+		validateTaskLinkList(tl.getTaskOrder(), entryIds);
+	}
+	
+	/*
+	 * Validates the ExportTaskLink's in a List<ExportTaskLink>
+	 * removing any that are invalid..
+	 */
+	private static void validateTaskLinkList(List<ExportTaskLink> tlList, List<Long> entryIds) {
+		// Scan the ExportTaskLink's in the List<ExportTaskLink>.
+		int c = ((null == tlList) ? 0 : tlList.size());
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			// Is this ExportTaskLink valid?
+			ExportTaskLink tl = tlList.get(i);
+			if (!(entryIds.contains(tl.m_entryId))) {
+				// No!  Remove it.
+				tlList.remove(i);
+			}
+			
+			else {			
+				// Yes, this ExportTaskLink is valid!  Validate its subtasks.
+				validateTaskLinkList(tl.getSubtasks(), entryIds);
+			}
+		}
+	}
+
+	/*
+	 * Extracts the <task-linkage> information from a <folder>.  If
+	 * found, creates a ExportTaskLinkage for it and adds it to the map
+	 * tracking ExportTaskLinkage's for imported folders.
+	 */
+	private static void importTaskLinkage(Document doc, Long newBinderId, Map<Long, ExportTaskLinkage> taskLinkageMap) {
+		// If the Document doesn't contain a <task-linkage>...
+		Element tlElement = ((Element) doc.selectSingleNode("//task-linkage"));
+		if (null == tlElement) {
+			// ...there's nothing to import.
+			return;
+		}
+
+		// Otherwise, create a ExportTaskLinkage...
+		ExportTaskLinkage tl = new ExportTaskLinkage();
+		
+		// ...populate it with the data from the <task-linkage>...
+		tl.setTaskOrder(importTaskLinkList(tlElement));
+		
+		// ...and map the new binder ID to that ExportTaskLinkage.
+		taskLinkageMap.put(newBinderId, tl);
+	}
+
+	/*
+	 * Extracts the <task-link> information from a <task-linkage> or
+	 * other <task-link>.  Returns a List<ExportTaskLink> for
+	 * <task-link>'s processed. 
+	 */
+	private static List<ExportTaskLink> importTaskLinkList(Element e) {
+		// Allocate a List<ExportTaskLink> to return.
+		List<ExportTaskLink> reply = new ArrayList<ExportTaskLink>();
+
+		// Scan the <task-link>'s in the Element we were given...
+		List<Element> linkElements = e.selectNodes("./task-link");
+		for (Element linkElement: linkElements) {
+			// ...adding a ExportTaskLink for each to the
+			// ...List<ExportTaskLink> we're going to return...
+			ExportTaskLink link = new ExportTaskLink();
+			String entryId = linkElement.attributeValue("entryId");
+			link.setEntryId(Long.parseLong(entryId));
+			reply.add(link);
+
+			// ...and process and nested <task-link>'s it contains.
+			link.setSubtasks(importTaskLinkList(linkElement));
+		}
+
+		// If we get here, reply refers to the List<ExportTaskLink> of
+		// the <task-link>'s we processed.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Given a Binder, ExportTaskLinkage and mapping between old entry
+	 * IDs and new entry IDs, fixes the old entry ID references in the
+	 * ExportTaskLinkage and writes a serialized version of it to the
+	 * binder's properties.
+	 */
+	private static void fixupAndStoreTaskLinage(Binder binder, ExportTaskLinkage tl, Map<Long, Long> entryIdMap) {
+		// Recursively fixup the entry ID's in the ExportTaskLinkage's
+		// List<ExportTaskLink>...
+		fixupTaskLinkList(tl.getTaskOrder(), entryIdMap);
+		
+		// ...and write the serialized ExportTaskLinkage to the binder.
+		binderModule.setProperty(
+			binder.getId(),
+			ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE,
+			tl.getSerializationMap());
+	}
+
+	/*
+	 * Recursively scans the ExportTaskLink's in a List<ExportTaskLink>
+	 * and changes references to old entry IDs to new entry IDs.
+	 */
+	private static void fixupTaskLinkList(List<ExportTaskLink> tlList, Map<Long, Long> entryIdMap) {
+		// Scan the ExportTaskLink's in the List<ExportTaskLink>.
+		int c = tlList.size();
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			// Can we map this ExportTaskLink's old entry ID to a new
+			// entry ID?
+			ExportTaskLink link = tlList.get(i);
+			Long entryId = link.getEntryId();
+			Long newEntryId = entryIdMap.get(entryId);
+			if (null == newEntryId) {
+				// No!  Log an error and remove it from the linkage.
+				logger.error("Task entry " + entryId + " missing from entry ID map, dropped from folder's linkage.");
+				tlList.remove(i);
+			}
+			else {
+				// Yes, we've got the new entry ID!  Store it and fixup
+				// its subtasks.
+				link.setEntryId(newEntryId);
+				fixupTaskLinkList(link.getSubtasks(), entryIdMap);
+			}
+		}
 	}
 }
