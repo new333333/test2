@@ -132,7 +132,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 		
 			<!-- This div holds the checkboxes for hiding/showing the various parts of the page, masthead, sidebar, etc. -->
 			<div style="padding:6px 0px 6px 20px;">
-				<div>
+				<div class="ss_nowrap">
 				  <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
 					id="${ss_mashupPropertyName}__hideMasthead"
 					<c:if test="${ss_mashupHideMasthead}">checked</c:if> >
@@ -140,7 +140,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideMasthead"/></span>
 				  </label>
 				</div>
-				<div>
+				<div class="ss_nowrap">
 				  <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
 					id="${ss_mashupPropertyName}__hideSidebar"
 					<c:if test="${ss_mashupHideSidebar}">checked</c:if> >
@@ -159,7 +159,7 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 				  </label>
 				</div>
 		<% } %>
-				<div>
+				<div class="ss_nowrap">
 				  <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
 					id="${ss_mashupPropertyName}__hideFooter"
 					<c:if test="${ss_mashupHideFooter}">checked</c:if> >
