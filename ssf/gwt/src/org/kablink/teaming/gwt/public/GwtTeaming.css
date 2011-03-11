@@ -1670,7 +1670,7 @@ body, table td, select
 { 
 	color: #414648; /* dark grey */
 	line-height: 1.1em; 
-	padding: 0.2em 0.5em 0.3em; 
+	padding: 0.4em 0.5em 0.3em; 
 	white-space: nowrap;
 }
 .mainMenuPopup_ItemA
