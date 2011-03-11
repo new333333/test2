@@ -306,7 +306,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="group"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
+    width="400px" singleItem="true"/> 
   </div>
 </div>
 
@@ -324,7 +324,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     type="user"
     leaveResultsVisible="false"
     clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
-    width="250px" singleItem="true"/> 
+    width="400px" singleItem="true"/> 
   </div>
 </div>
 
