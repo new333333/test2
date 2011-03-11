@@ -782,12 +782,24 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     			Collection<Principal> usersAndGroups = getBinderModule().getTeamMembers(binder, false);
     			SortedMap<String, User> teamUsers = new TreeMap();
     			SortedMap<String, Group> teamGroups = new TreeMap();
+    			List<User> fixUpNames = new ArrayList<User>();
     			for (Principal p : usersAndGroups) {
     				if (p instanceof User) {
-    					teamUsers.put(p.getTitle(), (User)p);
+    					if (teamUsers.containsKey(p.getTitle())) {
+    						//We must add the login name to the title to distinguish it from the name already there
+    						fixUpNames.add(teamUsers.get(p.getTitle()));
+    						teamUsers.put(p.getTitle() + " (" + p.getName() + ")", (User)p);
+    					} else {
+    						teamUsers.put(p.getTitle(), (User)p);
+    					}
     				} else if (p instanceof Group) {
     					teamGroups.put(p.getTitle(), (Group)p);
     				}
+    			}
+    			//Fix up any names needing to be fixed
+    			for (User u : fixUpNames) {
+    				teamUsers.put(u.getTitle() + " (" + u.getName() + ")", u);
+    				teamUsers.remove(u.getTitle());
     			}
 	   			idData.put(WebKeys.TEAM_MEMBERS, teamUsers);
 	   			idData.put(WebKeys.TEAM_MEMBERS_COUNT, teamUsers.size());
