@@ -49,6 +49,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
+import org.hibernate.criterion.Projections;
 import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.TeamingServiceSoapBindingStub;
@@ -161,7 +162,9 @@ public class TeamingServiceClientWithStub {
 		}
 */
 		
-		getMovedEntries();
+		//getMovedEntries();
+		
+		//getDeletedAndRestoredEntries();
 	}
 	
 	public static void addMicroBlog() throws Exception {
@@ -1089,6 +1092,22 @@ public class TeamingServiceClientWithStub {
 		System.out.println("Number of moved entries = " + entryIds.length);
 		for(int i = 0; i < entryIds.length; i++)
 			System.out.println("(" + i + ") ID = " + entryIds[i]);
+	}
+	
+	public static void getDeletedAndRestoredEntries() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		long[] folderIds = new long[] {51, 287};
+		String family = "discussion";
+		Calendar startTime = Calendar.getInstance();
+		startTime.add(Calendar.MINUTE, -10);
+		long[] deletedEntryIds = stub.folder_getDeletedEntriesInFolders(null, folderIds, family, startTime, Calendar.getInstance());
+		System.out.println("Number of deleted entries = " + deletedEntryIds.length);
+		for(int i = 0; i < deletedEntryIds.length; i++)
+			System.out.println("(" + (i+1) + ") ID = " + deletedEntryIds[i]);
+		long[] restoredEntryIds = stub.folder_getRestoredEntriesInFolders(null, folderIds, family, startTime, Calendar.getInstance());
+		System.out.println("Number of restored entries = " + restoredEntryIds.length);
+		for(int i = 0; i < restoredEntryIds.length; i++)
+			System.out.println("(" + (i+1) + ") ID = " + restoredEntryIds[i]);
 	}
 	
 	private static String toString(Object[] objs) {
