@@ -79,7 +79,7 @@ public class ReadThumbnailController extends AbstractReadFileController {
 			}
 
 			if (fa != null) {
-				response.setHeader("Cache-Control", "private");
+				response.setHeader("Cache-Control", "private, max-age=31536000");
 				response.setHeader("Content-Disposition",
 							"filename=\"" + FileHelper.encodeFileName(request, FileUtil.getShortFileName(fa.getFileItem().getName())) + "\"");				
 				response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));
