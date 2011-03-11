@@ -32,13 +32,14 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="java.text.DateFormat"                     %>
-<%@ page import="java.text.SimpleDateFormat"               %>
-<%@ page import="java.util.Calendar"                       %>
-<%@ page import="java.util.Date"                           %>
-<%@ page import="java.util.List"                           %>
-<%@ page import="org.kablink.teaming.util.NLT"             %>
-<%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<%@ page import="java.text.DateFormat"                        %>
+<%@ page import="java.text.SimpleDateFormat"                  %>
+<%@ page import="java.util.Calendar"                          %>
+<%@ page import="java.util.Date"                              %>
+<%@ page import="java.util.List"                              %>
+<%@ page import="org.kablink.teaming.calendar.TimeZoneHelper" %>
+<%@ page import="org.kablink.teaming.util.NLT"                %>
+<%@ page import="org.kablink.teaming.web.util.GwtUIHelper"    %>
 <jsp:useBean id="ssUser"                      type="org.kablink.teaming.domain.User"                      scope="request" />
 <jsp:useBean id="ssWeekendsAndHolidaysConfig" type="org.kablink.teaming.domain.WeekendsAndHolidaysConfig" scope="request" />
 
@@ -75,7 +76,7 @@
 	// Does the predefined short DateFormat doesn't generate a 4 digit
 	// year?
 	SimpleDateFormat sdf = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, ssUser.getLocale()));
-	sdf.setTimeZone(ssUser.getTimeZone());	
+	sdf.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));	// Was ssUser.getTimeZone()	
 	String sdfPattern = sdf.toPattern();
 	if (0 > sdfPattern.toLowerCase().indexOf("yyyy")) {
 		// No!  Change the formatter we'll use to generate a 4 digit
@@ -115,8 +116,13 @@
 		}
 		eHoliday.value = "";
 		
-		var eDate = new Date(addDate);
-		var sTime = String(eDate.getTime());
+		var eDate     = new Date(addDate);
+		var iTime     = Number(eDate.getTime());
+		var iTZOffset = Number(eDate.getTimezoneOffset());
+		if (0 != iTZOffset) {
+			iTime -= ((iTZOffset * 60) * 1000);
+		}
+		var sTime = String(iTime);
 		
 		// Is this date already in the holiday list?		
 		var holidayList = document.getElementById("holidayList");
@@ -279,8 +285,9 @@
 										&nbsp;<input type="text" dojoType="dijit.form.DateTextBox" 
 											id="addHolidayDate" 
 											name="addHolidayDate" 
+											timeZone="GMT"
 											lang="<ssf:convertLocaleToDojoStyle />" 
-										value="" />
+											value="" />
 									</nobr>
 									
 									<br />
