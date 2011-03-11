@@ -63,26 +63,27 @@
 		<li class="ss_calendarNaviBarSeparator"/>
 		<li class="ss_calendarNaviBarOption ss_calViewDatesDescriptions">
 			<table>
-				<tr>
-					<td>
+				<tr class="ss_nobghover">
+					<td style="padding: 0 10px;">
 						<a class="ss_calDateDownButton" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('prev'); return false;">
 							<img <ssf:alt tag="alt.viewCalPrev"/> title="<ssf:nlt tag="alt.viewCalPrev"/>"
 							src="<html:imagesPath/>pics/1pix.gif" border="0" align="absmiddle" />
 						</a>
 					</td>
-					<td style="width: 208px; text-align: center; ">
-						<span id="ss_calViewDatesDescriptions${prefix}"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
-					</td>
-					<td>
+					<td style="paddiing: 0 10px;">
 						<a class="ss_calDateUpButton" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('next'); return false;">
 							<img <ssf:alt tag="alt.viewCalNext"/> title="<ssf:nlt tag="alt.viewCalNext"/>"
 							src="<html:imagesPath/>pics/1pix.gif" border="0" align="absmiddle" />
 						</a>
 					</td>
+					<td style="width: 200px; padding: 0 10px; ">
+						<span id="ss_calViewDatesDescriptions${prefix}"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
+					</td>
 				</tr>
-			</table></li>
+			</table>
+		</li>
 		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calSelectDate ss_calendarNaviBarOption">
+		<li class="ss_calSelectDate ss_calendarNaviBarOption" style="padding: 0 10px;">
 			<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" 
 			  class="ss_toolbar_color"
 			  method="post" style="display:inline;float:left;"><div class="ss_toolbar_color" style="display:inline;float:left;">
@@ -93,10 +94,7 @@
 				 /></div></form>
 				 <div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"  style="display:inline;float:left;"></div>
 		</li>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
-				    title="<ssf:nlt tag="calendar.settings.link"/>" align="absmiddle" border="0" /></a></li>			
-		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 15px;">
+		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 10px;">
 				<a class="ss_calDaySelectButton" id="ss_calDaySelectButton${prefix}" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('daydelta'); return false;"><img <ssf:alt tag="alt.view1Day"/> title="<ssf:nlt tag="alt.view1Day"/>" 
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
 				
@@ -113,7 +111,11 @@
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
 				
 				<a class="ss_calMonthSelectButton" id="ss_calMonthSelectButton${prefix}" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('month'); return false;"><img <ssf:alt tag="alt.view1Month"/> title="<ssf:nlt tag="alt.view1Month"/>" 
-					src="<html:imagesPath/>pics/1pix.gif" /></a></li>
+					src="<html:imagesPath/>pics/1pix.gif" /></a>
+		</li>
+		<li class="ss_calendarNaviBarSeparator"/>
+		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg" style="padding-left: 10px;"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
+				    title="<ssf:nlt tag="calendar.settings.link"/>" align="absmiddle" border="0" /></a></li>			
 	</ul>
 	<script type="text/javascript">
 		dojo.addOnLoad(function() {

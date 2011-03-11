@@ -218,10 +218,26 @@ white-space:nowrap;
 .marginleft1  {
 margin-left:1em;
 }
+
 .clearStatus {
-color:#1C5894 !important;
-text-decoration:none;
-}
+	font-size: 11px;
+	color:#fff !important;
+	text-decoration:none;
+	background: #949494;
+	padding: 2px 6px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	}
+
+.user_status a.clearStatus:hover {
+	color:#fff !important;
+	text-decoration:none;
+	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
+	padding: 2px 6px;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	}
+
 .shareButton {
 float: right;
 margin-right:13px;
