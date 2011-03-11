@@ -113,6 +113,7 @@ public class HelpData
 	private String getLangCode()
 	{
 		String lang;
+		String originalLang;
 		int i;
 		
 		lang = null;
@@ -120,6 +121,8 @@ public class HelpData
 		if ( ri != null )
 			lang = ri.getLanguage();
 
+		originalLang = lang;
+		
 		// Do we know the language? 
 		if ( lang == null || lang.length() == 0 )
 		{
@@ -139,6 +142,14 @@ public class HelpData
 		if ( lang.length() > 2 )
 		{
 			lang = lang.substring( 0, 2 ); 
+		}
+
+		// Is the language Chinese?
+		if ( lang.equalsIgnoreCase( "zh" ) )
+		{
+			// Yes, use the full language string of zh-tw or zh-cn
+			lang = originalLang.toLowerCase();
+			lang = lang.replace( '_', '-' );
 		}
 
 		// Look for the appropriate language code.
