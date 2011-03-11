@@ -208,7 +208,7 @@
 			  <td>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			  </td>
-			  <td>
+			  <td nowrap>
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			  </td>
 			 </tr>
@@ -225,7 +225,7 @@
 					<ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</td>
-				<td>
+				<td nowrap>
 				  <div class="ss_entrySignature">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					value="${ssDefinitionEntry.modification.date}" type="both" 
