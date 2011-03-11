@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.module.report.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -48,12 +46,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
@@ -64,8 +62,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -83,7 +79,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowHistory;
 import org.kablink.teaming.domain.WorkflowState;
-import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EmailLog.EmailLogStatus;
 import org.kablink.teaming.domain.EmailLog.EmailLogType;
@@ -100,13 +95,11 @@ import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckException;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.util.stringcheck.XSSCheckException;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1871,72 +1864,103 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	public List<Long> getDeletedFolderEntryIds(final String family, final Date startDate, final Date endDate) {
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
-					.setProjection(Projections.distinct(Projections.projectionList() 
-                                                          .add(Projections.property("entityId"))))
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.in("transactionType", new String[]{AuditType.delete.name(), AuditType.preDelete.name()}))
-				.add(Restrictions.lt("startDate", endDate));
-				if(startDate != null)
-					crit.add(Restrictions.ge("startDate", startDate));
-				if(Validator.isNotNull(family))
-					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
-				return crit.list();
-			}});
-		return ids;
+		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, null, family, startDate, endDate);
+		
+		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
+		
+		TreeSet<Long> deletes = sets[0];
+		TreeSet<Long> preDeletes = sets[1];
+		
+		deletes.addAll(preDeletes);
+		
+		return new ArrayList<Long>(deletes);
 	}
 
 	public List<Long> getDeletedFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(AuditTrail.class)
-					.setProjection(Projections.distinct(Projections.projectionList() 
-                                                          .add(Projections.property("entityId"))))
-				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.in("transactionType", new String[]{AuditType.delete.name(), AuditType.preDelete.name()}))
-				.add(Restrictions.lt("startDate", endDate));
-				if(startDate != null)
-					crit.add(Restrictions.ge("startDate", startDate));
-				if(Validator.isNotNull(family))
-					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
-				if(folderIds != null && folderIds.length > 0) {
-					Long[] fIds = new Long[folderIds.length];
-					for(int i = 0; i < fIds.length; i++)
-						fIds[i] = Long.valueOf(folderIds[i]);
-					crit.add(Restrictions.in("owningBinderId", fIds));
-				}
-				return crit.list();
-			}});
-		return ids;
+		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
+
+		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
+		
+		TreeSet<Long> deletes = sets[0];
+		TreeSet<Long> preDeletes = sets[1];
+		
+		deletes.addAll(preDeletes);
+		
+		return new ArrayList<Long>(deletes);
 	}
 
 	public List<Long> getRestoredFolderEntryIds(final long[] folderIds, final String family, final Date startDate, final Date endDate) {
-		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+		List data = getAuditTrails(new String[]{AuditType.delete.name(), AuditType.preDelete.name(), AuditType.restore.name()}, folderIds, family, startDate, endDate);
+
+		TreeSet<Long>[] sets = effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(data);
+		
+		TreeSet<Long> restores = sets[2];
+		
+		return new ArrayList<Long>(restores);
+	}
+	
+	private List<Object> getAuditTrails(final String[] auditTypes, final long[] folderIds, final String family, final Date startDate, final Date endDate) {
+		return (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
-					.setProjection(Projections.distinct(Projections.projectionList() 
-                                                          .add(Projections.property("entityId"))))
+				.setProjection(Projections.projectionList() 
+						.add(Projections.property("entityId"))
+						.add(Projections.property("transactionType")))
 				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				.add(Restrictions.eq("entityType", EntityIdentifier.EntityType.folderEntry.name()))
-				.add(Restrictions.eq("transactionType", AuditType.restore.name()))
 				.add(Restrictions.lt("startDate", endDate));
-				if(startDate != null)
-					crit.add(Restrictions.ge("startDate", startDate));
-				if(Validator.isNotNull(family))
-					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
+				if(auditTypes != null && auditTypes.length > 0)
+					crit.add(Restrictions.in("transactionType", auditTypes));
 				if(folderIds != null && folderIds.length > 0) {
 					Long[] fIds = new Long[folderIds.length];
 					for(int i = 0; i < fIds.length; i++)
 						fIds[i] = Long.valueOf(folderIds[i]);
 					crit.add(Restrictions.in("owningBinderId", fIds));
 				}
+				if(Validator.isNotNull(family))
+					crit.add(Restrictions.eq("deletedFolderEntryFamily", family));
+				if(startDate != null)
+					crit.add(Restrictions.ge("startDate", startDate));
+				crit.addOrder(Order.asc("startDate"));
 				return crit.list();
 			}});
-		return ids;
+	}
+	
+	private TreeSet<Long>[] effectiveAuditTrailAfterNormalizingBetweenDeletePredeleteRestore(List<Object> data) {
+		TreeSet<Long> deletes = new TreeSet<Long>();
+		TreeSet<Long> preDeletes = new TreeSet<Long>();
+		TreeSet<Long> restores = new TreeSet<Long>();
+		
+		Map<Long, AuditType> entries = new HashMap<Long, AuditType>();
+		
+		for(Object o : data) {
+			Object[] cols = (Object[]) o;
+			Long entityId = (Long) cols[0];
+			String auditTypeStr = (String) cols[1];
+			if(auditTypeStr.equals(AuditType.delete.name())) {
+				if(restores.contains(entityId)) {
+					restores.remove(entityId);
+				}
+				else {
+					if(preDeletes.contains(entityId))
+						preDeletes.remove(entityId);
+					deletes.add(entityId);
+				}
+			}
+			else if(auditTypeStr.equals(AuditType.preDelete.name())) {
+				if(restores.contains(entityId))
+					restores.remove(entityId);
+				else
+					preDeletes.add(entityId);
+			}
+			else { // AuditType.restore
+				if(preDeletes.contains(entityId))
+					preDeletes.remove(entityId);
+				else
+					restores.add(entityId);
+			}
+		}
+		return new TreeSet[] {deletes, preDeletes, restores};
 	}
 	
 	public List<Long> getMovedFolderEntryIds(final Date startDate, final Date endDate) {
