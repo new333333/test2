@@ -113,6 +113,7 @@ public class SimpleProfiler {
     
     public static void disable() {
     	enabled = false;
+    	clear();
     }
 
     public static void start(String eventName) {
