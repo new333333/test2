@@ -670,93 +670,153 @@ public final class MiscUtil
 		"zh-tw",		
 	};
 	
-	// The following defines the portion of a documentation URL that
-	// may need patching for a locale.
-	private final static String CHANGE_THIS 		= "documentation/vibe_onprem31";
-	private final static String TO_THIS_FOR_KABLINK	= "documentation/kablinkvibe_onprem31";
-	
-	/*
-	 * Tweaks a help URL to account for localization specifics.
+	// Names of the different help guides.
+	private static final String USER_GUIDE = "user";
+	private static final String ADV_USER_GUIDE = "adv_user";
+	private static final String ADMIN_GUIDE = "admin";
+
+	/**
+	 * Return the url that points to the appropriate help documentation.
 	 */
-	private static String localizeHelpUrl(String helpUrl) {
-		// If we don't have a URL...
-		if ((null == helpUrl) || (0 == helpUrl.length())) {
-			// ...there's nothing to localize.
-			return helpUrl;
+	public static String getHelpUrl( String guideName, String pageId, String sectionId )
+	{
+		String url;
+		String lang;
+		String guideComponent = null;
+		
+		// Get the base help url from ssf-ext.properties.
+		url = SPropsUtil.getString( "help.hostName", "http://www.novell.com" );
+		
+		// Do we have a language code to put on the url?
+		lang = getHelpLangCode();
+		if ( lang != null && lang.length() > 0 )
+		{
+			// Yes
+			url +=  "/" + lang;
 		}
 		
-		// If the URL doesn't contain the pattern that needs
-		// localization information added to it...
-		int pos = helpUrl.indexOf(CHANGE_THIS);
-		if (0 > pos) {
-			// ...there's nothing to localize.
-			return helpUrl;
+		url += "/documentation";
+		
+		// Are we running Novell Teaming?
+		if ( ReleaseInfo.isLicenseRequiredEdition())
+		{
+			// Yes
+			url += "/vibe_onprem31";
+		}
+		else
+			url += "/kablinkvibe_onprem31";
+		
+		if ( guideName != null && guideName.length() > 0 )
+		{
+			if ( guideName.equalsIgnoreCase( USER_GUIDE ) )
+			{
+				// Get the url to the user guide.
+				guideComponent = "/vibeprem31_user/data/";
+			}
+			else if ( guideName.equalsIgnoreCase( ADV_USER_GUIDE ) )
+			{
+				// Get the url to the advanced user guide.
+				guideComponent = "/vibeprem31_useradv/data/";
+			}
+			else if ( guideName.equalsIgnoreCase( ADMIN_GUIDE ) )
+			{
+				// Get the url to the administration guide.
+				guideComponent = "/vibeprem31_admin/data/";
+			}
+			else
+				guideComponent = null;
+			
+			// Did we recognize the name of the guide?
+			if ( guideComponent != null )
+			{
+				// Yes, add the guide component to the url.
+				url += guideComponent;
+				
+				// Do we have a specific page to go to in the documentation?
+				if ( pageId != null )
+				{
+					// Yes, each page has its own html file.
+					url += pageId + ".html";
+					
+					// Do we have a specific section within the page to go to?
+					if ( sectionId != null )
+					{
+						// Yes
+						url += "#" + sectionId;
+					}
+				}
+				else
+				{
+					// No, take the user to the start of the guide.
+					url += "bookinfo.html";
+				}
+			}
 		}
 
-		// If we don't know the language that we're running in... 
-		String lang = NLT.get("Teaming.Lang", "");
-		if ((!(hasString(lang))) || (0 == lang.indexOf("en"))) {
-			// ...there's nothing to localize.
-			return helpUrl;
+		return url;
+	}
+
+	/**
+	 * Return the language code that should be put on the help url.
+	 */
+	private static String getHelpLangCode()
+	{
+		String lang;
+		String originalLang;
+		int i;
+		
+		// Get the language the user is running in
+		lang = NLT.get( "Teaming.Lang", "" );
+		originalLang = lang;
+		
+		// Do we know the language? 
+		if ( lang == null || lang.length() == 0 )
+		{
+			// No
+			return null;
+		}
+		
+		// Is the language English?
+		if ( lang.indexOf( "en" ) == 0 )
+		{
+			// Yes, we don't need to put a language code on the url.
+			return null;
 		}
 
 		// We only need the first two characters of the language to
 		// localize the documentation URLs.
-		if (2 < lang.length()) {
-			lang = lang.substring(0, 2); 
+		if ( lang.length() > 2 )
+		{
+			lang = lang.substring( 0, 2 ); 
 		}
 
-		// Do we have a documentation patch for this language?
-		int i;
-		for (i = 0; i < DOC_LANGS.length; i += 1) {
-			if (0 == DOC_LANGS[i].indexOf(lang)) {
+		// Is the language Chinese?
+		if ( lang.equalsIgnoreCase( "zh" ) )
+		{
+			// Yes, use the full language string of zh-tw or zh-cn
+			lang = originalLang.toLowerCase();
+			lang = lang.replace( '_', '-' );
+		}
+
+		// Look for the appropriate language code.
+		for (i = 0; i < DOC_LANGS.length; ++i)
+		{
+			if ( DOC_LANGS[i].indexOf( lang ) == 0 )
+			{
 				break;
 			}
 		}		
-		if (i == DOC_LANGS.length) {
-			// No!  There's nothing to localize.
-			return helpUrl;
+
+		// Do we have a language code for this language?
+		if ( i == DOC_LANGS.length )
+		{
+			// No
+			return null;
 		}
 
-		// Finally, return the localized documentation URL.
-		final String toThis = (DOC_LANGS[i] + "/" + CHANGE_THIS);
-		return StringUtil.replace(helpUrl, CHANGE_THIS, toThis);
+		return DOC_LANGS[i];
 	}
-
-	/**
-	 * Performs any and all necessary fixups on a help URL based on
-	 * locale, the product that's running, ...
-	 * 
-	 * @param helpUrl
-	 * 
-	 * @return
-	 */
-	public static String fixupHelpUrl(String helpUrl) {
-		// If we don't have a URL...
-		if ((null == helpUrl) || (0 == helpUrl.length())) {
-			// ...there's nothing to fixup.
-			return helpUrl;
-		}
-		
-		// Are we running Novell Vibe...
-		helpUrl = localizeHelpUrl(helpUrl);
-		if (ReleaseInfo.isLicenseRequiredEdition()) {
-			// ...no further fixup is necessary.  Return what we've
-			// ...got.
-			return helpUrl;
-		}
-		
-		// If the URL doesn't contain the pattern that needs fixing...
-		int pos = helpUrl.indexOf(CHANGE_THIS);
-		if (0 > pos) {
-			// ...no further fixup is necessary.  Return what we've
-			// ...got.
-			return helpUrl;
-		}
-
-		// Perform the Kablink Vibe specific fixups.
-		return StringUtil.replace(helpUrl, CHANGE_THIS, TO_THIS_FOR_KABLINK);
-	}
+	
 	
 	/**
 	 * Returns true if we're to run in HTML standards mode and false

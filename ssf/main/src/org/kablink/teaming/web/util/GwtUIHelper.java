@@ -1099,9 +1099,9 @@ public class GwtUIHelper {
 	 * 
 	 * @return
 	 */
-	private final static String BASE_HELPURL = "http://www.novell.com/documentation/vibe_onprem31/vibeprem31_user/data/bookinfo.html";
-	public static String getHelpUrl() {
-		return MiscUtil.fixupHelpUrl(BASE_HELPURL);
+	public static String getHelpUrl()
+	{
+		return MiscUtil.getHelpUrl( "user", null, null );
 	}
 
 	/**
