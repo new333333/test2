@@ -78,6 +78,7 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input, false);
 	}
 	
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	public static String check(String input, boolean checkOnly) throws StringCheckException {
 		return getInstance().checkAll(input, checkOnly);
 	}
@@ -104,6 +105,7 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input, false);
 	}
 
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	public static Map<String,?> check(Map<String,?> input, boolean checkOnly) throws StringCheckException {
 		return getInstance().checkAll(input, checkOnly);
 	}
@@ -132,13 +134,24 @@ public class StringCheckUtil implements InitializingBean {
 		return survey;
 	}
 	
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	private String checkAll(String input, boolean checkOnly) throws StringCheckException {
+		boolean changed = false;
 		for(int i = 0; i < checkers.length; i++) {
-			input = checkers[i].check(input, checkOnly);
+			String newInput = checkers[i].check(input, checkOnly);
+			if (input != null && !input.equals(newInput)) {
+				changed = true;
+				input = newInput;
+			}
+		}
+		if (checkOnly && changed) {
+			//If just checking, signal that a change occurred by throwing an exception
+			throw new StringCheckException();
 		}
 		return input;
 	}
 	
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	private Map<String,?> checkAll(Map<String,?> input, boolean checkOnly) throws StringCheckException {
 		for(int i = 0; i < checkers.length; i++) {
 			input = checkAll(checkers[i], input, checkOnly);
@@ -147,8 +160,10 @@ public class StringCheckUtil implements InitializingBean {
 	}
 
 	@SuppressWarnings("unchecked")
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
 	private Map<String,?> checkAll(StringCheck checker, Map<String,?> input, boolean checkOnly) throws StringCheckException {
 		Map output = new TreeMap();
+		boolean changed = false;
 		
 		Object value, newValue;
 		
@@ -170,10 +185,15 @@ public class StringCheckUtil implements InitializingBean {
 			else {
 				newValue = value;
 			}
-
+			if (value != null && !value.equals(newValue)) {
+				changed = true;
+			}
 			output.put(key, newValue);
 		}	
-		
+		if (checkOnly && changed) {
+			//If just checking, signal that a change occurred by throwing an exception
+			throw new StringCheckException();
+		}
 		return output;
 	}
 }
