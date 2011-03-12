@@ -130,7 +130,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 		if(queryFallbackToLegacy)
 			return new SsfQueryAnalyzer();
 		else
-			return new VibeIndexAnalyzer(queryStopWords, queryStopWordIgnoreCase, queryStemmerName, queryFoldToAscii);
+			return new VibeQueryAnalyzer(queryStopWords, queryStopWordIgnoreCase, queryStemmerName, queryFoldToAscii);
 	}
 	
 	private static void init() {
