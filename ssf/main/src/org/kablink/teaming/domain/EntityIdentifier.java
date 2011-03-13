@@ -36,7 +36,7 @@ package org.kablink.teaming.domain;
  * An entity is uniquely identified by its id and a type.
  *
  */
-public class EntityIdentifier {
+public class EntityIdentifier implements Comparable<EntityIdentifier> {
 	protected EntityType entityType=EntityType.none;
 	protected Long entityId;
 	
@@ -149,5 +149,23 @@ public class EntityIdentifier {
 	public String toString() {
 		return entityType.toString() + ":" + entityId.toString();
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(EntityIdentifier anotherEI) {
+		if(entityType.getValue() < anotherEI.entityType.getValue()) {
+			return -1;
+		}
+		else if(entityType.getValue() > anotherEI.entityType.getValue()) {
+			return 1;
+		}
+		else {
+			return entityId.compareTo(anotherEI.entityId);
+		}
+	}
+	
+
 
 }
