@@ -1814,6 +1814,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	//Used by indexing bulk load
 
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(final Collection<EntityIdentifier> entityIds) {
+		
+		
 		long begin = System.nanoTime();
 		try {
 			if (entityIds.isEmpty()) return new HashMap();
@@ -1837,7 +1839,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		            }
 		        );
 			Map<EntityIdentifier, List<Tag>> result = new HashMap();
-			for (EntityIdentifier id :entityIds) {
+			// Sort entityIds by EntityIdentifier
+			TreeSet<EntityIdentifier> entityIdSet = new TreeSet<EntityIdentifier>(entityIds);
+			for (EntityIdentifier id :entityIdSet) {
 				List<Tag> tList = new ArrayList();
 				
 				while (!tags.isEmpty()) {
