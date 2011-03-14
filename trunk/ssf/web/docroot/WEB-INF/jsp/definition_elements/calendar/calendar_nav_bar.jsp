@@ -83,7 +83,7 @@
 			</table>
 		</li>
 		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calSelectDate ss_calendarNaviBarOption" style="padding: 0 10px;">
+		<li class="ss_calSelectDate ss_calendarNaviBarOption ss_nobghover" style="padding: 0 10px;">
 			<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" 
 			  class="ss_toolbar_color"
 			  method="post" style="display:inline;float:left;"><div class="ss_toolbar_color" style="display:inline;float:left;">
@@ -114,7 +114,7 @@
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
 		</li>
 		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg" style="padding-left: 10px;"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
+		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding-left: 10px;"><a href="javascript: // " onclick="ss_calendar_settings.configure(${ssUser.weekFirstDayDefault},${ssUser.workDayStartDefault},'${ssUserProperties.calendarFirstDayOfWeek}'<c:if test="${!empty ssUserProperties.calendarWorkDayStart}">, ${ssUserProperties.calendarWorkDayStart}</c:if>);"><img border="0" class="ss_accessory_modify" src="<html:imagesPath/>pics/1pix.gif" 
 				    title="<ssf:nlt tag="calendar.settings.link"/>" align="absmiddle" border="0" /></a></li>			
 	</ul>
 	<script type="text/javascript">

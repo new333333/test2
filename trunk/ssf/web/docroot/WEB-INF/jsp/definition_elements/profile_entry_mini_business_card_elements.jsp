@@ -42,7 +42,7 @@
 <div class="ss_profileBox2" style="padding: 3px 5px;"><div class="ss_profileBox2" style="">
 <table class="ss_minicard_interior">
 	<tr>
-		<td valign="middle" style="padding-left: 3px; padding-top: 3px; padding-bottom: 3px;">
+		<td style="padding: 5px; vertical-align:top;">
 		<a href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 			value="${ssDefinitionEntry.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
 			value="${ssDefinitionEntry.creation.principal.id}"/><ssf:param name="newTab" 
@@ -54,7 +54,7 @@
 		</td>
 
 		<c:if test="${!empty propertyValues__elements}">
-			<td valign="middle">
+			<td style="padding: 5px 5px 5px 0; vertical-align:top;">
 			
 				<c:set var="ss_element_display_style_saved" value="${ss_element_display_style}"/>
 				<c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
