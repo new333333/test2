@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.tagext.TagSupport;
 
 import org.dom4j.Document;
 import org.kablink.teaming.dao.ProfileDao;
@@ -66,7 +67,7 @@ import org.kablink.util.servlet.StringServletResponse;
  * 
  */
 
-public class IfAccessAllowedTag extends BodyTagSupport {
+public class IfAccessAllowedTag extends TagSupport {
 	
 	private Binder binder = null;
 	private DefinableEntity entity = null;
@@ -107,17 +108,9 @@ public class IfAccessAllowedTag extends BodyTagSupport {
 			this.binderOperation = null;
 		}
 		
-		return EVAL_PAGE;
-	}
-	
-	public int doAfterBody() {
 		return SKIP_BODY;
 	}
 	
-	public int doEndTag() {
-		return EVAL_BODY_INCLUDE;
-	}
-
 	public void setBinder(Binder binder) {
 		this.binder = binder;
 	}
