@@ -134,21 +134,34 @@ public class SeenMap extends ZonedObject {
     	return checkAndSetSeen(entry, false);
     }
 	protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
-		if (!entry.isTop()) return true; //only maintain for top
 		return checkAndSetSeen(entry.getId(), entry.getLastActivity(), setIt);
 	}
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
-		if (Constants.ENTRY_TYPE_REPLY.equals(entry.get(Constants.ENTRY_TYPE_FIELD))) return true;
 		Long id = new Long((String)entry.get(Constants.DOCID_FIELD));
+
+     	// Do we have the date of the last activity?
 		Date modDate = (Date)entry.get(Constants.LASTACTIVITY_FIELD);		
-		if (modDate == null) return true;
+    	if ( modDate == null )
+    	{
+    		// No, use the modification date.
+    		modDate = (Date) entry.get( Constants.MODIFICATION_DATE_FIELD );
+    		if ( modDate == null )
+    			return true;
+    	}
     	return checkAndSetSeen(id, modDate, setIt);
 	}	
     public boolean checkIfSeen(Map entry) {
-		if (Constants.ENTRY_TYPE_REPLY.equals(entry.get(Constants.ENTRY_TYPE_FIELD))) return true;
      	Long id = new Long((String)entry.get(Constants.DOCID_FIELD));
+     	
+     	// Do we have the date of the last activity?
 		Date modDate = (Date)entry.get(Constants.LASTACTIVITY_FIELD);		
-    	if (modDate == null) return true;
+    	if ( modDate == null )
+    	{
+    		// No, use the modification date.
+    		modDate = (Date) entry.get( Constants.MODIFICATION_DATE_FIELD );
+    		if ( modDate == null )
+    			return true;
+    	}
     	return checkAndSetSeen(id, modDate, false);
     }   
     
