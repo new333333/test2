@@ -40,6 +40,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.LuceneReadSession;
+import org.kablink.teaming.util.SimpleProfiler;
 
 /**
  * This implementation provides access to local Lucene index.
@@ -59,7 +60,13 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 
 	public org.kablink.teaming.lucene.Hits search(Query query, int offset,
 			int size) {
-		return luceneProvider.search(query, offset, size);
+		SimpleProfiler.start("LocalLuceneReadSession.search(Query,int,int)");
+		try {
+			return luceneProvider.search(query, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,int,int)");
+		}
 	}
 
 	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort) {
@@ -68,14 +75,26 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 
 	public org.kablink.teaming.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) {
-		return luceneProvider.search(query, sort, offset, size);
+		SimpleProfiler.start("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		try {
+			return luceneProvider.search(query, sort, offset, size);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.search(Query,Sort,int,int)");
+		}
 	}
 
 	public ArrayList getTags(Query query, String tag, String type)
 	throws LuceneException {
-		return luceneProvider.getTags(query, tag, type, 
+		SimpleProfiler.start("LocalLuceneReadSession.getTags()");
+		try {
+			return luceneProvider.getTags(query, tag, type, 
 				RequestContextHolder.getRequestContext().getUserId().toString(), 
 				RequestContextHolder.getRequestContext().getUser().isSuper());
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getTags()");
+		}
 	}
 	
 	/**
@@ -89,9 +108,15 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	 */
 	public ArrayList getTagsWithFrequency(Query query, String tag, String type)
 			throws LuceneException {
-		return luceneProvider.getTagsWithFrequency(query, tag, type, 
+		SimpleProfiler.start("LocalLuceneReadSession.getTagsWithFrequency()");
+		try {
+			return luceneProvider.getTagsWithFrequency(query, tag, type, 
 				RequestContextHolder.getRequestContext().getUserId().toString(), 
 				RequestContextHolder.getRequestContext().getUser().isSuper());
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getTagsWithFrequency()");
+		}
 	}
 	
 	/**
@@ -110,7 +135,13 @@ public class LocalLuceneReadSession implements LuceneReadSession {
 	
 	public ArrayList getNormTitles(Query query, String start, String end, int skipsize)
 			throws LuceneException {
-		return luceneProvider.getNormTitlesAsList(query, start, end, skipsize);
+		SimpleProfiler.start("LocalLuceneReadSession.getNormTitles()");
+		try {
+			return luceneProvider.getNormTitlesAsList(query, start, end, skipsize);
+		}
+		finally {
+			SimpleProfiler.stop("LocalLuceneReadSession.getNormTitles()");	
+		}
 	}	
 
 	public void close() {
