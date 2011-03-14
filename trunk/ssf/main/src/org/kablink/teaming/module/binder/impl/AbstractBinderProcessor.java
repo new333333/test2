@@ -1039,7 +1039,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     	}
     	//Check to make sure the target binder has quota enough for this
-    	if (checkMoveBinderQuota(source, destination)) {
+    	if (!checkMoveBinderQuota(source, destination)) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestinationQuota", new String[] {destination.getPathName()});
     	}
         final Map ctx = new HashMap();
@@ -1057,26 +1057,28 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //Check to see if destination folder has enough quota
     public boolean checkMoveBinderQuota(Binder source, Binder destination) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
-    	try {
-	    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
-	    	if (minQuotaLeft != null && minQuotaLeft < sourceBinderQuota.getDiskSpaceUsedCumulative()) {
-	    		//There is not enough quota in the destination. See if this is a parent binder of the source
-	    		Binder parentBinder = source;
-	    		while (parentBinder != null) {
-	    			if (parentBinder.equals(destination)) {
-	    				//This binder is an ancestor, so the quota is not going to change
-	    				return true;
-	    			}
-	    			parentBinder = parentBinder.getParentBinder();
-	    		}
-	    		//Destination does not have the quota for this move.
-	    		return false;
-	    	}
-		} catch(NoObjectByTheIdException e) {
-			//Skip any binders that don't have a quota set up (shouldn't happen, but...)
-			//If there is no quota set up, just let the move be done
-		}
+    	if (getBinderModule().isBinderDiskQuotaEnabled()) {
+	    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
+	    	try {
+		    	BinderQuota sourceBinderQuota = getCoreDao().loadBinderQuota(zoneId, source.getId());
+		    	if (minQuotaLeft != null && minQuotaLeft < sourceBinderQuota.getDiskSpaceUsedCumulative()) {
+		    		//There is not enough quota in the destination. See if this is a parent binder of the source
+		    		Binder parentBinder = source;
+		    		while (parentBinder != null) {
+		    			if (parentBinder.equals(destination)) {
+		    				//This binder is an ancestor, so the quota is not going to change
+		    				return true;
+		    			}
+		    			parentBinder = parentBinder.getParentBinder();
+		    		}
+		    		//Destination does not have the quota for this move.
+		    		return false;
+		    	}
+			} catch(NoObjectByTheIdException e) {
+				//Skip any binders that don't have a quota set up (shouldn't happen, but...)
+				//If there is no quota set up, just let the move be done
+			}
+    	}
 
     	return true;
     }
