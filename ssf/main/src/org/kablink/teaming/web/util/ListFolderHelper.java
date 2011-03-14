@@ -88,6 +88,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -1770,14 +1771,17 @@ public class ListFolderHelper {
 		//Set Binder Quota
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
 				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
-			folderToolbar.addToolbarMenuItem("1_administration", "", 
-					NLT.get("toolbar.menu.manage_folder_quota"), url, qualifiers);
+			if (bs.getAdminModule().isBinderQuotaEnabled() &&
+					bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled()) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+				folderToolbar.addToolbarMenuItem("1_administration", "", 
+						NLT.get("toolbar.menu.manage_folder_quota"), url, qualifiers);
+			}
 		}
 		
 

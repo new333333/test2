@@ -899,17 +899,19 @@ public class WorkspaceTreeHelper {
 		}
 		
 		//Set Binder Quota
-		if (bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled() && 
-				bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration) ||
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration) ||
 				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
-			toolbar.addToolbarMenuItem("1_administration", "configuration", 
-					NLT.get("toolbar.menu.manage_workspace_quota"), url, qualifiers);
+			if (bs.getAdminModule().isBinderQuotaEnabled() &&
+					bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled()) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_BINDER_QUOTA);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+				toolbar.addToolbarMenuItem("1_administration", "configuration", 
+						NLT.get("toolbar.menu.manage_workspace_quota"), url, qualifiers);
+			}
 		}
 		
 		//if no menu items were added, remove the empty menu
