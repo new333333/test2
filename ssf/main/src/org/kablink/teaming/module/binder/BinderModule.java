@@ -224,6 +224,11 @@ public interface BinderModule {
 	 */
 	public boolean isBinderDiskHighWaterMarkExceeded(Binder binder);
 	/**
+	 * Check if the binder quota is enabled
+	 * @param binder
+	 */
+	public boolean isBinderDiskQuotaEnabled();
+	/**
 	 * Check if the binder quota has been exceeded
 	 * @param binder
 	 */

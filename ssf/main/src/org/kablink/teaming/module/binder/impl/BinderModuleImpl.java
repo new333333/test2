@@ -880,6 +880,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return false;
 		}
 	}
+	
+	//Check if quotas are enabled
+	public boolean isBinderDiskQuotaEnabled() {
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+		
 	//Check if this binder is over quota
 	public boolean isBinderDiskQuotaExceeded(Binder binder) {
 		boolean result = isBinderDiskQuotaOk(binder, 0L);
