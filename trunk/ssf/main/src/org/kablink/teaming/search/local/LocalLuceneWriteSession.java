@@ -38,6 +38,7 @@ import org.apache.lucene.index.Term;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
 import org.kablink.teaming.search.LuceneWriteSession;
+import org.kablink.teaming.util.SimpleProfiler;
 
 public class LocalLuceneWriteSession implements LuceneWriteSession {
 
@@ -48,23 +49,33 @@ public class LocalLuceneWriteSession implements LuceneWriteSession {
 	}
 
 	public void addDocuments(ArrayList docs) {
+		SimpleProfiler.start("LocalLuceneReadSession.addDocuments()");
 		luceneProvider.addDocuments(docs);
+		SimpleProfiler.stop("LocalLuceneReadSession.addDocuments()");
 	}
 
 	public void deleteDocuments(Term term) {
+		SimpleProfiler.start("LocalLuceneReadSession.deleteDocuments()");
 		luceneProvider.deleteDocuments(term);
+		SimpleProfiler.stop("LocalLuceneReadSession.deleteDocuments()");
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
+		SimpleProfiler.start("LocalLuceneReadSession.addDeleteDocuments()");
 		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
+		SimpleProfiler.stop("LocalLuceneReadSession.addDeleteDocuments()");
 	}
 
 	public void optimize() {
+		SimpleProfiler.start("LocalLuceneReadSession.optimize()");
 		luceneProvider.optimize();
+		SimpleProfiler.stop("LocalLuceneReadSession.optimize()");
 	}
 		
 	public void clearIndex() {
+		SimpleProfiler.start("LocalLuceneReadSession.clearIndex()");
 		luceneProvider.clearIndex();
+		SimpleProfiler.stop("LocalLuceneReadSession.clearIndex()");
 	}
 	
 	public void close() {
