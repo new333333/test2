@@ -132,7 +132,7 @@
   -- ENTRIES
   --
 --%><c:set var="ss_entry_border_color" value="#CCCCCC" scope="request"/><%--
---%><c:set var="ss_entry_description_background_color" value="#E9EDF3" scope="request"/><%--
+--%><c:set var="ss_entry_description_background_color" value="#EDF5F5" scope="request"/><%--
 --%><%--
   --
   --FORMS

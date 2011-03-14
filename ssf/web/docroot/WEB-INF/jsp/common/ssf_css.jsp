@@ -607,7 +607,7 @@ div.ss_workflow {
 
 .ss_blockquote_watermark {
 	background-color: transparent;
-	background-image: url(<html:imagesPath/>pics/watermark_blockquote_blue.gif);
+	background-image: url(<html:imagesPath/>pics/watermark_blockquote_blue.png);
     background-position: top left;
     background-repeat: no-repeat;
     padding: 7px 6px 33px 20px;
@@ -625,6 +625,8 @@ table.ss_guestbook {
 	background-color: ${ss_entry_description_background_color};
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 }
 .ss_tinyControl {
   	font-size: 9px !important;
