@@ -13,8 +13,8 @@
     <property name="startDate" index="startDate_audit"/>
     <property name="endBy"/>
     <property name="endDate"/>
- 	<property name="entityId" index="entityId_audit"/>
-   	<property name="entityType" length="16"/>
+   	<property name="entityType" length="16" index="entityOwner_audit"/>
+ 	<property name="entityId" index="entityOwner_audit"/>
     <property name="owningBinderId" index="owningBinder_audit"/>
  	<property name="owningBinderKey" length="255" />
  	<property name="description" length="512"/>

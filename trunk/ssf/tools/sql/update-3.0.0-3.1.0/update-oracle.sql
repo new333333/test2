@@ -1,4 +1,5 @@
 connect sitescape/sitescape;
+DROP INDEX entityOwner_clog;
 DROP INDEX entityOwner_audit;
 DROP INDEX entityTransaction_audit;
 ALTER TABLE SS_Events MODIFY dtStart timestamp null;
@@ -17,7 +18,9 @@ create index diskQuota_bquota on SS_BinderQuota (diskQuota);
 alter table SS_ZoneConfig add binderQuotasInitialized number(1,0);
 alter table SS_ZoneConfig add binderQuotasEnabled number(1,0);
 alter table SS_ZoneConfig add binderQuotasAllowOwner number(1,0);
+CREATE INDEX entityOwner_clog on SS_ChangeLogs (entityType, entityId);
+CREATE INDEX operationDate_clog on SS_ChangeLogs (operationDate);
+CREATE INDEX entityOwner_audit on SS_AuditTrail (entityType, entityId);
 CREATE INDEX startDate_audit ON SS_AuditTrail (startDate);
 CREATE INDEX startBy_audit ON SS_AuditTrail (startBy);
-CREATE INDEX entityId_audit ON SS_AuditTrail (entityId);
 INSERT INTO SS_SchemaInfo values (18);
