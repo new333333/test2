@@ -1146,28 +1146,34 @@ public class GwtMainPage extends Composite
 	 */
 	private void handleLandingPageOptions( boolean hideMasthead, boolean hideSidebar, boolean showBranding )
 	{
-		boolean showMasthead;
-		
-		// Save the current ui state so we can restore it when the user moves to another page.
-		saveUIState();
-		
-		// Hide or show the sidebar.
-		if ( hideSidebar )
-			handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
-		else
-			handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
-		
-		// Figure out if we should show the masthead.
-		if ( hideMasthead == false || showBranding == true )
-			showMasthead = true;
-		else
-			showMasthead = false;
-		
-		// Hide or show the masthead.
-		if ( showMasthead )
-			handleAction( TeamingAction.SHOW_MASTHEAD, null );
-		else
-			handleAction( TeamingAction.HIDE_MASTHEAD, null );
+		// If we are running in captive mode we never want to show the masthead of sidebar.
+		// Are we running in captive mode (GroupWise integration)?
+		if ( m_requestInfo.isSessionCaptive() == false )
+		{
+			boolean showMasthead;
+
+			// No
+			// Save the current ui state so we can restore it when the user moves to another page.
+			saveUIState();
+			
+			// Hide or show the sidebar.
+			if ( hideSidebar )
+				handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
+			else
+				handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
+			
+			// Figure out if we should show the masthead.
+			if ( hideMasthead == false || showBranding == true )
+				showMasthead = true;
+			else
+				showMasthead = false;
+			
+			// Hide or show the masthead.
+			if ( showMasthead )
+				handleAction( TeamingAction.SHOW_MASTHEAD, null );
+			else
+				handleAction( TeamingAction.HIDE_MASTHEAD, null );
+		}
 	}// end handleLandingPageOptions()
 	
 
