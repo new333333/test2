@@ -470,6 +470,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_FIND_PLACES="mobile_find_places"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
+    public static final String OPERATION_MOBILE_DELETE_ENTRY="mobile_delete_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FAVORITES="mobile_show_favorites"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
     public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 

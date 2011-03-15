@@ -32,11 +32,38 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:set var="ss_windowTitle" value='<%= NLT.get("mobile.deleteEntry") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<div>
 
+<%@ include file="/WEB-INF/jsp/mobile/masthead.jsp" %>
+
+<div class="content">
+
+<c:set var="ss_hideMiniBlog" value="true" scope="request" />
+<%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
+
+  <div class="folders">
+    <div class="folder-content">
+
+	  <div class="ss_entryContent" style="padding:20px;">
+  		<span class="ss_bold"><ssf:nlt tag="mobile.confirmDeleteEntry"/></span>
+  		<br/>
+  		<span>${ssEntry.title}</span>
+	  </div>
+
+  	  <div style="padding:20px 0px 20px 10px;">
+  	    <form method="post">
+  	      <div class="ss_buttonBarRight" width="100%">
+  	        <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+  	        <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+  	      </div>
+        </form>
+      </div>
+	</div>
+  </div>
 
 </div>
-
 </body>
 </html>
