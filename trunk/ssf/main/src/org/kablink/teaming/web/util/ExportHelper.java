@@ -1937,10 +1937,11 @@ public class ExportHelper {
 				((List)reportMap.get(errorList)).add(e.getLocalizedMessage());
 			}
 
-			// Index the reply only once
+			// Index the reply only once (and it's top entry)
 			if(logger.isDebugEnabled())
 				logger.debug("Indexing reply " + newEntryId);
 			folderModule.indexEntry(entry, false);
+			folderModule.indexEntry(entry.getTopEntry(), false);
 
 			return newEntryId;
 		} catch (WriteFilesException e) {
