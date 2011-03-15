@@ -398,6 +398,16 @@ public class GwtClientHelper {
 		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
 		return $wnd.top.ss_getObjectTop(iFrameDIV);
 	}-*/;
+
+	/**
+	 * Returns the view type of what's being viewed in the content
+	 * panel.
+	 * 
+	 * @return
+	 */
+	public static native String jsGetViewType() /*-{
+		return $wnd.top.gwtContentIframe.ss_viewType;
+	}-*/;
 	
 	/**
 	 * Hides the popup entry iframe div if one exists.
