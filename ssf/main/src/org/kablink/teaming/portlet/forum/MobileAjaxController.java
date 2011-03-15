@@ -166,6 +166,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddReply(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
 				ajaxMobileDoModifyEntry(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_DELETE_ENTRY)) {
+				ajaxMobileDoDeleteEntry(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
 				ajaxMobileDoAddUserGroupTeam(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
@@ -229,6 +231,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_MODIFY_ENTRY)) {
 			return ajaxMobileModifyEntry(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_DELETE_ENTRY)) {
+			return ajaxMobileDeleteEntry(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
 			return ajaxMobileAddUserGroupTeam(this, request, response);
@@ -328,6 +333,22 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+		} else {
+			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
+			if (!sUrl.equals("")) response.sendRedirect(sUrl);
+		}
+	}
+
+	private void ajaxMobileDoDeleteEntry(ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Delete an entry
+		Map formData = request.getParameterMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		//See if the delete entry form was submitted
+		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+			//The form was submitted. Go process it
+			getFolderModule().deleteEntry(folderId, entryId);
 		} else {
 			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
 			if (!sUrl.equals("")) response.sendRedirect(sUrl);
@@ -1253,6 +1274,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		List actions = new ArrayList();
 		List new_actions = new ArrayList();	
 		List modify_actions = new ArrayList();	
+		List delete_actions = new ArrayList();	
 		
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -1342,6 +1364,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				BinderHelper.addActionsGeneral(request, modify_actions, NLT.get("mobile.modifyEntry"), adapterUrl.toString(), "");
 			}
 	
+			if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_DELETE_ENTRY);
+				model.put(WebKeys.MOBILE_ENTRY_MODIFY_URL, adapterUrl);
+				BinderHelper.addActionsGeneral(request, delete_actions, NLT.get("mobile.deleteEntry"), adapterUrl.toString(), "");
+			}
+	
 			List entries = new ArrayList();
 			entries.add(entry);
 			BinderHelper.buildWorkflowSupportBeans(this, entries, model);
@@ -1355,6 +1387,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put("ss_actions", actions);
 		model.put("ss_new_actions", new_actions);
 		model.put("ss_modify_actions", modify_actions);
+		model.put("ss_delete_actions", delete_actions);
 		
 		return new ModelAndView("mobile/show_entry", model);
 	}	
@@ -1564,6 +1597,32 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowEntry(bs, request, response);
 		} else {
 			return new ModelAndView("mobile/modify_entry", model);
+		}
+	}	
+
+	private ModelAndView ajaxMobileDeleteEntry(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
+		Folder folder = getFolderModule().getFolder(folderId);
+		Map formData = request.getParameterMap();
+		if (!formData.containsKey("okBtn")) {
+			FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+			model.put(WebKeys.ENTRY, entry);
+			DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
+		}
+		//Deleting an entry; get the specific definition
+		model.put(WebKeys.FOLDER, folder);
+		model.put(WebKeys.BINDER, folder);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		
+		if (formData.containsKey("okBtn")) {
+			return ajaxMobileShowFolder(bs, request, response);
+		} else if (formData.containsKey("cancelBtn")) {
+			return ajaxMobileShowEntry(bs, request, response);
+		} else {
+			return new ModelAndView("mobile/delete_entry", model);
 		}
 	}	
 

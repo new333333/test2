@@ -134,6 +134,15 @@ function ss_logoff_from_sso(s) {
     </c:if>
   </c:if>  
 
+  <c:if test="${!empty ss_delete_actions}">
+     <c:if test="${fn:length(ss_delete_actions) == 1}">
+      <c:forEach var="action" items="${ss_delete_actions}">
+        <a class="actions-a" href="${action.url}" 
+          title="${action.title}"><ssf:nlt tag="Delete"/></a>
+      </c:forEach>
+    </c:if>
+  </c:if>  
+
   <c:if test="${ssDefinitionFamily == 'calendar'}">
     <%@ include file="/WEB-INF/jsp/mobile/calendar_today_button.jsp" %>
   </c:if>  
