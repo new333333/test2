@@ -314,7 +314,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	throws Exception {
 		//Modify an entry
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		//See if the modify entry form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
@@ -328,6 +327,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					deleteAtts.add(key.substring(8));
 				}
 			}
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
+			Long folderId = entry.getParentFolder().getId();
 			getFolderModule().modifyEntry(folderId, entryId, 
 					new MapInputData(formData), fileMap, deleteAtts, null, null);
 			
@@ -391,21 +392,20 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private void ajaxMobileDoAddReply(ActionRequest request, ActionResponse response) 
 			throws Exception {
-		//Add an entry
+		//Add a reply
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
-		Long entryId=null;
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
-			Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-			entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null).getId();
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
+			Long replyId = getFolderModule().addReply(entry.getParentFolder().getId(), entryId, entryType, inputData, fileMap, null).getId();
 
 			//See if the user wants to subscribe to this entry
-			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
+			BinderHelper.subscribeToThisEntry(this, request, entry.getParentFolder().getId(), replyId);
 		} else {
 			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");
 			if (!sUrl.equals("")) response.sendRedirect(sUrl);
@@ -1576,13 +1576,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileModifyEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
-		Folder folder = getFolderModule().getFolder(folderId);
-		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		//Adding an entry; get the specific definition
-		model.put(WebKeys.FOLDER, folder);
-		model.put(WebKeys.BINDER, folder);
+		model.put(WebKeys.FOLDER, entry.getParentFolder());
+		model.put(WebKeys.BINDER, entry.getParentFolder());
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
@@ -1743,12 +1741,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));		
     	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
     	request.setAttribute(WebKeys.URL_ENTRY_ID, entryId.toString());
-    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+    	FolderEntry entry = getFolderModule().getEntry(null, entryId);
     	Folder folder = entry.getParentFolder();
     	model.put(WebKeys.FOLDER, folder); 
+    	model.put(WebKeys.BINDER, folder); 
     	model.put(WebKeys.ENTRY, entry); 
 			
     	//Get the legal reply types from the parent entry definition
