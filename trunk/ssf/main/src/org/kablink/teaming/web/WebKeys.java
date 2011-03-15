@@ -1069,6 +1069,7 @@ public class WebKeys {
     public static final String NOTIFICATION_SCHEDULE_INFO="ssNotification_ScheduleInfo";
     public static final String OPERATION="ssOperation";
     public static final String OPERATION_MAP="ssOperationMap";
+    public static final String OPERATION_TYPE="ssOperationType";
     public static final String OWNER="ssOwner";
     public static final String PAGE_NUMBER="ss_pageNumber";
     public static final String PAGE_SIZE="ss_pageSize";

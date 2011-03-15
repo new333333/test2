@@ -77,7 +77,7 @@
 
   <c:otherwise>
     <c:set var="operationType" value="mobile_add_entry"/>
-    <c:if test="${!empty ssEntry}"><c:set var="operationType" value="mobile_modify_entry"/></c:if>
+    <c:if test="${!empty ssOperationType}"><c:set var="operationType" value="${ssOperationType}"/></c:if>
 	<form style="background: transparent; padding: 10px" 
 	  method="<%= methodName %>" 
 	  enctype="<%= enctype %>" 

@@ -39,6 +39,7 @@
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div>
 
+<c:set var="ssOperationType" value="mobile_add_entry" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	configElement="${ssConfigElement}" 
 	configJspStyle="mobile" 
