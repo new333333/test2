@@ -96,8 +96,11 @@
 </style>
 
 <script type="text/javascript">
-	dojo.require("dojo.parser");
+	dojo.require("dojo.date");
+	dojo.require("dojo.date.locale");
+	dojo.require("dojo.date.stamp");
 	dojo.require("dijit.form.DateTextBox");
+	dojo.require("dijit.dijit");
 </script>
 
 <script type="text/javascript">
@@ -116,9 +119,10 @@
 		}
 		eHoliday.value = "";
 		
-		var eDate     = new Date(addDate);
-		var iTime     = Number(eDate.getTime());
-		var iTZOffset = Number(eDate.getTimezoneOffset());
+		var eHolidayDojo = dijit.byId("addHolidayDate");
+		var eDate        = eHolidayDojo.value;
+		var iTime        = Number(eDate.getTime());
+		var iTZOffset    = Number(eDate.getTimezoneOffset());
 		if (0 != iTZOffset) {
 			iTime -= ((iTZOffset * 60) * 1000);
 		}
