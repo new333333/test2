@@ -56,30 +56,36 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 	private static String queryStemmerName;
 	private static boolean queryFoldToAscii;
 	private static boolean queryFallbackToLegacy;
+	private static boolean queryTokenDecomposition;
 
-	public VibeQueryAnalyzer() {
+	protected VibeQueryAnalyzer() {
 		super();
 	}
 	
-	public VibeQueryAnalyzer(String stemmerName) {
+	protected VibeQueryAnalyzer(String stemmerName) {
 		super(stemmerName);
 	}
 
-	public VibeQueryAnalyzer(boolean foldToAscii) {
+	protected VibeQueryAnalyzer(boolean foldToAscii) {
 		super(foldToAscii);
 	}
 	
-	public VibeQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+	protected VibeQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
 			String stemmerName, boolean foldToAscii) {
 		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
-	public VibeQueryAnalyzer(File stopWords, String charset, boolean ignoreCaseForStop,
+	protected VibeQueryAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+			String stemmerName, boolean foldToAscii, boolean decomposeToken) {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii, decomposeToken);
+	}
+
+	protected VibeQueryAnalyzer(File stopWords, String charset, boolean ignoreCaseForStop,
 			String stemmerName, boolean foldToAscii) throws IOException {
 		super(openStopWordFile(stopWords, charset), ignoreCaseForStop, stemmerName, foldToAscii);
 	}
 
-	public VibeQueryAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
+	protected VibeQueryAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
 			String stemmerName, boolean foldToAscii) throws IOException {
 		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
@@ -87,6 +93,8 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		TokenStream result = new StandardTokenizer(VERSION, reader);
 		result = new StandardFilter(result);
+		if(decomposeToken)
+			result = new TokenDecomposingFilter(result);
 		if(foldToAscii)
 			result = new ASCIIFoldingFilter(result);
 		if (stopSet != null && stopSet.size() > 0)
@@ -110,6 +118,8 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 			streams = new SavedStreams();
 			streams.source = new StandardTokenizer(VERSION, reader);
 			streams.result = new StandardFilter(streams.source);
+			if(decomposeToken)
+				streams.result = new TokenDecomposingFilter(streams.result);
 			if(foldToAscii)
 				streams.result = new ASCIIFoldingFilter(streams.result);
 			if (stopSet != null && stopSet.size() > 0)
@@ -130,7 +140,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 		if(queryFallbackToLegacy)
 			return new SsfQueryAnalyzer();
 		else
-			return new VibeQueryAnalyzer(queryStopWords, queryStopWordIgnoreCase, queryStemmerName, queryFoldToAscii);
+			return new VibeQueryAnalyzer(queryStopWords, queryStopWordIgnoreCase, queryStemmerName, queryFoldToAscii, queryTokenDecomposition);
 	}
 	
 	private static void init() {
@@ -179,6 +189,9 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 			
 			queryFoldToAscii = PropsUtil.getBoolean("lucene.searching.asciifolding.enable", true);
 			logger.info("ASCII folding is " + ((queryFoldToAscii)? "enabled":"disabled") + " for searching");
+			
+			queryTokenDecomposition = PropsUtil.getBoolean("lucene.searching.decomposition.enable", false);
+			logger.info("Token decomposition is " + ((queryTokenDecomposition)? "enabled":"disabled") + " for searching");			
 		}
 		
 		inited = true;

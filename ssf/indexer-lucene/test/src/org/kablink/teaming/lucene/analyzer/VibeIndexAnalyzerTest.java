@@ -158,4 +158,19 @@ public class VibeIndexAnalyzerTest extends TestCase {
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"L'ephemeride", "l'ephemeride", "Guterzug", "guterzug", "novell", "uberfuhr", "by", "danemark", "Caractere", "caractere", "to", "brulante", "vibe", "evenement"}); 
 	}
+	
+	public void testTokenDecomposition() throws Exception {
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, false);
+		String text = "debug.doc foo.bar() www.novell.com";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"debug.doc", "foo.bar", "www.novell.com"}); 
+		
+		analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, true);
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"debug.doc", "debug", "doc", "foo.bar", "foo", "bar", "www.novell.com", "www", "novell", "com"}); 
+	}
 }

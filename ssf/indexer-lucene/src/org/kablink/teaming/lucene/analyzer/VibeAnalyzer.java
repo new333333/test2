@@ -53,6 +53,7 @@ public abstract class VibeAnalyzer extends Analyzer {
 	protected Set<String> stopSet;
 	protected boolean ignoreCaseForStop = true;
 	protected boolean foldToAscii = false;
+	protected boolean decomposeToken = false;
 
 	protected static final Version VERSION = Version.LUCENE_29;
 
@@ -76,6 +77,16 @@ public abstract class VibeAnalyzer extends Analyzer {
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
+		init();
+	}
+
+	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+			String stemmerName, boolean foldToAscii, boolean decomposeToken) {
+		stopSet = stopWords;
+		this.ignoreCaseForStop = ignoreCaseForStop;
+		this.stemmerName = stemmerName;
+		this.foldToAscii = foldToAscii;
+		this.decomposeToken = decomposeToken;
 		init();
 	}
 
