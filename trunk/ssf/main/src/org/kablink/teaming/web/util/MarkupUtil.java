@@ -105,6 +105,7 @@ public class MarkupUtil {
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
 	protected final static Pattern uploadImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^\"]*viewType=ss_viewUploadFile[^>]*>)");
 	protected final static Pattern urlSrcPattern = Pattern.compile("src\\s*=\\s*\"([^\"]*)\"");
+	protected final static String uploadImageViewTypePattern = "viewType=ss_viewUploadFile(&amp%3b)?";
 	
 	protected final static Pattern fileIdPattern = Pattern.compile("fileId=([^\\&\"]*)");
 	protected final static Pattern binderIdPattern = Pattern.compile("binderId=([^\\&\"]*)");
@@ -205,6 +206,7 @@ public class MarkupUtil {
         			fileName = uri.getRawPath();
         		} catch (Exception ex) {};
         		img = m3.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+        		img = img.replaceAll(uploadImageViewTypePattern, "");
         		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove special chars from replacement string
         		m = uploadImagePattern.matcher(description.getText());
         	}
