@@ -449,6 +449,7 @@ public interface GwtTeamingMessages extends Messages
 	String mainMenuFolderOptionsDlgFolderViews();
 	String mainMenuFolderOptionsDlgHeader();
 	String mainMenuFolderOptionsDlgImportCalendar();
+	String mainMenuFolderOptionsDlgImportTask();
 	String mainMenuFolderOptionsNoOptions();
 	String mainMenuManageEditTeam();
 	String mainMenuManageEmailTeam();
