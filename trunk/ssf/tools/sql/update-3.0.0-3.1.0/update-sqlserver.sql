@@ -1,4 +1,6 @@
 use sitescape;
+DROP INDEX entityOwner_audit ON SS_AuditTrail;
+DROP INDEX entityTransaction_audit ON SS_AuditTrail;
 ALTER TABLE SS_Events ALTER COLUMN dtStart datetime null;
 ALTER TABLE SS_Events add dtCalcStart datetime null;
 ALTER TABLE SS_Events add dtCalcEnd datetime null;
@@ -15,4 +17,7 @@ create index diskQuota_bquota on SS_BinderQuota (diskQuota);
 alter table SS_ZoneConfig add binderQuotasInitialized tinyint;
 alter table SS_ZoneConfig add binderQuotasEnabled tinyint;
 alter table SS_ZoneConfig add binderQuotasAllowOwner tinyint;
+CREATE INDEX startDate_audit ON SS_AuditTrail (startDate);
+CREATE INDEX startBy_audit ON SS_AuditTrail (startBy);
+CREATE INDEX entityId_audit ON SS_AuditTrail (entityId);
 INSERT INTO SS_SchemaInfo values (18);
