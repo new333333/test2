@@ -128,15 +128,28 @@ function ss_checkIfQuotaValid(s) {
 		</span>
       </div>
 
-      <c:set var="currentQuota"><fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
-		  maxFractionDigits="0"/></c:set>
+      <c:set var="currentQuota" value=""/>
 	  <div style="padding:6px 10px 0px 10px;">
         <span class="ss_bold"><ssf:nlt tag="quota.currentQuota"/></span>
         <span>
           <c:if test="${empty ss_binderQuota.diskQuota}"><ssf:nlt tag="None"/></c:if>
           <c:if test="${!empty ss_binderQuota.diskQuota}">
+		      <c:set var="currentQuota"><fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
+				  maxFractionDigits="0"/></c:set>
+			  <fmt:setLocale value="${ssUser.locale}"/>
+		  	  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
+		  	    maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/>
+		  </c:if>
+        </span>
+      </div>
+
+	  <div style="padding:6px 10px 0px 10px;">
+        <span class="ss_bold"><ssf:nlt tag="quota.currentParentQuota"/></span>
+        <span>
+          <c:if test="${empty ss_binderMinQuotaParentBinder}"><ssf:nlt tag="None"/></c:if>
+          <c:if test="${!empty ss_binderMinQuotaParentBinder}">
           <fmt:setLocale value="${ssUser.locale}"/>
-		  <fmt:formatNumber value="${(ss_binderQuota.diskQuota + 524287)/1048576}"
+		  <fmt:formatNumber value="${(ss_binderMinQuotaParentBinder + 524287)/1048576}"
 		  maxFractionDigits="0"/><ssf:nlt tag="file.sizeMB"/></c:if>
         </span>
       </div>

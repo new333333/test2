@@ -250,6 +250,11 @@ public interface BinderModule {
 	 */
 	public Binder getMinBinderQuotaLeftBinder(Binder binder);
 	/**
+	 * Get the parent binder with the lowest quota
+	 * @param binder
+	 */
+	public Long getMinParentBinderQuota(Binder binder);
+	/**
 	 * Increment the disk space used in a binder
 	 * @param binder
 	 * @param file size
