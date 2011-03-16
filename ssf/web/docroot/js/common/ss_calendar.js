@@ -2066,7 +2066,7 @@ function ss_calendarEngine(
 		
 	    var eHtml = "";
 	   	if (day == 0 && event.allDay && (continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
-			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.png'+'" style="float: left; border: 0;" />';			
 		}
 	   	if (event) {
 			var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:event.binderId, entryId:event.entryId}, "view_folder_entry");
@@ -2076,7 +2076,7 @@ function ss_calendarEngine(
 			eHtml += '<a href="javascript: //"  style="padding-left: 4px; float: left;">' + (title?title:that.locale.noTitle) + '</a>';
 	   	}
    		if (daysToEndOfEvent > eventLength && event.allDay && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
-			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0; " />';			
+			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.png'+'" style="float: right; border: 0; " />';			
 		}
 		
 		if (text != "") {
@@ -2393,11 +2393,11 @@ function ss_calendarEngine(
 			var boxHtml = '';
 			
 			if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
-				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.png'+'" style="float: left; border: 0;" />';			
 			}
 			boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
 			if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
-				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
+				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.png'+'" style="float: right; border: 0;" />';			
 			}
 			
 			eboxInner.innerHTML = boxHtml;
@@ -2518,11 +2518,11 @@ function ss_calendarEngine(
 						
 						var boxHtml = '';
 						if (hasPrev) {
-							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.png'+'" style="float: left; border: 0;" />';			
 						}
 						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: ' + hFudge6Weeks + '; ' + titleStyle + '"':'style="' + titleStyle + '"') + '>'+titleDisp+'</a>';			
 						if (hasNext) {
-							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
+							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.png'+'" style="float: right; border: 0;" />';			
 						}
 						
 						eboxInner.innerHTML = boxHtml;

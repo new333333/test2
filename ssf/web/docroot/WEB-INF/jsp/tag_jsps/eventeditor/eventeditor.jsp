@@ -147,21 +147,24 @@
 					
 				</span>	
 			</td>
-			<c:if test="${attMap.hasDur}">
-				<td>
-					<input type="checkbox" name="${allDayEventId}"
-					<c:if test="${initEvent.allDayEvent}">
-						checked="checked"
-					</c:if> id="${prefix}_allDayEvent" 
-					onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
-				</td>
-			</c:if>
+			<td>
+				<c:if test="${attMap.hasDur}">
+					<div class="marginleft1">
+						<input type="checkbox" name="${allDayEventId}"
+						<c:if test="${initEvent.allDayEvent}">
+							checked="checked"
+						</c:if> id="${prefix}_allDayEvent" 
+						onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " />&nbsp;<label for="${prefix}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
+					</div>
+				</c:if>	
+			</td>
 		</tr>
+
 	
 	<c:if test="${attMap.hasDur}">
 			<tr>
-				<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
-				<td>
+				<td valign="top" class="contentbold" style="padding-top: 4px;"><ssf:nlt tag="event.end" />:</td>
+				<td valign="top">
 					<input type="text" dojoType="dijit.form.DateTextBoxEventEditor" 
 						id="event_end_${prefix}" 
 						name="${dateId2}_fullDate" 
@@ -175,7 +178,7 @@
 						endDateWidgetId="event_end_${prefix}"
 						endTimeWidgetId="event_end_time_${prefix}" />
 				</td>
-				<td>
+				<td valign="top">
 					<span id="${prefix}eventEndTime"
 						<c:if test="${initEvent.allDayEvent}">
 							style="display: none; "
@@ -214,6 +217,193 @@
 							/>
 						<input type="hidden" name="${dateId2}_timeZoneSensitive" id="${dateId2}_timeZoneSensitive" value="" />							
 					</span>
+				</td>
+				<td valign="top">
+					<c:set var="interval" value="1" />
+					<c:set var="frequency" value="none" />
+						
+					<c:if test="${attMap.hasRecur}">
+						<c:if test="${!empty initEvent.interval}">
+							<c:set var="interval" value="${initEvent.interval}" />
+						</c:if>
+					
+						<c:choose>
+							<c:when test="${initEvent.frequencyString == 'DAILY'}">
+								<c:set var="frequency" value="day" />
+							</c:when>
+							<c:when test="${initEvent.frequencyString == 'WEEKLY'}">
+								<c:set var="frequency" value="week" />
+							</c:when>
+							<c:when test="${initEvent.frequencyString == 'MONTHLY'}">
+								<c:set var="frequency" value="month" />
+							</c:when>
+							<c:when test="${initEvent.frequencyString == 'YEARLY'}">
+								<c:set var="frequency" value="year" />
+							</c:when>
+						</c:choose>
+						
+						<c:set var="sundaySeleted" value="false" />
+						<c:set var="mondaySeleted" value="false" />
+						<c:set var="tuesdaySeleted" value="false" />
+						<c:set var="wednesdaySeleted" value="false" />
+						<c:set var="thursdaySeleted" value="false" />
+						<c:set var="fridaySeleted" value="false" />
+						<c:set var="saturdaySeleted" value="false" />
+						<c:set var="daynum" value="" />
+						<c:set var="dowstring" value="" />
+					
+						<c:forEach var="daypos" items="${initEvent.byDay}">
+							<c:choose>
+								<c:when test="${daypos.dayOfWeek == 1}">
+									<c:set var="sundaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 2}">
+									<c:set var="mondaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 3}">
+									<c:set var="tuesdaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 4}">
+									<c:set var="wednesdaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 5}">
+									<c:set var="thursdaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 6}">
+									<c:set var="fridaySeleted" value="true" />
+								</c:when>
+								<c:when test="${daypos.dayOfWeek == 7}">
+									<c:set var="saturdaySeleted" value="true" />
+								</c:when>
+							</c:choose>
+							<% // we only implement daynum (onDayCard) for months... in that case,
+							   // there will only be one DayPositiion entry in the array
+							%>
+							<c:choose>
+								<c:when test="${daypos.dayPosition == 0}" >
+									<c:set var="daystring" value="none" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == 1}" >
+									<c:set var="daystring" value="first" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == 2}" >
+									<c:set var="daystring" value="second" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == 3}" >
+									<c:set var="daystring" value="third" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == 4}" >
+									<c:set var="daystring" value="fourth" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == 5}" >
+									<c:set var="daystring" value="last" />
+								</c:when>
+							</c:choose>
+					
+							<c:set var="dowstring" value="${daypos.dayOfWeekString}" />
+					
+						</c:forEach>	
+					
+						<div class="ss_event_recurences marginleft1">
+							
+							<label for="${prefix}RepeatFrequency"><ssf:nlt tag="event.repeat" /></label>
+							
+							<select name="${prefix}_repeatUnit" 
+									id="${prefix}RepeatFrequency" 
+									onchange="${prefix}ssEventEditor.setFrequency(this)">
+								<option value="none"<c:if test="${frequency == 'none'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.none" /></option>
+								<option value="day"<c:if test="${frequency == 'day'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.daily" /></option>
+								<option value="week"<c:if test="${frequency == 'week'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.weekly" /></option>
+								<option value="month"<c:if test="${frequency == 'month'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.monthly" /></option>
+								<option value="year"<c:if test="${frequency == 'year'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.yearly" /></option>								
+							</select>
+							
+							<div id="${prefix}RequrencyDefinitions" style="visibility:hidden; display:none;" class="ss_event_repeat"></div>
+							<div id="${prefix}Range" style="visibility:hidden; display:none;" class="ss_event_range">
+								<table class="ss_style" border="0" cellpadding="2" cellspacing="0">
+									<% /* 
+										* Until stuff works like this:
+										*   count == 0 means repeats forever
+										*   count == -1 means until was specified and we don't know the count
+										*   count > 0 means we do know the count and the until member is also there and computed from count
+										*/
+									%>
+									<c:set var="count" value="0" />
+									<c:if test="${!empty initEvent.count}"> 
+										<c:set var="count" value="${initEvent.count}" />
+									</c:if>
+									<tr>
+										<td>
+											<ssf:nlt tag="event.repeatrange" />
+										</td>
+									</tr>
+									<tr>
+										<td 
+											<c:choose>
+												<c:when test="${count > 0}">class="ss_requrency_row_active"</c:when>
+												<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
+											</c:choose>
+											id="${prefix}_rangeSel_count_row">
+											<input type="radio" 
+													name="${prefix}_rangeSel" 
+													id="${prefix}_rangeSel_count" value="count"
+													<c:if test="${count > 0}" > checked="checked" </c:if>
+													onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_count_row')" />
+											<label for="${prefix}_rangeSel_count"><ssf:nlt tag="event.repeat" /></label>
+											<input type="text" class="ss_text" size="2" 
+													name="${prefix}_repeatCount" 
+													id="${prefix}_repeatCount"
+													<c:choose>
+														<c:when test="${count > 0}" > value="${count}" </c:when>
+														<c:otherwise> value="10" </c:otherwise>
+													</c:choose>
+													onfocus="${prefix}_checkRadio('${prefix}_rangeSel_count'); ${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_count'), '${prefix}_rangeSel_count_row'); "
+													onBlur="intRequiredBlur(this, INT_MODE_GT_ZERO, '<ssf:escapeJavaScript><ssf:nlt tag="event.error.integerRequired" /></ssf:escapeJavaScript>');" />
+											<label for="${prefix}_repeatCount"><ssf:nlt tag="event.times" /></label>
+										</td>
+									</tr>
+					
+									<tr>
+										<td 
+											<c:choose>
+												<c:when test="${count == -1}">class="ss_requrency_row_active"</c:when>
+												<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
+											</c:choose>   	
+											id="${prefix}_rangeSel_until_row" >
+											<input type="radio" name="${prefix}_rangeSel" id="${prefix}_rangeSel_until" value="until"
+												<c:if test="${count == -1}"> checked="checked" </c:if>
+												onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_until_row')" /> 
+											<label for="${prefix}_rangeSel_until"><ssf:nlt tag="event.repeat_until" /> </label>
+					
+											<input type="text" dojoType="dijit.form.DateTextBox" 
+											id="repeat_until_${prefix}" 
+											name="${endrangeId}_fullDate" 
+											lang="<ssf:convertLocaleToDojoStyle />" 
+											<c:if test="${!empty initEvent.until}">
+												value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+											</c:if>
+											/>
+						
+										</td>
+									</tr>
+									<tr>
+										<td 
+											<c:choose>
+												<c:when test="${count == 0}">class="ss_requrency_row_active"</c:when>
+												<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
+											</c:choose>   
+											id="${prefix}_rangeSel_forever_row">
+											<input type="radio" name="${prefix}_rangeSel" 
+													id="${prefix}_rangeSel_forever" value="forever" 
+													<c:if test="${count == 0}"> checked="checked" </c:if>
+													onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_forever_row')" /> 
+											<label for="${prefix}_rangeSel_forever"><ssf:nlt tag="event.repeat_forever" /> </label>
+										</td>
+									</tr>
+								</table>			
+							</div>		
+						</div>
+					</c:if>						
 				</td>
 			</tr>
 	</c:if>
@@ -255,193 +445,6 @@
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 		<input type="hidden" name="${property_name}_dateExistedBefore" value="true" />
 	</c:if>
-	
-
-<c:set var="interval" value="1" />
-<c:set var="frequency" value="none" />
-	
-<c:if test="${attMap.hasRecur}">
-	<c:if test="${!empty initEvent.interval}">
-		<c:set var="interval" value="${initEvent.interval}" />
-	</c:if>
-
-	<c:choose>
-		<c:when test="${initEvent.frequencyString == 'DAILY'}">
-			<c:set var="frequency" value="day" />
-		</c:when>
-		<c:when test="${initEvent.frequencyString == 'WEEKLY'}">
-			<c:set var="frequency" value="week" />
-		</c:when>
-		<c:when test="${initEvent.frequencyString == 'MONTHLY'}">
-			<c:set var="frequency" value="month" />
-		</c:when>
-		<c:when test="${initEvent.frequencyString == 'YEARLY'}">
-			<c:set var="frequency" value="year" />
-		</c:when>
-	</c:choose>
-	
-	<c:set var="sundaySeleted" value="false" />
-	<c:set var="mondaySeleted" value="false" />
-	<c:set var="tuesdaySeleted" value="false" />
-	<c:set var="wednesdaySeleted" value="false" />
-	<c:set var="thursdaySeleted" value="false" />
-	<c:set var="fridaySeleted" value="false" />
-	<c:set var="saturdaySeleted" value="false" />
-	<c:set var="daynum" value="" />
-	<c:set var="dowstring" value="" />
-
-	<c:forEach var="daypos" items="${initEvent.byDay}">
-		<c:choose>
-			<c:when test="${daypos.dayOfWeek == 1}">
-				<c:set var="sundaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 2}">
-				<c:set var="mondaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 3}">
-				<c:set var="tuesdaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 4}">
-				<c:set var="wednesdaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 5}">
-				<c:set var="thursdaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 6}">
-				<c:set var="fridaySeleted" value="true" />
-			</c:when>
-			<c:when test="${daypos.dayOfWeek == 7}">
-				<c:set var="saturdaySeleted" value="true" />
-			</c:when>
-		</c:choose>
-		<% // we only implement daynum (onDayCard) for months... in that case,
-		   // there will only be one DayPositiion entry in the array
-		%>
-		<c:choose>
-			<c:when test="${daypos.dayPosition == 0}" >
-				<c:set var="daystring" value="none" />
-			</c:when>
-			<c:when test="${daypos.dayPosition == 1}" >
-				<c:set var="daystring" value="first" />
-			</c:when>
-			<c:when test="${daypos.dayPosition == 2}" >
-				<c:set var="daystring" value="second" />
-			</c:when>
-			<c:when test="${daypos.dayPosition == 3}" >
-				<c:set var="daystring" value="third" />
-			</c:when>
-			<c:when test="${daypos.dayPosition == 4}" >
-				<c:set var="daystring" value="fourth" />
-			</c:when>
-			<c:when test="${daypos.dayPosition == 5}" >
-				<c:set var="daystring" value="last" />
-			</c:when>
-		</c:choose>
-
-		<c:set var="dowstring" value="${daypos.dayOfWeekString}" />
-
-	</c:forEach>	
-
-	<div class="ss_event_recurences">
-		
-		<label for="${prefix}RepeatFrequency"><ssf:nlt tag="event.repeat" /></label>
-		
-		<select name="${prefix}_repeatUnit" 
-				id="${prefix}RepeatFrequency" 
-				onchange="${prefix}ssEventEditor.setFrequency(this)">
-			<option value="none"<c:if test="${frequency == 'none'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.none" /></option>
-			<option value="day"<c:if test="${frequency == 'day'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.daily" /></option>
-			<option value="week"<c:if test="${frequency == 'week'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.weekly" /></option>
-			<option value="month"<c:if test="${frequency == 'month'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.monthly" /></option>
-			<option value="year"<c:if test="${frequency == 'year'}"> selected="true"</c:if>><ssf:nlt tag="event.editor.frequency.yearly" /></option>								
-		</select>
-		
-		<div id="${prefix}RequrencyDefinitions" style="visibility:hidden; display:none;" class="ss_event_repeat"></div>
-		<div id="${prefix}Range" style="visibility:hidden; display:none;" class="ss_event_range">
-			<table class="ss_style" border="0" cellpadding="2" cellspacing="0">
-				<% /* 
-					* Until stuff works like this:
-					*   count == 0 means repeats forever
-					*   count == -1 means until was specified and we don't know the count
-					*   count > 0 means we do know the count and the until member is also there and computed from count
-					*/
-				%>
-				<c:set var="count" value="0" />
-				<c:if test="${!empty initEvent.count}"> 
-					<c:set var="count" value="${initEvent.count}" />
-				</c:if>
-				<tr>
-					<td>
-						<ssf:nlt tag="event.repeatrange" />
-					</td>
-				</tr>
-				<tr>
-					<td 
-						<c:choose>
-							<c:when test="${count > 0}">class="ss_requrency_row_active"</c:when>
-							<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
-						</c:choose>
-						id="${prefix}_rangeSel_count_row">
-						<input type="radio" 
-								name="${prefix}_rangeSel" 
-								id="${prefix}_rangeSel_count" value="count"
-								<c:if test="${count > 0}" > checked="checked" </c:if>
-								onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_count_row')" />
-						<label for="${prefix}_rangeSel_count"><ssf:nlt tag="event.repeat" /></label>
-						<input type="text" class="ss_text" size="2" 
-								name="${prefix}_repeatCount" 
-								id="${prefix}_repeatCount"
-								<c:choose>
-									<c:when test="${count > 0}" > value="${count}" </c:when>
-									<c:otherwise> value="10" </c:otherwise>
-								</c:choose>
-								onfocus="${prefix}_checkRadio('${prefix}_rangeSel_count'); ${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_count'), '${prefix}_rangeSel_count_row'); "
-								onBlur="intRequiredBlur(this, INT_MODE_GT_ZERO, '<ssf:escapeJavaScript><ssf:nlt tag="event.error.integerRequired" /></ssf:escapeJavaScript>');" />
-						<label for="${prefix}_repeatCount"><ssf:nlt tag="event.times" /></label>
-					</td>
-				</tr>
-
-				<tr>
-					<td 
-						<c:choose>
-							<c:when test="${count == -1}">class="ss_requrency_row_active"</c:when>
-							<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
-						</c:choose>   	
-						id="${prefix}_rangeSel_until_row" >
-						<input type="radio" name="${prefix}_rangeSel" id="${prefix}_rangeSel_until" value="until"
-							<c:if test="${count == -1}"> checked="checked" </c:if>
-							onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_until_row')" /> 
-						<label for="${prefix}_rangeSel_until"><ssf:nlt tag="event.repeat_until" /> </label>
-
-						<input type="text" dojoType="dijit.form.DateTextBox" 
-						id="repeat_until_${prefix}" 
-						name="${endrangeId}_fullDate" 
-						lang="<ssf:convertLocaleToDojoStyle />" 
-						<c:if test="${!empty initEvent.until}">
-							value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
-						</c:if>
-						/>
-    
-					</td>
-				</tr>
-				<tr>
-					<td 
-						<c:choose>
-							<c:when test="${count == 0}">class="ss_requrency_row_active"</c:when>
-							<c:otherwise>class="ss_requrency_row_unactive"</c:otherwise>
-						</c:choose>   
-						id="${prefix}_rangeSel_forever_row">
-						<input type="radio" name="${prefix}_rangeSel" 
-								id="${prefix}_rangeSel_forever" value="forever" 
-								<c:if test="${count == 0}"> checked="checked" </c:if>
-								onchange="${prefix}_rangeRowMarker.mark(this, '${prefix}_rangeSel_forever_row')" /> 
-						<label for="${prefix}_rangeSel_forever"><ssf:nlt tag="event.repeat_forever" /> </label>
-					</td>
-				</tr>
-			</table>			
-		</div>		
-	</div>
-</c:if>
 	
 	<script type="text/javascript">
 		

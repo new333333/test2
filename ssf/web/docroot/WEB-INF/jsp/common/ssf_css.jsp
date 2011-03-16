@@ -3208,18 +3208,18 @@ a.ss_calendarButton:hover img {
  
  
 .ss_calendar_defaultCalendar {
-	border-color: #CCCCCC;
-	background-color: #E8EFF7;
+	border-color: #8bd3ea;
+	background-color: #e0f6fd;
 }
 
 .ss_calendar_calendar0 {
 	border-color: #66AA66;
-	background-color: #88CC88;
+	background-color: #9ae69a;
 }
 
 .ss_calendar_calendar1 {
 	border-color: #AA66AA;
-	background-color: #CC88CC;
+	background-color: #e8a9e8;
 }
 
 .ss_calendar_calendar2 {
@@ -3228,35 +3228,40 @@ a.ss_calendarButton:hover img {
 }
 
 .ss_calendar_calendar3 {
-	border-color: #AAAA66;
-	background-color: #CCCC88;
+	border-color: #e6b920;
+	background-color: #f9d868;
 }
 
 .ss_calendar_calendar4 {
-	border-color: #CCCCCC;
-	background-color: #E8EFF7;
+	border-color: #6cbdc7;
+	background-color: #b6f2f9;
 }
 
 .ss_calendar_more_box {
 	position: absolute;
 	z-index: 2003;
-	background-color: transparent;
-	border: 2px solid #AFC8E3;
-	background-color: #FFFFFF;
+	padding: 6px;
+	padding-bottom: 9px;
+    background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .ss_calendar_more_box_header {
-	height: 19px;
+	height: 22px;
 	width: 100%;
 	background-color: #ECECEC;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 }
 
 .ss_calendar_more_box_close {
 	float: right;
-  	background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
-	background-repeat: no-repeat;
-	height: 13px;
-	width: 13px;
+  	background: url(<html:imagesPath/>icons/close_gray16.png) no-repeat;
+	height: 16px;
+	width: 16px;
 	margin-top: 3px;
 	margin-right: 3px;
 }
@@ -3445,7 +3450,10 @@ div.ss_cal_eventBox {
 }
 
 div.ss_cal_moreBox {
-	background-color: #BBBBBB;
+	background-color: #b8b8b8;
+}
+div.ss_cal_moreBox a {
+	color: #fff !important;
 }
 
 div.ss_cal_moreBox a, div.ss_cal_moreBox a:hover {
@@ -3470,7 +3478,7 @@ div.ss_cal_monthEventBody a, div.ss_cal_monthEventBody a:hover,
 	div.ss_cal_monthEventBody a:link, div.ss_cal_monthEventBody a:active,
 	div.ss_cal_monthEventBody a:visited {
 	text-decoration: none;
-	color: #666666;
+	color: #353838;
 }
 
 /* Used to render the short-form time of the event */
@@ -3498,7 +3506,6 @@ ul.ss_calendarNaviBar {
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
-
 }
 
 ul.ss_calendarNaviBar li {
@@ -3633,7 +3640,7 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	border: 1px solid transparent;
 }
 
-.ss_event_editor .ss_event_recurences {
+.ss_event_editor {
 	padding: 7px 0 0 0;
 }
 

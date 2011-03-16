@@ -44,7 +44,7 @@ function ss_setTeamMembersVariables(prefix, formElement) {
 }
 
 function ss_toggleShowTeamMembersIcon(iconId) {
-	ss_toggleImage(iconId, "sym_s_expand.gif", "sym_s_down.gif");
+	ss_toggleImage(iconId, "sym_s_expand.gif", "sym_s_collapse.gif");
 }
 
 
