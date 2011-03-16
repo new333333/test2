@@ -923,6 +923,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return true;
 	}
 	
+	//Get the lowest parent quota
+	public Long getMinParentBinderQuota(Binder binder) {
+		Long leastQuota = null;
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
+		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
+			Binder parentBinder = binder;
+			while (parentBinder != null) {
+				try {
+					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());
+					if (binderQuota.getDiskQuota() != null) {
+						Long quota = binderQuota.getDiskQuota();
+						if (leastQuota == null || (quota != null && quota  < leastQuota)) {
+							//A new low
+							leastQuota = quota;
+						}
+					}
+				} catch(NoObjectByTheIdException e) {
+					//Skip any binders that don't have a quota set up (shouldn't happen, but...)
+				}
+				parentBinder = parentBinder.getParentBinder();
+			}
+		}
+		return leastQuota;
+	}
+	
 	//Get the most that this binder will allow for disk usage
 	public Long getMinBinderQuotaLeft(Binder binder) {
 		Long leastQuotaLeft = null;
