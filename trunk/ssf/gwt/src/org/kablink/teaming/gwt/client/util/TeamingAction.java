@@ -48,6 +48,7 @@ public enum TeamingAction implements IsSerializable
 	ADMINISTRATION( "Invoke Administration Page" ),
 	ADVANCED_SEARCH( "Runs Advanced Search in the Content Panel" ),
 	BROWSE_HIERARCHY( "Browse Teaming's Hierarchy" ),
+	CHECK_FOR_UPGRADE_TASKS( "Check for upgrade tasks that need to be performed" ),
 	CLOSE_ADMINISTRATION( "Close Administration Page" ),
 	EDIT_BRANDING( "Edit Branding" ),
 	EDIT_PERSONAL_PREFERENCES( "Edit Personal Preferences" ),

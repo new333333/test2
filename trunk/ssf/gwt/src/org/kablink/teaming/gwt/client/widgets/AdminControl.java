@@ -53,10 +53,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -66,16 +63,13 @@ import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Panel;
 
 
 /**
@@ -86,234 +80,10 @@ import com.google.gwt.user.client.ui.Panel;
 public class AdminControl extends Composite
 	implements ActionRequestor, ActionTrigger 
 {
-	private AsyncCallback<GwtUpgradeInfo> m_rpcGetUpgradeInfoCallback = null;
 	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
-	private AdminInfoDlg m_adminInfoDlg = null;
 
-	/**
-	 * Class used for the ui of the "Administration Information" dialog
-	 */
-	public class AdminInfoDlg extends DlgBox
-	{
-		private Button m_closeBtn;
-		private FlexTable m_table;
-		
-		/**
-		 * 
-		 */
-		public AdminInfoDlg(
-			boolean autoHide,
-			boolean modal,
-			int xPos,
-			int yPos )
-		{
-			super( autoHide, modal, xPos, yPos );
-		
-			String headerText;
-			
-			// Create the header, content and footer of this dialog box.
-			headerText = GwtTeaming.getMessages().adminInfoDlgHeader();
-			createAllDlgContent( headerText, null, null, null ); 
-		}// end LoginDlg()
-		
-		/**
-		 * Create all the controls that make up the dialog box.
-		 */
-		public Panel createContent( Object props )
-		{
-			FlowPanel mainPanel = null;
-			
-			mainPanel = new FlowPanel();
-			mainPanel.setStyleName( "teamingDlgBoxContent" );
-			
-			m_table = new FlexTable();
-			m_table.setCellSpacing( 4 );
-			m_table.addStyleName( "dlgContent" );
-			
-			// The content of the dialog will be created in refreshContent() which will be called
-			// when we get the GwtUpgradeInfo object from the server.
-			
-			mainPanel.add( m_table );
-
-			init( props );
-
-			return mainPanel;
-		}// end createContent()
-		
-		
-		/*
-		 * Override the createFooter() method so we can control what buttons are in the footer.
-		 */
-		public Panel createFooter()
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			
-			// Associate this panel with its stylesheet.
-			panel.setStyleName( "teamingDlgBoxFooter" );
-			
-			m_closeBtn = new Button( GwtTeaming.getMessages().close() );
-			m_closeBtn.addClickHandler( this );
-			m_closeBtn.addStyleName( "teamingButton" );
-			panel.add( m_closeBtn );
-
-			return panel;
-		}// end createFooter()
-		
-		
-		/**
-		 * 
-		 */
-		public Object getDataFromDlg()
-		{
-			// Nothing to do.
-			return new Object();
-		}// end getDataFromDlg()
-		
-		
-		/**
-		 *  
-		 */
-		public FocusWidget getFocusWidget()
-		{
-			return null;
-		}// end getFocusWidget()
-
-		
-		/**
-		 * Initialize the controls in the dialog with the values from the given GwtUpgradeInfo object.
-		 */
-		public void init( Object props )
-		{
-			// Nothing to do.
-		}// end init()
-
-		
-		/*
-		 * This method gets called when the user clicks on a button in the footer.
-		 */
-		public void onClick( ClickEvent event )
-		{
-			Object	source;
-			
-			// Get the object that was clicked on.
-			source = event.getSource();
-			
-			// Did the user click on close?
-			if ( source == m_closeBtn )
-			{
-				// Yes
-				hide();
-			}
-		}// end onClick()
-
-		/**
-		 * Refresh the content of this dialog with the new information found in the given GwtUpgradeInfo object.
-		 */
-		public void refreshContent( GwtUpgradeInfo upgradeInfo )
-		{
-			int row = 0;
-			FlexTable.FlexCellFormatter cellFormatter; 
-
-			// Clear any existing content.
-			m_table.clear();
-			
-			cellFormatter = m_table.getFlexCellFormatter();
-
-			// Add a row for the Teaming release information
-			{
-				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgRelease() );
-				cellFormatter.setWordWrap( row, 0, false );
-				m_table.setText( row, 1, upgradeInfo.getReleaseInfo() );
-				cellFormatter.setWordWrap( row, 1, false );
-				m_table.setText( row, 2, " " );
-				
-				++row;
-			}
-			
-			// Are there upgrade tasks that need to be performed?
-			if ( upgradeInfo.doUpgradeTasksExist() )
-			{
-				// Yes
-				
-				// Add text to let the user know there are upgrade tasks that need to be completed.
-				++row;
-				cellFormatter.setColSpan( row, 0, 2 );
-				cellFormatter.setWordWrap( row, 0, false );
-				m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgUpgradeTasksNotDone() );
-				++row;
-
-				// Are we dealing with the "admin" user?
-				if ( upgradeInfo.getIsAdmin() )
-				{
-					ArrayList<GwtUpgradeInfo.UpgradeTask> upgradeTasks;
-					
-					// Yes
-					// Get the list of upgrade tasks
-					upgradeTasks = upgradeInfo.getUpgradeTasks();
-					
-					if ( upgradeTasks != null && upgradeTasks.size() > 0 )
-					{
-						UListElement uList;
-						
-						uList = Document.get().createULElement();
-					
-						// Display a message for each upgrade task.
-						for ( GwtUpgradeInfo.UpgradeTask task : upgradeTasks )
-						{
-							String taskInfo;
-							
-							taskInfo = null;
-							switch ( task )
-							{
-							case UPGRADE_ACCESS_CONTROLS:
-								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeAccessControls();
-								break;
-								
-							case UPGRADE_DEFINITIONS:
-								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeDefinitions();
-								break;
-								
-							case UPGRADE_SEARCH_INDEX:
-								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeSearchIndex();
-								break;
-								
-							case UPGRADE_TEMPLATES:
-								taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeTemplates();
-								break;
-							}
-							
-							if ( taskInfo != null )
-							{
-								LIElement liElement;
-
-								liElement = Document.get().createLIElement();
-								liElement.setInnerText( taskInfo );
-								
-								uList.appendChild( liElement );
-							}
-						}
-						
-						cellFormatter.setColSpan( row, 0, 2 );
-						cellFormatter.setWordWrap( row, 0, false );
-						m_table.setHTML( row, 0, uList.getString() );
-					}
-				}
-				else
-				{
-					cellFormatter.setColSpan( row, 0, 2 );
-					cellFormatter.setWordWrap( row, 0, false );
-					m_table.setText( row, 0, GwtTeaming.getMessages().adminInfoDlgLoginAsAdmin() );
-					++row;
-				}
-			}
-		}// end refreshContent()
-	}// end AdminInfoDlg
-	
-	
 	/**
 	 * Class used for the ui for an administration action.
 	 */
@@ -577,9 +347,21 @@ public class AdminControl extends Composite
 					{
 						public void onClick( ClickEvent event  )
 						{
-							// Issue an ajax request to get the upgrade information from the server.
-							// When we get the response the callback will open the AdminInfoDlg.
-							getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback2 );
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								/**
+								 * 
+								 */
+								public void execute()
+								{
+									// Issue an ajax request to get the upgrade information from the server.
+									// When we get the response the callback will open the AdminInfoDlg.
+									getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback2 );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
 						}// end onClick()
 					}
 					);
@@ -638,8 +420,13 @@ public class AdminControl extends Composite
 				 */
 				public void onSuccess( GwtUpgradeInfo upgradeInfo )
 				{
+					int x;
+					int y;
+					
 					// Show the AdminInfoDlg
-					showAdminInfoDlg( upgradeInfo );
+					x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
+					y = m_adminActionsTreeControl.getAbsoluteTop();
+					showAdminInfoDlg( upgradeInfo, x, y );
 				}// end onSuccess()
 			};
 
@@ -715,34 +502,6 @@ public class AdminControl extends Composite
 		m_contentControl.addStyleName( "adminContentControl" );
 		mainPanel.add( m_contentControl );
 		
-		// Create the callback that will be used when we issue an ajax call to get upgrade information
-		m_rpcGetUpgradeInfoCallback = new AsyncCallback<GwtUpgradeInfo>()
-		{
-			/**
-			 * 
-			 */
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
-			}// end onFailure()
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			public void onSuccess( GwtUpgradeInfo upgradeInfo )
-			{
-				// Are there upgrade tasks that need to be performed?
-				if ( upgradeInfo.doUpgradeTasksExist() )
-				{
-					// Yes, invoke the AdminInfoDlg.
-					showAdminInfoDlg( upgradeInfo );
-				}
-			}// end onSuccess()
-		};
-
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end AdminControl()
@@ -820,9 +579,64 @@ public class AdminControl extends Composite
 	
 	
 	/**
+	 * Issue an ajax request to get information about the upgrade tasks that need to be performed.
+	 * If there are upgrade tasks that need to be performed show the list of tasks.
+	 */
+	public static void showUpgradeTasks()
+	{
+		AsyncCallback<GwtUpgradeInfo> rpcGetUpgradeInfoCallback = null;
+
+		// Create the callback that will be used when we issue an ajax call to get upgrade information
+		rpcGetUpgradeInfoCallback = new AsyncCallback<GwtUpgradeInfo>()
+		{
+			/**
+			 * 
+			 */
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			public void onSuccess( final GwtUpgradeInfo upgradeInfo )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					/**
+					 * 
+					 */
+					public void execute()
+					{
+						// Are there upgrade tasks that need to be performed?
+						if ( upgradeInfo.doUpgradeTasksExist() )
+						{
+							// Yes, invoke the AdminInfoDlg.
+							showAdminInfoDlg( upgradeInfo, 250, 100 );
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		};
+
+		// When we get the upgrade info from the server our callback will check to
+    	// see if upgrade tasks exists.  If they do, the callback will invoke the
+    	// AdminInfoDlg which will show the user the tasks they need to do.
+		getUpgradeInfoFromServer( rpcGetUpgradeInfoCallback );
+	}
+	
+	
+	/**
 	 * Issue an ajax request to get the upgrade information from the server.
 	 */
-	public void getUpgradeInfoFromServer( AsyncCallback<GwtUpgradeInfo> callback )
+	public static void getUpgradeInfoFromServer( AsyncCallback<GwtUpgradeInfo> callback )
 	{
 		GwtRpcServiceAsync rpcService;
 		
@@ -927,21 +741,15 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public void showAdminInfoDlg( GwtUpgradeInfo upgradeInfo )
+	public static void showAdminInfoDlg( GwtUpgradeInfo upgradeInfo, int x, int y )
 	{
-		// Invoke the "Administration Information" dialog.
-		if ( m_adminInfoDlg == null )
-		{
-			int x;
-			int y;
-			
-			x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth();
-			y = m_adminActionsTreeControl.getAbsoluteTop();
-			m_adminInfoDlg = new AdminInfoDlg( false, true, x, y );
-		}
+		AdminInfoDlg adminInfoDlg = null;
 		
-		m_adminInfoDlg.refreshContent( upgradeInfo );
-		m_adminInfoDlg.show();
+		// Invoke the "Administration Information" dialog.
+		adminInfoDlg = new AdminInfoDlg( false, true, x, y );
+		
+		adminInfoDlg.refreshContent( upgradeInfo );
+		adminInfoDlg.show();
 	}// end showAdminInfoDlg()
 	
 	
@@ -987,10 +795,9 @@ public class AdminControl extends Composite
 		{
 			public void execute()
 			{
-            	// When we get the upgrade info from the server our callback will check to
-            	// see if upgrade tasks exists.  If they do, the callback will invoke the
-            	// AdminInfoDlg which will show the user the tasks they need to do.
-				getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback );
+            	// Get the upgrade info from the server.  If there are upgrade tasks that
+				// need to be performed, AdminInfoDlg will display them.
+				showUpgradeTasks();
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

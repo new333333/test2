@@ -832,6 +832,12 @@ public class GwtMainPage extends Composite
 			relayoutPage( false );
 			break;
 		
+		case CHECK_FOR_UPGRADE_TASKS:
+			// Show a list of upgrade tasks that still need to be performed.
+			AdminControl.showUpgradeTasks();
+			
+			break;
+			
 		case CLOSE_ADMINISTRATION:
 			Scheduler.ScheduledCommand cmd;
 			
