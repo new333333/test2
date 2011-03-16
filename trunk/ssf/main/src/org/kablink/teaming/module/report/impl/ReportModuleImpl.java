@@ -359,7 +359,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.property("transactionType"))
 							.add(Projections.property("description"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-					.add(Restrictions.eq("entityType", EntityType.folderEntry.toString()))
+					.add(Restrictions.eq("entityType", EntityType.folderEntry.name()))
 				    .add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), 
 				    													AuditType.download.name()}))
 					.add(Restrictions.eq("startBy", ownerId))
@@ -713,6 +713,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.setProjection(proj)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entry.getZoneId()))
 							.add(Restrictions.eq("owningBinderId", binderId))
+							.add(Restrictions.eq("entityType", entry.getEntityType().name()))
 							.add(Restrictions.eq("entityId", entryId))
 							.add(Restrictions.in("transactionType", activityTypes))
 							.addOrder(Order.asc("startBy"));
