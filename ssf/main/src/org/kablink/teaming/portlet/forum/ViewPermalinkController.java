@@ -92,6 +92,11 @@ public class ViewPermalinkController  extends SAbstractController {
 		String sUrl = null;
 		AdaptedPortletURL adaptedPortletUrl = null;
 		response.setRenderParameters(request.getParameterMap());
+
+		HttpServletRequest httpReq = WebHelper.getHttpServletRequest(request);
+		boolean isMobile = false;
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		if (httpReq != null) isMobile = BrowserSniffer.is_mobile(httpReq, userAgents);
 		
 		try {
 			if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
@@ -128,7 +133,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 
 			boolean durangoUI = GwtUIHelper.isGwtUIActive(request);
-			if (durangoUI && adaptedPortletUrl != null)
+			if (!isMobile && durangoUI && adaptedPortletUrl != null)
 			{
 				String param;
 				
