@@ -30,32 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.aopalliance;
+package org.kablink.teaming.security.accesstoken;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.security.AccessControlException;
 
-public class LoggingInterceptor implements MethodInterceptor {
-
-	protected Log logger = LogFactory.getLog(getClass());
-
-	public Object invoke(MethodInvocation invocation) throws Throwable {
-		try {
-			long startTime = System.nanoTime();
-			
-			Object result = invocation.proceed();
-			
-			if(logger.isDebugEnabled())
-				logger.debug("(" + ((System.nanoTime()-startTime)/1000000.0) + " ms) " + invocation.toString());
-			
-			return result;
-		}
-		catch(Throwable t) {
-			logger.error(invocation.toString(), t);
-			throw t;
-		}
+public class ExpiredAccessTokenException extends AccessControlException {
+	
+	private static final long serialVersionUID = 1L;
+	
+	private static final String ExpiredAccessTokenlException_ErrorCode = "errorcode.expired.accesstoken";
+	
+	public ExpiredAccessTokenException(String accessToken) {
+		super(ExpiredAccessTokenlException_ErrorCode, new Object[] {accessToken});
 	}
 
 }
