@@ -194,53 +194,6 @@ public class QueryBuilder {
 		if ((lang == null) || (lang.equals(""))) lang = DEFAULT;
 		so.setLanguage(lang);
 		
-		// OLD (executed only for debugging purpose)
-		
-		if(logger.isDebugEnabled()) {
-			parseRootElementDoNotUse(root, so);
-		
-			//If searching as a different user, add in the acl for that user
-			if (asUserId != null && !ignoreAcls) {
-				QueryBuilder aclQ = new QueryBuilder(asUserId);
-				String acls = getAclClauseForIds(aclQ.userPrincipals, asUserId);
-				if (acls.length() != 0) {
-					String q = so.getQueryStringDoNotUse();
-					if (q.equalsIgnoreCase("(  )"))
-						q = "";
-					if (q.length() > 0)
-						q += "AND ";
-					q += acls;
-					so.setQueryStringDoNotUse(q);
-				}
-			}
-			
-			String q = so.getQueryStringDoNotUse();
-			// add acl check to every query. (If it's the superuser doing this query, then this clause
-			// will return the empty string.
-			
-			if (!ignoreAcls) { 
-				String acls = getAclClause();
-				if (acls.length() != 0) {
-					q = so.getQueryStringDoNotUse();
-					if (q.equalsIgnoreCase("(  )"))
-						q = "";
-					if (q.length() > 0)
-						q += "AND ";
-					q += acls;
-					so.setQueryStringDoNotUse(q);
-				}
-			}
-			
-			// add preDeleted clause to every query.  Check to see if the preDeleted option was passed in
-			if (q.equalsIgnoreCase("(  )"))
-				q = " "; // if it's an empty clause - delete it
-			if (q.length() > 0)
-				q += " AND ";  // if there's a clause there, then AND this to it
-			String preDeletedClause = getPreDeletedClauseDoNotUse(preDeleted);
-			q += preDeletedClause;
-			so.setQueryStringDoNotUse(q);
-		} // OLD
-
 		//Add on the ACL clauses that filter out anything the user is not allowed to see.
 		handleRootElement(root, so);
 		
@@ -278,15 +231,7 @@ public class QueryBuilder {
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					((SPropsUtil.getBoolean("querybuilder.debug.format.dom", false))? XmlUtil.asPrettyString(domQuery) : domQuery.asXML()) +
 					org.kablink.teaming.util.Constants.NEWLINE + 
-					"Query string (old) =>" +
-					org.kablink.teaming.util.Constants.NEWLINE + 
-					so.getQueryStringDoNotUse() + 
-					org.kablink.teaming.util.Constants.NEWLINE + 
-					"Lucene query (old) =>" +
-					org.kablink.teaming.util.Constants.NEWLINE + 
-					so.getQueryDoNotUse().toString() + 
-					org.kablink.teaming.util.Constants.NEWLINE + 
-					"Lucene query (new) =>" +
+					"Lucene query =>" +
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					so.getLuceneQuery().toString());
 					
@@ -783,7 +728,9 @@ public class QueryBuilder {
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
       	Set principalIds2 = new HashSet(principalIds);
-      	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+      	User user = null;
+      	if(userId != null)
+      		user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
       	
       	//Get the conditions that the current user passes
 		List<Condition> conditions = getSecurityDao().findFunctionConditions(RequestContextHolder.getRequestContext().getZoneId());
