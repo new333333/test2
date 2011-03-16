@@ -48,7 +48,7 @@ public interface ObjectKeys {
 	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="Kablink Conference";
 	
 	//Upgrade version
-	public static final String PRODUCT_UPGRADE_VERSION="2.0";
+	public static final String PRODUCT_UPGRADE_VERSION="3.1";
 
 	//Original zoneId for V1 zones
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";

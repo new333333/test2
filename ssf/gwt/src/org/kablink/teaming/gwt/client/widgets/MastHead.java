@@ -334,8 +334,29 @@ public class MastHead extends Composite
 					// Did we get a url for the "site administration" action?
 					if ( url != null && url.length() > 0 )
 					{
+						Scheduler.ScheduledCommand cmd;
+						
 						// Yes
-						m_adminLink.setVisible( true );
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							public void execute()
+							{
+								m_adminLink.setVisible( true );
+
+								// Since the user has administration rights, show them a list of
+								// upgrade tasks that still need to be performed.
+								// Notify all ActionHandler that have registered.
+								for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
+								{
+									// Calling each ActionHandler
+									actionHandlerIT.next().handleAction( TeamingAction.CHECK_FOR_UPGRADE_TASKS, null );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
 				}// end onSuccess()
 			};
