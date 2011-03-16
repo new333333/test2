@@ -166,8 +166,8 @@ function handleRepeatEveryOnFocus()
 		</select>
 			:
 		<select name="${schedPrefix}schedMinutes" id="${schedPrefix}schedMinutes" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>>
-			<option <c:if test="${schedule.minutes == '0'}">selected="selected"</c:if> value="00">00
-			<option <c:if test="${schedule.minutes == '5'}">selected="selected"</c:if> value="05">05
+			<option <c:if test="${schedule.minutes == '0' || schedule.minutes == '00'}">selected="selected"</c:if> value="00">00
+			<option <c:if test="${schedule.minutes == '5' || schedule.minutes == '05'}">selected="selected"</c:if> value="05">05
 			<option <c:if test="${schedule.minutes == '10'}">selected="selected"</c:if> value="10">10
 			<option <c:if test="${schedule.minutes == '15'}">selected="selected"</c:if> value="15">15
 			<option <c:if test="${schedule.minutes == '20'}">selected="selected"</c:if> value="20">20
