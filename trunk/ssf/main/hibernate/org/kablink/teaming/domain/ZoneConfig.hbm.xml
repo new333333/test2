@@ -25,8 +25,8 @@
 		<property name="defaultGuestHomePageId"/>
     </component>
     <component name="weekendsAndHolidaysConfig" class="org.kablink.teaming.domain.WeekendsAndHolidaysConfig">
-		<property name="holidays"/>
-		<property name="weekendDays"/>
+		<property name="holidays" length="4096"/>	<!-- Allows for 256 holidays. -->
+		<property name="weekendDays" length="128"/>
     </component>
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
  		 <property name="allowLocalLogin" />

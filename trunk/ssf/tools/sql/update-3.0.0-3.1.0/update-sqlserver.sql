@@ -18,6 +18,8 @@ create index diskQuota_bquota on SS_BinderQuota (diskQuota);
 alter table SS_ZoneConfig add binderQuotasInitialized tinyint;
 alter table SS_ZoneConfig add binderQuotasEnabled tinyint;
 alter table SS_ZoneConfig add binderQuotasAllowOwner tinyint;
+alter table SS_ZoneConfig add holidays varchar(4096) null;
+alter table SS_ZoneConfig add weekendDays varchar(128) null;
 CREATE INDEX entityOwner_clog on SS_ChangeLogs (entityType, entityId);
 CREATE INDEX operationDate_clog on SS_ChangeLogs (operationDate);
 CREATE INDEX entityOwner_audit on SS_AuditTrail (entityType, entityId);
