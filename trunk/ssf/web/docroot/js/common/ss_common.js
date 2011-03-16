@@ -5268,8 +5268,11 @@ function ss_moveThisTableRow(objToMove, namespace, upDown) {
     		prevRow = ss_getPrevRow( toMove );
     		if ( prevRow != null )
     		{
-    			// Yes, move the given row above the previous row.
-				toMove.parentNode.insertBefore( toMove, prevRow );
+    			//Yes, check to make sure this isn't the column header row "th"
+    			if (prevRow.getElementsByTagName("th").length <= 0) {
+	    			// Yes, move the given row above the previous row.
+					toMove.parentNode.insertBefore( toMove, prevRow );
+    			}
     		}
 		}
 		else
