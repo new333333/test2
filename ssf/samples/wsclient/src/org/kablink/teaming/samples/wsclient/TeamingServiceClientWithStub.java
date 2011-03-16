@@ -197,7 +197,7 @@ public class TeamingServiceClientWithStub {
 		System.out.println("Successfully added a micro blog entry. The id is " + id);
 	}
 	
-	private static void callGetTeamsUsingToken(TeamingServiceSoapBindingStub regularStub, long applicationId, long userId) throws Exception {
+	private static void callGetTeamsUsingToken(TeamingServiceSoapBindingStub regularStub, long applicationId, long userId, long delayInSecond) throws Exception {
 		try {
 			// Obtain an application-scoped token on behalf of the user. 
 			// This call is made through the regular web services endpoint.
@@ -206,13 +206,18 @@ public class TeamingServiceClientWithStub {
 				// If you're here, the request was successful.
 				System.out.println("Obtained token=" + token + " for application=" + applicationId + " user=" + userId);
 				
+				if(delayInSecond > 0) {
+					System.out.println("Sleeping for " + delayInSecond + " seconds");
+					Thread.sleep(delayInSecond*1000);
+				}
+				
 				// Invoke search_getTeams() web services operation using the token obtained above.
 				// This call must be made through the endpoint set up for token-based web services.
 				TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 				locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_TOKEN);
 				TeamingServiceSoapBindingStub tokenBasedStub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-				tokenBasedStub.search_getTeams(token);
-				System.out.println("Successfully invoked getTeams() operation");
+				TeamCollection tc = tokenBasedStub.search_getTeams(token);
+				System.out.println("Successfully invoked getTeams() operation with result size = " + tc.getTeams().length);
 			}
 			finally {
 				// Destroy the token. Again, this call is made through the regular web services endpoint.
@@ -229,13 +234,19 @@ public class TeamingServiceClientWithStub {
 		TeamingServiceSoapBindingStub stub = getStub();
 
 		// Non-existing application ID
-		callGetTeamsUsingToken(stub, 12345, 8);
+		callGetTeamsUsingToken(stub, 12345, 8, 0);
 		
 		// Non-existing user ID
-		callGetTeamsUsingToken(stub, 11, 888);
+		callGetTeamsUsingToken(stub, 57, 888, 0);
 		
 		// Existing application ID and user ID
-		callGetTeamsUsingToken(stub, 11, 8);
+		callGetTeamsUsingToken(stub, 57, 7, 0);
+		
+		// Existing application ID and user ID (with 10 second delay between obtaining and using token)
+		callGetTeamsUsingToken(stub, 57, 7, 10);
+		
+		// Existing application ID and user ID
+		callGetTeamsUsingToken(stub, 57, 7, 2);
 	}
 	
 	public static void fetchTaskEntriesModifiedBetweenTwoDates() throws Exception {
