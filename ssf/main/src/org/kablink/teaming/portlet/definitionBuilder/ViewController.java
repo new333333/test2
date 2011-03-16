@@ -222,6 +222,7 @@ public class ViewController extends SAbstractController {
 				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 				selectedItem = "";
 			} catch (DataIntegrityViolationException de) {
+				logger.error(NLT.get("definition.error.dataIntegrityIssue"), de);
 				response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.dataIntegrityIssue"));
 			}
 		}
