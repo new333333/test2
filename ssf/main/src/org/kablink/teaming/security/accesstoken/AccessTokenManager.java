@@ -44,8 +44,9 @@ public interface AccessTokenManager {
 	 * @param tokenStr string representation from which <code>token</code> was created
 	 * @param token
 	 * @throws InvalidAccessTokenException thrown if the access token is invalid
+	 * @throws ExpiredAccessTokenException thrown if the access token is expired
 	 */
-	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException;
+	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException, ExpiredAccessTokenException;
 	
 	/**
 	 * Returns an access token of request scoped.

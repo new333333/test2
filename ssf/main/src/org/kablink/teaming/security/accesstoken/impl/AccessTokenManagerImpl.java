@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessTokenException;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
+import org.kablink.teaming.security.accesstoken.ExpiredAccessTokenException;
 import org.kablink.teaming.security.accesstoken.InvalidAccessTokenException;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.security.accesstoken.AccessToken.TokenScope;
@@ -86,7 +87,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		this.transactionTemplate = transactionTemplate;
 	}
 
-	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException {
+	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException, ExpiredAccessTokenException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(token.getScope() == AccessToken.TokenScope.session) {
 			TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), token.getInfoId());
@@ -146,7 +147,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 										return null;
 									}
 								});
-						throw new InvalidAccessTokenException(tokenStr);
+						throw new ExpiredAccessTokenException(tokenStr);
 					}
 					// Everything looks good. Update the last accessed time. 
 					info.setLastAccessTime(now);
