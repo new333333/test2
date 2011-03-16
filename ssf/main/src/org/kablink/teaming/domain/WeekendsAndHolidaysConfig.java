@@ -47,8 +47,8 @@ import org.kablink.util.StringUtil;
  * @author drfoster@novell.com
  */
 public class WeekendsAndHolidaysConfig  {
-	private String m_holidays    = null;	//
-	private String m_weekendDays = null;	//
+	private String m_holidays    = null;	// Database size:  4096.  Allows for 256 holidays.
+	private String m_weekendDays = null;	// Database size:   128.
 	
 	/**
 	 * Class constructors.
