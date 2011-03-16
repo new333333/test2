@@ -75,7 +75,7 @@
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<input type="hidden" name="searchWorkflow_hidden" value="${block.searchWorkflow}" />
 				<div class="marginleft2">
-					<span class="ss_label"><ssf:nlt tag="searchForm.label.workflow"/>:</span>
+					<span class="ss_label"><ssf:nlt tag="searchForm.label.workflow"/></span>
 					<script type="text/javascript">
 						document.write(ss_searchWorkflows['${block.searchWorkflow}']);
 					</script>
@@ -111,7 +111,7 @@
 		<c:if test="${!empty ss_filterMap.additionalFilters.creator_by_id}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.creator_by_id}">
 				<div class="marginleft2">
-					<span class="ss_label"><ssf:nlt tag="searchForm.label.author"/>:</span> ${block.authorTitle}
+					<span class="ss_label"><ssf:nlt tag="searchForm.label.author"/></span> ${block.authorTitle}
 					<input type="hidden" name="searchAuthors_hidden" value="${block.authorTitle}" />
 					<input type="hidden" name="searchAuthors_selected_hidden" value="${block.authorId}" />
 				</div>
@@ -138,14 +138,13 @@
 				</c:choose>
 				
 				<div class="marginleft2">
-					<span class="ss_label"><ssf:nlt tag="searchForm.label.entry"/>:</span>
+					<span class="ss_label"><ssf:nlt tag="searchForm.label.entry"/></span>
 				<script type="text/javascript">
 					document.write(ss_searchEntries['<ssf:escapeJavaScript value="${block.entryType}"/>']);
 					if (ss_searchFields['<ssf:escapeJavaScript value="${block.entryType}"/>-<ssf:escapeJavaScript value="${block.entryElement}"/>']) {
 						document.write(" - " + ss_searchFields['<ssf:escapeJavaScript value="${block.entryType}"/>-<ssf:escapeJavaScript value="${block.entryElement}"/>']);
 					}
 				</script>
-				:
 				<c:choose>
 					<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
 						<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" dateStyle="medium"/>
@@ -172,7 +171,7 @@
 				<% /* There is only one value on the list. */ %>
 				<input type="hidden" name="searchDaysNumber_hidden" value="${block.daysNumber}" />
 				<div class="marginleft2">
-					<span class="ss_label"><ssf:nlt tag="searchForm.label.lastActivityInDays"/>:</span> ${block.daysNumber}
+					<span class="ss_label"><ssf:nlt tag="searchForm.label.lastActivityInDays"/></span> ${block.daysNumber}
 				</div>
 			</c:forEach>
 		</c:if>

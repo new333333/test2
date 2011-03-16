@@ -125,7 +125,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue, stepTitles) {
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	workflowsContainer.appendChild(remover);
-	workflowsContainer.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + ": "));
+	workflowsContainer.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + " "));
 
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
@@ -283,7 +283,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 	dojo.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", ss_imagesPath + "pics/delete.png");
 	div.appendChild(remover);
-	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelEntry + ": "));
+	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelEntry + " "));
 	
 	var entryTypeDiv = document.createElement('div');
 	entryTypeDiv.id = "placeholderEntry"+orderNo;
@@ -815,7 +815,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 	aDiv.id = "placeholderAuthor"+orderNo;
 	aDiv.style.display = "inline";
 
-	div.appendChild(document.createTextNode(" " + ss_searchFormLabelAuthor + ": "));
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelAuthor + " "));
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
@@ -846,7 +846,7 @@ function ss_addAuthor(orderNo, authorId, authorName) {
 function ss_addLastActivity(orderNo, initialDaysNumber) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.appendChild(document.createTextNode(" " + ss_searchFormLabelLastActivity + ": "));
+	div.appendChild(document.createTextNode(" " + ss_searchFormLabelLastActivity + " "));
 	
 	var selectBox = document.createElement('select');
 	selectBox.name="searchDaysNumber"+orderNo;
