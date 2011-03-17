@@ -1131,6 +1131,7 @@ public class WebKeys {
     public static final String BINDER_QUOTAS_MIN_QUOTA_PARENT_BINDER="ss_binderMinQuotaParentBinder";
     public static final String BINDER_QUOTAS_MAX_USED="ss_binderMaxUsed";
     public static final String BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED="ss_binderQuotasAllowBinderOwnerEnabled";
+    public static final String BINDER_QUOTAS_ALLOW_MANAGE_BINDER_QUOTAS="ss_binderQuotasAllowManageBinderQuotas";
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";

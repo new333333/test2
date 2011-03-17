@@ -901,8 +901,7 @@ public class WorkspaceTreeHelper {
 		//Set Binder Quota
 		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration) ||
 				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
-			if (bs.getAdminModule().isBinderQuotaEnabled() &&
-					bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled()) {
+			if (bs.getAdminModule().isBinderQuotaEnabled()) {
 				qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));
 				url = response.createRenderURL();

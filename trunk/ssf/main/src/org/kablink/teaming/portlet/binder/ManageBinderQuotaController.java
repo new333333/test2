@@ -108,6 +108,7 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 		model.put(WebKeys.BINDER_QUOTA, getAdminModule().getBinderQuota(binder));
 		model.put(WebKeys.BINDER_QUOTAS_INITIALIZED, getAdminModule().isBinderQuotaInitialized());
 		model.put(WebKeys.BINDER_QUOTAS_ENABLED, getAdminModule().isBinderQuotaEnabled());
+		model.put(WebKeys.BINDER_QUOTAS_ALLOW_MANAGE_BINDER_QUOTAS, getAdminModule().testAccess(AdminOperation.manageFunction));
 		model.put(WebKeys.BINDER_QUOTAS_ALLOW_BINDER_OWNER_ENABLED, getAdminModule().isBinderQuotaAllowBinderOwnerEnabled());
 		model.put(WebKeys.BINDER_QUOTAS_MIN_QUOTA_PARENT_BINDER, getBinderModule().getMinParentBinderQuota(binder));
 		return new ModelAndView(WebKeys.VIEW_MANAGE_BINDER_QUOTA, model);
