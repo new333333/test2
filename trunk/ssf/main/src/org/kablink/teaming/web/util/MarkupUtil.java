@@ -463,7 +463,7 @@ public class MarkupUtil {
 						zoneUUID, normalizedTitle, title, isMobile);
 			}
 			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title, Boolean isMobile) {
-				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
+				if (WebKeys.MARKUP_EXPORT.equals(type) || WebKeys.MARKUP_EMAIL.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), zoneUUID, normalizedTitle);
 				}
 				String url = "";
@@ -768,7 +768,7 @@ public class MarkupUtil {
 						zoneUUID, normalizedTitle, title, isMobile);
 			}
 			public String getTitleUrl(String binderId, String zoneUUID, String normalizedTitle, String title, Boolean isMobile) {
-				if (WebKeys.MARKUP_EXPORT.equals(type) || res == null) {
+				if (WebKeys.MARKUP_EXPORT.equals(type) || WebKeys.MARKUP_EMAIL.equals(type) || res == null) {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), normalizedTitle);
 				}
 				String url = "";
@@ -919,7 +919,7 @@ public class MarkupUtil {
 		try {
 			Matcher matcher; //Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 			//do first, before add hrefs
-			if (type.equals(WebKeys.MARKUP_EXPORT)) {
+			if (type.equals(WebKeys.MARKUP_EXPORT) || type.equals(WebKeys.MARKUP_EMAIL)) {
 				//tinymce stores relative urls.  If this isn't going to be used by tinymce, need to change the urls
 				//This isn't true anymore, but doesn't hurt
 				matcher = hrefPattern.matcher(outputBuf);
@@ -1192,7 +1192,7 @@ public class MarkupUtil {
 		    	
 	    	//When viewing the string, replace the markup title links with real links    [[page title]]
 			if ((entityType.equals(EntityType.folderEntry.name()) || entityType.equals(EntityType.folder.name())) && 
-					(type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT))) {
+					(type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_EXPORT) || type.equals(WebKeys.MARKUP_EMAIL))) {
 		    	matcher  = pageTitleUrlTextPattern.matcher(outputBuf);
 				if (matcher.find()) {
 					loopDetector = 0;
