@@ -1769,8 +1769,9 @@ public class ListFolderHelper {
 		}
 
 		//Set Binder Quota
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
-				bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+		if (!folder.isMirrored() && 
+				(bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
+				bs.getAdminModule().testAccess(AdminOperation.manageFunction))) {
 			if (bs.getAdminModule().isBinderQuotaEnabled() &&
 					bs.getAdminModule().isBinderQuotaAllowBinderOwnerEnabled()) {
 				qualifiers = new HashMap();
