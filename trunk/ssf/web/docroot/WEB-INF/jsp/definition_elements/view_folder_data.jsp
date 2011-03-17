@@ -61,6 +61,12 @@
 	} else if (itemType.equals("url")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_url.jsp" /><%
 		
+	} else if (itemType.equals("date")) {
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_date.jsp" /><%
+	
+	} else if (itemType.equals("date_time")) {
+		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_date_time.jsp" /><%
+		
 	} else if (itemType.equals("checkbox")) {
 		%><jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_data_checkbox.jsp" /><%
 		
