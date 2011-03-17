@@ -155,7 +155,7 @@ function ss_checkIfQuotaValid(s) {
       </div>
 
       <div style="padding:16px 10px 0px 10px;">
-       <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled}">
+       <c:if test="${ss_binderQuotasAllowBinderOwnerEnabled || ss_binderQuotasAllowManageBinderQuotas}">
         <c:if test="${empty ss_binderQuota.diskQuota}">
           <span class="ss_bold"><ssf:nlt tag="quota.changeQuota"/></span>
           <input type="text" name="quota" value="" 
@@ -170,6 +170,9 @@ function ss_checkIfQuotaValid(s) {
             onChange='if (!ss_checkIfQuotaValid(this.value)){this.value="";}'
             /><ssf:nlt tag="file.sizeMB"/>
         </c:if>
+       </c:if>
+       <c:if test="${!ss_binderQuotasAllowBinderOwnerEnabled && !ss_binderQuotasAllowManageBinderQuotas}">
+       <span><ssf:nlt tag="quota.changeQuotaNotAllowed"/></span>
        </c:if>
 	  </div>
     </fieldset>
