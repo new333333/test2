@@ -1454,8 +1454,15 @@ public class BuildDefinitionDivs extends TagSupport {
 
 					} else {
 						sb.append(propertyConfigCaption);
-						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
-						sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
+						if (readonly.equals("")) {
+							sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
+							sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
+						} else {
+							sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_readonly_" + propertyId + "\" size=\"40\" ");
+							sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
+							sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" ");
+							sb.append("value=\""+Html.formatTo(propertyValue0)+"\" />\n");
+						}
 					}
 					//See if this property has any help
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
