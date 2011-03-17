@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-public class FieldBuilderAddressUnsortable extends FieldBuilderGeneric {
+public class FieldBuilderAddressUnsortable extends FieldBuilderGenericNotAnalyzed {
 
 	@Override
 	public String getSortFieldName(String dataElemName) {

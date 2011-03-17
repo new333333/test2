@@ -32,5 +32,5 @@
  */
 package org.kablink.teaming.module.definition.index;
 
-public class FieldBuilderAddressSortable extends FieldBuilderGeneric {
+public class FieldBuilderAddressSortable extends FieldBuilderGenericNotAnalyzed {
 }

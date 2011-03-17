@@ -32,10 +32,34 @@
  */
 package org.kablink.teaming.module.definition.index;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.lucene.document.Field;
 
 public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric {
 	
+	@Override
+	protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+		Field[] fields = super.build(dataElemName, dataElemValue, args);
+		if(extraIndexingForLowercase()) {
+			String strToIndex = getStringToIndex(dataElemValue);
+			if(strToIndex != null) {
+				String lower = strToIndex.toLowerCase();
+				if(!lower.equals(strToIndex)) {
+					Field lowerField = new Field(getSearchFieldName(dataElemName), lower, getFieldStore(), getFieldIndex());
+					Field[] newFields = new Field[fields.length+1];
+					int i;
+					for(i = 0; i < fields.length; i++)
+						newFields[i] = fields[i];
+					newFields[i] = lowerField;
+					fields = newFields;
+				}
+			}
+		}
+		return fields;
+	}
+
 	@Override
 	public String getSortFieldName(String dataElemName) {
 		return getSearchFieldName(dataElemName);
@@ -46,4 +70,9 @@ public abstract class FieldBuilderGenericNotAnalyzed extends FieldBuilderGeneric
 		return Field.Index.NOT_ANALYZED_NO_NORMS;
 	}
 
+	protected boolean extraIndexingForLowercase() {
+		// By default, if the input string contains at least one uppercase character, then
+		// we also index the all-lower case version of the string as well.
+		return true; 
+	}
 }
