@@ -89,6 +89,7 @@ import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.util.Validator;
 import org.springframework.beans.factory.InitializingBean;
@@ -707,7 +708,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     		logger.debug("checking for timers");
     		//collect timer info and close context,
     		//otherwise something messes up with closing the iterator.
-    		Iterator iter = schedulerSession.findTimersByDueDate(100);
+    		Iterator iter = schedulerSession.findTimersByDueDate(SPropsUtil.getInt("workflow.timer.max.result.count", 10000));
     		boolean isDueDateInPast=true; 
     		while( (iter.hasNext()) && (isDueDateInPast)) {
     			Timer timer = (Timer) iter.next();
