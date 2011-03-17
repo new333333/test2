@@ -98,25 +98,15 @@
 		conditionRow.appendChild(conditionTd2);
 		div = document.createElement("div");
 		conditionTd2.appendChild(div);
-		input = document.createElement("input");
-		input.setAttribute("type", "radio");
-		input.setAttribute("name", "ipAddressAccessCondition"+ss_nextIpAddressConditionId);
-		input.setAttribute("value", "allow");
-		input.setAttribute("checked", "checked");
-		div.appendChild(input)
-		span = document.createElement("span");
-		span.appendChild(document.createTextNode(allowAccessText));
-		div.appendChild(span);
+		//Due to a bug in IE7, we have to use innerHTML to add radio buttons
+		var allowText = "<input type='radio' name='ipAddressAccessCondition"+ss_nextIpAddressConditionId+"'";
+		allowText += " value='allow' checked='checked'/><span>"+allowAccessText+"</span>\n";
+		div.innerHTML = allowText;
 		div = document.createElement("div");
 		conditionTd2.appendChild(div);
-		input = document.createElement("input");
-		input.setAttribute("type", "radio");
-		input.setAttribute("name", "ipAddressAccessCondition"+ss_nextIpAddressConditionId);
-		input.setAttribute("value", "deny");
-		div.appendChild(input)
-		span = document.createElement("span");
-		span.appendChild(document.createTextNode(denyAccessText));
-		div.appendChild(span);
+		var denyText = "<input type='radio' name='ipAddressAccessCondition"+ss_nextIpAddressConditionId+"'";
+		denyText += " value='deny'/><span>"+denyAccessText+"</span>\n";
+		div.innerHTML = denyText;
 		
 		ss_nextIpAddressConditionId++;
 	}
