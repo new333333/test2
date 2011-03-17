@@ -33,7 +33,9 @@
 package org.kablink.teaming.module.folder.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
@@ -466,7 +469,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
  
    protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags) {
-		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
+	   User user = RequestContextHolder.getRequestContext().getUser();
+	   getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
 		EntryBuilder.copyAttributes(source, entry);
  		//copy tags
  		List myTags = new ArrayList();
@@ -487,6 +491,36 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	processChangeLog(entry, ChangeLog.ADDENTRY);
 		getCoreDao().evict(tags);
+		
+		//Add any workflows
+		Set<WorkflowState> workflowStates = source.getWorkflowStates();
+
+		for (WorkflowState state : workflowStates) {
+			Definition def = state.getDefinition();
+
+			EntityIdentifier entityIdentifier = new EntityIdentifier(entry.getId(), 
+					EntityIdentifier.EntityType.folderEntry);
+
+			Map options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, state.getState());
+			
+			//Workflow State needs a modification timestamp
+			//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	    	Calendar current = Calendar.getInstance();
+	    	current.setTime(new Date());
+			
+			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, user.getName());
+			options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, current);				
+			
+			try {
+				getWorkflowModule().addEntryWorkflow((FolderEntry) entry,
+					entityIdentifier, def, options);
+				
+			} catch(Exception e) {
+				logger.error(e);
+			}
+		}
+
 		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags);
    	 
    }
