@@ -10,5 +10,6 @@
 <!-- use length to force medium blog in mysql -->
     <property name="seenMap" not-null="true" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="lastPrune"/>
+    <property name="pruneDays" access="field"/>
   </class>
 </hibernate-mapping>
