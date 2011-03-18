@@ -110,8 +110,8 @@
 	          <span class="ss_newpage_box_next_prev" id="ss_showEntryDivNextPrev"></span>
 	        </td>
 	        <td valign="top" align="right" nowrap width="4%">
-	          <span class="ss_newpage_box_close"><a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><img 
-					  	border="0" src="<html:imagesPath/>icons/close_teal16.png"/></a></span>
+	          <span class="ss_newpage_box_close ss_close_text"><a href="javascript: ;" onClick="ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><ssf:nlt tag="button.close"/>&nbsp;<img 
+					  	border="0" src="<html:imagesPath/>icons/close_teal16.png" align="absmiddle" /></a></span>
 			</td>
 			</tr>
 			</table>
