@@ -919,6 +919,10 @@ public class ViewEntryController extends  SAbstractController {
 				Map<String,Definition> workflowAssociations = entry.getParentBinder().getWorkflowAssociations();
 				List<Definition> configWorkflows = entry.getParentBinder().getWorkflowDefinitions();
 				Set<WorkflowState>runningWorkflows = entry.getWorkflowStates();
+				Set<Definition>runningWorkflowDefinitions = new HashSet<Definition>();
+				for (WorkflowState ws : runningWorkflows) {
+					runningWorkflowDefinitions.add(ws.getDefinition());
+				}
 				if (!configWorkflows.isEmpty() || !runningWorkflows.isEmpty() || !workflowAssociations.isEmpty()) {
 					Map qualifiers = new HashMap();
 					
@@ -949,7 +953,9 @@ public class ViewEntryController extends  SAbstractController {
 					//Add the associated workflows to configWorkflows
 					for (Definition associatedDef : workflowAssociations.values()) {
 						//This makes it possible to start any associated workflow if it isn't running
-						if (!configWorkflows.contains(associatedDef)) configWorkflows.add(associatedDef);
+						if (!configWorkflows.contains(associatedDef) && !runningWorkflowDefinitions.contains(associatedDef)) {
+							configWorkflows.add(associatedDef);
+						}
 					}
 					for (Definition workflowDef:configWorkflows) {
 						if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
