@@ -141,7 +141,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 
 	  <td class="ss_title_bar" nowrap><span id="ss_showEntryDivNextPrev"></span></td>
 	  <c:if test="<%= showCloseIcon %>">
-		<td class="ss_title_bar" align="right" style="padding-left: 10px;"><span class="ss_box_small_icon ss_nowrap"><a style="text-decoration: none; color: #fff !important; font-size: 11px;" 
+		<td class="ss_title_bar" align="right" style="padding-left: 10px;"><span class="ss_box_small_icon ss_nowrap ss_close_text"><a 
 			 href="javascript: ;" onClick="<%= showCloseRoutine %>;return false;"><ssf:nlt tag="button.close"/>&nbsp;<img align="absmiddle" border="0" <ssf:alt/>
 			 height="16" hspace="0" 
 			 name="p_${renderResponse.namespace}_close" 

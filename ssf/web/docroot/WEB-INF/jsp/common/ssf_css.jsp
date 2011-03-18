@@ -1792,6 +1792,13 @@ a:hover.ss_box_prev {
 	-webkit-border-top-left-radius: 5px;
 	-webkit-border-top-right-radius: 5px;
 }
+.ss_close_text a {
+	text-decoration: none;
+	color: #fff !important;
+	font-size: 11px;
+	font-weight: normal;
+	padding-left: 10px;
+	}
 .ss_newpage_box_close {
 	padding: 5px 8px 0px 0px;
 	}
