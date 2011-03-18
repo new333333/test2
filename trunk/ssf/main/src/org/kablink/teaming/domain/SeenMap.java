@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.ArrayList;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.search.Constants;
 
 
@@ -54,6 +55,7 @@ public class SeenMap extends ZonedObject {
 	protected Long principalId;
 	protected Map seenMap;
 	protected Date lastPrune;
+	protected Long pruneDays;	//used if this user has too many items in seenMap.
 	
 	
 	protected SeenMap() {		
@@ -74,7 +76,6 @@ public class SeenMap extends ZonedObject {
 		this.principalId = principalId;
 	}	
 
-	
 	/**
 	 * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType" not-null="true"
 	 * @return
@@ -97,16 +98,35 @@ public class SeenMap extends ZonedObject {
 		this.lastPrune = lastSeenPrune;
 	}
 
+	/**
+	 * @hibernate.property
+	 * @param entry
+	 */
+	public Long getPruneDays() {
+		return pruneDays;
+	}
+	public void setPruneDays(Long pruneDays) {
+		this.pruneDays = pruneDays;
+	}	
+
     protected void pruneMap(Date now) {
     	Iterator it;
     	Map.Entry me;
+    	Long seenMapTimeout = ObjectKeys.SEEN_MAP_TIMEOUT;
+    	if (pruneDays != null) {
+    		//This user is being cut back, so use the value in pruneDays for the timeout
+    		seenMapTimeout = pruneDays * 24 * 60 * 60 * 1000;  //Days converted into milliseconds
+    	}
+    	Long maxSeenMapSize = SPropsUtil.getLong("seen.maxNumberOfSeenEntries", 20000L);
     	long nowT = now.getTime();
-    	if ((lastPrune == null) || ((nowT - lastPrune.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT)) {
+    	if ((lastPrune == null) || ((nowT - lastPrune.getTime()) > seenMapTimeout) ||
+    			seenMap.size() > maxSeenMapSize || 
+    			(pruneDays != null && seenMap.size() < maxSeenMapSize * 60 / 100)) {
         	ArrayList removeList = new ArrayList();
     		it = seenMap.entrySet().iterator();
     		while (it.hasNext()) {
     			 me = (Map.Entry) it.next();
-    			if (nowT - ((Date)me.getValue()).getTime() > ObjectKeys.SEEN_MAP_TIMEOUT) {
+    			if (nowT - ((Date)me.getValue()).getTime() > seenMapTimeout) {
     				removeList.add(me.getKey());
     			}
     		}
@@ -115,6 +135,28 @@ public class SeenMap extends ZonedObject {
     		}
     	   	removeList.clear();
     	    setLastPrune(now);
+    	    
+    	    //See if this pruning got it down to below 80% of the max
+    	    if (seenMap.size() > maxSeenMapSize * 80 / 100) {
+    	    	//The map is too large, we will try pruning it more by limiting the pruneDays a little
+    	    	if (pruneDays == null) {
+    	    		pruneDays = ObjectKeys.SEEN_TIMEOUT_DAYS;
+    	    	}
+    	    	pruneDays--;
+    	    	if (pruneDays < 0) pruneDays = 0L;
+    	    	//The next pruning cycle should cut a few more out of the map
+    	    	//This will occur when the next entry is marked seen.
+    	    	
+    	    } else if (seenMap.size() < maxSeenMapSize * 60 / 100) {
+    	    	//The number of entries in the map is now below 6%, we can increase the prune days if they had been cut back
+    	    	if (pruneDays != null) {
+    	    		pruneDays++;
+    	    		if (pruneDays >= ObjectKeys.SEEN_TIMEOUT_DAYS) {
+    	    			//Ok, we are back to the default setting, clear pruneDays
+    	    			pruneDays = null;
+    	    		}
+    	    	}
+    	    }
     	}
 
     }
@@ -170,8 +212,13 @@ public class SeenMap extends ZonedObject {
       	boolean ret = false;
       	seen = (Date)seenMap.get(id);
    		now = new Date();
+    	Long seenMapTimeout = ObjectKeys.SEEN_MAP_TIMEOUT;
+    	if (pruneDays != null) {
+    		//This user is being cut back, so use the value in pruneDays for the timeout
+    		seenMapTimeout = pruneDays * 24 * 60 * 60 * 1000;  //Days converted into milliseconds
+    	}
         if (seen == null) {
-    		if ((modDate != null) && (now.getTime() - modDate.getTime()) > ObjectKeys.SEEN_MAP_TIMEOUT) {
+    		if ((modDate != null) && (now.getTime() - modDate.getTime()) > seenMapTimeout) {
      		    ret = true;
     		}
     	} else {
