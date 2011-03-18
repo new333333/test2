@@ -90,10 +90,6 @@ public class ResponseHeaderFilter implements Filter {
 					response.setHeader( "Cache-control", "public,max-age=31536000,no-check" );
 					response.setHeader( "Expires", "Wed, 01 Jan 2020 00:00:00 GMT" );
 				}
-
-				// Force IE7 emulation.  We need to do this until we
-				// fix the problems throughout Vibe that require this.
-				response.setHeader("X-UA-Compatible", "IE=EmulateIE7");
 			}
 			
 			// Set the provided HTTP response parameters
