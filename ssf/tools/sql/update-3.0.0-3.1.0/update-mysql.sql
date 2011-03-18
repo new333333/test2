@@ -25,4 +25,5 @@ CREATE INDEX operationDate_clog on SS_ChangeLogs (operationDate);
 CREATE INDEX entityOwner_audit on SS_AuditTrail (entityType, entityId);
 CREATE INDEX startDate_audit ON SS_AuditTrail (startDate);
 CREATE INDEX startBy_audit ON SS_AuditTrail (startBy);
-INSERT INTO SS_SchemaInfo values (18);
+alter table SS_SeenMap add pruneDays bigint;
+INSERT INTO SS_SchemaInfo values (19);
