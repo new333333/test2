@@ -309,23 +309,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems,ctx);
 	        SimpleProfiler.stop("addBinder_filterFiles");
 	        
-	 	    //If a binder was created, go create the BinderQuota record
-	        SimpleProfiler.start("addBinderQuotaRecord");
-	        // The following part requires update database transaction.
-	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	public Object doInTransaction(TransactionStatus status) {
-	        		//Create a BinderQuota for this binder
-	        		BinderQuota bq = new BinderQuota();
-	   	    		bq.setZoneId(binder.getZoneId());
-	   	    		bq.setBinderId(binder.getId());
-	   	    		bq.setDiskSpaceUsed(0L);
-	   	    		bq.setDiskSpaceUsedCumulative(0L);
-	   	    		getCoreDao().save(bq);
-	                return null;
-	        	}
-	        });
-	        SimpleProfiler.stop("addBinderQuotaRecord");
-
 	        SimpleProfiler.start("addBinder_processFiles");
 	        // We must save the entry before processing files because it makes use
 	        // of the persistent id of the entry. 
@@ -587,6 +570,26 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	processChangeLog(binder, ChangeLog.ADDBINDER);
     	getReportModule().addAuditTrail(AuditType.add, binder);
     	
+    	
+    	// Should have a BinderQuota for the newly created binder.
+    	BinderQuota bq;
+    	try {
+    		// Normally, BinerQuota shouldn't already exist for a newly created binder. 
+    		// However, due to the way this code was written previously, there's slight chance that
+    		// inconsistency can arise between the binder and the corresponding quota object. 
+    		// This code will fix the inconsistency if detected.
+    		bq = getCoreDao().loadBinderQuota(binder.getZoneId(), binder.getId());
+    		bq.setDiskQuota(null);
+    		bq.setDiskSpaceUsed(0L);
+    		bq.setDiskSpaceUsedCumulative(0L);
+    	} catch(NoObjectByTheIdException e) {
+    		bq = new BinderQuota();
+    		bq.setZoneId(binder.getZoneId());
+    		bq.setBinderId(binder.getId());
+    		bq.setDiskSpaceUsed(0L);
+    		bq.setDiskSpaceUsedCumulative(0L);
+    		getCoreDao().save(bq);
+    	}
     }
 
     //inside write transaction    
