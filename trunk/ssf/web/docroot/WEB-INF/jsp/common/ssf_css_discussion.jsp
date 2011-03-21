@@ -471,6 +471,10 @@ a.ss_new_thread {
 /*	height:38px !important;		*/
 	margin-bottom: 0px;
 	width: 100%;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
 	}
 /***********This is the style sub-group for the "Go boxes" ***********/
 .ss_goBox {
@@ -481,9 +485,9 @@ a.ss_new_thread {
 	}
 .ss_pagination_goTable {
 /*	height:38px !important;		*/
-	background-color: #ccc !important;
 	padding:4px 0px;
 	white-space: nowrap !important;
+	background-color: transparent !important;
 	}
 .ss_paginationGo {
 	font-size: ${ss_style_font_fineprint} !important;
