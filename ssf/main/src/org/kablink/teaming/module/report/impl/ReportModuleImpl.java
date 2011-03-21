@@ -360,8 +360,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 							.add(Projections.property("description"))))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 					.add(Restrictions.eq("entityType", EntityType.folderEntry.name()))
-				    .add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), 
-				    													AuditType.download.name()}))
+				    .add(Restrictions.in("transactionType", new Object[] {AuditType.view.name()}))
 					.add(Restrictions.eq("startBy", ownerId))
 					.add(Restrictions.ge("startDate", startDate))
 					.add(Restrictions.lt("startDate", endDate));
