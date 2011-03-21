@@ -38,9 +38,9 @@
 <div class="ss_style ss_portlet">
 <br/>
 
-<form class="ss_style ss_form" 
+<form class="ss_style ss_form" name="form1"
   id="${renderResponse.namespace}fm" 
-  method="post" onSubmit="return ss_onSubmit(this);">
+  method="post" onSubmit="return ss_onSubmit(this, true);">
 <span class="ss_titlebold"><ssf:nlt tag="toolbar.teams.addMember"/></span><br><br>
 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
@@ -51,8 +51,8 @@
 <tr>
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td><ssf:nlt tag="team.inheritTeamFromParent.no"/></td>
-  <td><input type="submit" class="ss_submit" name="inheritBtnNo" value="<ssf:nlt tag="button.Yes"/>" 
-    onClick="ss_buttonSelect('inheritBtnNo');">
+  <td><input type="button" class="ss_submit" name="inheritBtnNo" value="<ssf:nlt tag="button.Yes"/>" 
+    onClick="ss_buttonSelect('inheritBtnNo');ss_submitFindForm('form1');">
   </td>
 </tr>
 </c:if>
@@ -63,8 +63,8 @@
 <tr>
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td><ssf:nlt tag="team.inheritTeamFromParent.yes"/></td>
-  <td><input type="submit" class="ss_submit" name="inheritBtnYes" value="<ssf:nlt tag="button.Yes"/>" 
-    onClick="ss_buttonSelect('inheritBtnYes');">
+  <td><input type="button" class="ss_submit" name="inheritBtnYes" value="<ssf:nlt tag="button.Yes"/>" 
+    onClick="ss_buttonSelect('inheritBtnYes');ss_submitFindForm('form1');">
   </td>
 </tr>
 </c:if>
@@ -110,10 +110,10 @@
 
 <br/>  
 
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" 
-  onClick="ss_buttonSelect('okBtn');">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>" 
-  onClick="ss_buttonSelect('closeBtn');">
+<input type="button" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" 
+  onClick="ss_buttonSelect('okBtn');ss_submitFindForm('form1');">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>" 
+  onClick="ss_buttonSelect('closeBtn');ss_submitFindForm('form1');">
 
 </form>
 </div>
