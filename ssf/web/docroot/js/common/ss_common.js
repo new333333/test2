@@ -4723,10 +4723,10 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, viewType,
 function ss_pinEntry(obj, binderId, entryId) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"pin_entry", binderId:binderId, entryId:entryId});
 	var imgObj = obj.getElementsByTagName("img").item(0);
-	if (imgObj.src.indexOf("ss_pin_orange.png") > 0) {
-		imgObj.src = ss_imagesPath + "pics/discussion/ss_pin_grey.png";
+	if (imgObj.src.indexOf("pin_orange.png") > 0) {
+		imgObj.src = ss_imagesPath + "pics/discussion/pin_gray.png";
 	} else {
-		imgObj.src = ss_imagesPath + "pics/discussion/ss_pin_orange.png"
+		imgObj.src = ss_imagesPath + "pics/discussion/pin_orange.png"
 	}
 	ss_post_to_url(url);
 }
