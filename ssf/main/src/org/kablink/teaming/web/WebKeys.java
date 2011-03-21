@@ -1163,6 +1163,9 @@ public class WebKeys {
     
     public static final String ZONE_INFO_LIST="ss_zoneInfoList";
 
+    public static final String READ_FILE_LAST = "last";
+    public static final String READ_FILE_LAST_VIEW = "lastView";
+    
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SCHEDULE_INFO2="ssScheduleInfo2";

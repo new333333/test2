@@ -337,13 +337,20 @@ public class WebUrlUtil {
 	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt) {
 		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, false);
 	}
-	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt, boolean useVersionNumber) {
-		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber);
+	public static String getFileUrl(HttpServletRequest req, String path, FileAttachment fAtt, 
+			boolean useVersionNumber, boolean download) {
+		return getFileUrl(WebUrlUtil.getServletRootURL(req), path, fAtt, useVersionNumber, download);
 	}
 	public static String getFileUrl(String webPath, String action, FileAttachment fAtt) {
 		return getFileUrl(webPath, action, fAtt, false);
 	}
-	public static String getFileUrl(String webPath, String action, FileAttachment fAtt, boolean useVersionNumber) {
+	public static String getFileUrl(String webPath, String action, FileAttachment fAtt, 
+			boolean useVersionNumber) {
+		return getFileUrl(webPath, action, fAtt, false, false);
+	}
+	//"download" is a flag which if true is used to cause an audit trail of the download to be made
+	public static String getFileUrl(String webPath, String action, FileAttachment fAtt, 
+			boolean useVersionNumber, boolean download) {
 		DefinableEntity entity = fAtt.getOwner().getEntity();
 
 		if (fAtt instanceof VersionAttachment) {
@@ -359,7 +366,7 @@ public class WebUrlUtil {
 		} else {
 			return getFileUrl(webPath, action, entity.getId().toString(), entity.getEntityType().name(), String.valueOf(fAtt.getId()),  
 					String.valueOf(fAtt.getModification().getDate().getTime()), null, 
-					fAtt.getFileItem().getName());
+					fAtt.getFileItem().getName(), download);
 		}
 	}
 	public static String getFileUrl(PortletRequest req, String action, DefinableEntity entity, String fileName) {
@@ -530,11 +537,20 @@ public class WebUrlUtil {
 		return info;
 	}
 	
-	
 	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String fileId, String attDate, String version, 
 			String fileName) {
+		return getFileUrl(webPath, action, entityId, entityType, fileId, attDate, version, fileName, false);
+	}
+	public static String getFileUrl(String webPath, String action, String entityId, String entityType, String fileId, String attDate, String version, 
+			String fileName, boolean download) {
 		if (Validator.isNull(fileId)) fileId = "-";
-		if (Validator.isNull(version)) version = "last";
+		if (Validator.isNull(version)) {
+			if (download) {
+				version = WebKeys.READ_FILE_LAST_VIEW;
+			} else {
+				version = WebKeys.READ_FILE_LAST;
+			}
+		}
 		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
 		StringBuffer webUrl = new StringBuffer(webPath + action);
 		webUrl.append(Constants.SLASH + entityType);

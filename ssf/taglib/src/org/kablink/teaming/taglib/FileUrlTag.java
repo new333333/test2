@@ -84,11 +84,16 @@ public class FileUrlTag extends BodyTagSupport {
 			HttpServletRequest req =
 				(HttpServletRequest)pageContext.getRequest();
 			String webUrl = null;
-			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber);
+			boolean download = false;
+			if (webPath.equals(WebKeys.ACTION_READ_FILE) && !useVersionNumber) {
+				//When viewing files, audit that it was explicitly viewed
+				download = true;
+			}
+			if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber, download);
 			else if (searchResult != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, searchResult);
 			else if (fileId != null && !this.zipUrl) {
 				attachment = (FileAttachment)entity.getAttachment(fileId); 
-				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber);
+				if (attachment != null) webUrl = WebUrlUtil.getFileUrl(req, webPath, attachment, useVersionNumber, download);
 			} else {
 				if (this.baseUrl) {
 					//We are building a base url that has no file name
@@ -103,7 +108,7 @@ public class FileUrlTag extends BodyTagSupport {
 					//try the first entity
 					Set<FileAttachment> atts = entity.getFileAttachments(); 
 					if (!atts.isEmpty())
-						webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next(), useVersionNumber);
+						webUrl = WebUrlUtil.getFileUrl(req, webPath, atts.iterator().next(), useVersionNumber, download);
 				}
 				
 			}
