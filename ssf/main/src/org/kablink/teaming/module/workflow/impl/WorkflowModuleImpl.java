@@ -750,7 +750,20 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
  						//token id is id of workflowState
  						WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
  		   				//only process timers in current zone
- 						if (ws == null || !ws.getDefinition().getZoneId().equals(zoneId)) return null;;
+ 						if(ws == null) {
+ 							// There is no workflow state associated with this timer, which is an indication
+ 							// that this is an orphaned timer. This means that somehow the system failed to
+ 							// purge the associated timers when the workflow was removed from the system. 
+ 							// This code purges these left over timers. Otherwise, these orphan timers will 
+ 							// remain in the system forever causing both performance and space problem.
+ 							schedulerSession.deleteTimer(timer);
+ 							return null;
+ 						}
+ 						else if(!ws.getDefinition().getZoneId().equals(zoneId)) {
+ 							// Zone ids do not match. Only process timers in current zone. This timer should be
+ 							// processed when the respective zone's turn comes.
+ 							return null;
+ 						}
  						final Entry entry = (Entry)ws.getOwner().getEntity();					
  						if (entry.isDeleted() || entry.getParentBinder().isDeleted()) {
  							schedulerSession.deleteTimer(timer);
