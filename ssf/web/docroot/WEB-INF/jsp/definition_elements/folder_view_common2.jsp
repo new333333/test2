@@ -112,7 +112,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 	<c:if test="${slidingTableStyle == 'fixed'}">
       <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="2%">
-        <img src="<html:imagesPath/>pics/discussion/pin_gray.png" width="17" height="18" 
+        <img src="<html:imagesPath/>pics/discussion/pin_gray.png" width="16" height="16" 
           title="<%= NLT.get("discussion.pinned").replaceAll("\"", "&QUOT;") %>">
       </ssf:slidingTableColumn>
 	</c:if>
@@ -123,7 +123,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   	<c:if test="${!empty ssFolderColumnTitles['number']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['number']}</c:set>
 	</c:if>
-    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="6%">
+    <ssf:slidingTableColumn  style="${slidingTableColStyle}" width="5%">
 
       <a href="<ssf:url binderId="${ssBinder.id}" action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
