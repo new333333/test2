@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
 import org.kablink.util.Validator;
 import org.springframework.web.servlet.ModelAndView;
@@ -100,7 +101,8 @@ public abstract class AbstractReadFileController extends SAbstractController {
 			if (fa == null) {
 				fa = (FileAttachment)entity.getAttachment(fileAttachmentId);
 			}
-			if (fa != null && !fileVersion.equals("last")) {
+			if (fa != null && !fileVersion.equals(WebKeys.READ_FILE_LAST) && 
+					!fileVersion.equals(WebKeys.READ_FILE_LAST_VIEW)) {
 				//request for a specific version
 				fa = fa.findFileVersionByNumber(Integer.valueOf(fileVersion));
 			}

@@ -58,6 +58,7 @@ import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
@@ -240,7 +241,10 @@ public class ReadFileController extends AbstractReadFileController {
 						response.setHeader("Content-Length", 
 								String.valueOf(FileHelper.getLength(parent, entity, fa)));
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-						getReportModule().addFileInfo(AuditType.download, fa);
+						if (args[WebUrlUtil.FILE_URL_VERSION].equals(WebKeys.READ_FILE_LAST_VIEW)) {
+							//This is a real file download, so mark it in the audit trail
+							getReportModule().addFileInfo(AuditType.download, fa);
+						}
 					}
 					catch(Exception e) {
 						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
