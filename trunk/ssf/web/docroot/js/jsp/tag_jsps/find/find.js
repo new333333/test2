@@ -1033,4 +1033,20 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		ssFind.objectsByFormName[formName][elementName] = obj;
 	}
 	
+	//Routine to conditionally submit the form (called from an <input type="button"...>)
+	function ss_submitFindForm(formName) {
+		var formObj = self.document.forms[formName];
+		if (formObj != null) {
+			if (ss_onSubmit(formObj, true)) {
+				//Ok to submit
+				//But first, add the selected button to the form
+			    var hiddenObj = document.createElement("input");
+			    hiddenObj.setAttribute("type", "hidden");
+			    hiddenObj.setAttribute("name", ss_buttonSelected);
+			    hiddenObj.setAttribute("value", ss_buttonSelected);
+			    formObj.appendChild(hiddenObj);
+				formObj.submit();
+			}
+		}
+	}
 }
