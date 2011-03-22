@@ -43,16 +43,21 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.UserAppConfig;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 
 
-public class SsfsUtil {
-	
+/**
+ * ?
+ *  
+ * @author ?
+ */
+public class SsfsUtil {	
 	private static String[] editInPlaceFileExtensionsIE;
 	private static String[] editInPlaceFileExtensionsNonIE;
 	
@@ -65,6 +70,7 @@ public class SsfsUtil {
 		append("/").toString();
 	}
 		
+	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrl(HttpServletRequest req, 
 			Binder binder, DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
@@ -82,6 +88,7 @@ public class SsfsUtil {
 		return sb.toString();
 	}
 
+	@SuppressWarnings("unused")
 	public static String getInternalAttachmentUrlEncoded(PortletRequest req, Binder binder, 
 			DefinableEntity entity, FileAttachment fa) throws Exception {
 		StringBuffer sb = getInternalCommonPart(req, binder, entity);
@@ -240,26 +247,23 @@ public class SsfsUtil {
 		return supportsViewAsHtml(relativeFilePath);
 	}
 	public static boolean supportsViewAsHtml(String relativeFilePath) { 
-		String extension = null;
-		
 		int index = relativeFilePath.lastIndexOf(".");
-		if(index < 0)
-			return false; // No extension. can not support edit-in-place
-		else
-			extension = relativeFilePath.substring(index).toLowerCase();
-		
-		String viewAsHtmlKey;
-		if (ReleaseInfo.isLicenseRequiredEdition())
-		     viewAsHtmlKey = "view.as.html.file.stellent.extensions";
-		else viewAsHtmlKey = "view.as.html.file.openoffice.extensions";
-		String[] s = SPropsUtil.getStringArray(viewAsHtmlKey, ",");
-		for(int i = 0; i < s.length; i++)
-			s[i] = s[i].toLowerCase();
+		if (0 > index) {
+			return false;	// No extension.  Cannot support View as HTML.
+		}
+		String extension = relativeFilePath.substring(index).toLowerCase();
 
-		for(int i = 0; i < s.length; i++)
-		{
-			if(extension.endsWith(s[i]))
+		ConvertedFileModule cfm = ((ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule"));
+		String viewAsHtmlKey;
+		if (cfm.isOOHtmlConverter())
+		     viewAsHtmlKey = "view.as.html.file.openoffice.extensions";
+		else viewAsHtmlKey = "view.as.html.file.stellent.extensions";
+		String[] s = SPropsUtil.getStringArray(viewAsHtmlKey, ",");
+
+		for (int i = 0; i < s.length; i += 1) {
+			if (extension.endsWith(s[i].toLowerCase())) {
 				return true;
+			}
 		}
 		
 		return false;
@@ -337,8 +341,11 @@ public class SsfsUtil {
 	}
 	public static boolean supportApplets(HttpServletRequest req) {
 		Boolean allowed = SPropsUtil.getBoolean("applet.support.in.application", false);
-		if (!allowed) return false;
-		//Special check for mac
+		if (!allowed) {
+			return false;
+		}
+		
+		// Special check for Mac.
 		String platform = BrowserSniffer.getOSInfo(req).toString();
 		if (platform.equals("mac")) {
 			String[] browsers = SPropsUtil.getStringArray("applet.support.in.mac.browsers", ",");
