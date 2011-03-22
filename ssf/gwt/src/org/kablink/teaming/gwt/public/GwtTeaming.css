@@ -659,11 +659,9 @@ body, table td, select
 /* Styles for the row that holds the header in the table that holds the colors in the "color picker" dialog. */
 .colorPickerHeaderTR
 {
-	background: transparent url(images/teal_slice.png) repeat-x scroll center;
-	border-top: 1px solid #5AA7E3;
-	color: white;
-	font-size: 0.85em;
-	font-weight: bold;
+	background: transparent url("images/blends/gray_blend8_28.png") repeat-x scroll center;
+	color: #505354;
+	font-size: 0.8em;
 	height: 24px;
 	padding: 0.2em;
 	text-align: left;
@@ -682,7 +680,8 @@ body, table td, select
 .colorPickerTable
 {
 	background-color: #F6F6F6;
-	border-bottom: 0 solid #F6F6F6;
+	border: 1px solid #c4c4c4;
+	border-bottom: 0px solid;
 	font-family: Arial,Helvetica,Geneva,Swiss,SunSans-Regular;
 }
 
@@ -756,7 +755,7 @@ body, table td, select
 /* Style used for the "Advanced" link in the "edit branding" dialog. */
 .editBrandingAdvancedLink, .editorOverridesLink1, .selfRegLink1
 {
-	padding: 4px 8px;
+	padding: 2px 8px;
 }
 
 /* Style used for the Browse link in the "edit branding" dialog. */
@@ -2489,7 +2488,19 @@ body, table td, select
 
 
 /* Styles uses for sub-header and button backgrounds. */
-.subhead-control-bg1, .btn-bg1
+.btn-bg1
+{
+	-moz-border-radius:15px;
+	-webkit-border-radius: 15px;
+	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
+	border:1px solid #c4c4c4;
+	font-size:11px;
+	margin-top:5px;
+	padding:2px 5px;
+	text-align:center;
+	position: relative;
+}
+.subhead-control-bg1
 {
 	background: url(images/trans10_black_blend.png) repeat;
 	background-position:bottom;
@@ -2618,17 +2629,21 @@ a.ss_new_thread {
 	margin-left: 5px;
 }
 .qView-a {
+	color: #353838 !important;
 	font-size:10px;
 	font-style:normal;
 	font-weight:normal;
 	cursor: pointer;
 	display:block;
 }
+.qView-a:hover {
+	color: #135c8f;
+}
 .qView-action  {
 	-moz-border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend2.png") repeat-x scroll center bottom #FFFFFF;
-	color:#000000;
+	border:1px solid #c4c4c4;
 	font-size:11px;
 	margin-top:5px;
 	padding:2px 5px;
@@ -2636,19 +2651,25 @@ a.ss_new_thread {
 	position: relative;
 }
 .qView-action2 {
-	color: #FFFFFF;
-	background: url(images/teal_slice.png) repeat-x center;
+	color: #135c8f;
+	background: url("images/teal_slice.png") repeat-x center;
+	border:1px solid #91daf2;
 }
 .qView-action-following  {
 	-moz-border-radius:15px;
 	-webkit-border-radius: 15px;
 	background:url("images/putty_blend4.png") repeat-x scroll center bottom #FFFFFF;
-	border:1px solid #BBBBB9;
-	color:#1C5894;
+	border:1px solid #b8b8b8;
+	color:#353838;
 	font-size:11px;
 	margin-top:5px;
 	padding:2px 5px;
 	text-align:center;
+}
+.qView-action-following:hover {
+	background: url("images/teal_slice.png") repeat-x center;
+	border:1px solid #91daf2;
+	color:#135c8f;
 }
 .qView-action-img {
 	background:url("images/trans50_black_arrowleft.png");
