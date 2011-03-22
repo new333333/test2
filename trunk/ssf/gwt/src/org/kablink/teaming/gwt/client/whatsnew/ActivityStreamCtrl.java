@@ -210,17 +210,26 @@ public class ActivityStreamCtrl extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( ActivityStreamData activityStreamData )
+			public void onSuccess( final ActivityStreamData activityStreamData )
 			{
 				hideSearchingText();
 
 				if ( activityStreamData != null )
 				{
-					// Add the search results to the search results widget.
-					addSearchResults( activityStreamData );
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Add the search results to the search results widget.
+							addSearchResults( activityStreamData );
+							
+							m_searchInProgress = false;
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
-				
-				m_searchInProgress = false;
 			}// end onSuccess()
 		};
 		m_searchInProgress = false;
@@ -400,9 +409,18 @@ public class ActivityStreamCtrl extends Composite
 						// Is the user composing a reply?
 						if ( isReplyInProgress() == false )
 						{
+							Scheduler.ScheduledCommand cmd;
+							
 							// No
 							// Refresh the activity stream.
-							refreshActivityStream();
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								public void execute()
+								{
+									refreshActivityStream();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
 						}
 					}
 				}// end onSuccess()

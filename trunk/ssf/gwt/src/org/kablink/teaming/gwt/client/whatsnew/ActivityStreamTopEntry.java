@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -392,11 +393,20 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 				/**
 				 * 
 				 */
-				public void onSuccess( String binderPermalink )
+				public void onSuccess( final String binderPermalink )
 				{
-					// Take the user to the parent binder.
-					m_parentBinderPermalink = binderPermalink;
-					gotoParentBinder();
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Take the user to the parent binder.
+							m_parentBinderPermalink = binderPermalink;
+							gotoParentBinder();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 			
