@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -111,8 +111,13 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 				}
 				
 				public void onSuccess(List<TreeInfo> tiList)  {
-					m_treeDisplay = new TreeDisplayHorizontal(wsTree, tiList);
-					m_treeDisplay.render(selectedBinderId, mainPanel);
+					// Asynchronously render the horizontal tree so
+					// that we can release the AJAX request ASAP.
+					renderHTreeAsync(
+						mainPanel,
+						wsTree,
+						selectedBinderId,
+						tiList);
 				}
 			});
 			
@@ -128,52 +133,13 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 						selectedBinderId);
 				}
 				public void onSuccess(TreeInfo ti)  {
-					// Construct the vertical tree display.
-					m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
-					
-					// Are we starting up showing what's new?
-					if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
-						// Yes!  Then we enter activity stream mode by
-						// default.  Tell the menu about the context...
-						m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
-						
-						// ...and enter activity stream mode.
-						m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-						GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
-							public void onFailure(Throwable t) {
-								// If we couldn't get it, handle the
-								// failure...
-								GwtClientHelper.handleGwtRPCFailure(
-									t,
-									GwtTeaming.getMessages().rpcFailure_GetDefaultActivityStream());
-								
-								// ...and just go site wide.
-								ActivityStreamInfo asi = new ActivityStreamInfo();
-								asi.setActivityStream(ActivityStream.SITE_WIDE);
-								asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
-								m_treeDisplay.enterActivityStreamMode(asi);
-							}
-							
-							public void onSuccess(ActivityStreamInfo asi) {
-								// If the user doesn't have a default
-								// saved or the default saved is
-								// current binder...
-								if ((null == asi) || (ActivityStream.CURRENT_BINDER == asi.getActivityStream())) {
-									// ...default to site wide.
-									asi = new ActivityStreamInfo();
-									asi.setActivityStream(ActivityStream.SITE_WIDE);
-									asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
-								}
-								m_treeDisplay.enterActivityStreamMode(asi);
-							}
-						});
-					}
-					
-					else if (GwtClientHelper.hasString(selectedBinderId)){
-						// No, we aren't starting in activity stream
-						// mode!  Render the tree.
-						m_treeDisplay.render(selectedBinderId, mainPanel);
-					}
+					// Asynchronously render the vertical tree so that
+					// we can release the AJAX request ASAP.
+					renderVTreeAsync(
+						mainPanel,
+						wsTree,
+						selectedBinderId,
+						ti);
 				}
 			});
 			
@@ -328,6 +294,94 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		style.setHeight( height, Style.Unit.PX );
 	}
 
+	/*
+	 * Asynchronously renders a horizontal tree.
+	 */
+	private void renderHTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final List<TreeInfo> tiList) {
+		Scheduler.ScheduledCommand renderHTree;
+		renderHTree = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				renderHTreeNow(mainPanel, wsTree, selectedBinderId, tiList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(renderHTree);
+	}
+	
+	/*
+	 * Synchronously renders a horizontal tree.
+	 */
+	private void renderHTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, String selectedBinderId, List<TreeInfo> tiList) {
+		m_treeDisplay = new TreeDisplayHorizontal(wsTree, tiList);
+		m_treeDisplay.render(selectedBinderId, mainPanel);
+	}
+	
+	/*
+	 * Asynchronously renders a vertical tree.
+	 */
+	private void renderVTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final TreeInfo ti) {
+		Scheduler.ScheduledCommand renderVTree;
+		renderVTree = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				renderVTreeNow(mainPanel, wsTree, selectedBinderId, ti);
+			}
+		};
+		Scheduler.get().scheduleDeferred(renderVTree);
+	}
+	
+	/*
+	 * Synchronously renders a vertical tree.
+	 */
+	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, String selectedBinderId, TreeInfo ti) {
+		// Construct the vertical tree display.
+		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
+		
+		// Are we starting up showing what's new?
+		if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
+			// Yes!  Then we enter activity stream mode by
+			// default.  Tell the menu about the context...
+			m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
+			
+			// ...and enter activity stream mode.
+			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
+			GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
+				public void onFailure(Throwable t) {
+					// If we couldn't get it, handle the
+					// failure...
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetDefaultActivityStream());
+					
+					// ...and just go site wide.
+					ActivityStreamInfo asi = new ActivityStreamInfo();
+					asi.setActivityStream(ActivityStream.SITE_WIDE);
+					asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
+					m_treeDisplay.enterActivityStreamMode(asi);
+				}
+				
+				public void onSuccess(ActivityStreamInfo asi) {
+					// If the user doesn't have a default
+					// saved or the default saved is
+					// current binder...
+					if ((null == asi) || (ActivityStream.CURRENT_BINDER == asi.getActivityStream())) {
+						// ...default to site wide.
+						asi = new ActivityStreamInfo();
+						asi.setActivityStream(ActivityStream.SITE_WIDE);
+						asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
+					}
+					m_treeDisplay.enterActivityStreamMode(asi);
+				}
+			});
+		}
+		
+		else if (GwtClientHelper.hasString(selectedBinderId)){
+			// No, we aren't starting in activity stream
+			// mode!  Render the tree.
+			m_treeDisplay.render(selectedBinderId, mainPanel);
+		}
+	}
+	
 	/**
 	 * Called to reset the main menu context to that previously loaded.
 	 */

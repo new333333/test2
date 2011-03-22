@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -130,9 +131,23 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		/*
-		 * Collapses the current row.
+		 * Asynchronously collapses the current row.
 		 */
-		private void doCollapseRow() {
+		private void doCollapseRowAsync() {
+			Scheduler.ScheduledCommand collapser;
+			collapser = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					doCollapseRowNow();
+				}
+			};
+			Scheduler.get().scheduleDeferred(collapser);
+		}
+
+		/*
+		 * Synchronously collapses the current row.
+		 */
+		private void doCollapseRowNow() {
 			if (!m_ti.isActivityStream()) {
 				m_ti.clearChildBindersList();
 			}
@@ -142,9 +157,23 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		}
 
 		/*
-		 * Expands the current row.
+		 * Asynchronously expands the current row.
 		 */
-		private void doExpandRow(TreeInfo expandedTI) {
+		private void doExpandRowAsync(final TreeInfo expandedTI) {
+			Scheduler.ScheduledCommand expander;
+			expander = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					doExpandRowNow(expandedTI);
+				}
+			};
+			Scheduler.get().scheduleDeferred(expander);
+		}
+		
+		/*
+		 * Synchronously expands the current row.
+		 */
+		private void doExpandRowNow(TreeInfo expandedTI) {
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
@@ -167,7 +196,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// stream?
 				if (m_ti.isBucket() || m_ti.isActivityStream()) {
 					// Yes!  Collapse it.
-					doCollapseRow();
+					doCollapseRowAsync();
 				}
 				
 				else {
@@ -186,7 +215,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							// Yes!  Update the TreeInfo, re-render the
 							// row and change the row's Anchor Image to a
 							// tree_opener.
-							doCollapseRow();
+							doCollapseRowAsync();
 						}
 					});
 				}
@@ -209,7 +238,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 							// there are any expanded rows, render
 							// them and change the row's Anchor
 							// Image to a tree_closer.
-							doExpandRow(expandedTI);
+							doExpandRowAsync(expandedTI);
 						}
 					});
 				}
@@ -220,7 +249,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					// Yes!  If there are any expanded rows, render
 					// them and change the row's Anchor Image to a
 					// tree_closer.
-					doExpandRow(m_ti);
+					doExpandRowAsync(m_ti);
 				}
 				
 				else {
@@ -251,7 +280,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 									// there are any expanded rows, render
 									// them and change the row's Anchor
 									// Image to a tree_closer.
-									doExpandRow(expandedTI);
+									doExpandRowAsync(expandedTI);
 								}
 							});
 						}
@@ -462,16 +491,32 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 
 				public void onSuccess(TreeInfo ti) {
 					// ...and put it into effect.
-					enterActivityStreamModeImpl(ti, defaultASI);
+					enterActivityStreamModeAsync(ti, defaultASI);
 				}
 			});
 		}
 	}
 	
 	/*
-	 * Loads an activity stream based TreeInfo into the sidebar.
+	 * Asynchronously loads an activity stream based TreeInfo into the
+	 * sidebar.
 	 */
-	private void enterActivityStreamModeImpl(TreeInfo asRootTI, ActivityStreamInfo defaultASI) {
+	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI) {
+		Scheduler.ScheduledCommand asLoader;
+		asLoader = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				enterActivityStreamModeNow(asRootTI, defaultASI);
+			}
+		};
+		Scheduler.get().scheduleDeferred(asLoader);
+	}
+	
+	/*
+	 * Synchronously loads an activity stream based TreeInfo into the
+	 * sidebar.
+	 */
+	private void enterActivityStreamModeNow(TreeInfo asRootTI, ActivityStreamInfo defaultASI) {
 		// Put the activity streams TreeInfo into affect...
 		m_selectedActivityStream = defaultASI;
 		setRootTreeInfo(asRootTI);
@@ -1005,7 +1050,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * selects a binder.
 	 */
 	private void reRootTree(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode) {
-		// Read the TreeInfo for the selected Binder...
+		// Read the TreeInfo for the selected Binder.
 		getRpcService().getVerticalTree( HttpRequestInfo.createHttpRequestInfo(), newRootBinderId, new AsyncCallback<TreeInfo>() {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -1014,29 +1059,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					newRootBinderId);
 			}
 			public void onSuccess(TreeInfo rootTI)  {
-				// ...and update the display with it.
-				setRootTreeInfo(rootTI);
-				m_rootPanel.clear();
-				render(newRootBinderId, m_rootPanel);
-				
-				// If we're supposed to select a binder as part of the
-				// re-rooting...
-				if (null != selectedBinderId) {
-					// ...and we can find that binder...
-					TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderId.longValue()));
-					if (null != selectedBinderTI) {
-						// ...select it.
-						selectBinder(selectedBinderTI);
-					}
-				}
-				
-				// If we re-rooted the tree to exit activity stream
-				// mode...
-				if (exitingActivityStreamMode) {
-					// ...reset the menu so that it display what's
-					// ...appropriate for navigation mode.
-					resetMenuContext();
-				}
+				// Re-root the tree asynchronously so that we release
+				// the AJAX request ASAP.
+				reRootTreeAsync(
+					newRootBinderId,
+					selectedBinderId,
+					exitingActivityStreamMode,
+					rootTI);
 			}
 		});
 	}
@@ -1044,6 +1073,55 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private void reRootTree(final String newRootBinderId) {
 		// Always use the initial form of the method.
 		reRootTree(newRootBinderId, null, false);
+	}
+	
+	/*
+	 * Asynchronously re-roots the WorkspaceTreeControl to a new Binder
+	 * and optionally selects a binder.
+	 */
+	private void reRootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode, final TreeInfo rootTI) {
+		Scheduler.ScheduledCommand treeRooter;
+		treeRooter = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				reRootTreeNow(
+					newRootBinderId,
+					selectedBinderId,
+					exitingActivityStreamMode,
+					rootTI);
+			}
+		};
+		Scheduler.get().scheduleDeferred(treeRooter);
+	}
+	
+	/*
+	 * Synchronously re-roots the WorkspaceTreeControl to a new Binder
+	 * and optionally selects a binder.
+	 */
+	private void reRootTreeNow(String newRootBinderId, Long selectedBinderId, boolean exitingActivityStreamMode, TreeInfo rootTI) {
+		// Update the display with the TreeInfo.
+		setRootTreeInfo(rootTI);
+		m_rootPanel.clear();
+		render(newRootBinderId, m_rootPanel);
+		
+		// If we're supposed to select a binder as part of the
+		// re-rooting...
+		if (null != selectedBinderId) {
+			// ...and we can find that binder...
+			TreeInfo selectedBinderTI = TreeInfo.findBinderTI(rootTI, String.valueOf(selectedBinderId.longValue()));
+			if (null != selectedBinderTI) {
+				// ...select it.
+				selectBinder(selectedBinderTI);
+			}
+		}
+		
+		// If we re-rooted the tree to exit activity stream
+		// mode...
+		if (exitingActivityStreamMode) {
+			// ...reset the menu so that it display what's
+			// ...appropriate for navigation mode.
+			resetMenuContext();
+		}
 	}
 
 	/*
@@ -1137,20 +1215,13 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 						selectBinder(targetTI);
 					}
 					public void onSuccess(String rootWorkspaceId)  {
-						// If the selected Binder's workspace is
-						// different from the Binder we're currently
-						// rooted to, we need to re-root the tree.  Do
-						// we need to re-root?
-						if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
-							// No!  Simply select the Binder.
-							if (forceReload)
-								 reloadTree();
-							else selectBinder(targetTI);
-						}
-						else {
-							// Yes, we need to re-root!
-							reRootTree(binderId);
-						}
+						// Asynchronously perform the selection so that
+						// we release the AJAX request ASAP.
+						selectRootWorkspaceIdAsync(
+							binderId,
+							forceReload,
+							targetTI,
+							rootWorkspaceId);
 					}
 				});
 				break;
@@ -1160,6 +1231,39 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			// No, the requested Binder isn't available in those we've
 			// already got loaded!  Re-root the tree at the selected
 			// Binder...
+			reRootTree(binderId);
+		}
+	}
+
+	/*
+	 * Asynchronously selects a binder and/or re-roots the tree.
+	 */
+	private void selectRootWorkspaceIdAsync(final String binderId, final boolean forceReload, final TreeInfo targetTI, final String rootWorkspaceId) {
+		Scheduler.ScheduledCommand rootWSSelector;
+		rootWSSelector = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				selectRootWorkspaceIdNow(binderId, forceReload, targetTI, rootWorkspaceId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(rootWSSelector);
+	}
+	
+	/*
+	 * Synchronously selects a binder and/or re-roots the tree.
+	 */
+	private void selectRootWorkspaceIdNow(String binderId, boolean forceReload, TreeInfo targetTI, String rootWorkspaceId) {
+		// If the selected Binder's workspace is different from the
+		// Binder we're currently rooted to, we need to re-root the
+		// tree.  Do we need to re-root?
+		if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
+			// No!  Simply select the Binder.
+			if (forceReload)
+				 reloadTree();
+			else selectBinder(targetTI);
+		}
+		else {
+			// Yes, we need to re-root!
 			reRootTree(binderId);
 		}
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -107,8 +108,10 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 				}
 				
 				public void onSuccess(String binderPermalink) {
-					m_actionTrigger.triggerAction(
-						TeamingAction.SELECTION_CHANGED,
+					// Trigger the selection changed action
+					// asynchronously so that we can release the AJAX
+					// request ASAP.
+					triggerSelectionChangedAsync(
 						new OnSelectBinderInfo(
 							m_favorite.getValue(),
 							binderPermalink,
@@ -116,6 +119,27 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 							Instigator.OTHER));
 				}
 			});
+		}
+
+		/*
+		 * Asynchronously triggers a selection changed action.
+		 */
+		private void triggerSelectionChangedAsync(final OnSelectBinderInfo osbi) {
+			Scheduler.ScheduledCommand changeSelection;
+			changeSelection = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					triggerSelectionChangedNow(osbi);
+				}
+			};
+			Scheduler.get().scheduleDeferred(changeSelection);
+		}
+		
+		/*
+		 * Synchronously triggers a selection changed action.
+		 */
+		private void triggerSelectionChangedNow(OnSelectBinderInfo osbi) {
+			m_actionTrigger.triggerAction(TeamingAction.SELECTION_CHANGED, osbi);
 		}
 	}
 	
@@ -246,6 +270,78 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		return true;
 	}
 	
+	/*
+	 * Asynchronously shows the 'My Favorites' popup menu.
+	 */
+	private void showMyFavoritesMenuAsync(final List<FavoriteInfo> fList)  {
+		Scheduler.ScheduledCommand showMenu;
+		showMenu = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				showMyFavoritesMenuNow(fList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(showMenu);
+	}
+	
+	/*
+	 * Synchronously shows the 'My Favorites' popup menu.
+	 */
+	private void showMyFavoritesMenuNow(List<FavoriteInfo> fList) {
+		// Scan the favorites...
+		boolean currentIsFavorite = false;
+		int fCount = 0;
+		MenuPopupAnchor fA;
+		String currentFavoriteId = null;
+		for (Iterator<FavoriteInfo> fIT = fList.iterator(); fIT.hasNext(); ) {
+			// ...creating an item structure for each.
+			FavoriteInfo favorite = fIT.next();
+			String mtId = (IDBASE + favorite.getId());
+			
+			fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteClickHandler(favorite));
+			addContentWidget(fA);
+			fCount += 1;
+			
+			if (m_currentBinder.getBinderId().equals(favorite.getValue())) {
+				currentIsFavorite = true;
+				currentFavoriteId = favorite.getId();
+			}
+		}
+		
+		// If there weren't any favorites...
+		if (0 == fCount) {
+			// ...put something in the menu that tells the user
+			// ...that.
+			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuFavoritesNoFavorites());
+			addContentWidget(content);
+		}
+
+		// Do we need to add any favorite commands?
+		if ((null != m_currentBinder) || (0 < fCount)) {
+			// Yes!  Add a spacer between the favorites and
+			// the commands... 
+			FlowPanel spacerPanel = new FlowPanel();
+			spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
+			addContentWidget(spacerPanel);
+		
+			// ...and add the favorite command items.
+			MenuPopupAnchor mtA;
+			if (null != m_currentBinder) {
+				if (currentIsFavorite)
+					 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
+				else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
+				addContentWidget(mtA);
+			}
+			if (0 < fCount) {
+				mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
+				addContentWidget(mtA);
+			}
+		}
+				
+		// Finally, show the menu popup.
+		show();
+	}
+	
 	/**
 	 * Completes construction of the menu and shows it.
 	 * 
@@ -275,59 +371,10 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 					m_messages.rpcFailure_GetFavorites());
 			}
 			
-			public void onSuccess(final List<FavoriteInfo> fList)  {
-				// Scan the favorites...
-				boolean currentIsFavorite = false;
-				int fCount = 0;
-				MenuPopupAnchor fA;
-				String currentFavoriteId = null;
-				for (Iterator<FavoriteInfo> fIT = fList.iterator(); fIT.hasNext(); ) {
-					// ...creating an item structure for each.
-					FavoriteInfo favorite = fIT.next();
-					String mtId = (IDBASE + favorite.getId());
-					
-					fA = new MenuPopupAnchor(mtId, favorite.getName(), favorite.getHover(), new FavoriteClickHandler(favorite));
-					addContentWidget(fA);
-					fCount += 1;
-					
-					if (m_currentBinder.getBinderId().equals(favorite.getValue())) {
-						currentIsFavorite = true;
-						currentFavoriteId = favorite.getId();
-					}
-				}
-				
-				// If there weren't any favorites...
-				if (0 == fCount) {
-					// ...put something in the menu that tells the user
-					// ...that.
-					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuFavoritesNoFavorites());
-					addContentWidget(content);
-				}
-
-				// Do we need to add any favorite commands?
-				if ((null != m_currentBinder) || (0 < fCount)) {
-					// Yes!  Add a spacer between the favorites and
-					// the commands... 
-					FlowPanel spacerPanel = new FlowPanel();
-					spacerPanel.addStyleName("mainMenuPopup_ItemSpacer");
-					addContentWidget(spacerPanel);
-				
-					// ...and add the favorite command items.
-					MenuPopupAnchor mtA;
-					if (null != m_currentBinder) {
-						if (currentIsFavorite)
-							 mtA = new MenuPopupAnchor((IDBASE + "Remove"), m_messages.mainMenuFavoritesRemove(), null, new ManageClickHandler(FavoriteOperation.REMOVE, currentFavoriteId));
-						else mtA = new MenuPopupAnchor((IDBASE + "Add"),    m_messages.mainMenuFavoritesAdd(),    null, new ManageClickHandler(FavoriteOperation.ADD,    m_currentBinder.getBinderId()));
-						addContentWidget(mtA);
-					}
-					if (0 < fCount) {
-						mtA = new MenuPopupAnchor((IDBASE + "Edit"), m_messages.mainMenuFavoritesEdit(), null, new ManageClickHandler(FavoriteOperation.EDIT, fList));
-						addContentWidget(mtA);
-					}
-				}
-						
-				// Finally, show the menu popup.
-				show();
+			public void onSuccess(List<FavoriteInfo> fList)  {
+				// Show the 'My Favorites' popup menu asynchronously
+				// so that we can release the AJAX request ASAP.
+				showMyFavoritesMenuAsync(fList);
 			}
 		});
 	}
