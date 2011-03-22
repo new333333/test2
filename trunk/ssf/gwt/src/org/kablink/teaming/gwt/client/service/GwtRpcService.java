@@ -184,6 +184,8 @@ public interface GwtRpcService extends RemoteService
 	public Boolean canManagePublicEntryTags( HttpRequestInfo ri, String entryId );
 	public ArrayList<TagInfo> getEntryTags( HttpRequestInfo ri, String entryId );
 	public ArrayList<TagInfo> getBinderTags( HttpRequestInfo ri, String binderId );
+	public ArrayList<Boolean> getTagRightsForBinder( HttpRequestInfo ri, String binderId );
+	public ArrayList<Boolean> getTagRightsForEntry( HttpRequestInfo ri, String entryId );
 	public TagSortOrder getTagSortOrder( HttpRequestInfo ri );
 	public Boolean saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder );
 	public Boolean updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded );

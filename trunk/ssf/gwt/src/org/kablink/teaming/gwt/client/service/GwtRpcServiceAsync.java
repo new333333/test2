@@ -179,6 +179,8 @@ public interface GwtRpcServiceAsync
 	public void canManagePublicEntryTags( HttpRequestInfo ri, String binderId, AsyncCallback<Boolean> callback );
 	public void getEntryTags( HttpRequestInfo ri, String entryId, AsyncCallback<ArrayList<TagInfo>> callback );
 	public void getBinderTags( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<TagInfo>> callback );
+	public void getTagRightsForBinder( HttpRequestInfo ri, String binderId, AsyncCallback<ArrayList<Boolean>> callback );
+	public void getTagRightsForEntry( HttpRequestInfo ri, String entryId, AsyncCallback<ArrayList<Boolean>> callback );
 	public void getTagSortOrder( HttpRequestInfo ri, AsyncCallback<TagSortOrder> callback );
 	public void saveTagSortOrder( HttpRequestInfo ri, TagSortOrder sortOrder, AsyncCallback<Boolean> callback );
 	public void updateEntryTags( HttpRequestInfo ri, String entryId, ArrayList<TagInfo> tagsToBeDeleted, ArrayList<TagInfo> tagsToBeAdded, AsyncCallback<Boolean> callback );
