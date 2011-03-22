@@ -649,11 +649,20 @@ public abstract class ActivityStreamUIEntry extends Composite
 				/**
 				 * 
 				 */
-				public void onSuccess( String viewEntryUrl )
+				public void onSuccess( final String viewEntryUrl )
 				{
-					// Open the entry using the view entry url.
-					m_viewEntryUrl = viewEntryUrl;
-					viewEntry();
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							// Open the entry using the view entry url.
+							m_viewEntryUrl = viewEntryUrl;
+							viewEntry();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 			
@@ -758,12 +767,21 @@ public abstract class ActivityStreamUIEntry extends Composite
 			 */
 			public void onSuccess( Boolean success )
 			{
-				// Update the ui to reflect the fact that this entry is now read.
-				updateReadUnreadUI( true );
+				Scheduler.ScheduledCommand cmd;
 				
-				// Do we need to hide this entry.
-				if ( hideEntry )
-					setVisible( false );
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Update the ui to reflect the fact that this entry is now read.
+						updateReadUnreadUI( true );
+						
+						// Do we need to hide this entry.
+						if ( hideEntry )
+							setVisible( false );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
@@ -802,8 +820,17 @@ public abstract class ActivityStreamUIEntry extends Composite
 			 */
 			public void onSuccess( Boolean success )
 			{
-				// Update the ui to reflect the fact that this entry is now read.
-				updateReadUnreadUI( false );
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Update the ui to reflect the fact that this entry is now read.
+						updateReadUnreadUI( false );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
@@ -916,10 +943,19 @@ public abstract class ActivityStreamUIEntry extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( ActivityStreamEntry asEntry )
+			public void onSuccess( final ActivityStreamEntry asEntry )
 			{
-				// Add the reply to the top entry.
-				insertReply( asEntry );
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Add the reply to the top entry.
+						insertReply( asEntry );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 			
 		};
