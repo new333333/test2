@@ -83,6 +83,6 @@ In SS_ZoneConfig:
   alter table SS_ZoneConfig add column binderQuotasEnabled bit;
   alter table SS_ZoneConfig add column binderQuotasAllowOwner bit;
 
-Version 1:
+Version 19:
 In SS_SeenMap:
   alter table SS_SeenMap add pruneDays bigint;
