@@ -212,8 +212,6 @@ public class ActivityStreamCtrl extends Composite
 			 */
 			public void onSuccess( final ActivityStreamData activityStreamData )
 			{
-				hideSearchingText();
-
 				if ( activityStreamData != null )
 				{
 					Scheduler.ScheduledCommand cmd;
@@ -222,10 +220,11 @@ public class ActivityStreamCtrl extends Composite
 					{
 						public void execute()
 						{
+							m_searchInProgress = false;
+							hideSearchingText();
+
 							// Add the search results to the search results widget.
 							addSearchResults( activityStreamData );
-							
-							m_searchInProgress = false;
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
