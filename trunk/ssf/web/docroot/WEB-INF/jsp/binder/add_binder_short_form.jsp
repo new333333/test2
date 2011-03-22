@@ -48,6 +48,30 @@ var ss_checkTitleUrl = "<ssf:url
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
+function ss_validateEntryTitle(eTitle) {
+	var sTitle = ss_validateEntryTextFieldLength(eTitle.value);
+	if (sTitle != eTitle.value) {
+		eTitle.value = sTitle;
+		alert("<ssf:nlt tag="error.titleTooLong"/>");
+		window.setTimeout(
+			function() {
+				input_setCaretToEnd(eTitle);
+			}, 100 );
+		return false;
+	}
+	return true;
+}
+
+function ss_checkTitleOnSubmit() {
+	var formObj = self.document.getElementById("${formName}");
+	if (formObj == null) return true;
+	var eTitle = formObj["title"];
+	if (eTitle == null) return true;
+	return ss_validateEntryTitle(eTitle);
+}
+
+ss_createOnSubmitObj("ss_checkTitleOnSubmit", "${formName}", ss_checkTitleOnSubmit);
+
 function ss_treeShowIdAddBinder${renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
@@ -95,6 +119,7 @@ function ss_checkForm(obj) {
     <div class="needed-because-of-ie-bug"><div id="ss_titleCheck" style="display:none; visibility:hidden;" 
       ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
 	<input type="text" class="ss_text" size="70" name="title" id="title" 
+	  onkeyup="ss_validateEntryTitle(this);"
 	  onchange="ss_ajaxValidate(ss_checkTitleUrl, this,'title_label', 'ss_titleCheck');">
 	<br/>
 	<br/>
