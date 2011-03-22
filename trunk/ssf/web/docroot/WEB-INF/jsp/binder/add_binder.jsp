@@ -484,14 +484,14 @@ function ss_checkForm(obj) {
 </c:if>
 
 </table>
-
-<c:if test="${empty ss_accessControlMap || 
-  empty ss_accessControlMap.createWorkspace || 
-  ss_accessControlMap.createWorkspace}">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
-</c:if>
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
-
+<div style="text-align: right; margin: 20px;">
+	<c:if test="${empty ss_accessControlMap || 
+	  empty ss_accessControlMap.createWorkspace || 
+	  ss_accessControlMap.createWorkspace}">
+	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" onClick="ss_buttonSelect('okBtn');">
+	</c:if>
+	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
+</div>
 </form>
 </ssf:form>
 </div>
