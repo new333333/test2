@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -91,9 +92,23 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 		}
 
 		/*
-		 * Expands the current node.
+		 * Asynchronously expands the current node.
 		 */
-		private void doExpandNode(TreeInfo expandedTI) {
+		private void doExpandNodeAsync(final TreeInfo expandedTI) {
+			Scheduler.ScheduledCommand expander;
+			expander = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					doExpandNodeNow(expandedTI);
+				}
+			};
+			Scheduler.get().scheduleDeferred(expander);
+		}
+		
+		/*
+		 * Synchronously expands the current node.
+		 */
+		private void doExpandNodeNow(TreeInfo expandedTI) {
 			m_expanderImg.setResource(getImages().tree_closer());
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
@@ -127,9 +142,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						}
 						
 						public void onSuccess(TreeInfo expandedTI) {
-							// Yes!  Mark the node as being opened, save its
-							// new child Binder's list and re-render it.
-							doExpandNode(expandedTI);
+							// Yes!  Mark the node as being opened,
+							// save its new child Binder's list and
+							// re-render it.  We do this asynchronously
+							// so that we release the AJAX request
+							// ASAP.
+							doExpandNodeAsync(expandedTI);
 						}
 					});
 				}
@@ -147,9 +165,12 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 						}
 						
 						public void onSuccess(TreeInfo expandedTI) {
-							// Yes!  Mark the node as being opened, save its
-							// new child Binder's list and re-render it.
-							doExpandNode(expandedTI);
+							// Yes!  Mark the node as being opened,
+							// save its new child Binder's list and
+							// re-render it.  We do this asynchronously
+							// so that we release the AJAX request
+							// ASAP.
+							doExpandNodeAsync(expandedTI);
 						}
 					});
 				}

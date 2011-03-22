@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -185,31 +186,54 @@ public class RecentPlacesMenuPopup extends MenuBarPopupBase {
 					m_messages.rpcFailure_GetRecentPlaces());
 			}
 			
-			public void onSuccess(List<RecentPlaceInfo> mtList)  {
-				// Scan the places...
-				int mtCount = 0;
-				MenuPopupAnchor rpA;
-				for (Iterator<RecentPlaceInfo> rpIT = mtList.iterator(); rpIT.hasNext(); ) {
-					// ...creating an item structure for each.
-					RecentPlaceInfo place = rpIT.next();
-					String rpId = (IDBASE + place.getId());
-					
-					rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
-					addContentWidget(rpA);
-					mtCount += 1;
-				}
-				
-				// If there weren't any places...
-				if (0 == mtCount) {
-					// ...put something in the menu that tells the user
-					// ...that.
-					MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuRecentPlacesNoPlaces());
-					addContentWidget(content);
-				}
-				
-				// Finally, show the menu popup.
-				show();
+			public void onSuccess(List<RecentPlaceInfo> rpList)  {
+				// Show the 'Recent Places' popup menu asynchronously
+				// so that we can release the AJAX request ASAP.
+				showRecentPlacesMenuAsync(rpList);
 			}
 		});
+	}
+	
+	/*
+	 * Asynchronously shows the 'Recent Places' popup menu.
+	 */
+	private void showRecentPlacesMenuAsync(final List<RecentPlaceInfo> rpList) {
+		Scheduler.ScheduledCommand showMenu;
+		showMenu = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				showRecentPlacesMenuNow(rpList);
+			}
+		};
+		Scheduler.get().scheduleDeferred(showMenu);
+	}
+	
+	/*
+	 * Synchronously shows the 'Recent Places' popup menu.
+	 */
+	private void showRecentPlacesMenuNow(List<RecentPlaceInfo> rpList) {
+		// Scan the places...
+		int mtCount = 0;
+		MenuPopupAnchor rpA;
+		for (Iterator<RecentPlaceInfo> rpIT = rpList.iterator(); rpIT.hasNext(); ) {
+			// ...creating an item structure for each.
+			RecentPlaceInfo place = rpIT.next();
+			String rpId = (IDBASE + place.getId());
+			
+			rpA = new MenuPopupAnchor(rpId, place.getTitle(), place.getEntityPath(), new PlaceClickHandler(place));
+			addContentWidget(rpA);
+			mtCount += 1;
+		}
+		
+		// If there weren't any places...
+		if (0 == mtCount) {
+			// ...put something in the menu that tells the user
+			// ...that.
+			MenuPopupLabel content = new MenuPopupLabel(m_messages.mainMenuRecentPlacesNoPlaces());
+			addContentWidget(content);
+		}
+		
+		// Finally, show the menu popup.
+		show();
 	}
 }

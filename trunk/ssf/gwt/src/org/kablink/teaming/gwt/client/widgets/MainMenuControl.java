@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -546,45 +547,13 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 					binderId);
 			}
 			public void onSuccess(BinderInfo binderInfo) {
-				m_contextBinder = binderInfo;
-				GwtTeaming.getRpcService().getToolbarItems(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<List<ToolbarItem>>() {
-					public void onFailure(Throwable t) {
-						GwtClientHelper.handleGwtRPCFailure(
-							t,
-							m_messages.rpcFailure_GetToolbarItems(),
-							binderId);
-					}
-					public void onSuccess(final List<ToolbarItem> toolbarItemList) {
-						GwtTeaming.getRpcService().getTeamManagementInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
-							public void onFailure(Throwable t) {
-								GwtClientHelper.handleGwtRPCFailure(
-									t,
-									m_messages.rpcFailure_GetTeamManagement(),
-									binderId);
-							}
-							public void onSuccess(final TeamManagementInfo tmi) {
-								// Handle variations based on activity
-								// stream and search mode.
-								addRecentPlacesToContext(toolbarItemList);
-								boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
-								if (!inASMode) {
-									addManageToContext(toolbarItemList, tmi);
-								}
-								if (inSearch && (!inASMode)) {
-									addTopRankedToContext();
-									addManageSavedSearchesToContext(searchTabId);
-								}
-								if (!inASMode) {
-									addViewsToContext(toolbarItemList);
-								}
-							}
-						});
-					}
-				});
+				// Show the context asynchronously so that we can
+				// release the AJAX request ASAP.
+				showContextAsync(binderInfo, binderId, inSearch, searchTabId);
 			}
 		});
 	}
-
+	
 	/**
 	 * Show all the menus and controls on this menu control and hide
 	 * the Close administration menu item..  This is used when we close
@@ -678,6 +647,88 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		
 		// Show the Close administration menu item.
 		m_closeAdminBox.setVisible(true);
+	}
+
+	/*
+	 * Asynchronously shows the context that was loaded.
+	 */
+	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
+		Scheduler.ScheduledCommand showContext;
+		showContext = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				showContextNow(binderInfo, binderId, inSearch, searchTabId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(showContext);
+	}
+	
+	/*
+	 * Synchronously shows the context that was loaded.
+	 */
+	private void showContextNow(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
+		m_contextBinder = binderInfo;
+		GwtTeaming.getRpcService().getToolbarItems(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<List<ToolbarItem>>() {
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetToolbarItems(),
+					binderId);
+			}
+			public void onSuccess(final List<ToolbarItem> toolbarItemList) {
+				GwtTeaming.getRpcService().getTeamManagementInfo( HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<TeamManagementInfo>() {
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_GetTeamManagement(),
+							binderId);
+					}
+					public void onSuccess(TeamManagementInfo tmi) {
+						// Show the toolbar items asynchronously so
+						// that we can release the AJAX request ASAP.
+						showToolbarItemsAsync(
+							inSearch,
+							searchTabId,
+							toolbarItemList,
+							tmi);
+					}
+				});
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously shows the toolbar items.
+	 */
+	private void showToolbarItemsAsync(final boolean inSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
+		Scheduler.ScheduledCommand showTBIs;
+		showTBIs = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				showToolbarItemsNow(inSearch, searchTabId, toolbarItemList, tmi);
+			}
+		};
+		Scheduler.get().scheduleDeferred(showTBIs);
+	}
+	
+	/*
+	 * Synchronously shows the toolbar items.
+	 */
+	private void showToolbarItemsNow(boolean inSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
+		// Handle variations based on activity
+		// stream and search mode.
+		addRecentPlacesToContext(toolbarItemList);
+		boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
+		if (!inASMode) {
+			addManageToContext(toolbarItemList, tmi);
+		}
+		if (inSearch && (!inASMode)) {
+			addTopRankedToContext();
+			addManageSavedSearchesToContext(searchTabId);
+		}
+		if (!inASMode) {
+			addViewsToContext(toolbarItemList);
+		}
 	}
 
 	/**
