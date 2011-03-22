@@ -35,6 +35,14 @@
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
+<%
+	User ssUser = (User) request.getAttribute("ssUser");
+	Date now = new Date();
+	TimeZone tz = ssUser.getTimeZone();
+	int offset = tz.getOffset(now.getTime());
+	int offsetHour = offset / (1000*60*60);
+%>
+<c:set var="offsetHour" value="<%= offsetHour %>"/>
 
 <script type="text/javascript">
 /**
@@ -66,7 +74,7 @@ function handleRepeatEveryOnFocus()
 )</c:if>
 ,&nbsp;
 <c:if test="${!schedule.repeatMinutes && !schedule.repeatHours}">
-&nbsp;${schedule.hours}:${schedule.minutes}&nbsp;<%= TimeZone.getDefault().getID() %>
+  <span id='${schedPrefix}userTime'>${(schedule.hours + offsetHour +24) % 24}:${schedule.minutes} ${ssUser.timeZone.displayName}</span>
 </c:if>
 <c:if test="${schedule.repeatMinutes}">
 	<ssf:nlt tag="schedule.repeathours">
@@ -139,32 +147,19 @@ function handleRepeatEveryOnFocus()
 	
 	   <label for="${schedPrefix}schedHours"><span style="display:none;"><ssf:nlt tag="label.selectHours"/></span></label>
 		<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours" <c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
-			<option <c:if test="${schedule.hours == '0'}">selected="selected"</c:if> value="00">00
-			<option <c:if test="${schedule.hours == '1'}">selected="selected"</c:if> value="01">01
-			<option <c:if test="${schedule.hours == '2'}">selected="selected"</c:if> value="02">02
-			<option <c:if test="${schedule.hours == '3'}">selected="selected"</c:if> value="03">03
-			<option <c:if test="${schedule.hours == '4'}">selected="selected"</c:if> value="04">04
-			<option <c:if test="${schedule.hours == '5'}">selected="selected"</c:if> value="05">05
-			<option <c:if test="${schedule.hours == '6'}">selected="selected"</c:if> value="06">06
-			<option <c:if test="${schedule.hours == '7'}">selected="selected"</c:if> value="07">07
-			<option <c:if test="${schedule.hours == '8'}">selected="selected"</c:if> value="08">08
-			<option <c:if test="${schedule.hours == '9'}">selected="selected"</c:if> value="09">09
-			<option <c:if test="${schedule.hours == '10'}">selected="selected"</c:if> value="10">10
-			<option <c:if test="${schedule.hours == '11'}">selected="selected"</c:if> value="11">11
-			<option <c:if test="${schedule.hours == '12'}">selected="selected"</c:if> value="12">12
-			<option <c:if test="${schedule.hours == '13'}">selected="selected"</c:if> value="13">13
-			<option <c:if test="${schedule.hours == '14'}">selected="selected"</c:if> value="14">14
-			<option <c:if test="${schedule.hours == '15'}">selected="selected"</c:if> value="15">15
-			<option <c:if test="${schedule.hours == '16'}">selected="selected"</c:if> value="16">16
-			<option <c:if test="${schedule.hours == '17'}">selected="selected"</c:if> value="17">17
-			<option <c:if test="${schedule.hours == '18'}">selected="selected"</c:if> value="18">18
-			<option <c:if test="${schedule.hours == '19'}">selected="selected"</c:if> value="19">19
-			<option <c:if test="${schedule.hours == '20'}">selected="selected"</c:if> value="20">20
-			<option <c:if test="${schedule.hours == '21'}">selected="selected"</c:if> value="21">21
-			<option <c:if test="${schedule.hours == '22'}">selected="selected"</c:if> value="22">22
-			<option <c:if test="${schedule.hours == '23'}">selected="selected"</c:if> value="23">23
+			
+	<%  for (int i = 0; i < 24; i++) {
+			int hour = i - offsetHour;
+	%>
+			<c:set var="schedHour" value="<%= (hour % 24) %>"/>
+	    	<option <c:if test="${schedule.hours == schedHour}">selected="selected"</c:if> 
+	    	    value="<fmt:formatNumber type="number" minIntegerDigits="2" value="<%= (hour % 24) %>"/>"
+	    	><fmt:formatNumber type="number" minIntegerDigits="2" value="<%= (i % 24) %>"/></option>
+	<%  }  
+	%>
+	
 		</select>
-			:
+		<span> : </span>
 		<select name="${schedPrefix}schedMinutes" id="${schedPrefix}schedMinutes" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>>
 			<option <c:if test="${schedule.minutes == '0' || schedule.minutes == '00'}">selected="selected"</c:if> value="00">00
 			<option <c:if test="${schedule.minutes == '5' || schedule.minutes == '05'}">selected="selected"</c:if> value="05">05
@@ -181,39 +176,10 @@ function handleRepeatEveryOnFocus()
 		</select>
 
 
-	<label for="${schedPrefix}schedMinutes"><span style="display:none;"><ssf:nlt tag="label.selectMinutes"/></span></label>
-&nbsp;<span class="ss_bold"><%= TimeZone.getDefault().getID() %></span>
-	<c:set var="defaultTimeZoneId" value="<%= TimeZone.getDefault().getID() %>" />
+	<label for="${schedPrefix}schedMinutes">
+	  <span style="display:none;"><ssf:nlt tag="label.selectMinutes"/></span>
+	</label>&nbsp;<span class="ss_bold">${ssUser.timeZone.displayName}</span>
 	
-	<%
-		User ssUser = (User) request.getAttribute("ssUser");
-	%>
-	
-	<c:set var="defaultTimeZoneOffset" value="<%= TimeZone.getDefault().getOffset((new Date()).getTime()) %>" />
-	<c:set var="userTimeZoneOffset" value="<%= ssUser.getTimeZone().getOffset((new Date()).getTime()) %>" />
-		
-	<c:if test="${defaultTimeZoneOffset != userTimeZoneOffset}">
-		<span class="ss_fineprint ss_bright">
-			
-		<ssf:nlt tag="schedule.timeInTimeZone">
-			<ssf:param name="value" useBody="true">
-				<span id='${schedPrefix}userTime'>${schedule.hours}:${schedule.minutes}</span>
-			</ssf:param>
-			<ssf:param name="value" value="${ssUser.timeZone.displayName}" />
-		</ssf:nlt>
-		 </span>
-		<script type="text/javascript">
-			dojo.require('dojo.date.locale');
-			dojo.addOnLoad(function() {
-				function toConnect() { 
-					ss_printSchedulerTime('${schedPrefix}schedHours', '${schedPrefix}schedMinutes', '${schedPrefix}userTime', <%= ssUser.getTimeZone().getOffset((new Date()).getTime()) %>, '${ssUser.locale}')
-				}
-				toConnect();
-				dojo.connect(dojo.byId("${schedPrefix}schedHours"),  "onchange", toConnect);
-				dojo.connect(dojo.byId("${schedPrefix}schedMinutes"),  "onchange", toConnect);
-			});
-		</script>
-	</c:if>
 </div>
 
 	<div class="marginleft1 margintop2"">
