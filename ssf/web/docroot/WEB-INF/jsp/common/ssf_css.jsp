@@ -166,7 +166,7 @@ img { -ms-interpolation-mode: bicubic; }
   border:0px none;
 }
 .ss_style ul li {
-  list-style-type: square;
+  list-style-type: disc;
   list-style-image: none;
   list-style-position: inside;
 }
@@ -513,7 +513,7 @@ div.ss_entryContent a:hover {
 	}
 div.ss_entryDescription ul li {
     margin: 2px 0px 0px 25px;
-    list-style-type: square;
+    list-style-type: disc;
     list-style-position: outside;
     list-style-image: none;
 	}
@@ -2442,7 +2442,7 @@ ul.ss_title_menu {
 }
 
 ul.ss_title_menu li {
-  list-style-type: square;
+  list-style-type: disc;
   margin-left: 0px;
   margin-bottom: 0px;
   padding-left: 2px;
