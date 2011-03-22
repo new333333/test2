@@ -283,7 +283,7 @@ function ss_checkForm(obj) {
 	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
 	  onClick="ss_showAddBinderOptions()"
 	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
-	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
+	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint">
 	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
 	  </span></td>
 	  </tr>
@@ -296,7 +296,7 @@ function ss_checkForm(obj) {
 	  <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
 	  onClick="ss_showAddBinderOptions()"
 	  > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
-	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
+	  <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint">
 	    <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
 	  </span></td>
 	  </tr>
@@ -310,7 +310,7 @@ function ss_checkForm(obj) {
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
       onClick="ss_showAddBinderOptions()"
       > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
-      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint">
         <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
       </span></td>
       </tr>
@@ -324,7 +324,7 @@ function ss_checkForm(obj) {
       <c:if test="${checkedConfig == config.id}">checked="checked"</c:if>
       onClick="ss_showAddBinderOptions()"
       > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>&nbsp;&nbsp;&nbsp;</td>
-      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light">
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint">
         <ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/>
       </span></td>
       </tr>
@@ -337,7 +337,7 @@ function ss_checkForm(obj) {
 <input type="hidden" name="binderConfigId" value="${binderConfigId}"/>
 <ssf:nlt tag="__template_team_workspace" checkIfTag="true"/>
 <br/>
-<span class="ss_smallprint ss_light">
+<span class="ss_smallprint">
   <ssf:nlt tag="__template_team_workspace_description" checkIfTag="true"/>
 </span>
 <br/>
@@ -407,7 +407,7 @@ function ss_checkForm(obj) {
       <tr><td valign="top" nowrap><input type="checkbox" name="folderConfigId_${config.id}" /> 
       <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
       > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;</td>
-      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
       </tr>
     </c:if>
    </c:if>
@@ -438,7 +438,7 @@ function ss_checkForm(obj) {
       <tr><td valign="top" nowrap><input type="checkbox" name="folderConfigId_${config.id}" /> 
       <span id="folderConfigIdTitle_${config.id}" class="ss_normalprint"
       > <ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/></span>&nbsp;&nbsp;&nbsp;</td>
-      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint ss_light"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
+      <td valign="top" style="padding-bottom:6px;"><span class="ss_smallprint"><ssf:nlt tag="${config.templateDescription}" checkIfTag="true"/></span></td>
       </tr>
     </c:if>
    </c:if>
