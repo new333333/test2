@@ -59,7 +59,6 @@ var ss_GWT_main_page = true;
 --%></c:if><%--
 --%><c:set var="ss_watermark" value="" scope="request"/><%--
 --%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_head.jsp" />
-<!-- meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" --> <!-- DRF:  Removed on 20110308 as Bug#676366. -->
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
 <c:if test="${!empty ss_windowTitle}"><title>${ss_windowTitle}</title></c:if>
