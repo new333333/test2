@@ -93,12 +93,13 @@ public class TagThisDlg extends DlgBox
 	private String m_binderId;						// Id of the binder we are working with.  This can be null if m_entryId is not null.
 	private BinderType m_binderType;				// Type of binder we are workith with.  This can be null
 	private String m_entryId;						// Id of the entry we are working with.  This can be null if m_binderId is not null.
-	private boolean m_isPublicTagManager;			// true -> The user can manage public tags on the binder.  false -> They can't.
+	private boolean m_canManagePersonalTags;
+	private boolean m_canManageGlobalTags;
 	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
 	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
+	private AsyncCallback<ArrayList<Boolean>> m_rightsCallback = null;
 	private AsyncCallback<ArrayList<TagInfo>> m_readTagsCallback = null;
 	private AsyncCallback<Boolean> m_saveTagsCallback = null;
-	private AsyncCallback<Boolean> m_publicTagManagerCallback = null;
 	private AsyncCallback<Boolean> m_saveSortOrderCallback = null;
 	private ArrayList<TagInfo> m_currentListOfPersonalTags;
 	private ArrayList<TagInfo> m_currentListOfGlobalTags;
@@ -330,10 +331,15 @@ public class TagThisDlg extends DlgBox
 		// If this is a community tag and the user can't manage public tags then don't
 		// add the delete widget.
 		canDelete = true;
-		if ( tagInfo.getTagType() == TagType.COMMUNITY && m_isPublicTagManager == false )
+		if ( tagInfo.getTagType() == TagType.COMMUNITY && m_canManageGlobalTags == false )
 		{
 			canDelete = false;
 		}
+		else if ( tagInfo.getTagType() == TagType.PERSONAL && m_canManagePersonalTags == false )
+		{
+			canDelete = false;
+		}
+		
 		
 		if ( canDelete )
 		{
@@ -921,7 +927,7 @@ public class TagThisDlg extends DlgBox
 	 */
 	private TagType getSelectedTagType()
 	{
-		if ( m_personalRB.getValue() == Boolean.TRUE )
+		if ( m_personalRB.isVisible() && m_personalRB.getValue() == Boolean.TRUE )
 			return TagType.PERSONAL;
 		
 		if ( m_communityRB.isVisible() && m_communityRB.getValue() == Boolean.TRUE )
@@ -1065,9 +1071,9 @@ public class TagThisDlg extends DlgBox
 		if ( title != null )
 			m_titleLabel.setText( title );
 		
-		m_isPublicTagManager = false;
+		m_canManageGlobalTags = false;
+		m_canManagePersonalTags = false;
 		m_findCtrl.setInitialSearchString( "" );
-		m_personalRB.setValue( Boolean.TRUE );
 
 		adjustTagTablePanelHeight();
 		
@@ -1105,11 +1111,11 @@ public class TagThisDlg extends DlgBox
 			};
 		}
 		
-		if ( m_publicTagManagerCallback == null )
+		if ( m_rightsCallback == null )
 		{
-			// Create a callback that will be used when we issue an ajax request to see if the
-			// user can manage public tags.
-			m_publicTagManagerCallback = new AsyncCallback<Boolean>()
+			// Create a callback that will be used when we issue an ajax request to see if
+			// the user has rights to manage personal or global tags.
+			m_rightsCallback = new AsyncCallback<ArrayList<Boolean>>()
 			{
 				/**
 				 * 
@@ -1125,20 +1131,34 @@ public class TagThisDlg extends DlgBox
 					
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
-						m_messages.rpcFailure_CanManagePublicTags(),
+						m_messages.rpcFailure_GetTagRights(),
 						entityId );
 				}
 				
 				/**
 				 * 
 				 */
-				public void onSuccess( Boolean isPublicTagManager )
+				public void onSuccess( ArrayList<Boolean> tagRights )
 				{
-					m_isPublicTagManager = isPublicTagManager.booleanValue();
-					
-					// If the user can't manage public tags then hide the "Community tag" radio button.
-					m_communityRB.setVisible( isPublicTagManager );
+					// If the user can't manage personal tags then hide the "Personal tag" radio button.
+					m_canManagePersonalTags = tagRights.get( 0 ).booleanValue();
+					m_personalRB.setVisible( m_canManagePersonalTags );
 
+					// If the user can't manage public tags then hide the "Community tag" radio button.
+					m_canManageGlobalTags = tagRights.get( 1 ).booleanValue();
+					m_communityRB.setVisible( m_canManageGlobalTags );
+					
+					if ( m_canManagePersonalTags )
+					{
+						m_personalRB.setValue( Boolean.TRUE );
+						m_findCtrl.setSearchType( SearchType.PERSONAL_TAGS );
+					}
+					else
+					{
+						m_communityRB.setValue( Boolean.TRUE );
+						m_findCtrl.setSearchType( SearchType.COMMUNITY_TAGS );
+					}
+					
 					// Are we working with a binder?
 					if ( m_binderId != null && m_binderId.length() > 0 )
 					{
@@ -1158,6 +1178,7 @@ public class TagThisDlg extends DlgBox
 		// Are we working with a binder?
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
+			// Yes
 			// Update the label above the list of tags.
 			if ( m_binderType != null )
 			{
@@ -1169,9 +1190,9 @@ public class TagThisDlg extends DlgBox
 					m_listLabel.setText( "unknown binder type" );
 			}
 			
-			// Yes, Issue a request to see if the user can manage public tags.
+			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue the call to read the tags.
-			GwtTeaming.getRpcService().canManagePublicBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_publicTagManagerCallback );
+			GwtTeaming.getRpcService().getTagRightsForBinder( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rightsCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
@@ -1179,9 +1200,9 @@ public class TagThisDlg extends DlgBox
 			m_listLabel.setText( m_messages.listOfEntryTagsLabel() );
 			
 			// We are working with an entry.
-			// Issue a request to see if the user can manage public tags.
+			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue a request to get the tags associated with the given entry.
-			GwtTeaming.getRpcService().canManagePublicEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_publicTagManagerCallback );
+			GwtTeaming.getRpcService().getTagRightsForEntry( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_rightsCallback );
 		}
 		else
 		{

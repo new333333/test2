@@ -261,6 +261,36 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 	}
 
+	/**
+	 * Return the rights the user has for modifying tags on the given binder.
+	 */
+	public ArrayList<Boolean> getTagRightsForBinder( HttpRequestInfo ri, String binderId )
+	{
+		ArrayList<Boolean> tagRights;
+		
+		tagRights = new ArrayList<Boolean>();
+		
+		tagRights.add( 0, canManagePersonalBinderTags( ri, binderId ) );
+		tagRights.add( 1, canManagePublicBinderTags( ri, binderId ) );
+		
+		return tagRights;
+	}
+	
+	/**
+	 * Return the rights the user has for modifying personal tags on the given entry.
+	 */
+	public ArrayList<Boolean> getTagRightsForEntry( HttpRequestInfo ri, String entryId )
+	{
+		ArrayList<Boolean> tagRights;
+		
+		tagRights = new ArrayList<Boolean>();
+		
+		tagRights.add( 0, canManagePersonalEntryTags( ri, entryId ) );
+		tagRights.add( 1, canManagePublicEntryTags( ri, entryId ) );
+		
+		return tagRights;
+	}
+	
     /**
      * 
      */
@@ -2642,6 +2672,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	}//end getBinderTags()
 	
 	/**
+	 * Returns true if the user can manage personal tags on the binder.
+	 */
+	public Boolean canManagePersonalBinderTags( HttpRequestInfo ri, String binderId )
+	{
+		return GwtServerHelper.canManagePersonalBinderTags( this, binderId );
+	}
+	
+	/**
+	 * Returns true if the user can manager personal tags on the entry.
+	 */
+	public Boolean canManagePersonalEntryTags( HttpRequestInfo ri, String entryId )
+	{
+		return GwtServerHelper.canManagePersonalEntryTags( this, entryId );
+	}
+	
+	/**
 	 * Returns true if the user can manage public tags on the binder
 	 * and false otherwise.
 	 *
@@ -2652,8 +2698,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 */
 	public Boolean canManagePublicBinderTags( HttpRequestInfo ri, String binderId )
 	{
-		Binder binder = getBinderModule().getBinder(Long.parseLong(binderId));
-		return new Boolean(getBinderModule().testAccess(binder, BinderOperation.manageTag));
+		return GwtServerHelper.canManagePublicBinderTags( this, binderId );
 	}//end canManagePublicBinderTags()
 	
 

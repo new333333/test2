@@ -798,6 +798,94 @@ public class GwtServerHelper {
 
 	
 	/**
+	 * See if the user has rights to manage personal tags on the given binder.
+	 */
+	public static Boolean canManagePersonalBinderTags( AllModulesInjected bs, String binderId )
+	{
+		try
+		{
+			Binder binder;
+			
+			binder = bs.getBinderModule().getBinder( Long.parseLong( binderId ) );
+			return new Boolean( bs.getBinderModule().testAccess( binder, BinderOperation.modifyBinder ) );
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to manage personal tags on the binder.
+		return Boolean.FALSE;
+	}
+	
+	/**
+	 * See if the user has rights to manage personal tags on the given entry.
+	 */
+	public static Boolean canManagePersonalEntryTags( AllModulesInjected bs, String entryId )
+	{
+		try
+		{
+			FolderModule folderModule;
+			FolderEntry folderEntry;
+			Long entryIdL;
+			
+			folderModule = bs.getFolderModule();
+			entryIdL = new Long( entryId );
+
+			folderEntry = folderModule.getEntry( null, entryIdL );
+	        
+			// Check to see if the user can manage personal tags on this entry.
+			folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
+
+			// If we get here the action is valid.
+			return Boolean.TRUE;
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to manage personal tags on the entry.
+		return Boolean.FALSE;
+	}
+	
+	/**
+	 * See if the user has rights to manage public tags on the given binder.
+	 */
+	public static Boolean canManagePublicBinderTags( AllModulesInjected bs, String binderId )
+	{
+		try
+		{
+			Binder binder;
+			
+			binder = bs.getBinderModule().getBinder(Long.parseLong(binderId));
+			return new Boolean( bs.getBinderModule().testAccess( binder, BinderOperation.manageTag ) );
+		}
+		catch (NoFolderEntryByTheIdException nbEx)
+		{
+		}
+		catch (AccessControlException acEx)
+		{
+		}
+		catch (Exception e)
+		{
+		}
+		
+		// If we get here the user does not have rights to manage public tags on the binder.
+		return Boolean.FALSE;
+	}
+	
+	/**
 	 * See if the user has rights to manage public tags on the given entry.
 	 */
 	public static Boolean canManagePublicEntryTags( AllModulesInjected bs, String entryId )
@@ -3979,7 +4067,17 @@ public class GwtServerHelper {
 					if ( teamingAction == TeamingAction.REPLY.ordinal() )
 						folderModule.checkAccess( folderEntry, FolderOperation.addReply );
 					else if ( teamingAction == TeamingAction.TAG.ordinal() )
-						folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
+					{
+						// Tag is valid if the user can manage public tags or can modify the entry.
+						if ( canManagePublicEntryTags( bs, entryId ) == true )
+						{
+							// Nothing to do.
+						}
+						else
+						{
+							folderModule.checkAccess( folderEntry, FolderOperation.modifyEntry );
+						}
+					}
 					else if ( teamingAction == TeamingAction.SHARE.ordinal() )
 						folderModule.checkAccess( folderEntry, FolderOperation.readEntry );
 					else if ( teamingAction == TeamingAction.SUBSCRIBE.ordinal() )

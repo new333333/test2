@@ -307,6 +307,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetStatus();
 	String rpcFailure_GetSubscriptionData();
 	String rpcFailure_GetTags();
+	String rpcFailure_GetTagRights();
 	String rpcFailure_GetTagSortOrder();
 	String rpcFailure_GetTaskLinkage();
 	String rpcFailure_GetTaskList();
