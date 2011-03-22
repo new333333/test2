@@ -38,7 +38,6 @@
 <html <c:if test="${!empty ssUser && !empty ssUser.locale}"> lang="${ssUser.locale}"</c:if>>
 <c:set var="ssf_snippet" value="1" scope="request"/>
 <head>
-<!-- meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" --> <!-- DRF:  Removed on 20110308 as Bug#676366. -->
 <meta http-equiv="Content-Script-Type" content="text/javascript"/>
 <meta http-equiv="Content-Style-Type" content="text/css"/>
 
