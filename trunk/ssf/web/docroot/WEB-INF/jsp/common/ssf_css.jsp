@@ -4926,7 +4926,9 @@ span.ss_infoDivValue {
 .ss_muster_users:hover {
 	color: #135c8f;
 }
-
+.ss_tasks_list .ss_muster_users {
+	font-size: 10px !important;
+}
 .ss_videoDiv {
 }
 
