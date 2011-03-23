@@ -37,6 +37,7 @@ import java.nio.charset.Charset;
 import java.util.Set;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.StopAnalyzer;
 
 import junit.framework.TestCase;
 
@@ -160,17 +161,28 @@ public class VibeIndexAnalyzerTest extends TestCase {
 	}
 	
 	public void testTokenDecomposition() throws Exception {
-		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, false);
+		Analyzer analyzer = new VibeIndexAnalyzer((Set)null, true, null, false, false);
 		String text = "debug.doc foo.bar() www.novell.com";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"debug.doc", "foo.bar", "www.novell.com"}); 
 		
-		analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, true);
+		analyzer = new VibeIndexAnalyzer((Set)null, true, null, false, true);
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"debug.doc", "debug", "doc", "foo.bar", "foo", "bar", "www.novell.com", "www", "novell", "com"}); 
+	}
+	
+	public void testDefaultConfiguration() throws Exception {
+		Analyzer analyzer = new VibeIndexAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET, 
+				true, 
+				"English", 
+				true, 
+				false);
+		String text = "Kunde Karlsruhe Update von IBM";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
 	}
 }
