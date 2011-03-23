@@ -44,7 +44,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
 
-<script type="text/javascript" src="<html:validatePath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
+<script type="text/javascript" src="<html:rootPath />js/gwt/gwtteaming/gwtteaming.nocache.js"></script>
 <div id="gwtUserStatusDiv">
 </div>
 
