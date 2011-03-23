@@ -79,20 +79,20 @@
 </div>
 <div class="ss_task_list_container">
 <table class="ss_tasks_list" style="text-align: left;">
-	<tr>
-		<th><ssf:nlt tag="task.title"/></th>
-		<th><ssf:nlt tag="task.priority"/></th>
-		<th><ssf:nlt tag="task.dueDate"/></th>
-		<th><ssf:nlt tag="task.status"/></th>
-		<th><ssf:nlt tag="task.assigned"/></th>
-		<th><ssf:nlt tag="task.done"/></th>		
-		<th><ssf:nlt tag="task.location"/></th>
+	<tr class="columnhead">
+		<td><ssf:nlt tag="task.title"/></td>
+		<td><ssf:nlt tag="task.priority"/></td>
+		<td><ssf:nlt tag="task.dueDate"/></td>
+		<td><ssf:nlt tag="task.status"/></td>
+		<td><ssf:nlt tag="task.assigned"/></td>
+		<td><ssf:nlt tag="task.done"/></td>		
+		<td><ssf:nlt tag="task.location"/></td>
 	</tr>
 
 <c:forEach var="entry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
 	<jsp:useBean id="entry" type="java.util.HashMap" />
 	<tr>
-		<td class="ss_entryTitle ss_normalprint">
+		<td class="ss_entryTitle">
 			<c:set var="isDashboard" value="yes"/>
 				
 			<ssf:titleLink 
@@ -111,7 +111,7 @@
 				</ssf:titleLink>
 		</td>
 		<td class="ss_iconsContainer" style="text-align: center;">
-		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
+		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.png"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
 		<td>
 			<c:choose>
 				<c:when test="${!empty entry['start_end#LogicalEndDate']}">
@@ -138,31 +138,25 @@
 				</c:otherwise>
 			</c:choose>				  
 		</td>
-		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
+		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.png" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
 			<c:set var="assignment" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment"), false) %>' />
 			<c:set var="assignment_groups" value='<%= org.kablink.teaming.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>' />
 			<c:set var="assignment_teams" value='<%= org.kablink.teaming.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>' />
 			<c:if test="${!empty assignment}">
-				<ul>
 					<c:forEach var="assigned" items="${assignment}">
-						<li><ssf:showUser user="${assigned}"/></li>
+						<div><ssf:showUser user="${assigned}"/></div>
 					</c:forEach>
-				</ul>
 			</c:if>
 			<c:if test="${!empty assignment_groups}">
-				<ul>
 					<c:forEach var="assigned" items="${assignment_groups}">
-						<li><ssf:showGroup group="${assigned}"/></li>
+						<div><ssf:showGroup group="${assigned}"/></div>
 					</c:forEach>
-				</ul>
 			</c:if>	
 			<c:if test="${!empty assignment_teams}">
-				<ul>
 					<c:forEach var="assigned" items="${assignment_teams}">
-						<li><ssf:showTeam team="${assigned}"/></li>
+						<div><ssf:showTeam team="${assigned}"/></div>
 					</c:forEach>
-				</ul>
 			</c:if>							
 			
 			<c:if test="${empty assignment && empty assignment_groups && empty assignment_teams}">
@@ -196,7 +190,7 @@
 	    		<a href="javascript: ;"
 					onclick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 					title="${path}"
-					><span class="ss_bold">${title}</span></a>
+					><span>${title}</span></a>
 			</c:if>
 				
 								

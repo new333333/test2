@@ -59,7 +59,7 @@
 			</c:if>
 		</c:when>
 		<c:otherwise>
-			<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
+			<img border="0" src="<html:imagesPath/>pics/group_icon_small.png" />
 		</c:otherwise>
 	</c:choose>
 	
