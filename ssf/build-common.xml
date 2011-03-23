@@ -30,7 +30,64 @@
 	<propertycopy name="app.server.lib.dir" from="app.server.${portal.type}.${app.server.type}.lib.dir" />
 	<propertycopy name="app.server.ssf.dir" from="app.server.${portal.type}.${app.server.type}.ssf.dir" />
 	<propertycopy name="app.server.ssfs.dir" from="app.server.${portal.type}.${app.server.type}.ssfs.dir" />
-	
+
+	<tstamp>
+	    <format property="new.static.dir" pattern="dd-MM-yyyy-hhmm" />
+	</tstamp>
+
+	<if>
+		<isset property="doing-release-build" />
+		<then>
+			<property name="web.static.dir" value="${new.static.dir}" />
+		</then>
+		<else>
+			<if>
+				<isset property="default.static.dir" />
+				<then>
+					<property name="web.static.dir" value="${default.static.dir}" />
+				</then>
+				<else>
+    				<if>
+    					<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
+    					<then>
+    						<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
+      							<filterchain>
+        							<linecontains>
+          								<contains value="release.static.dir"/>
+        							</linecontains>
+      							</filterchain>
+    						</loadproperties>
+    					</then>
+    				</if>
+    				
+    				<if>
+    					<not>
+    						<isset property="release.static.dir" />
+    					</not>
+    					<then>
+	    					<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    				</if>
+    				<if>
+    					<equals arg1="${release.static.dir}" arg2="" />
+    					<then>
+							<property name="web.static.dir" value="${new.static.dir}" />
+    					</then>
+    					<else>
+    						<property name="web.static.dir" value="${release.static.dir}" />
+    					</else>
+    				</if>
+				</else>
+			</if>
+		</else>
+	</if>
+	<if>
+		<isset property="web.static.path" />
+		<then>
+			<echo>The static files will be put in "${web.static.path}"</echo>
+		</then>
+	</if>
+			
 	<target name="clean">
 		<delete file="${jar.file}" failonerror="false" />
 		<delete dir="${java2html.dir}" />
