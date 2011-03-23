@@ -3,57 +3,6 @@
 <project name="web" basedir="." default="war">
 	<import file="../build-common.xml" />
 	
-	<tstamp>
-	    <format property="new.static.dir" pattern="dd-MM-yyyy-hhmm" />
-	</tstamp>
-
-	<if>
-		<isset property="doing-release-build" />
-		<then>
-			<property name="web.static.dir" value="${new.static.dir}" />
-		</then>
-		<else>
-			<if>
-				<isset property="default.static.dir" />
-				<then>
-					<property name="web.static.dir" value="${default.static.dir}" />
-				</then>
-				<else>
-    				<if>
-    					<available file="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties"/>
-    					<then>
-    						<loadproperties srcFile="${app.server.ssf.dir}/WEB-INF/classes/config/ssf.properties">
-      							<filterchain>
-        							<linecontains>
-          								<contains value="release.static.dir"/>
-        							</linecontains>
-      							</filterchain>
-    						</loadproperties>
-    					</then>
-    				</if>
-    				
-    				<if>
-    					<not>
-    						<isset property="release.static.dir" />
-    					</not>
-    					<then>
-	    					<property name="web.static.dir" value="${new.static.dir}" />
-    					</then>
-    				</if>
-    				<if>
-    					<equals arg1="${release.static.dir}" arg2="" />
-    					<then>
-							<property name="web.static.dir" value="${new.static.dir}" />
-    					</then>
-    					<else>
-    						<property name="web.static.dir" value="${release.static.dir}" />
-    					</else>
-    				</if>
-				</else>
-			</if>
-		</else>
-	</if>
-
 	<property name="war.file" value="ssf-web.war" />
 		
 	<propertycopy name="app.server.dir" from="app.server.${portal.type}.${app.server.type}.dir" />
@@ -68,7 +17,7 @@
 	
 	<target name="clean">
 		<delete dir="temp"/>
-		<delete dir="{jspclasses.dir}" />
+		<delete dir="${jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
 		<delete>
 			<fileset dir="${web.dir}/WEB-INF"
