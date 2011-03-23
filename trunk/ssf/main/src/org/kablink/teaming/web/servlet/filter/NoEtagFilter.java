@@ -43,6 +43,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import org.kablink.teaming.util.ReleaseInfo;
+
 public class NoEtagFilter implements Filter {
 
 	/* (non-Javadoc)
@@ -62,6 +64,15 @@ public class NoEtagFilter implements Filter {
 		      public void setHeader(String name, String value) {
 		          if (!"etag".equalsIgnoreCase(name)) {
 		              super.setHeader(name, value);
+		          } else {
+		        	  //This is an ETag, force the value to be the build #
+		        	  int buildNumber = ReleaseInfo.getBuildNumber();
+		        	  String etagValue = String.valueOf(buildNumber);
+		        	  if (buildNumber == 0) {
+		        		  //This must be a development system
+		        		  etagValue = ReleaseInfo.getStartTime();
+		        	  }
+		        	  super.setHeader(name, etagValue);
 		          }
 		      }
 		  });
