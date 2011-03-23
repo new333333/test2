@@ -48,7 +48,7 @@
 
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
-		  src="<html:brandedImagesPath/>icons/group.gif"/> 
+		  src="<html:brandedImagesPath/>icons/group.png"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
 <c:if test="${!empty ssTeamMemberGroups}">
