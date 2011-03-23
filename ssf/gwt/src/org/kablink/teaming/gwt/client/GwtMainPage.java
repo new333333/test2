@@ -270,6 +270,9 @@ public class GwtMainPage extends Composite
 			// ...we hide the masthead and sidebar by default.
 			handleAction(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
 			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
+			
+			// Have the masthead hide the logout link
+			m_mastHead.hideLogoutLink();
 		}
 	}// end GwtMainPage()
 
