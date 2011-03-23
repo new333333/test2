@@ -101,8 +101,8 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		GwtRpcServiceAsync rpcService = GwtTeaming.getRpcService();
 		switch (m_tm) {
 		case HORIZONTAL:
-			mainPanel.addStyleName( "breadCrumb_Browser" );
-			rpcService.getHorizontalTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
+			mainPanel.addStyleName("breadCrumb_Browser");
+			rpcService.getHorizontalTree(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<List<TreeInfo>>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -124,8 +124,8 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			break;
 			
 		case VERTICAL:
-			mainPanel.addStyleName( "workspaceTreeControl" );
-			rpcService.getVerticalTree( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
+			mainPanel.addStyleName("workspaceTreeControl");
+			rpcService.getVerticalTree(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<TreeInfo>() {
 				public void onFailure(Throwable t) {
 					GwtClientHelper.handleGwtRPCFailure(
 						t,
@@ -144,20 +144,11 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			});
 			
 			// Set the size of the control.
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-        			relayoutPage();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			relayoutPageAsync();
 		}
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget(mainPanel);
 	}
 
 	/**
@@ -256,33 +247,30 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	}
 	
 	/**
-	 * Called to force the workspace tree control to lay itself
+	 * Asynchronously forces the workspace tree control to lay itself
 	 * out correctly.
 	 */
-	public void relayoutPage()
-	{
+	public void relayoutPageAsync() {
 		// We only worry about layout if the tree if it's in vertical
 		// mode.  Is it?
 		if (TreeMode.VERTICAL == m_tm) {
-			Scheduler.ScheduledCommand cmd;
-
 			// Yes!  Force it to lay itself out again.
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
-					relayoutPageImpl();
+			Scheduler.ScheduledCommand layouter;
+			layouter = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					relayoutPageNow();
 				}
 			};
-			Scheduler.get().scheduleDeferred( cmd );
+			Scheduler.get().scheduleDeferred(layouter);
 		}
 	}
 		
 	/*
-	 * Implementation method of relayoutPage() that actually performs
-	 * the changes.
+	 * Synchronously forces the workspace tree control to lay itself
+	 * out correctly.
 	 */
-	private void relayoutPageImpl() {
+	private void relayoutPageNow() {
 		int height;
 		Style style;
 
@@ -291,7 +279,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		
 		// ...and set it's height.
 		style = getElement().getStyle();
-		style.setHeight( height, Style.Unit.PX );
+		style.setHeight(height, Style.Unit.PX);
 	}
 
 	/*
@@ -345,7 +333,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
-			GwtTeaming.getRpcService().getDefaultActivityStream( HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
+			GwtTeaming.getRpcService().getDefaultActivityStream(HttpRequestInfo.createHttpRequestInfo(), selectedBinderId, new AsyncCallback<ActivityStreamInfo>() {
 				public void onFailure(Throwable t) {
 					// If we couldn't get it, handle the
 					// failure...
