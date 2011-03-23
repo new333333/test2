@@ -39,6 +39,7 @@ import java.util.Set;
 import junit.framework.TestCase;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.StopAnalyzer;
 
 public class VibeQueryAnalyzerTest extends TestCase {
 	
@@ -158,6 +159,17 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"debug.doc", "debug", "doc", "foo.bar", "foo", "bar", "www.novell.com", "www", "novell", "com"}); 
+	}
+	
+	public void testDefaultConfiguration() throws Exception {
+		Analyzer analyzer = new VibeQueryAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET, 
+				true, 
+				"English", 
+				true, 
+				false);
+		String text = "Kunde Karlsruhe Update von IBM";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
 	}
 }
 
