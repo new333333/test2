@@ -423,7 +423,12 @@ public class GwtMainPage extends Composite
 	
 	private void contextLoaded( String binderId, final Instigator instigator, boolean inSearch, String searchTabId )
 	{
-		restoreUIState();
+		// If the administration control is NOT active...
+		if ( !isAdminActive() )
+		{
+			// ..restore the UI state.
+			restoreUIState();
+		}
 
 		// If the context was loaded because of the initial login and
 		// we're entering activity stream mode by default...
@@ -865,11 +870,11 @@ public class GwtMainPage extends Composite
 				public void execute()
 				{
 					restoreUIState();
+					relayoutPage( true );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 			
-			relayoutPage( false );
 			break;
 			
 		case EDIT_BRANDING:
@@ -914,7 +919,8 @@ public class GwtMainPage extends Composite
 			
 		case MY_WORKSPACE:
 			// If we're currently running site administration...
-			if ((null != m_adminControl) && m_adminControl.isVisible()) {
+			if ( isAdminActive() )
+			{
 				// ...close it first.
 				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
 			}
@@ -1867,7 +1873,7 @@ public class GwtMainPage extends Composite
 			if ( null != m_wsTreeCtrl )
 			{
 				// Yes
-				m_wsTreeCtrl.relayoutPage();
+				m_wsTreeCtrl.relayoutPageAsync();
 			}
 			
 			// Set the size and position of the entry popup div.
@@ -1987,4 +1993,13 @@ public class GwtMainPage extends Composite
 		else reply = defaultValue;
 		return reply;
 	}// end getBooleanActionParam()
+	
+	/*
+	 * Returns true if the administration control is active and visible
+	 * and false otherwise.
+	 */
+	private boolean isAdminActive()
+	{
+		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
+	}// end isAdminActive()
 }// end GwtMainPage
