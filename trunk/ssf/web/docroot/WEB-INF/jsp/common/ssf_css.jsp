@@ -4019,7 +4019,7 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 .ss_paginator {float:left;}
 
 .ss_searchResult_dashboardHeader {
-	border-bottom: 1px solid #afc8e3;	
+	border-bottom: 1px solid #d2d5d1;	
 	padding: 3px 0px 3px 12px;
 }
 .ss_searchResult_dashboardNumbers {
@@ -4476,30 +4476,31 @@ div.ss_content_outer table.ss_tasks_list {
 table.ss_tasks_list {
 	margin:6px 0px 4px 8px;
 	padding: 0px;
-	border-top: 1px solid #afc8e3;
-	border-left: 1px solid #afc8e3;
-	border-right: 1px solid #afc8e3;
+	border-top: 1px solid #D2D5D1;
+	border-left: 1px solid #D2D5D1;
+	border-right: 1px solid #D2D5D1;
 	border-spacing: 0px;
 	width: 99%;
 	empty-cells: show;
 	border-collapse: collapse;
 }
 
-table.ss_tasks_list th {
-	background-color: #dbe6f2;
-	border-bottom: 1px solid #afc8e3;
-	border-right: 1px solid #afc8e3;
-	font-size: 10px !important;
+table.ss_tasks_list tr.columnhead td {
+	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
+	background-position:bottom;
+	border-bottom: 1px solid #D2D5D1;
+	border-right: 1px solid #D2D5D1;
+	font-size: 11px !important;
 	text-align: left;
-	padding: 3px 0px 3px 5px;
+	padding: 3px 5px;
 	white-space: nowrap;
 	overflow: visible;
-	color: ${ss_style_text_color} !important;
+	color: #505354 !important;
 }
 table.ss_tasks_list td {
 	padding: 3px 0px 3px 6px;
-	font-size: 10px !important;
-	border-bottom: 1px solid #afc8e3;
+	font-size: 11px !important;
+	border-bottom: 1px solid #D2D5D1;
 }
 
 table.ss_tasks_accessory td {
@@ -4599,8 +4600,8 @@ div.ss_bar_status {
 }
 
 a.ss_taskStatus img, img.ss_taskStatus {
-	width: 21px;
-	height: 22px;
+	width: 16px;
+	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -4629,8 +4630,8 @@ a.ss_taskStatus_s2_u:hover img, a.ss_taskStatus_s1_u:hover img, a.ss_taskStatus_
 }
 
 a.ss_taskPriority img, img.ss_taskPriority {
-	width: 21px;
-	height: 21px;
+	width: 16px;
+	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;

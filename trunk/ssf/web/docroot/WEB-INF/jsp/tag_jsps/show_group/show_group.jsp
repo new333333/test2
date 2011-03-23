@@ -42,19 +42,18 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 <c:if test="${ssConfigJspStyle != 'mobile'}">
-	<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
-		<span class="${ss_showGroupTitleStyle}"><c:out value="${ss_showGroupGroup.title}" /></span>
 	<a href="javascript: //"
 	onclick="ss_toggleShowDiv('ss_show_group_${ss_showGroupInstanceCount}'); return false;" 
-	class="ss_fineprint"><ssf:nlt tag="showGroup.group.members"><ssf:param 
-	name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
-	<div id="ss_show_group_${ss_showGroupInstanceCount}" style="display: none;">
-  		<ul>
+	class="ss_smallprint ss_nowrap">
+		<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_icon_small.png" align="absmiddle" />
+		<span class="${ss_showGroupTitleStyle}"><c:out value="${ss_showGroupGroup.title}" /></span>
+		<ssf:nlt tag="showGroup.group.members"><ssf:param 
+			name="value" value="${fn:length(ss_showGroupGroupMembers)}"/></ssf:nlt></a>
+		<div id="ss_show_group_${ss_showGroupInstanceCount}" style="display: none;">
 			<c:forEach var="member" items="${ss_showGroupGroupMembers}" >
-		 	 <li>${member.title}</li>
+		 	 <div class="marginleft3">${member.title}</div>
 			</c:forEach>
-  		</ul>
-	</div>
+		</div>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <span class="${ss_showGroupTitleStyle}">${ss_showGroupGroup.title}</span>
