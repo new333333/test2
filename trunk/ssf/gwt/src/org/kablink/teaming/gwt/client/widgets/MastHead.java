@@ -663,6 +663,16 @@ public class MastHead extends Composite
 	
 
 	/**
+	 * Hide the logout link.  We will do this if we are running in captive mode.
+	 */
+	public void hideLogoutLink()
+	{
+		if ( m_logoutLink != null )
+			m_logoutLink.setVisible( false );
+	}
+	
+	
+	/**
 	 * This method gets called when the user clicks on something in the branding panel.
 	 */
 	public void onClick( ClickEvent event )
