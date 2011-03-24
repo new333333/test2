@@ -132,25 +132,37 @@ import org.kablink.util.cal.DayAndPosition;
 /**
  * iCalendar generator.
  * 
- * 
- * 
  * @author Pawel Nowicki
- * 
  */
 @SuppressWarnings("deprecation")
 public class IcalModuleImpl extends CommonDependencyInjection implements IcalModule {
-	protected Log logger = LogFactory.getLog(getClass());
+	protected Log          logger = LogFactory.getLog(getClass());
+	private   BinderModule binderModule;
+	private   FolderModule folderModule;
 	
-	private static final ProdId PROD_ID = new ProdId("-//Novell Inc//"
-			+ ObjectKeys.PRODUCT_NAME_DEFAULT);
+	private static final ProdId PROD_ID				= new ProdId("-//Novell Inc//" + ObjectKeys.PRODUCT_NAME_DEFAULT);
+	private static final String CAL_ADDRESS_HEADER	= "MAILTO:";
 
-	private BinderModule binderModule;
-	private FolderModule folderModule;
+	// The following are used in a VTODO so that when imported, we can
+	// correctly recreate the specification from the original task.
+	private static final String TASK_DURATION_DAYS      = "X-VIBE-DURATION-DAYS";					
+	private static final String TASK_HASDURATION_DAYS   = "X-VIBE-HASDURATION-DAYS";
+	private static final String TASK_HASSPECIFIED_END   = "X-VIBE-HASSPECIFIED-END";
+	private static final String TASK_HASSPECIFIED_START = "X-VIBE-HASSPECIFIED-START";
 	
-	private static final String CAL_ADDRESS_HEADER = "MAILTO:";
+	private static enum ComponentType {
+		Task,
+		Calendar;
+	}
 
-	
 	/*
+	 * This table contains mappings from Linux time zone IDs to Java
+	 * 1.6 time zone IDs.  It was defined using information from:
+	 * 
+	 *    http://tinyurl.com/76ylrz
+	 *         -or-
+	 *    http://74.125.95.132/search?q=cache:-KG8flcy8-4J:www.njdj.gov.cn/qhdj/Adx/images/xxmyimg_1039.jsp%3Fsort%3D3%26downfile%3D%252Fopt%252Foracle%252Fjre%252F1.3.1%252Flib%252Ftzmappings+tzmappings&hl=en&ct=clnk&cd=28&gl=us
+	 *    
 	 * When Loaded, linuxTZIDMappings will hold a HashMap of the
 	 * items from LINUX_TZID_MAPPINGS that aren't mapped to themselves.
 	 * (For the sake of completeness, I included EVERYTHING in the
@@ -160,17 +172,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * method loadLinuxTZIDMappings() which occurs on the first call to
 	 * the method mapLinuxTZIDToJavaTZID().
 	 */
-	private static HashMap<String, String> linuxTZIDMappings;
-
-	/*
-	 * This table contains mappings from Linux time zone IDs to Java
-	 * 1.6 time zone IDs.  It was defined using information from:
-	 * 
-	 *    http://tinyurl.com/76ylrz
-	 *         -or-
-	 *    http://74.125.95.132/search?q=cache:-KG8flcy8-4J:www.njdj.gov.cn/qhdj/Adx/images/xxmyimg_1039.jsp%3Fsort%3D3%26downfile%3D%252Fopt%252Foracle%252Fjre%252F1.3.1%252Flib%252Ftzmappings+tzmappings&hl=en&ct=clnk&cd=28&gl=us
-	 */
-	private final static String[][] LINUX_TZID_MAPPINGS = new String[][]
+	private       static HashMap<String, String> linuxTZIDMappings;
+	private final static String[][]              LINUX_TZID_MAPPINGS = new String[][]
      {
      	new String[]{"Africa/Abidjan", "Africa/Abidjan"},
      	new String[]{"Africa/Accra", "Africa/Accra"},
@@ -1502,11 +1505,6 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		this.folderModule = folderModule;
 	}
 
-	private static enum ComponentType {
-
-		Task, Calendar;
-	}
-
 	/**
 	 * parseEvents
 	 * 
@@ -1565,6 +1563,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				event = parseEvent(todoComponent.getStartDate(), null, todoComponent.getDue(), 
 						todoComponent.getDuration(), (RRule) todoComponent.getProperty("RRULE"),
 						todoComponent.getRecurrenceId(), todoComponent.getUid(), timeZones);
+				
+				parseVibeSpecificStuff(event, todoComponent);
 	
 				String description = null;
 				if(todoComponent.getDescription() != null) {
@@ -1704,17 +1704,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return user;
 	}
 	
-	/**
+	/*
 	 * Parse VEVENT or VTODO.
-	 * 
-	 * @param start
-	 * @param end
-	 * @param due
-	 * @param duration
-	 * @param recurrence
-	 * @param recurrenceId
-	 * @param timeZones
-	 * @return
 	 */
 	private Event parseEvent(DtStart start, DtEnd end, Due due, Duration duration, RRule recurrence,
 			RecurrenceId recurrenceId, Uid uid, Map<String, TimeZone> timeZones) {	
@@ -1822,6 +1813,43 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 					start.getParameter(Value.DATE.getName()) == null));
 	}
 
+	/*
+	 * Looks in the VTODO for an 'X-VIBE-*' fields and applies them
+	 * as necessary.
+	 */
+	private void parseVibeSpecificStuff(Event event, VToDo vToDo) {
+		// Do we have the required Vibe specific settings?
+		XProperty xHasDurDays        = ((XProperty) vToDo.getProperties().getProperty(TASK_HASDURATION_DAYS));
+		XProperty xHasSpecifiedEnd   = ((XProperty) vToDo.getProperties().getProperty(TASK_HASSPECIFIED_END));
+		XProperty xHasSpecifiedStart = ((XProperty) vToDo.getProperties().getProperty(TASK_HASSPECIFIED_START));		
+		if ((null == xHasDurDays) || (null == xHasSpecifiedEnd) || (null == xHasSpecifiedStart)) {
+			// No!  Bail.
+			return;
+		}
+
+		// Apply the end specifics.
+		boolean hasSpecifiedEnd = Boolean.parseBoolean(xHasSpecifiedEnd.getValue());		
+		if (!hasSpecifiedEnd) {
+			event.setDtCalcEnd(event.getDtEnd());
+			event.setDtEnd((java.util.Calendar) null);
+		}
+		
+		// Apply the start specifics.
+		boolean hasSpecifiedStart = Boolean.parseBoolean(xHasSpecifiedStart.getValue());
+		if (!hasSpecifiedStart) {
+			event.setDtCalcStart(event.getDtStart());
+			event.setDtStart((java.util.Calendar) null);
+		}
+
+		// Apply the duration specifics.
+		boolean hasDurDays = Boolean.parseBoolean(xHasDurDays.getValue());
+		if (hasDurDays) {
+			XProperty xDurDays = ((XProperty) vToDo.getProperties().getProperty(TASK_DURATION_DAYS));
+			int durDays = Integer.parseInt(xDurDays.getValue());
+			event.setDuration(new org.kablink.util.cal.Duration(durDays, 0, 0, 0));
+		}
+	}
+	
 	/**
 	 * parseEvents
 	 * 
@@ -2190,6 +2218,22 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE_TIME);
 			if (hasEnd) {
 				vToDo.getProperties().getProperty(Property.DUE).getParameters().add(Value.DATE_TIME);
+			}
+
+			// Was this task given a specified end date?
+			boolean hasSpecifiedEnd = (null != event.getDtEnd());
+			if (!hasSpecifiedEnd) {
+				// No!  Add 'X-VIBE-*' fields to the VTODO so that we
+				// can correctly recreate the task when imported.
+				boolean hasDurDays        = event.getDuration().hasDaysOnly(); 
+				boolean hasSpecifiedStart = (null != event.getDtStart());
+				
+				vToDo.getProperties().add(new XProperty(TASK_HASSPECIFIED_START, String.valueOf(hasSpecifiedStart)));				
+				vToDo.getProperties().add(new XProperty(TASK_HASSPECIFIED_END,   String.valueOf(hasSpecifiedEnd)));
+				vToDo.getProperties().add(new XProperty(TASK_HASDURATION_DAYS,   String.valueOf(hasDurDays)));
+				if (hasDurDays) {
+					vToDo.getProperties().add(new XProperty(TASK_DURATION_DAYS, String.valueOf(event.getDuration().getDays())));					
+				}
 			}
 		} else {
 			Date start = new Date(event.getLogicalStart().getTime());
