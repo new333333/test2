@@ -1060,7 +1060,13 @@ public class DefinitionHelper {
     			if (mashupItemAttributes.containsKey(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME)) 
     				jspName = (String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_NAME);
     			if (!jspName.equals("")) {
-    				String fileName = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey() + File.separator + jspName;
+    				String jspName2 = jspName;
+    				if (File.separator.equals("\\")) {
+    					jspName2 = jspName.replaceAll("[\\\\/]", "\\\\");
+    				} else {
+    					jspName2 = jspName.replaceAll("[\\\\/]", File.separator);
+    				}
+    				String fileName = DirPath.getExtensionBasePath() + File.separator + Utils.getZoneKey() + File.separator + jspName2;
     				File f = new File(fileName);
     				if (f.isFile()) pathType = ObjectKeys.MASHUP_ATTR_CUSTOM_JSP_PATH_TYPE_EXTENSION;
     			}

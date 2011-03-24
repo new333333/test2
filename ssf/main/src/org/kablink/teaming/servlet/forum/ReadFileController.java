@@ -90,7 +90,7 @@ public class ReadFileController extends AbstractReadFileController {
 				Set<Attachment> attachments = entity.getAttachments();
 				String fileName = getBinderModule().filename8BitSingleByteOnly(entity.getTitle() + ".zip", "files.zip", singleByte);
 				response.setContentType(mimeTypes.getContentType(fileName));
-				response.setHeader("Cache-Control", "private");
+				response.setHeader("Cache-Control", "private, max-age=0");
 				response.setHeader(
 							"Content-Disposition",
 							"attachment; filename=\"" + fileName + "\"");
@@ -160,7 +160,7 @@ public class ReadFileController extends AbstractReadFileController {
 					String fileName = EntityIndexUtils.getFileNameWithoutExtension(fileAtt.getFileItem().getName());
 					fileName = getBinderModule().filename8BitSingleByteOnly(fileName + ".zip", "download.zip", singleByte);
 					response.setContentType(mimeTypes.getContentType(fileName));
-					response.setHeader("Cache-Control", "private");
+					response.setHeader("Cache-Control", "private, max-age=0");
 					response.setHeader(
 								"Content-Disposition",
 								"attachment; filename=\"" + fileName + "\"");
@@ -225,7 +225,7 @@ public class ReadFileController extends AbstractReadFileController {
 					String contentType = getFileTypeMap().getContentType(shortFileName);
 					response.setContentType(contentType);
 					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-					String cacheControl = "private";
+					String cacheControl = "private, max-age=86400";
 					if (isHttps) {
 						response.setHeader("Pragma", "public");
 						cacheControl += ", proxy-revalidate, s-maxage=0";

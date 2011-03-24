@@ -208,6 +208,22 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>privateResourcesFilter</filter-name>
+		<url-pattern>/s/readFile/*.zip</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>privateCachedResourcesFilter</filter-name>
+		<url-pattern>/s/readFile/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>publicResourcesFilter</filter-name>
+		<url-pattern>/s/viewCss*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>publicResourcesFilter</filter-name>
+		<url-pattern>/s/viewCss/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>privateResourcesFilter</filter-name>
 		<url-pattern>/s/*</url-pattern>
 	</filter-mapping>
 
