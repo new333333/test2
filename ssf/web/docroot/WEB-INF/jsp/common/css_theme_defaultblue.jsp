@@ -165,7 +165,7 @@
   --
   -- GUESTBOOK
   --
---%><c:set var="ss_guestbook_rule_color" value="#AFC8E3" scope="request"/><%--
+--%><c:set var="ss_guestbook_rule_color" value="#D2D5D1" scope="request"/><%--
 --%><%--
   --
   -- HELP COLORS
