@@ -44,45 +44,49 @@
 
 
 
-<div class="ss_buddies">
+<div class="ss_buddies" style="padding-left: 5px;">
 
 	<div class="ss_buddiesListHeader">		
 		<img border="0" <ssf:alt/>
-		  src="<html:brandedImagesPath/>icons/group.png"/> 
+		  src="<html:brandedImagesPath/>icons/team_small.png"/> 
 		  <span>${ssBinder.title}</span> 
     </div>
+
 <c:if test="${!empty ssTeamMemberGroups}">
-	<div style="padding:10px 0px 20px 0px;">
+	<div style="padding:16px;">
 	    <div style="padding-bottom:6px;">
-	      <span class="ss_bold"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
+	      <span class="ss_gray_medium"><ssf:nlt tag="teamMembersList.groupsInTeam"/></span>
 	    </div>
 	    <div style="padding-left:10px;">
 	    <c:forEach var="teamGroup" items="${ssTeamMemberGroups}">
-	    	<a href="<ssf:url
-					adapter="true" 
-					crawlable="true"
-					portletName="ss_forum" 
-					action="__ajax_request"
-					actionUrl="false"><ssf:param 
-					name="operation" value="get_group_list"/><ssf:param 
-					name="groupId" value="${teamGroup.value.id}"/></ssf:url>"
-			    onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
-			<span class="ss_smallprint">${teamGroup.key}</span>
-			<c:if test="${!empty teamGroup.value.members}">
-			  <span class="ss_fineprint ss_light">(<ssf:nlt tag="teamMembersList.members">
-			    <ssf:param name="value" value="${fn:length(teamGroup.value.members)}"/>
-			  </ssf:nlt>)</span>
-			</c:if>
-			 </a><br/>
+	    	<div class="margintop2">
+				<img style="margin: 1px 3px 0;" border="0" src="<html:imagesPath/>pics/group_icon_small.png" align="absbottom" />
+				<a href="<ssf:url
+						adapter="true" 
+						crawlable="true"
+						portletName="ss_forum" 
+						action="__ajax_request"
+						actionUrl="false"><ssf:param 
+						name="operation" value="get_group_list"/><ssf:param 
+						name="groupId" value="${teamGroup.value.id}"/></ssf:url>"
+					onClick="ss_openUrlInWindow(this, '_blank', 400, 600);return false;">
+				<span>${teamGroup.key}</span>
+				<c:if test="${!empty teamGroup.value.members}">
+				  (<ssf:nlt tag="teamMembersList.members">
+					<ssf:param name="value" value="${fn:length(teamGroup.value.members)}"/>
+				  </ssf:nlt>)
+				</c:if>
+				 </a>
+			 </div>
 	    </c:forEach>
 	    </div>
 	</div>
 </c:if>
 <c:if test="${ssConfigJspStyle != 'template'}">	
-    <div style="padding-bottom:10px;">
-      <span class="ss_bold"><ssf:nlt tag="team.members"/></span>
+    <div style="padding: 0 0 10px 16px;">
+      <span class="ss_gray_medium"><ssf:nlt tag="team.members"/></span>
     </div>
-	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
+	<table class="ss_buddiesList" style="padding-left: 16px;" cellpadding="0" cellspacing="0">
 	
 		<c:choose>
 			<c:when test="${ssTeamMembersCount > 0}">					
@@ -96,18 +100,18 @@
 							user="${member}" 
 								folderId="${member.parentBinder.id}" entryId="${member.id}" />						
 						 </td>
-						<td>
+						<td class="ss_nowrap">
 						  <a href="<ssf:permalink entity="${member}"/>"
 							onClick="return ss_gotoPermalink('${member.parentBinder.id}','${member.id}', 'user', '${ss_namespace}', 'yes');"
 							><ssf:userTitle user="${member}"/></a>
 						</td>
 						<td><c:if test="${!empty member.organization}"><c:out value="${member.organization}" /></c:if></td>
-						<td width="20">
+						<td style="padding: 0 5px">
 							<div id="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"></div>
 							<ssf:presenceInfo user="${member}" 
 							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>
 						</td>
-						<td><ssf:mailto email="${member.emailAddress}"/></td>
+						<td width="100%"><ssf:mailto email="${member.emailAddress}"/></td>
 					</tr>
 				  </c:if>
 				</c:forEach>
@@ -119,7 +123,7 @@
 		
 	</table>
 	
-<div>
+<div class="margintop2" style="padding-left: 16px;">
   <table width="100%">
    <tr>
     <td>

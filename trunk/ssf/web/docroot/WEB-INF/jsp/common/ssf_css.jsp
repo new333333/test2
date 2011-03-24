@@ -297,11 +297,13 @@ a.ss_download_link {
 .ss_gray {
   color: ${ss_style_gray_color};   
   }
-
+.ss_gray_medium {
+  color: #666;   
+  }
 .ss_light {
   color: ${ss_style_light_color};   
   }
-
+  
 .ss_border_light {
   border: 1px ${ss_style_border_color} solid;
   }
@@ -2559,9 +2561,8 @@ div.ss_miniblog_list {
 	margin-top:12px;
 	}
 div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
-    width: 35px;
-    height: 35px;
-    background-color: ${ss_gallery_background_color};
+    width: 25px;
+    height: 25px;
     color: ${ss_style_metadata_color};    
     vertical-align: middle;
 	text-align:center;
@@ -3731,7 +3732,6 @@ table.ss_buddiesList {
 	width: 100%; 
 	empty-cells: show;
 	padding: 0px; 
-	border-top: 1px solid ${ss_guestbook_rule_color};
 }
 table.ss_buddiesList td {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
@@ -3746,9 +3746,9 @@ table.ss_buddiesList td.selectable {
 }
 table.ss_buddiesList td.picture {
 	border-bottom: 1px solid ${ss_guestbook_rule_color};
-	padding: 6px 5px 7px 8px; 
-	width: 24px;
+	padding: 3px 5px; 
 }
+
 table.ss_buddiesList tr.options td {
 	border: 0px;
 }
