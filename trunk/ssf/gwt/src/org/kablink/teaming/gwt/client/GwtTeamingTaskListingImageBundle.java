@@ -154,7 +154,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource completed();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/group.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/group_small.png")
 	public ImageResource group();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -214,7 +214,7 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource task_opener();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/team.gif")
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/team_small.png")
 	public ImageResource team();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
