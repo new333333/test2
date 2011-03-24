@@ -340,7 +340,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 			var optionObj = document.createElement("option");
 			optionObj.value = valueOptionValue;
 			optionObj.selected = true;
-			optionObj.innerHTML = valueOptionValue;
+			optionObj.innerHTML = valueLabel;
 			selectObj.appendChild(optionObj);
 			fieldValue3Div.appendChild(selectObj);
 		}
