@@ -1587,6 +1587,7 @@ public class WebKeys {
     public static final String SERVLET_READ_FILE="readFile";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
+    public static final String SERVLET_VIEW_CSS_START_TIME="start_time";
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
     public static final String SERVLET_PORTAL_LOGIN="portalLogin";
     public static final String SERVLET_PORTAL_LOGOUT="portalLogout";

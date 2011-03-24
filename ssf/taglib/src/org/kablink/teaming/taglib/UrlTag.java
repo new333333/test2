@@ -147,6 +147,11 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				params.put(WebKeys.URL_OPERATION, new String[] {operation});
 			} 
 			if (!Validator.isNull(webPath)) {
+				if (webPath.equals(WebKeys.SERVLET_VIEW_CSS)) {
+					//This is a special case for the viewCss file. We will add a unique qualifier that causes 
+					//  the browsers to use the latest version after an install or system restart.
+					webPath += "/" + WebKeys.SERVLET_VIEW_CSS_START_TIME + "/" + ReleaseInfo.getStartTime();
+				}
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
