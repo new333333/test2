@@ -482,7 +482,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   			}
 			   			//find definitions owned by this binder
 			   			List<Definition> defs = session.createCriteria(Definition.class)
-			   				.add(Expression.eq("binderId", binder.getId())).list();
+			   				.add(Expression.eq("binderId", binder.getId()))
+			   				.add(Expression.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId())).
+			   				list();
 			   			for (Definition definition:defs) {
 			   				try {
 			   					delete(definition);
