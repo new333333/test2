@@ -82,7 +82,7 @@ function ${renderResponse.namespace}_getUnseenCountsReturn() {
 <c:if test="${empty ssFolderList}">
 <div align="right">
   <a class="ss_linkButton" 
-    href="<portlet:renderURL 
+    href="<portletadapter:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
     ><ssf:nlt tag="portlet.forum.configure"/></a>
@@ -112,39 +112,39 @@ function ${renderResponse.namespace}_getUnseenCountsReturn() {
   <td>&nbsp;&nbsp;&nbsp;</td>
   <td>
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	name="action" value="view_folder_listing"/><portlet:param 
-	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"
+	  <a href="<portletadapter:renderURL windowState="maximized"><portletadapter:param 
+	  	name="action" value="view_folder_listing"/><portletadapter:param 
+	  	name="binderId" value="${binder.id}"/></portletadapter:renderURL>"
 	  	onClick="ss_openUrlInWorkarea(this.href, '${binder.id}', 'view_folder_listing');return false;"
 	  ><span>${binder.title}</span></a>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType == 'folder'}">
 	    <a style="padding-left:20px;" 
-	    	href="<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="view_folder_listing"/><portlet:param 
-			name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>"
+	    	href="<portletadapter:renderURL windowState="maximized"><portletadapter:param 
+			name="action" value="view_folder_listing"/><portletadapter:param 
+			name="binderId" value="${binder.parentBinder.id}"/></portletadapter:renderURL>"
 	  		onClick="ss_openUrlInWorkarea(this.href, '${binder.parentBinder.id}', 'view_folder_listing');return false;"
 		><span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType != 'folder'}">
 	    <a style="padding-left:20px;" 
-	    	href="<portlet:renderURL windowState="maximized"><portlet:param 
-	    	name="action" value="view_ws_listing"/><portlet:param 
-	    	name="binderId" value="${binder.parentBinder.id}"/></portlet:renderURL>"
+	    	href="<portletadapter:renderURL windowState="maximized"><portletadapter:param 
+	    	name="action" value="view_ws_listing"/><portletadapter:param 
+	    	name="binderId" value="${binder.parentBinder.id}"/></portletadapter:renderURL>"
 	  		onClick="ss_openUrlInWorkarea(this.href, '${binder.parentBinder.id}', 'view_ws_listing');return false;"
 	    ><span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	name="action" value="view_ws_listing"/><portlet:param 
-	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"
+	  <a href="<portletadapter:renderURL windowState="maximized"><portletadapter:param 
+	  	name="action" value="view_ws_listing"/><portletadapter:param 
+	  	name="binderId" value="${binder.id}"/></portletadapter:renderURL>"
 	  	onClick="ss_openUrlInWorkarea(this.href, '${binder.id}', 'view_ws_listing');return false;"
 	  ><span>${binder.title}</span></a>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'profiles'}">
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	name="action" value="view_profile_listing"/><portlet:param 
-	  	name="binderId" value="${binder.id}"/></portlet:renderURL>"
+	  <a href="<portletadapter:renderURL windowState="maximized"><portletadapter:param 
+	  	name="action" value="view_profile_listing"/><portletadapter:param 
+	  	name="binderId" value="${binder.id}"/></portletadapter:renderURL>"
 	  	onClick="ss_openUrlInWorkarea(this.href, '${binder.id}', 'view_profile_listing');return false;"
 	  ><span>${binder.title}</span></a>
 	</c:if>
@@ -160,7 +160,7 @@ function ${renderResponse.namespace}_getUnseenCountsReturn() {
 </div>
 <div align="right">
   <a class="ss_linkButton" 
-    href="<portlet:renderURL 
+    href="<portletadapter:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
     ><ssf:nlt tag="portlet.forum.configure"/></a>
