@@ -202,17 +202,13 @@ function ss_mashup_deleteAll_${renderResponse.namespace}() {
 			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
 				id="${ss_mashupPropertyName}__style"
 				<c:if test="${ss_mashupStyle == 'mashup.css'}">checked</c:if> >
-			  <label for="${ss_mashupPropertyName}__style">
 				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_light"/></span>
-			  </label>
 		  </div>
 		  <div class="margintop1 marginleft1">
 			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup_dark.css"
 				id="${ss_mashupPropertyName}__style_dark"
 				<c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
-			  <label for="${ss_mashupPropertyName}__style_dark">
 				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_dark"/></span>
-			  </label>
 		  </div>
     </div>
 	</td>
