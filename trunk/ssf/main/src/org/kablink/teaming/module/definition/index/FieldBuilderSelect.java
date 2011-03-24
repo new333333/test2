@@ -85,7 +85,8 @@ public abstract class FieldBuilderSelect extends AbstractFieldBuilder {
             val = (String) it.next();
 	        field = new Field(fieldName, val, Field.Store.YES, Field.Index.NOT_ANALYZED_NO_NORMS);
 	        fields[i] = field;
-	        allText += " " + getNltTagInAllLanguages(val);
+	        // Do NOT include translated text for the selection into the all text field. See bug#682072 
+	        //allText += " " + getNltTagInAllLanguages(val);
         }
         
         //Build the allText field
