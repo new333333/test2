@@ -525,7 +525,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				if (setAITitle(  ai, principalTitles)) {
 					setAIMembers(ai, groupCounts     );
-					ai.setPresenceDude("pics/group_icon_small.gif");
+					ai.setPresenceDude("pics/group_icon_small.png");
 				}
 				else {
 					removeList.add(ai);
@@ -538,7 +538,7 @@ public class GwtTaskHelper {
 				// ...setting each one's title and membership count.
 				if (setAITitle(  ai, teamTitles)) {
 					setAIMembers(ai, teamCounts );
-					ai.setPresenceDude("trees/people.gif");
+					ai.setPresenceDude("pics/team_small.png");
 				}
 				else {
 					removeList.add(ai);
@@ -672,7 +672,7 @@ public class GwtTaskHelper {
 				// Yes!  Set its title and membership count.
 				setAITitle(  ai, principalTitles);
 				setAIMembers(ai, groupCounts    );
-				ai.setPresenceDude("pics/group_icon_small.gif");
+				ai.setPresenceDude("pics/group_icon_small.png");
 			}
 			
 			else {
