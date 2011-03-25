@@ -929,7 +929,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		ZoneConfig zoneConf = getCoreDao().loadZoneConfig(zoneId);
 		if (zoneConf.isBinderQuotaEnabled() && zoneConf.isBinderQuotaInitialized()) {
-			Binder parentBinder = binder;
+			Binder parentBinder = binder.getParentBinder();
 			while (parentBinder != null) {
 				try {
 					BinderQuota binderQuota = getCoreDao().loadBinderQuota(zoneId, parentBinder.getId());

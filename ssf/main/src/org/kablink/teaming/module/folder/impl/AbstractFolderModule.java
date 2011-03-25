@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -869,6 +870,18 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
                 
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
+        //Check if there is quota to do the move
+        long fileSize = 0;
+        for (Attachment att : entry.getAttachments()) {
+        	if (att instanceof FileAttachment) {
+        		fileSize += ((FileAttachment)att).getFileItem().getLength();
+        	}
+        }
+		if (!getBinderModule().isBinderDiskQuotaOk(destination, fileSize)) {
+			//Adding this file would cause the quota to be exceeded
+			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{entry.getTitle()});
+		}
+
         processor.moveEntry(folder, entry, destination, options);
     }
     //inside write transaction    
@@ -880,7 +893,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
                
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
+
+        //Check if there is quota to do the move
+        long fileSize = 0;
+        for (Attachment att : entry.getAttachments()) {
+        	if (att instanceof FileAttachment) {
+        		fileSize += ((FileAttachment)att).getFileItem().getLength();
+        	}
+        }
+		if (!getBinderModule().isBinderDiskQuotaOk(destination, fileSize)) {
+			//Adding this file would cause the quota to be exceeded
+			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{entry.getTitle()});
+		}
+
+		return (FolderEntry) processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
     public void setSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
