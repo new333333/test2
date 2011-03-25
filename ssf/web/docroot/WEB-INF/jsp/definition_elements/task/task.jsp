@@ -54,14 +54,12 @@
 			 (ss_searchTotalHits <= SPropsUtil.getInt("subtasks.max.items", Integer.MAX_VALUE)));
 	}
 	
-	boolean updateCalculatedDates = false;
-	try {
-		Boolean taskChanged = ((Boolean) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGED));
-		if (null != taskChanged) {
-			updateCalculatedDates = taskChanged.booleanValue();
-		}
-	}
-	catch (Exception ex) {}
+	String taskChange = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_CHANGE));
+	if (null == taskChange) taskChange = "";
+	boolean updateCalculatedDates = (0 < taskChange.length());
+	
+	String taskId = ((String) ssBinder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_ID));
+	if (null == taskId) taskId = "";
 %>
 
 <c:set var="gwtPage" value="taskListing" scope="request"/>	
@@ -191,6 +189,8 @@
 			<input type="hidden" id="ssFolderSortBy"          value="${ssFolderSortBy}"            />
 			<input type="hidden" id="ssFolderSortDescend"     value="${ssFolderSortDescend}"       />
 			<input type="hidden" id="ssShowFolderModeSelect"  value="${ssShowFolderModeSelect}"    />
+			<input type="hidden" id="taskChange"              value="<%= taskChange            %>" />
+			<input type="hidden" id="taskId"                  value="<%= taskId                %>" />
 			<input type="hidden" id="updateCalculatedDates"   value="<%= updateCalculatedDates %>" />
 		</div>
 	<% } else { %>

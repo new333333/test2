@@ -879,6 +879,13 @@ public interface GwtTeamingMessages extends Messages
 	String tagType();
 	String unknownTagType();
 	
+	// The following are used for task disposition dialog.
+	String taskDispositionDlgHeader();
+	String taskDispositionDlgInsertAfter();
+	String taskDispositionDlgInsertAppend();
+	String taskDispositionDlgInsertAsSubtask();
+	String taskDispositionDlgInsertBefore();
+
 	// The following are used for task folder listing.
 	String taskAltDelete();
 	String taskAltMoveDown();

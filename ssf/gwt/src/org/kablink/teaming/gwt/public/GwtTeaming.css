@@ -2768,6 +2768,26 @@ top:100px;
 	-webkit-border-radius: 3px;
 }
 
+/* Styles for the task disposition dialog. */
+.taskDispositionDlg
+{
+}
+.taskDispositionDlg_Radio
+{
+	margin-left: 5px;
+}
+.taskDispositionDlg_Grid
+{
+	margin-top: 8px;
+}
+.taskDispositionDlg_Label
+{
+	color: #414648; /* dark grey */
+	line-height: 1.1em; 
+	margin-right: 5px;
+	padding: 0.2em 0.5em 0.3em; 
+	white-space: nowrap;
+}
 
 /* Start:  GWT Task Folder Listing styles. */
 .gwtTaskTools

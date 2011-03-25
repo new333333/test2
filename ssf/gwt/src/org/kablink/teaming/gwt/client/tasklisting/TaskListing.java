@@ -81,6 +81,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String			m_sortBy;					// The column the tasks are currently sorted by.
+	private String			m_taskChangeId;				// Empty or the ID of an added or modified task.
+	private String			m_taskChangeReason;			// Empty, taskAdded or taskModified, as the case may be.
 	private TaskBundle		m_taskBundle;				// The TaskLinkage and List<TaskListItem> that we're listing.
 	private TaskButton		m_deleteButton;				//
 	private TaskButton		m_moveDownButton;			//
@@ -114,6 +116,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_mode                  =                 jsGetElementValue("ssCurrentFolderModeType");
 		m_sortBy                =                 jsGetElementValue("ssFolderSortBy"         );
 		m_sortDescend           = Boolean.valueOf(jsGetElementValue("ssFolderSortDescend"   ));
+		m_taskChangeId          =                 jsGetElementValue("taskId"                 );
+		m_taskChangeReason      =                 jsGetElementValue("taskChange"             );
 		m_updateCalculatedDates = Boolean.valueOf(jsGetElementValue("updateCalculatedDates" ));
 		
 		String showMode = jsGetElementValue("ssShowFolderModeSelect");
@@ -158,23 +162,33 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * 
 	 * @return
 	 */
-	public boolean     getSortDescend()     {return m_sortDescend;    }
-	public FlowPanel   getTaskListingDIV()  {return m_taskListingDIV; }
-	public FlowPanel   getTaskRootDIV()     {return m_taskRootDIV;    }
-	public FlowPanel   getTaskToolsDIV()    {return m_taskToolsDIV;   }
-	public InlineLabel getHintSpan()        {return m_hintSpan;       }
-	public Long        getBinderId()        {return m_binderId;       }
-	public RequestInfo getRequestInfo()     {return m_requestInfo;    }
-	public String      getFilterType()      {return m_filterType;     }
-	public String      getMode()            {return m_mode;           }
-	public String      getSortBy()          {return m_sortBy;         }
-	public TaskBundle  getTaskBundle()      {return m_taskBundle;     }
-	public TaskButton  getDeleteButton()    {return m_deleteButton;   }
-	public TaskButton  getMoveDownButton()  {return m_moveDownButton; }
-	public TaskButton  getMoveUpButton()    {return m_moveUpButton;   }
-	public TaskButton  getMoveLeftButton()  {return m_moveLeftButton; }
-	public TaskButton  getMoveRightButton() {return m_moveRightButton;}
-	public TaskButton  getPurgeButton()     {return m_purgeButton;    }
+	public boolean     getSortDescend()           {return m_sortDescend;          }
+	public boolean     getUpdateCalculatedDates() {return m_updateCalculatedDates;}
+	public FlowPanel   getTaskListingDIV()        {return m_taskListingDIV;       }
+	public FlowPanel   getTaskRootDIV()           {return m_taskRootDIV;          }
+	public FlowPanel   getTaskToolsDIV()          {return m_taskToolsDIV;         }
+	public InlineLabel getHintSpan()              {return m_hintSpan;             }
+	public Long        getBinderId()              {return m_binderId;             }
+	public RequestInfo getRequestInfo()           {return m_requestInfo;          }
+	public String      getFilterType()            {return m_filterType;           }
+	public String      getMode()                  {return m_mode;                 }
+	public String      getSortBy()                {return m_sortBy;               }
+	public String      getTaskChangeReason()      {return m_taskChangeReason;     }
+	public TaskBundle  getTaskBundle()            {return m_taskBundle;           }
+	public TaskButton  getDeleteButton()          {return m_deleteButton;         }
+	public TaskButton  getMoveDownButton()        {return m_moveDownButton;       }
+	public TaskButton  getMoveUpButton()          {return m_moveUpButton;         }
+	public TaskButton  getMoveLeftButton()        {return m_moveLeftButton;       }
+	public TaskButton  getMoveRightButton()       {return m_moveRightButton;      }
+	public TaskButton  getPurgeButton()           {return m_purgeButton;          }
+	
+	public Long getTaskChangeId() {
+		Long reply;
+		if (GwtClientHelper.hasString(m_taskChangeId))
+		     reply = Long.parseLong(m_taskChangeId);
+		else reply = null;
+		return reply;
+	}
 	
 	/**
 	 * Set'er methods.
@@ -513,7 +527,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_taskListingDIV.clear();
 		boolean newTaskTable = (null == m_taskTable);
 		if (newTaskTable) m_taskTable = new TaskTable(this);
-		final long showTime = m_taskTable.showTasks(m_taskBundle, m_updateCalculatedDates);
+		final long showTime = m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
 		if (m_taskBundle.getIsDebug()) {
 			Scheduler.ScheduledCommand showTimeCommand;
