@@ -61,6 +61,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
@@ -338,8 +339,14 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		try {
 			boolean hadSession = SessionUtil.sessionActive();
 			try {
-				if (!hadSession) SessionUtil.sessionStartup();	
-				return doAuthenticate(authentication);
+				if (!hadSession) SessionUtil.sessionStartup();
+				
+				SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
+				Authentication retVal = doAuthenticate(authentication);
+				SimpleProfiler.stop( "1-AuthenticationModuleImpl.doAuthenticate()");
+				SimpleProfiler.dumpToLog();
+				
+				return retVal;
 			}
 			finally {
 				if (!hadSession) SessionUtil.sessionStop();
@@ -366,7 +373,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		AuthenticationException exc = null;
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	try {
+    		SimpleProfiler.start( "2-AuthenticationModuleImpl.ensureZoneIsConfigured()" );
     		ensureZoneIsConfigured(zone);
+    		SimpleProfiler.stop( "2-AuthenticationModuleImpl.ensureZoneIsConfigured()" );
     	} catch(Exception e) {
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
@@ -386,7 +395,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
         		// This will also try local authentication as fallback, if configured to do so.
 	    		try {
 	    			// Perform authentication
+	    			SimpleProfiler.start( "3-authenticators.get(zone).authenticate(authentication)" );
 	     			result = authenticators.get(zone).authenticate(authentication);
+	     			SimpleProfiler.stop( "3-authenticators.get(zone).authenticate(authentication)" );
 	     			
 	     			String loginName;
 	     			
@@ -399,9 +410,12 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	     			}
 	     			
 	     			// This is not used for authentication but for synchronization.
+	     			SimpleProfiler.start( "4-AuthenticationManagerUtil.authenticate()" );
 	    			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
 	    					loginName, (String) result.getCredentials(),
 	    					(Map) result.getPrincipal(), getAuthenticator());
+	     			SimpleProfiler.stop( "4-AuthenticationManagerUtil.authenticate()" );
+	     			
 	    			if(result instanceof SynchNotifiableAuthentication)
 	    				((SynchNotifiableAuthentication)result).synchDone();
 	    			return result;
@@ -421,13 +435,19 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    		}
         	}
         	else { // Yes, system account
-        		// Do not try ldap authentication. Authenticate against Teaming db.
+     			// Do not try ldap authentication. Authenticate against Teaming db.
+     			SimpleProfiler.start( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
     			result = localProviders.get(zone).authenticate(authentication);
+     			SimpleProfiler.stop( "3a-system account: localProviders.get(zone).authenticate(authentication)" );
+
     			// This is not used for authentication or synchronization but merely to log the authenticator.
+     			SimpleProfiler.start( "4a-system account: AuthenticationManagerUtil.authenticate()" );
     			AuthenticationManagerUtil.authenticate(getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName()),
     					(String) result.getName(), (String) result.getCredentials(),
     					false, false, true, 
     					(Map) result.getPrincipal(), getAuthenticator());			
+     			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
+
     			return result;
     		}
     	}
