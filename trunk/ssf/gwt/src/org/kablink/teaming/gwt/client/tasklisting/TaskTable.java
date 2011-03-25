@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingTaskListingImageBundle;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.tasklisting.TaskDispositionDlg.TaskDisposition;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -490,6 +491,43 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 
+	/*
+	 * Called from the task disposition dialog to apply the selection.
+	 */
+	public void applyTaskDisposition(TaskDisposition disposition, Long newTaskId, Long selectedTaskId) {		
+		switch (disposition) {
+		default:
+		case APPEND:
+			// Nothing to do.  Tasks are appended by default.
+			return;
+			
+		case BEFORE:			
+		case AFTER:
+		case SUBTASK:
+			// Find the affected tasks...
+			TaskListItem newTask      = TaskListItemHelper.findTask(m_taskBundle, newTaskId     );
+			TaskListItem selectedTask = TaskListItemHelper.findTask(m_taskBundle, selectedTaskId);
+			
+			// ...perform the move...
+			switch (disposition) {			
+			case BEFORE:
+				TaskListItemHelper.moveTaskAbove(m_taskBundle, newTask, selectedTask); 
+				break;
+				
+			case SUBTASK:
+			case AFTER:
+				TaskListItemHelper.moveTaskBelow(m_taskBundle, newTask, selectedTask);
+				if (TaskDisposition.SUBTASK == disposition) {
+					TaskListItemHelper.moveTaskRight(m_taskBundle, newTask);
+				}
+				break;
+			}
+			
+			// ...and refresh the list.
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTask);
+		}		
+	}
+	
 	/*
 	 * Returns a base Anchor widget.
 	 */
@@ -1828,6 +1866,20 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Uses JSNI to return the ID of the most recently selected task.
+	 */
+	private native String jsGetSelectedTaskId() /*-{
+		return $wnd.top.ss_selectedTaskId;
+	}-*/;
+	
+	/*
+	 * Uses JSNI to store the ID of the most recently selected task.
+	 */
+	private native void jsSetSelectedTaskId(String taskId) /*-{
+		$wnd.top.ss_selectedTaskId = String(taskId);
+	}-*/;
+	
+	/*
 	 * If the TaskTable is sorted by the specified column, add the
 	 * appropriate 'sorted by' indicator. 
 	 */
@@ -1914,6 +1966,38 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 	}
 
+	/*
+	 * Asynchronously prompts the user for where they want to place a
+	 * new task.
+	 */
+	private void promptForDispositionAsync(final Long newTaskId, final Long selectedTaskId) {
+		Scheduler.ScheduledCommand promptor;
+		promptor = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				promptForDispositionNow(newTaskId, selectedTaskId);
+			}
+		};
+		Scheduler.get().scheduleDeferred(promptor);
+	}
+	
+	/*
+	 * Synchronously prompts the user for where they want to place a
+	 * new task.
+	 */
+	private void promptForDispositionNow(Long newTaskId, Long selectedTaskId) {
+		TaskDispositionDlg tdd = new TaskDispositionDlg(
+			false,	// false -> Don't auto hide.
+			true,	// true  -> Modal.
+			0,		// Left.
+			0,		// Top.
+			this,
+			newTaskId,
+			selectedTaskId);
+		tdd.addStyleName("taskDispositionDlg");
+		tdd.show(true);
+	}
+	
 	/*
 	 * Called to completely refresh the contents of the TaskTable.
 	 */
@@ -2592,14 +2676,46 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Shows the tasks in the TaskBundle.
 	 * 
 	 * @param taskBundle
-	 * @param updateCalculatedDates
 	 * 
 	 * @return	The time, in milliseconds, it took to show the tasks.
 	 */
-	public long showTasks(TaskBundle tb, boolean updateCalculatedDates) {
-		// Render the tasks from the bundle, returning the time it
-		// took to render them.
-		m_renderTime = renderTaskBundle(tb, updateCalculatedDates);
+	public long showTasks(TaskBundle tb) {
+		// Are we currently in a mode that respects the task linkage?
+		Long newTaskId      = null;
+		Long selectedTaskId = null;
+		if (tb.respectLinkage()) {
+			// Yes!  Were we call because the user added a new task?
+			String taskChangeReason = m_taskListing.getTaskChangeReason();
+			if ((null != taskChangeReason) && taskChangeReason.equals("taskAdded")) {
+				// Yes!  When they added the task, was there one and
+				// only one task selected?
+				String selectedTaskIdS = jsGetSelectedTaskId();
+				if (GwtClientHelper.hasString(selectedTaskIdS)) {
+					// Yes!  We'll need to ask the user where they want
+					// to put the new task...
+					newTaskId      = m_taskListing.getTaskChangeId();
+					selectedTaskId = Long.parseLong(selectedTaskIdS);
+					
+					// ...and mark the selected task so they have a
+					// ...reference.
+					TaskListItem selectedTask = TaskListItemHelper.findTask(tb, selectedTaskId);
+					getUIData(selectedTask).setTaskSelected(true);
+				}
+			}
+		}
+		
+		// Render the tasks from the bundle...
+		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
+
+		// ...if we need to prompt the user for how to handle a new
+		// ...task...
+		if ((null != newTaskId) && (null != selectedTaskId) && 
+				(Column.ORDER == m_sortColumn) && m_sortAscending) {
+			// ...do it...
+			promptForDispositionAsync(newTaskId, selectedTaskId);
+		}
+		
+		// ...finally, return the time it took to render the tasks.
 		return m_renderTime;
 	}
 	
@@ -2750,6 +2866,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Get the checked tasks and count.
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
+		String selectedTaskId;
+		if (1 == tasksCheckedCount)
+		     selectedTaskId = String.valueOf(tasksChecked.get(0).getTask().getTaskId().getEntryId());
+		else selectedTaskId = "";
+		jsSetSelectedTaskId(selectedTaskId);
 		
 		// Can the user perform a delete or purge?
 		boolean enableDelete = (m_taskBundle.getCanTrashEntry() && (0 < tasksCheckedCount) && (!(m_taskBundle.getBinderIsMirrored())));

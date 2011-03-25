@@ -2074,10 +2074,8 @@ public class GwtTaskHelper {
 
 			// ...and clear any flag from the binder telling us we've
 			// ...go a change pending.
-			bs.getBinderModule().setProperty(
-				tb.getBinderId(),
-				ObjectKeys.BINDER_PROPERTY_TASK_CHANGED,
-				Boolean.FALSE);
+			bs.getBinderModule().setProperty(tb.getBinderId(), ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, "");
+			bs.getBinderModule().setProperty(tb.getBinderId(), ObjectKeys.BINDER_PROPERTY_TASK_ID,     "");
 		}
 		
 		// If we get here, reply refers to a Map<Long, TaskDate>

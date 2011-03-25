@@ -239,7 +239,10 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
     public static final String BINDER_PROPERTY_TASK_LINKAGE = "taskLinkage";
-    public static final String BINDER_PROPERTY_TASK_CHANGED = "taskChanged";
+    public static final String BINDER_PROPERTY_TASK_ADDED = "taskAdded";
+    public static final String BINDER_PROPERTY_TASK_CHANGE = "taskChange";
+    public static final String BINDER_PROPERTY_TASK_ID = "taskId";
+    public static final String BINDER_PROPERTY_TASK_MODIFIED = "taskModified";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";

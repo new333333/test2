@@ -163,10 +163,8 @@ public class AddEntryController extends SAbstractController {
 					if (TaskHelper.isTaskEntryType(fe)) {
 						// ...mark the binder so that the task listing
 						// ...knows something changed.
-						getBinderModule().setProperty(
-							folderId,
-							ObjectKeys.BINDER_PROPERTY_TASK_CHANGED,
-							Boolean.TRUE);
+						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_ADDED);
+						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
 					}
 				}
 				catch (Exception ex) {}
