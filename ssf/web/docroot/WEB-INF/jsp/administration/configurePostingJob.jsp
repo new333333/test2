@@ -102,9 +102,9 @@ function ${renderResponse.namespace}_modifyAlias() {
 <tr>
 <td valign="top">
 
-<c:set var="schedule" value="${ssScheduleInfonotify.schedule}"/>
-<c:set var="schedPrefix" value="notify"/>
-<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+<c:set var="schedule" value="${ssScheduleInfonotify.schedule}" scope="request"/>
+<c:set var="schedPrefix" value="notify" scope="request"/>
+<jsp:include page="/WEB-INF/jsp/administration/schedule.jsp" />
 </td></tr></table>
 </fieldset>
 <c:if test="${ssSMTPEnabled}">
@@ -121,9 +121,9 @@ function ${renderResponse.namespace}_modifyAlias() {
   <legend class="ss_legend"><ssf:nlt tag="incoming.header" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr><td valign="top"> 
-<c:set var="schedule" value="${ssScheduleInfopost.schedule}"/>
-<c:set var="schedPrefix" value="post"/>
-<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+<c:set var="schedule" value="${ssScheduleInfopost.schedule}" scope="request"/>
+<c:set var="schedPrefix" value="post" scope="request"/>
+<jsp:include page="/WEB-INF/jsp/administration/schedule.jsp" />
 </td></tr>
 <c:if test="${!empty ssPostings}"> 
 <tr>
