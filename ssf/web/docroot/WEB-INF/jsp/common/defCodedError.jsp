@@ -36,7 +36,7 @@
 
 <body class="tundra">
 <script type="text/javascript">
-var ss_error_msg = '${exception.localizedMessage }' ;
+var ss_error_msg = "<ssf:escapeQuotes>${exception.localizedMessage }</ssf:escapeQuotes>" ;
 var ss_error_code = 1;
 </script>
 
