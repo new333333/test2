@@ -49,6 +49,7 @@ import org.dom4j.Document;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.portlet.ModelAndView;
 
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
@@ -205,7 +206,13 @@ public class ModifyEntryController extends SAbstractController {
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
-					getFolderModule().moveEntry(folderId, entryId, destinationId, null);
+					try {
+						getFolderModule().moveEntry(folderId, entryId, destinationId, null);
+					} catch(DataQuotaException e) {
+			    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+			    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			    		return;
+					}
 					setupViewFolder(response, folderId);
 
 					//Force the user's status to be updated.  Note that
@@ -224,7 +231,13 @@ public class ModifyEntryController extends SAbstractController {
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
-					getFolderModule().copyEntry(folderId, entryId, destinationId, null);
+					try {
+						getFolderModule().copyEntry(folderId, entryId, destinationId, null);
+					} catch(DataQuotaException e) {
+			    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
+			    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			    		return;
+					}
 				} 
 				setupViewFolder(response, folderId);
 				
