@@ -188,8 +188,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(RequestContextHolder.getRequestContext() != null)
 			application = RequestContextHolder.getRequestContext().getApplication();
 		if ((user.isSuper() || isSynchronizationWork(user, workAreaOperation)) && 
-				(application == null || application.isTrusted())) 
+				(application == null || application.isTrusted())) {
 			return true;
+		}
+		if (user.isDisabled() || user.isDeleted()) {
+			//Whatever the operation, deny it if the user account is disabled or deleted
+			return false;
+		}
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
 				!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
 				!getLicenseManager().validLicense())return false;
