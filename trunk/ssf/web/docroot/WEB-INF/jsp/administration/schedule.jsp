@@ -32,6 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
