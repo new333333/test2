@@ -24,10 +24,10 @@
       <key column="principal" on-delete="cascade"/>
       <one-to-many class="org.kablink.teaming.domain.Event"/>
     </set>
-    <property name="zoneId"/>
-    <property name="type" update="false" insert="false"/> 
+    <property name="zoneId" index="internal_principal,type_principal"/>
+    <property name="type" update="false" insert="false" index="type_principal"/> 
     <property name="workspaceId"/>
-    <property name="internalId" length="32"/>
+    <property name="internalId" length="32" index="internal_principal"/>
     <property name="deleted"/>
     <property name="disabled"/>
 	<property name="logVersion"/>
@@ -40,7 +40,7 @@
     </map>
     <property name="name" length="128"/>
     <property name="foreignName" length="128" />
-    <property name="ldapGuid" length="128" />
+    <property name="ldapGuid" length="128" index="ldapGuid_principal"/>
 	<property name="theme" length="64"/>
 <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>
@@ -60,7 +60,7 @@
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    
     <property name="definitionType"/>
- 	<property name="entryDefId" access="field">
+ 	<property name="entryDefId" access="field" index="entryDef_principal">
  		<column name="entryDef" sql-type="char(32)"/>
  	</property>
     <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">
@@ -76,7 +76,7 @@
       </many-to-one>
     </component>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.UserPrincipal">
-	  	<property name="diskQuota" access="field" index="diskQuota_principal"/>
+	  	<property name="diskQuota" access="field"/>
 	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
 	      <cache usage="read-write"/>
 	      <key column="userId"/>

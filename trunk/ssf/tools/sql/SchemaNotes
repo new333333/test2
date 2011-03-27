@@ -86,3 +86,6 @@ In SS_ZoneConfig:
 Version 19:
 In SS_SeenMap:
   alter table SS_SeenMap add pruneDays bigint;
+  
+Version 20:
+  More than a dozen changes to the indexes on various tables

@@ -82,7 +82,7 @@
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>
- 	<property name="entryDefId" access="field">
+ 	<property name="entryDefId" access="field" index="entryDef_fEntry">
  		<column name="entryDef" sql-type="char(32)"/>
  	</property>
     <component name="creation" node="creation" class="org.kablink.teaming.domain.HistoryStamp">

@@ -5,8 +5,8 @@
   <class dynamic-update="true" lazy="false" table="SS_BinderQuota" name="org.kablink.teaming.domain.BinderQuota">
     <id unsaved-value="null" name="binderId" type="long"/>
     <property name="zoneId" not-null="true"/>
-    <property name="diskQuota" index="diskQuota_bquota"/>
-    <property name="diskSpaceUsed" index="diskSpaceUsed_bquota"/>
-    <property name="diskSpaceUsedCumulative" index="diskSpaceUsedCumulative_bquota"/>
+    <property name="diskQuota"/>
+    <property name="diskSpaceUsed"/>
+    <property name="diskSpaceUsedCumulative"/>
   </class>
 </hibernate-mapping>
