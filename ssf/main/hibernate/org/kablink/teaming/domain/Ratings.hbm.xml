@@ -5,8 +5,12 @@
   <class dynamic-update="true" table="SS_Ratings" name="org.kablink.teaming.domain.Rating">
     <composite-id name="id" class="org.kablink.teaming.domain.UserEntityPK">
       <key-property name="principalId"/>
-      <key-property name="entityId"/>
-      <key-property name="entityType"/>
+      <key-property name="entityId">
+      	<column name="entityId" index="entity_Ratings"/>
+      </key-property>
+      <key-property name="entityType">
+      	<column name="entityType" index="entity_Ratings"/>
+      </key-property>
     </composite-id>
    <property name="zoneId" access="field"/>
    <property name="rating"/>

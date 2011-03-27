@@ -5,8 +5,12 @@
   <class dynamic-update="true" table="SS_Subscriptions" name="org.kablink.teaming.domain.Subscription">
     <composite-id name="id" class="org.kablink.teaming.domain.UserEntityPK">
       <key-property name="principalId"/>
-      <key-property name="entityId"/>
-      <key-property name="entityType"/>
+      <key-property name="entityId">
+      	<column name="entityId" index="entity_Subscriptions"/>
+      </key-property>
+      <key-property name="entityType">
+      	<column name="entityType" index="entity_Subscriptions"/>
+      </key-property>
     </composite-id>
     <property name="zoneId" access="field"/>
     <property name="style" access="field"/>

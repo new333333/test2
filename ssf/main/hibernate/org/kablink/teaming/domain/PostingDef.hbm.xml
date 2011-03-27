@@ -11,9 +11,9 @@
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-	<property name="zoneId" not-null="true"/>
+	<property name="zoneId" not-null="true" index="email_postings"/>
     <property name="enabled"/>
-    <property name="emailAddress" length="256"/>
+    <property name="emailAddress" length="256" index="email_postings"/>
 	<property name="password" access="field" length="64"/>
 	<property name="credentials" access="field" length="64" type="encrypted"/>
     <many-to-one name="binder"/>
