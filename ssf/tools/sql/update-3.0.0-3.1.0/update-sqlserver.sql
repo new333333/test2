@@ -3,7 +3,6 @@ DROP INDEX entityOwner_clog on SS_ChangeLogs;
 DROP INDEX entityOwner_audit ON SS_AuditTrail;
 DROP INDEX entityTransaction_audit ON SS_AuditTrail;
 DROP INDEX internalId_Definition ON SS_Definitions;
-DROP INDEX index_emaillog ON SS_EmailLog;
 DROP INDEX diskQuota_principal ON SS_Principals; 
 DROP INDEX entityTransaction_wfhistory ON SS_WorkflowHistory;
 DROP INDEX access_shared ON SS_SharedEntity;
