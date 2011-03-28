@@ -39,6 +39,9 @@
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
+<c:set var="title_entry" value="${ssDefinitionEntry}"/>
+<jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.get("userFolderColumns");
 	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
@@ -95,11 +98,28 @@ ${nextEntry.docNumber}.
 %>
 </c:if>
 	<div>
+	<c:if test="${!ssSeenEntries[ssDefinitionEntry.id]}">
+		<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif">
+	</c:if>
 	<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 	<span class="ss_entryTitle ss_link_7">
 		<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
 			!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
 		  <c:out value="${ssDefinitionEntry.docNumber}"/>.
+		</c:if>
+		<c:if test="${(empty property_showDocNumber || property_showDocNumber == 'true') && 
+			!empty ssDefinitionEntry.docNumber && empty ssFolderColumns['number'] && 
+			!empty ssDefinitionEntry.parentEntry}">
+		  <%
+		  	//This is a reply. Always make sure the reply number is shown
+		  	if (ssDefinitionEntry instanceof FolderEntry) {
+		  		String docNum = ((FolderEntry)ssDefinitionEntry).getDocNumber();
+		  		docNum = docNum.substring(docNum.indexOf(".") + 1, docNum.length());
+		  %>
+		  <%= docNum %>. 
+		  <%
+		  	}
+		  %>
 		</c:if>
 			<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
 			binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"

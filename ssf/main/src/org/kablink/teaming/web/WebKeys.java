@@ -1201,6 +1201,7 @@ public class WebKeys {
     public static final String SEARCH_TEXT="ss_searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
     public static final String SEEN_MAP="ssSeenMap";
+    public static final String SEEN_ENTRIES="ssSeenEntries";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SENDING_EMAIL="sendingEmail";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";

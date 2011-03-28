@@ -1171,9 +1171,11 @@ public class ViewEntryController extends  SAbstractController {
 		//String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
 		
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		Map seenEntries = new HashMap();
 		
 		model.put(WebKeys.IS_APPLET_SUPPORTED, isAppletSupported);
 		model.put(WebKeys.SEEN_MAP, seen);
+		model.put(WebKeys.SEEN_ENTRIES, seenEntries);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
@@ -1193,10 +1195,22 @@ public class ViewEntryController extends  SAbstractController {
 		//only start transaction if necessary
 		List<FolderEntry> replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
+			for (FolderEntry reply : replies) {
+				if (!seen.checkIfSeen(reply)) {  
+					seenEntries.put(reply.getId(), false);
+					getProfileModule().setSeen(null, reply);
+				} else {
+					seenEntries.put(reply.getId(), true);
+				}
+			}
 			replies.add(entry);
 		}
+		
 		if (!seen.checkIfSeen(entry)) {  
+			seenEntries.put(entry.getId(), false);
 			getProfileModule().setSeen(null, entry);
+		} else {
+			seenEntries.put(entry.getId(), true);
 		}
 		BinderHelper.buildWorkflowSupportBeans(this, replies, model);
 		
