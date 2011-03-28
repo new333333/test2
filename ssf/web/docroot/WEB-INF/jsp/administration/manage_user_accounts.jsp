@@ -100,7 +100,11 @@ function ss_confirmDelete(obj) {
 	for (var i = 0; i < formObj.elements.length; i++) {
 		var child = formObj.elements[i];
 		if (child.name.indexOf("disableUser_") == 0) {
-			if (child.value == 'on') count++;
+			// Is this checkbox checked?
+			if ( child.type == 'checkbox' && child.checked )
+			{
+				count++;
+			}
 		} else if (child.name.indexOf("addUsers") == 0) {
 			var values = child.value.split(" ");
 			for (var j = 0; j < values.length; j++) {
