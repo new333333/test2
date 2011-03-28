@@ -3,7 +3,6 @@ DROP INDEX entityOwner_clog;
 DROP INDEX entityOwner_audit;
 DROP INDEX entityTransaction_audit;
 DROP INDEX internalId_Definition;
-DROP INDEX index_emaillog;
 DROP INDEX diskQuota_principal; 
 DROP INDEX entityTransaction_wfhistory;
 DROP INDEX access_shared;
