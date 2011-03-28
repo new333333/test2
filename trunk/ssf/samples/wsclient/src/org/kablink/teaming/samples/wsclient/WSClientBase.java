@@ -64,6 +64,7 @@ import org.kablink.teaming.client.ws.model.FolderCollection;
 import org.kablink.teaming.client.ws.model.FolderEntry;
 import org.kablink.teaming.client.ws.model.FolderEntryBrief;
 import org.kablink.teaming.client.ws.model.FolderEntryCollection;
+import org.kablink.teaming.client.ws.model.Tag;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
 import org.kablink.teaming.client.ws.model.User;
@@ -392,6 +393,17 @@ public abstract class WSClientBase {
 		DefinableEntity entity = (DefinableEntity) fetch(serviceName, operation, args);
 
 		printDefinableEntity(entity);
+	}
+
+	void fetchAndPrintTags(String serviceName, String operation, Object[] args) throws Exception {
+		Tag[] tags = (Tag[]) fetch(serviceName, operation, args);
+		System.out.println("Number of tags: " + tags.length);
+		for(int i = 0; i < tags.length; i++) {
+			Tag tag = tags[i];
+			System.out.println("Tag " + (i+1) + ": id=" + tag.getId() + ", name=" +
+					tag.getName() + ", entity id=" + tag.getEntityId() + ", public=" +
+					tag.is_public());
+		}
 	}
 
 	void fetchAndPrintFEC(String serviceName, String operation, Object[] args) throws Exception {
