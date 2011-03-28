@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 
 
@@ -70,6 +71,8 @@ public class ChangeLogUtils {
 		}
 		if (entry.getEntryDefId() != null) {
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, entry.getEntryDefId());
+			String defName = DefinitionHelper.getItemProperty(entry.getEntryDefDoc().getRootElement(), "name");
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION_NAME, defName);
 		}
 		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
 		//process all form items
