@@ -55,6 +55,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
@@ -173,11 +174,11 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				
 				try {
-					// If we just modified a task entry...
-					FolderEntry fe = getFolderModule().getEntry(folderId, entryId);
-					if (TaskHelper.isTaskEntryType(fe)) {
-						// ...mark the binder so that the task listing
-						// ...knows something changed.
+					// If we just modified an entry in a task folder...
+					Folder folder = ((Folder) getBinderModule().getBinder(folderId));
+					if (TaskHelper.isTaskFolderType(folder)) {
+						// ...mark it so that the task listing knows
+						// ...something changed.
 						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_MODIFIED);
 						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
 					}

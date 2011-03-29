@@ -44,6 +44,8 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class TaskBundle implements IsSerializable {
 	private boolean				m_binderIsMirrored;		//
+	private boolean				m_canAddEntry;		    // Based on FolderOperation.addEntry.
+	private boolean				m_canContainTasks;		//
 	private boolean				m_canModifyTaskLinkage;	// Based on BinderOperation.setProperty.
 	private boolean				m_canModifyEntry;		// Based on FolderOperation.modifyEntry.
 	private boolean				m_canPurgeEntry;		// Based on FolderOperation.deleteEntry.
@@ -56,6 +58,7 @@ public class TaskBundle implements IsSerializable {
 	private Long				m_binderId;				//
 	private String				m_filterTypeParam;		//
 	private String				m_modeTypeParam;		//
+	private String				m_newTaskUrl;			//
 	private TaskLinkage			m_taskLinkage;			//
 
 	/**
@@ -73,6 +76,8 @@ public class TaskBundle implements IsSerializable {
 	 * @return
 	 */
 	public boolean            getBinderIsMirrored()     {return m_binderIsMirrored;    }
+	public boolean            getCanAddEntry()          {return m_canAddEntry;         }
+	public boolean            getCanContainTasks()      {return m_canContainTasks;     }
 	public boolean            getCanModifyTaskLinkage() {return m_canModifyTaskLinkage;}
 	public boolean            getCanModifyEntry()       {return m_canModifyEntry;      }
 	public boolean            getCanPurgeEntry()        {return m_canPurgeEntry;       }
@@ -85,6 +90,7 @@ public class TaskBundle implements IsSerializable {
 	public Long               getBinderId()             {return m_binderId;            }
 	public String             getFilterTypeParam()      {return m_filterTypeParam;     }
 	public String             getModeTypeParam()        {return m_modeTypeParam;       }
+	public String             getNewTaskUrl()           {return m_newTaskUrl;          }
 	public TaskLinkage        getTaskLinkage()          {return m_taskLinkage;         }
 
 	/**
@@ -93,6 +99,8 @@ public class TaskBundle implements IsSerializable {
 	 * @param
 	 */
 	public void setBinderIsMirrored(    boolean            binderIsMirrored)     {m_binderIsMirrored     = binderIsMirrored;    }
+	public void setCanAddEntry(         boolean            canAddEntry)          {m_canAddEntry          = canAddEntry;         }
+	public void setCanContainTasks(     boolean            canContainTasks)      {m_canContainTasks      = canContainTasks;     }
 	public void setCanModifyTaskLinkage(boolean            canModifyTaskLinkage) {m_canModifyTaskLinkage = canModifyTaskLinkage;}
 	public void setCanModifyEntry(      boolean            canModifyEntry)       {m_canModifyEntry       = canModifyEntry;      }
 	public void setCanPurgeEntry(       boolean            canPurgeEntry)        {m_canPurgeEntry        = canPurgeEntry;       }
@@ -105,6 +113,7 @@ public class TaskBundle implements IsSerializable {
 	public void setBinderId(            Long               binderId)             {m_binderId             = binderId;            }
 	public void setFilterTypeParam(     String             filterTypeParam)      {m_filterTypeParam      = filterTypeParam;     }
 	public void setModeTypeParam(       String             modeTypeParam)        {m_modeTypeParam        = modeTypeParam;       }
+	public void setNewTaskUrl(          String             newTaskUrl)           {m_newTaskUrl           = newTaskUrl;          }
 	public void setTaskLinkage(         TaskLinkage        taskLinkage)          {m_taskLinkage          = taskLinkage;         }
 
 	/**

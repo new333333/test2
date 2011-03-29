@@ -102,6 +102,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private EventHandler			m_cbClickHandler;			//
 	private EventHandler			m_columnClickHandler;		//
 	private EventHandler			m_expanderClickHandler;		//
+	private EventHandler			m_newTaskClickHandler;		//
 	private EventHandler			m_taskOptionClickHandler;	//
 	private EventHandler			m_taskSeenClickHandler;		//
 	private EventHandler			m_taskViewClickHandler;		//
@@ -113,6 +114,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private RowFormatter			m_flexTableRF;				//
 	private TaskBundle				m_taskBundle;				//
 	private TaskListing				m_taskListing;				//
+	private TaskPopupMenu			m_newTaskMenu;				//
 	private TaskPopupMenu			m_percentDoneMenu;			//
 	private TaskPopupMenu			m_priorityMenu;				//
 	private TaskPopupMenu			m_statusMenu;				//
@@ -159,6 +161,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		SELECTOR(           "*Unsortable*"),
 		ORDER(              "order"),
 		TASK_NAME(          "_sortTitle"),
+		NEW_TASK_MENU(      "*never sorted*"),
 		PRIORITY(           "priority"),
 		DUE_DATE(           "start_end#LogicalEndDate"),
 		STATUS(             "status"),
@@ -345,6 +348,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		private boolean		m_taskSelected;				//
 		private Anchor		m_taskUnseenAnchor;			//
 		private CheckBox	m_taskSelectorCB;			//
+		private Image		m_taskNewTaskMenuImage;		//
 		private Image		m_taskPercentDoneImage;		//
 		private Image		m_taskPriorityImage;		//
 		private Image		m_taskStatusImage;			//
@@ -382,6 +386,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		public boolean     getTaskSelected()          {return m_taskSelected;         }
 		public Anchor      getTaskUnseenAnchor()      {return m_taskUnseenAnchor;     }
 		public CheckBox    getTaskSelectorCB()        {return m_taskSelectorCB;       }
+		public Image       getTaskNewTaskMenuImage()  {return m_taskNewTaskMenuImage; }
 		public Image       getTaskPercentDoneImage()  {return m_taskPercentDoneImage; }
 		public Image       getTaskPriorityImage()     {return m_taskPriorityImage;    }
 		public Image       getTaskStatusImage()       {return m_taskStatusImage;      }
@@ -395,6 +400,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		public void setTaskSelected(         boolean     taskSelected)          {m_taskSelected          = taskSelected;         }
 		public void setTaskUnseenAnchor(     Anchor      taskUnseenAnchor)      {m_taskUnseenAnchor      = taskUnseenAnchor;     }
 		public void setTaskSelectorCB(       CheckBox    taskSelectorCB)        {m_taskSelectorCB        = taskSelectorCB;       } 
+		public void setTaskNewTaskMenuImage( Image       taskNewTaskMenuImage)  {m_taskNewTaskMenuImage  = taskNewTaskMenuImage; }
 		public void setTaskPercentDoneImage( Image       taskPercentDoneImage)  {m_taskPercentDoneImage  = taskPercentDoneImage; }
 		public void setTaskPriorityImage(    Image       taskPriorityImage)     {m_taskPriorityImage     = taskPriorityImage;    }
 		public void setTaskStatusImage(      Image       taskStatusImage)       {m_taskStatusImage       = taskStatusImage;      }
@@ -429,6 +435,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		// ...store the parameters...
 		m_taskListing = taskListing;
 		
+		// ...initialize the JSNI mouse event handlers...
+		jsInitTaskMouseEventHandlers(this);
+		
 		// ...create the popup menus we'll need for the TaskTable.
 		List<TaskMenuOption> pOpts = new ArrayList<TaskMenuOption>();
 		pOpts.add(new TaskMenuOption(TaskInfo.PRIORITY_CRITICAL, m_images.p1(), m_messages.taskPriority_p1()));
@@ -458,6 +467,12 @@ public class TaskTable extends Composite implements ActionHandler {
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_90,  m_images.c90(),  m_messages.taskCompleted_c90()));
 		pdOpts.add(new TaskMenuOption(TaskInfo.COMPLETED_100, m_images.c100(), m_messages.taskCompleted_c100()));
 		m_percentDoneMenu = new TaskPopupMenu(this, TeamingAction.TASK_SET_PERCENT_DONE, pdOpts);
+		
+		List<TaskMenuOption> ntOpts = new ArrayList<TaskMenuOption>();
+		ntOpts.add(new TaskMenuOption(TaskDisposition.BEFORE.toString(),  m_messages.taskNewAbove()));
+		ntOpts.add(new TaskMenuOption(TaskDisposition.AFTER.toString(),   m_messages.taskNewBelow()));
+		ntOpts.add(new TaskMenuOption(TaskDisposition.SUBTASK.toString(), m_messages.TaskNewSubtask()));
+		m_newTaskMenu = new TaskPopupMenu(this, TeamingAction.TASK_NEW_TASK, ntOpts);
 
 		// ...create the FlexTable that's to hold everything...
 		m_flexTable   = new FlexTable();
@@ -896,7 +911,15 @@ public class TaskTable extends Composite implements ActionHandler {
 			}				
 		};
 		
-
+		// Event handler used when the user clicks on the new task
+		// link to create a new task.
+		m_newTaskClickHandler = new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				handleNewTaskMenu(getTaskFromEventWidget((Widget) event.getSource()));
+			}
+		};
+		
 		// Event handler used when the user clicks on one of a task's
 		// option menus.
 		m_taskOptionClickHandler = new ClickHandler() {
@@ -952,11 +975,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	/*
+	 * Given an Element from an event, returns it's corresponding task.
+	 */
+	private TaskListItem getTaskFromEventElement(Element e) {
+		String entryId = e.getAttribute(ATTR_ENTRY_ID);
+		return TaskListItemHelper.findTask(m_taskBundle, Long.parseLong(entryId));
+	}
+	
+	/*
 	 * Given a Widget from an event, returns it's corresponding task.
 	 */
 	private TaskListItem getTaskFromEventWidget(Widget w) {
-		String entryId = w.getElement().getAttribute(ATTR_ENTRY_ID);
-		return TaskListItemHelper.findTask(m_taskBundle, Long.parseLong(entryId));
+		return getTaskFromEventElement(w.getElement());
 	}
 	
 	/*
@@ -1084,6 +1114,20 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 	
+	/*
+	 * Called to create JavaScript methods that will be invoked from
+	 * the the task table to handle hover events over a task.
+	 */
+	private native void jsInitTaskMouseEventHandlers(TaskTable taskTable) /*-{
+		$wnd.ss_taskMouseOut = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOut(Ljava/lang/String;)(row);
+		}
+		
+		$wnd.ss_taskMouseOver = function(row) {
+			taskTable.@org.kablink.teaming.gwt.client.tasklisting.TaskTable::handleTaskMouseOver(Ljava/lang/String;)(row);
+		}
+	}-*/;
+
 	/**
 	 * Called by TaskPopupMenu when a selection has been made in one of
 	 * the task's option menus.
@@ -1094,6 +1138,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	public void setTaskOption(TaskListItem task, TeamingAction action, String optionValue) {
 		switch (action) {
+		case TASK_NEW_TASK:          handleTaskNewTask(       task, optionValue); break;
 		case TASK_SET_PERCENT_DONE:  handleTaskSetPercentDone(task, optionValue); break;
 		case TASK_SET_PRIORITY:      handleTaskSetPriority(   task, optionValue); break;
 		case TASK_SET_STATUS:        handleTaskSetStatus(     task, optionValue); break;
@@ -1251,6 +1296,16 @@ public class TaskTable extends Composite implements ActionHandler {
 			break;
 		}
 	}
+
+	/*
+	 * Handles the user clicking the new task menu on a task.
+	 */
+	private void handleNewTaskMenu(TaskListItem task) {
+		// Simply run the new task menu for this task.
+		m_newTaskMenu.showTaskPopupMenu(
+			task,
+			getUIData(task).getTaskNewTaskMenuImage().getElement());
+	}
 	
 	/*
 	 * This method gets invoked when the user clicks on an individual
@@ -1262,7 +1317,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		String wsIdS = ((null == wsId) ? null : String.valueOf(wsId));
 		GwtClientHelper.invokeSimpleProfile(element, wsIdS, ai.getTitle());
 	}
-	
+
 	/*
 	 * Called when the user clicks the select all checkbox.
 	 */
@@ -1376,6 +1431,28 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	/*
+	 * Called from a JSNI method when the mouse leaves a task.
+	 */
+	private void handleTaskMouseOut(String taskRowS) {
+		int taskRow = Integer.parseInt(taskRowS);
+		Element trElement = m_flexTableRF.getElement(taskRow);
+		TaskListItem task = getTaskFromEventElement(trElement);
+		Image img = getUIData(task).getTaskNewTaskMenuImage();
+		img.setResource(m_images.newTaskButton1());
+	}
+	
+	/*
+	 * Called from a JSNI method when the mouse enters a task.
+	 */
+	private void handleTaskMouseOver(String taskRowS) {
+		int taskRow = Integer.parseInt(taskRowS);
+		Element trElement = m_flexTableRF.getElement(taskRow);
+		TaskListItem task = getTaskFromEventElement(trElement);
+		Image img = getUIData(task).getTaskNewTaskMenuImage();
+		img.setResource(m_images.newTaskButton2());
+	}
+	
+	/*
 	 * Called when the user presses the move down button on the task
 	 * tool bar.
 	 */
@@ -1431,6 +1508,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 
+	/*
+	 * Called when the selects something from the new task menu.
+	 */
+	private void handleTaskNewTask(TaskListItem task, String newTaskDisposition) {
+		jsSetNewTaskDisposition(newTaskDisposition);
+		jsSetSelectedTaskId(String.valueOf(task.getTask().getTaskId().getEntryId()));
+		GwtClientHelper.jsLaunchToolbarPopupUrl(m_taskBundle.getNewTaskUrl());
+	}
+	
 	/*
 	 * Does what's necessary after a task is moved to put the change
 	 * into affect.
@@ -1866,10 +1952,24 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Uses JSNI to return the disposition of newly created task.
+	 */
+	private native String jsGetNewTaskDisposition() /*-{
+		return $wnd.top.ss_newTaskDisposition;
+	}-*/;
+	
+	/*
 	 * Uses JSNI to return the ID of the most recently selected task.
 	 */
 	private native String jsGetSelectedTaskId() /*-{
 		return $wnd.top.ss_selectedTaskId;
+	}-*/;
+	
+	/*
+	 * Uses JSNI to store the ID of the most recently selected task.
+	 */
+	private native void jsSetNewTaskDisposition(String newTaskDisposition) /*-{
+		$wnd.top.ss_newTaskDisposition = String(newTaskDisposition);
 	}-*/;
 	
 	/*
@@ -2057,6 +2157,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		case ASSIGNED_TO:          renderColumnAssignedTo(       task, row); break;		
 		case DUE_DATE:             renderColumnDueDate(          task, row); break;		
 		case TASK_NAME:            renderColumnTaskName(         task, row); break;
+		case NEW_TASK_MENU:        renderColumnNewTaskMenuLink(  task, row); break;
 		case ORDER:                renderColumnOrder(            task, row); break;
 		case PRIORITY:             renderColumnPriority(         task, row); break;		
 		case SELECTOR:             renderColumnSelectCB(         task, row); break;
@@ -2179,6 +2280,53 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 
+	/*
+	 * Renders the 'New Task Menu' link.
+	 */
+	private void renderColumnNewTaskMenuLink(final TaskListItem task, int row) {
+		// Do we need to include a new task menu link for this task?
+		boolean includeNewTaskMenu =
+			(m_taskBundle.respectLinkage()     &&
+			 m_taskBundle.getCanAddEntry()     &&
+			 m_taskBundle.getCanContainTasks() &&
+			 (Column.ORDER == m_sortColumn) && m_sortAscending);
+
+		int newTaskMenuIndex = getColumnIndex(Column.NEW_TASK_MENU);
+		if (includeNewTaskMenu) {
+			// Yes!  Add an Anchor for it...
+			Anchor menuAnchor = buildAnchor("gwtTaskList_newTaskMenu_Link");
+			Element menuElement = menuAnchor.getElement();
+			String entryId = String.valueOf(task.getTask().getTaskId().getEntryId());
+			menuElement.setAttribute(ATTR_ENTRY_ID, entryId);
+			EventWrapper.addHandler(menuAnchor, m_newTaskClickHandler);
+			Image newTaskMenuImg = buildImage(m_images.newTaskButton1());
+			getUIData(task).setTaskNewTaskMenuImage(newTaskMenuImg);
+			menuElement.appendChild(newTaskMenuImg.getElement());
+			m_flexTable.setWidget(row, newTaskMenuIndex, menuAnchor);
+			
+			// ...and add hover event handlers to the task.
+			m_flexTableRF.getElement(row).setAttribute(ATTR_ENTRY_ID, entryId);
+			
+			String mouseOut  = "ss_taskMouseOut('"  + row + "');";
+			String mouseOver = "ss_taskMouseOver('" + row + "');";
+			
+			Element tdElement = m_flexTableCF.getElement(row, getColumnIndex(Column.TASK_NAME));
+			tdElement.setAttribute("onMouseOut",  mouseOut);
+			tdElement.setAttribute("onMouseOver", mouseOver);
+			
+			tdElement = m_flexTableCF.getElement(row, newTaskMenuIndex);
+			tdElement.setAttribute("onMouseOut",  mouseOut);
+			tdElement.setAttribute("onMouseOver", mouseOver);
+		}
+		
+		else {
+			// No, we don't need to include a new task menu link for
+			// this task!  Add a non-breaking space so that IE displays
+			// the cell correctly.
+			m_flexTable.setHTML(row, newTaskMenuIndex, "&nbsp;");
+		}
+	}
+		
 	/*
 	 * Renders the 'Order' column.
 	 */
@@ -2340,6 +2488,8 @@ public class TaskTable extends Composite implements ActionHandler {
 		else                      m_flexTableRF.removeStyleName(row, "disabled");
 		ta.getElement().appendChild(taskLabel.getElement());
 		fp.add(ta);
+
+		// Finally, put the FlowPanel in the table.
 		m_flexTable.setWidget(row, getColumnIndex(Column.TASK_NAME), fp);
 	}
 
@@ -2352,6 +2502,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		case ASSIGNED_TO:          renderHeaderAssignedTo();        break;		
 		case DUE_DATE:             renderHeaderDueDate();           break;		
 		case TASK_NAME:            renderHeaderTaskName();          break;
+		case NEW_TASK_MENU:        renderHeaderNewTaskMenuLink();   break;
 		case ORDER:                renderHeaderOrder();             break;
 		case PRIORITY:             renderHeaderPriority();          break;		
 		case SELECTOR:             renderHeaderSelectCB();          break;
@@ -2427,6 +2578,15 @@ public class TaskTable extends Composite implements ActionHandler {
 			m_flexTable.setWidget( 0, colIndex, a);
 			m_flexTableCF.setWidth(0, colIndex, "100%");
 		}
+	}
+
+	/*
+	 * Renders the 'New Task Menu' link column header.
+	 */
+	private void renderHeaderNewTaskMenuLink() {
+		// Add a non-breaking space so that IE displays the cell
+		// correctly.
+		m_flexTable.setHTML(0, getColumnIndex(Column.NEW_TASK_MENU), "&nbsp;");
 	}
 	
 	/*
@@ -2681,8 +2841,9 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	public long showTasks(TaskBundle tb) {
 		// Are we currently in a mode that respects the task linkage?
-		Long newTaskId      = null;
-		Long selectedTaskId = null;
+		Long            newTaskId       = null;
+		Long            selectedTaskId  = null;
+		TaskDisposition taskDisposition = null;
 		if (tb.respectLinkage()) {
 			// Yes!  Were we call because the user added a new task?
 			String taskChangeReason = m_taskListing.getTaskChangeReason();
@@ -2691,28 +2852,59 @@ public class TaskTable extends Composite implements ActionHandler {
 				// only one task selected?
 				String selectedTaskIdS = jsGetSelectedTaskId();
 				if (GwtClientHelper.hasString(selectedTaskIdS)) {
-					// Yes!  We'll need to ask the user where they want
-					// to put the new task...
+					// Yes!  What are the IDs of the new and selected
+					// tasks?
 					newTaskId      = m_taskListing.getTaskChangeId();
 					selectedTaskId = Long.parseLong(selectedTaskIdS);
 					
-					// ...and mark the selected task so they have a
-					// ...reference.
-					TaskListItem selectedTask = TaskListItemHelper.findTask(tb, selectedTaskId);
-					getUIData(selectedTask).setTaskSelected(true);
+					// Do we already know how the user wants to dispose
+					// of this task?
+					String newTaskDisposition = jsGetNewTaskDisposition();
+					if (GwtClientHelper.hasString(newTaskDisposition)) {
+						// Yes!  Track how they want it disposed of.
+						taskDisposition = TaskDisposition.valueOf(newTaskDisposition);
+						TaskListItem newTask = TaskListItemHelper.findTask(tb, newTaskId);
+						getUIData(newTask).setTaskSelected(true);
+					}
+					
+					else {
+						// No, we don't know how the user wants to
+						// dispose of this task!  We'll need to ask
+						// them where they want to put it.  Mark the
+						// selected task so they have a reference.
+						TaskListItem selectedTask = TaskListItemHelper.findTask(tb, selectedTaskId);
+						getUIData(selectedTask).setTaskSelected(true);
+					}
 				}
 			}
 		}
+
+		// Forget about any new task stuff we may have stored for use
+		// above.
+		jsSetNewTaskDisposition("");
+		jsSetSelectedTaskId(    "");
 		
-		// Render the tasks from the bundle...
+		// Render the tasks from the bundle.
 		m_renderTime = renderTaskBundle(tb, m_taskListing.getUpdateCalculatedDates());
 
-		// ...if we need to prompt the user for how to handle a new
-		// ...task...
-		if ((null != newTaskId) && (null != selectedTaskId) && 
-				(Column.ORDER == m_sortColumn) && m_sortAscending) {
-			// ...do it...
-			promptForDispositionAsync(newTaskId, selectedTaskId);
+		// Did we just add a new task in the context of an existing
+		// task?
+		if ((null != newTaskId) && (null != selectedTaskId)) {
+			// Yes!  Do we know where the new task should be placed?
+			if (null != taskDisposition) {
+				// Yes!  Just put it there.
+				applyTaskDisposition(
+					taskDisposition,
+					newTaskId,
+					selectedTaskId);		
+			}
+
+			// No, we don't know where the new task should be placed!
+			// Should we prompt the user for where?
+			else if ((Column.ORDER == m_sortColumn) && m_sortAscending) {
+				// Yes!  Do it.
+				promptForDispositionAsync(newTaskId, selectedTaskId);
+			}
 		}
 		
 		// ...finally, return the time it took to render the tasks.
@@ -2752,6 +2944,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		switch(m_sortColumn) {
 		default:
 		case ORDER:                comparator = new TaskSorter.OrderComparator(            m_sortAscending); break;
+		case NEW_TASK_MENU:        m_sortColumn = Column.TASK_NAME;
 		case TASK_NAME:            comparator = new TaskSorter.NameComparator(             m_sortAscending); break;
 		case PRIORITY:             comparator = new TaskSorter.PriorityComparator(         m_sortAscending); break;
 		case DUE_DATE:             comparator = new TaskSorter.DueDateComparator(          m_sortAscending); break;

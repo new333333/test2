@@ -931,6 +931,9 @@ public interface GwtTeamingMessages extends Messages
 	String taskLabelPurge();
 	String taskLabelSubtask();
 	String taskMemberCount(String count);
+	String taskNewAbove();
+	String taskNewBelow();
+	String TaskNewSubtask();
 	String taskNoTasks();
 	String taskPleaseWait_Loading();
 	String taskPleaseWait_Rendering();

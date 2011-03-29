@@ -101,6 +101,7 @@ public enum TeamingAction implements IsSerializable
 	TASK_SET_STATUS( "Sets a Task's Status." ),
 	TASK_VIEW( "Sets a Task's View." ),
 	TASK_PURGE( "Delete and Immediately Purge the Selected Tasks." ),
+	TASK_NEW_TASK( "Creates a New Task Relative to an Existing One." ),
 
 	// This is used as a default case to store a TeamingAction when
 	// there isn't a real value to store.

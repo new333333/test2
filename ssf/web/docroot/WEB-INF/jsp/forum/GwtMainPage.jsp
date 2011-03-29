@@ -268,10 +268,11 @@
 		}
 		
 		
-		// The following is used to communicate a selected task ID
-		// between the time a task is selected and the time the
-		// task folder is refreshed after an add.
-		var ss_selectedTaskId = "";
+		// The following are used to communicate a task information
+		// between the time a task is selected and the time the task
+		// folder is refreshed after an add.
+		var ss_newTaskDisposition = "";
+		var ss_selectedTaskId     = "";
 	</script>
 	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
