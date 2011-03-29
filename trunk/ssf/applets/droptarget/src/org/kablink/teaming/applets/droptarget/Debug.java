@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,9 @@ import java.io.FileWriter;
  * @version 1.0
  */
 
-public class Debug { 
+public class Debug {
+	
+  public static final boolean DEBUG_ENABLED = false;
 
   static File file = null;
   static FileWriter fw = null;
@@ -53,13 +55,24 @@ public class Debug {
 
   public static void debug(String text)
   {
-    try {
-      fw = new FileWriter("c:/temp/debug.txt", true);
-      fw.write(text);
-      fw.write("\n\r");
-      fw.write("\n\r");
-      fw.flush();
-      fw.close();
-    } catch (Exception e) {}
+	if (DEBUG_ENABLED) {
+	    try {
+	      fw = new FileWriter("c:/temp/debug.txt", true);
+	      fw.write(text);
+	      fw.write("\n\r");
+	      fw.write("\n\r");
+	      fw.flush();
+	      fw.close();
+	    } catch (Exception e) {}
+	}
+  }
+  
+  public static void debugLog(String text) {
+	  if (DEBUG_ENABLED) {
+		  writeLog(text);
+	  }
+  }
+  public static void writeLog(String text) {
+	  System.out.println(text);
   }
 }
