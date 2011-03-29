@@ -39,7 +39,6 @@
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="org.kablink.teaming.domain.DefinableEntity" scope="request" />
-<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 <jsp:useBean id="title_entry" type="org.kablink.teaming.domain.FolderEntry" />
 <%
