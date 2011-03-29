@@ -139,6 +139,7 @@ public class ModifyFileController extends SAbstractController {
 				//Delete this version
 				if (fileAtt != null && fileAtt instanceof VersionAttachment) {
 					getFileModule().deleteVersion(binder, entity, (VersionAttachment)fileAtt);
+					BinderHelper.indexEntity(this, entity);
 				} else if (fileAtt != null && fileAtt instanceof FileAttachment) {
 					//This is the top file in the version list
 					if (fileAtt.getFileVersionsUnsorted().size() <= 1) {
@@ -182,6 +183,7 @@ public class ModifyFileController extends SAbstractController {
 						}
 					}
 				}
+				BinderHelper.indexEntity(this, entity);
 				
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
