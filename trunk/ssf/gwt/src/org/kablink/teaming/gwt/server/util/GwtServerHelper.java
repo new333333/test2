@@ -64,6 +64,7 @@ import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
+import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
@@ -2981,15 +2982,16 @@ public class GwtServerHelper {
 		ArrayList<GroupInfo> reply = new ArrayList<GroupInfo>();
 
 		// Scan the groups the current user is a member of...
+		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
 		List<Long> userIds = new ArrayList<Long>();
 		userIds.add(userId);
 		List users = ResolveIds.getPrincipals(userIds, true);
 		if (!users.isEmpty()) {
 			Principal p = (Principal)users.get(0);
-			List groups = p.getMemberOf();
-			for (Iterator<Principal> myGroupsIT = groups.iterator(); myGroupsIT.hasNext(); ) {
+			Set<Long> groupIds = profileDao.getAllGroupMembership(p.getId(), RequestContextHolder.getRequestContext().getZoneId());
+			List<Group> groups = profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
+			for (Group myGroup : groups) {
 				// ...adding a GroupInfo for each to the reply list.
-				Group myGroup = (Group)myGroupsIT.next();
 				GroupInfo gi = new GroupInfo();
 				gi.setId(myGroup.getId());
 				gi.setTitle(myGroup.getTitle());
