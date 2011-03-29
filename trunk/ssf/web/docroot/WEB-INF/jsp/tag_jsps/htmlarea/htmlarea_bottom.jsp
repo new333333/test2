@@ -32,8 +32,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %><% // htmlarea editor bottom
-%><%@ include file="/WEB-INF/jsp/common/include.jsp" 
 %></textarea>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 </div>
 <c:if test="${!empty wikiLinkBinderId && editor_toolbar != 'minimal'}">
    <div class="ss_editorHints">

@@ -36,6 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ page import="java.lang.String" %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <c:set var="ss_quotaMessage" value="" />
 <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
@@ -47,6 +48,9 @@
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.diskQuotaExceeded"/></c:set>
 </c:if>
 <c:set var="isShowYouTube" value='<%= SPropsUtil.getBoolean("youTube.showInEditor") %>'/>
+<%
+	if (BrowserSniffer.is_TinyMCECapable(request, SPropsUtil.getString("TinyMCE.notSupportedUserAgents", ""))) {
+%>
 <c:if test="${empty ss_tinyMCE_hasBeenLoaded}">
 <c:set var="wikiLinkBinderId" value="" scope="request"/><%--
 --%><c:if test="${!empty ssDefinitionEntry}"><%--
@@ -277,3 +281,28 @@ var ss_invalidYouTubeUrl = "<%= NLT.get("__youTubeInvalidUrl").replaceAll("\"", 
   <% //need to escape cause html is going into textarea %>
  <c:out value="${init_text}" escapeXml="true"/>
 <c:out value="${body}" escapeXml="true"/>
+<%
+	} else {
+%>
+<div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
+</c:if>">
+
+<textarea 
+  style="width:100%; <c:if test="${!empty element_height}">height:${element_height}px;</c:if> <c:if 
+  test="${!empty element_color}">background-color:${element_color}; </c:if>"
+  <c:if test="${!empty element_id}">
+    id="${element_id}" 
+  </c:if>
+  <c:if test="${!empty element_name}">
+    name="${element_name}" 
+  </c:if>
+
+><%--
+	//Be very careful never to add any whitespace characters or cr-lf characters between 
+	//  the opening <textarea> and the closing </textarea> in htmlarea_bottom.jsp
+	//  Otherwise, they will get added to the form result
+--%><c:out value="${init_text}" escapeXml="true"/><%--
+--%><c:out value="${body}" escapeXml="true"/><%--
+--%><%
+	}
+%>

@@ -527,6 +527,28 @@ public class BrowserSniffer {
 		else return "";
 	}
 
+	public static boolean is_TinyMCECapable(HttpServletRequest req, String userAgents) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+		if (agent == null) {
+			return false;
+		}
+		agent = agent.toLowerCase();
+		
+		//See if there are user agents defined in ssf.properties (e.g., "nokia, pre/")
+		String[] mobileDevices = userAgents.split(",");
+		for (int i = 0; i < mobileDevices.length; i++) {
+			if (mobileDevices[i].equals("")) continue;
+			if (agent.indexOf(mobileDevices[i]) != -1) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private static final String _GZIP = "gzip";
 
 }
