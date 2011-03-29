@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -73,6 +73,10 @@ boolean fileUploadInProgress = false;
 private static ArrayList xferFileList;
 private static ArrayList xferFileListNames;
 
+private static DataFlavor uriListFlavor;
+private static DataFlavor gnomeIODataFlavor;
+private static DataFlavor javaStringDataFlavor;
+
   /** Create a new DataSink object */
   public DataSink(TopFrame topFrame) {
     this.topframe = topFrame;
@@ -90,8 +94,27 @@ private static ArrayList xferFileListNames;
     this.getInputMap().put(keyStroke, "PASTE");
     this.getActionMap().put("PASTE", paste);
     changeIcon(StaticGif);
+    
+    initDataFlavors();
   }
 
+  private void initDataFlavors() {
+	  if (null == uriListFlavor) {
+		  try                  {uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");}
+		  catch (Exception ex) {uriListFlavor = null;}
+	  }
+	  
+	  if (null == gnomeIODataFlavor) {
+		  try                  {gnomeIODataFlavor = new DataFlavor("x-special/gnome-copied-files;class=java.io.InputStream");}
+		  catch (Exception ex) {gnomeIODataFlavor = null;}
+	  }
+	  
+	  if (null == javaStringDataFlavor) {
+		  try                  {javaStringDataFlavor = new DataFlavor("application/x-java-serialized-object;class=java.lang.String");}
+		  catch (Exception ex) {javaStringDataFlavor = null;}
+	  }
+  }
+  
   private static Action paste = new AbstractAction()
   {
     public void actionPerformed(ActionEvent e)
@@ -113,8 +136,8 @@ private static ArrayList xferFileListNames;
    * a special border to tell the user that we're interested.
    */
   public void dragEnter(DropTargetDragEvent e) {
-	  //System.out.println("DataSink.dragEnter()..........");
-    if (e.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+	  Debug.debugLog("DataSink.dragEnter()..........");
+    if (e.isDataFlavorSupported(DataFlavor.javaFileListFlavor) || ((null != uriListFlavor) && e.isDataFlavorSupported(uriListFlavor))) {
       e.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
       changeIcon(OpenGif);
       this.setBorder(dropBorder);
@@ -125,7 +148,7 @@ private static ArrayList xferFileListNames;
    * The user is no longer dragging over us, so restore the default border
    */
   public void dragExit(DropTargetEvent e) {
-    //System.out.println("DataSink.dragExit()..........");
+    Debug.debugLog("DataSink.dragExit()..........");
     changeIcon(StaticGif);
     this.setBorder(null);
   }
@@ -164,27 +187,24 @@ private static ArrayList xferFileListNames;
     DataFlavor [] dataFlavor = t.getTransferDataFlavors();
     for (int i = 0; i < dataFlavor.length; i++) {
     	DataFlavor dataFlavor1 = dataFlavor[i];
-    	System.out.println("\n dataFlavor ["+ i +"]"+ dataFlavor1);
+    	Debug.writeLog("\n dataFlavor ["+ i +"]"+ dataFlavor1);
     	
     	if (t.isDataFlavorSupported(dataFlavor1)) {
-    		System.out.println("Supported :) !!!!!: "+ dataFlavor1 + "\n\n");
+    		Debug.writeLog("Supported :) !!!!!: "+ dataFlavor1 + "\n\n");
     		
     		try {
     			Object objData = t.getTransferData(dataFlavor1);
-    			System.out.println("objData: "+objData + "\n\n");
+    			Debug.writeLog("objData: "+objData + "\n\n");
     		} catch(Exception oe) {
-    			System.out.println("Error: "+ oe + "\n\n");
+    			Debug.writeLog("Error: "+ oe + "\n\n");
     		}
     		
     	} else {
-    		System.out.println("Not Supported :( !!!!!: "+ dataFlavor1 + "\n\n");
+    		Debug.writeLog("Not Supported :( !!!!!: "+ dataFlavor1 + "\n\n");
     	}
     }
 */    
     try {
-    	DataFlavor gnomeIODataFlavor = new DataFlavor("x-special/gnome-copied-files;class=java.io.InputStream");
-    	DataFlavor javaStringDataFlavor = new DataFlavor("application/x-java-serialized-object;class=java.lang.String");
-    	
 	    List files = new ArrayList();
 	    // Code Got from Java Bug Database Bug Id: 4899516
 	    // Check for types of data that we support
@@ -206,7 +226,7 @@ private static ArrayList xferFileListNames;
         	String strFiles = (String) t.getTransferData(javaStringDataFlavor);
         	files = stringListToFileList(strFiles);
         } else {
-        	System.out.println("File Upload Not supported...........");
+        	Debug.writeLog("File Upload Not supported...........");
         	uploadNotSupported();
         	changeIcon(StaticGif);
         }
@@ -235,6 +255,7 @@ private static ArrayList xferFileListNames;
           if (xferFileList.size() > 0) {
             fileLoadingInProgress();
             PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
+            poster.start();
           }
           else {
         	  informNoFilesCopied();
@@ -265,14 +286,14 @@ private static ArrayList xferFileListNames;
               java.io.File file = new java.io.File(uri);
               list.add(file);
           } catch (java.net.URISyntaxException e) {
-        	  System.out.println("xSpecialListToFileList: "+e);
+        	  Debug.writeLog("xSpecialListToFileList: "+e);
               // malformed URI
           } catch (IllegalArgumentException e) {
-        	  System.out.println("xSpecialListToFileList: "+e);
+        	  Debug.writeLog("xSpecialListToFileList: "+e);
               // the URI is not a valid 'file:' URI
           }
           catch (Exception e) {
-        	  System.out.println("xSpecialListToFileList: "+e);
+        	  Debug.writeLog("xSpecialListToFileList: "+e);
               // the URI is not a valid 'file:' URI
           }
       }
@@ -288,10 +309,10 @@ private static ArrayList xferFileListNames;
               boolean blnDoesFileExist = file.exists();
               if (blnDoesFileExist) list.add(file);
           } catch (IllegalArgumentException e) {
-        	  System.out.println("stringListToFileList: "+e);
+        	  Debug.writeLog("stringListToFileList: "+e);
               // the URI is not a valid 'file:' URI
           } catch (Exception e) {
-        	  System.out.println("stringListToFileList: "+e);
+        	  Debug.writeLog("stringListToFileList: "+e);
               // the URI is not a valid 'file:' URI
           }
       }
@@ -355,8 +376,6 @@ private static ArrayList xferFileListNames;
     if ("no".equalsIgnoreCase(strLoadDirectory)) loadDirectory = false;
     
     try {
-    	DataFlavor uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
-    	
 	    List files = new ArrayList();
 	    // Code Got from Java Bug Database Bug Id: 4899516
 	    // Check for types of data that we support
@@ -365,7 +384,7 @@ private static ArrayList xferFileListNames;
 	      // and display the file contents
 	      e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
 	      files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-	    } else if (t.isDataFlavorSupported(uriListFlavor)) {
+	    } else if ((null != uriListFlavor) && t.isDataFlavorSupported(uriListFlavor)) {
 	    	e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
             String data = (String)t.getTransferData(uriListFlavor);
             files = textURIListToFileList(data);
@@ -398,6 +417,7 @@ private static ArrayList xferFileListNames;
           if (xferFileList.size() > 0) {
             fileLoadingInProgress();
             PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
+            poster.start();
           }
           else {
         	  informNoFilesCopied();
@@ -454,10 +474,10 @@ private static ArrayList xferFileListNames;
   }
   // These are unused DropTargetListener methods
   public void dragOver(DropTargetDragEvent e) {
-	  //System.out.println("DataSink.dragOver()..........");
+	  Debug.debugLog("DataSink.dragOver()..........");
   }
   public void dropActionChanged(DropTargetDragEvent e) {
-	  //System.out.println("DataSink.dropActionChanged()..........");	  
+	  Debug.debugLog("DataSink.dropActionChanged()..........");	  
   }
 
   /**

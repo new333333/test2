@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -258,7 +258,6 @@ public class PostFiles extends Thread {
       toAddr = ta;
       fileList = fl;
       topDir = td;
-      start();
     }
     
     public void run() {
@@ -287,7 +286,7 @@ public class PostFiles extends Thread {
             try {
             	conn.connect();
             } catch(Exception e) {
-            	System.out.println("Error Uploading File: Could not connect to the server. Exception: "+e);
+            	Debug.writeLog("Error Uploading File: Could not connect to the server. Exception: "+e);
             	reportErrorMessage(topFrame, conn, e.toString());
             }
             
@@ -333,10 +332,10 @@ public class PostFiles extends Thread {
         	String strErrorMessage = "There is a problem with the file being uploaded. \nIt is likely that the file size is too large.";
         	String translatedString = new String(topFrame.getParameter("uploadErrorFileTooLarge"));
         	if (translatedString != null && !translatedString.equals("")) strErrorMessage = translatedString;
-        	System.out.println("Error Uploading File: Out of Memory Error: "+ oome + "\n" + strErrorMessage);
+        	Debug.writeLog("Error Uploading File: Out of Memory Error: "+ oome + "\n" + strErrorMessage);
         	reportErrorMessage(topFrame, conn, strErrorMessage);
         } catch (Exception e) {
-        	System.out.println("Error Uploading File: Exception: "+e);
+        	Debug.writeLog("Error Uploading File: Exception: "+e);
         	reportErrorMessage(topFrame, conn, e.toString());
         }
     }
@@ -353,7 +352,7 @@ public class PostFiles extends Thread {
 			String args[] = {uploadErrorMessage + " : \n" + strError};
 			Object foo = win.call(reloadFunction,args);
 		} catch (Exception e) { 
-			System.out.println("reportErrorMessage: e " + e);
+			Debug.writeLog("reportErrorMessage: e " + e);
 		}
         finally {
         	conn.disconnect();
@@ -403,7 +402,7 @@ public class PostFiles extends Thread {
               return;
             }
 
-			System.out.println("url: "+url);
+			Debug.writeLog("url: "+url);
 
             if (writing) {
 				writing = false;
@@ -424,7 +423,7 @@ public class PostFiles extends Thread {
 				} catch (Exception ignored) { }
             }
         } catch (IOException e) {
-        	System.out.println("handleResponse saw Exception:" + e);
+        	Debug.writeLog("handleResponse saw Exception:" + e);
         	return;
         }
         finally {
