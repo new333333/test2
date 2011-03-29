@@ -363,6 +363,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			logger.error("Error deleting the file attachment's cache directory [" +
 					cacheFileStore.getAbsolutePath(faPath) + "]", e);
 		}
+		//Mark that this entity was modified
+		setEntityModification(entry);
 		
 		return errors;
 	}
@@ -1005,6 +1007,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//		va.getFileItem().getName());
 		
 		saveChangeLogTransactional(changes);
+		//Mark that this entity was modified
+		setEntityModification(entity); 
 	}
 
 	public Map<String,Long> getChildrenFileNames(Binder binder) {
