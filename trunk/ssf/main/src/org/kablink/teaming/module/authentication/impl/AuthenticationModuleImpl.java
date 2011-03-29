@@ -85,37 +85,38 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 
-	protected Map<Long, ProviderManager> authenticators = null;
+	protected Map<Long, ProviderManager> externalAuthenticators = null;
 
 	protected Map<Long, ZoneAwareLocalAuthenticationProvider> localProviders = null;
 	protected Map<Long, Long> lastUpdates = null;
 	
 	protected Class localAuthenticationProviderClass;
+	protected boolean authenticateLdapMatchingUsersUsingLdapOnly = true;
 	
 	public AuthenticationModuleImpl() throws ClassNotFoundException {
-		authenticators = new HashMap<Long, ProviderManager>();
+		externalAuthenticators = new HashMap<Long, ProviderManager>();
 		localProviders = new HashMap<Long, ZoneAwareLocalAuthenticationProvider>();
 		lastUpdates = new HashMap<Long, Long>();
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		localAuthenticationProviderClass = ReflectHelper.classForName(SPropsUtil.getString("local.authentication.provider.class", "org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProviderImpl"));
+		authenticateLdapMatchingUsersUsingLdapOnly = SPropsUtil.getBoolean("authenticate.ldap.matching.users.using.ldap.only", true);
 	}
 
 	protected void addZone(ZoneConfig zoneConfig) throws Exception
 	{
 		String zoneName = getZoneModule().getZoneInfo(zoneConfig.getZoneId()).getZoneName();
-		if(authenticators.containsKey(zoneConfig.getZoneId())) {
+		if(externalAuthenticators.containsKey(zoneConfig.getZoneId())) {
 			logger.error("Duplicate zone added to AuthenticationModule: " + zoneConfig.getZoneId() + " " + zoneName);
 			throw new Exception("Duplicate zone added to AuthenticationModule");
 		}
 		logger.debug("Setting authentication info for zone " + zoneName);
-		ProviderManager pm = new ProviderManager();
 		
 		ZoneAwareLocalAuthenticationProvider localProvider = newZoneAwareLocalAuthenticationProviderInstance(zoneName);
 		localProviders.put(zoneConfig.getZoneId(), localProvider);
 		
-		authenticators.put(zoneConfig.getZoneId(), pm);
+		externalAuthenticators.put(zoneConfig.getZoneId(), null);
 		
 		rebuildProvidersForZone(zoneConfig);
 	}
@@ -128,8 +129,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	
 	protected void removeZone(Long zoneId)
 	{
-		if(authenticators.containsKey(zoneId)) {
-			authenticators.remove(zoneId);
+		if(externalAuthenticators.containsKey(zoneId)) {
+			externalAuthenticators.remove(zoneId);
 			localProviders.remove(zoneId);
 			lastUpdates.remove(zoneId);
 		}
@@ -139,7 +140,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	{
 		try {
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-			if(! authenticators.containsKey(zoneId)) {
+			if(!externalAuthenticators.containsKey(zoneId)) {
 				addZone(zoneConfig);
 			}
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
@@ -156,13 +157,22 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	}
 	
 	protected void rebuildProvidersForZone(ZoneConfig zoneConfig) throws Exception {
-		ProviderManager pm = authenticators.get(zoneConfig.getZoneId());
+		ProviderManager pm = externalAuthenticators.get(zoneConfig.getZoneId());
 		List<AuthenticationProvider> providers = createProvidersForZone(zoneConfig.getZoneId());
-		if(zoneConfig.getAuthenticationConfig().isAllowLocalLogin()) {
-			providers.add(localProviders.get(zoneConfig.getZoneId()));
+		if(providers.size() > 0) { // we've got external authenticators such as LDAP
+			if(pm != null) {
+				pm.setProviders(providers);
+			}
+			else {
+				pm = new ProviderManager();
+				pm.setProviders(providers);
+				externalAuthenticators.put(zoneConfig.getZoneId(), pm);
+			}
 		}
-
-		pm.setProviders(providers);
+		else { // no external authenticators
+			if(pm != null)
+				externalAuthenticators.put(zoneConfig.getZoneId(), null);
+		}
 		lastUpdates.put(zoneConfig.getZoneId(), zoneConfig.getAuthenticationConfig().getLastUpdate());
 	}
 
@@ -380,7 +390,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
 
-    	if(authenticators.containsKey(zone)) {
+    	if(externalAuthenticators.containsKey(zone)) {
     		// Don't allow anyone to log in without specifying a password (to prevent successful
     		// authentication on an account that has no password).
     		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
@@ -396,7 +406,7 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    		try {
 	    			// Perform authentication
 	    			SimpleProfiler.start( "3-authenticators.get(zone).authenticate(authentication)" );
-	     			result = authenticators.get(zone).authenticate(authentication);
+	     			result = performAuthentication(zone, authentication);
 	     			SimpleProfiler.stop( "3-authenticators.get(zone).authenticate(authentication)" );
 	     			
 	     			String loginName;
@@ -498,11 +508,14 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     		logger.error("Unable to configure authentication for zone " + zone + ": " + e.toString());
     		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
     	}
-		if (authenticators.containsKey(zone)) {
-			for (Object o : authenticators.get(zone).getProviders()) {
-				AuthenticationProvider p = (AuthenticationProvider) o;
-				if (p.supports(authentication)) {
-					return true;
+		if (externalAuthenticators.containsKey(zone)) {
+			ProviderManager pm = externalAuthenticators.get(zone);
+			if(pm != null) {
+				for (Object o : pm.getProviders()) {
+					AuthenticationProvider p = (AuthenticationProvider) o;
+					if (p.supports(authentication)) {
+						return true;
+					}
 				}
 			}
 			return (localProviders.get(zone).supports(authentication));
@@ -510,4 +523,33 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 		return false;
 	}
 
+	private Authentication performAuthentication(Long zoneId, Authentication authentication) throws AuthenticationException {
+		AuthenticationException exc = null;
+		ProviderManager pm = externalAuthenticators.get(zoneId);
+		boolean mustSkipLocalAuthentication = false;
+		if(pm != null) {
+			try {
+				return pm.authenticate(authentication);
+			}
+			catch(AuthenticationException e) {
+				exc = e;
+				if(authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException)) 
+					mustSkipLocalAuthentication = true;
+			}
+		}
+		if(!mustSkipLocalAuthentication) {
+			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+			if(zoneConfig.getAuthenticationConfig().isAllowLocalLogin()) {
+				return localProviders.get(zoneId).authenticate(authentication);
+			}
+		}
+		if(exc != null) {
+			throw exc;
+		}
+		else {
+			// This means that we don't have any external authenticators while local login is at the same time disallowed.
+			// Clearly a major configuration error which should not (and can not) occur.
+			throw new UsernameNotFoundException("No such account " + authentication.getName());
+		}
+	}
 }
