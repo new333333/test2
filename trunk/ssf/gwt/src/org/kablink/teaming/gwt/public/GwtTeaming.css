@@ -2916,6 +2916,8 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	white-space: nowrap;
 	display: inline-block;
 }
+.gwtTaskList_newTaskMenu_Link {
+}
 .gwtTaskList_popupGlass
 {
 	background-color: #000;

@@ -116,10 +116,12 @@ public class AddEntryController extends SAbstractController {
 			
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				MapInputData inputData = new MapInputData(formData);
+				Folder folder = null;
 				
 				try {
 					// Does the folder being added to require unique titles?
-					if (getBinderModule().getBinder(folderId).isUniqueTitles()) {
+					folder = ((Folder) getBinderModule().getBinder(folderId));
+					if (folder.isUniqueTitles()) {
 						// Yes!  Do we have a title for the entry we're
 						// adding?
 						String title = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE);
@@ -158,11 +160,10 @@ public class AddEntryController extends SAbstractController {
 				}
 				
 				try {
-					// If we just added a task entry...
-					FolderEntry fe = getFolderModule().getEntry(folderId, entryId);
-					if (TaskHelper.isTaskEntryType(fe)) {
-						// ...mark the binder so that the task listing
-						// ...knows something changed.
+					// If we just added an entry to a task folder...
+					if (TaskHelper.isTaskFolderType(folder)) {
+						// ...mark it so that the task listing knows
+						// ...something changed.
 						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_CHANGE, ObjectKeys.BINDER_PROPERTY_TASK_ADDED);
 						getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_TASK_ID,     String.valueOf(entryId));
 					}

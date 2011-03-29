@@ -168,6 +168,14 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/needsAction.png")
 	public ImageResource needsAction();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions1.png")
+	public ImageResource newTaskButton1();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/activityStreamActions2.png")
+	public ImageResource newTaskButton2();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/p0.png")

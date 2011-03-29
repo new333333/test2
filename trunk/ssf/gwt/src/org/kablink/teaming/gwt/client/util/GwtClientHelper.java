@@ -447,6 +447,16 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Uses Teaming's existing ss_common JavaScript to launch a toolbar
+	 * popup URL.
+	 * 
+	 * @param url
+	 */
+	public static native void jsLaunchToolbarPopupUrl(String url) /*-{
+		$wnd.ss_toolbarPopupUrl(url, '_blank', '', '');
+	}-*/;
+
+	/**
 	 * Uses Teaming's existing ss_common JavaScript to launch a URL in
 	 * a new window.
 	 * 

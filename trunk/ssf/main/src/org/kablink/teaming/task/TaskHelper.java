@@ -53,6 +53,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -583,6 +584,24 @@ public class TaskHelper {
 	@SuppressWarnings("unchecked")
 	public static String getTaskStatusValue(Map formData) {
 		return getTaskSingleValue(formData, STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+	}
+
+	/**
+	 * Returns true if folder is being viewed as a task listing and
+	 * false otherwise.
+	 * 
+	 * @param folder
+	 * 
+	 * @return
+	 */
+	public static boolean isTaskFolderType(Folder folder) {
+		Definition folderDef = folder.getDefaultViewDef();
+		String viewType = DefinitionUtils.getViewType(folderDef.getDefinition());
+		return isTaskFolderType(viewType);
+	}
+	
+	private static boolean isTaskFolderType(String viewType) {
+		return viewType.equals(Definition.VIEW_STYLE_TASK);		
 	}
 	
 	/**

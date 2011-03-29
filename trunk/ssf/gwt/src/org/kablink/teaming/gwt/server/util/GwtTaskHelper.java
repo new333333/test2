@@ -58,6 +58,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -81,10 +82,12 @@ import org.kablink.teaming.gwt.client.util.TaskListItem.TaskDuration;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
+import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.task.TaskHelper;
@@ -94,6 +97,7 @@ import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.EventHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
@@ -237,7 +241,7 @@ public class GwtTaskHelper {
 		
 		// Store the user's rights to the Binder.
 		reply.setCanModifyTaskLinkage(TaskHelper.canModifyTaskLinkage(request, bs, binder));
-		setTaskBundleRights(bs, ((Folder) binder), reply);
+		setTaskBundleRights(request, bs, ((Folder) binder), reply);
 		
 		// Store whether the task list is being filtered.
 		reply.setFilterTypeParam(filterTypeParam);
@@ -2007,11 +2011,38 @@ public class GwtTaskHelper {
 	/*
 	 * Sets the rights properties on a TaskBundle object.
 	 */
-	private static void setTaskBundleRights(AllModulesInjected bs, Folder taskFolder, TaskBundle tb) {
+	private static void setTaskBundleRights(HttpServletRequest request, AllModulesInjected bs, Folder taskFolder, TaskBundle tb) {
+		// Set the rights associated with managing entries in the
+		// folder.
 		boolean hasAddEntryRights = bs.getFolderModule().testAccess(taskFolder, FolderOperation.addEntry);
+		tb.setCanAddEntry(   hasAddEntryRights);
 		tb.setCanModifyEntry(hasAddEntryRights);
 		tb.setCanPurgeEntry( hasAddEntryRights);
 		tb.setCanTrashEntry( hasAddEntryRights);
+
+		// Scan the definitions that this folder may contain.
+		@SuppressWarnings("unchecked")
+		List<Definition> folderDefs = taskFolder.getEntryDefinitions();
+		for (Definition folderDef:  folderDefs) {
+			// Is this a task definition?
+			String family = DefinitionUtils.getFamily(folderDef.getDefinition());
+			if (ObjectKeys.FAMILY_TASK.equals(family)) {
+				// Yes!  Mark that the folder can contain task
+				// entries...
+				tb.setCanContainTasks(true);
+
+				// ...store the URL to use to create a new task...
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, taskFolder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, folderDef.getId());
+				tb.setNewTaskUrl(adapterUrl.toString());
+
+				// ...and break out of the loop.  Once we process the
+				// ...task definition, we're done.
+				break;
+			}
+		}
 	}
 	
 	/**
