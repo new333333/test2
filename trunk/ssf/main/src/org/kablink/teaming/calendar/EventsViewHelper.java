@@ -119,7 +119,7 @@ public class EventsViewHelper {
 	
 	private static final String dayNames[] = new String[10];
 	
-	private static final String nums[] = new String[6];
+	private static final String nums[] = new String[7];
 	
 	static {
 		dayNames[Calendar.SUNDAY] = "calendar.day.abbrevs.su";
@@ -134,7 +134,8 @@ public class EventsViewHelper {
 		nums[2] = "calendar.second";
 		nums[3] = "calendar.third";
 		nums[4] = "calendar.fourth";
-		nums[5] = "calendar.last";
+		nums[5] = "calendar.fifth";
+		nums[6] = "calendar.last";
 	}
 	
 	public static final String EVENT_TYPE_CREATION = "creation";
@@ -653,7 +654,7 @@ public class EventsViewHelper {
 			// not a list)
 			if (event.getFrequency() == Event.MONTHLY && byDaysIt.hasNext()) {
 				Integer ii = (Integer) byDaysIt.next();
-				onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[bynum.intValue()], locale) + " ";
+				onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[getNumsIndex(bynum.intValue())], locale) + " ";
 				onString += NLT.get(dayNames[ii.intValue()], locale);
 			}
 
@@ -680,7 +681,7 @@ public class EventsViewHelper {
 				if (byDaysIt.hasNext() && event.getByMonth() != null
 						&& event.getByMonth().length > 0) {
 					Integer ii = (Integer) byDaysIt.next();
-					onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[bynum.intValue()], locale) + " ";
+					onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[getNumsIndex(bynum.intValue())], locale) + " ";
 					onString += NLT.get(dayNames[ii.intValue()], locale) + " ";
 
 					onString += "of ";
@@ -728,5 +729,10 @@ public class EventsViewHelper {
 		return "th";
 	}
 
-	
+	private static int getNumsIndex(int byNum) {
+		if ((-1) == byNum) {
+			byNum = 6;
+		}
+		return byNum;
+	}
 }

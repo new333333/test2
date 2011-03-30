@@ -82,6 +82,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Transp;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
@@ -125,6 +127,7 @@ import org.kablink.util.cal.Duration;
  */
 @SuppressWarnings("deprecation")
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {
+	protected static Log logger = LogFactory.getLog(Event.class);
 
 	public enum FreeBusyType {
 		free,
@@ -3561,8 +3564,15 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		vEvent.getProperties().add(Transp.OPAQUE); // to be sure getConsumedTime works correctly
 		
 		IcalModuleImpl.addRecurrences(vEvent, this);
-		
-		PeriodList periods = vEvent.getConsumedTime(new net.fortuna.ical4j.model.Date(getDtStart().getTime().getTime()-1), new net.fortuna.ical4j.model.Date(max_count_time), false);
+
+		PeriodList periods;
+		try {
+			periods = vEvent.getConsumedTime(new net.fortuna.ical4j.model.Date(getDtStart().getTime().getTime()-1), new net.fortuna.ical4j.model.Date(max_count_time), false);
+		}
+		catch (Exception ex) {
+			logger.error(ex);
+			periods = new PeriodList();
+		}
 		
 		Iterator it = periods.iterator();
 		while (it.hasNext()) {

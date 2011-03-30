@@ -2703,8 +2703,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 						day = "SA";
 					}
 
-					recur.getDayList().add(
-							new WeekDay(day, dp.getDayPosition()));
+					int dayPos = dp.getDayPosition();
+					if (6 == dayPos) {
+						dayPos = (-1);
+					}
+					recur.getDayList().add(new WeekDay(day, dayPos));
 				}
 			}
 

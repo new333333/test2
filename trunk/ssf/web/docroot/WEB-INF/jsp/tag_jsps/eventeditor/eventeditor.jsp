@@ -296,6 +296,9 @@
 									<c:set var="daystring" value="fourth" />
 								</c:when>
 								<c:when test="${daypos.dayPosition == 5}" >
+									<c:set var="daystring" value="fifth" />
+								</c:when>
+								<c:when test="${daypos.dayPosition == -1}" >
 									<c:set var="daystring" value="last" />
 								</c:when>
 							</c:choose>
@@ -467,6 +470,7 @@
 		${prefix}ssEventEditor.locale.weekSecond = "<ssf:nlt tag="event.whichweek.second" />";
 		${prefix}ssEventEditor.locale.weekThird = "<ssf:nlt tag="event.whichweek.third" />";
 		${prefix}ssEventEditor.locale.weekFourth = "<ssf:nlt tag="event.whichweek.fourth" />";
+		${prefix}ssEventEditor.locale.weekFifth = "<ssf:nlt tag="event.whichweek.fifth" />";
 		${prefix}ssEventEditor.locale.weekLast = "<ssf:nlt tag="event.whichweek.last" />";
 		${prefix}ssEventEditor.locale.weekday = "<ssf:nlt tag="calendar.day.names.weekday" />";
 		${prefix}ssEventEditor.locale.weekendday = "<ssf:nlt tag="calendar.day.names.weekendday" />";
