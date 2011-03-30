@@ -653,7 +653,8 @@ public class EventHelper {
             else if (onDayCard.equals("second")) dayNum = 2;
             else if (onDayCard.equals("third" )) dayNum = 3;
             else if (onDayCard.equals("fourth")) dayNum = 4;
-            else if (onDayCard.equals("last"  )) dayNum = 5;
+            else if (onDayCard.equals("fifth" )) dayNum = 5;
+            else if (onDayCard.equals("last"  )) dayNum = -1;
 
             int day = 0;
             if      (dow.equals("Sunday"   )) day = Calendar.SUNDAY;
