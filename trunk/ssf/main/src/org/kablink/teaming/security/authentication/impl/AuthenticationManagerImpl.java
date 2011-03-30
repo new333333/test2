@@ -59,6 +59,7 @@ import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.EncryptUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -143,7 +144,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		boolean hadSession = SessionUtil.sessionActive();
 		boolean syncUser;
 		LdapModule ldapModule;
-	
+
+		SimpleProfiler.start( "3x-AuthenticationManagerImpl.authenticate()" );
+		
 		ldapModule = getLdapModule();
 		syncUser = false;
 		
@@ -200,6 +203,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			}
 		}
 		
+		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.authenticate()" );
 		return user;
 	}
 
@@ -235,6 +239,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				boolean passwordAutoSynch, boolean ignorePassword)
 			throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
+
+		SimpleProfiler.start( "3x-AuthenticationManagerImpl.doAuthenticate()" );
 
 		try {
 			// Are we dealing with one of the system accounts? ie admin
@@ -326,6 +332,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   		}
     	}
    		
+		SimpleProfiler.stop( "3x-AuthenticationManagerImpl.doAuthenticate()" );
 		return user;
 	}
 
