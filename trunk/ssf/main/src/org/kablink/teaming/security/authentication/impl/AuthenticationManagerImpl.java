@@ -237,37 +237,42 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		User user = null;
 
 		try {
-			String ldapGuid;
-			LdapModule ldapModule;
-			Binder top;
-			Long zoneId;
-			
-			// Get the zone id from the zone name.
-	    	top = getCoreDao().findTopWorkspace( zoneName );
-	    	zoneId = top.getZoneId();
-
-	    	// Read this user's ldap guid from the ldap directory.
-			ldapModule = getLdapModule();
-			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
-			
-			// Did we find an ldap guid for this user?
-			if ( ldapGuid != null && ldapGuid.length() > 0 )
+			// Are we dealing with one of the system accounts? ie admin
+			if ( !MiscUtil.isSystemUserAccount( username ) )
 			{
-				// Yes
-				try
+				String ldapGuid;
+				LdapModule ldapModule;
+				Binder top;
+				Long zoneId;
+
+				// No
+				// Get the zone id from the zone name.
+		    	top = getCoreDao().findTopWorkspace( zoneName );
+		    	zoneId = top.getZoneId();
+
+		    	// Read this user's ldap guid from the ldap directory.
+				ldapModule = getLdapModule();
+				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
+				
+				// Did we find an ldap guid for this user?
+				if ( ldapGuid != null && ldapGuid.length() > 0 )
 				{
-					ProfileModule profileModule;
-					
-					// Try to find the user in Teaming by their ldap guid.
-					profileModule = getProfileModule();
-					user = profileModule.findUserByLdapGuid( ldapGuid );
-				}
-				catch (NoUserByTheNameException ex)
-				{
-					// Nothing to do
+					// Yes
+					try
+					{
+						ProfileModule profileModule;
+						
+						// Try to find the user in Teaming by their ldap guid.
+						profileModule = getProfileModule();
+						user = profileModule.findUserByLdapGuid( ldapGuid );
+					}
+					catch (NoUserByTheNameException ex)
+					{
+						// Nothing to do
+					}
 				}
 			}
-			
+
 			// Did we find the user by their ldap guid?
 			if ( user == null )
 			{
