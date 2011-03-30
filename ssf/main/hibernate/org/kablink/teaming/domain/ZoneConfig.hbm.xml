@@ -25,7 +25,7 @@
 		<property name="defaultGuestHomePageId"/>
     </component>
     <component name="weekendsAndHolidaysConfig" class="org.kablink.teaming.domain.WeekendsAndHolidaysConfig">
-		<property name="holidays" length="4096"/>	<!-- Allows for 256 holidays. -->
+		<property name="holidays" length="4000"/>	<!-- Allows for 250 holidays. Note: The maximum size is 4000 bytes for Oracle. -->
 		<property name="weekendDays" length="128"/>
     </component>
      <component name="authenticationConfig" class="org.kablink.teaming.domain.AuthenticationConfig">
