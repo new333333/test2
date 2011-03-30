@@ -97,7 +97,10 @@ public class TextFormat extends BodyTagSupport {
 				}
 				
 				String summary = Html.wordStripHTML(textContent, intMaxAllowedWords);
-				
+				if (stripHtml) {
+					//Ok, really strip out the remaining html
+					summary = Html.stripHtml(summary);
+				}
 				JspWriter jspOut = pageContext.getOut();
 				jspOut.print(summary.trim());
 				
@@ -120,6 +123,11 @@ public class TextFormat extends BodyTagSupport {
 				textContent = textContent.trim();
 				
 				String summary = textContent;
+				if (stripHtml) {
+					//Ok, strip out any html
+					summary = Html.stripHtml(summary);
+				}
+
 				if (intMaxAllowedChars >= 0 && textContent.length() > intMaxAllowedChars) {
 					summary = summary.substring(0, intMaxAllowedChars) + "...";
 				}
@@ -137,6 +145,10 @@ public class TextFormat extends BodyTagSupport {
 					throw new JspException("TextFormat: Text Max Words not a numeric value");
 				}
 	
+				if (stripHtml) {
+					//Ok, strip out any html
+					textContent = Html.stripHtml(textContent);
+				}
 				String summary = "";
 				String [] words = textContent.split(" ");
 				
@@ -166,6 +178,10 @@ public class TextFormat extends BodyTagSupport {
 				
 			} else {
 				JspWriter jspOut = pageContext.getOut();
+				if (stripHtml) {
+					//Ok, strip out any html
+					textContent = Html.stripHtml(textContent);
+				}
 				jspOut.print(textContent);
 			}
 			
