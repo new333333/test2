@@ -18,7 +18,7 @@ create table SS_BinderQuota (binderId bigint not null, zoneId bigint not null, d
 alter table SS_ZoneConfig add column binderQuotasInitialized bit;
 alter table SS_ZoneConfig add column binderQuotasEnabled bit;
 alter table SS_ZoneConfig add column binderQuotasAllowOwner bit;
-alter table SS_ZoneConfig add column holidays varchar(4096);
+alter table SS_ZoneConfig add column holidays varchar(4000);
 alter table SS_ZoneConfig add column weekendDays varchar(128);
 create index entityOwner_clog on SS_ChangeLogs (entityType, entityId);
 create index operationDate_clog on SS_ChangeLogs (zoneId, operationDate);
