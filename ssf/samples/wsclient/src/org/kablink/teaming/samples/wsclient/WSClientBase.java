@@ -218,8 +218,11 @@ public abstract class WSClientBase {
 		// The endpoint is different depending on the authentication mechanism to be used.
 		// If using WS-Security, the endpoint is http://<host>:<port>/ssf/ws/<servicename>
 		// With Basic Authentication, it is http://<host>:<port>/ssr/secure/ws/<servicename> 
-		StringBuilder sb = new StringBuilder("http://");
-		sb.append(host);
+		StringBuilder sb = new StringBuilder();
+		if(host.startsWith("http"))
+			sb.append(host); // it has a scheme
+		else
+			sb.append("http://").append(host); // default to http
 		if(port != null)
 			sb.append(":").append(port);
 		if(authWSS)
