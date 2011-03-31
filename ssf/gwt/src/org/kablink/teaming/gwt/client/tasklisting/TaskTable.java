@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.util.TaskId;
 import org.kablink.teaming.gwt.client.util.TaskLinkage;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.util.TaskListItem.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.TaskListItem.TaskEvent;
 import org.kablink.teaming.gwt.client.util.TaskListItem.TaskInfo;
 import org.kablink.teaming.gwt.client.util.TaskListItemHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -2368,12 +2369,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Renders the 'Due Date' column.
 	 */
 	private void renderColumnDueDate(final TaskListItem task, int row) {
-		String dueDate = task.getTask().getEvent().getLogicalEnd().getDateDisplay();
+		TaskInfo  ti  = task.getTask();
+		TaskEvent tie = ti.getEvent();
+		String dueDate = tie.getLogicalEnd().getDateDisplay();
 		InlineLabel il = new InlineLabel();
 		il.getElement().setInnerHTML(GwtClientHelper.hasString(dueDate) ? dueDate : "&nbsp;");
 		il.setWordWrap(false);
-		if (task.getTask().isTaskOverdue()) {
+		if (ti.isTaskOverdue()) {
 			il.addStyleName("gwtTaskList_task-overdue-color");
+		}
+		if (tie.getEndIsCalculated()) {
+			il.addStyleName("gwtTaskList_calculatedDate");
+			il.setTitle(m_messages.taskAltDateCalculated());
 		}
 		m_flexTable.setWidget(row, getColumnIndex(Column.DUE_DATE), il);
 	}
