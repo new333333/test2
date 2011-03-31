@@ -1748,12 +1748,19 @@ public class GwtTaskHelper {
 	public static String saveTaskCompleted(AllModulesInjected bs, List<TaskId> taskIds, String completed) throws GwtTeamingException {
 		// Are we marking the tasks completed?
 		boolean nowCompleted = (TaskInfo.COMPLETED_100.equals(completed));
-		
+				
 		// Scan the tasks whose completed value is changing.
+		FolderModule  fm      = bs.getFolderModule();
+		ProfileModule pm      = bs.getProfileModule();
+		SeenMap       seenMap = pm.getUserSeenMap(null);
 		for (TaskId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
 			Long entryId  = taskId.getEntryId();
 			try {
+				// Has the user seen this entry already?
+				FolderEntry fe       = fm.getEntry(binderId, entryId);
+				boolean     taskSeen = seenMap.checkIfSeen(fe);
+				
 				// Construct the appropriate form data for the change...
 				Map formData = new HashMap();
 				formData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {completed});
@@ -1761,7 +1768,6 @@ public class GwtTaskHelper {
 					formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_COMPLETED});
 				}				
 				else {				
-					FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
 					String currentStatus = TaskHelper.getTaskStatusValue(   fe);
 					if (TaskInfo.STATUS_COMPLETED.equals(currentStatus)) {
 						formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {TaskInfo.STATUS_IN_PROCESS});
@@ -1769,7 +1775,7 @@ public class GwtTaskHelper {
 				}
 
 				// ...and modify the entry.
-				bs.getFolderModule().modifyEntry(
+				fm.modifyEntry(
 					binderId,
 					entryId, 
 					new MapInputData(formData),
@@ -1777,6 +1783,12 @@ public class GwtTaskHelper {
 					null,
 					null,
 					null);
+				
+				// If the user saw the entry before we modified it...
+				if (taskSeen) {
+					// ...retain that seen state.
+					pm.setSeen(null, fe);
+				}
 			}
 			
 			catch (Exception ex) {
@@ -1853,9 +1865,15 @@ public class GwtTaskHelper {
 	@SuppressWarnings("unchecked")
 	public static Boolean saveTaskPriority(AllModulesInjected bs, Long binderId, Long entryId, String priority) throws GwtTeamingException {
 		try {
+			// Has the user seen this entry already?
+			FolderModule  fm       = bs.getFolderModule();
+			ProfileModule pm       = bs.getProfileModule();
+			FolderEntry   fe       = fm.getEntry(binderId, entryId);
+			boolean       taskSeen = pm.getUserSeenMap(null).checkIfSeen(fe);
+			
 			Map formData = new HashMap();
 			formData.put(TaskHelper.PRIORITY_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {priority});
-			bs.getFolderModule().modifyEntry(
+			fm.modifyEntry(
 				binderId,
 				entryId, 
 				new MapInputData(formData),
@@ -1863,6 +1881,12 @@ public class GwtTaskHelper {
 				null,
 				null,
 				null);
+			
+			// If the user saw the entry before we modified it...
+			if (taskSeen) {
+				// ...retain that seen state.
+				pm.setSeen(null, fe);
+			}
 			return Boolean.TRUE;
 		}
 		
@@ -1918,10 +1942,17 @@ public class GwtTaskHelper {
 		boolean nowCompleted = (TaskInfo.STATUS_COMPLETED.equals(status));
 		
 		// Scan the tasks whose status is changing.
+		FolderModule  fm      = bs.getFolderModule();
+		ProfileModule pm      = bs.getProfileModule();
+		SeenMap       seenMap = pm.getUserSeenMap(null);
 		for (TaskId taskId:  taskIds) {
 			Long binderId = taskId.getBinderId();
 			Long entryId  = taskId.getEntryId();
 			try {
+				// Has the user seen this entry already?
+				FolderEntry   fe       = fm.getEntry(binderId, entryId);
+				boolean       taskSeen = seenMap.checkIfSeen(fe);
+				
 				// Construct the appropriate form data for the change...
 				Map formData = new HashMap();
 				formData.put(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME, new String[] {status});
@@ -1930,7 +1961,6 @@ public class GwtTaskHelper {
 				}				
 				else {				
 					if ((TaskInfo.STATUS_NEEDS_ACTION.equals(status)) || (TaskInfo.STATUS_IN_PROCESS.equals(status))) {
-						FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
 						String currentStatus    = TaskHelper.getTaskStatusValue(   fe);
 						String currentCompleted = TaskHelper.getTaskCompletedValue(fe);
 						if ((TaskInfo.STATUS_COMPLETED.equals(currentStatus)) && (TaskInfo.COMPLETED_100.equals(currentCompleted))) {
@@ -1940,7 +1970,7 @@ public class GwtTaskHelper {
 				}
 
 				// ...and modify the entry.
-				bs.getFolderModule().modifyEntry(
+				fm.modifyEntry(
 					binderId,
 					entryId, 
 					new MapInputData(formData),
@@ -1948,6 +1978,12 @@ public class GwtTaskHelper {
 					null,
 					null,
 					null);
+				
+				// If the user saw the entry before we modified it...
+				if (taskSeen) {
+					// ...retain that seen state.
+					pm.setSeen(null, fe);
+				}
 			}
 			
 			catch (Exception ex) {
