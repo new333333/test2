@@ -55,7 +55,9 @@
 	<div <%--
     --%> id="ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}"><%--
 	--%><c:if test="${!empty part['sectionTitle']}"><%--
+		--%><table width="100%" cellspacing="0" cellpadding="0"><tr><td width="90%"><%--
 		--%><div class="ss_editableSectionTitle"><span class="${part['sectionTitleClass']}">${part['sectionTitle']}</span></div><%--
+		--%></td><td width="10%"><%--
 		--%><c:if test="${aclMap[entityId]['modifyEntry']}"><%--
 			--%><div align="right" class="ss_editableSectionEditBtn"><a href="javascript:;"<%--
 	    	--%> onMouseOver="ss_editableHighlight('over', this, 'ss_editableSectionDiv${renderResponse.namespace}_${ss_editableSectionIdNumber}');return false;"<%--
@@ -68,6 +70,7 @@
 			--%>[<ssf:nlt tag="Edit"/>]</span></a><%--
 			--%></div><%--
 		--%></c:if><%--
+		--%></td></tr></table><%--
 		--%><div class="ss_clear"></div><%--
 	--%></c:if><%--
 	--%>${part['sectionBody']}<%--
