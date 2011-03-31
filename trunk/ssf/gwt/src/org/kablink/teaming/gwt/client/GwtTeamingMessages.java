@@ -887,6 +887,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskDispositionDlgInsertBefore();
 
 	// The following are used for task folder listing.
+	String taskAltDateCalculated();
 	String taskAltDelete();
 	String taskAltMoveDown();
 	String taskAltMoveLeft();

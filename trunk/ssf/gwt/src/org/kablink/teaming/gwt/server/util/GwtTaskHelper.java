@@ -1067,6 +1067,7 @@ public class GwtTaskHelper {
 		TaskEvent reply = new TaskEvent();
 
 		// Are we reading the information for the client?
+		TaskDate calcEnd = getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE), true);
 		if (!clientBundle) {
 			// No!  Extract the event's actual and calculated start and
 			// end dates.
@@ -1074,13 +1075,17 @@ public class GwtTaskHelper {
 			sd.setActualStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_START_DATE     ), true));
 			sd.setActualEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_END_DATE       ), true));
 			sd.setCalcStart(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_START_DATE), true));
-			sd.setCalcEnd(    getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_CALC_END_DATE  ), true));
+			sd.setCalcEnd(    calcEnd                                                                                );
 			reply.setServerData(sd);
 		}
 		
 		// Extract the event's logical start and end...
 		reply.setLogicalStart(getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_START_DATE), false ));		
 		reply.setLogicalEnd(  getTaskDateFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_LOGICAL_END_DATE  ), false ));
+		
+		// ...pass through an indicator of whether it's using a
+		// ...calculated end date...
+		reply.setEndIsCalculated(null != calcEnd);
 
 		// ...extract the event's 'All Day Event' flag from the Map...
 		String tz = getStringFromMap(m, buildEventFieldName(Constants.EVENT_FIELD_TIME_ZONE_ID));

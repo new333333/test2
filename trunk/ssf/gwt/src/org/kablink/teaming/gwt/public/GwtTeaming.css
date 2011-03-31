@@ -2909,6 +2909,10 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	-moz-border-radius: 2px;
 	-webkit-border-radius: 2px;
 }
+.gwtTaskList_calculatedDate
+{
+	font-style: italic;
+}
 .gwtTaskList_loading
 {
 	margin-top: 5px;
