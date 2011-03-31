@@ -300,6 +300,8 @@ public class ModifyEntryController extends SAbstractController {
 	    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 	    		return;
 			}
+			//Mark this entry as having been seen by the current user
+			getProfileModule().setSeen(null, entry);
 
 		} else if (formData.containsKey("cancelBtn")) {
 			//	The user clicked the cancel button

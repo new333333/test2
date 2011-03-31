@@ -145,7 +145,7 @@ public class MarkupUtil {
 	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)");
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
-	protected final static Pattern sectionPattern =Pattern.compile("(==[=]*)([^=]*)(==[=]*)");
+	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]*)(==[=]*)(</p>)?");
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	protected static Integer youtubeDivId = 0;
 
@@ -1313,10 +1313,17 @@ public class MarkupUtil {
 		List bodyParts = new ArrayList();
     	Matcher m0 = sectionPattern.matcher(body);
     	if (m0.find()) {
+    		//The "prefix" is everything up to the first section title (where a title is: ==title text== or <p>==titleText==</p>)
 			Map part = new HashMap();
-			part.put("prefix", body.substring(0, m0.start(0)));
-			bodyParts.add(part);
-			body = body.substring(m0.start(0), body.length());
+			if (m0.start(1) >= 0) {
+				part.put("prefix", body.substring(0, m0.start(1)));
+				bodyParts.add(part);
+				body = body.substring(m0.start(1), body.length());
+			} else {
+				part.put("prefix", body.substring(0, m0.start(2)));
+				bodyParts.add(part);
+				body = body.substring(m0.start(2), body.length());
+			}
     	}
     	
     	int sectionNumber = 0;
@@ -1329,13 +1336,13 @@ public class MarkupUtil {
     		}
  			Map part = new HashMap();
     		//Get the section title
-    		String title = m1.group(2).trim();
+    		String title = m1.group(3).trim();
     		if (title == null) title = "";
 			
     		part.put("sectionTitle", title);
     		part.put("sectionNumber", String.valueOf(sectionNumber));
     		
-			String equalSigns = m1.group(1).trim();
+			String equalSigns = m1.group(2).trim();
 			int sectionDepth = Integer.valueOf(equalSigns.length());
 			if (sectionDepth > 4) sectionDepth = 4;
 			sectionDepth--;
@@ -1344,12 +1351,20 @@ public class MarkupUtil {
 			body = body.substring(m1.end(), body.length());
 	    	Matcher m2 = sectionPattern.matcher(body);
 	    	if (m2.find()) {
-				part.put("sectionBody", body.substring(0, m2.start(0)));
-				body = body.substring(m2.start(0), body.length());
+	    		if (m2.groupCount() >= 2 && m2.start(0) >= 0) {
+					part.put("sectionBody", body.substring(0, m2.start(0)));
+					body = body.substring(m2.start(0), body.length());
+	    		} else {
+	    			part.put("sectionBody", body);
+	    		}
 	    	} else {
 	    		part.put("sectionBody", body);
 	    	}
-	    	part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + part.get("sectionBody"));
+	    	if (m1.group(1) != null && m1.group(5) != null) {
+	    		part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + m1.group(4) + m1.group(5) + part.get("sectionBody"));
+	    	} else {
+	    		part.put("sectionText", m1.group(2) + m1.group(3) + m1.group(4) + part.get("sectionBody"));
+	    	}
 			bodyParts.add(part);
 			m1 = sectionPattern.matcher(body);
     		
@@ -1378,13 +1393,13 @@ public class MarkupUtil {
     		}
  			Map part = new HashMap();
     		//Get the section title
-    		String title = m1.group(2).trim();
+    		String title = m1.group(3).trim();
     		if (title == null) title = "";
 			
     		part.put("sectionTitle", title);
     		part.put("sectionNumber", String.valueOf(sectionNumber));
     		
-			String equalSigns = m1.group(1).trim();
+			String equalSigns = m1.group(2).trim();
 			int sectionDepth = Integer.valueOf(equalSigns.length());
 			if (sectionDepth > 4) sectionDepth = 4;
 			sectionDepth--;
@@ -1398,7 +1413,11 @@ public class MarkupUtil {
 	    	} else {
 	    		part.put("sectionBody", body);
 	    	}
-	    	part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + part.get("sectionBody"));
+	    	if (m1.group(1) != null && m1.group(5) != null) {
+	    		part.put("sectionText", m1.group(1) + m1.group(2) + m1.group(3) + m1.group(4) + m1.group(5) + part.get("sectionBody"));
+	    	} else {
+	    		part.put("sectionText", m1.group(2) + m1.group(3) + m1.group(4) + part.get("sectionBody"));
+	    	}
 			bodyParts.add(part);
 			m1 = sectionPattern.matcher(body);
     		
