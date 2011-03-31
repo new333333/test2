@@ -1206,12 +1206,9 @@ public class ViewEntryController extends  SAbstractController {
 			replies.add(entry);
 		}
 		
-		if (!seen.checkIfSeen(entry)) {  
-			seenEntries.put(entry.getId(), false);
-			getProfileModule().setSeen(null, entry);
-		} else {
-			seenEntries.put(entry.getId(), true);
-		}
+		//Always mark the entry being viewed as seen
+		seenEntries.put(entry.getId(), true);
+		
 		BinderHelper.buildWorkflowSupportBeans(this, replies, model);
 		
 		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entry.getEntryDefId());

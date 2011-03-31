@@ -185,6 +185,9 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				catch (Exception ex) {}
 				
+				//Mark this entry as having been seen by the current user
+				getProfileModule().setSeen(null, entry);
+				
 				//Force the user's status to be updated.
 				BinderHelper.updateUserStatus(folderId, entryId, user);
 
