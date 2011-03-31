@@ -406,7 +406,18 @@
 								</table>			
 							</div>		
 						</div>
-					</c:if>						
+					</c:if>
+											
+					<c:if test="${!attMap.hasRecur}">
+						<div class="marginleft1">
+							<input
+								class="ss_submit"
+								type="submit"
+								onclick="ss_clearStartEnd(); return false;"
+								value="<ssf:nlt tag="event.clear.startEnd" />"
+								name="clearBtn" />
+						</div>
+					</c:if>
 				</td>
 			</tr>
 	</c:if>
@@ -688,6 +699,17 @@
 			</c:if>
 		
 			return true;
+		}
+
+		/*
+		 * Clears the start/end date/time entry widgets.
+		 */
+		function ss_clearStartEnd() {
+			var e;
+			e = document.getElementById("event_end_${prefix}");        if (null != e) e.value = ""; 
+			e = document.getElementById("event_end_time_${prefix}");   if (null != e) e.value = ""; 
+			e = document.getElementById("event_start_${prefix}");      if (null != e) e.value = ""; 
+			e = document.getElementById("event_start_time_${prefix}"); if (null != e) e.value = ""; 
 		}
 
 		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);		 
