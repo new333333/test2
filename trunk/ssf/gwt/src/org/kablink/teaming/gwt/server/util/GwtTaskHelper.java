@@ -1577,6 +1577,7 @@ public class GwtTaskHelper {
 		}
 
 		// Scan any tasks that weren't addressed by the task linkage...
+		boolean linkageChanged = false;
 		for (TaskInfo task:  tasks) {
 			// ...add each as a TaskListItem to the task list being
 			// ...built...
@@ -1595,7 +1596,14 @@ public class GwtTaskHelper {
 				TaskLink tl = new TaskLink();
 				tl.setEntryId(task.getTaskId().getEntryId());
 				taskOrder.add(tl);
+				linkageChanged = true;
 			}
+		}
+
+		// If we changed the linkage based on the rendering...
+		if (linkageChanged) {
+			// ...save the new linkage.
+			saveTaskLinkage(bs, binder, tb.getTaskLinkage());
 		}
 	}
 
