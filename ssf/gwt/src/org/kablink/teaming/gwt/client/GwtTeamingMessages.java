@@ -896,7 +896,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskAltTaskClosed();
 	String taskAltTaskUnread();
 	String taskCantMove_Filter();
-	String taskCantMove_NotOne(String number);
+	String taskCantMove_NoMoveableTasksSelected();
 	String taskCantMove_Order();
 	String taskCantMove_Rights();
 	String taskCantMove_Virtual();

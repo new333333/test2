@@ -211,6 +211,56 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 
 	/*
+	 * Inner class used to track the state of the movement buttons in
+	 * the task listing toolbar.
+	 */
+	private class MoveStates {
+		private boolean m_canMoveDown;	//
+		private boolean m_canMoveLeft;	//
+		private boolean m_canMoveRight;	//
+		private boolean m_canMoveUp;	//
+
+		/**
+		 * Constructor method.
+		 */
+		public MoveStates() {
+			// Nothing to do.
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean canMoveAll()   {return (m_canMoveDown && m_canMoveLeft && m_canMoveRight && m_canMoveUp);}
+		public boolean canMoveAny()   {return (m_canMoveDown || m_canMoveLeft || m_canMoveRight || m_canMoveUp);}
+		public boolean canMoveDown()  {return m_canMoveDown; }
+		public boolean canMoveLeft()  {return m_canMoveLeft; }
+		public boolean canMoveRight() {return m_canMoveRight;}
+		public boolean canMoveUp()    {return m_canMoveUp;   }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param canMoveDown
+		 */
+		public void setCanMoveDown( boolean canMoveDown)  {m_canMoveDown  = canMoveDown; }
+		public void setCanMoveLeft( boolean canMoveLeft)  {m_canMoveLeft  = canMoveLeft; }
+		public void setCanMoveRight(boolean canMoveRight) {m_canMoveRight = canMoveRight;}
+		public void setCanMoveUp(   boolean canMoveUp)    {m_canMoveUp    = canMoveUp;   }
+		
+		/**
+		 * Clears all the movement flags in the object.
+		 */
+		public void reset() {
+			m_canMoveDown  =
+			m_canMoveLeft  =
+			m_canMoveRight =
+			m_canMoveUp    = false;
+		}
+	}
+	
+	/*
 	 * Inner class used to show a popup message while a potentially
 	 * long running process is in progress.
 	 */
@@ -539,7 +589,9 @@ public class TaskTable extends Composite implements ActionHandler {
 			}
 			
 			// ...and refresh the list.
-			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTask);
+			List<TaskListItem> newTaskList = new ArrayList<TaskListItem>();
+			newTaskList.add(newTask);
+			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), newTaskList);
 		}		
 	}
 	
@@ -735,6 +787,38 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 	}
 	
+	/*
+	 * Returns a MoveStates object based on the state of the tasks in a
+	 * task list.
+	 */
+	public MoveStates buildMoveStates(List<TaskListItem> taskList) {
+		// If there's nothing in the list...
+		MoveStates reply = new MoveStates();
+		int taskCount = ((null == taskList) ? 0 : taskList.size());
+		if (0 == taskCount) {
+			// ...nothing can be moved.  Return the base object.
+			return reply;
+		}
+
+		// Scan the items in the list...
+		for (TaskListItem task:  taskList) {
+			// ...setting the move states as appropriate.
+			if (TaskListItemHelper.canMoveTaskDown( m_taskBundle, task)) reply.setCanMoveDown( true);
+			if (TaskListItemHelper.canMoveTaskLeft( m_taskBundle, task)) reply.setCanMoveLeft( true);
+			if (TaskListItemHelper.canMoveTaskRight(m_taskBundle, task)) reply.setCanMoveRight(true);
+			if (TaskListItemHelper.canMoveTaskUp(   m_taskBundle, task)) reply.setCanMoveUp(   true);
+
+			// Once all the move states are set...
+			if (reply.canMoveAll()) {
+				// ...we don't need to look at any more.
+				break;
+			}
+		}
+
+		// If we get here, reply removes the the MoveStates object
+		// based on the task list.  Return it.
+		return reply;
+	}
 	/*
 	 * Build a column that contains a task option Widget. 
 	 */
@@ -1459,10 +1543,18 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskMoveDown() {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
-		if (1 == tasksCheckedCount) {
-			TaskListItem task = tasksChecked.get(0);
-			TaskListItemHelper.moveTaskDown(m_taskBundle, task);
-			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
+		if (0 < tasksCheckedCount) {
+			// Note:  Unlike the other movers, we must iterate through
+			// these from bottom to top.  Otherwise, moving two items
+			// that are peers to each other would have no net affect.
+			for (int i = (tasksCheckedCount - 1); i >= 0; i -= 1) {
+				TaskListItem task = tasksChecked.get(i);
+				TaskListItemHelper.moveTaskDown(m_taskBundle, task);
+			}
+			
+			handleTaskPostMove(
+				buildProcessActive(m_messages.taskProcess_move()),
+				tasksChecked);
 		}
 	}
 	
@@ -1473,10 +1565,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskMoveLeft() {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
-		if (1 == tasksCheckedCount) {
-			TaskListItem task = tasksChecked.get(0);
-			TaskListItemHelper.moveTaskLeft(m_taskBundle, task);
-			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
+		if (0 < tasksCheckedCount) {
+			for (TaskListItem task:  tasksChecked) {
+				TaskListItemHelper.moveTaskLeft(m_taskBundle, task);
+			}
+			
+			handleTaskPostMove(
+				buildProcessActive(m_messages.taskProcess_move()),
+				tasksChecked);
 		}
 	}
 	
@@ -1487,10 +1583,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskMoveRight() {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
-		if (1 == tasksCheckedCount) {
-			TaskListItem task = tasksChecked.get(0);
-			TaskListItemHelper.moveTaskRight(m_taskBundle, task);
-			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
+		if (0 <  tasksCheckedCount) {
+			for (TaskListItem task:  tasksChecked) {
+				TaskListItemHelper.moveTaskRight(m_taskBundle, task);
+			}
+			
+			handleTaskPostMove(
+				buildProcessActive(m_messages.taskProcess_move()),
+				tasksChecked);
 		}
 	}
 	
@@ -1501,10 +1601,14 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void handleTaskMoveUp() {
 		List<TaskListItem> tasksChecked = getTasksChecked();
 		int tasksCheckedCount = tasksChecked.size();
-		if (1 == tasksCheckedCount) {
-			TaskListItem task = tasksChecked.get(0);
-			TaskListItemHelper.moveTaskUp(m_taskBundle, task);
-			handleTaskPostMove(buildProcessActive(m_messages.taskProcess_move()), task);
+		if (0 < tasksCheckedCount) {
+			for (TaskListItem task:   tasksChecked) {
+				TaskListItemHelper.moveTaskUp(m_taskBundle, task);
+			}
+			
+			handleTaskPostMove(
+				buildProcessActive(m_messages.taskProcess_move()),
+				tasksChecked);
 		}
 	}
 
@@ -1521,12 +1625,21 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * Does what's necessary after a task is moved to put the change
 	 * into affect.
 	 */
-	private void handleTaskPostMove(final ProcessActive pa, TaskListItem task) {	
+	private void handleTaskPostMove(final ProcessActive pa, List<TaskListItem> taskList) {	
 		initializeUIData();	// Forces the order and depths to be reset.
 		renderTaskBundle(m_taskBundle);		
 
 		// Persist whatever changed in the linkage information.
-		final TaskId taskId = task.getTask().getTaskId();
+		TaskListItem task;
+		final TaskId taskId;
+		if ((null != taskList) && (1 == taskList.size())) {
+			task = taskList.get(0);
+		    taskId = task.getTask().getTaskId();
+		}
+		else {
+			task   = null;
+			taskId = null;
+		}
 		persistLinkageChangeAsync(
 			task,
 			new Scheduler.ScheduledCommand() {
@@ -1534,8 +1647,8 @@ public class TaskTable extends Composite implements ActionHandler {
 				public void execute() {
 					updateCalculatedDatesNow(
 						pa,
-						taskId.getBinderId(),
-						taskId.getEntryId());
+						((null == taskId) ? null : taskId.getBinderId()),
+						((null == taskId) ? null : taskId.getEntryId()));
 				}
 		});
 	}
@@ -3050,11 +3163,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	private void validateTaskToolsNow() {
-		boolean enableMoveDown  = false;
-		boolean enableMoveLeft  = false;
-		boolean enableMoveRight = false;
-		boolean enableMoveUp    = false;
-		String  toolHint        = null;
+		String  toolHint = null;
 
 		// Get the checked tasks and count.
 		List<TaskListItem> tasksChecked = getTasksChecked();
@@ -3070,12 +3179,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		boolean enablePurge  = (m_taskBundle.getCanPurgeEntry() && (0 < tasksCheckedCount));
 		
 		// Does the user have the rights to manage linkage?
+		MoveStates moveStates;
 		boolean allowMovement = m_taskBundle.getCanModifyTaskLinkage();
 		if (allowMovement) {				
 			// Yes!  Validate the the base criteria about whether the
-			// movement buttons are enabled.  Is one and only one task
-			// selected?
-			allowMovement = (1 == tasksCheckedCount);
+			// movement buttons are enabled.  Are there any movable
+			// tasks selected?
+			moveStates = buildMoveStates(tasksChecked);
+			allowMovement = moveStates.canMoveAny();
 			if (allowMovement) {
 				// Yes!  Is this list a non-filtered list?
 				allowMovement = (!(m_taskBundle.getIsFiltered()));
@@ -3102,25 +3213,21 @@ public class TaskTable extends Composite implements ActionHandler {
 				}
 			}			
 			else {
-				// Disallowed:  Other than 1 item checked.
+				// Disallowed:  No movable tasks selected.
 				if (0 == tasksCheckedCount)
 				     toolHint = m_messages.taskCantMove_Zero();
-				else toolHint = m_messages.taskCantMove_NotOne(String.valueOf(tasksCheckedCount));
+				else toolHint = m_messages.taskCantMove_NoMoveableTasksSelected();
 			}
 	
 			// Is the base criteria for movement satisfied?
-			if (allowMovement) {
-				// Yes!  Furthermore, the allowed movement is based on the
-				// selected task's current position in the linkage.
-				TaskListItem task = tasksChecked.get(0);
-				enableMoveDown    = TaskListItemHelper.canMoveTaskDown( m_taskBundle, task);
-				enableMoveLeft    = TaskListItemHelper.canMoveTaskLeft( m_taskBundle, task);
-				enableMoveRight   = TaskListItemHelper.canMoveTaskRight(m_taskBundle, task);
-				enableMoveUp      = TaskListItemHelper.canMoveTaskUp(   m_taskBundle, task);
+			if (!allowMovement) {
+				// No!  Then use a cleared MoveStates object.
+				moveStates.reset();
 			}
 		}
 		else {
 			// Disallowed:  Insufficient rights.
+			moveStates = new MoveStates();
 			toolHint = m_messages.taskCantMove_Rights();
 		}
 		
@@ -3128,11 +3235,11 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskListing.showHint(toolHint);
 
 		// Enabled/disable the buttons as calculated.
-		m_taskListing.getDeleteButton().setEnabled(   enableDelete   );
-		m_taskListing.getMoveDownButton().setEnabled( enableMoveDown );
-		m_taskListing.getMoveLeftButton().setEnabled( enableMoveLeft );
-		m_taskListing.getMoveRightButton().setEnabled(enableMoveRight);
-		m_taskListing.getMoveUpButton().setEnabled(   enableMoveUp   );
-		m_taskListing.getPurgeButton().setEnabled(    enablePurge    );
+		m_taskListing.getDeleteButton().setEnabled(   enableDelete             );
+		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown() );
+		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft() );
+		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight());
+		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp()   );
+		m_taskListing.getPurgeButton().setEnabled(    enablePurge              );
 	}
 }
