@@ -486,10 +486,16 @@ public class FileAttachment extends Attachment {
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MAJOR_VERSION, getMajorVersion().toString());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_MINOR_VERSION, getMinorVersion().toString());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_STATUS, getFileStatus().toString());
+		Set fileVersions = getFileVersions();
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_VERSION_COUNT, String.valueOf(fileVersions.size()));
 		if (includeVersions) {
-			for (Iterator iter=getFileVersions().iterator(); iter.hasNext();) {
+			int count = 0;
+			for (Iterator iter=fileVersions.iterator(); iter.hasNext();) {
 				VersionAttachment v = (VersionAttachment)iter.next();
 				v.addChangeLog(element);
+				count++;
+				//Only add the first few version to this log file
+				if (count > ObjectKeys.XTAG_FILE_VERSION_COUNT_MAXIMUM) break;
 			}
 		}
 		return element;

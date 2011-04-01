@@ -656,6 +656,8 @@ public interface ObjectKeys {
     public static final String XTAG_FILE_PARENT="parentAttachment";
     public static final String XTAG_FILE_VERSION_NUMBER="versionNumber";
     public static final String XTAG_FILE_VERSION_NAME="versionName";
+    public static final String XTAG_FILE_VERSION_COUNT="versionCount";
+    public static final int XTAG_FILE_VERSION_COUNT_MAXIMUM = 20;  //This is how many version to show in the change log
     //values of attributes on element XTAG_ELEMENT_TYPE_FILEARCHIVE
     public static final String XTAG_FILE_ARCHIVE_STORE_NAME="archiveStoreName";
     //values of attributes on element XTAG_ELEMENT_TYPE_VERSIONARCHIVE
