@@ -2424,11 +2424,12 @@ public class GwtTaskHelper {
 		if (ti.getCanModify()) {		
 			try {
 				// Yes!  Read the existing Event data from it...
-				Long binderId = ti.getTaskId().getBinderId();
-				Long entryId  = ti.getTaskId().getEntryId();
-				FolderEntry fe = bs.getFolderModule().getEntry(binderId, entryId);
+				Long            binderId        = ti.getTaskId().getBinderId();
+				Long            entryId         = ti.getTaskId().getEntryId();
+				FolderModule    fm              = bs.getFolderModule();
+				FolderEntry     fe              = fm.getEntry(binderId, entryId);
 				CustomAttribute customAttribute = fe.getCustomAttribute(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME);
-				Event event = ((Event) customAttribute.getValue());
+				Event           event           = ((Event) customAttribute.getValue());
 				
 				// ...modify the event with the new calculated
 				// ...start/end dates, as appropriate...
@@ -2467,11 +2468,22 @@ public class GwtTaskHelper {
 
 				// ...and if we really need to change anything...
 				if (modifyEvent) {
-					// ...save the modified Event.
+					// ...check whether the user has seen this entry
+					// ...already...
+					ProfileModule pm = bs.getProfileModule();
+					boolean taskSeen = pm.getUserSeenMap(null).checkIfSeen(fe);
+					
+					// ...and save the modified Event.
 					Map formData = new HashMap(); 
 					formData.put(TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME, event);
-					bs.getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), null, null, null, null);
+					fm.modifyEntry(binderId, entryId, new MapInputData(formData), null, null, null, null);
 					reply = true;
+					
+					// If the user saw the entry before we modified it...
+					if (taskSeen) {
+						// ...retain that seen state.
+						pm.setSeen(null, fe);
+					}
 				}
 			}
 			
