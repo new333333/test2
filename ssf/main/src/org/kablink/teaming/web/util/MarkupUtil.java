@@ -103,8 +103,8 @@ import com.google.gwt.dom.client.Document;
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
-	protected final static Pattern uploadImagePattern = Pattern.compile("(<img [^>]*src\\s*=\\s*\"[^\"]*viewType=ss_viewUploadFile[^>]*>)");
-	protected final static Pattern urlSrcPattern = Pattern.compile("src\\s*=\\s*\"([^\"]*)\"");
+	protected final static Pattern uploadImagePattern = Pattern.compile("(<img[^>]*\\ssrc\\s*=\\s*\"[^{}\"]*viewType=ss_viewUploadFile[^>]*>)");
+	protected final static Pattern urlSrcPattern = Pattern.compile("\\ssrc\\s*=\\s*\"([^{}\"]*)\"");
 	protected final static String uploadImageViewTypePattern = "viewType=ss_viewUploadFile(&amp%3b)?";
 	
 	protected final static Pattern fileIdPattern = Pattern.compile("fileId=([^\\&\"]*)");
@@ -205,7 +205,7 @@ public class MarkupUtil {
         			URI uri = new URI(null, null, fileName, null); //encode as editor does after a modify, so always looks the same
         			fileName = uri.getRawPath();
         		} catch (Exception ex) {};
-        		img = m3.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+        		img = m3.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
         		img = img.replaceAll(uploadImageViewTypePattern, "");
         		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove special chars from replacement string
         		m = uploadImagePattern.matcher(description.getText());
@@ -235,7 +235,7 @@ public class MarkupUtil {
 		    	Matcher m1 = urlSrcPattern.matcher(img);
 	        	if (m1.find()) {
 	        		//not sure what this specialAmp is about, but leave as is from v1
-	        		img = m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId + "}}\"");
+	        		img = m1.replaceFirst(" src=\"{{attachmentFileId: fileId=" + fileId + "}}\"");
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove regex special char
 	        		m = v1AttachmentUrlPattern.matcher(description.getText());
 	        	}
@@ -262,7 +262,7 @@ public class MarkupUtil {
 	        	if (m1.find()) {
 	        		String fileName = args[WebUrlUtil.FILE_URL_NAME];
 	 
-	        		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+	        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
 	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
 	        		m = readFileImagePattern.matcher(description.getText());
 	        	}
@@ -308,7 +308,7 @@ public class MarkupUtil {
 
         		// Change the text from <img class="ss_addimage_att src="some file name" alt=" " />
         		// to <img class="ss_addimage_att src="{{attachmentUrl: some file name"}}" alt=" " />
-        		img = m1.replaceFirst("src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
         		markedUpImg = img.replace( "$", "\\$" );	// remove regex special char
         		desc = description.getText();
         		desc = desc.replaceFirst( origImg, markedUpImg );
