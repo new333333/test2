@@ -50,8 +50,16 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -60,6 +68,8 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.TextBox;
 
 /**
  * Implements a GWT based task folder list user interface.
@@ -71,13 +81,14 @@ public class TaskListing extends Composite implements ActionTrigger {
 	
 	private boolean			m_updateCalculatedDates;	// true -> Tell the task table to update the calculated dates upon loading.
 	private boolean			m_showModeSelect;			// true -> Show the 'All Entries vs. From Folder' options.  false -> Don't.
-	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending. 
+	private boolean			m_sortDescend;				// true -> Sort is descending.  false -> Sort is ascending.
 	private FlowPanel		m_taskListingDIV;			// The <DIV> in the content pane that's to contain the task listing.
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private FlowPanel		m_taskToolsDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private InlineLabel		m_hintSpan;					// The <SPAN> containing the reason why the movement buttons are disabled.
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
+	private RootPanel		m_taskFilterRoot;			//
 	private String			m_filterType;				// The current filtering in affect, if any.
 	private String			m_mode;						// The current mode being displayed (PHYSICAL vs. VITRUAL.)
 	private String			m_sortBy;					// The column the tasks are currently sorted by.
@@ -90,6 +101,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 	private TaskButton		m_moveLeftButton;			//
 	private TaskButton		m_moveRightButton;			//
 	private TaskButton		m_purgeButton;				//
+	private TaskFilter		m_taskFilter;				//
 	private TaskPopupMenu	m_viewMenu;					//
 	private TaskTable		m_taskTable;				//
 	
@@ -99,6 +111,175 @@ public class TaskListing extends Composite implements ActionTrigger {
 	
 	private final int FOOTER_FUDGE         = 45;	// Space allowed for the task folder's footer.
 	private final int TASK_LISTING_MINIMUM = 50;	// Minimum size for the task listing <DIV>.  Below this, and it reverts to '100%'.
+
+	/*
+	 * Inner class used to encapsulate the task filter widgets.
+	 */
+	private class TaskFilter extends Composite {
+		private boolean		m_taskFilterEmpty = true;	//
+		private boolean		m_taskFilterOff   = true;	//
+		private FlowPanel	m_taskFilterDIV;			// <DIV> containing the filter widgets.
+		private Image		m_taskFilterImage;			// <IMG> for the filter.  Changes based on whether a filter is active or not.
+		private TextBox		m_taskFilterInput;			// The <INPUT> for entering a filter.
+		
+		/**
+		 * Class constructor.
+		 */
+		public TaskFilter() {
+			super();
+			
+			// Create the filter <IMG>...
+			m_taskFilterImage = new Image(m_images.filterOff());
+			m_taskFilterImage.setStyleName("cursorPointer");
+			m_taskFilterImage.getElement().setAttribute("align", "absmiddle");
+			EventWrapper.addHandler(m_taskFilterImage, new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					// Simply kill any filter information.
+					killFilter();
+				}				
+			});
+			
+			// ...create the filter <INPUT>...
+			m_taskFilterInput = new TextBox();
+			m_taskFilterInput.setValue(m_messages.taskFilter_empty());
+			m_taskFilterInput.addStyleName("gwtTaskFilter_input");
+			setBlurStyles();
+			List<EventHandler> inputHandlers = new ArrayList<EventHandler>();
+			inputHandlers.add(new KeyPressHandler() {
+				@Override
+				public void onKeyPress(KeyPressEvent event) {
+					// Is this the enter key being pressed?
+					int key = event.getNativeEvent().getKeyCode();
+					if (KeyCodes.KEY_ENTER == key) {
+						// Yes!  Is there anything in the filter?
+						String filter = m_taskFilterInput.getValue();
+						if (GwtClientHelper.hasString(filter)) {
+							// Yes!  Put the filter into effect.
+							m_taskFilterImage.setResource(m_images.filterOn());
+							m_taskFilterOff   =
+							m_taskFilterEmpty = false;
+							m_taskFilterInput.setFocus(false);
+							filterListAsync(filter);
+						}
+						
+						else {
+							// No, there's nothing in the filter!  Kill
+							// any filter information that we may be
+							// tracking.
+							killFilter();
+						}
+					}
+				}
+			});
+			inputHandlers.add(new BlurHandler() {
+				@Override
+				public void onBlur(BlurEvent event) {
+					// Set the appropriate styles on the input...
+					setBlurStyles();
+
+					// ...and if the filter input is empty...
+					String filter     = m_taskFilterInput.getValue();
+					m_taskFilterEmpty = (!(GwtClientHelper.hasString(filter)));
+					if (m_taskFilterEmpty) {
+						// ...display an empty message in it.
+						m_taskFilterInput.setValue(m_messages.taskFilter_empty());
+					}
+				}
+			});
+			inputHandlers.add(new FocusHandler() {
+				@Override
+				public void onFocus(FocusEvent event) {
+					// Set the appropriate styles on the input...
+					setFocusStyles();
+					
+					// ...and if the filter input is empty...
+					if (m_taskFilterEmpty) {
+						// ...remove any empty message from it.
+						m_taskFilterInput.setValue("");
+					}
+				}
+			});
+			EventWrapper.addHandlers(m_taskFilterInput, inputHandlers);
+
+			// ...tie it all together...
+			m_taskFilterDIV = new FlowPanel();
+			m_taskFilterDIV.add(m_taskFilterImage);
+			m_taskFilterDIV.add(m_taskFilterInput);
+			
+			// ...and tell the Composite that we're good to go.
+			initWidget(m_taskFilterDIV);
+		}
+
+		/*
+		 * Asynchronously sets/clears a filter.
+		 */
+		private void filterListAsync(final String filter) {
+			Scheduler.ScheduledCommand doFilter;
+			doFilter = new Scheduler.ScheduledCommand() {
+				@Override
+				public void execute() {
+					filterListNow(filter);
+				}
+			};
+			Scheduler.get().scheduleDeferred(doFilter);
+		}
+		
+		/*
+		 * Synchronously sets/clears a filter.
+		 */
+		private void filterListNow(String filter) {
+			if (GwtClientHelper.hasString(filter)) {
+				Window.alert("showFilter( '" + filter + "' ) ...this needs to be implemented...");
+			}
+			
+			else {
+				Window.alert("killFilter() ...this needs to be implemented...");
+			}
+		}
+
+		/*
+		 * Sets the appropriate styles on the input widget for when
+		 * it loses focus.
+		 */
+		private void setBlurStyles() {
+			if (m_taskFilterOff) {
+				m_taskFilterInput.removeStyleName("gwtTaskFilter_inputFocus");
+				m_taskFilterInput.addStyleName(   "gwtTaskFilter_inputBlur");
+			}
+			
+			else {
+				setFocusStyles();
+			}
+		}
+		
+		/*
+		 * Sets the appropriate styles on the input widget for when
+		 * it gets focus.
+		 */
+		private void setFocusStyles() {
+			m_taskFilterInput.removeStyleName("gwtTaskFilter_inputBlur");
+			m_taskFilterInput.addStyleName(   "gwtTaskFilter_inputFocus");
+		}		
+		
+		/*
+		 * Does what's necessary to turn off a filter.
+		 */
+		private void killFilter() {
+			boolean filterWasOn = (!m_taskFilterOff);
+
+			m_taskFilterInput.setValue(m_messages.taskFilter_empty());
+			m_taskFilterImage.setResource(m_images.filterOff());
+			m_taskFilterOff   =
+			m_taskFilterEmpty = true;
+			m_taskFilterInput.setFocus(false);
+			setBlurStyles();
+			
+			if (filterWasOn) {
+				filterListAsync(null);
+			}
+		}
+	}
 	
 	/**
 	 * Class constructor.
@@ -254,6 +435,13 @@ public class TaskListing extends Composite implements ActionTrigger {
 	}
 	
 	/*
+	 * Uses JSNI to return the value of a document element.
+	 */
+	private native String jsGetElementValue(String eId) /*-{
+		return $doc.getElementById(eId).value;
+	}-*/;
+	
+	/*
 	 * Uses JSNI to grab the JavaScript object that holds the
 	 * information about the request dealing with.
 	 */
@@ -263,12 +451,13 @@ public class TaskListing extends Composite implements ActionTrigger {
 	}-*/;
 
 	/*
-	 * Uses JSNI to return the value of a document element.
+	 * Uses JSNI to grab the document Element that's to contain the
+	 * task filter widgets.
 	 */
-	private native String jsGetElementValue(String eId) /*-{
-		return $doc.getElementById(eId).value;
+	private native Element jsGetTaskFilterDIV() /*-{
+		return $doc.getElementById("gwtTaskFilter");
 	}-*/;
-	
+
 	/*
 	 * Called to create a JavaScript method that will be invoked when
 	 * the content area resizes.
@@ -283,10 +472,20 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * Populates the <DIV>'s for the task tools and listing.
 	 */
 	private void populateTaskDIVs() {
+		populateTaskFilterDIV();
 		populateTaskToolsDIV();
 		populateTaskListingDIV();
 	}
 
+	/*
+	 * Adds the task filter widgets to the task filter DIV.
+	 */
+	private void populateTaskFilterDIV() {
+		m_taskFilterRoot = RootPanel.get("gwtTaskFilter");		
+		m_taskFilter     = new TaskFilter();
+		m_taskFilterRoot.add(m_taskFilter);
+	}
+	
 	/*
 	 * Adds the task listing widgets to the task listing DIV.
 	 */

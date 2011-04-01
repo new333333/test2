@@ -36,8 +36,14 @@ package org.kablink.teaming.gwt.client.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.BlurEvent;
+import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.FocusEvent;
+import com.google.gwt.event.dom.client.FocusHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
+import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -68,7 +74,10 @@ public class EventWrapper {
 		for (EventHandler eh:  handlers) {
 			// Note that we don't 'else if' these since an EventHandler
 			// could conceivably handle multiple event types.
+			if (eh instanceof BlurHandler)      w.addDomHandler(((BlurHandler)      eh), BlurEvent.getType()     ); 
 			if (eh instanceof ClickHandler)     w.addDomHandler(((ClickHandler)     eh), ClickEvent.getType()    ); 
+			if (eh instanceof FocusHandler)     w.addDomHandler(((FocusHandler)     eh), FocusEvent.getType()    ); 
+			if (eh instanceof KeyPressHandler)  w.addDomHandler(((KeyPressHandler)  eh), KeyPressEvent.getType() ); 
 			if (eh instanceof MouseOverHandler) w.addDomHandler(((MouseOverHandler) eh), MouseOverEvent.getType()); 
 			if (eh instanceof MouseOutHandler)  w.addDomHandler(((MouseOutHandler)  eh), MouseOutEvent.getType() ); 
 		}

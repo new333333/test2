@@ -889,6 +889,7 @@ public interface GwtTeamingMessages extends Messages
 	// The following are used for task folder listing.
 	String taskAltDateCalculated();
 	String taskAltDelete();
+	String taskAltFilter();
 	String taskAltMoveDown();
 	String taskAltMoveLeft();
 	String taskAltMoveRight();
@@ -924,6 +925,7 @@ public interface GwtTeamingMessages extends Messages
 	String taskConfirmDelete();
 	String taskConfirmPurge();
 	String taskDebug_times(String taskCount, String readTime, String showTime, String totalTime);
+	String taskFilter_empty();
 	String taskInternalError_FilteredOrVirtual(String operation);
 	String taskInternalError_UnexpectedAction(String action);
 	String taskInternalError_UnexpectedViewOption(String viewOption);

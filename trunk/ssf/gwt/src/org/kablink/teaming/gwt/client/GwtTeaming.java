@@ -213,6 +213,8 @@ public class GwtTeaming implements EntryPoint
 			
 			taskListing = new TaskListing();
 			rootPanel.add( taskListing );
+			
+			return;
 		}
 
 	}// end onModuleLoad()
