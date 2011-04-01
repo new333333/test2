@@ -151,6 +151,10 @@ public class AddEntryController extends SAbstractController {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
 				}
+				//Get the entry that was just created
+				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+				//Mark this entry as having been seen by the current user
+				getProfileModule().setSeen(null, entry);
 				
 				setupReloadBinder(request, response, folderId);
 				if (!addEntryFromIFrame.equals("")) {
@@ -182,6 +186,14 @@ public class AddEntryController extends SAbstractController {
 				} catch(WriteEntryDataException e) {
 		    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 		    		return;
+				}
+				//Mark this entry as having been seen by the current user
+				getProfileModule().setSeen(null, entry);
+				//Also mark the parent replies and entry seen
+				FolderEntry parentEntry = entry.getParentEntry();
+				while (parentEntry != null) {
+					getProfileModule().setSeen(null, parentEntry);
+					parentEntry = parentEntry.getParentEntry();
 				}
 
 				//Show the parent entry when this operation finishes
@@ -337,9 +349,13 @@ public class AddEntryController extends SAbstractController {
 	        	    	//If there is a pre-existing entry - we modify the entry
 	        	    	try {
 	        	    		if (preExistingEntry == null) {
-		        	    		FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
+		        	    		FolderEntry fe = FolderUtils.createLibraryEntry(entryCreationFolder, strDecodedFileName, myFile.getInputStream(), null, true);
+		        				//Mark this entry as having been seen by the current user
+		        				getProfileModule().setSeen(null, fe);
 		        	    	} else {
 		        	    		FolderUtils.modifyLibraryEntry(preExistingEntry, strDecodedFileName, myFile.getInputStream(), null, true);
+		        				//Mark this entry as having been seen by the current user
+		        				getProfileModule().setSeen(null, preExistingEntry);
 		        	    	}
 		        	    	intFileCount++;
 	        	    	} catch(Exception e) {
@@ -381,6 +397,10 @@ public class AddEntryController extends SAbstractController {
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	try {
 		        	    	entryId = addEntry(request, response, folderId, fileDefId, inputData, oneFileMap, null).getId();
+		    				//Get the entry that was just created
+		    				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+		    				//Mark this entry as having been seen by the current user
+		    				getProfileModule().setSeen(null, entry);
 						} catch(WriteFilesException e) {
 				    		response.setRenderParameter(WebKeys.FILE_PROCESSING_ERRORS, e.getMessage());
 				    		return;
