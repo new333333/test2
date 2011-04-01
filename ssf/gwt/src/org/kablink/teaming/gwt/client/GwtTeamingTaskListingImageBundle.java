@@ -154,6 +154,14 @@ public interface GwtTeamingTaskListingImageBundle extends ClientBundle {
 	public ImageResource completed();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/filterOn.png")
+	public ImageResource filterOn();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/TaskListing/filterOff.png")
+	public ImageResource filterOff();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/TaskListing/group_small.png")
 	public ImageResource group();
 

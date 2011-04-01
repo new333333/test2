@@ -159,7 +159,7 @@
 </c:if>
 
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
-<div class="ss_folder_border">
+<div class="ss_folder_border <% if (subtasksEnabled) { %>gwtTaskFilter_toolbar<% } %>">
 	<% // Add the toolbar with the navigation widgets, commands and filter %>
 	<ssf:toolbar style="ss_actions_bar5 ss_actions_bar">
 		<ssHelpSpot 
@@ -172,6 +172,9 @@
 			<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar5 ss_actions_bar" item="true" />
 		 </c:if>
 	</ssf:toolbar>
+	<% if (subtasksEnabled) { %>
+		<div class="gwtTaskFilter_div" id="gwtTaskFilter"></div>
+	<% } %>
 	<div class="ss_clear"></div>
 </div>
 
