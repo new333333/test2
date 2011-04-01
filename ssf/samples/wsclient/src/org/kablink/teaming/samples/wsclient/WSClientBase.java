@@ -55,6 +55,7 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 
 import org.kablink.teaming.client.ws.model.Attachment;
 import org.kablink.teaming.client.ws.model.AttachmentsField;
+import org.kablink.teaming.client.ws.model.Binder;
 import org.kablink.teaming.client.ws.model.BinderBrief;
 import org.kablink.teaming.client.ws.model.DefinableEntity;
 import org.kablink.teaming.client.ws.model.FileVersion;
@@ -398,6 +399,12 @@ public abstract class WSClientBase {
 		printDefinableEntity(entity);
 	}
 
+	void fetchAndPrintBinder(String serviceName, String operation, Object[] args) throws Exception {
+		Binder binder = (Binder) fetch(serviceName, operation, args);
+
+		printBinder(binder);
+	}
+
 	void fetchAndPrintTags(String serviceName, String operation, Object[] args) throws Exception {
 		Tag[] tags = (Tag[]) fetch(serviceName, operation, args);
 		System.out.println("Number of tags: " + tags.length);
@@ -522,6 +529,11 @@ public abstract class WSClientBase {
 		else {
 			System.out.println("No entity returned");
 		}
+	}
+	
+	void printBinder(Binder binder) {
+		printDefinableEntity(binder);
+		System.out.println("Path: " + binder.getPath());
 	}
 	
 	void printFileVersions(FileVersions fileVersions) {
