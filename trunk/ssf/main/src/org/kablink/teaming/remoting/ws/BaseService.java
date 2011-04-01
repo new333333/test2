@@ -316,7 +316,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected void fillBinderModel(org.kablink.teaming.remoting.ws.model.Binder binderModel, Binder binder) {
 		// Binder common
 		fillDefinableEntityModel(binderModel, binder);
-		
+		binderModel.setPath(binder.getPathName());
 	}
 	protected void fillUserModel(org.kablink.teaming.remoting.ws.model.User userModel, User user) {
 		// Principal common

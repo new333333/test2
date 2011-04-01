@@ -38,6 +38,7 @@ public class Binder extends DefinableEntity implements Serializable {
 	protected Boolean preDeleted;
     protected Long preDeletedWhen;
     protected Long preDeletedBy;
+    protected String path;
 
     public Boolean isPreDeleted() {
     	return ((null != preDeleted) && preDeleted);
@@ -58,5 +59,12 @@ public class Binder extends DefinableEntity implements Serializable {
 	}
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
+	}
+	
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
 	}
 }
