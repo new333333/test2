@@ -504,13 +504,14 @@ public class AddEntryController extends SAbstractController {
 				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 				model.put(WebKeys.DEFINITION_ID, entryType);
 				//Make sure the requested definition is legal
+				String family = "";
 				if (folderEntryDefs.containsKey(entryType)) {
 					Definition currentDef = (Definition)folderEntryDefs.get(entryType);
 					DefinitionHelper.getDefinition(currentDef, model, "//item[@type='form']");
 					if (currentDef.getDefinition() != null) {
 						Element familyProperty = (Element) currentDef.getDefinition().getRootElement().selectSingleNode("//properties/property[@name='family']");
 						if (familyProperty != null) {
-							String family = familyProperty.attributeValue("value", "");
+							family = familyProperty.attributeValue("value", "");
 							model.put(WebKeys.DEFINITION_FAMILY, family);
 						}
 					}
@@ -523,7 +524,7 @@ public class AddEntryController extends SAbstractController {
 					model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 				} catch(AccessControlException e) {}
 			
-				parseInitialCalendarEventData(model, request);
+				parseInitialCalendarEventData(model, request, TaskHelper.isTaskEntryType(family));
 			} else {
 		    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 		    	request.setAttribute(WebKeys.URL_ENTRY_ID,entryId.toString());
@@ -577,7 +578,7 @@ public class AddEntryController extends SAbstractController {
 		return new ModelAndView(path, model);
 	}
 
-	private void parseInitialCalendarEventData(Map model, RenderRequest request) {
+	private void parseInitialCalendarEventData(Map model, RenderRequest request, boolean taskEvent) {
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
 		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
@@ -613,7 +614,7 @@ public class AddEntryController extends SAbstractController {
 			} else if (time != null && time.equals("-1")) {
 				timeZone = null;
 			}
-		} else {
+		} else if (!taskEvent) {
 			startDate = new DateTime(EventsViewHelper.getCalendarCurrentDate(request.getPortletSession()));
 			startDate = startDate.plusMinutes(startDate
 					.getMinuteOfHour() > 30 ? 60 - startDate

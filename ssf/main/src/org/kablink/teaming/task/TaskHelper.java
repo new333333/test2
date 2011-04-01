@@ -616,12 +616,20 @@ public class TaskHelper {
 		return isTaskEntryType(family);
 	}
 
-	/*
+	/**
 	 * Returns true if the family from an entry definition is that of a
 	 * task and false otherwise.
+	 * 
+	 * @param family
+	 * 
+	 * @return
 	 */
-	private static boolean isTaskEntryType(String family) {
-		return ObjectKeys.FAMILY_TASK.equals(family);
+	public static boolean isTaskEntryType(String family) {
+		boolean reply;
+		if (null == family)
+		     reply = false;
+		else reply = ObjectKeys.FAMILY_TASK.equals(family);
+		return reply;
 	}
 
 	/**
