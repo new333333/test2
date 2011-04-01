@@ -592,7 +592,6 @@
 			var eStart        = document.getElementById("event_start_${prefix}"     );
 			var eStartTime    = document.getElementById("event_start_time_${prefix}");
 
-alert("1");
 			if ((null != eAllDayEvent)      &&
 					(null != eDurationDays) &&
 					(null != eEnd)          && (null != eEndTime) &&
@@ -601,7 +600,7 @@ alert("1");
 				var hasDurationDays = (0 < eDurationDays.value.length);
 				var hasEnd          = (0 < eEnd.value.length);
 				var hasStart        = (0 < eStart.value.length);
-alert(hasDurationDays+":"+hasEnd+":"+hasStart);
+				
 				// Is the 'All day' checkbox checked?
 				if (eAllDayEvent.checked) {
 					// Yes!  If we have a 'Duration'...
@@ -638,12 +637,10 @@ alert(hasDurationDays+":"+hasEnd+":"+hasStart);
 					if ((!hasStart) && (0 == eStartTime.value.length) &&
 						(!hasEnd)   && (0 == eEndTime.value.length)   &&
 							(!hasDurationDays)) {
-alert("no values, using 1 day");
 						eDurationDays.value = "1";
 						hasDurationDays     = true;
 						return true;
 					}
-alert("continuing check");					
 					// As per the Task Improvements for Evergreen
 					// design document, the following items must be
 					// supplied:
