@@ -591,7 +591,8 @@
 			var eEndTime      = document.getElementById("event_end_time_${prefix}"  );
 			var eStart        = document.getElementById("event_start_${prefix}"     );
 			var eStartTime    = document.getElementById("event_start_time_${prefix}");
-			
+
+alert("1");
 			if ((null != eAllDayEvent)      &&
 					(null != eDurationDays) &&
 					(null != eEnd)          && (null != eEndTime) &&
@@ -600,7 +601,7 @@
 				var hasDurationDays = (0 < eDurationDays.value.length);
 				var hasEnd          = (0 < eEnd.value.length);
 				var hasStart        = (0 < eStart.value.length);
-
+alert(hasDurationDays+":"+hasEnd+":"+hasStart);
 				// Is the 'All day' checkbox checked?
 				if (eAllDayEvent.checked) {
 					// Yes!  If we have a 'Duration'...
@@ -631,6 +632,18 @@
 				else {
 					// No, the 'All day' checkbox is not checked!
 					//
+					// Bugzilla 682430:
+					//    If the start, end and duration are all blank,
+					//    supply a default duration days of 1.
+					if ((!hasStart) && (0 == eStartTime.value.length) &&
+						(!hasEnd)   && (0 == eEndTime.value.length)   &&
+							(!hasDurationDays)) {
+alert("no values, using 1 day");
+						eDurationDays.value = "1";
+						hasDurationDays     = true;
+						return true;
+					}
+alert("continuing check");					
 					// As per the Task Improvements for Evergreen
 					// design document, the following items must be
 					// supplied:
@@ -656,7 +669,7 @@
 						// Condition 4 has been met.
 						return true;
 					}
-					
+
 					// One of the conditions has not been met.
 					alert("<ssf:escapeJavaScript><ssf:nlt tag="event.error.duration.invalidCombination" /></ssf:escapeJavaScript>");
 					return false;
@@ -706,10 +719,10 @@
 		 */
 		function ss_clearStartEnd() {
 			var e;
-			e = document.getElementById("event_end_${prefix}");        if (null != e) e.value = ""; 
-			e = document.getElementById("event_end_time_${prefix}");   if (null != e) e.value = ""; 
-			e = document.getElementById("event_start_${prefix}");      if (null != e) e.value = ""; 
-			e = document.getElementById("event_start_time_${prefix}"); if (null != e) e.value = ""; 
+			e = document.getElementById("event_end_${prefix}");        if (null != e) dijit.byId("event_end_${prefix}"       ).reset(); 
+			e = document.getElementById("event_end_time_${prefix}");   if (null != e) dijit.byId("event_end_time_${prefix}"  ).reset(); 
+			e = document.getElementById("event_start_${prefix}");      if (null != e) dijit.byId("event_start_${prefix}"     ).reset(); 
+			e = document.getElementById("event_start_time_${prefix}"); if (null != e) dijit.byId("event_start_time_${prefix}").reset(); 
 		}
 
 		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);		 
