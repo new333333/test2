@@ -54,6 +54,7 @@ public abstract class VibeAnalyzer extends Analyzer {
 	protected boolean ignoreCaseForStop = true;
 	protected boolean foldToAscii = false;
 	protected boolean decomposeToken = false;
+	protected boolean useStandard = true;
 
 	protected static final Version VERSION = Version.LUCENE_29;
 
@@ -81,30 +82,35 @@ public abstract class VibeAnalyzer extends Analyzer {
 	}
 
 	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii, boolean decomposeToken) {
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) {
 		stopSet = stopWords;
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
 		this.decomposeToken = decomposeToken;
+		this.useStandard = useStandard;
 		init();
 	}
 
 	public VibeAnalyzer(File stopwords, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii) throws IOException {
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
+		this.decomposeToken = decomposeToken;
+		this.useStandard = useStandard;
 		init();
 	}
 
 	public VibeAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii) throws IOException {
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
 		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
+		this.decomposeToken = decomposeToken;
+		this.useStandard = useStandard;
 		init();
 	}
 
