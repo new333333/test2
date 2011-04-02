@@ -220,7 +220,8 @@ function insertAction() {
 	var fileSelectObj = document.getElementById('srcUrl');
 	var radioBtnObj = document.getElementById('typeSelFile');
 	var prevObj = document.getElementById('prev');
-	if (radioBtnObj.checked && prevObj.innerHTML == "") {
+	if (radioBtnObj.checked && prevObj.innerHTML == "" &&
+			(elm == null || elm.nodeName.toUpperCase() != "IMG")) {
 		alert(tinyMCEPopup.getLang('ss_addimage_dlg.missing_img', '', true))
 		return
 	} else if ((fileSelectObj.value == null || fileSelectObj.value == "") && prevObj.innerHTML == "") {
