@@ -46,21 +46,21 @@ public class VibeQueryAnalyzerTest extends TestCase {
 	public void testPuntuationAndEmailAddress() throws Exception {
 		System.out.println(Charset.defaultCharset());
 		
-		Analyzer analyzer = new VibeQueryAnalyzer();
-		String text = "vibe_onprem a.b. test.doc a-b end. 30-12 vibe_onprem@novell.com";
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, false, false);
+		String text = "vibe_onprem a.b. test.doc a-b end. 30-12 vibe3_onprem@novell.com 3A";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"vibe", "onprem", "ab", "test.doc", "a", "b", "end", "30-12", "vibe_onprem@novell.com"});
+				new String[] {"vibe", "onprem", "a", "b", "test", "doc", "a", "b", "end", "30", "12", "vibe3", "onprem", "novell", "com", "3A"});
 	}
 	
 	public void testCases() throws Exception {
-		Analyzer analyzer = new VibeQueryAnalyzer();
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, false, false);
 		String text = "Novell nOvell XY&Z NOVELL novell Runs RUNS";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"Novell", "nOvell", "XY&Z", "NOVELL", "novell", "Runs", "RUNS"});
+				new String[] {"Novell", "nOvell", "XY", "Z", "NOVELL", "novell", "Runs", "RUNS"});
 		
 		text = "the The tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
@@ -71,7 +71,7 @@ public class VibeQueryAnalyzerTest extends TestCase {
 	
 	
 	public void testEnglishStemming() throws Exception {
-		Analyzer analyzer = new VibeQueryAnalyzer("English");
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, "English", false, false, false);
 		String text = "stemming algorithms Algorithmic breathing breathes runs Runs RUNS ran running";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
@@ -81,14 +81,14 @@ public class VibeQueryAnalyzerTest extends TestCase {
 	
 	public void testStopWords() throws Exception {
 		// Apply stop words case insensitively.
-		Analyzer analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false);
+		Analyzer analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false, false, false);
 		String text = "the The tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, new String[] {});	
 
 		// Apply stop words case sensitively.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), false, null, false);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), false, null, false, false, false);
 		text = "the The Then tHe thE THE";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
@@ -98,28 +98,28 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		// reading them from a file previously encoded in windows-1252 using system default 
 		// character encoding (which is windows-1252 on Windows and probably ISO-8859-1 on Linux).
 		// This should work properly.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), Charset.defaultCharset().name(), true, null, false, false, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"L'éphéméride", "novell", "dänemark", "vibe"});	
+				new String[] {"L", "éphéméride", "novell", "dänemark", "vibe"});	
 
 		// Apply Western European language (specifically, German and French) stop words by
 		// reading them using UTF-8 charset from a file previously encoded also in UTF-8.
 		// This should work properly.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.utf8.txt"), "UTF-8", true, null, false);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.utf8.txt"), "UTF-8", true, null, false, false, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"L'éphéméride", "novell", "dänemark", "vibe"});	
+				new String[] {"L", "éphéméride", "novell", "dänemark", "vibe"});	
 		
 		// Apply Western European language (specifically, German and French) stop words by
 		// reading them from a file previously encoded in UTF-8 using system default 
 		// character encoding (which is windows-1252 on Windows and probably ISO-8859-1 on Linux).
 		// This should NOT work properly.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.utf8.txt"), Charset.defaultCharset().name(), true, null, false);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.utf8.txt"), Charset.defaultCharset().name(), true, null, false, false, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
@@ -129,7 +129,7 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		// Apply Western European language (specifically, German and French) stop words by
 		// reading them using UTF-8 charset from a file previously encoded in windows-1252.
 		// This should NOT work properly.
-		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), "UTF-8", true, null, false);
+		analyzer = new VibeQueryAnalyzer(new File("C:/junk/stop_words.txt"), "UTF-8", true, null, false, false, false);
 		text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
@@ -138,27 +138,12 @@ public class VibeQueryAnalyzerTest extends TestCase {
 	}
 	
 	public void testFoldingToAscii() throws Exception {
-		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, true);
+		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, true, false, false);
 		String text = "L'éphéméride Güterzug novell überfuhr by dänemark Caractère to brûlante vibe évènement";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"L'ephemeride", "Guterzug", "novell", "uberfuhr", "by", "danemark", "Caractere", "to", "brulante", "vibe", "evenement"}); 
-	}
-	
-	public void testTokenDecomposition() throws Exception {
-		Analyzer analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, false);
-		String text = "debug.doc foo.bar() www.novell.com";
-		AnalyzerUtils.displayTokens(analyzer, text);
-		System.out.println();
-		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"debug.doc", "foo.bar", "www.novell.com"}); 
-		
-		analyzer = new VibeQueryAnalyzer((Set)null, true, null, false, true);
-		AnalyzerUtils.displayTokens(analyzer, text);
-		System.out.println();
-		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"debug.doc", "debug", "doc", "foo.bar", "foo", "bar", "www.novell.com", "www", "novell", "com"}); 
+				new String[] {"L", "ephemeride", "Guterzug", "novell", "uberfuhr", "by", "danemark", "Caractere", "to", "brulante", "vibe", "evenement"}); 
 	}
 	
 	public void testDefaultConfiguration() throws Exception {
@@ -166,10 +151,14 @@ public class VibeQueryAnalyzerTest extends TestCase {
 				true, 
 				"English", 
 				true, 
+				false,
 				false);
-		String text = "Kunde Karlsruhe Update von IBM";
+		String text = "Kunde Karlsruhe Update update von IBM";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"Kund", "Karlsruh", "Update", "updat", "von", "IBM"}); 
 	}
+
 }
 

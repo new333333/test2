@@ -35,7 +35,6 @@ package org.kablink.teaming.lucene.analyzer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.*;
-import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.kablink.teaming.lucene.util.SsfTokenFilter;
@@ -57,8 +56,10 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 	private static String indexStemmerName;
 	private static boolean indexFoldToAscii;
 	private static boolean indexFallbackToLegacy;
-	private static boolean indexTokenDecomposition;
+	private static boolean indexTokenDecomposition = false;
+	private static boolean indexUseStandard;
 	
+	/*
 	protected VibeIndexAnalyzer() {
 		super();
 	}
@@ -75,34 +76,41 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 			String stemmerName, boolean foldToAscii) {
 		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
 	}
+	*/
 
 	protected VibeIndexAnalyzer(Set stopWords, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii, boolean decomposeToken) {
-		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii, decomposeToken);
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii, decomposeToken, useStandard);
 	}
 
 	protected VibeIndexAnalyzer(File stopWords, String charset, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii) throws IOException {
-		super(openStopWordFile(stopWords, charset), ignoreCaseForStop, stemmerName, foldToAscii);
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
+		super(openStopWordFile(stopWords, charset), ignoreCaseForStop, stemmerName, foldToAscii, decomposeToken, useStandard);
 	}
 
 	protected VibeIndexAnalyzer(Reader stopWords, boolean ignoreCaseForStop,
-			String stemmerName, boolean foldToAscii) throws IOException {
-		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii);
+			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
+		super(stopWords, ignoreCaseForStop, stemmerName, foldToAscii, decomposeToken, useStandard);
 	}
 
 	public TokenStream tokenStream(String fieldName, Reader reader) {
-		TokenStream result = new StandardTokenizer(VERSION, reader);
-		result = new StandardFilter(result);
+		TokenStream result;
+		if(useStandard) {
+			result = new StandardTokenizer(VERSION, reader);
+			result = new StandardFilter(result);
+		}
+		else {
+			result = new LetterOrDigitTokenizer(reader);
+		}
 		if(decomposeToken)
 			result = new TokenDecomposingFilter(result);
 		if(foldToAscii)
-			result = new ASCIIFoldingFilter(result);
+			result = new VibeASCIIFoldingFilter(result, true);
 		result = new SsfTokenFilter(result);
 		if (stopSet != null && stopSet.size() > 0)
 			result = new StopFilter(true, result, stopSet, ignoreCaseForStop);
 		if(stemmerName != null && !stemmerName.equals(""))
-			result = new SnowballFilter(result, stemmerName);
+			result = new VibeSnowballFilter(result, stemmerName, true);
 		return result;
 	}
 
@@ -118,18 +126,23 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 		SavedStreams streams = (SavedStreams) getPreviousTokenStream();
 		if (streams == null) {
 			streams = new SavedStreams();
-			streams.source = new StandardTokenizer(VERSION, reader);
-			streams.result = new StandardFilter(streams.source);
+			if(useStandard) {
+				streams.source = new StandardTokenizer(VERSION, reader);
+				streams.result = new StandardFilter(streams.source);
+			}
+			else {
+				streams.source = new LetterOrDigitTokenizer(reader);
+			}
 			if(decomposeToken)
-				streams.result = new TokenDecomposingFilter(streams.result);
+				streams.result = new TokenDecomposingFilter((streams.result == null)? streams.source : streams.result);
 			if(foldToAscii)
-				streams.result = new ASCIIFoldingFilter(streams.result);
-			streams.result = new SsfTokenFilter(streams.result);
+				streams.result = new VibeASCIIFoldingFilter((streams.result == null)? streams.source : streams.result, true);
+			streams.result = new SsfTokenFilter((streams.result == null)? streams.source : streams.result);
 			if (stopSet != null && stopSet.size() > 0)
-				streams.result = new StopFilter(true, streams.result, stopSet,
+				streams.result = new StopFilter(true, (streams.result == null)? streams.source : streams.result, stopSet,
 						ignoreCaseForStop);
 			if(stemmerName != null && !stemmerName.equals(""))
-				streams.result = new SnowballFilter(streams.result, stemmerName);
+				streams.result = new VibeSnowballFilter((streams.result == null)? streams.source : streams.result, stemmerName, true);
 			setPreviousTokenStream(streams);
 		} else {
 			streams.source.reset(reader);
@@ -143,7 +156,7 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 		if(indexFallbackToLegacy)
 			return new SsfIndexAnalyzer();
 		else 
-			return new VibeIndexAnalyzer(indexStopWords, indexStopWordIgnoreCase, indexStemmerName, indexFoldToAscii, indexTokenDecomposition);
+			return new VibeIndexAnalyzer(indexStopWords, indexStopWordIgnoreCase, indexStemmerName, indexFoldToAscii, indexTokenDecomposition, indexUseStandard);
 	}
 	
 	private static void init() {
@@ -193,8 +206,15 @@ public class VibeIndexAnalyzer extends VibeAnalyzer {
 			indexFoldToAscii = PropsUtil.getBoolean("lucene.indexing.asciifolding.enable", true);
 			logger.info("ASCII folding is " + ((indexFoldToAscii)? "enabled":"disabled") + " for indexing");
 			
-			indexTokenDecomposition = PropsUtil.getBoolean("lucene.indexing.decomposition.enable", false);
-			logger.info("Token decomposition is " + ((indexTokenDecomposition)? "enabled":"disabled") + " for indexing");			
+			indexUseStandard = PropsUtil.getBoolean("lucene.indexing.use.standard", false);
+			if(indexUseStandard) {
+				logger.info("Using Lucene's standard tokenizer and filter for indexing");
+				indexTokenDecomposition = PropsUtil.getBoolean("lucene.indexing.decomposition.enable", false);
+				logger.info("Token decomposition is " + ((indexTokenDecomposition)? "enabled":"disabled") + " for indexing");							
+			}
+			else {
+				logger.info("Using Vibe tokenizer for indexing");
+			}
 		}
 		
 		inited = true;
