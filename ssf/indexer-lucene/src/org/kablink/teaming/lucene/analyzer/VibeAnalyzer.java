@@ -51,7 +51,6 @@ import org.apache.lucene.util.Version;
 public abstract class VibeAnalyzer extends Analyzer {
 	protected String stemmerName;
 	protected Set<String> stopSet;
-	protected boolean ignoreCaseForStop = true;
 	protected boolean foldToAscii = false;
 	protected boolean decomposeToken = false;
 	protected boolean useStandard = true;
@@ -72,19 +71,17 @@ public abstract class VibeAnalyzer extends Analyzer {
 		init();
 	}
 	
-	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+	public VibeAnalyzer(Set stopWords,
 			String stemmerName, boolean foldToAscii) {
 		stopSet = stopWords;
-		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
 		init();
 	}
 
-	public VibeAnalyzer(Set stopWords, boolean ignoreCaseForStop,
+	public VibeAnalyzer(Set stopWords,
 			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) {
 		stopSet = stopWords;
-		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
 		this.decomposeToken = decomposeToken;
@@ -92,10 +89,9 @@ public abstract class VibeAnalyzer extends Analyzer {
 		init();
 	}
 
-	public VibeAnalyzer(File stopwords, boolean ignoreCaseForStop,
+	public VibeAnalyzer(File stopwords,
 			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
 		this.decomposeToken = decomposeToken;
@@ -103,10 +99,9 @@ public abstract class VibeAnalyzer extends Analyzer {
 		init();
 	}
 
-	public VibeAnalyzer(Reader stopwords, boolean ignoreCaseForStop,
+	public VibeAnalyzer(Reader stopwords,
 			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) throws IOException {
 		stopSet = WordlistLoader.getWordSet(stopwords);
-		this.ignoreCaseForStop = ignoreCaseForStop;
 		this.stemmerName = stemmerName;
 		this.foldToAscii = foldToAscii;
 		this.decomposeToken = decomposeToken;
