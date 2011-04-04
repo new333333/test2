@@ -656,6 +656,7 @@ public class BinderHelper {
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
 			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
@@ -2669,6 +2670,21 @@ public class BinderHelper {
 			while (itTeams.hasNext()) {
 				Map team = (Map)itTeams.next();
 				trackedPlaces.add((String)team.get(Constants.DOCID_FIELD));
+			}
+		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES)) {
+			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+			Object obj = userProperties.get(ObjectKeys.USER_PROPERTY_FAVORITES);
+			Favorites f;
+			if (obj != null && obj instanceof Document) {
+				f = new Favorites((Document)obj);
+				//fixup - have to store as string cause hibernate equals fails
+				bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+			} else {		
+				f = new Favorites((String)obj);
+			}
+			List<Long> favIdList = f.getFavoritesBinderIdList();
+			for (Long id : favIdList) {
+				trackedPlaces.add(String.valueOf(id));
 			}
 		} else {
 			if (binderId != null) {

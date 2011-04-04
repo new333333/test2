@@ -91,6 +91,7 @@
       	    <span>
               <c:if test="${ss_whatsNewType == 'teams'}"><ssf:nlt tag="navigation.myTeams"/></c:if>
               <c:if test="${ss_whatsNewType == 'tracked'}"><ssf:nlt tag="mobile.whatsNewTracked"/></c:if>
+              <c:if test="${ss_whatsNewType == 'favorites'}"><ssf:nlt tag="mobile.whatsNewFavorites"/></c:if>
               <c:if test="${ss_whatsNewType == 'site'}"><ssf:nlt tag="mobile.whatsNewSite"/></c:if>
               <c:if test="${ss_whatsNewType == 'microblog'}"><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></c:if>
             </span><img border="0" 
@@ -110,6 +111,12 @@
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
 				        actionUrl="true" ><ssf:param name="whats_new" value="tracked"/></ssf:url>"
 				      ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
+				    </div>
+				    <div class="menu-item">		      
+				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				        action="__ajax_mobile" operation="mobile_show_front_page" 
+				        actionUrl="true" ><ssf:param name="whats_new" value="favorites"/></ssf:url>"
+				      ><ssf:nlt tag="mobile.whatsNewFavorites"/></a>
 				    </div>
 				    <div class="menu-item">		      
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 

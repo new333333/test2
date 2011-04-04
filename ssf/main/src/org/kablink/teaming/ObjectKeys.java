@@ -707,6 +707,9 @@ public interface ObjectKeys {
 	public static final String USER_PROPERTY_MOBILE_WHATS_NEW_TYPE = "mobile_whats_new_type";
     public static final String MOBILE_WHATS_NEW_VIEW_TEAMS = "teams";
     public static final String MOBILE_WHATS_NEW_VIEW_TRACKED = "tracked";
+    public static final String MOBILE_WHATS_NEW_VIEW_TRACKED_PEOPLE = "trackedPeople";
+    public static final String MOBILE_WHATS_NEW_VIEW_TRACKED_PLACES = "trackedPlaces";
+    public static final String MOBILE_WHATS_NEW_VIEW_FAVORITES = "favorites";
     public static final String MOBILE_WHATS_NEW_VIEW_SITE = "site";
     public static final String MOBILE_WHATS_NEW_VIEW_MICROBLOG = "microblog";
     
