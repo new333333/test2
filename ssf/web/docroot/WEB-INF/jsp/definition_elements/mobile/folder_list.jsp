@@ -37,6 +37,7 @@
 <%@ page import="java.util.Map" %>
 <jsp:useBean id="ssUserFolderProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:set var="ss_folderViewColumnsType" value="empty" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_column_defaults.jsp" %>
 
@@ -72,6 +73,10 @@
 	    	<jsp:useBean id="entryFol" type="java.util.Map" />
 			<div class="entry">
 			  <div class="entry-title">
+			    <% if (!ssSeenMap.checkIfSeen(entryFol)) { %>
+					<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+					  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+  				<% } %>
 			    <c:if test="${!empty ssFolderColumns['number'] && !empty entryFol._docNum}">
 			    <span style="font-weight: normal !important;">${entryFol._docNum}. </span>
 			    </c:if>

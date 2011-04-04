@@ -63,7 +63,7 @@
 <td valign="top" align="right" width="1%">
   <div class="search">
 	<a href="javascript: ;" 
-      onClick="ss_showMenu('search-dialog');return false;"><ssf:nlt tag="navigation.search"/></a>
+      onClick="ss_toggleDivVisibility('search-dialog');return false;"><ssf:nlt tag="navigation.search"/></a>
   </div>
 </td>
 </tr>

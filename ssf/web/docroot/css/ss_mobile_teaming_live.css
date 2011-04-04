@@ -22,7 +22,13 @@ select {
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
 	}
-	
+input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {   
+    color: #fff;
+    font-size: 1em !important;
+    background: #81b2bd url(/ssf/static/04-04-2011-0834/css/images/main/slice_blend_teal_27.png) repeat-x;
+    background-position: center;
+    }
+
 span.pad-left20 {
 	padding-left: 10px;
 	}	
@@ -100,7 +106,6 @@ span.pad-left20 {
 	font-size: .6em;
 	}	
 .action-dialog { 
-	position: absolute; 
 	display: none;
 	top: 38px; 
 	left: 0px;
@@ -154,7 +159,7 @@ span.pad-left20 {
 .menu-item a { font-size: 1em; line-height: 2em;}
 .menu-curlevel {font-weight: bold;}	
 
-#micro-blog	a { 
+#micro-blog-a { 
 	color: black;
 	} 
 		

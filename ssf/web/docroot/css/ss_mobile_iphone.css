@@ -22,7 +22,13 @@ select {
 input[type=button], input[type=submit], input[type=reset] { 
 	font-size: 1em;
 	}
-	
+input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {   
+    color: #fff;
+    font-size: 1em !important;
+    background: #81b2bd url(/ssf/static/04-04-2011-0834/css/images/main/slice_blend_teal_27.png) repeat-x;
+    background-position: center;
+    }
+
 div.pad-top20 {
 	padding-top: 10px;
 	}	
@@ -104,7 +110,6 @@ span.pad-left20 select {
 	font-size: .6em;
 	}	
 .action-dialog { 
-	position: absolute; 
 	display: none;
 	top: 38px; 
 	left: 5px;
@@ -118,25 +123,11 @@ span.pad-left20 select {
 	background-position: bottom;
 	}
 
-.whats-new-dialog { 
-	position: absolute; 
-	display: none;
-	padding: 10px;
-	text-align:left;
-	border-left: 1px solid #1C5894;
-	border-right: 1px solid #1C5894;
-	border-top: 2px solid #1C5894;
-	border-bottom: 4px solid #1C5894;
-	background: #e8e9e6 url(images/mobile/putty_blend3.png) repeat-x;
-	background-position: bottom;
-	}
-
 .search	a, .homelink a { 
 	color: #fff;
 	}
 
 #actions { 
-	position: relative; 
 	top: 0px; 
 	left: 0px; 
 	padding: 4px;
@@ -175,7 +166,7 @@ span.pad-left20 select {
 .menu-item a { font-size: 1em;}
 .menu-curlevel {font-weight: bold;}	
 
-#micro-blog	a { 
+#micro-blog-a { 
 	color: black;
 	} 	
 #micro-blog-date {

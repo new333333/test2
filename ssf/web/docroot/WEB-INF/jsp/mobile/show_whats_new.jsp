@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.whatsNew") %>' scope="request"/>
 <c:set var="ss_pageTitle2" value="mobile.whatsNewWorkspace" />
@@ -89,6 +90,10 @@
 	      <jsp:useBean id="entryWn" type="java.util.Map" />
 	      <div class="entry">
 			<div class="entry-title">
+			    <% if (!ssSeenMap.checkIfSeen(entryWn)) { %>
+					<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+					  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+  				<% } %>
 			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"
 				action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />"
