@@ -42,4 +42,17 @@ create index startDate_wfhistory on SS_WorkflowHistory (zoneId, startDate);
 create index entity_Ratings on SS_Ratings (entityId, entityType);
 create index entity_Subscriptions on SS_Subscriptions (entityId, entityType);
 alter table SS_SeenMap add pruneDays bigint;
+DELIMITER $$
+
+CREATE PROCEDURE vopCreateIndex()
+BEGIN
+	DECLARE CONTINUE HANDLER FOR SQLSTATE '42000' BEGIN END;
+
+	create index ldapGuid_principal on SS_Principals (ldapGuid);
+END $$
+
+DELIMITER ;
+CALL vopCreateIndex();
+DROP PROCEDURE vopCreateIndex;
+
 INSERT INTO SS_SchemaInfo values (20);
