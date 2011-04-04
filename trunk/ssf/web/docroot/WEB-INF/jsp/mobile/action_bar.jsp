@@ -98,13 +98,13 @@ function ss_logoff_from_sso(s) {
  <table cellspacing="0" cellpadding="0" width="100%">
  <tr>
  <td>
-  <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_showMenu('hierarchy-dialog');return false;">
+  <a class="hierarchy-a actionimg" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');return false;">
     <img src="<html:rootPath/>images/mobile/nl_browse_hierarchy_20.png" border="0" align="absmiddle"/>
   </a>
   
 <c:if test="${!ss_hideMiniBlog}">
-  <a class="micro-blog-a" href="javascript: ;" 
-    onClick="ss_showMenu('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
+  <a href="javascript: ;" 
+    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
 </c:if>
   
   <c:if test="${!empty ss_new_actions}">
@@ -121,7 +121,7 @@ function ss_logoff_from_sso(s) {
     </c:if>
     <c:if test="${fn:length(ss_new_actions) > 1}">
       <a class="actions-a" href="javascript: ;" 
-        onClick="ss_showMenu('new-actions-menu');return false;">${actionTitle}</a>
+        onClick="ss_toggleDivVisibility('new-actions-menu');return false;">${actionTitle}</a>
     </c:if>
   </c:if>  
 
@@ -149,7 +149,7 @@ function ss_logoff_from_sso(s) {
 
   <c:if test="${!empty ss_actions}">
     <a class="actions-a" href="javascript: ;" 
-      onClick="ss_showMenu('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
+      onClick="ss_toggleDivVisibility('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
   </c:if>  
  </td>
  <td align="right">

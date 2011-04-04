@@ -556,6 +556,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileFrontPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		model.put(WebKeys.SEEN_MAP, seen);
 		String view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, "mobile/show_front_page");
 
 		return new ModelAndView(view, model);
@@ -564,6 +566,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxShowTeamingLive(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		model.put(WebKeys.SEEN_MAP, seen);
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 		Date lastUpdate = (Date)session.getAttribute(WebKeys.TEAMING_LIVE_UPDATE_DATE);
 		if (lastUpdate == null) {
@@ -633,6 +637,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		model.put(WebKeys.SEEN_MAP, seen);
 		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
 		String scope = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_SCOPE, "site");
@@ -744,6 +750,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Setup the actions menu list
 		List actions = new ArrayList();
 		List new_actions = new ArrayList();
+		
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		model.put(WebKeys.SEEN_MAP, seen);
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = null;
@@ -955,6 +964,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
+
+		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		model.put(WebKeys.SEEN_MAP, seen);
+
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Binder binder = null;
 		if (binderId == null) {

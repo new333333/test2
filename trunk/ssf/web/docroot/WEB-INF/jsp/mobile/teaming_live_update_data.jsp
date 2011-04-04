@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <c:set var="gwtUIActive" value="false" />
 <% if (GwtUIHelper.isGwtUIActive(request)) { %>
 	<c:set var="gwtUIActive" value="true" />
@@ -47,6 +48,10 @@
 	    	</c:if>
 	    	<div class="entry">
 	    	  <div class="entry-title">
+			    <% if (!ssSeenMap.checkIfSeen(entryWn)) { %>
+					<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+					  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+  				<% } %>
 			    <a
 			    	target="_blank"
 			    	<c:if test="${gwtUIActive == 'true'}">

@@ -35,6 +35,7 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.HashMap" %>
+<jsp:useBean id="ssSeenMap" type="org.kablink.teaming.domain.SeenMap" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.searchResults") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
@@ -97,6 +98,10 @@
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 					  <div class="entry">
 						<div class="entry-title">
+						    <% if (!ssSeenMap.checkIfSeen(entry)) { %>
+								<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
+								  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+			  				<% } %>
 						    <c:if test="${0 == 1 && !empty entry._docNum}">
 						      <span class="entry-docNumber">${entry._docNum}.</span>
 						    </c:if>
