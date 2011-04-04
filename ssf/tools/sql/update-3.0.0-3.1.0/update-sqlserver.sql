@@ -1,3 +1,17 @@
+CREATE PROCEDURE vopCreateIndex
+AS
+    BEGIN TRY
+	    create index ldapGuid_principal on sitescape.dbo.SS_Principals (ldapGuid);
+    END TRY
+    BEGIN CATCH
+    END CATCH;
+GO
+
+EXECUTE vopCreateIndex;
+
+DROP PROCEDURE vopCreateIndex;
+
+
 use sitescape;
 drop index entityOwner_clog on SS_ChangeLogs;
 drop index entityOwner_audit on SS_AuditTrail;
@@ -42,4 +56,5 @@ create index startDate_wfhistory on SS_WorkflowHistory (zoneId, startDate);
 create index entity_Ratings on SS_Ratings (entityId, entityType);
 create index entity_Subscriptions on SS_Subscriptions (entityId, entityType);
 alter table SS_SeenMap add pruneDays numeric(19,0);
+
 INSERT INTO SS_SchemaInfo values (20);
