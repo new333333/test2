@@ -113,6 +113,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	private long					m_renderTime;				//
 	private ProcessActiveWidgets	m_processActiveWidgets;		//
 	private RowFormatter			m_flexTableRF;				//
+	private String					m_quickFilter;				//
 	private TaskBundle				m_taskBundle;				//
 	private TaskListing				m_taskListing;				//
 	private TaskPopupMenu			m_newTaskMenu;				//
@@ -1245,12 +1246,13 @@ public class TaskTable extends Composite implements ActionHandler {
 	@Override
 	public void handleAction(TeamingAction action, Object obj) {
 		switch (action) {
-		case TASK_DELETE:      handleTaskDelete();    break;
-		case TASK_MOVE_DOWN:   handleTaskMoveDown();  break;
-		case TASK_MOVE_LEFT:   handleTaskMoveLeft();  break;
-		case TASK_MOVE_RIGHT:  handleTaskMoveRight(); break;
-		case TASK_MOVE_UP:     handleTaskMoveUp();    break;
-		case TASK_PURGE:       handleTaskPurge();     break;
+		case TASK_DELETE:        handleTaskDelete();                  break;
+		case TASK_MOVE_DOWN:     handleTaskMoveDown();                break;
+		case TASK_MOVE_LEFT:     handleTaskMoveLeft();                break;
+		case TASK_MOVE_RIGHT:    handleTaskMoveRight();               break;
+		case TASK_MOVE_UP:       handleTaskMoveUp();                  break;
+		case TASK_PURGE:         handleTaskPurge();                   break;
+		case TASK_QUICK_FILTER:  handleTaskQuickFilter((String) obj); break;
 
 		default:
 			Window.alert(m_messages.taskInternalError_UnexpectedAction(action.toString()));
@@ -1739,6 +1741,48 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	/*
+	 * Sets/clears a quick filter.
+	 */
+	private void handleTaskQuickFilter(String quickFilter) {
+		// Are we setting a quick filter?
+		if (null != quickFilter) {
+			// Yes!  Are we really?
+			quickFilter = quickFilter.trim();
+			if (0 == quickFilter.length()) {
+				// No!  Clear it instead.
+				quickFilter = null;
+			}
+			else {
+				// Yes, we really are!  Track the filter string
+				// in lower case so what we don't have to mess
+				// with case sensitivity later.
+				quickFilter = quickFilter.toLowerCase();
+			}
+		}
+
+		// If the quick filter is not changing, simply bail.
+		boolean hadQuickFilter = (null != m_quickFilter);
+		boolean hasQuickFilter = (null != quickFilter);
+		if ((!hadQuickFilter) && (!hasQuickFilter))                                     return;
+		if (  hadQuickFilter  &&   hasQuickFilter && quickFilter.equals(m_quickFilter)) return;
+		
+		// Do we need to flatten or restructure the list?
+		m_quickFilter = quickFilter;
+		if (shouldShowStructure() && (hasQuickFilter != hadQuickFilter)) {
+			// Yes!  Flatten or restructure it and then resort it to
+			// ensure either change ends up sorted correctly.
+			if (hasQuickFilter)
+			     TaskListItemHelper.flattenTaskList(m_taskBundle);
+			else TaskListItemHelper.applyTaskLinkage(m_taskBundle);
+			initializeUIData(false);	// Forces the depths, ... to be reset.
+			sortByColumnImpl();
+		}
+		
+		// Simply redisplay the tasks to put the filter into affect.
+		renderTaskBundle(m_taskBundle);
+	}
+	
+	/*
 	 * Called when the user clicks the seen sun burst on a task.
 	 */
 	private void handleTaskSeen(final TaskListItem task) {
@@ -2065,6 +2109,28 @@ public class TaskTable extends Composite implements ActionHandler {
 		});
 	}
 
+	/*
+	 * Returns true if a task should be displayed back on the current
+	 * quick filter and false otherwise.
+	 */
+	private boolean isTaskInQuickFilter(TaskListItem task) {
+		// If there's no quick filter defined...
+		if (null == m_quickFilter) {
+			// ...all tasks are displayed.
+			return true;
+		}
+
+		// If a task's title contains the quick filter...
+		String title = task.getTask().getTitle();
+		if (title.trim().toLowerCase().contains(m_quickFilter)) {
+			// ...it's displayed.
+			return true;
+		}
+
+		// Otherwise, the task is not displayed.
+		return false;
+	}
+	
 	/*
 	 * Uses JSNI to return the disposition of newly created task.
 	 */
@@ -2409,7 +2475,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			(m_taskBundle.respectLinkage()     &&
 			 m_taskBundle.getCanAddEntry()     &&
 			 m_taskBundle.getCanContainTasks() &&
-			 (Column.ORDER == m_sortColumn) && m_sortAscending);
+			 (Column.ORDER == m_sortColumn) && m_sortAscending && (null == m_quickFilter));
 
 		int newTaskMenuIndex = getColumnIndex(Column.NEW_TASK_MENU);
 		if (includeNewTaskMenu) {
@@ -2877,13 +2943,21 @@ public class TaskTable extends Composite implements ActionHandler {
 	 */
 	private void renderTaskList(List<TaskListItem> tasks) {
 		// Scan the tasks in the list...
+		boolean hasQuickFilter = (null != m_quickFilter);
 		for (TaskListItem task:  tasks) {
-			// ..rendering each one...
-			renderTaskItem(task);
+			if (hasQuickFilter) {
+				if (isTaskInQuickFilter(task)) {
+					renderTaskItem(task);
+				}
+			}
+			else {
+				// ..rendering each one...
+				renderTaskItem(task);
 			
-			// ...and their subtasks.
-			if (task.getExpandSubtasks()) {
-				renderTaskList(task.getSubtasks());
+				// ...and their subtasks.
+				if (task.getExpandSubtasks()) {
+					renderTaskList(task.getSubtasks());
+				}
 			}
 		}
 	}
@@ -2942,6 +3016,14 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 	}
 
+	/*
+	 * Returns true if we're in a mode that should show structure and
+	 * false otherwise.
+	 */
+	private boolean shouldShowStructure() {
+		return (m_taskBundle.respectLinkage() && (Column.ORDER == m_sortColumn));
+	}
+	
 	/*
 	 * Returns true if we should show the order column and false
 	 * otherwise.
@@ -3038,7 +3120,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		// Are we currently in a mode that respects the task linkage?
 		// (We don't if the list is filtered or showing 'Assigned To'
 		// items.)
-		if (m_taskBundle.respectLinkage()) {
+		if (m_taskBundle.respectLinkage() && (null == m_quickFilter)) {
 			// Yes!  Are we sorting on other than the order column when
 			// we were previously sorted on the order column?
 			if ((Column.ORDER != m_sortColumn) && (Column.ORDER == previousSortColumn)) {
@@ -3060,6 +3142,13 @@ public class TaskTable extends Composite implements ActionHandler {
 		}
 
 		// Apply the sort base on the selected column.
+		sortByColumnImpl();
+	}
+	
+	/*
+	 * Apply the sort base on the selected column.
+	 */
+	private void sortByColumnImpl() {
 		Comparator<TaskListItem> comparator;
 		switch(m_sortColumn) {
 		default:

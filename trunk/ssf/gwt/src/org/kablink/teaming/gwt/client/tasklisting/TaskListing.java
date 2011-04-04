@@ -153,8 +153,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 					int key = event.getNativeEvent().getKeyCode();
 					if (KeyCodes.KEY_ENTER == key) {
 						// Yes!  Is there anything in the filter?
-						String filter = m_taskFilterInput.getValue();
-						if (GwtClientHelper.hasString(filter)) {
+						String filter = getFilterValue();
+						if (0 < filter.length()) {
 							// Yes!  Put the filter into effect.
 							m_taskFilterImage.setResource(m_images.filterOn());
 							m_taskFilterOff   =
@@ -179,8 +179,8 @@ public class TaskListing extends Composite implements ActionTrigger {
 					setBlurStyles();
 
 					// ...and if the filter input is empty...
-					String filter     = m_taskFilterInput.getValue();
-					m_taskFilterEmpty = (!(GwtClientHelper.hasString(filter)));
+					String filter     = getFilterValue();
+					m_taskFilterEmpty = (0 == filter.length());
 					if (m_taskFilterEmpty) {
 						// ...display an empty message in it.
 						m_taskFilterInput.setValue(m_messages.taskFilter_empty());
@@ -229,13 +229,20 @@ public class TaskListing extends Composite implements ActionTrigger {
 		 * Synchronously sets/clears a filter.
 		 */
 		private void filterListNow(String filter) {
-			if (GwtClientHelper.hasString(filter)) {
-				Window.alert("showFilter( '" + filter + "' ) ...this needs to be implemented...");
-			}
-			
-			else {
-				Window.alert("killFilter() ...this needs to be implemented...");
-			}
+			m_taskTable.handleAction(
+				TeamingAction.TASK_QUICK_FILTER,
+				filter);
+		}
+
+		/*
+		 * Returns a non-null, non-space padded filter value from the
+		 * input widget.
+		 */
+		private String getFilterValue() {
+			String reply = m_taskFilterInput.getValue();
+			if (null == reply)           reply = "";
+			else if (0 < reply.length()) reply = reply.trim();
+			return reply;
 		}
 
 		/*
@@ -268,11 +275,11 @@ public class TaskListing extends Composite implements ActionTrigger {
 		private void killFilter() {
 			boolean filterWasOn = (!m_taskFilterOff);
 
+			m_taskFilterInput.setFocus(false);
 			m_taskFilterInput.setValue(m_messages.taskFilter_empty());
 			m_taskFilterImage.setResource(m_images.filterOff());
 			m_taskFilterOff   =
 			m_taskFilterEmpty = true;
-			m_taskFilterInput.setFocus(false);
 			setBlurStyles();
 			
 			if (filterWasOn) {
