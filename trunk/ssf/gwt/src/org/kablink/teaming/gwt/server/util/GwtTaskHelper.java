@@ -1605,8 +1605,9 @@ public class GwtTaskHelper {
 			}
 		}
 
-		// If we changed the linkage based on the rendering...
-		if (linkageChanged) {
+		// If we changed the linkage based on the rendering and we have
+		// rights to modify the linkage...
+		if (linkageChanged && tb.getCanModifyTaskLinkage()) {
 			// ...save the new linkage.
 			saveTaskLinkage(bs, binder, tb.getTaskLinkage());
 		}
