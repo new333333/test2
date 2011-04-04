@@ -1142,6 +1142,7 @@ public class GwtMainPage extends Composite
 		case TASK_MOVE_UP:
 		case TASK_NEW_TASK:
 		case TASK_PURGE:
+		case TASK_QUICK_FILTER:
 		case TASK_SET_PERCENT_DONE:
 		case TASK_SET_PRIORITY:
 		case TASK_SET_STATUS:

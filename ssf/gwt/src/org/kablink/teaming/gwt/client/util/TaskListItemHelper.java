@@ -110,6 +110,22 @@ public class TaskListItemHelper {
 			applyTaskLinkageImpl(flatTask.getSubtasks(), flatTaskList, link.getSubtasks());
 		}
 	}
+
+	/**
+	 * Returns true if the task list in the TaskBundle is flat and
+	 * false otherwise.
+	 * 
+	 * @param tb
+	 * @return
+	 */
+	public static boolean areTasksFlat(TaskBundle tb) {
+		for (TaskListItem taskScan:  tb.getTasks()) {
+			if (!(taskScan.getSubtasks().isEmpty())) {
+				return false;
+			}
+		}
+		return true;
+	}	
 	
 	/**
 	 * Uses the current contents of m_tasks to update the contained
@@ -527,7 +543,7 @@ public class TaskListItemHelper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Move one TaskListItem above another.
 	 * 
