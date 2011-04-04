@@ -403,6 +403,23 @@ public class Favorites {
     	return ids;
 	}
 	
+	public List<Long> getFavoritesBinderIdList() {
+		getFavorites();
+		List ids = new ArrayList();
+    	Element favRoot = this.favorites.getRootElement();
+    	Iterator itFavorites = favRoot.selectNodes("favorite").iterator();
+       	while (itFavorites.hasNext()) {
+       		Element srcFavorite = (Element) itFavorites.next();
+       		if (srcFavorite.attributeValue("type", "").equals(Favorites.FAVORITE_BINDER)) {
+       			String id = srcFavorite.attributeValue("value");
+	       		if (id != null) {
+	       			ids.add(Long.valueOf(id));
+	       		}
+       		}
+       	}
+    	return ids;
+	}
+	
 	private void buildFavoritesDomTree(Element srcElement, Element destElement, 
 			DomTreeBuilder treeHelper) {
        	Iterator itFavorites = srcElement.selectNodes("favorite|category").iterator();
