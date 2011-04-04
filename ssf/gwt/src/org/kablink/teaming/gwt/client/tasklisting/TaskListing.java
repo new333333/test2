@@ -130,6 +130,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 			
 			// Create the filter <IMG>...
 			m_taskFilterImage = new Image(m_images.filterOff());
+			m_taskFilterImage.setTitle(m_messages.taskAltFilterOff());
 			m_taskFilterImage.setStyleName("cursorPointer");
 			m_taskFilterImage.getElement().setAttribute("align", "absmiddle");
 			EventWrapper.addHandler(m_taskFilterImage, new ClickHandler() {
@@ -157,6 +158,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 						if (0 < filter.length()) {
 							// Yes!  Put the filter into effect.
 							m_taskFilterImage.setResource(m_images.filterOn());
+							m_taskFilterImage.setTitle(m_messages.taskAltFilterOn());
 							m_taskFilterOff   =
 							m_taskFilterEmpty = false;
 							m_taskFilterInput.setFocus(false);
@@ -278,6 +280,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 			m_taskFilterInput.setFocus(false);
 			m_taskFilterInput.setValue(m_messages.taskFilter_empty());
 			m_taskFilterImage.setResource(m_images.filterOff());
+			m_taskFilterImage.setTitle(m_messages.taskAltFilterOff());
 			m_taskFilterOff   =
 			m_taskFilterEmpty = true;
 			setBlurStyles();
