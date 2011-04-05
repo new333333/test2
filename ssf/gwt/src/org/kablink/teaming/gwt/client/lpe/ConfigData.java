@@ -253,6 +253,23 @@ public class ConfigData
 	
 	
 	/**
+	 * Replace all occurrences of "%2c" with ',' and all occurrences of "%3b" with ';'
+	 */
+	public static String decodeSeparators( String encodedData )
+	{
+		String results = null;
+		
+		if ( encodedData != null )
+		{
+			results = encodedData.replaceAll( "%2c", "," );
+			results = results.replaceAll( "%3b", ";" );
+		}
+		
+		return results;
+	}
+	
+	
+	/**
 	 * Encode the given config data.  We will call URL.encode and then in addition to that
 	 * we will encode all ',' and ';' characters.
 	 */

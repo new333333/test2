@@ -75,7 +75,7 @@ public class HtmlConfig extends ConfigItem
 						{
 							String html;
 							
-							html = URL.decodeComponent( results2[1] );
+							html = ConfigData.decodeSeparators( results2[1] );
 							m_properties.setHtmlWithMarkup( html );
 						}
 					}
