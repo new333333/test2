@@ -330,9 +330,9 @@ public class IFrameWidgetDlgBox extends DlgBox
 		properties = (IFrameProperties) props;
 
 		value = properties.getUrl();
-		if ( value == null )
-			value = "";
-		m_urlTxtBox.setText( properties.getUrl() );
+		if ( value == null || value.length() == 0 )
+			value = "http://";
+		m_urlTxtBox.setText( value );
 		
 		value = properties.getName();
 		if ( value == null )
