@@ -35,6 +35,9 @@
 <% // User filters %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<%@ page import="java.util.TreeMap" %>
+<%@ page import="org.kablink.teaming.comparator.StringComparator" %>
+<jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 
 <c:set var="currentFilter" value="${ssUserFolderProperties.userFilter}"/>
 <c:set var="currentFilterScope" value="${ssUserFolderProperties.userFilterScope}"/>
@@ -60,25 +63,28 @@
 					<c:if test="${!empty currentFilter}"> class="ss_navbar_not_current"</c:if>
 					><ssf:nlt tag="None"/></span></a>
 			</li>				
-			<c:forEach var="filter" items="${ssUserFolderProperties.searchFilterMap}">
-			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssBinder.id}"/><ssf:param 
-				name="operation" value="select_filter"/><ssf:param 
-				name="operation2" value="personal"/><ssf:param 
-				name="select_filter" value="${filter.key}"/></ssf:url>"><span 
-					<c:if test="${filter.key == currentFilter && currentFilterScope != 'global'}"> class="ss_navbar_current"</c:if>
-					<c:if test="${filter.key != currentFilter || currentFilterScope == 'global'}"> class="ss_navbar_not_current"</c:if>
-					><c:out value="${filter.key}"/></span></a>
-			 </li>
+			<% 
+				//Sort the filters
+				TreeMap tm = new TreeMap(new StringComparator(ssUser.getLocale()));
+			%>
+			<c:set var="sortedFilters" value="<%= tm %>" />
+			<c:forEach var="filter1" items="${ssUserFolderProperties.searchFilterMap}">
+				<jsp:useBean id="filter1" type="java.util.Map.Entry" />
+				<% tm.put(filter1.getKey(), "personal"); %>
 			</c:forEach>
-			<c:forEach var="filter" items="${ssBinder.properties.binderFilters}">
+			<c:forEach var="filter2" items="${ssBinder.properties.binderFilters}">
+				<jsp:useBean id="filter2" type="java.util.Map.Entry"  />
+				<% tm.put(filter2.getKey(), "global"); %>
+			</c:forEach>
+						
+			<c:forEach var="filter" items="${sortedFilters}">
 			 <li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssBinder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
-				name="operation2" value="global"/><ssf:param 
+				name="operation2" value="${filter.value}"/><ssf:param 
 				name="select_filter" value="${filter.key}"/></ssf:url>"><span 
-					<c:if test="${filter.key == currentFilter && currentFilterScope == 'global'}"> class="ss_navbar_current"</c:if>
-					<c:if test="${filter.key != currentFilter || currentFilterScope != 'global'}"> class="ss_navbar_not_current"</c:if>
+					<c:if test="${filter.key == currentFilter && currentFilterScope == filter.value}"> class="ss_navbar_current"</c:if>
+					<c:if test="${filter.key != currentFilter || currentFilterScope != filter.value}"> class="ss_navbar_not_current"</c:if>
 					><c:out value="${filter.key}"/></span></a>
 			 </li>
 			</c:forEach>
