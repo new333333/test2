@@ -403,6 +403,11 @@ public class TaskListItem implements IsSerializable {
 		 * 
 		 * @return
 		 */
+		public boolean isTaskActive() {
+			String status = getStatus();
+			return (status.equals(STATUS_IN_PROCESS) || status.equals(STATUS_NEEDS_ACTION));
+		}
+		
 		public boolean isTaskCancelled() {
 			return getStatus().equals(STATUS_CANCELED);
 		}
