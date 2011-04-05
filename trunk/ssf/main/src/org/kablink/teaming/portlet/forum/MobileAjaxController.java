@@ -62,6 +62,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONArray;
@@ -172,6 +173,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoAddUserGroupTeam(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 				ajaxMobileDoFrontPage(this, request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FULL_UI)) {
+				ajaxMobileDoFullUi(this, request, response);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI)) {
+				ajaxMobileDoMobileUi(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 				ajaxMobileDoShowEntry(this, request, response);
 			} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
@@ -437,7 +442,24 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				bs.getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_MOBILE_WHATS_NEW_TYPE, type);
 			}
 		}
+	}
 
+	private void ajaxMobileDoFullUi(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Go to the full ui
+		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+		HttpSession session = WebHelper.getRequiredSession(req);
+		session.setAttribute(WebKeys.MOBILE_FULL_UI, Boolean.TRUE);
+		response.sendRedirect(WebUrlUtil.getSimpleURLContextRootURL(request).toString());
+	}
+
+	private void ajaxMobileDoMobileUi(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
+			throws Exception {
+		//Go to the mobile ui
+		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+		HttpSession session = WebHelper.getRequiredSession(req);
+		session.setAttribute(WebKeys.MOBILE_FULL_UI, Boolean.FALSE);
+		response.sendRedirect(WebUrlUtil.getSimpleURLContextRootURL(request).toString());
 	}
 
 	private void ajaxDoTeamingLive(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
@@ -916,6 +938,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), null);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), null);
 		model.put("ss_actions", actions);
 		model.put("ss_new_actions", new_actions);
 		
@@ -1047,6 +1070,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 					BinderHelper.addActionsRecentPlaces(request, actions, binderId);
 					BinderHelper.addActionsSpacer(request, actions);
 					BinderHelper.addActionsLogout(request, actions);
+					BinderHelper.addActionsFullView(bs, request, actions, binderId, null);
 					model.put("ss_actions", actions);
 					
 					return new ModelAndView("mobile/show_user", model);
@@ -1189,6 +1213,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), null);
 		model.put("ss_actions", actions);
 		
 		return new ModelAndView("mobile/show_workspace", model);
@@ -1215,6 +1240,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		model.put("ss_actions", actions);
 		
 		return new ModelAndView("mobile/show_no_entry", model);
@@ -1240,6 +1266,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		model.put("ss_actions", actions);
 		
 		return new ModelAndView("mobile/show_no_entry", model);
@@ -1397,6 +1424,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		BinderHelper.addActionsSpacer(request, actions);
 		BinderHelper.addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binderId, entryId);
 		model.put("ss_actions", actions);
 		model.put("ss_new_actions", new_actions);
 		model.put("ss_modify_actions", modify_actions);
@@ -1433,6 +1461,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}
 	BinderHelper.addActionsSpacer(request, actions);
 	BinderHelper.addActionsLogout(request, actions);
+	BinderHelper.addActionsFullView(bs, request, actions, binder.getId(), entryId);
 	model.put("ss_actions", actions);
 	
 	return new ModelAndView("mobile/show_user", model);

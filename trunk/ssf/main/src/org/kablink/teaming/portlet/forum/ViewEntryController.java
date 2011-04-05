@@ -50,6 +50,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
@@ -102,6 +103,7 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 
 
@@ -912,6 +914,19 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.copy"), url, qualifiers);
+			}
+
+			HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+			if (BrowserSniffer.is_mobile(req, userAgents)) {
+				//The "Mobile UI" menu
+				Map qualifiers = new HashMap();
+				qualifiers.put("nosort", true);
+				qualifiers.put("onClick", "window.open(this.href,'_top');return false;");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+				toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.showMobileUI"), url, qualifiers);
 			}
 
 				

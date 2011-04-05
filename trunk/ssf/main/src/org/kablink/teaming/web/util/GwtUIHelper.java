@@ -478,6 +478,26 @@ public class GwtUIHelper {
 			null);
 	}
 	
+	/*
+	 * Adds a mobile ui item to the toolbar.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void addMobileUiToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
+		// Construct a URL to go to the mobile ui
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+		
+		// ...and add t to the toolbar.
+		addTeamingActionToToolbar(
+			tb,
+			"mobileUI",
+			"GOTO_PERMALINK_URL",
+			NLT.get("toolbar.menu.mobileUI"),
+			url.toString(),
+			null);
+	}
+	
 	/**
 	 * Appends a parameter to to a URL.
 	 * 
@@ -533,6 +553,7 @@ public class GwtUIHelper {
 					addShareBinderToToolbar(     bs, request, model, binder, gwtMiscToolbar);
 					addTrackBinderToToolbar(     bs, request, model, binder, gwtMiscToolbar);
 					addTrashToToolbar(           bs, request, model, binder, gwtMiscToolbar);
+					addMobileUiToToolbar(        bs, request, model, binder, gwtMiscToolbar);
 				}
 			}
 		}

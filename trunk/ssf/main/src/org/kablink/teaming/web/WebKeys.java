@@ -477,6 +477,8 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_SHOW_NEXT_ENTRY="mobile_show_next_entry"; 
     public static final String OPERATION_MOBILE_SHOW_PREV_ENTRY="mobile_show_prev_entry"; 
     public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
+    public static final String OPERATION_MOBILE_SHOW_FULL_UI="mobile_show_full_ui"; 
+    public static final String OPERATION_MOBILE_SHOW_MOBILE_UI="mobile_show_mobile_ui"; 
     public static final String OPERATION_MOBILE_SHOW_RECENT_PLACES="mobile_show_recent_places"; 
     public static final String OPERATION_MOBILE_SHOW_SEARCH_RESULTS="mobile_show_search_results"; 
     public static final String OPERATION_MOBILE_SHOW_TEAMS="mobile_show_teams"; 
@@ -1037,6 +1039,7 @@ public class WebKeys {
     public static final String MINIBLOG_PAGE="ss_miniblogPage"; 
     public static final String MINIBLOG_USER="ss_miniblog_user"; 
     public static final String MINIBLOG_USER_ID="ss_miniblog_user_id"; 
+	public static final String MOBILE_FULL_UI="ss_mobileFullUI";
     public static final String MOBILE_ACCESS_ENABLED="ss_mobileAccessEnabled"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_BINDER_DEF_URL_LIST="ss_mobileBinderDefUrlList"; 
@@ -1230,6 +1233,7 @@ public class WebKeys {
     public static final String TOOLBAR_MEETING_IDS="ss_toolbar_meeting_ids";
     public static final String TOOLBAR_MEETING_POST="ss_toolbar_meeting_post";
     public static final String TOOLBAR_MEETING_URL="ss_toolbar_meeting_url";
+    public static final String TOOLBAR_MOBILE_UI_URL="ss_toolbar_mobile_ui_url";
     public static final String TOOLBAR_SUBSCRIBE_EMAIL="ss_toolbar_subscribe_email";
     public static final String TOOLBAR_TRASH="ss_toolbar_trash";
     public static final String TOOLBAR_URL_ICAL="ss_toolbar_url_ical";

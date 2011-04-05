@@ -58,6 +58,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_whatsNewTBI;				// The what's new      toolbar item, if found.
 	private ToolbarItem m_whatsUnreadTBI;			// The what's unread   toolbar item, if found.
 	private ToolbarItem m_whoHasAccessTBI;			// The who has access  toolbar item, if found.
+	private ToolbarItem m_mobileUiTBI;				// The mobile UI  	   toolbar item, if found.
 
 	/**
 	 * Class constructor.
@@ -199,6 +200,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 				m_aboutTBI     = tbi.getNestedToolbarItem("about");
 				m_clipboardTBI = tbi.getNestedToolbarItem("clipboard");
 				m_trashTBI     = tbi.getNestedToolbarItem("trash");
+				m_mobileUiTBI  = tbi.getNestedToolbarItem("mobileUI");
 			}
 		}
 		
@@ -209,6 +211,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 			 (null != m_activityReportTBI) ||
 			 (null != m_clipboardTBI)      ||
 			 (null != m_trashTBI)          ||
+			 (null != m_mobileUiTBI)       ||
 			 (null != m_whatsNewTBI)       ||
 			 (null != m_whatsUnreadTBI)    ||
 			 (null != m_whoHasAccessTBI));
@@ -236,11 +239,13 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 			addContextMenuItem(IDBASE, m_activityReportTBI);
 			if (isSpacerNeeded() &&
 					((null != m_clipboardTBI) ||
+					 (null != m_mobileUiTBI) ||
 					 (null != m_trashTBI))) {
 				addSpacerMenuItem();
 			}
 			addContextMenuItem(IDBASE, m_clipboardTBI);
 			addContextMenuItem(IDBASE, m_trashTBI);
+			addContextMenuItem(IDBASE, m_mobileUiTBI);
 			if (null != m_aboutTBI) {
 				if (isSpacerNeeded()) {
 					addSpacerMenuItem();
