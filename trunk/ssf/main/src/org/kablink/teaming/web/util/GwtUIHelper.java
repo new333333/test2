@@ -70,6 +70,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.BrowserSniffer;
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -483,19 +484,23 @@ public class GwtUIHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	private static void addMobileUiToToolbar(AllModulesInjected bs, RenderRequest request, Map model, Binder binder, Toolbar tb) {
-		// Construct a URL to go to the mobile ui
-		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
-		
-		// ...and add t to the toolbar.
-		addTeamingActionToToolbar(
-			tb,
-			"mobileUI",
-			"GOTO_PERMALINK_URL",
-			NLT.get("toolbar.menu.mobileUI"),
-			url.toString(),
-			null);
+		//Is this a mobile device?
+		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		if (BrowserSniffer.is_mobile(req, userAgents)) {
+			// Construct a URL to go to the mobile ui
+			AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true, true);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+			// ...and add t to the toolbar.
+			addTeamingActionToToolbar(
+				tb,
+				"mobileUI",
+				"GOTO_PERMALINK_URL",
+				NLT.get("toolbar.menu.mobileUI"),
+				url.toString(),
+				null);
+		}
 	}
 	
 	/**
