@@ -394,6 +394,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private Anchor buildCloseActivityStreamsPB() {
 		// Create the Label for the push button...
 		Label closeLabel = new Label(getMessages().treeCloseActivityStreams());
+		closeLabel.setWordWrap(false);
 		closeLabel.addStyleName("workspaceTreeControlHeader_closeButton");
 		setWidgetHover(closeLabel, getMessages().treeCloseActivityStreamsHint());
 		
