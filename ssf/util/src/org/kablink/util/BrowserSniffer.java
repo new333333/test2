@@ -365,9 +365,6 @@ public class BrowserSniffer {
 		}
 	}
 
-	public static boolean is_mobile(HttpServletRequest req) { 
-		return is_mobile(req, "");
-	}
 	public static boolean is_mobile(HttpServletRequest req, String userAgents) { 
 		if (req == null) {
 			return false;

@@ -451,6 +451,9 @@ public class BinderHelper {
     		if (user != null) {
     			UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
         		model.put(WebKeys.USER_PRINCIPAL, user);
+        		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+        		model.put(WebKeys.SEEN_MAP, seen);
+
         		if (userProperties.getProperties() != null) {
         			model.put(WebKeys.USER_PROPERTIES, userProperties.getProperties());
         		} else {
@@ -686,9 +689,9 @@ public class BinderHelper {
 		addActionsWhatsNew(request, actions, null);
 		addActionsWhatsUnseen(request, actions, null);
 		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
-		//addActionsFullView(bs, request, actions, user.getWorkspaceId(), null);
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
+		BinderHelper.addActionsFullView(bs, request, actions, binderId, null);
 		model.put("ss_actions", actions);
 		
 		return view;
@@ -962,21 +965,13 @@ public class BinderHelper {
 		if (binder != null) {
 			Map action = new HashMap();
 			action.put("title", NLT.get("mobile.teamingUI"));
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			if (EntityType.folder.equals(binder.getEntityType())) {
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			} else if (EntityType.workspace.equals(binder.getEntityType())) {
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			} else if (EntityType.profiles.equals(binder.getEntityType())) {
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			}
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			if (binder != null) adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FULL_UI);
 			if (entryId != null) {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			}
-			//adapterUrl.setParameter(WebKeys.URL_CAPTIVE, "true");
 			action.put("url", adapterUrl.toString());
 			actions.add(action);
 		}

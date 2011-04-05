@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -1037,5 +1038,16 @@ public class WebUrlUtil {
 		// If we get here, fileName refers to the encoded version of
 		// the string received if encoding was configured.  Return it.
 		return encodedFileName;
+	}
+	
+	//Routine to see if this is a mobile device in Full UI mode
+	public static boolean isMobileFullUI(HttpServletRequest req) {
+		HttpSession session = WebHelper.getRequiredSession(req);
+		Boolean isFullUI = (Boolean)session.getAttribute(WebKeys.MOBILE_FULL_UI);
+		if (isFullUI == null || !isFullUI) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }

@@ -45,6 +45,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
@@ -91,16 +92,23 @@ public class LoginFilter  implements Filter {
 		
 		try {
 			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
+				HttpSession session = WebHelper.getRequiredSession(req);
+				boolean mobileFullUI = false;
+				if (session != null) {
+					Boolean mfu = (Boolean) session.getAttribute(WebKeys.MOBILE_FULL_UI);
+					if (mfu != null && mfu) {
+						mobileFullUI = true;
+					}
+				}
+				
 				// We're at the root URL. Re-direct the client to its workspace.
 				// Do this only if the request method is GET.
-				if (BrowserSniffer.is_mobile(req)) {
+				String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+				if (BrowserSniffer.is_mobile(req, userAgents) && !mobileFullUI) {
 					String landingPageUrl = getWapLandingPageURL(req);
 					res.sendRedirect(landingPageUrl);
 				} else {
-					// Not a mobile device, but it could be a
-					// Blackberry, iPhone or any other browser. 
-					// Give the Blackberry's and iPhones the full
-					// UI.
+					// Not a mobile device, or a mobile device in full UI mode
 					String workspaceUrl = getWorkspaceURL(req);
 					res.sendRedirect(workspaceUrl);
 				}

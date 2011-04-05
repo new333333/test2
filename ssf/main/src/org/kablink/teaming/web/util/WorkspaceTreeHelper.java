@@ -55,6 +55,7 @@ import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,6 +97,7 @@ import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 import org.springframework.web.portlet.ModelAndView;
@@ -1184,7 +1186,22 @@ public class WorkspaceTreeHelper {
 			//footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 			model.put(WebKeys.TOOLBAR_MEETING_URL, adapterUrl.toString());
 		}
-			
+
+		//Mobile UI
+		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		if (BrowserSniffer.is_mobile(req, userAgents)) {
+			//The "Mobile UI" menu
+			qualifiers = new HashMap();
+			qualifiers.put("nosort", true);
+			qualifiers.put("onClick", "window.open(this.href,'_top');return false;");
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_MOBILE_UI);
+			//toolbar.addToolbarMenuItem("4_actions", "actions", NLT.get("toolbar.showMobileUI"), url, qualifiers);
+			model.put(WebKeys.TOOLBAR_MOBILE_UI_URL, url.toString());
+		}
+
 		//Color themes (removed for now)
 		if (0 == 1 && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
