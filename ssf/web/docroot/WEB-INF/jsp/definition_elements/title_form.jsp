@@ -145,7 +145,7 @@ function ss_checkTitleOnSubmit() {
 ss_createOnSubmitObj("ss_checkTitleOnSubmit", "${formName}", ss_checkTitleOnSubmit);
 <c:if test="${empty ss_fieldModifyDisabled || ss_fieldModificationsAllowed}">
 var titleObj = document.getElementById("title");
-if (titleObj != null) {
+if (titleObj != null && !ss_isIE) {
 	try {
 		titleObj.focus();
 	} catch(e) {
