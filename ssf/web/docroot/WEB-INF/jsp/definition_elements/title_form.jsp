@@ -144,7 +144,16 @@ function ss_checkTitleOnSubmit() {
 }
 ss_createOnSubmitObj("ss_checkTitleOnSubmit", "${formName}", ss_checkTitleOnSubmit);
 <c:if test="${empty ss_fieldModifyDisabled || ss_fieldModificationsAllowed}">
-ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
+var titleObj = document.getElementById("title");
+if (titleObj != null) {
+	try {
+		titleObj.focus();
+	} catch(e) {
+		ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
+	}
+} else {
+	ss_createOnLoadObj("ss_focusOnTitle", ss_focusOnTitle);
+}
 </c:if>
 </script>
   </c:otherwise>
