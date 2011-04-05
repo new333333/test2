@@ -111,6 +111,37 @@ public class TaskListItemHelper {
 		}
 	}
 
+	/*
+	 * Returns true if the subtasks of task are all completed and false
+	 * otherwise.
+	 * 
+	 * skipThisTask will not be evaluated.
+	 */
+	private static boolean areSubtasksComplete(TaskListItem task, TaskListItem skipThisTask) {
+		// Were we given a task whose subtasks are to be checked?
+		if (null != task) {
+			// Yes!  Scan the subtasks.
+			for (TaskListItem subtask:  task.getSubtasks()) {
+				// Are we supposed to skip this subtask?
+				if (subtask == skipThisTask) {
+					// Yes!  Skip it.
+					continue;
+				}
+				
+				// If we find any subtasks, besides skipThisTask that
+				// are not completed...
+				if (!(subtask.getTask().isTaskCompleted())) {
+					// ...we're done and return false.
+					return false;
+				}
+			}
+		}
+		
+		// If we get here, we consider all the task's children other
+		// than skipThisTask to be completed.  Return true.
+		return true;
+	}
+	
 	/**
 	 * Returns true if the task list in the TaskBundle is flat and
 	 * false otherwise.
@@ -257,6 +288,54 @@ public class TaskListItemHelper {
 	
 	public static boolean canMoveTaskUp(TaskBundle tb, Long entryId) {
 		return canMoveTaskUp(tb, findTask(tb, entryId));
+	}
+
+	/**
+	 * Scan a task's parentage for completed parent tasks that need to
+	 * be made active when a subtask is made active.
+	 * 
+	 * @param tb
+	 * @param task
+	 * @param affectedTasks
+	 */
+	public static void findAffectedParentTasks_Active(TaskBundle tb, TaskListItem task, List<TaskListItem> affectedTasks) {
+		// Is the task a subtask?
+		TaskListItem parentTask = TaskListItemHelper.findTaskListItemContainingTask(tb, task);
+		if (null != parentTask) {
+			// Yes!  Is its parent completed?
+			if (parentTask.getTask().isTaskCompleted()) {
+				// Yes!  It needs to be made active and its parent
+				// evaluated.
+				affectedTasks.add(parentTask);				
+				findAffectedParentTasks_Active(tb, parentTask, affectedTasks);
+			}
+		}
+	}
+	
+	/**
+	 * Scan a task's parentage for uncompleted parent tasks that need
+	 * to be made completed when a subtask is made completed.
+	 * 
+	 * @param tb
+	 * @param task
+	 * @param affectedTasks
+	 */
+	public static void findAffectedParentTasks_Completed(TaskBundle tb, TaskListItem task, List<TaskListItem> affectedTasks) {
+		// Is the task a subtask?
+		TaskListItem parentTask = TaskListItemHelper.findTaskListItemContainingTask(tb, task);
+		if (null != parentTask) {
+			// Yes!  Is the parent active?
+			if (parentTask.getTask().isTaskActive()) {
+				// Yes!  Are all the parent's children, except the task
+				// in question completed?
+				if (areSubtasksComplete(parentTask, task)) {
+					// Yes!  The parent needs to be marked completed
+					// and its parent evaluated.
+					affectedTasks.add(parentTask);					
+					findAffectedParentTasks_Completed(tb, parentTask, affectedTasks);
+				}
+			}
+		}
 	}
 	
 	/**

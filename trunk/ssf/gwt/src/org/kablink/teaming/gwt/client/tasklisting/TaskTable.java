@@ -1845,7 +1845,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		if (percentDone.equals(TaskInfo.COMPLETED_100)) {
 			// ...simply change its status to complete.  That change
 			// ...will take care of any mucking that has to occur with
-			// ...subtasks, ...
+			// ...parent tasks, subtasks, ...
 			handleTaskSetStatus(task, TaskInfo.STATUS_COMPLETED);
 			return;
 		}
@@ -1976,24 +1976,22 @@ public class TaskTable extends Composite implements ActionHandler {
 			return;
 		}
 		
-		// Collect the tasks this is going to affect.  If we're marking
-		// a task complete or cancelled, it implies marking its entire
-		// subtask hierarchy the same way too.
-		TaskInfo     ti     = task.getTask();
-		final TaskId taskId = ti.getTaskId();
-		final List<TaskListItem> affectedTasks;
-		final List<TaskId>       affectedTaskIds;
-		boolean applyToSubtasks = false; //! ((TaskInfo.STATUS_COMPLETED.equals(status) || TaskInfo.STATUS_CANCELED.equals(status)) && (!(task.getSubtasks().isEmpty())));
-		if (applyToSubtasks) {
-			affectedTasks   = TaskListItemHelper.getTaskHierarchy(  task                );
-			affectedTaskIds = TaskListItemHelper.getTaskIdsFromList(affectedTasks, false);
+		// Collect the tasks this is going to affect.
+		final List<TaskListItem> affectedTasks = new ArrayList<TaskListItem>();
+		affectedTasks.add(task);
+		if (TaskInfo.STATUS_COMPLETED.equalsIgnoreCase(status)) {
+			TaskListItemHelper.findAffectedParentTasks_Completed(m_taskBundle, task, affectedTasks);
+		}		
+		else if (TaskInfo.STATUS_IN_PROCESS.equalsIgnoreCase(status) || TaskInfo.STATUS_NEEDS_ACTION.equalsIgnoreCase(status)) {
+			TaskListItemHelper.findAffectedParentTasks_Active(m_taskBundle, task, affectedTasks);
 		}
-		else {
-			affectedTasks = new ArrayList<TaskListItem>();
-			affectedTasks.add(task);
-			
-			affectedTaskIds = new ArrayList<TaskId>();
-			affectedTaskIds.add(taskId);
+
+		// Collect the TaskId's of the affected tasks.
+		TaskInfo           ti              = task.getTask();
+		final TaskId       taskId          = ti.getTaskId();
+		final List<TaskId> affectedTaskIds = new ArrayList<TaskId>();
+		for (TaskListItem affectedTask:  affectedTasks) {
+			affectedTaskIds.add(affectedTask.getTask().getTaskId());
 		}
 
 		// Save the new status on the affected tasks.
