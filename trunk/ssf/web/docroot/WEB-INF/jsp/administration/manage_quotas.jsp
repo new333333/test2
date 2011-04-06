@@ -156,6 +156,18 @@ function ss_getOperationStatus() {
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 }
 
+function ss_checkForAllUsersGroup() {
+	var formObj = self.document.getElementById("form1");
+	if (formObj != null && typeof formObj.addGroups.value != "undefined") {
+		var groups = formObj.addGroups.value.split(" ");
+		for (var i = 0; i < groups.length; i++) {
+			if (groups[i] == '${ssAllUsersGroupId}') {
+				alert("<ssf:nlt tag="administration.quotas.allUsers.notAllowed"/>")
+			}
+		}
+	}
+}
+
 </script>
 
 <div class="ss_pseudoPortal">
@@ -173,9 +185,11 @@ function ss_getOperationStatus() {
   <br/>
 </c:if>
 
-<form name="form1" class="ss_style ss_form" method="post" 
+<form name="form1" id="form1" class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_quotas" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/></ssf:url>">
+	name="binderId" value="${ssBinder.id}"/></ssf:url>"
+	onSubmit="ss_checkForAllUsersGroup();return true;"
+>
 	
 	<div align="right">
 	  <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"

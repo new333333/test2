@@ -197,39 +197,89 @@ public class WorkflowUtils {
 		}
 		return questionsData;
     }
-   public static String getStateCaption(Definition wfDef, String state) {
-   	String stateCaption = "";
-   	//Find the actual caption of the state
-   	if (wfDef != null) {
-   		Document wfDefDoc = wfDef.getDefinition();
-       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
-       	if (stateProperty != null) {
-       		Element statePropertyCaption = (Element) stateProperty.getParent().selectSingleNode("./property[@name='caption']");
-       		if (statePropertyCaption != null) stateCaption = statePropertyCaption.attributeValue("value", "");
-       	}
-       	if (stateCaption.equals("")) {
-       		stateCaption = state;
-       	} else {
-       		stateCaption = NLT.getDef(stateCaption);
-       	}
-   	}
-   	return stateCaption;
-   }
    
-   public static String getStateDescription(Definition wfDef, String state) {
-   	String stateDescription = "";
-   	//Find the actual caption of the state
-   	if (wfDef != null) {
-   		Document wfDefDoc = wfDef.getDefinition();
-       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
-       	if (stateProperty != null) {
-       		Element statePropertyDescription = (Element) stateProperty.getParent().selectSingleNode("./property[@name='description']");
-       		if (statePropertyDescription != null) stateDescription = statePropertyDescription.getText();
-       	}
-   	}
-   	return stateDescription;
-   }
+    public static String getStateCaption(Definition wfDef, String state) {
+	   	String stateCaption = "";
+	   	//Find the actual caption of the state
+	   	if (wfDef != null) {
+	   		Document wfDefDoc = wfDef.getDefinition();
+	       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
+	       	if (stateProperty != null) {
+	       		Element statePropertyCaption = (Element) stateProperty.getParent().selectSingleNode("./property[@name='caption']");
+	       		if (statePropertyCaption != null) stateCaption = statePropertyCaption.attributeValue("value", "");
+	       	}
+	       	if (stateCaption.equals("")) {
+	       		stateCaption = state;
+	       	} else {
+	       		stateCaption = NLT.getDef(stateCaption);
+	       	}
+	   	}
+	   	return stateCaption;
+    }
    
+    public static String getStateDescription(Definition wfDef, String state) {
+	   	String stateDescription = "";
+	   	//Find the actual caption of the state
+	   	if (wfDef != null) {
+	   		Document wfDefDoc = wfDef.getDefinition();
+	       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
+	       	if (stateProperty != null) {
+	       		Element statePropertyDescription = (Element) stateProperty.getParent().selectSingleNode("./property[@name='description']");
+	       		if (statePropertyDescription != null) stateDescription = statePropertyDescription.getText();
+	       	}
+	   	}
+	   	return stateDescription;
+   }
+
+    public static String getQuestionCaption(Definition wfDef, String state, String questionName) {
+	   	String questionCaption = "";
+	   	//Find the actual caption of the question
+	   	if (wfDef != null) {
+	   		Document wfDefDoc = wfDef.getDefinition();
+	       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
+	       	if (stateProperty != null) {
+		       	Element questionProperty = (Element) stateProperty.selectSingleNode("//item[@name='workflowQuestion']/properties/property[@name='name' and @value='"+questionName+"']");
+		       	if (questionProperty != null) {
+		       		Element questionPropertyCaption = (Element) questionProperty.getParent().selectSingleNode("./property[@name='question']");
+		       		if (questionPropertyCaption != null) {
+		       			questionCaption = questionPropertyCaption.attributeValue("value", "");
+		       		}
+		       		
+		       	}
+
+	       	}
+	       	if (!questionCaption.equals("")) {
+	       		questionCaption = NLT.getDef(questionCaption);
+	       	}
+	   	}
+	   	return questionCaption;
+    }
+    
+    public static String getResponseCaption(Definition wfDef, String state, String questionName, String responseName) {
+	   	String responseCaption = "";
+	   	//Find the actual caption of the question
+	   	if (wfDef != null) {
+	   		Document wfDefDoc = wfDef.getDefinition();
+	       	Element stateProperty = (Element) wfDefDoc.getRootElement().selectSingleNode("//item[@name='state']/properties/property[@name='name' and @value='"+state+"']");
+	       	if (stateProperty != null) {
+		       	Element questionProperty = (Element) stateProperty.selectSingleNode("//item[@name='workflowQuestion']/properties/property[@name='name' and @value='"+questionName+"']");
+		       	if (questionProperty != null) {
+		       		Element responseProperty = (Element) questionProperty.getParent().getParent().selectSingleNode("//item[@name='workflowResponse']/properties/property[@name='name' and @value='"+responseName+"']");
+			       	if (responseProperty != null) {
+			       		Element responsePropertyCaption = (Element) responseProperty.getParent().selectSingleNode("./property[@name='response']");
+			       		if (responsePropertyCaption != null) {
+			       			responseCaption = responsePropertyCaption.attributeValue("value", "");
+			       		}
+			       	}
+		       	}
+	       	}
+	       	if (!responseCaption.equals("")) {
+	       		responseCaption = NLT.getDef(responseCaption);
+	       	}
+	   	}
+	   	return responseCaption;
+    }
+    
     public static String getThreadCaption(Definition wfDef, String thread) {
     	String threadCaption = "";
     	//Find the actual caption of the thread

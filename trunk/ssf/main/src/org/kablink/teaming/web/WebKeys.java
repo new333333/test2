@@ -1139,6 +1139,7 @@ public class WebKeys {
     public static final String ALL_BINDER_DEFINITIONS="ssAllBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
+    public static final String ALL_USERS_GROUP_ID="ssAllUsersGroupId";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String READ_ONLY="ssReadOnlyFields";
