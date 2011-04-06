@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -449,11 +449,16 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						if(result.contains("ss_error_msg")) {
 							int beginIndex = result.indexOf("ss_error_msg");
 							int endIndex = result.indexOf("ss_error_code");
-						
+
 							String part1 = result.substring(beginIndex, endIndex);
-							beginIndex = part1.indexOf('\'');
+							char quoteChar = '\'';
+							beginIndex = part1.indexOf(quoteChar);
+							if (0 > beginIndex) {
+								quoteChar = '"';
+								beginIndex = part1.indexOf(quoteChar);
+							}
 							String part2 = part1.substring(beginIndex+1);
-							endIndex = part2.indexOf('\'');
+							endIndex = part2.indexOf(quoteChar);
 							String msg = part2.substring(0, endIndex);
 							Window.alert(msg);
 						}
