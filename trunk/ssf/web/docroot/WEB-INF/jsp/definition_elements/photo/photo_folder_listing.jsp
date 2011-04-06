@@ -96,11 +96,12 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				    action="view_folder_entry" 
 				    entryId="${fileEntry._docId}" actionUrl="true" />" 
 				    onClick="ss_loadEntry(this, '${fileEntry._docId}', '${ssBinder.id}', '${fileEntry._entityType}', '${renderResponse.namespace}', 'no');return false;" 
-				    ><c:if test="${empty fileEntry.title}"
-				    ><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyleFine %>
-				    >--<ssf:nlt tag="entry.noTitle"/>--</span
-				    ></c:if><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyle %>
-				    ><c:out value="${fileEntry.title}"/></span></a>
+				    title="<c:out value="${fileEntry.title}"/>"
+			    ><c:if test="${empty fileEntry.title}"
+			    ><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyleFine %>
+			    >--<ssf:nlt tag="entry.noTitle"/>--</span
+			    ></c:if><span id="folderLineSeen_${fileEntry._docId}" <%= seenStyle %>
+			    ><ssf:makeWrapable>${fileEntry.title}</ssf:makeWrapable></span></a>
 			    </div>
 			 </c:if>
 			
