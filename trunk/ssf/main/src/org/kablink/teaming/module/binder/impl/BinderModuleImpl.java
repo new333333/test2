@@ -1495,7 +1495,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		int maxHitLimit = SPropsUtil.getInt("search.maxNumberOfRequestedResults", ObjectKeys.SEARCH_MAX_HITS_SEARCH_LIMIT);
 		if (maxResults > maxHitLimit) {
 			//Let the admin know someone is doing this
-			logger.warn("Search request throttled: " + String.valueOf(maxResults) + ", Query: " + soQuery.toString());
+			//logger.warn("Search request throttled: " + String.valueOf(maxResults) + ", Query: " + soQuery.toString());
 			//Throttle the request
 			maxResults = maxHitLimit;
 		}
