@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,7 +39,7 @@ dojo.require("dijit.dijit");
 dojo.requireLocalization("ssf.cldr","custom", null, "da,de,de-de,en,en-gb,en_us,es,es-es,fi,fi-fi,fr,fr-fr,hu,it,it-it,ROOT,ja,ja-jp,ko,ko-kr,nl,nl-nl,pl,pt,pt-br,sv,zh,zh-cn,zh-hk,zh-tw");
 dojo.date.locale.addCustomFormats("ssf.cldr","custom");
 
-// Bugzilla:  512176:
+// Bugzilla 512176:
 //    Rewrote to use dojo's locale based date formatter to construct
 //    the correct format.  The following is used to which format is
 //    used.
@@ -607,7 +607,7 @@ function ss_calendarEngine(
 	        if (gridType != "") { this.currentType = gridType; }
 	        if (this.currentType == "day") {
 				if ((7 == this.gridSize) || (14 == this.gridSize)) {
-					// Bugzilla:  509734:
+					// Bugzilla 509734:
 					//    For week views, we want to show the week
 					//    starting with the user's first day setting.
 		        	var firstDay = this.currentDate;
@@ -656,7 +656,7 @@ function ss_calendarEngine(
 	    },
 	    
 	    showCalendarDaysDescription: function(firstDayToShow) {
-	    	// Bugzilla:  512176:
+	    	// Bugzilla 512176:
 	    	//    Rewrote to use dojo's locale based date formatter to
 	    	//    construct the correct format.
 // Was:    	var descr = firstDayToShow.getDate() + " " + getMonthNameShort(firstDayToShow) + " " + firstDayToShow.getFullYear();
@@ -1902,9 +1902,12 @@ function ss_calendarEngine(
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
 		                var lastDayToShow = dojo.date.add(dayToShow, "day", -ss_cal_Grid.gridIncr);
-		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
-		                	requiredDay = lastDayToShow;
-		                }
+		                // Bugzilla 685230:
+		                //    This was causing an extra shift by the
+		                //    gridIncr the first time it was hit.
+// Was:		            if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
+//		                	requiredDay = lastDayToShow;
+//		                }
 	            	}
 	            	            	
 		            grid = ss_cal_Grid.currentType;
@@ -1917,9 +1920,12 @@ function ss_calendarEngine(
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
 		                var lastDayToShow = dojo.date.add(dayToShow, "day", ss_cal_Grid.gridIncr);
-		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
-		                	requiredDay = lastDayToShow;
-		                }
+		                // Bugzilla 685230:
+		                //    This was causing an extra shift by the
+		                //    gridIncr the first time it was hit.
+// Was:	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
+//		                	requiredDay = lastDayToShow;
+//		                }
 	            	}
 	            	
 		            grid = ss_cal_Grid.currentType;
@@ -2230,9 +2236,9 @@ function ss_calendarEngine(
 	};
 	
 	function drawMonthEventBlock(containerId, date, eventList) {
-		// Bugzilla:  557401
-		//   Removed the vertical fudge used to display day entries in
-		//   a month view where the month displays 6 weeks.
+		// Bugzilla 557401:
+		//    Removed the vertical fudge used to display day entries in
+		//    a month view where the month displays 6 weeks.
 		var hFudge6Weeks = "0";	// ...was "-3px"
 
 		var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
