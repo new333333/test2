@@ -51,7 +51,7 @@
 				//Output the first <td>
 				Element tdItem1 = (Element) itItems.next();
 %>
-<td valign="top">
+<td valign="top" <c:if test="${!empty property_width1}"> width="${property_width1}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem1 %>" 
@@ -64,7 +64,7 @@
 				if (itItems.hasNext()) {
 					Element tdItem2 = (Element) itItems.next();
 %>
-<td valign="top">
+<td valign="top" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem2 %>" 
@@ -75,7 +75,7 @@
 <%
 				} else {
 %>
-<td valign="top">&nbsp;</td>
+<td valign="top" <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >&nbsp;</td>
 <%
 				}
 %>
