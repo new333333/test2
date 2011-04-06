@@ -54,6 +54,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -116,6 +117,11 @@ public class ManageQuotasController extends SAbstractController {
 				getAdminModule().setQuotaHighWaterMark(highWaterMark);
 				
 				Set<Long> groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addGroups"));
+				Long allUsersGroupId = Utils.getAllUsersGroupId();
+				if (allUsersGroupId != null && groupIds.contains(allUsersGroupId)) {
+					//Trying to set a quota for all users by using the All Users group is prohibited
+					groupIds.remove(allUsersGroupId);
+				}
 				Set<Long> userIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("addUsers"));
 				String s_userQuota = PortletRequestUtils.getStringParameter(request, "addUserQuota", "");
 				if (!s_userQuota.equals("")) {
@@ -206,6 +212,7 @@ public class ManageQuotasController extends SAbstractController {
 		model.put(WebKeys.QUOTAS_USERS, principals);
 		SortedSet<Principal> group_principals = getProfileModule().getPrincipals(groups);
 		model.put(WebKeys.QUOTAS_GROUPS, group_principals);
+		model.put(WebKeys.ALL_USERS_GROUP_ID, String.valueOf(Utils.getAllUsersGroupId()));
 
 		model.put(WebKeys.QUOTAS_DEFAULT, getAdminModule().getQuotaDefault());
 		model.put(WebKeys.QUOTAS_ENABLED, getAdminModule().isQuotaEnabled());
