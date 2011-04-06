@@ -2486,4 +2486,25 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}	        		
 	}
 
+	public List<Binder> loadBindersByPathName(final String pathName, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			return (List)getHibernateTemplate().execute(
+			    new HibernateCallback() {
+			        public Object doInHibernate(Session session) throws HibernateException {
+						Criteria crit = session.createCriteria(Binder.class)
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.ge("pathName", pathName.toLowerCase()))
+							.add(Restrictions.le("pathName", pathName.toUpperCase()))
+							.setCacheable(true);
+					return crit.list();
+	               }
+	            }
+			);
+    	}
+    	finally {
+    		end(begin, "loadBindersByPathName()");
+    	}	        
+	}
+	
  }
