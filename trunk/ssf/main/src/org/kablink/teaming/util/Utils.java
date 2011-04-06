@@ -356,4 +356,9 @@ public class Utils {
 			return false;
 		}
 	}
+	
+	//Routine to get the maximum number of allowable search results (maxHits)
+	public static int getSearchDefaultMaxHits() {
+		return SPropsUtil.getInt("search.maxNumberOfRequestedResults", ObjectKeys.SEARCH_MAX_HITS_LIMIT);
+	}
 }

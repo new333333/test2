@@ -144,6 +144,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.util.search.Restrictions;
 import org.kablink.teaming.util.SPropsUtil;
@@ -3338,6 +3339,7 @@ public class BinderHelper {
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
 		
 		Integer maxHits = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, new Integer(entriesPerPage));
+		if (maxHits > Utils.getSearchDefaultMaxHits()) maxHits = Utils.getSearchDefaultMaxHits();
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
 		Integer summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, new Integer(20));
@@ -3376,6 +3378,7 @@ public class BinderHelper {
 		int[] maxOnPageArr = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_MAX_HITS);
 		int maxOnPage = defaultMaxOnPage;
 		if (maxOnPageArr.length >0) maxOnPage = maxOnPageArr[0];
+		if (maxOnPage > Utils.getSearchDefaultMaxHits()) maxOnPage = Utils.getSearchDefaultMaxHits();
 		int userOffset = (pageNo - 1) * maxOnPage;
 		int[] summaryWords = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS);
 		int summaryWordsCount = 20;
