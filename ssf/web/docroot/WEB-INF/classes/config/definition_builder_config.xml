@@ -3389,6 +3389,8 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="width1" caption="__col1width" type="text"/>
+			<property name="width2" caption="__col2width" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -3416,6 +3418,8 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="width1" caption="__col1width" type="text"/>
+			<property name="width2" caption="__col2width" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
@@ -3442,6 +3446,9 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="width1" caption="__col1width" type="text"/>
+			<property name="width2" caption="__col2width" type="text"/>
+			<property name="width3" caption="__col3width" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -3469,6 +3476,9 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
+			<property name="width1" caption="__col1width" type="text"/>
+			<property name="width2" caption="__col2width" type="text"/>
+			<property name="width3" caption="__col3width" type="text"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />

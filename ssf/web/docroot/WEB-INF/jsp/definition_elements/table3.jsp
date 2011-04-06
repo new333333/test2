@@ -51,7 +51,7 @@
 				//Output the first <td>
 				Element tdItem1 = (Element) itItems.next();
 %>
-<td>
+<td <c:if test="${!empty property_width1}"> width="${property_width1}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem1 %>" 
@@ -64,7 +64,7 @@
 				if (itItems.hasNext()) {
 					Element tdItem2 = (Element) itItems.next();
 %>
-<td>
+<td <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem2 %>" 
@@ -75,7 +75,7 @@
 <%
 				} else {
 %>
-<td>&nbsp;</td>
+<td <c:if test="${!empty property_width2}"> width="${property_width2}" </c:if> >&nbsp;</td>
 <%
 				}
 
@@ -83,7 +83,7 @@
 				if (itItems.hasNext()) {
 					Element tdItem3 = (Element) itItems.next();
 %>
-<td>
+<td <c:if test="${!empty property_width3}"> width="${property_width3}" </c:if> >
 <ssf:displayConfiguration 
   configDefinition="${ssConfigDefinition}" 
   configElement="<%= tdItem3 %>" 
@@ -94,7 +94,7 @@
 <%
 				} else {
 %>
-<td>&nbsp;</td>
+<td <c:if test="${!empty property_width3}"> width="${property_width3}" </c:if> >&nbsp;</td>
 <%
 				}
 %>
