@@ -834,6 +834,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void syncUser( String teamingUserName, String ldapUserName ) 
 		throws NoUserByTheNameException, NamingException
 	{
+		if(logger.isDebugEnabled())
+			logger.debug("Synching LDAP user '" + ldapUserName + "' to Vibe user '" + teamingUserName + "'");
+		
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
 
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
