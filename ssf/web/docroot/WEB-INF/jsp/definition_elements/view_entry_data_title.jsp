@@ -98,7 +98,7 @@ ${nextEntry.docNumber}.
 </c:if>
 	<div>
 	<c:if test="${!ssSeenEntries[ssDefinitionEntry.id]}">
-		<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif">
+		<img border="0" align="absbottom" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png">
 	</c:if>
 	<c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 	<span class="ss_entryTitle ss_link_7">

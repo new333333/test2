@@ -123,7 +123,7 @@
 		  style="display:${ss_sunburstVisibilityHide};"
 		  id="ss_sunburstShow${renderResponse.namespace}" 
 		  class="ss_fineprint">
-		  	<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif">
+		  	<img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png">
 		  </span>
 		  </a>
 		

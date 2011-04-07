@@ -94,7 +94,7 @@
 <div class="entry-title">
   <%
 	  if (!ssSeenMap.checkIfSeen(title_entry)) {
-		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+		%><img border="0" align="absbottom" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png"><%
 	  }
   %>
   <c:if test="${!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">

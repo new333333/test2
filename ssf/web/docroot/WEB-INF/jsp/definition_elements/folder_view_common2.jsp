@@ -656,7 +656,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 >
   	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-  	align="text-bottom" border="0" <ssf:alt tag="sunburst.click"/> />&nbsp;
+  	align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
   </a>
     
 	</c:if>
@@ -710,7 +710,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	  	href="#"
 	  	onClick="return ss_showRelatedFilesForEntry('relatedFilesAnchor_<%= e1DocId %>', '${ssBinder.id}', '<%= e1DocId %>');"><img
 	  		width="12" height="12"
-	  		align="text-bottom"
+	  		align="absmiddle"
 			src="<html:imagesPath/>icons/related_files.png"
 			border="0" 
          	title="<%= NLT.get("entry.hasRelatedFiles").replaceAll("\"", "&QUOT;") %>" /></a> 

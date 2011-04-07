@@ -223,7 +223,7 @@ span.ss_header_bar_title_text {
     font-weight: bold;
 	color: ${ss_style_header_bar_title_color};
 	font-size: 15px;
-	margin-left: 5px;
+	margin-left: 2px;
 	}
 a.ss_header_bar_title_link {
 	color: ${ss_style_header_bar_title_link_color};

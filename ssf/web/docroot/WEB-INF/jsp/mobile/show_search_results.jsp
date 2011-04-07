@@ -100,7 +100,7 @@
 						<div class="entry-title">
 						    <% if (!ssSeenMap.checkIfSeen(entry)) { %>
 								<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-								  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+								  	align="absmiddle" border="0" <ssf:alt tag="alt.unseen"/> /></span>
 			  				<% } %>
 						    <c:if test="${0 == 1 && !empty entry._docNum}">
 						      <span class="entry-docNumber">${entry._docNum}.</span>
