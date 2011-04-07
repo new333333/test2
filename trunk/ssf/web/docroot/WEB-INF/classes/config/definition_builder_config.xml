@@ -1692,10 +1692,10 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileState" caption="__state" type="data" dataType="address" 
+	<item name="profileState" caption="__profile_state" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__state"/>
+			<property name="caption" caption="__caption" type="text" value="__profile_state"/>
 			<property name="name" caption="__data_name" type="text" value="state" 
 			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
@@ -1768,10 +1768,10 @@
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
 	
-	<item name="profileState" caption="__state" type="data" dataType="address" 
+	<item name="profileState" caption="__profile_state" type="data" dataType="address" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__state"/>
+			<property name="caption" caption="__caption" type="text" value="__profile_state"/>
 			<property name="name" caption="__data_name" type="text" value="state" 
 			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
@@ -2006,7 +2006,7 @@
 			<option name="profileRank" caption="__rank" initial="false"/>
 			<option name="profileStreet" caption="__street" initial="false"/>
 			<option name="profileCity" caption="__city" initial="false"/>
-			<option name="profileState" caption="__state" initial="true"/>
+			<option name="profileState" caption="__profile_state" initial="true"/>
 			<option name="profilePostalCode" caption="__postalCode" initial="true"/>
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" optionCaption="__standard_entry_options" >
@@ -2108,7 +2108,7 @@
 			<option name="profileRank" caption="__rank" initial="true"/>
 			<option name="profileStreet" caption="__street" initial="false"/>
 			<option name="profileCity" caption="__city" initial="false"/>
-			<option name="profileState" caption="__state" initial="true"/>
+			<option name="profileState" caption="__profile_state" initial="true"/>
 			<option name="profilePostalCode" caption="__postalCode" initial="true"/>
 			<option_select definitionType="7" path="//item[@category='profileEntryViewData']" optionCaption="__profile_additional_options" />
 		</options>

@@ -128,9 +128,9 @@
             <property name="required" value=""/> 
           </properties> 
         </item>  
-        <item name="profileState" caption="__state" type="data" id="41"> 
+        <item name="profileState" caption="__profile_state" type="data" id="41"> 
           <properties> 
-            <property name="caption" value="__state"/>  
+            <property name="caption" value="__profile_state"/>  
             <property name="name" value="state"/>  
             <property name="width" value=""/>  
             <property name="required" value=""/> 
@@ -406,9 +406,9 @@
           <property name="required" value=""/> 
         </properties> 
       </item>  
-      <item name="profileState" caption="__state" type="data" id="66"> 
+      <item name="profileState" caption="__profile_state" type="data" id="66"> 
         <properties> 
-          <property name="caption" value="__state"/>  
+          <property name="caption" value="__profile_state"/>  
           <property name="name" value="state"/>  
           <property name="width" value=""/>  
           <property name="required" value=""/> 
