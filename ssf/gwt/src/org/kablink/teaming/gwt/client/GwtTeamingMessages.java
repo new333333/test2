@@ -759,6 +759,7 @@ public interface GwtTeamingMessages extends Messages
 	String adminInfoDlgUpgradeTemplates();
 
 	// The following strings are used in the activity stream control.
+	String actionsLabel();
 	String autoRefreshIsPaused();
 	String followedPeople();
 	String followedPlaces();
