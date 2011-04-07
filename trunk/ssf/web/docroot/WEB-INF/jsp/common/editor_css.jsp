@@ -49,14 +49,14 @@ p { margin:8px 0px 8px 0px; }
 table tr td { border: 1px solid #BBBBBB; }
 
 ul li {
-    margin: 2px 0px 0px 15px;
-    list-style-type: square;
+    margin: 2px 0px 0px 0px;
+    list-style-type: round;
     list-style-position: outside;
     list-style-image: none;
 }
 
 ol li {
-    margin: 2px 0px 0px 15px;
+    margin: 2px 0px 0px 0px;
     list-style-position: outside;
     list-style-type: decimal;
 }
