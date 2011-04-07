@@ -3089,7 +3089,8 @@ div.ss_cal_monthGridDayBadge a:hover, div.ss_cal_monthGridDayBadgeCurrent a:hove
   text-decoration: underline;
 }
 
-a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img, 
+a.ss_calDaySelectButton img,
+	a.ss_calTodaySelectButton img, a.ss_calDaySelectButtonActive img, 
 	a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButtonActive img,
 	a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img,
 	a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img,
@@ -3108,6 +3109,12 @@ a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelec
 }
 a.ss_calDaySelectButton:hover img { 
 	background: transparent url(<html:imagesPath/>icons/calView_1day_over_btn.png) no-repeat top left; 
+}
+a.ss_calTodaySelectButton img, a.ss_calTodaySelectButton:link img , a.ss_calTodaySelectButton:focus img, a.ss_calTodaySelectButton:visited img { 
+	background: transparent url(<html:imagesPath/>icons/calView_today_btn.png) no-repeat top left; 
+}
+a.ss_calTodaySelectButton:hover img { 
+	background: transparent url(<html:imagesPath/>icons/calView_today_over_btn.png) no-repeat top left; 
 }
 a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss_calDaySelectButtonActive:focus img, a.ss_calDaySelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/calView_1day_sel_btn.png) no-repeat top left; 
@@ -3583,7 +3590,11 @@ ul.ss_calendarNaviBar li.ss_calViewDatesDescriptions td {
 }
 
 ul.ss_calendarNaviBar li.ss_calSelectDate {
-	padding: 0px 10px 0px 7px;
+	padding: 0px 0px 0px 7px;
+}
+
+ul.ss_calendarNaviBar li.ss_calSelectToday {
+	padding: 0px 0px 0px 7px;
 }
 
 ul.ss_calendarNaviBar li.ss_taskViewOptions {
