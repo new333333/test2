@@ -873,6 +873,9 @@ public class EntityIndexUtils {
 			doc.add(ttfTagField);
 		}
     
+		// This line of code depends on our using specific tokenizer. As soon as we switch to some other
+		// tokenizer such as Lucene's standard tokenizer/filter, this approach will stop working, and
+		// we will need to re-desgn this part of the code.
     	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.ANALYZED);
     	doc.add(tagField);
     	
