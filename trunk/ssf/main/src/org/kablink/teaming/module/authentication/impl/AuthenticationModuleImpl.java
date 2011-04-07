@@ -380,6 +380,9 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
     }
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
+		if(logger.isDebugEnabled())
+			logger.debug("Authenticating '" + authentication.getName() + "'");
+		
 		AuthenticationException exc = null;
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	try {
