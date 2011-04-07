@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.WebHelper;
@@ -84,6 +85,10 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 			RequestContextHolder.clear();
 		}
 		catch(UserDoesNotExistException e) {
+			logger.warn(e);
+			throw new ServletException(e);
+		}
+		catch(UserAccountNotActiveException e) {
 			logger.warn(e);
 			throw new ServletException(e);
 		}
