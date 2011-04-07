@@ -161,16 +161,16 @@ public class TaskListing extends Composite implements ActionTrigger {
 							m_taskFilterImage.setTitle(m_messages.taskAltFilterOn());
 							m_taskFilterOff   =
 							m_taskFilterEmpty = false;
-							m_taskFilterInput.setFocus(false);
-							filterListAsync(filter);
-						}
-						
+						}						
 						else {
-							// No, there's nothing in the filter!  Kill
-							// any filter information that we may be
-							// tracking.
-							killFilter();
+							// No, there's nothing in the filter!  Turn
+							// off any filter that's in effect.
+							m_taskFilterImage.setResource(m_images.filterOff());
+							m_taskFilterImage.setTitle(m_messages.taskAltFilterOff());
+							m_taskFilterOff   =
+							m_taskFilterEmpty = true;
 						}
+						filterListAsync(filter);
 					}
 				}
 			});
@@ -277,7 +277,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 		private void killFilter() {
 			boolean filterWasOn = (!m_taskFilterOff);
 
-			m_taskFilterInput.setFocus(false);
 			m_taskFilterInput.setValue(m_messages.taskFilter_empty());
 			m_taskFilterImage.setResource(m_images.filterOff());
 			m_taskFilterImage.setTitle(m_messages.taskAltFilterOff());
