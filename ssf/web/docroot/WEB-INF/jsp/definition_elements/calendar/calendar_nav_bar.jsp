@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,17 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="java.util.Date" %>
+<%@ page import="java.util.Calendar"          %>
+<%@ page import="java.util.Date"              %>
+<%@ page import="java.util.GregorianCalendar" %>
+<%
+	GregorianCalendar cal = new GregorianCalendar();
+	cal.setTime(new Date());
+	
+	String currentYear  = String.valueOf(cal.get(Calendar.YEAR));
+	String currentMonth = String.valueOf(cal.get(Calendar.MONTH)+1);
+	String currentDay   = String.valueOf(cal.get(Calendar.DAY_OF_MONTH));
+%>
 <div class="ss_clear"></div>
 <div>
   <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="-2" offsetY="6" 
@@ -82,18 +92,23 @@
 				</tr>
 			</table>
 		</li>
-		<li class="ss_calendarNaviBarSeparator"/>
-		<li class="ss_calSelectDate ss_calendarNaviBarOption ss_nobghover" style="padding: 0 10px;">
+		<c:set var="gotoId" value="ss_goto${prefix}" />
+		<li class="ss_calSelectDate ss_calendarNaviBarOption ss_nobghover" style="padding: 0px;">
 			<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" 
 			  class="ss_toolbar_color"
 			  method="post" style="display:inline;float:left;"><div class="ss_toolbar_color" style="display:inline;float:left;">
 				<ssf:datepicker formName="ssCalNavBar${prefix}" showSelectors="true" 
-				 popupDivId="ss_calDivPopup${prefix}" id="ss_goto${prefix}" initDate="${ssCurrentDate}"
+				 popupDivId="ss_calDivPopup${prefix}" id="${gotoId}" initDate="${ssCurrentDate}"
 				 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
 				 altText='<%= NLT.get("calendar.view.popupAltText") %>'
 				 /></div></form>
 				 <div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"  style="display:inline;float:left;"></div>
 		</li>
+		<li class="ss_calSelectToday ss_calendarNaviBarOption ss_nobghover" style="padding: 0px;">
+			<a class="ss_calTodaySelectButton" id="ss_calTodaySelectButton${prefix}" href="javascript: ;" onclick="setMultipleValues_${gotoId}('<%= currentYear %>','<%= currentMonth %>','<%= currentDay %>'); return false;"><img <ssf:alt tag="calendar.view.alt.navToToday"/> title="<ssf:nlt tag="calendar.view.alt.navToToday"/>" 
+				src="<html:imagesPath/>pics/1pix.gif" /></a>
+		</li>
+		<li class="ss_calendarNaviBarSeparator"/>
 		<li class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 10px;">
 				<a class="ss_calDaySelectButton" id="ss_calDaySelectButton${prefix}" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('daydelta'); return false;"><img <ssf:alt tag="alt.view1Day"/> title="<ssf:nlt tag="alt.view1Day"/>" 
 					src="<html:imagesPath/>pics/1pix.gif" /></a>
