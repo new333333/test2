@@ -472,6 +472,11 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 			   				.setLong("binder", binder.getId())
 			   				.executeUpdate();
 			   			
+	    	   			//delete binder quota on this binder
+	    	   			session.createQuery("DELETE org.kablink.teaming.domain.BinderQuota where binderId=:binder")
+		   				.setLong("binder", binder.getId())
+		   				.executeUpdate();
+	    	   			
 			   			//do ourselves or hibernate will flsuh
 			   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
 			   		    	.setLong("id", binder.getId().longValue())
