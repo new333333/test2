@@ -54,7 +54,7 @@
 				  workspacePreDeleted="${ss_showUserWorkspacePredeleted}" /> 
 			</c:if>		
 			<c:if test="${ss_showUserShowPresence && ss_showUserProfileEntry}">
-			  <img border="0" align="absmiddle" style="padding-left:4px;" 
+			  <img border="0" align="absbottom" style="padding-left:4px;" 
 			    src="<html:imagesPath/>pics/sym_s_white_dude_14.png" />
 			</c:if>
 		</c:when>

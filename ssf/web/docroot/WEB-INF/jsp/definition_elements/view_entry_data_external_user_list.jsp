@@ -61,7 +61,7 @@
 			<ul class="ss_nobullet">
 				<c:forEach var="selection" items="<%= externalUserListSet %>" >
 					<li><img
-						border="0"
+						border="0" align="absbottom"
 						src="<html:imagesPath/>pics/sym_s_white_dude_14.png"
 						alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" /></li>
 				</c:forEach>
@@ -78,7 +78,7 @@
 				<ul class="ss_nobullet">
 					<c:forEach var="selection" items="<%= externalUserListSet %>" >
 						<li><img
-							border="0"
+							border="0" align="absbottom"
 							src="<html:imagesPath/>pics/sym_s_white_dude_14.png"
 							alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" /></li>
 					</c:forEach>
