@@ -81,8 +81,8 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				  style="display:${ss_sunburstVisibilityHide};"
 				  id="ss_sunburstShow${renderResponse.namespace}" 
 				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0"
-				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />&nbsp;
+				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="absmiddle" border="0"
+				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />
 				  </span>
 				  </a>
 					    
@@ -120,8 +120,8 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				  style="display:${ss_sunburstVisibilityHide};"
 				  id="ss_sunburstShow${renderResponse.namespace}" 
 				  class="ss_fineprint">
-				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0"
-				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />&nbsp;
+				  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="absmiddle" border="0"
+				  		style="width:12px;height:12px;" <ssf:alt tag="alt.new"/> />
 				  </span>
 				  </a>
 					    

@@ -187,7 +187,7 @@
 	    	  <div class="entry-title">
 			    <% if (!ssSeenMap.checkIfSeen(entryWn)) { %>
 					<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-					  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+					  	align="absmiddle" border="0" <ssf:alt tag="alt.unseen"/> /></span>
   				<% } %>
 			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				  folderId="${entryWn._binderId}"  entryId="${entryWn._docId}"

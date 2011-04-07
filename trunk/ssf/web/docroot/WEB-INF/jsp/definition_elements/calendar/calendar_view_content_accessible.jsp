@@ -91,7 +91,7 @@
 								<%
 									if (!ssSeenMap.checkIfSeen(entry)) {
 										%><img <ssf:alt tag="alt.unseen"/> border="0" 
-										src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+										src="<html:imagesPath/>pics/sym_s_unseen.png"><%
 									}
 								%>
 						

@@ -75,7 +75,7 @@
 			  <div class="entry-title">
 			    <% if (!ssSeenMap.checkIfSeen(entryFol)) { %>
 					<span><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-					  	align="text-bottom" border="0" <ssf:alt tag="alt.unseen"/> />&nbsp;</span>
+					  	align="absmiddle" border="0" <ssf:alt tag="alt.unseen"/> /></span>
   				<% } %>
 			    <c:if test="${!empty ssFolderColumns['number'] && !empty entryFol._docNum}">
 			    <span style="font-weight: normal !important;">${entryFol._docNum}. </span>

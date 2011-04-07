@@ -211,7 +211,7 @@
 	  		title="<ssf:nlt tag="sunburst.click"/>"
 	  		onClick="ss_hideSunburst('${entry1._docId}', '${ssBinder.id}');return false;"
 		><img src="<html:rootPath/>images/pics/discussion/sunburst.png" 
-	  	  align="text-bottom" border="0" <ssf:alt tag="sunburst.click"/> />&nbsp;
+	  	  align="absmiddle" border="0" <ssf:alt tag="sunburst.click"/> />
 	    </a>
 	  </c:if>
       <a class="wiki-page-a <c:if test="${entry1._docId == ss_wikiHomepageEntryId}"> wiki-homepage-a</c:if>"

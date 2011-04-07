@@ -62,7 +62,7 @@ var ss_showingFolder = true;
 							  style="display:${ss_sunburstVisibilityHide};"
 							  id="ss_sunburstShow${renderResponse.namespace}" 
 							  class="ss_fineprint">
-							  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" border="0" <ssf:alt tag="alt.new"/> />&nbsp;
+							  	<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="absmiddle" border="0" <ssf:alt tag="alt.new"/> />
 							  </span>
 							  </a>
 								    
