@@ -105,18 +105,22 @@ function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard)
 		});	 
 	}
 	
-	this.stickyCalendarDisplaySettings = function(options) {
+	this.stickyCalendarDisplaySettings = function(options, refreshFunction) {
 	 	if (!options) {
 	 		return;
 	 	}
 
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
 								binderId: binderId, calendarStickyId: stickyId}, options));
-		
 		dojo.xhrGet({
 	    	url: url,
 			error: function(err) { },
-			load: function(data) { return data },
+			load: function(data) {
+				if (typeof refreshFunction == 'function') {
+					refreshFunction();
+				}
+				return data
+			},
 			preventCache: true
 		});
 	}
@@ -1980,14 +1984,19 @@ function ss_calendarEngine(
 			}
 	
 			if (oldEventType != this.eventsType) {
+				if ((3 == oldEventType) || (3 == this.eventsType))
+				     refreshFunction = function(){document.location.reload();};
+				else refreshFunction = function(){this.redrawAll();};			
+
 				if (calendarDataProvider) {
-					calendarDataProvider.stickyCalendarDisplaySettings({eventType : this.eventsTypes[this.eventsType]});
+					calendarDataProvider.stickyCalendarDisplaySettings(
+						{eventType : this.eventsTypes[this.eventsType]},
+						refreshFunction);
 				}
-				if ((3 == oldEventType) || (3 == this.eventsType)) {
-					document.location.reload();
-				} else {
-					this.redrawAll();
-				}			
+				
+				else {
+					refreshFunction();
+				}
 			}
 	    }
 	    
