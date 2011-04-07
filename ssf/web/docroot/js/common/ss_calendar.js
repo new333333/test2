@@ -1901,13 +1901,10 @@ function ss_calendarEngine(
 						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", -ss_cal_Grid.gridIncr);
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dojo.date.add(dayToShow, "day", -ss_cal_Grid.gridIncr);
-		                // Bugzilla 685230:
-		                //    This was causing an extra shift by the
-		                //    gridIncr the first time it was hit.
-// Was:		            if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
-//		                	requiredDay = lastDayToShow;
-//		                }
+		                var lastDayToShow = dojo.date.add(dayToShow, "day", ss_cal_Grid.gridIncr);
+		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
+		                	requiredDay = lastDayToShow;
+		                }
 	            	}
 	            	            	
 		            grid = ss_cal_Grid.currentType;
@@ -1919,13 +1916,10 @@ function ss_calendarEngine(
 						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, "day", ss_cal_Grid.gridIncr);
 					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dojo.date.add(dayToShow, "day", ss_cal_Grid.gridIncr);
-		                // Bugzilla 685230:
-		                //    This was causing an extra shift by the
-		                //    gridIncr the first time it was hit.
-// Was:	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
-//		                	requiredDay = lastDayToShow;
-//		                }
+		                var lastDayToShow = dojo.date.add(dayToShow, "day", -ss_cal_Grid.gridIncr);
+		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
+		                	requiredDay = lastDayToShow;
+		                }
 	            	}
 	            	
 		            grid = ss_cal_Grid.currentType;
