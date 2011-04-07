@@ -82,6 +82,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
 	private InlineLabel m_title;
+	private InlineLabel m_actionsLabel;
 	private FlowPanel m_presencePanel;
 	private FlowPanel m_commentsPanel;
 	private ClickHandler m_presenceClickHandler;
@@ -294,19 +295,28 @@ public abstract class ActivityStreamUIEntry extends Composite
 		// be visible when the mouse is not over the entry.  Image 2 will be visible
 		// when the mouse is over the entry.
 		{
+			FlowPanel actionsPanel;
 			ClickHandler clickHandler;
+
+			actionsPanel = new FlowPanel();
+			actionsPanel.addStyleName( "activityStreamActionsPanel" );
+			headerPanel.add( actionsPanel );
+			
+			m_actionsLabel = new InlineLabel( GwtTeaming.getMessages().actionsLabel() );
+			m_actionsLabel.addStyleName( "activityStreamActionsLabel" );
+			actionsPanel.add( m_actionsLabel );
 			
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions1();
 			m_actionsImg1 = new Image( imageResource );
 			m_actionsImg1.addStyleName( "activityStreamActionsImg1" );
 			m_actionsImg1.getElement().setId( "activityStreamActionsImg1" );
-			headerPanel.add( m_actionsImg1 );
+			actionsPanel.add( m_actionsImg1 );
 			imageResource = GwtTeaming.getImageBundle().activityStreamActions2();
 			m_actionsImg2 = new Image( imageResource );
 			m_actionsImg2.addStyleName( "activityStreamActionsImg2" );
 			m_actionsImg2.getElement().setId( "activityStreamActionsImg2" );
 			m_actionsImg2.setVisible( false );
-			headerPanel.add( m_actionsImg2 );
+			actionsPanel.add( m_actionsImg2 );
 
 			// Add a click handler for the Actions image.
 			clickHandler = new ClickHandler()
@@ -331,6 +341,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 							m_actionsImg2.setVisible( false );
 							m_actionsImg1.setVisible( true );
 
+							m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
+							
 							// Invoke the Actions menu.
 							invokeActionsMenu( x, y );
 						}
@@ -340,6 +352,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			};
 			m_actionsImg1.addClickHandler( clickHandler );
 			m_actionsImg2.addClickHandler( clickHandler );
+			m_actionsLabel.addClickHandler( clickHandler );
 		}
 		
 		// Create a <span> to hold the title.
@@ -889,6 +902,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Hide the actions2 image.
 			m_actionsImg2.setVisible( false );
 			m_actionsImg1.setVisible( true );
+
+			m_actionsLabel.removeStyleName( "activityStreamActionsLabelBold" );
 		}
 	}
 
@@ -914,6 +929,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Hide the actions1 image and show the image the user clicks on to invoke the Actions menu.
 			m_actionsImg1.setVisible( false );
 			m_actionsImg2.setVisible( true );
+
+			m_actionsLabel.addStyleName( "activityStreamActionsLabelBold" );
 		}
 	}
 
