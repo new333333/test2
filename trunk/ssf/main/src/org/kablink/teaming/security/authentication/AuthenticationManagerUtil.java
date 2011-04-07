@@ -48,7 +48,7 @@ public class AuthenticationManagerUtil {
 			final boolean createUser, final boolean passwordAutoSynch,
 			final boolean ignorePassword, final Map updates,
 			final String authenticatorName)
-			throws PasswordDoesNotMatchException, UserDoesNotExistException {
+			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
 				return getAuthenticationManager().authenticate(zoneName,
@@ -61,7 +61,7 @@ public class AuthenticationManagerUtil {
 	public static User authenticate(final String zoneName,
 			final String username, final String password,
 			final Map updates, final String authenticatorName)
-			throws PasswordDoesNotMatchException, UserDoesNotExistException {
+			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		boolean passwordAutoSynch = 
 			SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
 		boolean ignorePassword =
@@ -75,7 +75,7 @@ public class AuthenticationManagerUtil {
 	public static User authenticate(final String zoneName,
 			final String username, final String password,
 			final boolean passwordAutoSynch, final boolean ignorePassword,
-			final String authenticatorName) throws UserDoesNotExistException,
+			final String authenticatorName) throws UserDoesNotExistException, UserAccountNotActiveException,
 			PasswordDoesNotMatchException {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {
@@ -88,7 +88,7 @@ public class AuthenticationManagerUtil {
 
 	public static User authenticate(final String zoneName, final Long userId,
 			final String binderId, final String privateDigest,
-			final String authenticatorName) throws UserDoesNotExistException,
+			final String authenticatorName) throws UserDoesNotExistException, UserAccountNotActiveException,
 			DigestDoesNotMatchException {
 		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
 			public Object doAs() {

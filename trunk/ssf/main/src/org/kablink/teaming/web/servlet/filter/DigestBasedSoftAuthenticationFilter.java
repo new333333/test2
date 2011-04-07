@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -90,6 +91,10 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 				RequestContextUtil.setThreadContext(user);
 			}
 			catch(UserDoesNotExistException e) {
+				logger.warn("RSS: "+e.getLocalizedMessage());
+				request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
+			}
+			catch(UserAccountNotActiveException e) {
 				logger.warn("RSS: "+e.getLocalizedMessage());
 				request.setAttribute(WebKeys.UNAUTHENTICATED_REQUEST, Boolean.TRUE);
 			}

@@ -32,23 +32,18 @@
  */
 package org.kablink.teaming.security.authentication;
 
+public class UserAccountNotActiveException extends AuthenticationException {
+    public UserAccountNotActiveException() {
+        super();
+    }
+    public UserAccountNotActiveException(String message) {
+        super(message);
+    }
+    public UserAccountNotActiveException(String message, Throwable cause) {
+        super(message, cause);
+    }
+    public UserAccountNotActiveException(Throwable cause) {
+        super(cause);
+    }
 
-import java.util.Map;
-
-import org.kablink.teaming.domain.User;
-public interface AuthenticationManager {
-
-	public User authenticate(String zoneName, String username, String password,
-			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
-			Map updates, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
-
-	public User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
-	throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
-
-	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, 
-			String authenticatorName) throws DigestDoesNotMatchException, 
-			UserDoesNotExistException, UserAccountNotActiveException;
-	
 }

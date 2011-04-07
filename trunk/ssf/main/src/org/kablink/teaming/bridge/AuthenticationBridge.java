@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.SZoneConfig;
 
@@ -49,7 +50,7 @@ public class AuthenticationBridge {
 
 	public static void authenticate(String zoneName, String userName, 
 			String password, Map updates, String authenticator) 
-	throws UserDoesNotExistException, PasswordDoesNotMatchException {
+	throws UserDoesNotExistException, PasswordDoesNotMatchException, UserAccountNotActiveException {
 		if(zoneName != null) {
 			if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
 					LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.zone.MultiZone")))
@@ -71,6 +72,10 @@ public class AuthenticationBridge {
 		catch(UserDoesNotExistException e) {
 			// This means that the user doesn't exist in Aspen and the
 			// configuration does not allow automatic creation of user.
+			// This is not an error. 
+		}
+		catch(UserAccountNotActiveException e) {
+			// This means that the user account is disabled or deleted .
 			// This is not an error. 
 		}
 		catch(PasswordDoesNotMatchException e) {

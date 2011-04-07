@@ -55,8 +55,10 @@ import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.kablink.teaming.util.EncryptUtil;
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -137,7 +139,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, String userName, String password,
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
-		throws PasswordDoesNotMatchException, UserDoesNotExistException
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException
 	{
 		validateZone(zoneName);
 		User user=null;
@@ -156,6 +158,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 				SessionUtil.sessionStartup();	
 			
 			user = doAuthenticate(zoneName, userName, password, passwordAutoSynch, ignorePassword);
+			//Make sure this user account hasn't been disabled
+			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
+				//This account is not active
+				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
+			}
 			if (updates != null && !updates.isEmpty()) {
    				// We don't want to sync ldap attributes if the user is one of the 5
    				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent" and "_synchronizationAgent".
@@ -209,7 +216,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		validateZone(zoneName);
 		User user=null;
 		boolean hadSession = SessionUtil.sessionActive();
@@ -234,10 +241,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	 * @return
 	 * @throws PasswordDoesNotMatchException
 	 * @throws UserDoesNotExistException
+	 * @throws UserAccountNotActiveException
 	 */
 	protected User doAuthenticate(String zoneName, String username, String password,
 				boolean passwordAutoSynch, boolean ignorePassword)
-			throws PasswordDoesNotMatchException, UserDoesNotExistException {
+			throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		User user = null;
 
 		SimpleProfiler.start( "3x-AuthenticationManagerImpl.doAuthenticate()" );
@@ -291,7 +299,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
      						+ zoneName + "," + username + "]", e);
     		}
     	} catch (NoUserByTheNameException e) {
-			throw new UserDoesNotExistException("Unrecognized user [" 
+			try {
+				// Try to find the user even if disabled or deleted
+				user = getProfileDao().findUserByNameDeadOrAlive( username, zoneName );
+				throw new UserAccountNotActiveException("User account disabled or deleted [" 
+						+ zoneName + "," + username + "]", e);
+
+			} catch (NoUserByTheNameException ex) {
+				throw new UserDoesNotExistException("Unrecognized user [" 
+						+ zoneName + "," + username + "]", e);
+			}
+    	} catch (UserAccountNotActiveException e) {
+			throw new UserDoesNotExistException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
     	
@@ -343,7 +362,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 	
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
-		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException {
 		validateZone(zoneName);
 		User user = null;
 		boolean hadSession = SessionUtil.sessionActive();
@@ -360,6 +379,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		}
 		catch(NoUserByTheIdException e) {
 			throw new UserDoesNotExistException("Unrecognized user ["
+					+ zoneName + "," + userId + "]", e);
+		}
+		catch(UserAccountNotActiveException e) {
+			throw new UserAccountNotActiveException("User account disabled or deleted ["
 					+ zoneName + "," + userId + "]", e);
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			

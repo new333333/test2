@@ -37,6 +37,7 @@ import java.util.HashMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
 import org.springframework.security.Authentication;
 import org.springframework.security.AuthenticationException;
@@ -75,6 +76,8 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 			throw new BadCredentialsException("Bad credentials", e);
 		} catch(UserDoesNotExistException e) {
 			throw new UsernameNotFoundException("No such user", e);
+		} catch(UserAccountNotActiveException e) {
+			throw new UsernameNotFoundException("User account disabled or deleted", e);
 		}	
 	}
 
