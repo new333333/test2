@@ -76,7 +76,8 @@ function handleRepeatEveryOnFocus()
 )</c:if>
 ,&nbsp;
 <c:if test="${!schedule.repeatMinutes && !schedule.repeatHours}">
-  <span id='${schedPrefix}userTime'>${(schedule.hours + offsetHour +24) % 24}:${schedule.minutes} ${ssUser.timeZone.displayName}</span>
+  <span id='${schedPrefix}userTime'>${(schedule.hours + offsetHour +24) % 24}:${schedule.minutes} <fmt:formatDate value="<%= now %>" 
+					    pattern="z" timeZone="${ssUser.timeZone.ID}"/></span>
 </c:if>
 <c:if test="${schedule.repeatMinutes}">
 	<ssf:nlt tag="schedule.repeathours">
@@ -180,7 +181,8 @@ function handleRepeatEveryOnFocus()
 
 	<label for="${schedPrefix}schedMinutes">
 	  <span style="display:none;"><ssf:nlt tag="label.selectMinutes"/></span>
-	</label>&nbsp;<span class="ss_bold">${ssUser.timeZone.displayName}</span>
+	</label>&nbsp;<span class="ss_bold"><fmt:formatDate value="<%= now %>" 
+					    pattern="z" timeZone="${ssUser.timeZone.ID}"/></span>
 	
 </div>
 
