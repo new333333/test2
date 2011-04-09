@@ -73,7 +73,7 @@ public class SearchMenuPanel extends FlowPanel {
 		m_actionTrigger = actionTrigger;
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_messages = GwtTeaming.getMessages();
-		addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel subhead-control-bg1 roundcornerSM");
+		addStyleName("mainMenuBar_BoxPanel mainMenuSearch_Panel");
 
 		// Finally, add the search and button widgets.
 		addSearchWidget();
