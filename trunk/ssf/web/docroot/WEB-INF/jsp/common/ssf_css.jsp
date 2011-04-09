@@ -3514,7 +3514,7 @@ ul.ss_calendarNaviBar {
 	font-family: Arial;
 	background-color: #c4c4c4;
 	list-style-type: none;
-	padding: 3px;
+	padding: 5px;
 	margin: 0px;
 	width: 100%;
 	-moz-border-radius-topleft: 3px;
@@ -3533,7 +3533,7 @@ ul.ss_calendarNaviBar li {
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	vertical-align: middle;
 	height: 30px;
-	line-height: 30px;
+	line-height: 20px;
 	white-space: nowrap;
 }
 
@@ -3580,7 +3580,7 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
-	margin: 7px 0px 7px 0px;
+	margin: 7px;
 }
 
 ul.ss_calendarNaviBar li.ss_calViewDatesDescriptions td {	
