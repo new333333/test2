@@ -1743,20 +1743,30 @@ body, table td, select
 }
 .mainMenuSearch_Input
 {
-	font-size: 9px;
-	padding: 1px 0;
-	vertical-align: top;
-	width: 150px;
+	font-size: 10px;
+	padding: 3px 0 0 3px;
+	vertical-align: middle;
+	width: 140px;
+	background-color: transparent;
+	border: 0px;
 }
 .mainMenuSearch_Panel
 {
-	padding: 1px;
+	padding: 0 0 0 5px;
 	border-left: none;
 	display: block;
 	position: absolute;
-	right: 43px;
-	top: 1px;
+	right: 45px;
+	top: 2px;
+	height: 18px;
 	white-space: nowrap;
+	
+	background-color: #fafafa;
+	border: 1px solid #c4c4c4;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+
+	
 }
 .mainMenuSearchOptions
 {
