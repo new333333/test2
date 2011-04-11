@@ -2520,17 +2520,14 @@ public class GwtServerHelper {
 				else if (ex instanceof OperationAccessControlExceptionNoName) exType = ExceptionType.ACCESS_CONTROL_EXCEPTION;
 				else                                                          exType = ExceptionType.UNKNOWN;
 				
-				reply.setExceptionType( exType );
+				reply.setExceptionType(exType);
 			}
 		}
 
-		// If debug logging is enabled...
-		if (m_logger.isDebugEnabled()) {
-			// ...log the exception that get us here.
-			if (null == ex)
-			     m_logger.debug("GwtServerHelper.getGwtTeamingException( EXCEPTION ):  ",         ex   );
-			else m_logger.debug("GwtServerHelper.getGwtTeamingException( DEFAULT EXCEPTION ):  ", reply);
-		}
+		// Log the exception.
+		if (null != ex)
+		     m_logger.error("GwtServerHelper.getGwtTeamingException( SOURCE EXCEPTION ):  ", ex   );
+		else m_logger.error("GwtServerHelper.getGwtTeamingException( GWT EXCEPTION ):  ",    reply);
 
 		// If we get here, reply refers to the GwtTeamingException that
 		// was requested.  Return it.
