@@ -2524,10 +2524,13 @@ public class GwtServerHelper {
 			}
 		}
 
-		// Log the exception.
-		if (null != ex)
-		     m_logger.error("GwtServerHelper.getGwtTeamingException( SOURCE EXCEPTION ):  ", ex   );
-		else m_logger.error("GwtServerHelper.getGwtTeamingException( GWT EXCEPTION ):  ",    reply);
+		// If debug logging is enabled...
+		if (m_logger.isDebugEnabled()) {
+			// ...log the exception that got us here.
+			if (null != ex)
+			     m_logger.debug("GwtServerHelper.getGwtTeamingException( SOURCE EXCEPTION ):  ", ex   );
+			else m_logger.debug("GwtServerHelper.getGwtTeamingException( GWT EXCEPTION ):  ",    reply);
+		}
 
 		// If we get here, reply refers to the GwtTeamingException that
 		// was requested.  Return it.
