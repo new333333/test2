@@ -45,7 +45,7 @@
 		<iframe frameborder="0" scrolling="auto" 
 		    id="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}" 
 		    name="ss_iframe_folder_dropbox${ssFolder.id}${renderResponse.namespace}"
-		    title="Add Files to Folder" 
+		    title="<ssf:nlt tag="toolbar.menu.dropBox.title"/>" 
 		    src="<html:rootPath/>js/forum/null.html" 
 		    height="80%" width="96%" style="padding:6px;">xxx</iframe>
 	    <div align="right">
