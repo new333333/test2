@@ -32,6 +32,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
+<%@ page import="java.util.Locale" %>
 <script type="text/javascript" src="<html:tinyMcePath/>tiny_mce.js"></script>
 <script type="text/javascript">
 //need to shut off relative links and adding pictures for mail.
@@ -53,6 +54,7 @@ tinyMCE.init({
     --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale == Locale.TAIWAN}">language: 'tw',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
     --%><c:otherwise>language: 'en',</c:otherwise><%--
 --%></c:choose>
