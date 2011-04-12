@@ -201,6 +201,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
 				return ajaxMobileLoginCheckForActivity(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_GET_LOGIN_NAME)) {
+				return ajaxMobileGetLoginName(this, request, response);
 			} else {
 				return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			}
@@ -270,6 +272,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_TEAMS)) {
 			return ajaxMobileShowTeams(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_GET_LOGIN_NAME)) {
+			return ajaxMobileGetLoginName(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 			return ajaxShowTeamingLive(this, request, response);
@@ -582,6 +587,21 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.SEEN_MAP, seen);
 		String view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, "mobile/show_front_page");
 
+		return new ModelAndView(view, model);
+	}
+
+	private ModelAndView ajaxMobileGetLoginName(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser(); 
+		Map model = new HashMap();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+		if (user.getName().equals(ObjectKeys.GUEST)) {
+			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.FALSE);
+		} else {
+			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.TRUE);
+		}
+		String view = "mobile/get_login_name";
+		response.setContentType("text/json");
 		return new ModelAndView(view, model);
 	}
 
