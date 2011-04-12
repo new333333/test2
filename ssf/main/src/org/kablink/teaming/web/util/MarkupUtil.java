@@ -439,7 +439,7 @@ public class MarkupUtil {
 				return WebUrlUtil.getAdapterRootUrl();
 			}
 			public String getImagesRootUrl() {
-				return WebUrlUtil.getRelativeSSFContextRootURL() + "images/";
+				return WebUrlUtil.getStaticFilesSSFContextRootURL() + "images/";
 			}
 			public String getRootServletUrl() {
 				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
@@ -740,7 +740,7 @@ public class MarkupUtil {
 				return WebUrlUtil.getAdapterRootUrl();
 			}
 			public String getImagesRootUrl() {
-				return WebUrlUtil.getRelativeSSFContextRootURL() + "images/";
+				return WebUrlUtil.getStaticFilesSSFContextRootURL() + "images/";
 			}
 			public String getRootServletUrl() {
 				if (httpReq != null) return WebUrlUtil.getServletRootURL(httpReq, httpReq.isSecure());
