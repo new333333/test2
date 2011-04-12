@@ -76,16 +76,23 @@ public final class ChineseFilter extends TokenFilter {
                 case Character.UPPERCASE_LETTER:
 
                     // English word/token should larger than 1 character.
-                    if (text.length()>1) {
-                        return token;
-                    }
-                    break;
+                    //if (text.length()>1) {
+                    //    return token;
+                    //}
+                    //break;
+                	
+                	// Allow English word/token regardless of size (for bug #560705)
+                	return token;
                 case Character.OTHER_LETTER:
 
                     // One Chinese character as one Chinese word.
                     // Chinese word extraction to be added later here.
 
                     return token;
+                    
+                // Added to handle the situation reported in bug #560705 
+                case Character.DECIMAL_DIGIT_NUMBER:
+                	return token;
                 }
 
             }
