@@ -468,6 +468,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_FIND_USER_GROUP_TEAM="mobile_find_user_group_team"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_FIND_PLACES="mobile_find_places"; 
+	public static final String OPERATION_MOBILE_GET_LOGIN_NAME = "mobile_get_login_name";
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
     public static final String OPERATION_MOBILE_DELETE_ENTRY="mobile_delete_entry"; 
@@ -1045,6 +1046,7 @@ public class WebKeys {
     public static final String MOBILE_BINDER_DEF_URL_LIST="ss_mobileBinderDefUrlList"; 
     public static final String MOBILE_ENTRY_MODIFY_URL="ss_mobileEntryModifyUrl"; 
     public static final String MOBILE_FAVORITES_LIST="ss_mobileFavoritesList"; 
+    public static final String MOBILE_IS_LOGGED_IN="ss_mobileIsLoggedIn"; 
     public static final String MOBILE_TEAMS_LIST="ss_mobileTeamsList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_URL="ssMobileUrl"; 
