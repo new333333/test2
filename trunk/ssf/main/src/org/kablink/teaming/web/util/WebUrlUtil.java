@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -602,8 +603,10 @@ public class WebUrlUtil {
 		return sb;
 	}
 	
-	public static String getRelativeSSFContextRootURL() {
+	public static String getStaticFilesSSFContextRootURL() {
 		String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+		ctx += "/" + ObjectKeys.STATIC_DIR;
+		ctx += "/" + SPropsUtil.getString("release.static.dir", "xxx");
 		return ctx + "/";
 	}
 	
