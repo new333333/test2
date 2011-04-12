@@ -65,7 +65,7 @@ ${exception.class}<br/>
 		message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
 	}
 %>
-<%= message.toString() %>
+<%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
 </p>
 
 <c:if test="${ssUser.super}">
