@@ -38,6 +38,7 @@
 <%@ page import="java.lang.String" %>
 <%@ page import="org.kablink.util.BrowserSniffer" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="java.util.Locale" %>
 <c:set var="ss_quotaMessage" value="" />
 <c:if test="${ss_diskQuotaHighWaterMarkExceeded && !ss_diskQuotaExceeded && !ss_isBinderMirroredFolder}">
 <c:set var="ss_quotaMessage" ><ssf:nlt tag="quota.nearLimit"><ssf:param name="value" useBody="true"
@@ -105,6 +106,7 @@ tinyMCE.init({
     --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    --%><c:when test="${ssUser.locale == Locale.TAIWAN}">language: 'tw',</c:when><%--
     --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
     --%><c:otherwise>language: 'en',</c:otherwise><%--
 --%></c:choose>
@@ -181,6 +183,7 @@ tinyMCE.init({
 	    --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
 	    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
 	    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
+    	--%><c:when test="${ssUser.locale == Locale.TAIWAN}">language: 'tw',</c:when><%--
 	    --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
 	    --%><c:otherwise>language: 'en',</c:otherwise><%--
 	--%></c:choose>
