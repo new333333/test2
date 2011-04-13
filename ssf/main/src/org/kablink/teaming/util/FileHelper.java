@@ -212,7 +212,7 @@ public class FileHelper {
 		boolean result = true;
 		String[] types = SPropsUtil.getStringArray("view.file.directly", ",");
 		for (int i=0; i < types.length; i++) {
-			if (contentType.startsWith(types[i].trim() + "/")) return false;
+			if (contentType.startsWith(types[i].trim())) return false;
 		}
 		return result;
 	}
