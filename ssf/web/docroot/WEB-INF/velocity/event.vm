@@ -33,13 +33,13 @@
 
 	#if ((${ssVisitor.Entity.getCustomAttribute($property_name).Value.AllDayEvent} && $ssEvent_startString == $ssEvent_endString) || 
 			${ssVisitor.Entity.getCustomAttribute($property_name).Value.Duration.Interval} == 0)
-			${ssVisitor.getNLT("calendar.when")}: ${ssEvent_startString}<br />
+			${ssVisitor.getNLT("calendar.when")} ${ssEvent_startString}<br />
 	#else
-			${ssVisitor.getNLT("calendar.start")}: ${ssEvent_startString}<br />
-			${ssVisitor.getNLT("calendar.end")}: ${ssEvent_endString}<br />
+			${ssVisitor.getNLT("calendar.start")} ${ssEvent_startString}<br />
+			${ssVisitor.getNLT("calendar.end")} ${ssEvent_endString}<br />
 	#end
 	#if (${ssEvent_repeatString})
-	    ${ssVisitor.getNLT("calendar.frequency")}: ${ssEvent_repeatString}
+	    ${ssVisitor.getNLT("calendar.frequency")} ${ssEvent_repeatString}
     #end
 
 #end
@@ -49,13 +49,13 @@
 #if (${ssVisitor.Entity.getCustomAttribute($property_name)})
 #if ((${ssVisitor.Entity.getCustomAttribute($property_name).Value.AllDayEvent} && $ssEvent_startString == $ssEvent_endString) || 
 			${ssVisitor.Entity.getCustomAttribute($property_name).Value.Duration.Interval} == 0)
-#ss_printLn(" ${ssVisitor.getNLT('calendar.when')}: ${ssEvent_startString}")
+#ss_printLn(" ${ssVisitor.getNLT('calendar.when')} ${ssEvent_startString}")
 #else
-#ss_printLn(" ${ssVisitor.getNLT('calendar.start')}: ${ssEvent_startString}")
-#ss_printLn(" ${ssVisitor.getNLT('calendar.end')}: ${ssEvent_endString}")
+#ss_printLn(" ${ssVisitor.getNLT('calendar.start')} ${ssEvent_startString}")
+#ss_printLn(" ${ssVisitor.getNLT('calendar.end')} ${ssEvent_endString}")
 #end
 #if (${ssEvent_repeatString})
-#ss_printLn(" ${ssVisitor.getNLT('calendar.frequency')}: ${ssEvent_repeatString}")
+#ss_printLn(" ${ssVisitor.getNLT('calendar.frequency')} ${ssEvent_repeatString}")
 #end
 #end
 #end

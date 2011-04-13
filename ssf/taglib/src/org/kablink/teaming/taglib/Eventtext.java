@@ -101,11 +101,11 @@ public class Eventtext extends TagSupport {
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			} else if (!event.isTimeZoneSensitive()) {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-						DateFormat.MEDIUM, user.getLocale());
+						DateFormat.SHORT, user.getLocale());
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			} else {
 				dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-						DateFormat.MEDIUM, user.getLocale());
+						DateFormat.SHORT, user.getLocale());
 				dateFormat.setTimeZone(user.getTimeZone());
 			}
 
