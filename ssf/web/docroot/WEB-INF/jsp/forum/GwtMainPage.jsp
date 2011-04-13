@@ -33,6 +33,7 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="java.util.Locale" %>
 <%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value="${ssProductName}" scope="request"/>
@@ -49,14 +50,17 @@
 	
 	<script type="text/javascript" language="javascript">
 		// Initialize tinyMCE.  This must be done here so that tinyMCE can bring in the other
-		// necessary js files.
+		// necessary js files. 
 		tinyMCE.init(
 		{
 			paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 			mode : "none",
 			editor_selector : "mceEditable_standard",
 			theme : "advanced", 
-		    language : '${ssUser.locale.language}',
+		    <c:choose><%--
+		    --%><c:when test="${ssUser.locale == 'zh_TW'}">language: 'tw',</c:when><%--
+		    --%><c:otherwise>language: '${ssUser.locale.language}',</c:otherwise><%--
+			--%></c:choose>
 			content_css : "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
 			relative_urls : false, 
 			remove_script_host : false,
