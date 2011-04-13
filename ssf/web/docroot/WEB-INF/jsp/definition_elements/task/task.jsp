@@ -196,6 +196,7 @@
 			<input type="hidden" id="taskId"                  value="<%= taskId                %>" />
 			<input type="hidden" id="updateCalculatedDates"   value="<%= updateCalculatedDates %>" />
 		</div>
+		<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
 	<% } else { %>
 		<% // Generate the old. JSP based UI. %>
 		<%@ include file="/WEB-INF/jsp/definition_elements/task/task_nav_bar.jsp"        %>
