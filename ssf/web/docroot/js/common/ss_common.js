@@ -1101,13 +1101,31 @@ function ss_postRequestSetFileStatus(s, data) {
 	ss_hideDiv("ss_fileStatusMenu"+data.statusObjId+"_" + data.fileId);
 }
 
-function ss_executeJavascript(xmlNode) {
+function ss_executeJavascript(xmlNode, globalScope) {
+	// Scan the <script>'s in xmlNode.
     var scripts = xmlNode.getElementsByTagName("script");
     for (var i = 0; i < scripts.length; i++) {
+    	// Is this <script> JavaScript?
         var script = scripts[i];
         if (script.getAttribute("type") == "text/javascript") {
-           // var js = script.firstChild.nodeValue;
-            eval(script.innerHTML);
+        	// Yes!  Does it contain anything to execute?
+        	var js = script.innerHTML;
+        	if ((null != js) && (0 < js.length)) {
+        		// Yes!  Are we supposed to evaluate it at a global
+        		// scope?
+	        	if (globalScope) {
+	        		// Yes!  Evaluate it.
+		        	if (window.execScript)
+		        	     window.execScript(js);	// Global scoped in IE.
+		        	else window.eval(js);		// Global scoped everwhere else.
+	        	}
+	        	else {
+	        		// No, we're not supposed to evaluate it at a
+	        		// global scope.  Evaluate it at a local scope as
+	        		// we've always done.
+	        		eval(js);
+	        	}
+        	}
         }
     }
 }
@@ -4237,6 +4255,8 @@ function ss_showComponentCallback(s, data) {
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 		ss_callDashboardEvent(data.componentId, "onAfterShow");
 		ss_showEmailLinks();
+		
+		ss_executeJavascript(targetDiv, true);	// true -> Global scope the eval()'s.
 	}
 }
 function ss_hideComponentCallback(s, data) {
