@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
+import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.spring.security.SsfContextMapper;
 import org.kablink.teaming.spring.security.SynchNotifiableAuthentication;
 import org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProvider;
@@ -65,6 +66,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -434,6 +436,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	    			return result;
 	    		} catch(AuthenticationException e) {
 	    			exc = e;
+	    		} catch(UserAccountNotActiveException e) {
+	    			exc = new UserIdNotActiveException(e.getMessage());
 	    		}
 	    		catch ( IncorrectResultSizeDataAccessException irsdaEx )
 	    		{
