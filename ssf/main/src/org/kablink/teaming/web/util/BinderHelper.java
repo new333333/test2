@@ -1428,6 +1428,7 @@ public class BinderHelper {
 	}
 	
 	static public void buildWorkspaceTreeBean(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
+		if (binder instanceof TemplateBinder) return;
 		Binder workspaceBinder = binder;
 		Document tree = null;
 		try {

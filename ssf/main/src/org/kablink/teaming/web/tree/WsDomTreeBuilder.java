@@ -202,7 +202,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 				}
 			}
 			if ((type == DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
+				Binder ws = (Binder)source;
 				String icon = ws.getIconName();
 				String imageClass = "ss_twIcon";
 				String imageBrand = SPropsUtil.getString("branding.prefix");

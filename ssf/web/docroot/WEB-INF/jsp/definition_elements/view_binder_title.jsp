@@ -66,7 +66,7 @@
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
-           action="view_ws_listing"/>">
+           action="${actionVar}"/>">
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
@@ -107,7 +107,7 @@
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
-           action="view_ws_listing"/>">
+           action="${actionVar}"/>">
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>
@@ -121,7 +121,7 @@
 	    <a href="<ssf:url crawlable="true"
         	adapter="true" portletName="ss_forum"
            	folderId="${ssDefinitionEntry.id}" 
-           	action="view_ws_listing" ><ssf:param 
+           	action="${actionVar}" ><ssf:param 
 		   	name="profile" value="1" /></ssf:url>">
 			<span class="ss_profile"><ssf:nlt tag="relevance.tab.profile"/></span></a>
       </c:if>
@@ -151,7 +151,7 @@
 	  <a href="<ssf:url crawlable="true"
            adapter="true" portletName="ss_forum"
            folderId="${ssDefinitionEntry.id}" 
-           action="view_profile_listing"/>">
+           action="${actionVar}"/>">
 	    <c:if test="${empty ssDefinitionEntry.title}">
           <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
         </c:if>

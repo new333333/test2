@@ -46,6 +46,7 @@ import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
+import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.LongIdUtil;
@@ -85,7 +86,11 @@ public class ManageBinderQuotaController extends AbstractBinderController {
 				bq.setDiskQuota(quota);
 				getAdminModule().setBinderQuota(binder, bq);
 			}
-			setupViewBinder(response, binderId, binder.getEntityType().name());
+			if (binder instanceof TemplateBinder) {
+				setupViewTemplateBinder(response, binderId, binder.getEntityType().name());
+			} else {
+				setupViewBinder(response, binderId, binder.getEntityType().name());
+			}
 
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
