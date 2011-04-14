@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -165,7 +166,7 @@ public class LdapConnectionConfig extends ZonedObject {
 		this.position = position;
 	}
 
-	public static class SearchInfo {
+	public static class SearchInfo implements Serializable {
 		private String baseDn;
 
 		private String filter;
