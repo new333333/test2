@@ -2264,6 +2264,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * new task.
 	 */
 	private void promptForDispositionNow(Long newTaskId, Long selectedTaskId) {
+		TaskListItem task = TaskListItemHelper.findTask(m_taskBundle, selectedTaskId);
 		TaskDispositionDlg tdd = new TaskDispositionDlg(
 			false,	// false -> Don't auto hide.
 			true,	// true  -> Modal.
@@ -2271,7 +2272,7 @@ public class TaskTable extends Composite implements ActionHandler {
 			0,		// Top.
 			this,
 			newTaskId,
-			selectedTaskId);
+			task);
 		tdd.addStyleName("taskDispositionDlg");
 		tdd.show(true);
 	}

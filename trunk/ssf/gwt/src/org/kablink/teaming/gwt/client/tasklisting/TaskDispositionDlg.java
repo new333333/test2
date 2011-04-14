@@ -39,6 +39,8 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.Scheduler;
@@ -63,7 +65,7 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 	private Grid				m_taskDispositionsGrid;	// Once displayed, the table of task disposition options.
 	private GwtTeamingMessages	m_messages;				// Access to the GWT UI messages.
 	private Long				m_newTaskId;			// The ID of the new task whose disposition is being queried.
-	private Long				m_selectedTaskId;		// The ID of the task the new task is being disposed of relative to.
+	private TaskListItem		m_selectedTask;			// The task the new task is being disposed of relative to.
 	private TaskTable			m_taskTable;			// Access to the TaskTable we're prompting for.
 
 	// This enumeration is used to specify the task disposition options
@@ -81,9 +83,17 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 	 * Inner class that wraps labels displayed in the dialog's content.
 	 */
 	private class DlgLabel extends Label {
-		public DlgLabel(String label) {
+		public DlgLabel(String label, String addedStyle) {
 			super(label);
 			addStyleName("taskDispositionDlg_Label");
+			if (!(GwtClientHelper.hasString(addedStyle))) {
+				addedStyle = "gwtUI_nowrap";
+			}
+			addStyleName(addedStyle);
+		}
+		
+		public DlgLabel(String label) {
+			this(label, null);
 		}
 	}
 
@@ -96,17 +106,17 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 	 * @param top
 	 * @param taskTable
 	 * @param newTaskId
-	 * @param selectedTaskId
+	 * @param selectedTask
 	 */
-	public TaskDispositionDlg(boolean autoHide, boolean modal, int left, int top, TaskTable taskTable, Long newTaskId, Long selectedTaskId) {
+	public TaskDispositionDlg(boolean autoHide, boolean modal, int left, int top, TaskTable taskTable, Long newTaskId, TaskListItem selectedTask) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top, DlgButtonMode.Ok);
 
 		// ...initialize everything else...
-		m_messages       = GwtTeaming.getMessages();
-		m_taskTable      = taskTable;
-		m_newTaskId      = newTaskId;
-		m_selectedTaskId = selectedTaskId;
+		m_messages     = GwtTeaming.getMessages();
+		m_taskTable    = taskTable;
+		m_newTaskId    = newTaskId;
+		m_selectedTask = selectedTask;
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -129,6 +139,14 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 	public Panel createContent(Object ignored) {
 		// Create a panel to hold the dialog's content...
 		VerticalPanel vp = new VerticalPanel();
+
+		// ...add a hint about what's happening at the top of the
+		// ...dialog...
+		vp.add(
+			new DlgLabel(
+				m_messages.taskDispositionDlgHint(
+					m_selectedTask.getTask().getTitle()),
+					"taskDispositionDlg_Hint"));
 
 		// ...create Grid for that...
 		m_taskDispositionsGrid = new Grid(0, 2);
@@ -196,7 +214,7 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 				m_taskTable.applyTaskDisposition(
 					td,
 					m_newTaskId,
-					m_selectedTaskId);
+					m_selectedTask.getTask().getTaskId().getEntryId());
 			}
 		};
 		Scheduler.get().scheduleDeferred(taskDispositioner);
