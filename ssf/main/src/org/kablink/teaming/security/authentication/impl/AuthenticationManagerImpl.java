@@ -52,6 +52,7 @@ import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.zone.ZoneException;
+import org.kablink.teaming.security.authentication.AuthenticationException;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
 import org.kablink.teaming.security.authentication.DigestDoesNotMatchException;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
@@ -191,6 +192,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
  			else throw nu;
+		} 
+		catch (UserAccountNotActiveException nu) {
+ 			throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
 		}
@@ -284,6 +288,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 					{
 						// Nothing to do
 					}
+					catch (UserAccountNotActiveException ex)
+					{
+						// Nothing to do
+					}
 				}
 			}
 
@@ -310,7 +318,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						+ zoneName + "," + username + "]", e);
 			}
     	} catch (UserAccountNotActiveException e) {
-			throw new UserDoesNotExistException("User account disabled or deleted [" 
+			throw new UserAccountNotActiveException("User account disabled or deleted [" 
 						+ zoneName + "," + username + "]", e);
     	}
     	
@@ -382,7 +390,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 					+ zoneName + "," + userId + "]", e);
 		}
 		catch(UserAccountNotActiveException e) {
-			throw new UserAccountNotActiveException("User account disabled or deleted ["
+			throw new UserDoesNotExistException("User account disabled or deleted ["
 					+ zoneName + "," + userId + "]", e);
 		} finally {
 			if (!hadSession) SessionUtil.sessionStop();			
