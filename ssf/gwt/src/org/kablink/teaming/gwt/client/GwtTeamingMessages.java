@@ -882,6 +882,7 @@ public interface GwtTeamingMessages extends Messages
 	
 	// The following are used for task disposition dialog.
 	String taskDispositionDlgHeader();
+	String taskDispositionDlgHint(String selectedTaskName);
 	String taskDispositionDlgInsertAfter();
 	String taskDispositionDlgInsertAppend();
 	String taskDispositionDlgInsertAsSubtask();

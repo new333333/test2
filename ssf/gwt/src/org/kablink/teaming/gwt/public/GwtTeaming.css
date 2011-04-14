@@ -2828,7 +2828,11 @@ top:100px;
 	line-height: 1.1em; 
 	margin-right: 5px;
 	padding: 0.2em 0.5em 0.3em; 
-	white-space: nowrap;
+}
+.taskDispositionDlg_Hint
+{
+	width: 400px;
+	margin-top: 5px;
 }
 
 /* Start:  GWT Task Folder Listing styles. */
