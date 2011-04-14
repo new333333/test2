@@ -156,5 +156,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jersey-json.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-server.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-snowball.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hibernate-jpa-2.0-api.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
