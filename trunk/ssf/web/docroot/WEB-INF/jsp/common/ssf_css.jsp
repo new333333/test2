@@ -4952,6 +4952,14 @@ span.ss_infoDivValue {
 	background: transparent url(<html:imagesPath/>pics/1pix.gif) no-repeat top left !important; 
 }
 
+.ss_table_rounded {
+	margin: 12px;
+	background-color: #ededed;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: 1px solid #c4c4c4;
+	}
+
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />

@@ -424,6 +424,27 @@ fieldset a:hover {
   	font-size: ${ss_style_font_normalprint};
 	}
 
+.ss_upButton {
+	display: block;
+	width: 16px;
+	height: 16px;
+	background: url(<html:imagesPath/>icons/arrow_up.png) no-repeat 0 0;
+	}
+.ss_upButton:hover {
+	cursor: pointer;
+	background: url(<html:imagesPath/>icons/arrow_up_over.png) no-repeat 0 0;
+	}	
+.ss_downButton {
+	display: block;
+	width: 16px;
+	height: 16px;
+	background: url(<html:imagesPath/>icons/arrow_down.png) no-repeat 0 0;
+	}
+.ss_downButton:hover {
+	cursor: pointer;
+	background: url(<html:imagesPath/>icons/arrow_down_over.png) no-repeat 0 0;
+	}	
+
 /* Text styled as buttons */
 
 .ss_inlineButton, input[type="reset"].ss_inlineButton, input[type="button"].ss_inlineButton, input[type="submit"].ss_inlineButton, button.ss_inlineButton {
