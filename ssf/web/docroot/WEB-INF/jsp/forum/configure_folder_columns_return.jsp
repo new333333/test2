@@ -86,25 +86,17 @@
   	</c:forEach>
 </c:forEach>
 
-<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width}; height:420px; overflow:scroll;">
- <tbody>
-  <tr >
-   <td valign="top" width="100%">
-     <div class="ss_popup_top">
-       <div class="ss_popup_title"><ssf:nlt tag="folder.selectColumns"/></div>
-     </div>
-   </td>
-  </tr>
-  <tr><td valign="top">
-   <div class="ss_popup_body">
+<div class="ss_popup teamingDlgBox" style="width: 400px;">
+   	<div class="teamingDlgBoxHeader"><ssf:nlt tag="misc.configureColumns"/></div>
+	<div class="ss_popup_body">
 	<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);" id="saveColumnsForm" name="saveColumnsForm">
-	<div class="ss_indent_medium">
-	<table>
+	<div class="gray3" style="font-size: 12px !important; width: 270px;"><ssf:nlt tag="folder.selectColumns"/></div>
+	<table cellpadding="4" class="ss_table_rounded">
 	 <tbody>
-	  <tr>
-	   <th colspan="2"><ssf:nlt tag="folder.column.columns"/></th>
-	   <th colspan="1"><ssf:nlt tag="folder.column.title"/></th>
-	   <th colspan="2"><ssf:nlt tag="folder.column.sort"/></th>	   
+	  <tr class="ss_tab_table_columnhead">
+	   <td colspan="2" style="text-align: center;"><ssf:nlt tag="folder.column.columns"/></td>
+	   <td colspan="1" style="text-align: center;"><ssf:nlt tag="folder.column.custom"/></td>
+	   <td colspan="2" style="text-align: left;"><ssf:nlt tag="folder.column.sort"/></td>	   
 	  </tr>
  
 <c:forEach var="colName" items="${allColumns}">
@@ -162,33 +154,34 @@
 	<c:set var="ss_folderColumnId" value="${colIdName}"/>
 	<%@ include file="/WEB-INF/jsp/forum/configure_folder_columns_sort.jsp" %>
   </tr>
-   
-</c:forEach>
-   
-  </tbody>
-  </table>
+</c:forEach>   
+</table>
     
 <c:if test="${ss_accessControlMap[ssBinder.id]['modifyBinder'] and ssConfigJspStyle != 'template'}">
-  <br/>
-  <input type="checkbox" name="setFolderDefaultColumns"/>
-  <span class="ss_labelAfter"><label for="setFolderDefaultColumns">
-	 <ssf:nlt tag="misc.configureColumns.folderDefault"/>
-  </label></span>
+
 </c:if>
 
-  <br/>
-  <br/>
-  <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
-  &nbsp;&nbsp;&nbsp;
-  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('ss_folder_column_menu');return false;">
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-  <input type="submit" name="defaultBtn" value="<ssf:nlt tag="button.restoreDefaults"/>">
-  
-</div>
-<input type="hidden" name="columns__order"/>
+	<div>
+		<input type="checkbox" name="setFolderDefaultColumns"/>
+		<span class="ss_labelAfter">
+			<label for="setFolderDefaultColumns"><ssf:nlt tag="misc.configureColumns.folderDefault"/></label>
+		</span>
+	</div>
+	<table class="margintop3">
+		<tr>
+			<td>
+				<input type="submit" name="defaultBtn" value="<ssf:nlt tag="button.restoreDefaults"/>">
+			</td>
+			<td width="100%" align="right">	
+				<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+				<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_cancelPopupDiv('ss_folder_column_menu');return false;">
+			</td>
+		</tr>
+	</table>
+
+	<input type="hidden" name="columns__order"/>
 </form>
 </div>
-</td></tr></tbody></table>
+</div>
 </c:otherwise>
 </c:choose>

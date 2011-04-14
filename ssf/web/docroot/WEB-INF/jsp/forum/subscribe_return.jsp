@@ -34,12 +34,14 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_popup" style="width: 350px" align="left">
-<form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
-<div align="center" class="ss_popup_topLg ss_bold"><ssf:nlt tag="subscribe.select.type"/><ssf:showHelp guideName="user" pageId="informed_notifications" /></div>
+<div class="ss_style ss_popup teamingDlgBox" style="width: 350px" align="left">
 
-<br/>
-<br/>
+<form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
+
+<div class="popupContent">
+<div class="teamingDlgBoxHeader"><ssf:nlt tag="toolbar.menu.subscriptionToFolder"/></div>
+	<div class="margintop3 gray3" style="font-size: 12px !important; margin-left: 10px; padding-right: 10px;"><ssf:nlt tag="subscribe.select.type"/>&nbsp;&nbsp;<ssf:showHelp guideName="user" pageId="informed_notifications" /></div>
+
 <c:set var="styles" value="${ssSubscription.styles}"/>
 <c:if test="${!empty styles}">
 <jsp:useBean id="styles" type="java.util.Map" />
@@ -59,7 +61,7 @@
 	request.setAttribute("currentStyles", currentStyles);
 %>
 </c:if>
-<div class="ss_indent_medium  ss_valignTop">
+<div class="ss_indent_medium  ss_valignTop" style="padding: 10px;">
 <c:set var="nothing" value="${true}"/>
 
 <c:forEach var="email" items="${ssUser.emailAddresses}"> 	
@@ -71,8 +73,8 @@
 
 <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/>
 <c:if test="${!ssScheduleInfo.enabled}">
-<br/>(<ssf:nlt tag="subscribe.select.disabled"/>
-<br/><ssf:nlt tag="administration.notify.nodefault.schedule"/>
+<div>(<ssf:nlt tag="subscribe.select.disabled"/></div>
+<div><ssf:nlt tag="administration.notify.nodefault.schedule"/></div>
 )</c:if>
 </span> 
   <select multiple="multiple" name="_subscribe1">
@@ -93,16 +95,17 @@
 	</c:if>
 </c:forEach>
 
-  <br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
-  <select multiple="multiple" name="_subscribe2">
-		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
-	<c:forEach var="email" items="${ssUser.emailAddresses}">
-	<c:set var="styleName" value="2${email.key}"/>
-		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value.address}</option>
-	</c:forEach>
-   </select>
-   
+	<div class="margintop3">
+	  <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
+	  <select multiple="multiple" name="_subscribe2">
+			<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<c:forEach var="email" items="${ssUser.emailAddresses}">
+		<c:set var="styleName" value="2${email.key}"/>
+			<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
+			>${email.value.address}</option>
+		</c:forEach>
+	   </select>
+	</div>   
 <c:set var="nothing" value="${true}"/>
 
 <c:forEach var="email" items="${ssUser.emailAddresses}"> 	
@@ -112,16 +115,17 @@
 	</c:if>
 </c:forEach>
 
-	<br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
-    <select multiple="multiple" name="_subscribe3">
-		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
-	<c:forEach var="email" items="${ssUser.emailAddresses}">
-	<c:set var="styleName" value="3${email.key}"/>
-		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value.address}</option>
-	</c:forEach>
-   </select>
-  
+   	<div class="margintop3">
+		<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
+		<select multiple="multiple" name="_subscribe3">
+			<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<c:forEach var="email" items="${ssUser.emailAddresses}">
+		<c:set var="styleName" value="3${email.key}"/>
+			<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
+			>${email.value.address}</option>
+		</c:forEach>
+	   </select>
+		</div>  
 <c:set var="nothing" value="${true}"/>
 
 <c:forEach var="email" items="${ssUser.emailAddresses}"> 	
@@ -131,34 +135,43 @@
 	</c:if>
 </c:forEach>
    
-	<br/><br/><span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
-    <select multiple="multiple" name="_subscribe5">
-		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
-	<c:forEach var="email" items="${ssUser.emailAddresses}">
-	<c:set var="styleName" value="5${email.key}"/>
-		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value.address}</option>
-	</c:forEach>
-   </select>
- 
-<br/><br/>
-  <table border="0" cellspacing="0" cellpadding="0">
-  <tr><td valign="top"><input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
-  <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
-  /></td><td><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:showHelp guideName="user" pageId="informed_notifications" sectionId="informed_notifications_override" /></td></tr></table><br/>
+   	<div class="margintop3">
+		<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
+		<select multiple="multiple" name="_subscribe5">
+			<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<c:forEach var="email" items="${ssUser.emailAddresses}">
+		<c:set var="styleName" value="5${email.key}"/>
+			<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
+			>${email.value.address}</option>
+		</c:forEach>
+	   </select>
+	</div>
+	 
+	<table class="margintop3" border="0" cellspacing="0" cellpadding="0">
+		<tr>
+			<td valign="top">
+				<input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
+				<c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if> />
+			</td>
+			<td>
+				<label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:showHelp guideName="user" pageId="informed_notifications" sectionId="informed_notifications_override" />
+			</td>
+		</tr>
+	</table>
   
-  <br/>
-    <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
-    onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssBinder.id}" >
-    <ssf:param name="namespace" value="${ss_namespace}"/>
-    <ssf:param name="operation" value="subscribe"/>
-     <ssf:param name="okBtn" value="1"/>
-    </ssf:url>', '${ss_namespace}subscription_form${ssBinder.id}');ss_cancelPopupDiv('ss_subscription_menu');return false;">
- &nbsp;&nbsp;&nbsp;
+	<div class="margintop3" style="text-align:right;">
+    	<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
+    		onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssBinder.id}" >
+    		<ssf:param name="namespace" value="${ss_namespace}"/>
+    		<ssf:param name="operation" value="subscribe"/>
+     		<ssf:param name="okBtn" value="1"/>
+    		</ssf:url>', '${ss_namespace}subscription_form${ssBinder.id}');ss_cancelPopupDiv('ss_subscription_menu');return false;">
   
-  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('ss_subscription_menu');return false;">
+  		<input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+  			onClick="ss_cancelPopupDiv('ss_subscription_menu');return false;">
+  </div>
   
+</div>
 </div>
 </form>
 </div>

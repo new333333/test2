@@ -587,16 +587,15 @@ ul.ss_dropdownmenu li {
 table.ss_popup, div.ss_popup {
 	position: relative;
 	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
-	padding: 5px;
+	padding: 6px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
 div.ss_popup {
 	position: relative;
 	background: url(<html:imagesPath/>pics/trans30_black.png) repeat;
-	padding: 5px;
+	padding: 6px;
   	margin: 0px;
-  	background-color:${ss_style_background_color_opaque};
   	text-align: left;
   	width: 300px;	
 	-moz-border-radius: 5px;
@@ -617,7 +616,7 @@ div.ss_popup_topLg {
   	position: relative;
   	background-image: url(<html:imagesPath/>pics/dialog_header_tile.png);
   	background-repeat: repeat-x;
-  	height: 22px; 
+  	height: 25px; 
   	width: 100%!important;
   	vertical-align:top;
 	<c:if test="<%= isIE %>">
@@ -626,7 +625,7 @@ div.ss_popup_topLg {
 	}	
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
-   font-size: ${ss_style_font_smallprint};
+   font-size: ${ss_style_font_normalprint};
    font-weight: bold;
    color: #fff;
    padding-top: 2px;
@@ -648,7 +647,11 @@ div.ss_popup_body {
   	background-color: #FFFFFF;
   	padding: 10px;
     font-family: ${ss_style_title_font_family}; 
-    font-size: ${ss_style_font_smallprint}; 	
+    font-size: ${ss_style_font_smallprint};
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 	}
 .ss_popup ul{
 	text-decoration: none;
@@ -667,7 +670,6 @@ div.ss_popup_body {
   	background-color: ${ss_style_background_color_opaque};
   	}  
 .ss_popupDiv input[type="submit"]:hover {	
-  	border: 1px dotted #333;
   	padding: 0px 7px 0px 7px;
 	<c:if test="<%= isIE %>">
   		padding: 0px;
@@ -1120,4 +1122,9 @@ tr.columnhead div.menudetail { background-color: #ffffff; text-align: left; posi
     }
 
 .menubottom  { margin-bottom: 0px; padding-bottom: 0px; padding-top: 5px; }
+
+#ss_folder_column_menu, #ss_subscription_menu {
+	background-color: transparent !important;
+	}
+
 /*-------------------------------------------*/

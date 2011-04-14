@@ -32,14 +32,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-	<td style="padding-left:10px;"><a class="ss_inlineButton" 
-	  onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveColumnOrder(this, 'columns__order');"
-	><img alt="<ssf:nlt tag="favorites.movedown"/>" title="<ssf:nlt tag="favorites.movedown"/>" 
-	src="<html:imagesPath/>icons/button_move_down.gif" 
-	/></a></td>
+	<td><a class="ss_downButton" 
+		onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'down');ss_saveColumnOrder(this, 'columns__order');"
+		alt="<ssf:nlt tag="favorites.movedown"/>" title="<ssf:nlt tag="favorites.movedown"/>" /></a>
+	 </td>
 	
-	<td style="padding-left:10px;"><a class="ss_inlineButton" 
-	  onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'up');ss_saveColumnOrder(this, 'columns__order');"
-	><img alt="<ssf:nlt tag="favorites.moveup"/>" title="<ssf:nlt tag="favorites.moveup"/>" 
-	src="<html:imagesPath/>icons/button_move_up.gif" 
-	/></a></td>
+	<td width="100%"><a class="ss_upButton" 
+	  	onClick="ss_moveThisTableRow(this, '${renderResponse.namespace}', 'up');ss_saveColumnOrder(this, 'columns__order');"
+		alt="<ssf:nlt tag="favorites.moveup"/>" title="<ssf:nlt tag="favorites.moveup"/>" /></a>
+	</td>
