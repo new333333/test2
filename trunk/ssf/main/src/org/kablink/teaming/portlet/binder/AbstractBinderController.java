@@ -66,6 +66,11 @@ public abstract class AbstractBinderController extends SAbstractController {
 		} else throw new IllegalArgumentException("Unknown binderType" + binderType);		
 	}
 
+	protected void setupViewTemplateBinder(ActionResponse response, Long binderId, String binderType) {
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+	}
+
 	protected void setupReloadBinder(ActionResponse response, Long binderId) {
 		//return to view binder
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);

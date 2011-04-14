@@ -41,6 +41,9 @@
   <ul class="ss_horizontal ss_nobullet">
   <c:set var="parentBinder2" value="${ssDefinitionEntry}"/>
   <c:set var="action" value="view_ws_listing"/>
+  <c:if test="${ssConfigJspStyle == 'template'}">
+    <c:set var="action" value="configure_configuration"/>
+  </c:if>
   <jsp:useBean id="parentBinder2" type="java.lang.Object" />
   <%
 	Stack parentTree2 = new Stack();
@@ -88,6 +91,9 @@
   </c:if>
   </li>
   <c:set var="action" value="view_folder_listing"/>
+  <c:if test="${ssConfigJspStyle != 'template'}">
+    <c:set var="action" value="configure_configuration"/>
+  </c:if>
  	 <%
    }
  	 %>

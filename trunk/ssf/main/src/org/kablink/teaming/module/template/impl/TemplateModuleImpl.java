@@ -52,6 +52,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.Definition;
@@ -438,6 +439,15 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 //copy all file attachments
 		 getFileModule().copyFiles(source, source, destination, destination);
 		 EntryBuilder.copyAttributes(source, destination);
+		 //Set quota (if any)
+		 if (getBinderModule().isBinderDiskQuotaEnabled()) {
+			 BinderQuota quotaSource = getAdminModule().getBinderQuota(source);
+			 BinderQuota quotaDestination = getAdminModule().getBinderQuota(destination);
+			 if (quotaSource != null && quotaDestination != null) {
+				 quotaDestination.setDiskQuota(quotaSource.getDiskQuota());
+				 getAdminModule().setBinderQuota(destination, quotaDestination);
+			 }
+		 }
 		 return destination;		
 	}
 	 protected TemplateBinder addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {

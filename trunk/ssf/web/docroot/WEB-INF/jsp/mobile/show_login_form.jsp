@@ -33,7 +33,11 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%
+	Boolean isAutoComplete = SPropsUtil.getBoolean( "enable.login.autocomplete", false );
+%>
 <c:set var="ss_windowTitle" value='<%= NLT.get("login.please") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 
@@ -44,7 +48,9 @@
 <div>
   <div id="contentDetail" style="display: block;">
     <div class="loginDetail">
-      <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" autocomplete="off">
+      <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}" 
+        <c:if test="<%= !isAutoComplete %>"> autocomplete="off" </c:if>
+      >
         <table border="0" cellspacing="5">
           <tr>
             <td>
