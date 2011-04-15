@@ -314,10 +314,10 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 				for(Recipient recipient : m_recipients) {
 					m_logger.debug("Delivering new message to " + recipient.m_email);			
 					//Run as background processing agent, same as other posting jobs.  
-					User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, recipient.m_simpleName.getZoneId());
+					User user = getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, recipient.m_simpleName.getId().getZoneId());
 					RequestContextUtil.setThreadContext(user).resolve();
 					
-					Binder binder = getCoreDao().loadBinder(recipient.m_simpleName.getBinderId(),recipient.m_simpleName.getZoneId());
+					Binder binder = getCoreDao().loadBinder(recipient.m_simpleName.getBinderId(),recipient.m_simpleName.getId().getZoneId());
 					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
 					errors.addAll(processor.postMessages((Folder)binder, recipient.m_email, msgs, session, null));
 					msgs[0].setFlag(Flags.Flag.DELETED, msgInitiallyDeleted);
