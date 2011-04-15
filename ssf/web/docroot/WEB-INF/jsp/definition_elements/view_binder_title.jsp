@@ -47,7 +47,13 @@
 	  <c:set var="actionVar" value="view_folder_listing"/>
 	</c:if>
 	<c:if test="${ssDefinitionEntry.parentBinder.entityType == 'profiles'}">
-	  <c:set var="actionVar" value="view_profile_listing"/>
+	  <c:if test="${ssDefinitionEntry.definitionType == '12'}">
+	    <c:set var="actionVar" value="view_ws_listing"/>
+	  </c:if>
+	  <c:if test="${ssDefinitionEntry.definitionType != '12'}">
+	    <c:set var="actionVar" value="view_profile_listing"/>
+	  </c:if>
+	  
 	</c:if>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'template'}">
