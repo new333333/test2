@@ -107,6 +107,7 @@ import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.CalendarHelper;
 import org.kablink.teaming.util.LongIdUtil;
@@ -202,7 +203,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
 				return ajaxMobileLoginCheckForActivity(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_APP_LOGIN)) {
-				return ajaxMobileGetLoginName(this, request, response);
+				return ajaxMobileAppLogin(this, request, response);
 			} else {
 				return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
 			}
@@ -274,7 +275,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileShowTeams(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_APP_LOGIN)) {
-			return ajaxMobileGetLoginName(this, request, response);
+			return ajaxMobileAppLogin(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
 			return ajaxShowTeamingLive(this, request, response);
@@ -590,18 +591,18 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView(view, model);
 	}
 
-	private ModelAndView ajaxMobileGetLoginName(AllModulesInjected bs, RenderRequest request, 
+	private ModelAndView ajaxMobileAppLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
 		Map model = new HashMap();
+		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		if (user.getName().equals(ObjectKeys.GUEST)) {
 			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.FALSE);
 		} else {
 			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.TRUE);
 		}
-		String view = "mobile/get_login_name";
-		response.setContentType("text/json");
+		String view = "mobile/app_login";
 		return new ModelAndView(view, model);
 	}
 
