@@ -191,6 +191,8 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 				DefaultSpringSecurityContextSource contextSource = null;
 				try {
 					String url;
+					String derefAliases;
+					Map<String,String> baseEnvironmentProperties; 
 					
 					// The call to new DefaultSpringSecurityContextSource() will fail if
 					// the word "ldap" is not all lower case.
@@ -209,6 +211,13 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 					}
 					
 					contextSource = new DefaultSpringSecurityContextSource( url );
+					
+					// Set the property that tells ldap whether or not to dereference aliases.
+					derefAliases = SPropsUtil.getString( "java.naming.ldap.derefAliases", "never" );
+					baseEnvironmentProperties = new HashMap<String, String>();
+					baseEnvironmentProperties.put( "java.naming.ldap.derefAliases", "never" );
+					contextSource.setBaseEnvironmentProperties( baseEnvironmentProperties );
+					
 				} catch(Exception e) {
 					logger.warn("Unable to create LDAP context for url " + config.getUrl() + ": " + e.toString());
 					continue;
