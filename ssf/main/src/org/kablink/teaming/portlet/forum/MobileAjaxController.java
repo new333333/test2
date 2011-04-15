@@ -201,7 +201,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				return ajaxMobileLogin(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
 			} else if (op.equals(WebKeys.OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY)) {
 				return ajaxMobileLoginCheckForActivity(this, request, response, "ss_forum", WebKeys.OPERATION_VIEW_TEAMING_LIVE);
-			} else if (op.equals(WebKeys.OPERATION_MOBILE_GET_LOGIN_NAME)) {
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_APP_LOGIN)) {
 				return ajaxMobileGetLoginName(this, request, response);
 			} else {
 				return ajaxMobileLogin(this, request, response, "ss_mobile", WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
@@ -273,7 +273,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_TEAMS)) {
 			return ajaxMobileShowTeams(this, request, response);
 			
-		} else if (op.equals(WebKeys.OPERATION_MOBILE_GET_LOGIN_NAME)) {
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_APP_LOGIN)) {
 			return ajaxMobileGetLoginName(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_VIEW_TEAMING_LIVE)) {
