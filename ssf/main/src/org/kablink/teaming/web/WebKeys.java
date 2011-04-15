@@ -468,7 +468,7 @@ public class WebKeys {
     public static final String OPERATION_MOBILE_FIND_USER_GROUP_TEAM="mobile_find_user_group_team"; 
     public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_FIND_PLACES="mobile_find_places"; 
-	public static final String OPERATION_MOBILE_GET_LOGIN_NAME = "mobile_get_login_name";
+	public static final String OPERATION_MOBILE_APP_LOGIN = "mobile_app_login";
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_MODIFY_ENTRY="mobile_modify_entry"; 
     public static final String OPERATION_MOBILE_DELETE_ENTRY="mobile_delete_entry"; 
@@ -713,6 +713,7 @@ public class WebKeys {
 	public static final String BINDER_READ_ENTRIES="ssBinderReadEntries";
 	public static final String BINDER_VIEW_BINDER_TITLE="ssBinderViewBinderTitle";
 	public static final String BINDERS="ss_binders";
+	public static final String BINDER_SUB_BINDERS="ss_binderSubBinders";
 	public static final String BINDERS_SUB_BINDERS="ss_bindersSubBinders";
 	public static final String BINDER_TEMPLATE_NAME="ssBinderTemplateName";
 	public static final String BINDER_TITLE="binderTitle";

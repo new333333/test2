@@ -49,6 +49,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.portlet.PortletSession;
@@ -420,6 +421,9 @@ public class WorkspaceTreeHelper {
 				if (viewType == null) viewType = "";
 				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
 					getShowDiscussionWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);					
+				} else if (viewType.equals(Definition.VIEW_STYLE_PROJECT_WORKSPACE)) {
+					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model, showTrash);
+					getShowProjectWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);
 				} else {
 					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model, showTrash);
 				}
@@ -681,6 +685,34 @@ public class WorkspaceTreeHelper {
       	//Get the info for the "add a team" button
 		buildAddTeamButton(bs, req, response, ws, model);
 		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
+	}
+	
+	protected static void getShowProjectWorkspace(AllModulesInjected bs, Map formData, 
+			RenderRequest req, RenderResponse response, Workspace ws, 
+			Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+		
+    	//Get the sorted list of child binders
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, org.kablink.util.search.Constants.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+		Map searchResults = bs.getBinderModule().getBinders(ws, options);
+		List<Map> binders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		model.put(WebKeys.BINDERS, binders); 
+		
+		//Get the next level of binders below the workspaces in "binders"
+		List binderIdList = new ArrayList();
+		for (Map binder:binders) {
+			String binderIdString = (String) binder.get(DOCID_FIELD);
+			if (binderIdString != null) {
+				binderIdList.add(Long.valueOf(binderIdString));
+			}
+		}
+		if (!binderIdList.isEmpty()) {
+			SortedSet<Binder> subBinders = bs.getBinderModule().getBinders(binderIdList);
+			model.put(WebKeys.BINDER_SUB_BINDERS, subBinders);
+		}
+
 	}
 	
 	protected static void buildAddTeamButton(AllModulesInjected bs, 
