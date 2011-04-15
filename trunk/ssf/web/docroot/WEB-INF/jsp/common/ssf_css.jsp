@@ -1539,10 +1539,18 @@ table.ss_attachments_list td.ss_att_description p{
 }
 
 
+
 .ss_dashboard_component {
 }
 .ss_dashboard_component_dragger {
 }
+
+<c:if test="<%= isIE %>">
+.ss_dashboard_component_dragger {
+	display: inline-block;
+	}
+</c:if>
+
 .ss_dashboard_component_title {
 }
 .ss_dashboard_dragHandle {
@@ -3509,47 +3517,38 @@ span.ss_cal_eventTime {
   background-color: ${ss_calendar_today_background_color};
 }
 
-ul.ss_calendarNaviBar {	
-	display: table;
-	font-family: Arial;
+div.ss_calendarNaviBar {	
 	background-color: #c4c4c4;
-	list-style-type: none;
-	padding: 5px;
 	margin: 0px;
-	width: 100%;
+	padding: 10px;
 	-moz-border-radius-topleft: 3px;
 	-moz-border-radius-topright: 3px;
 	-webkit-border-top-left-radius: 3px;
 	-webkit-border-top-right-radius: 3px;
 }
+ <c:if test="<%= isIE %>">
+	padding: 0px;
+ </c:if>
 
-ul.ss_calendarNaviBar li {
-	display: table-cell;
-	list-style-image:none;
-	list-style-position:outside;
-	list-style-type:none;
-}
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+.ss_calendarNaviBar .ss_calendarNaviBarOption, .ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	vertical-align: middle;
-	height: 30px;
-	line-height: 20px;
 	white-space: nowrap;
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption {	
-	padding: 0px 4px 0px 4px;
+.ss_calendarNaviBar .ss_calendarNaviBarOption {	
+	padding: 0px 4px;
 	margin: 0px;	
 }
 
-ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
 	border-left: 1px dotted #FFFFFF;
 	margin: 0px 5px 0px 5px;
 	padding: 0px;
 	width: 0px;
 }
 
-ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
+.ss_calendarNaviBar .ss_hoursSelectorTitle {
 	background-color: #e0e0e0;
 	color: #333333;
 	text-decoration: none;
@@ -3559,55 +3558,49 @@ ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
 	-webkit-border-radius: 15px;
 }
 
-ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu {
+.ss_calendarNaviBar .ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
 	padding-top: 5px;
  </c:if>
 }
 
-ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu img {
+.ss_calendarNaviBar .ss_calHoursSelectorMenu img {
 	vertical-align: middle;
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
+.ss_calendarNaviBar .ss_calendarNaviBarOptionMiddleImg {
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption  {
+.ss_calendarNaviBar .ss_calendarNaviBarOption  {
 	margin: 0px;
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
+.ss_calendarNaviBar .ss_calendarNaviBarOption div.ss_toolbar_color {
 }
 
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
-	margin: 7px;
+.ss_calendarNaviBar .ss_calendarNaviBarOption a.ss_calendarButton img {
 }
 
-ul.ss_calendarNaviBar li.ss_calViewDatesDescriptions td {	
+.ss_calendarNaviBar .ss_calViewDatesDescriptions td {	
 	color: #FFFFFF;
 	font-weight: bold;
 	font-size: 14px;
 }
 
-ul.ss_calendarNaviBar li.ss_calSelectDate {
+.ss_calendarNaviBar .ss_calSelectDate {
 	padding: 0px 0px 0px 7px;
 }
 
-ul.ss_calendarNaviBar li.ss_calSelectToday {
+.ss_calendarNaviBar .ss_calSelectToday {
 	padding: 0px 0px 0px 7px;
 }
 
-ul.ss_calendarNaviBar li.ss_taskViewOptions {
+.ss_calendarNaviBar .ss_taskViewOptions {
 	border: 1px solid white; 
 	margin: 1px 0px 0px 1px;
 	white-space: nowrap;
 }
 
-.ss_hoursSelectorList li  {
-	float:none;
-	border-right-style:none;
-    line-height:18px;
-}
 
 .ss_hoursSelectorList {
 	position:absolute;
@@ -3616,8 +3609,6 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	left:-25px;
  </c:if>
  <c:if test="<%= !isIE %>">
-	top:-8px;
-	left:-24px;
  </c:if>	
 	border-top:none;
 	padding: 4px 1px;
@@ -3625,24 +3616,42 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	-webkit-border-radius: 3px;
 }
 
-.ss_hoursSelectorList li a {
-  display: block;
-  padding-left: 10px;
-  padding-right: 10px;
-  text-decoration: none;
-}
+.popupMenu {
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	background-color: #3A3E40;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 400;
+	padding: 10px 0;
+	}
 
-.ss_hoursSelectorList div {
-	background:none;
-}
+.popupMenuTopPanel, .popupMenuBottomPanel	{
+	padding-top: 5px;
+	}
 
-.ss_hoursSelectorList li:hover, .ss_hoursSelectorList a:hover {
-	text-decoration:underline;
-	color:#333333;
-}
-.ss_hoursSelectorList a, .ss_actions_bar_submenu a:visited {
-	color:#333333;
-}
+.popupMenuItem {
+	font-family: ${ss_style_font_family};
+	font-size: ${ss_style_font_normalprint} !important; 
+	cursor: pointer;
+	line-height: 1.1em; 
+	padding: 0.4em 0.75em 0.5em; 
+	white-space: nowrap;
+	}
+
+.popupMenuItem:hover {
+	background: none repeat scroll 0 0 #505354;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	}
+.popupMenuItem a {
+	color: #fff !important;
+	fo
+	}
+.popupMenuItem a:hover {
+	color: #81B2BD !important;
+	}
 
 /* EVENT EDITOR */
 
