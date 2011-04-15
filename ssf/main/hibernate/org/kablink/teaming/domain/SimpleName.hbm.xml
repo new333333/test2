@@ -4,9 +4,9 @@
 <hibernate-mapping auto-import="false">
     <class dynamic-update="true" table="SS_SimpleName" lazy="false" name="org.kablink.teaming.domain.SimpleName">
     	<cache usage="nonstrict-read-write"/>
-	    <composite-id>
-	      <key-property name="zoneId" access="field"/>
-	      <key-property name="name" length="128" access="field"/>
+	    <composite-id name="id" class="org.kablink.teaming.domain.SimpleName$SimpleNamePK">
+	      <key-property name="zoneId"/>
+	      <key-property name="name" length="128"/>
 	    </composite-id>
 	    <property name="emailAddress" length="128" access="field" index="emailAddress_simpleName"/>
     	<property name="binderId" index="binderId_simpleName"/>

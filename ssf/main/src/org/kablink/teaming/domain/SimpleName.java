@@ -34,12 +34,10 @@ package org.kablink.teaming.domain;
 
 import java.io.Serializable;
 
-public class SimpleName extends ZonedObject implements Serializable {
+public class SimpleName {
+	
+	private SimpleNamePK id;
 
-	// The following field plus the zone id make up the primary key.
-	private String name; // access="field"
-	
-	
 	private String emailAddress; // access="field"
 	
 	private Long binderId;
@@ -50,7 +48,7 @@ public class SimpleName extends ZonedObject implements Serializable {
 	public SimpleName() {}
 	
 	public SimpleName(Long zoneId, String name) {
-		this.zoneId = zoneId;
+		setId(new SimpleNamePK(zoneId, name));
 		setName(name);
 	}
 	
@@ -60,6 +58,14 @@ public class SimpleName extends ZonedObject implements Serializable {
 		this.binderType = binderType;
 	}
 	
+	public SimpleNamePK getId() {
+		return id;
+	}
+
+	public void setId(SimpleNamePK id) {
+		this.id = id;
+	}
+
 	public Long getBinderId() {
 		return binderId;
 	}
@@ -73,10 +79,10 @@ public class SimpleName extends ZonedObject implements Serializable {
 		this.binderType = binderType;
 	}
 	public String getName() {
-		return name;
+		return id.getName();
 	}
 	public void setName(String name) {
-		this.name = name;
+		id.setName(name);
 		setEmailAddress(EmailFromURL(name));
 	}
 	
@@ -85,7 +91,6 @@ public class SimpleName extends ZonedObject implements Serializable {
 		return url.replace('/', '.');
 	}
 
-
 	public String getEmailAddress() {
 		return emailAddress;
 	}
@@ -93,23 +98,44 @@ public class SimpleName extends ZonedObject implements Serializable {
 		this.emailAddress = emailAddress;
 	}
 	
-	public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
-
-        if ((obj == null) || !(obj instanceof SimpleName))
-            return false;
-            
-        SimpleName sm = (SimpleName) obj;
-        if(zoneId.equals(sm.zoneId) && name.equals(sm.name))
-        	return true;
-        else
-        	return false;
-	}
-	public int hashCode() {
-       	int hash = 7;
-    	hash = 31*hash + zoneId.hashCode();
-    	hash = 31*hash + name.hashCode();
-    	return hash;
+	public static class SimpleNamePK implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private Long zoneId;
+		private String name;
+		public SimpleNamePK() {
+		}
+		public SimpleNamePK(Long zoneId, String name) {
+			this.zoneId = zoneId;
+			this.name = name;
+		}
+		public Long getZoneId() {
+			return zoneId;
+		}
+		public void setZoneId(Long zoneId) {
+			this.zoneId = zoneId;
+		}
+		public String getName() {
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public boolean equals(Object obj) {
+	        if(this == obj)
+	            return true;
+	        if ((obj == null) || !(obj instanceof SimpleNamePK))
+	            return false;     
+	        SimpleNamePK sm = (SimpleNamePK) obj;
+	        if(zoneId.equals(sm.zoneId) && name.equals(sm.name))
+	        	return true;
+	        else
+	        	return false;
+		}
+		public int hashCode() {
+	       	int hash = 7;
+	    	hash = 31*hash + zoneId.hashCode();
+	    	hash = 31*hash + name.hashCode();
+	    	return hash;
+		}		
 	}
 }

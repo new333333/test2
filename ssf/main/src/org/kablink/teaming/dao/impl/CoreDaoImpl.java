@@ -110,6 +110,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
@@ -2295,7 +2296,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	public SimpleName loadSimpleName(String name, Long zoneId) {
 		long begin = System.nanoTime();
 		try {
-			return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name));
+			return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleNamePK(zoneId, name));
     	}
     	finally {
     		end(begin, "loadSimpleName(String,Long)");
@@ -2309,7 +2310,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        return session.createCriteria(SimpleName.class)
-	                        	.add(Expression.eq("zoneId", zoneId))
+	                        	.add(Expression.eq("id.zoneId", zoneId))
 	                        	.add(Expression.eq("emailAddress", emailAddress))
 	                        	.setCacheable(true)
 	                        	.uniqueResult();
@@ -2330,10 +2331,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        List<SimpleName> results = session.createCriteria(SimpleName.class)
-	                        	.add(Expression.eq("zoneId", zoneId))
+	                        	.add(Expression.eq("id.zoneId", zoneId))
 	                        	.add(Expression.eq("binderId", binderId))
 	                        	.setCacheable(true)
-	                        	.addOrder(Order.asc("name"))
+	                        	.addOrder(Order.asc("id.name"))
 	                        	.list();
 	                    	return results;
 	                    }
