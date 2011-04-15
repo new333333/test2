@@ -38,7 +38,7 @@
 	<legend class="ss_legend"><ssf:nlt tag="project.statistics.title" /></legend>
 		<ul class="ss_nobullet">
 			<c:if test="${ssConfigJspStyle != 'template'}">		
-				<c:forEach var="selection" items="${ssBinder.folders}" varStatus="status">
+				<c:forEach var="selection" items="${ss_binderSubBinders}" varStatus="status">
 	  				<c:if test="${!empty selection && !empty selection.id}">		
 						<li>
 							<a href="<ssf:url 
