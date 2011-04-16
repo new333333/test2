@@ -43,7 +43,7 @@
 self.location.href="${ssMobileUrl}";
 </c:if>
 <c:if test="${!ss_mobileIsLoggedIn}">
-	Android.doAppLogin();
+	Android.doAppLogin("${operation2}");
 </c:if>
 </script>
 
