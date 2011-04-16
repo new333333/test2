@@ -594,7 +594,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileAppLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser(); 
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		Map model = new HashMap();
+		model.put(WebKeys.URL_OPERATION2, op2);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		if (user.getName().equals(ObjectKeys.GUEST)) {
