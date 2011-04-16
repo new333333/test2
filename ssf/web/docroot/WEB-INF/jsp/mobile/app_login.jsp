@@ -36,17 +36,14 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("mobile.frontPage") %>' scope="request"/>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-Loading...
+<ssf:nlt tag="Loading"/>
 <br/>
-<a href="${ssMobileUrl}/appLogin">login</a>
-
-</form>
 <script type="text/javascript">
 <c:if test="${ss_mobileIsLoggedIn}">
 self.location.href="${ssMobileUrl}";
 </c:if>
 <c:if test="${!ss_mobileIsLoggedIn}">
-self.location.href=${ssMobileUrl}/appLogin";
+	Android.doAppLogin();
 </c:if>
 </script>
 
