@@ -122,14 +122,24 @@ if (self != self.parent) {
 	try {
 		if ( window.name == 'gwtContentIframe' || window.name == 'ss_showentryframe')
 		{
+			//alert( 'window being loaded window.name: ' + window.name );
 			//Check all the way up to the top to see if there are more than one frame with these names
 			var windowObj = self;
 			var counter = 20;
 			while (counter > 0 && windowObj != null && windowObj != windowObj.parent) {
 				if (windowObj.parent.window.name == 'gwtContentIframe' || windowObj.parent.window.name == 'ss_showentryframe') {
+					//alert( 'windowObj.parent.window.name: ' + windowObj.parent.window.name );
 					if (typeof self.parent.ss_urlBase != "undefined") {
-						windowObj.parent.location.href = self.location.href;
-						break;
+						if ( typeof window.top.ss_gotoContentUrl != "undefined" )
+						{
+							// The gwtContentIFrame or the ss_showentryframe is being loaded inside a
+							// gwtContentIFrame or a ss_showentryframe.  We don't want that to happen.
+							// Take the url that is being loaded and load it into the top-level
+							// gwtContentIFrame.
+							window.top.ss_gotoContentUrl( self.location.href );
+							//!!!windowObj.parent.location.href = self.location.href;
+							break;
+						}
 					}
 				}
 				counter = counter - 1;
