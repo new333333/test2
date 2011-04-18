@@ -137,6 +137,8 @@ public class TeamingServiceClientWithStub {
 		
 		// addFileEntry();
 		
+		//addDiscussionEntry();
+		
 		// addTaskEntry();
 		
 		//getFunctionMembership();
@@ -257,7 +259,7 @@ public class TeamingServiceClientWithStub {
 		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_TASK)) // only task family
 		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
-		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20100931235959")) // modification time should fall in this range (inclusive)
+		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20110931235959")) // modification time should fall in this range (inclusive)
 		.add(not().add(eq("status","s3"))) // only those tasks not yet completed
 		;
 		
@@ -289,7 +291,7 @@ public class TeamingServiceClientWithStub {
 		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
 		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
-		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20101031235959")) // modification time should fall in this range (inclusive)
+		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20111031235959")) // modification time should fall in this range (inclusive)
 		.add(in(Constants.BINDER_ID_FIELD, new String[] {"43", "148"}));
 		
 		System.out.println("Here's the search string in XML");
@@ -304,7 +306,9 @@ public class TeamingServiceClientWithStub {
     	System.out.println("Result size: " + entries.length);
     	for(int i = 0; i < entries.length; i++) {
     		FolderEntryBrief entry = entries[i];
-    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + ", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + ", title=" + entry.getTitle());
+    		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + 
+    				", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + 
+    				", title=" + entry.getTitle() + ", permalink=" + entry.getPermaLink());
     	}
 	}
 	
@@ -552,14 +556,32 @@ public class TeamingServiceClientWithStub {
 	public static void addFileEntry() throws Exception {
 		TeamingServiceSoapBindingStub stub = getStub();
 		FolderEntry testEntry = new FolderEntry();
-		testEntry.setDescription(new Description(1,"Creating a file entry through web services"));
-		testEntry.setParentBinderId(new Long(149));
 		// Do not add title!!!
+		testEntry.setDescription(new Description(1,"Creating a file entry through web services"));
+		testEntry.setParentBinderId(new Long(488));
+		// Note: This call does NOT actually attach a file. Even though a file name is specified,
+		// the actual content is attached to the SOAP message. Consequently, the server side will
+		// conveniently ignore the file name, and will initially create an empty file entry with 
+		// no file attached.
 		long testEntryId = stub.folder_addEntry(null, testEntry, "debug1.txt");
 		System.out.println("Successfully created an empty file entry with ID = " + testEntryId);
 		String fileText = "Wow, this works!!";
 		stub.folder_uploadFileAsByteArray(null, testEntryId, null, "what-the.txt", fileText.getBytes());
 		System.out.println("Successfully uploaded primary file");
+	}
+	
+	public static void addDiscussionEntry() throws Exception {
+		TeamingServiceSoapBindingStub stub = getStub();
+		FolderEntry testEntry = new FolderEntry();
+		testEntry.setTitle("Created from web services");
+		testEntry.setDescription(new Description(1,"Setting creator and creation time programmtically"));
+		testEntry.setParentBinderId(new Long(251));
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTimeInMillis(cal.getTimeInMillis() - 100000000);
+	    Timestamp ts = new Timestamp(cal,"user1");
+	    testEntry.setCreation(ts);
+		long testEntryId = stub.folder_addEntry(null, testEntry, null);
+		System.out.println("Successfully created a discussion entry with ID = " + testEntryId);
 	}
 	
 	public static void checkEntry()  throws Exception {
