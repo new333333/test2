@@ -48,6 +48,11 @@
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="org.kablink.teaming.comparator.StringComparator" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
+<c:if test="${empty landingPageCalendarPrefix}">
+  <c:set var="landingPageCalendarPrefix" value="0" scope="request"/>
+</c:if>
+<c:set var="landingPageCalendarPrefix" value="${landingPageCalendarPrefix + 1}" scope="request"/>
+<c:set var="prefix" value="${landingPageCalendarPrefix}" />
 <c:set var="mashupBinderId" value="${mashup_attributes['folderId']}"/>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashupBinderId]}"/>
 
