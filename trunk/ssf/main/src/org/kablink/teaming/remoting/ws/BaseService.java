@@ -150,6 +150,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("modificationDate", sdFormat.format((Date)entry.get(Constants.MODIFICATION_DATE_FIELD)));
 		entryElem.addAttribute("modificationName", (String)entry.get(Constants.MODIFICATION_NAME_FIELD));
 		entryElem.addAttribute("modificationTitle", (String)entry.get(Constants.MODIFICATION_TITLE_FIELD));
+		if (Validator.isNotNull((String) entry.get(Constants.ENTITY_FIELD))) {
+			entryElem.addAttribute("permalink", PermaLinkUtil
+					.getPermalink(Long.valueOf((String) entry
+							.get(Constants.DOCID_FIELD)),
+							EntityIdentifier.EntityType.valueOf((String) entry
+									.get(Constants.ENTITY_FIELD))));
+		}
 	}
 	
 	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
