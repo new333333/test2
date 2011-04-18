@@ -271,12 +271,11 @@
 				self.location.href='<%= org.kablink.teaming.web.util.WebUrlUtil.getSsoProxyLogoffUrl(request) %>';
 		}
 		
-		
-		// The following are used to communicate a task information
-		// between the time a task is selected and the time the task
-		// folder is refreshed after an add.
-		var ss_newTaskDisposition = "";
-		var ss_selectedTaskId     = "";
+		// The following are used to persist task information across
+		// refresh cycles.
+		var ss_newTaskDisposition	= "";
+		var ss_selectedTaskId		= "";
+		var ss_showTaskGraphs		= false;
 	</script>
 	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
