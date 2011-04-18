@@ -321,6 +321,11 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::relayoutPage()();
 		}//end ss_gwtRelayoutPage()
+		
+		$wnd.ss_gotoContentUrl = function( url )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::gotoContentUrl(Ljava/lang/String;)( url );
+		}
 	}-*/;
 
 	/*
@@ -1495,6 +1500,17 @@ public class GwtMainPage extends Composite
 			alert( 'ss_showForumEntry() is undefined' );
 	}-*/;
 
+
+	/**
+	 * 
+	 */
+	private void gotoContentUrl( String url )
+	{
+		exitActivityStreamIfActive();
+		preContextSwitch();
+		gotoUrl( url, true );
+	}
+	
 	
 	/*
 	 * This method will be called to goto a URL, permalink or
