@@ -733,9 +733,9 @@ public class GwtTaskHelper {
 				if (null != task) {
 					// Yes!  Store the user's rights to that
 					// FolderEntry.
-					ti.setCanModify(   fm.testAccess(task, FolderOperation.modifyEntry   ));
-					ti.setCanPreDelete(fm.testAccess(task, FolderOperation.preDeleteEntry));
-					ti.setCanTrash(    fm.testAccess(task, FolderOperation.deleteEntry   ));
+					ti.setCanModify(fm.testAccess(task, FolderOperation.modifyEntry   ));
+					ti.setCanPurge( fm.testAccess(task, FolderOperation.deleteEntry   ));
+					ti.setCanTrash( fm.testAccess(task, FolderOperation.preDeleteEntry));
 				}
 			}
 			
@@ -824,7 +824,7 @@ public class GwtTaskHelper {
 			buf.append(buildDumpString("\n\tTask ID",            ti.getTaskId().getEntryId()    ));
 			buf.append(buildDumpString("\n\t\tBinder ID",        ti.getTaskId().getBinderId()   ));
 			buf.append(buildDumpString("\n\t\tCanModify",        ti.getCanModify()              ));
-			buf.append(buildDumpString("\n\t\tCanPreDelete",     ti.getCanPreDelete()           ));
+			buf.append(buildDumpString("\n\t\tCanPurge",         ti.getCanPurge()               ));
 			buf.append(buildDumpString("\n\t\tCanTrash",         ti.getCanTrash()               ));
 			buf.append(buildDumpString("\n\t\tSeen",             ti.getSeen()                   ));
 			buf.append(buildDumpString("\n\t\tAssignments",      ti.getAssignments(),      false));

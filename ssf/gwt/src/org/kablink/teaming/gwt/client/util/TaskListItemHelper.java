@@ -198,7 +198,7 @@ public class TaskListItemHelper {
 			buildSubtaskLinkage(newTaskLink, taskScan);
 		}
 	}
-	
+
 	/**
 	 * Returns true if the given task can be moved down from where
 	 * its at.
@@ -290,6 +290,40 @@ public class TaskListItemHelper {
 		return canMoveTaskUp(tb, findTask(tb, entryId));
 	}
 
+	/**
+	 * Returns true if any of the tasks in the list can be purged and
+	 * false otherwise.
+	 * 
+	 * @param tasks
+	 * 
+	 * @return
+	 */
+	public static boolean canPurgeTask(List<TaskListItem> tasks) {
+		for (TaskListItem task:  tasks) {
+			if (task.getTask().getCanPurge()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns true if any of the tasks in the list can be moved to the
+	 * trash and false otherwise.
+	 * 
+	 * @param tasks
+	 * 
+	 * @return
+	 */
+	public static boolean canTrashTask(List<TaskListItem> tasks) {
+		for (TaskListItem task:  tasks) {
+			if (task.getTask().getCanTrash()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Scan a task's parentage for completed parent tasks that need to
 	 * be made active when a subtask is made active.

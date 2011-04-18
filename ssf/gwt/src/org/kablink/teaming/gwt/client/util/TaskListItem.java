@@ -298,7 +298,7 @@ public class TaskListItem implements IsSerializable {
 	 */
 	public static class TaskInfo implements IsSerializable {
 		private boolean					m_canModify;
-		private boolean					m_canPreDelete;
+		private boolean					m_canPurge;
 		private boolean					m_canTrash;
 		private boolean					m_overdue;	
 		private boolean					m_seen;	
@@ -358,7 +358,7 @@ public class TaskListItem implements IsSerializable {
 		 * @return
 		 */
 		public boolean              getCanModify()        {return m_canModify;       }
-		public boolean              getCanPreDelete()     {return m_canPreDelete;    }
+		public boolean              getCanPurge()         {return m_canPurge;        }
 		public boolean              getCanTrash()         {return m_canTrash;        }
 		public boolean              getOverdue()          {return m_overdue;         }
 		public boolean              getSeen()             {return m_seen;            }
@@ -381,7 +381,7 @@ public class TaskListItem implements IsSerializable {
 		 * @return
 		 */
 		public void setCanModify(       boolean              canModify)        {m_canModify        = canModify;       }
-		public void setCanPreDelete(    boolean              canPreDelete)     {m_canPreDelete     = canPreDelete;    }
+		public void setCanPurge(        boolean              canPurge)         {m_canPurge         = canPurge;        }
 		public void setCanTrash(        boolean              canTrash)         {m_canTrash         = canTrash;        }
 		public void setOverdue(         boolean              overdue)          {m_overdue          = overdue;         }
 		public void setSeen(            boolean              seen)             {m_seen             = seen;            }
