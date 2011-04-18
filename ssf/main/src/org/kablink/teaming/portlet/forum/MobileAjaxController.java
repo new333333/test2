@@ -1761,7 +1761,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (type.equals("group")) {
 			searchTermFilter.addGroupNameFilter(searchText);
 		} else if (type.equals("team")) {
-			searchTermFilter.addPlacesFilter( searchText, false);
+			searchTermFilter.addTeamFilter(searchText);
 		} else {
 			searchTermFilter.addLoginNameFilter(searchText);
 		}
