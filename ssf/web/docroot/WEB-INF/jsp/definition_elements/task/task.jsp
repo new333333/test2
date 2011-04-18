@@ -86,7 +86,7 @@
 			eIMG.src   = ss_taskGraphCollapser;
 			eIMG.title = "<ssf:escapeJavaScript><ssf:nlt tag="task.graphsHideAlt"/></ssf:escapeJavaScript>";
 			
-			// ...and show them.
+			// ...and show the graphs.
 			if (null != ePriorities) ePriorities.className = "";
 			if (null != eRefresh)    eRefresh.className    = "";
 			if (null != eStatus)     eStatus.className     = "";
@@ -97,7 +97,7 @@
 			eIMG.src   = ss_taskGraphExpander;
 			eIMG.title = "<ssf:escapeJavaScript><ssf:nlt tag="task.graphsShowAlt"/></ssf:escapeJavaScript>";
 			
-			// ...and hide them.
+			// ...and hide the graphs.
 			if (null != ePriorities) ePriorities.className = "ss_taskGraphsHidden";
 			if (null != eRefresh)    eRefresh.className    = "ss_taskGraphsHidden";
 			if (null != eStatus)     eStatus.className     = "ss_taskGraphsHidden";
@@ -109,9 +109,25 @@
 		window.top.ss_gwtRelayoutPage();
 	}
 	
+	function ss_doShowTaskGraphs() {
+		// If the task graphs are supposed to be shown...
+		if (window.top.ss_showTaskGraphs) {
+			// ...toggle their visibility state.
+			window.top.ss_showTaskGraphs = false;
+			toggleGraphs();
+		}
+	}
+	
+	function ss_refreshTaskGraphs() {		
+		window.top.ss_showTaskGraphs = true;
+		self.location.reload(true);
+	}
+	
 	<% if (subtasksEnabled) { %>
-		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
+		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");		
 	<% } %>
+	
+	ss_createOnLoadObj( "tasksLoaded", ss_doShowTaskGraphs);
 </script>
 <c:if test="${ ssCurrentFolderModeType != 'VIRTUAL' }">
 	<table class="ss_statisticTable"><tr>
@@ -150,7 +166,7 @@
 	<c:if test="${colCount > 0}">
 	<tr>
 	<td colspan="${colCount}" align="right">
-	<div id="taskRefreshGraph" class="ss_taskGraphsHidden"><input type="button" class="ss_linkButton ss_smallprint" onClick="self.location.reload(true);"
+	<div id="taskRefreshGraph" class="ss_taskGraphsHidden"><input type="button" class="ss_linkButton ss_smallprint" onClick="ss_refreshTaskGraphs();"
 	 value="<%= NLT.get("task.refreshChart") %>" /></div>
 	</td>
 	</tr>
