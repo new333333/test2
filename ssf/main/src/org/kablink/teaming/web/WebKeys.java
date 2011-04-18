@@ -638,10 +638,11 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_TEAMING_LIVE_UPDATE = "view_teaming_live_update";
 	public static final String OPERATION_TEAMING_LIVE_CHECK_FOR_ACTIVITY = "teaming_live_check_for_activity";
 	
-	public static final String OPERATION_DUMP = "dump";
-	public static final String OPERATION_DUMP_TO_LOG = "dump_to_log";
-	public static final String OPERATION_ENABLE_SIMPLE_PROFILER = "enable_simple_profiler";
-	public static final String OPERATION_DISABLE_SIMPLE_PROFILER = "disable_simple_profiler";
+	public static final String MRS_OPERATION_DUMP = "dump";
+	public static final String MRS_OPERATION_DUMP_TO_LOG = "dump_to_log";
+	public static final String MRS_OPERATION_ENABLE_SIMPLE_PROFILER = "enable_simple_profiler";
+	public static final String MRS_OPERATION_DISABLE_SIMPLE_PROFILER = "disable_simple_profiler";
+	public static final String MRS_OPERATION_SEARCH = "search";
 
 	public static final String AUTO_NOTIFY_TAIL			= "_notify";
 	public static final String AUTO_NOTIFY_GROUPS_TAIL	= "_groups";

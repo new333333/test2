@@ -33,6 +33,9 @@
 package org.kablink.teaming.portlet.administration;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -40,7 +43,15 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.remoting.ws.service.search.SearchService;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -57,21 +68,27 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if(WebKeys.OPERATION_DUMP.equals(op)) {
+		if(WebKeys.MRS_OPERATION_DUMP.equals(op)) {
 			String data = getAdminModule().dumpRuntimeStatisticsAsString();
 			reportData(response, data);
 		}
-		else if(WebKeys.OPERATION_DUMP_TO_LOG.equals(op)) {
+		else if(WebKeys.MRS_OPERATION_DUMP_TO_LOG.equals(op)) {
 			getAdminModule().dumpRuntimeStatisticsToLog();
 			reportSuccess(response);
 		}
-		else if(WebKeys.OPERATION_ENABLE_SIMPLE_PROFILER.equals(op)) {
+		else if(WebKeys.MRS_OPERATION_ENABLE_SIMPLE_PROFILER.equals(op)) {
 			getAdminModule().enableSimpleProfiler();
 			reportSuccess(response);
 		}
-		else if(WebKeys.OPERATION_DISABLE_SIMPLE_PROFILER.equals(op)) {
+		else if(WebKeys.MRS_OPERATION_DISABLE_SIMPLE_PROFILER.equals(op)) {
 			getAdminModule().disableSimpleProfiler();
 			reportSuccess(response);
+		}
+		else if(WebKeys.MRS_OPERATION_SEARCH.equals(op)) {
+			doSearch(response,
+					PortletRequestUtils.getStringParameter(request, "query", ""),
+					PortletRequestUtils.getIntParameter(request, "offset", 0),
+					PortletRequestUtils.getIntParameter(request, "max", 25));
 		}
 		else if(op.equals("")) {
 			reportNoop(response);
@@ -99,4 +116,53 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 	protected void reportUnrecognized(RenderResponse response) throws IOException {
 		response.getWriter().write("<html><head></head><body>Unrecognized operation</body></html>");
 	}
+	
+	protected void doSearch(RenderResponse response, String qry, int offset, int maxResults) throws IOException {
+		if(qry.isEmpty()) {
+			response.getWriter().write("<html><head></head><body>Specify query</body></html>");
+			return;
+		}
+		else {
+			long totalStartTime = System.nanoTime();;
+			
+			String query = "<QUERY><AND><AND><FIELD exactphrase=\"false\"><TERMS>" + qry + "</TERMS></FIELD></AND></AND></QUERY>";
+			
+			long startTime = System.nanoTime();
+			BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
+			Document queryDoc = getDocument(query);
+			Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
+			double duration = elapsedTimeInMs(startTime);
+			
+			StringBuilder sb = new StringBuilder();
+			sb.append("<html><head></head><body>").
+			append("BinderModule.executeSearchQuery(Document,int,int) took ").append(duration).append(" milliseconds to execute<p>");
+			List entrylist = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+			Iterator entryIterator = entrylist.listIterator();
+			int i = 1;
+			while (entryIterator.hasNext()) {
+				Map result = (Map) entryIterator.next();
+				String docType = (String) result.get(org.kablink.util.search.Constants.DOC_TYPE_FIELD);
+				String docId = (String) result.get(org.kablink.util.search.Constants.DOCID_FIELD);
+				sb.append("(").append(i++).append(") docType=").append(docType).append(" docId=").append(docId).append("<br>");
+			}
+			sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).
+			append("</body></html>");
+			response.getWriter().write(sb.toString());
+		}
+	}
+	
+	protected Document getDocument(String xml) {
+		// Parse XML string into a document tree.
+		try {
+			return DocumentHelper.parseText(xml);
+		} catch (DocumentException e) {
+			logger.error(e);
+			throw new IllegalArgumentException(e.toString());
+		}
+	}
+	
+	protected double elapsedTimeInMs(long startTimeInNanoseconds) {
+		return (System.nanoTime() - startTimeInNanoseconds)/1000000.0;
+	}
+
 }
