@@ -411,7 +411,18 @@
 		<servlet-name>redirectServlet</servlet-name>
 		<url-pattern>/redirect/*</url-pattern>
 	</servlet-mapping>	
+	
+	<servlet>
+		<servlet-name>groovyServlet</servlet-name>
+		<servlet-class>groovy.servlet.GroovyServlet</servlet-class>
+		<load-on-startup>11</load-on-startup>
+	</servlet>
 
+	<servlet-mapping>
+		<servlet-name>groovyServlet</servlet-name>
+		<url-pattern>*.groovy</url-pattern>
+	</servlet-mapping>	
+	
 	<!--<servlet>
 		<servlet-name>jerseyServlet</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -427,7 +438,7 @@
 			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
 			<param-value>org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter</param-value>
 		</init-param>
-     	<load-on-startup>11</load-on-startup>		
+     	<load-on-startup>12</load-on-startup>		
 	</servlet>
 
 	<servlet-mapping>
