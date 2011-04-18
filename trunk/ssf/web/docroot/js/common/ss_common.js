@@ -4388,7 +4388,11 @@ function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace, str
 }
 
 function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
-	self.location.href = self.location.href;
+	if (self.location.href.indexOf("/action/") > 0) {
+		self.location.href = self.location.href + "/ss_showCommentsAttachmentsTab/viewAttachments";
+	} else {
+		self.location.href = self.location.href + "&ss_showCommentsAttachmentsTab=viewAttachments";
+	}
 	return;
 }
 
@@ -4407,8 +4411,8 @@ function ss_hideAddAttachmentDropbox(entryId, namespace) {
 
 function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
 	ss_hideAddAttachmentDropbox(entryId, namespace);
-	self.location.reload(true);
-	// ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+	//self.location.reload(true);
+	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
 }
 
 function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {

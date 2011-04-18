@@ -194,6 +194,7 @@ public class AddAttachmentController extends SAbstractController {
 		FolderEntry entry=null;
 		if (op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
 			model.put(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, closeDivFunctionName);
+			model.put(WebKeys.ENTRY_ATTACHMENT_TAB_TO_VIEW, "viewAttachments");
 			if (closeDivFunctionName.equals("")) {
 				path="forum/reload_parent";
 			} else {

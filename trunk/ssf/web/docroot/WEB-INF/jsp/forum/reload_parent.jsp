@@ -46,6 +46,13 @@ if (self.parent && self.parent.ss_reloadUrl) {
 	ss_random++;
 	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+	<c:if test="${!empty ss_showCommentsAttachmentsTab}">
+	if (url.indexOf("/action/") > 0) {
+		url += "/ss_showCommentsAttachmentsTab/${ss_showCommentsAttachmentsTab}";
+	} else {
+		url += "&ss_showCommentsAttachmentsTab=${ss_showCommentsAttachmentsTab}";
+	}
+	</c:if>
 	self.parent.location.href = url;
 	self.parent.focus();
 }

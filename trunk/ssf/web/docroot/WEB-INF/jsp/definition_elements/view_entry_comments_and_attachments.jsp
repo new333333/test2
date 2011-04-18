@@ -85,6 +85,9 @@ function ss_showHideEntryHistoryDiv${ss_divCounter}(iframeId) {
 <c:if test="${!empty ss_pseudoEntity}">
   <c:set var="ss_thisCurrentTab" value="viewAttachments"/>
 </c:if>
+<c:if test="${!empty ss_showCommentsAttachmentsTab}">
+  <c:set var="ss_thisCurrentTab" value="${ss_showCommentsAttachmentsTab}"/>
+</c:if>
 
 
 <script type="text/javascript">
