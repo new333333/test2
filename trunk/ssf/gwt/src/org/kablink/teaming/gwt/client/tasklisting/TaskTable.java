@@ -1434,8 +1434,15 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * bar.
 	 */
 	private void handleTaskDelete() {
-		// If nothing is checked...
+		// If nothing the user can delete is checked...
 		List<TaskListItem> tasksChecked = getTasksChecked();
+		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			TaskListItem task = tasksChecked.get(i);
+			if (!(task.getTask().getCanTrash())) {
+				tasksChecked.remove(i);
+			}
+		}
 		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
 			// ...there's nothing to delete.
 			return;
@@ -1710,8 +1717,15 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * bar.
 	 */
 	private void handleTaskPurge() {
-		// If nothing is checked...
+		// If nothing the user can purge is checked...
 		List<TaskListItem> tasksChecked = getTasksChecked();
+		int c = ((null == tasksChecked) ? 0 : tasksChecked.size());
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			TaskListItem task = tasksChecked.get(i);
+			if (!(task.getTask().getCanPurge())) {
+				tasksChecked.remove(i);
+			}
+		}
 		if ((null == tasksChecked) || tasksChecked.isEmpty()) {
 			// ...there's nothing to purge.
 			return;
@@ -2471,9 +2485,10 @@ public class TaskTable extends Composite implements ActionHandler {
 	private void renderColumnNewTaskMenuLink(final TaskListItem task, int row) {
 		// Do we need to include a new task menu link for this task?
 		boolean includeNewTaskMenu =
-			(m_taskBundle.respectLinkage()     &&
-			 m_taskBundle.getCanAddEntry()     &&
-			 m_taskBundle.getCanContainTasks() &&
+			(m_taskBundle.respectLinkage()          &&
+			 m_taskBundle.getCanModifyTaskLinkage() &&
+			 m_taskBundle.getCanAddEntry()          &&
+			 m_taskBundle.getCanContainTasks()      &&
 			 (Column.ORDER == m_sortColumn) && m_sortAscending && (null == m_quickFilter));
 
 		int newTaskMenuIndex = getColumnIndex(Column.NEW_TASK_MENU);
@@ -3041,11 +3056,12 @@ public class TaskTable extends Composite implements ActionHandler {
 	 * @return	The time, in milliseconds, it took to show the tasks.
 	 */
 	public long showTasks(TaskBundle tb) {
-		// Are we currently in a mode that respects the task linkage?
+		// Are we currently in a mode that respects the task linkage
+		// and can the user modify the task linkage?
 		Long            newTaskId       = null;
 		Long            selectedTaskId  = null;
 		TaskDisposition taskDisposition = null;
-		if (tb.respectLinkage()) {
+		if (tb.respectLinkage() && tb.getCanModifyTaskLinkage()) {
 			// Yes!  Were we call because the user added a new task?
 			String taskChangeReason = m_taskListing.getTaskChangeReason();
 			if ((null != taskChangeReason) && taskChangeReason.equals("taskAdded")) {
@@ -3269,9 +3285,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		else selectedTaskId = "";
 		jsSetSelectedTaskId(selectedTaskId);
 		
-		// Can the user perform a delete or purge?
-		boolean enableDelete = (m_taskBundle.getCanTrashEntry() && (0 < tasksCheckedCount) && (!(m_taskBundle.getBinderIsMirrored())));
-		boolean enablePurge  = (m_taskBundle.getCanPurgeEntry() && (0 < tasksCheckedCount));
+		// Can the user perform a purge or delete?
+		boolean enablePurge = (m_taskBundle.getCanPurgeEntry() && (0 < tasksCheckedCount) && TaskListItemHelper.canPurgeTask(tasksChecked));
+		boolean enableTrash = (m_taskBundle.getCanTrashEntry() && (0 < tasksCheckedCount) && TaskListItemHelper.canTrashTask(tasksChecked) && (!(m_taskBundle.getBinderIsMirrored())));
 		
 		// Does the user have the rights to manage linkage?
 		MoveStates moveStates;
@@ -3330,7 +3346,7 @@ public class TaskTable extends Composite implements ActionHandler {
 		m_taskListing.showHint(toolHint);
 
 		// Enabled/disable the buttons as calculated.
-		m_taskListing.getDeleteButton().setEnabled(   enableDelete             );
+		m_taskListing.getDeleteButton().setEnabled(   enableTrash              );
 		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown() );
 		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft() );
 		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight());
