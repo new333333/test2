@@ -215,6 +215,8 @@ public class ViewEntryController extends  SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
+		String caTab = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_TAB_TO_VIEW, "");
+		model.put(WebKeys.ENTRY_ATTACHMENT_TAB_TO_VIEW, caTab);
 		folderId = getBinderModule().getZoneBinderId(folderId, zoneUUID, EntityType.folder.name());
 		if (folderId == null) {
 			String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);

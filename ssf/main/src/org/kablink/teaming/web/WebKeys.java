@@ -893,6 +893,7 @@ public class WebKeys {
     public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
 	public static final String FOLDER_CONFIGS="ssFolderConfigs";
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
+    public static final String ENTRY_ATTACHMENT_TAB_TO_VIEW = "ss_showCommentsAttachmentsTab";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
 	public static final String FIELD_MODIFICATIONS_ALLOWED = "ss_fieldModificationsAllowed";
