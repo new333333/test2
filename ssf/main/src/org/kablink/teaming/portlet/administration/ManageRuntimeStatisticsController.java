@@ -145,7 +145,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 				String docId = (String) result.get(org.kablink.util.search.Constants.DOCID_FIELD);
 				sb.append("(").append(i++).append(") docType=").append(docType).append(" docId=").append(docId).append("<br>");
 			}
-			sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).
+			sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).append(" ms").
 			append("</body></html>");
 			response.getWriter().write(sb.toString());
 		}
