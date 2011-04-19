@@ -39,6 +39,14 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
+import org.kablink.teaming.gwt.client.util.TopRankedInfo;
+
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -49,25 +57,114 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 public class ViewsMenuPopup extends MenuBarPopupBase {
 	private final String IDBASE = "view_";	// Base ID for the items created in this menu.
 
-	private BinderInfo m_currentBinder;				// The currently selected binder.
-	private List<ToolbarItem> m_toolbarItemList;	// The context based toolbar requirements.
-	private ToolbarItem m_aboutTBI;					// The about           toolbar item, if found.
-	private ToolbarItem m_activityReportTBI;		// The activity report toolbar item, if found.
-	private ToolbarItem m_clipboardTBI;				// The clipboard       toolbar item, if found.
-	private ToolbarItem m_trashTBI;					// The trash           toolbar item, if found.
-	private ToolbarItem m_whatsNewTBI;				// The what's new      toolbar item, if found.
-	private ToolbarItem m_whatsUnreadTBI;			// The what's unread   toolbar item, if found.
-	private ToolbarItem m_whoHasAccessTBI;			// The who has access  toolbar item, if found.
-	private ToolbarItem m_mobileUiTBI;				// The mobile UI  	   toolbar item, if found.
+	private BinderInfo			m_currentBinder;		// The currently selected binder.
+	private boolean				m_inSearch;				// true -> We're viewing search results.
+	private int					m_menuLeft;				// Absolute left position of the menu.
+	private int					m_menuTop;				// Absolute top  position of the menu.
+	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
+	private String				m_searchTabId;			// When m_inSearch is true, the search tab ID.
+	private ToolbarItem			m_aboutTBI;				// The about           toolbar item, if found.
+	private ToolbarItem			m_activityReportTBI;	// The activity report toolbar item, if found.
+	private ToolbarItem			m_clipboardTBI;			// The clipboard       toolbar item, if found.
+	private ToolbarItem			m_trashTBI;				// The trash           toolbar item, if found.
+	private ToolbarItem			m_whatsNewTBI;			// The what's new      toolbar item, if found.
+	private ToolbarItem			m_whatsUnreadTBI;		// The what's unread   toolbar item, if found.
+	private ToolbarItem			m_whoHasAccessTBI;		// The who has access  toolbar item, if found.
+	private ToolbarItem			m_mobileUiTBI;			// The mobile UI  	   toolbar item, if found.
 
 	/**
 	 * Class constructor.
 	 * 
 	 * @param actionTrigger
 	 */
-	public ViewsMenuPopup(ActionTrigger actionTrigger) {
-		// Initialize the super class.
+	public ViewsMenuPopup(ActionTrigger actionTrigger, boolean inSearch, String searchTabId) {
+		// Initialize the super class...
 		super(actionTrigger, GwtTeaming.getMessages().mainMenuBarViews());
+		
+		// ...and save the other parameters.
+		m_inSearch    = inSearch;
+		m_searchTabId = searchTabId;
+	}
+
+	/*
+	 * Add the Saved Searches item to the context based portion of the
+	 * menu bar.
+	 */
+	private void addManageSavedSearchesToView() {
+		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuManageSavedSearches", m_messages.mainMenuBarManageSavedSearches(), null,
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {
+					// Remove the selection from the menu item...
+					Element menuItemElement = Document.get().getElementById("ss_mainMenuManageSavedSearches");
+					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+					
+					// ...hide the menu...
+					hide();
+					
+					// ...and run the manage saved searches dialog.
+					GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetSavedSearches());
+						}
+						
+						public void onSuccess(List<SavedSearchInfo> ssList) {
+							ManageSavedSearchesDlg mssDlg = new ManageSavedSearchesDlg(
+								false,	// false -> Don't auto hide.
+								true,	// true  -> Modal.
+								m_actionTrigger,
+								m_menuLeft,
+								m_menuTop,
+								ssList,
+								m_searchTabId);
+							mssDlg.addStyleName("manageSavedSearchesDlg");
+							mssDlg.show();
+						}
+					});
+				}
+			});
+		addContentWidget(mpa);
+	}
+	
+	/*
+	 * Adds the Top Ranked item to the context based portion of the
+	 * menu bar.
+	 */
+	private void addTopRankedToView() {
+		final MenuPopupAnchor mpa = new MenuPopupAnchor("ss_mainMenuTopRanged", m_messages.mainMenuBarTopRanked(), null,
+			new ClickHandler() {
+				public void onClick(ClickEvent event) {					
+					// Remove the selection from the menu item...
+					Element menuItemElement = Document.get().getElementById("ss_mainMenuTopRanged");
+					menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+					
+					// ...hide the menu...
+					hide();
+					
+					// ...and run the top ranked dialog.
+					GwtTeaming.getRpcService().getTopRanked( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
+						public void onFailure(Throwable t) {
+							GwtClientHelper.handleGwtRPCFailure(
+								t,
+								m_messages.rpcFailure_GetTopRanked());
+						}
+						
+						public void onSuccess(List<TopRankedInfo> triList) {
+							TopRankedDlg topRankedDlg = new TopRankedDlg(
+								false,	// false -> Don't auto hide.
+								true,	// true  -> Modal.
+								m_actionTrigger,
+								m_menuLeft,
+								m_menuTop,
+								triList);
+							topRankedDlg.addStyleName("topRankedDlg");
+							topRankedDlg.show();
+						}
+					});
+				}
+			});
+		addContentWidget(mpa);
 	}
 
 	/*
@@ -207,7 +304,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 		// Return true if we found any of the views menu items and
 		// false otherwise.
 		return
-			((null != m_aboutTBI)          ||
+			(m_inSearch                    ||
+			 (null != m_aboutTBI)          ||
 			 (null != m_activityReportTBI) ||
 			 (null != m_clipboardTBI)      ||
 			 (null != m_trashTBI)          ||
@@ -228,11 +326,18 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 	@Override
 	public void showPopup(int left, int top) {
 		// Position the menu...
+		m_menuLeft = left;
+		m_menuTop  = top;
 		setPopupPosition(left, top);
 		
 		// ...and if we haven't already constructed its contents...
 		if (!(hasContent())) {
 			// ...construct it now...
+			if (m_inSearch) {
+				addTopRankedToView();
+				addManageSavedSearchesToView();
+			}
+			
 			addContextMenuItem(IDBASE, m_whatsNewTBI,    true);
 			addContextMenuItem(IDBASE, m_whatsUnreadTBI, true);
 			addContextMenuItem(IDBASE, m_whoHasAccessTBI);
