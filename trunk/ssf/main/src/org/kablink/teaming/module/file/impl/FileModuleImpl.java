@@ -1825,7 +1825,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 			
-		if(fui.makeReentrant() > 0) {
+		if(ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) // Bug #688072  
+				|| fui.makeReentrant() > 0) {
+			// For mirrored file entry, allow creation of empty file (to deal with bug #688072).
+			// For regular file entry, creation of an empty file version is not allowed (for
+			// bug #632279 explained below). This compromise is reasonable because mirrored
+			// folders do not support versioning, hence it doesn't suffer from the same problem
+			// caused by extraneous versions created from empty contents.
 			String versionName = createVersionedFile(session, binder, entry, fui);
 							
 			long fileSize = session.getContentLengthVersioned(binder, entry, fui.getOriginalFilename(), versionName);
