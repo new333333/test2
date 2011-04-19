@@ -3274,7 +3274,7 @@ public class TaskTable extends Composite implements ActionHandler {
 	}
 	
 	private void validateTaskToolsNow() {
-		String  toolHint = null;
+		String  arrowHint = null;
 
 		// Get the checked tasks and count.
 		List<TaskListItem> tasksChecked = getTasksChecked();
@@ -3310,24 +3310,24 @@ public class TaskTable extends Composite implements ActionHandler {
 						allowMovement = ((Column.ORDER == m_sortColumn) && m_sortAscending);
 						if (!allowMovement) {
 							// Disallowed:  Not order/ascending.
-							toolHint = m_messages.taskCantMove_Order();
+							arrowHint = m_messages.taskCantMove_Order();
 						}
 					}
 					else {
 						// Disallowed:  Virtual.
-						toolHint = m_messages.taskCantMove_Virtual();
+						arrowHint = m_messages.taskCantMove_Virtual();
 					}
 				}
 				else {
 					// Disallowed:  Filters.
-					toolHint = m_messages.taskCantMove_Filter();
+					arrowHint = m_messages.taskCantMove_Filter();
 				}
 			}			
 			else {
 				// Disallowed:  No movable tasks selected.
 				if (0 == tasksCheckedCount)
-				     toolHint = m_messages.taskCantMove_Zero();
-				else toolHint = m_messages.taskCantMove_NoMoveableTasksSelected();
+				     arrowHint = m_messages.taskCantMove_Zero();
+				else arrowHint = m_messages.taskCantMove_NoMoveableTasksSelected();
 			}
 	
 			// Is the base criteria for movement satisfied?
@@ -3339,18 +3339,15 @@ public class TaskTable extends Composite implements ActionHandler {
 		else {
 			// Disallowed:  Insufficient rights.
 			moveStates = new MoveStates();
-			toolHint = m_messages.taskCantMove_Rights();
+			arrowHint = m_messages.taskCantMove_Rights();
 		}
 		
-		// Hide/show the task tools hint.
-		m_taskListing.showHint(toolHint);
-
 		// Enabled/disable the buttons as calculated.
-		m_taskListing.getDeleteButton().setEnabled(   enableTrash              );
-		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown() );
-		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft() );
-		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight());
-		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp()   );
-		m_taskListing.getPurgeButton().setEnabled(    enablePurge              );
+		m_taskListing.getDeleteButton().setEnabled(   enableTrash                        );
+		m_taskListing.getMoveDownButton().setEnabled( moveStates.canMoveDown(),  arrowHint);
+		m_taskListing.getMoveLeftButton().setEnabled( moveStates.canMoveLeft(),  arrowHint);
+		m_taskListing.getMoveRightButton().setEnabled(moveStates.canMoveRight(), arrowHint);
+		m_taskListing.getMoveUpButton().setEnabled(   moveStates.canMoveUp(),    arrowHint);
+		m_taskListing.getPurgeButton().setEnabled(    enablePurge                        );
 	}
 }
