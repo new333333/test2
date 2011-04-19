@@ -49,33 +49,33 @@ public class LocalLuceneWriteSession implements LuceneWriteSession {
 	}
 
 	public void addDocuments(ArrayList docs) {
-		SimpleProfiler.start("LocalLuceneReadSession.addDocuments()");
+		SimpleProfiler.start("LocalLuceneWriteSession.addDocuments()");
 		luceneProvider.addDocuments(docs);
-		SimpleProfiler.stop("LocalLuceneReadSession.addDocuments()");
+		SimpleProfiler.stop("LocalLuceneWriteSession.addDocuments()");
 	}
 
 	public void deleteDocuments(Term term) {
-		SimpleProfiler.start("LocalLuceneReadSession.deleteDocuments()");
+		SimpleProfiler.start("LocalLuceneWriteSession.deleteDocuments()");
 		luceneProvider.deleteDocuments(term);
-		SimpleProfiler.stop("LocalLuceneReadSession.deleteDocuments()");
+		SimpleProfiler.stop("LocalLuceneWriteSession.deleteDocuments()");
 	}
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
-		SimpleProfiler.start("LocalLuceneReadSession.addDeleteDocuments()");
+		SimpleProfiler.start("LocalLuceneWriteSession.addDeleteDocuments()");
 		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
-		SimpleProfiler.stop("LocalLuceneReadSession.addDeleteDocuments()");
+		SimpleProfiler.stop("LocalLuceneWriteSession.addDeleteDocuments()");
 	}
 
 	public void optimize() {
-		SimpleProfiler.start("LocalLuceneReadSession.optimize()");
+		SimpleProfiler.start("LocalLuceneWriteSession.optimize()");
 		luceneProvider.optimize();
-		SimpleProfiler.stop("LocalLuceneReadSession.optimize()");
+		SimpleProfiler.stop("LocalLuceneWriteSession.optimize()");
 	}
 		
 	public void clearIndex() {
-		SimpleProfiler.start("LocalLuceneReadSession.clearIndex()");
+		SimpleProfiler.start("LocalLuceneWriteSession.clearIndex()");
 		luceneProvider.clearIndex();
-		SimpleProfiler.stop("LocalLuceneReadSession.clearIndex()");
+		SimpleProfiler.stop("LocalLuceneWriteSession.clearIndex()");
 	}
 	
 	public void close() {

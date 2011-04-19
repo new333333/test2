@@ -117,7 +117,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException, WriteEntryDataException, WriteEntryDataException {
         // This default implementation is coded after template pattern. 
-        
+        SimpleProfiler.start("addEntry");
+		
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
         addEntry_setCtx(binder, ctx);
@@ -246,6 +247,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	throw new WriteEntryDataException(entryDataErrors);
         } finally {
            	cleanupFiles(fileUploadItems);       	
+            SimpleProfiler.stop("addEntry");
         }
     }
 
@@ -493,6 +495,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
     		throws WriteFilesException, WriteEntryDataException {
+       SimpleProfiler.start("modifyEntry");
+
        final Map ctx = new HashMap();
        if (options != null) ctx.putAll(options);
        modifyEntry_setCtx(entry, ctx);
@@ -599,6 +603,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	throw new WriteEntryDataException(entryDataErrors);
  	    }finally {
 		    cleanupFiles(fileUploadItems);
+	        SimpleProfiler.stop("modifyEntry");
 	    }
 	}
 
@@ -782,6 +787,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************   
     //no transaction expected
     public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
+        SimpleProfiler.start("deleteEntry");
+
     	final Map ctx = new HashMap();
     	if (options != null) ctx.putAll(options);
     	deleteEntry_setCtx(entry, ctx);
@@ -823,6 +830,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler.start("deleteEntry_indexDel");
     	deleteEntry_indexDel(parentBinder, entry, ctx);
     	SimpleProfiler.stop("deleteEntry_indexDel");
+        SimpleProfiler.stop("deleteEntry");
    }
     //no transaction
     protected void deleteEntry_setCtx(Entry entry, Map ctx) {
