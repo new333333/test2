@@ -156,7 +156,7 @@ public class SimpleProfiler {
     	if(enabled) {
     		try {
 	    		for(SimpleProfiler sp:profilers.values()) {
-	    			sb.append(sp.toString());
+	    			sb.append(sp.toString()).append(Constants.NEWLINE);
 	    		}
     		}
     		catch(Exception ignore) {}
