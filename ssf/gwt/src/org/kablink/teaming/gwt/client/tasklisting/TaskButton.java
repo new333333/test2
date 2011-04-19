@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 
@@ -64,6 +65,7 @@ public class TaskButton extends Anchor {
 	private ImageResource	m_disabledImgRes;	// For image buttons, the disabled   image resource.
 	private ImageResource	m_overImgRes;		// For image buttons, the mouse over image resource.
 	private InlineLabel		m_buttonLabel;		// For text  buttons, the InlineLabel widget that displays the text.
+	private String			m_imgTitle;			// The default title text for the button.
 	private TeamingAction	m_action;			// The TeamingAction to trigger when the button is clicked.
 	
 	/*
@@ -153,6 +155,7 @@ public class TaskButton extends Anchor {
 		m_baseImgRes     = baseImgRes;
 		m_disabledImgRes = disabledImgRes;
 		m_overImgRes     = overImgRes;
+		m_imgTitle       = imgTitle;
 		
 		// ...initialize the Anchor...
 		addStyleName("gwtTaskToolsButton_WidgetAnchor");
@@ -218,8 +221,17 @@ public class TaskButton extends Anchor {
 	 * Enables/disables the button.
 	 * 
 	 * @param enabled
+	 * @param imgTitle
 	 */
-	public void setEnabled(boolean enabled) {
+	public void setEnabled(boolean enabled, String imgTitle) {
+		// Make sure an image button has the correct title text on it.
+		if (null != m_buttonImage) {
+			if (!(GwtClientHelper.hasString(imgTitle))) {
+				imgTitle = m_imgTitle;
+			}
+			m_buttonImage.setTitle(imgTitle);
+		}
+		
 		// If the existing state is what's being requested...
 		if (enabled == m_enabled) {
 			// ...there's nothing to do.
@@ -244,5 +256,9 @@ public class TaskButton extends Anchor {
 		else           {addCursorStyle = "cursorDefault"; removeCursorStyle = "cursorPointer";}
 		removeStyleName(removeCursorStyle);
 		addStyleName(addCursorStyle);
+	}
+	
+	public void setEnabled(boolean enabled) {
+		setEnabled(enabled, null);
 	}
 }

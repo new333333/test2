@@ -85,7 +85,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 	private FlowPanel		m_taskListingDIV;			// The <DIV> in the content pane that's to contain the task listing.
 	private FlowPanel		m_taskRootDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
 	private FlowPanel		m_taskToolsDIV;				// The <DIV> in the content pane that's to contain the task tool bar.
-	private InlineLabel		m_hintSpan;					// The <SPAN> containing the reason why the movement buttons are disabled.
 	private InlineLabel		m_pleaseWaitLabel;			//
 	private Long			m_binderId;					// The ID of the binder containing the tasks to be listed.
 	private RootPanel		m_taskFilterRoot;			//
@@ -357,7 +356,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 	public FlowPanel   getTaskListingDIV()        {return m_taskListingDIV;       }
 	public FlowPanel   getTaskRootDIV()           {return m_taskRootDIV;          }
 	public FlowPanel   getTaskToolsDIV()          {return m_taskToolsDIV;         }
-	public InlineLabel getHintSpan()              {return m_hintSpan;             }
 	public Long        getBinderId()              {return m_binderId;             }
 	public RequestInfo getRequestInfo()           {return m_requestInfo;          }
 	public String      getFilterType()            {return m_filterType;           }
@@ -429,18 +427,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 		url = GwtClientHelper.replace(url, "xxx_operand_xxx", operand);
 		url = GwtClientHelper.replace(url, "xxx_option_xxx",  viewOption);
 		GwtClientHelper.jsLoadUrlInCurrentWindow(url);
-	}
-	
-	/**
-	 * Hides the hint <SPAN>, if visible.
-	 */
-	public void hideHint() {
-		// If the hint <SPAN> is visible...
-		if (m_hintSpan.isVisible()) {
-			// ...empty and hide it.
-			m_hintSpan.setText("");
-			m_hintSpan.addStyleName("gwtTaskTools_HintSpan_Hidden");
-		}
 	}
 	
 	/*
@@ -579,12 +565,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 			false,
 			TeamingAction.TASK_PURGE);
 		fp.add(m_purgeButton);
-
-		// ...create a span to hold any hints the TaskTable may
-		// ...want to display...
-		m_hintSpan = new InlineLabel();
-		m_hintSpan.addStyleName("gwtTaskTools_HintSpan gwtTaskTools_HintSpan_Hidden");
-		fp.add(m_hintSpan);
 		m_taskToolsDIV.add(fp);
 
 		// ...create a popup menu for the view options...
@@ -699,24 +679,6 @@ public class TaskListing extends Composite implements ActionTrigger {
 		}
 	}
 
-	/**
-	 * Displays a string in the hint <SPAN>.
-	 * 
-	 * @param hint
-	 */
-	public void showHint(String hint) {
-		// If we weren't given a hint to display...
-		if (!(GwtClientHelper.hasString(hint))) {
-			// ...hide the hint <SPAN>...
-			hideHint();
-		}
-		else {
-			// ...otherwise, display it.
-			m_hintSpan.setText(hint);
-			m_hintSpan.removeStyleName("gwtTaskTools_HintSpan_Hidden");
-		}
-	}
-	
 	/*
 	 * Shows the TaskBundle into the task listing DIV.
 	 */
