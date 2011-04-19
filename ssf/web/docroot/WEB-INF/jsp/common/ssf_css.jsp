@@ -1840,6 +1840,7 @@ a:hover.ss_box_prev {
 	-webkit-border-top-right-radius: 5px;
 }
 .ss_popup_wrapper {
+    font-family: ${ss_style_font_family};
 	padding: 0px;
 }
 .ss_popup_box_close {
