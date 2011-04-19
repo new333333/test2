@@ -42,17 +42,14 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.ManageSavedSearchesDlg;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarToggle;
 import org.kablink.teaming.gwt.client.mainmenu.MyFavoritesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
-import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
-import org.kablink.teaming.gwt.client.mainmenu.TopRankedDlg;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
@@ -66,11 +63,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -373,90 +367,11 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	}
 
 	/*
-	 * Add the Saved Searches item to the context based portion of the
-	 * menu bar.
-	 */
-	private void addManageSavedSearchesToContext(final String searchTabId) {
-		final ActionTrigger actionTrigger = this;
-		final MenuBarBox manageSavedSearchesBox = new MenuBarBox("ss_mainMenuManageSavedSearches", m_messages.mainMenuBarManageSavedSearches());
-		manageSavedSearchesBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
-					// Remove the selection from the menu item...
-					Element menuItemElement = Document.get().getElementById("ss_mainMenuManageSavedSearches");
-					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
-					
-					// ...and run the manage saved searches dialog.
-					GwtTeaming.getRpcService().getSavedSearches(HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<SavedSearchInfo>>() {
-						public void onFailure(Throwable t) {
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								m_messages.rpcFailure_GetSavedSearches());
-						}
-						
-						public void onSuccess(List<SavedSearchInfo> ssList) {
-							ManageSavedSearchesDlg mssDlg = new ManageSavedSearchesDlg(
-								false,	// false -> Don't auto hide.
-								true,	// true  -> Modal.
-								actionTrigger,
-								manageSavedSearchesBox.getAbsoluteLeft(),
-								manageSavedSearchesBox.getElement().getAbsoluteBottom(),
-								ssList,
-								searchTabId);
-							mssDlg.addStyleName("manageSavedSearchesDlg");
-							mssDlg.show();
-						}
-					});
-				}
-			});
-		m_contextPanel.add(manageSavedSearchesBox);
-	}
-	
-	/*
-	 * Adds the Top Ranked item to the context based portion of the
-	 * menu bar.
-	 */
-	private void addTopRankedToContext() {
-		final ActionTrigger actionTrigger = this;
-		final MenuBarBox topRankedBox = new MenuBarBox("ss_mainMenuTopRanged", m_messages.mainMenuBarTopRanked());
-		topRankedBox.addClickHandler(
-			new ClickHandler() {
-				public void onClick(ClickEvent event) {
-					// Remove the selection from the menu item...
-					Element menuItemElement = Document.get().getElementById("ss_mainMenuTopRanged");
-					menuItemElement.removeClassName("mainMenuPopup_BoxHover");
-					
-					// ...and run the top ranked dialog.
-					GwtTeaming.getRpcService().getTopRanked( HttpRequestInfo.createHttpRequestInfo(), new AsyncCallback<List<TopRankedInfo>>() {
-						public void onFailure(Throwable t) {
-							GwtClientHelper.handleGwtRPCFailure(
-								t,
-								m_messages.rpcFailure_GetTopRanked());
-						}
-						
-						public void onSuccess(List<TopRankedInfo> triList) {
-							TopRankedDlg topRankedDlg = new TopRankedDlg(
-								false,	// false -> Don't auto hide.
-								true,	// true  -> Modal.
-								actionTrigger,
-								topRankedBox.getAbsoluteLeft(),
-								topRankedBox.getElement().getAbsoluteBottom(),
-								triList);
-							topRankedDlg.addStyleName("topRankedDlg");
-							topRankedDlg.show();
-						}
-					});
-				}
-			});
-		m_contextPanel.add(topRankedBox);
-	}
-
-	/*
 	 * Adds the Views item to the context based portion of the menu
 	 * bar.
 	 */
-	private void addViewsToContext(List<ToolbarItem> toolbarItemList) {
-		final ViewsMenuPopup vmp = new ViewsMenuPopup(this);
+	private void addViewsToContext(List<ToolbarItem> toolbarItemList, boolean inSearch, String searchTabId) {
+		final ViewsMenuPopup vmp = new ViewsMenuPopup(this, inSearch, searchTabId);
 		vmp.setCurrentBinder(m_contextBinder);
 		vmp.setToolbarItemList(toolbarItemList);
 		if (vmp.shouldShowMenu()) {
@@ -537,7 +452,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		setContext(binderId, inSearch, searchTabId);
 		
 		// Rebuild the context based panel based on the new context.
-		clearContextMenus();
 		GwtTeaming.getRpcService().getBinderInfo(HttpRequestInfo.createHttpRequestInfo(), binderId, new AsyncCallback<BinderInfo>() {
 			public void onFailure(Throwable t) {
 				m_contextBinder = null;
@@ -715,19 +629,18 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * Synchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsNow(boolean inSearch, String searchTabId, List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		// Handle variations based on activity
-		// stream and search mode.
+		// Clear any context menus currently displayed...
+		clearContextMenus();
+		
+		// ...and hHandle variations based on activity
+		// ...stream and search mode.
 		addRecentPlacesToContext(toolbarItemList);
 		boolean inASMode = m_mainPage.getWorkspaceTree().isInActivityStreamMode();
 		if (!inASMode) {
 			addManageToContext(toolbarItemList, tmi);
 		}
-		if (inSearch && (!inASMode)) {
-			addTopRankedToContext();
-			addManageSavedSearchesToContext(searchTabId);
-		}
 		if (!inASMode) {
-			addViewsToContext(toolbarItemList);
+			addViewsToContext(toolbarItemList, inSearch, searchTabId);
 		}
 	}
 
