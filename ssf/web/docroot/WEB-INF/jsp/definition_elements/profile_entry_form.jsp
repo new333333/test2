@@ -245,7 +245,7 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 <%@ include file="/WEB-INF/jsp/definition_elements/textVerification.jsp" %>
 
 <%-- Show the ok and cancel buttons --%>
-<div class="ss_buttonBarLeft margintop3">
+<div class="ss_buttonBarRight" style="margin-top: 15px;">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
   <input type="button" class="ss_submit" 
     name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" 

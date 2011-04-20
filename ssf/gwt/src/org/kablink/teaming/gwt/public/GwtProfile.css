@@ -169,16 +169,14 @@ text-transform:uppercase;
 .profileSectionTitle {
 border-bottom:1px solid #D2D5D1;
 }
+img.sideBarTitle:hover {
+	cursor: pointer;
+}
 .sideBarTitle {
 margin-right: 5px;
 display:inline;
 vertical-align: middle;
 }
-
-.sideBarTitle img:hover {
-	cursor: pointer;
-}
-
 .s-topContent {
 clear:both;
 padding-bottom: 20px;

@@ -1216,7 +1216,7 @@ body, table td, select
 .lpeEntryName-mouseOver
 {
 	cursor: pointer;
-	color: blue;
+	color: #135c8f;
 }
 
 /* Styles used for the binder name in a "folder" widget */
@@ -1247,7 +1247,7 @@ body, table td, select
 .lpeFolderName-mouseOver
 {
 	cursor: pointer;
-	color: blue;
+	color: #135c8f;
 }
 
 /* Styles used for the graphic name in a "graphic" widget */

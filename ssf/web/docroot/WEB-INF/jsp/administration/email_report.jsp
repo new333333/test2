@@ -394,93 +394,95 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 				id="reportForm">
 
 		  <input type="hidden" name="ss_reportType" id="ss_reportType" value="activityByUser"/>
-		  <div class="ss_buttonBarRight">
-		    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>"
-		     onclick="getEmailReport();ss_startSpinner();return false;">
-		     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-		    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
-		      onclick="return handleCloseBtn();">
+		  <div class="ss_buttonBarRight margintop2 marginbottom3">
+		    <span><input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
+		      		onclick="return handleCloseBtn();"></span>
 		  </div>
-		  <br/>
-		  <ssf:nlt tag="administration.report.dates"/>
-		  <div style="display:inline;">
-		    <ssf:datepicker formName="reportForm" showSelectors="true" 
-			 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
-			 immediateMode="false" 
-			 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-			 />
-		  </div>
-		  <div id="ss_startPopup" class="ss_calPopupDiv"></div>
-		  <span style="padding:0px 10px;"><ssf:nlt tag="smallWords.and"/></span>
-		  <div style="display:inline;">
-		    <ssf:datepicker formName="reportForm" showSelectors="true" 
-			 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
-			 immediateMode="false" 
-			 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-			 />
-		  </div>
-		  <div id="ss_endPopup" class="ss_calPopupDiv"></div>
+		  <div class="ss_largeprint ss_bold marginbottom1"><ssf:nlt tag="administration.report.dates"/></div>
 		  
-		  <br/>				 
-		  <br/>				 
-		  <div id="ss_report_panel_forum">
-		   <input type="radio" class="ss_radio" name="reportType" value="send" id="sendReport" checked="checked" />
-		   <label class="ss_radio_label" for="sendReport"><ssf:nlt tag="administration.report.label.emailSend"/></label>
-		   <br/>
-		   <input type="radio" class="ss_radio" name="reportType" value="receive" id="receiveReport" />
-		   <label class="ss_radio_label" for="receiveReport"><ssf:nlt tag="administration.report.label.emailReceive"/></label>
-		   <br/>
-		   <input type="radio" class="ss_radio" name="reportType" value="errors" id="errorsReport" />
-		   <label class="ss_radio_label" for="errorsReport"><ssf:nlt tag="administration.report.label.emailErrors"/></label>
-		   <br/>
-		  </div>
-		   <br/>
-
-				<div style="margin-top: 2em;">
-					<span id="progressIndicator" style="margin-left: 4em; display: none;">
-							<ssf:nlt tag="administration.report.retrievingReport" text="Retrieving report..." />
-							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
-					</span>
+		  <div class="roundcornerSM" style="border: 1px solid #cccccc; padding: 5px; background-color: #ededed;">
+			  <div class="n_date_picker" style="display:inline; vertical-align: middle;">
+				<ssf:datepicker formName="reportForm" showSelectors="true" 
+				 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
+				 immediateMode="false" 
+				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+				 />
+			  </div>
+			  <div id="ss_startPopup" class="ss_calPopupDiv"></div>
+			  <span style="padding:0px 10px;"><ssf:nlt tag="smallWords.and"/></span>
+			  
+			  <div class="n_date_picker" style="display:inline;">
+				<ssf:datepicker formName="reportForm" showSelectors="true" 
+				 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
+				 immediateMode="false" 
+				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+				 />
+			  </div>
+			  <div id="ss_endPopup" class="ss_calPopupDiv"></div>
+			  
+			  <br/>				 
+			  <br/>				 
+			  <div id="ss_report_panel_forum">
+				<span style="padding-right: 10px">
+				   <input type="radio" class="ss_radio" name="reportType" value="send" id="sendReport" checked="checked" />
+				   <label class="ss_radio_label" for="sendReport"><ssf:nlt tag="administration.report.label.emailSend"/></label>
+			   </span>
+				<span style="padding-right: 10px">
+				   <input type="radio" class="ss_radio" name="reportType" value="receive" id="receiveReport" />
+				   <label class="ss_radio_label" for="receiveReport"><ssf:nlt tag="administration.report.label.emailReceive"/></label>
+			   </span>
+				<span style="padding-right: 10px">
+					<input type="radio" class="ss_radio" name="reportType" value="errors" id="errorsReport" />
+					<label class="ss_radio_label" for="errorsReport"><ssf:nlt tag="administration.report.label.emailErrors"/></label>
+			   </span>
+			   <div class="margintop3 marginbottom1" style="margin-left: 5px;">
+					<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.email" />"
+					onclick="getEmailReport();ss_startSpinner();return false;">
 				</div>
+			  </div>
+			</div> 
+			<div style="margin-top: 1em;">
+				<span id="progressIndicator" style="margin-left: 4em; display: none;">
+						<ssf:nlt tag="administration.report.retrievingReport" text="Retrieving report..." />
+						<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
+				</span>
+			</div>
 
-				<div id="emailReportDiv" style="display: none;">
-					<table id="emailReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
-						<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
-							<th>
-								<span>&nbsp;<ssf:nlt tag="administration.report.email.col1"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col2"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col3"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col4"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col5"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col6"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col7"/><span>
-							</th>
-							<th>
-								<span><ssf:nlt tag="administration.report.email.col8"/><span>
-							</th>
-						</tr>
-					</table>
-				</div>
+			<div class="roundcornerSM" id="emailReportDiv" style="display: none; border: 1px solid #cccccc;">
+				<table class="objlist2" id="emailReportTable" width="100%" class="ss_tableheader_style" cellspacing="0" cellpadding="2">
+					<tr class="columnhead" style="font-family: arial, sans-serif;">
+						<td>
+							<span>&nbsp;<ssf:nlt tag="administration.report.email.col1"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col2"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col3"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col4"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col5"/><span>
+						</td>
+						<td style="white-space: normal">
+							<span><ssf:nlt tag="administration.report.email.col6"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col7"/><span>
+						</td>
+						<td>
+							<span><ssf:nlt tag="administration.report.email.col8"/><span>
+						</td>
+					</tr>
+				</table>
+			</div>
 
-				<div style="margin-top: 2em !important;">
-				<input type="submit" class="ss_submit" name="okBtn" 
-				  value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="getEmailReport();ss_startSpinner();return false;">
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<input type="submit" class="ss_submit" name="closeBtn" 
-				 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
-				</div>
+				  <div class="ss_buttonBarRight marginbottom3" style="margin-top: 1em;">
+					<span><input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" 
+							onclick="return handleCloseBtn();"></span>
+				  </div>
 			  </form>
 			</ssf:form>
 		</div>
