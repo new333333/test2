@@ -126,7 +126,7 @@ function ss_confirmDelete(obj) {
 <div class="ss_style ss_portlet">
 <ssf:form titleTag="administration.userAccounts.manageUserAccounts">
 
-<div style="padding:10px;" id="ss_manageUserAccounts">
+<div id="ss_manageUserAccounts">
 <br>
 
 <c:if test="${!empty ssException}">
@@ -136,8 +136,7 @@ function ss_confirmDelete(obj) {
   <br/>
 </c:if>
 
-<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
-  class="wg-tabs margintop3 marginbottom2">
+<div class="wg-tabs margintop3" style="text-align: left; border: 0px none;">
   <table>
     <tr>
 	  <td>

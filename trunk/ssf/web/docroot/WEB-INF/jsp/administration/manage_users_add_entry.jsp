@@ -53,8 +53,7 @@
 		  <br/>
 		</c:if>
 	
-		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
-		  class="wg-tabs margintop3 marginbottom2">
+		<div class="wg-tabs margintop3" style="text-align: left; border: 0pt none;">
 		  <table>
 		    <tr>
 			  <td>
@@ -84,7 +83,7 @@
 		</div>
 		<div class="ss_clear"></div>
 	
-		<div id="manageIndexDiv" style="display:block;" class="wg-tab-content">
+		<div id="manageIndexDiv" style="display:block;" class="wg-tab-content marginbottom3">
 		<c:set var="ss_do_not_show_form_wrapper" value="true" scope="request" />
 		<script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 		<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

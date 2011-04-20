@@ -844,12 +844,23 @@ table.ss_actions_bar13_pane, table.ss_actions_bar13_pane td {
 	color: #fff;
 	background:none repeat scroll 0 0 #949494;
 	}	
+
+.wg-tab a {
+	color: #fff !important;
+	}
+.wg-tab a:hover {
+	color: #fff !important;
+	background: transparent url(<html:rootPath/>images/pics/1pix.gif) no-repeat;
+	}
+.wg-tab.on a {
+	color: #1f1f1f !important;
+	}
 .wg-tab:hover, .selected-menu {
 	color: #fff;
 	background: #81b2bd url(<html:rootPath/>css/images/main/slice_blend_teal_27.png) repeat-x;
 	}	
 .wg-tab.on, .wg-tab-b.on {
-	color: #000;
+	color: #1f1f1f;
 	font-size: 12px;
 	font-weight: bold;
 	background:none repeat scroll 0 0 #E6E6E4;
@@ -1126,5 +1137,9 @@ tr.columnhead div.menudetail { background-color: #ffffff; text-align: left; posi
 #ss_folder_column_menu, #ss_subscription_menu {
 	background-color: transparent !important;
 	}
+	
+.n_date_picker img {
+	vertical-align: middle;
+	}	
 
 /*-------------------------------------------*/

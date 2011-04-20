@@ -116,14 +116,17 @@ td.ss_cellvalign {
 
 .objlist div.actions a:hover { color: white; background-color: #5e919e;}
 
-.objlist tr.columnhead td	/* Apply to the column headings row following the menu */ {
-	color: #666;
-	font-weight: bold;
-	font-size: .85em;
-	background-color: #e9f1f1;
-	padding: 5px;
-	padding-right: 10px;
-	border-bottom: 1px solid #dbdbd3;
+.objlist tr.columnhead td, .objlist2 tr.columnhead td	/* Apply to the column headings row following the menu */ {
+	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
+	background-position:bottom;
+	border-bottom: 1px solid #D2D5D1;
+	border-right: 1px solid #D2D5D1;
+	font-size: 11px !important;
+	text-align: left;
+	padding: 3px 5px;
+	white-space: nowrap;
+	overflow: visible;
+	color: #505354 !important;
 	}
 
 .objlist tr.columnhead a { text-decoration: none; }
