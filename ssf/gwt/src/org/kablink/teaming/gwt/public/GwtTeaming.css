@@ -31,7 +31,7 @@
 {
 	cursor: pointer;
 	position: absolute;
-	right: 2px;
+	right: 5px;
 	top: 5px;
 }
 
@@ -41,6 +41,11 @@
 	background-position:center;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+}
+
+.activityStreamActionsPanel:hover span
+{
+	color: #135c8f !important;
 }
 
 .activityStreamActionsLabel

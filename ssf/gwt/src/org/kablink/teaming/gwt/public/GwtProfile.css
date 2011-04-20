@@ -70,9 +70,9 @@ margin-top:0.5em;
 
 
 .profile-title  {
-font-size:1.3em;
+font-size:1.4em;
 font-weight:bold;
-letter-spacing:0.05em;
+letter-spacing:0.03em;
 }
 
 .profile.a  {
@@ -172,7 +172,13 @@ border-bottom:1px solid #D2D5D1;
 .sideBarTitle {
 margin-right: 5px;
 display:inline;
+vertical-align: middle;
 }
+
+.sideBarTitle img:hover {
+	cursor: pointer;
+}
+
 .s-topContent {
 clear:both;
 padding-bottom: 20px;
@@ -301,13 +307,13 @@ font-weight: bold;
 .profileSideBar_ItemPanel {
 }
 .profileSideBar_Item { 
-	line-height: 1.1em;
-	font-size: 0.9em; 
-	margin-top: 0.5em;
+	line-height: 13px;
+	font-size: 11px; 
+	margin-top: 1px;
 	text-transform:none;
 }
 .profileSideBar_ItemText {
-	color: #1C5894;
+	color: #135c8f;
 	cursor: pointer;
 	display: block;
 	margin: 0px;
@@ -322,6 +328,7 @@ font-weight: bold;
 }
 .profile-title-area {
 	position:relative;	
+	padding-left: 5px;
 }
 .profile-actions{
 position:absolute;
@@ -351,7 +358,7 @@ top: 0px;
 * html .profile-action a {width:100%;}
 .profile-workspace-link {
 color:#1C5894 !important;
-font-size: 0.8em !important;
+font-size: 0.9em !important;
 font-style: normal !important;
 font-weight: normal !important;
 margin-left: 7px;
@@ -409,7 +416,9 @@ float: left;
 padding-right: 10px;
 }
 .aboutDesc {
-color: BLACK;
+color: #353838;
+font-size: 11px;
+line-height: 14px;
 text-transform: none;
 }
 .profile-selected-bg {
