@@ -873,11 +873,11 @@ public class EntityIndexUtils {
 			doc.add(ttfTagField);
 		}
     
-		// This line of code depends on our using specific tokenizer. As soon as we switch to some other
-		// tokenizer such as Lucene's standard tokenizer/filter, this approach will stop working, and
-		// we will need to re-desgn this part of the code.
-    	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.ANALYZED);
+    	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.NO);
     	doc.add(tagField);
+    	String[] its = StringUtil.split(indexableTags, " ");
+    	for(String it:its)
+    		doc.add(new Field(Constants.TAG_FIELD, it, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
     	
     	if (!fieldsOnly) {
     		tagField = BasicIndexUtils.allTextField(indexableTags);
