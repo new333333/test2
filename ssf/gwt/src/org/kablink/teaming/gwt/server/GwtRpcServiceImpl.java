@@ -2015,7 +2015,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		upgradeInfo = new GwtUpgradeInfo();
 		
 		// Get the Teaming version and build information
-		upgradeInfo.setReleaseInfo( ReleaseInfo.getReleaseInfo() );
+		upgradeInfo.setReleaseInfo( ReleaseInfo.getLocalizedReleaseInfo( GwtServerHelper.getCurrentUser().getLocale() ) );
 		
 		// Identify any upgrade tasks that may need to be performed.
 		{
