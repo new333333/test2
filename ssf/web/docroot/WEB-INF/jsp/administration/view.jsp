@@ -261,13 +261,13 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 	  <td>
   <c:if test="${ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet_site" 
-	      title="<ssf:nlt tag="helpSpot.adminPortletSite"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
+	      title="<ssf:nlt tag="helpSpot.adminPortletSite"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>" 
 	      offsetY="9" offsetX="-16">
 	    </ssHelpSpot>
   </c:if>
   <c:if test="${!ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet" 
-	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
+	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>" 
 	      offsetY="9" offsetX="-16">
 	    </ssHelpSpot>
   </c:if>
