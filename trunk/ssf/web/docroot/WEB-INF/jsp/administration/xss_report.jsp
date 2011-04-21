@@ -462,13 +462,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					<div style="margin-top: 2em;">
 					    <div style="padding-bottom:20px;">
 					      <span style="margin-right: 1em;">
-					        <ssf:nlt tag="administration.report.xss.desc1" 
-					        text="This report scans the binders and entries in each 
-					        selected binder looking for potential XSS (Cross-Site Scripting) issues. 
-					        If a threat is located, it can usually be remedied by clicking 'Modify' 
-					        followed by clicking 'Ok' on the offending item. This procedure removes 
-					        the potential XSS threat usually without any noticeable effect. The scan 
-					        takes about 1 minute for every 1000 entries." />
+					        <ssf:nlt tag="administration.report.xss.desc1" />
 					      </span>
 					    </div>
 						<span style="margin-right: 1em;">

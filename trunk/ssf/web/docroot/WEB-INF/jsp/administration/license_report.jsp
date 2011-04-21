@@ -140,42 +140,42 @@
 									onsubmit="return validateLicenseReportForm();"
 									name="${formName}">
 								<input type="hidden" name="ss_reportType" value="license"/>
+
+
 								<div class="ss_buttonBarRight">
-							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 									  onClick="return handleCloseBtn();"/>
 								</div>
-							   	<br/>
-							   	<br/>
-							   	<span class="ss_bold"><ssf:nlt tag="administration.report.license"/></span>
-							   	<br/>
-							   	<br/>
-							   	<ssf:nlt tag="administration.report.dates"/>
-							   	<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-											 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
-											 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-											 />
+								
+								<div class="ss_largeprint ss_bold marginbottom1"><ssf:nlt tag="administration.report.dates"/></div>
+								
+								<div class="roundcornerSM" style="border: 1px solid #cccccc; padding: 5px; background-color: #ededed;">
+
+									<div class="n_date_picker" style="display:inline; vertical-align: middle; padding-right: 10px;">
+										<ssf:datepicker formName="${formName}" showSelectors="true" 
+										popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
+										immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+										/>
+									</div>
+									<div id="ss_startPopup" class="ss_calPopupDiv"></div>
+									<ssf:nlt tag="smallWords.and"/>
+									<div class="n_date_picker" style="display:inline; vertical-align: middle;">
+										<ssf:datepicker formName="${formName}" showSelectors="true" 
+										popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
+										immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+										/>
+									</div>
+			   						<div class="margintop3 marginbottom1" style="margin-left: 5px;">
+										<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="administration.create.report" />">
+									</div>
 							   	</div>
-							   	<div id="ss_startPopup" class="ss_calPopupDiv"></div>
-							   	<ssf:nlt tag="smallWords.and"/>
-							   	<div class="ss_toolbar_color" style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-											 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
-											 immediateMode="false" altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-											 />
-							   	</div>
-							   	<br/>
 							   	<div id="ss_endPopup" class="ss_calPopupDiv"></div>
-							   	<div class="ss_buttonBarLeft">
-							    	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-							     	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-									  onClick="return handleCloseBtn();"/>
-							   	</div>
 							</form>
 			
-			<c:if test="${not empty ssLicenseKey}">
-							<hr>
+				<c:if test="${not empty ssLicenseKey}">
+				
+				
+						<div class="roundcornerSM margintop2" style="border: 1px solid #cccccc; padding: 5px;">
 							<span class="ss_bold"><%= org.kablink.teaming.util.ReleaseInfo.getName() + " " + org.kablink.teaming.util.ReleaseInfo.getVersion() %>
 								<ssf:nlt tag="administration.report.title.license"/>:&nbsp;&nbsp;
 								<fmt:formatDate value="${ssCurrentDate}" timeZone="${ssUser.timeZone.ID}" type="both" timeStyle="short" dateStyle="medium"/>
@@ -266,6 +266,12 @@
 						</td>
 					</tr>
 				</table>
+			</div>	
+								<div class="ss_buttonBarRight" style="padding-right: 15px;">
+							    	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+									  onClick="return handleCloseBtn();"/>
+								</div>
+
 			</ssf:form>
 		</div>
 	</div>
