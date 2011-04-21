@@ -188,8 +188,6 @@ function handleResponseToGetAccessReport( responseData )
 			div.style.display = '';
 			div = document.getElementById( 'accessReportDiv2' );
 			div.style.display = '';
-			div.style.height = '500px';
-
 			// responseData.reportData is an array of objects.  Each object holds information about
 			// the object the user has access to.
 			for (i = 0; i < responseData.reportData.length; ++i)
@@ -347,8 +345,9 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					name="reportForm"
 					id="reportForm">
 
-					<div style="margin-top: 2em;">
-						<span style="margin-right: 1em;"><ssf:nlt tag="administration.report.userAccess.selectUser" /></span>
+					<div id="header1Span" class="margintop3"><ssf:nlt tag="administration.report.userAccess.header1" /></div>
+					<div class="margintop3">
+						<span style="padding-right: 5px;"><ssf:nlt tag="administration.report.userAccess.selectUser" /></span>
 
 					  	<ssf:find formName="${formName}" formElement="user" 
 									type="user" 
@@ -356,44 +355,29 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 									width="80"
 									clickRoutine="ss_selectUser${renderResponse.namespace}" />
 
-						<span id="progressIndicator" style="margin-left: 4em; display: none;">
+						<div id="progressIndicator" class="margintop3 marginbottom3" style="display: none;">
 							<ssf:nlt tag="administration.report.userAccess.retrievingReport" />
 							<img src="<html:imagesPath/>pics/spinner_small.gif" align="absmiddle" border="0" >
-						</span>
+						</div>
 					</div>
 				</form>
 
-				<div id="accessReportDiv1" style="display: none;">
-					<table cellspacing="0" cellpadding="3">
-						<tr>
-							<td>
-								<div style="margin-top: .7em;">
-									<span id="header1Span"><ssf:nlt tag="administration.report.userAccess.header1" /></span>
-								</div>
-								<div style="margin-bottom: .6em;">
-									<span><ssf:nlt tag="administration.report.userAccess.header2" /></span>
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div id="accessReportDiv2" style="display: none; width: 90%; overflow: auto;">
-					<table id="accessReportTable" width="100%" class="ss_style" cellspacing="0" cellpadding="3" style="border: 1px solid black;">
-						<tr style="font-family: arial, sans-serif; background-color: #EDEEEC; border-bottom: 1px solid black; color: black; font-size: .75em; font-weight: bold;">
+				<div id="accessReportDiv1" class="margintop3" style="display: none;"><ssf:nlt tag="administration.report.userAccess.header2" /></div>
+				<div id="accessReportDiv2" class="margintop1 roundcornerSM" style="display: none; height: 600px; width: 600px; overflow: auto; border: 1px solid #cccccc;">
+					<table class="objlist2" id="accessReportTable" cellspacing="0" cellpadding="3">
+						<tr class="columnhead" style="font-family: arial, sans-serif;">
 							<td align="left">
-								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col1" /><span>
+								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col1" /></span>
 							</td>
 							<td align="left">
-								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col2" /><span>
+								<span>&nbsp;<ssf:nlt tag="administration.report.userAccess.col2" /></span>
 							</td>
-							<td align="left" width="100%">
-								&nbsp;
-							</td>
+							<td align="left" width="100%">&nbsp;</td>
 						</tr>
 					</table>
 				</div>
 
-				<div style="margin-top: 2em !important;">
+	   			<div class="ss_buttonBarRight" style="margin-top: 10px;">
 					<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
 						onClick="return handleCloseBtn();" />
 				</div>

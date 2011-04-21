@@ -86,40 +86,45 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 </script>
 
 <ssf:form titleTag="administration.report.title.quota">
-<table class="ss_style" width="100%"><tr><td>
-<form class="ss_style ss_form" 
-	action="<ssf:url webPath="reportDownload"/>" 
-	method="post" 
-	name="${formName}">
-<input type="hidden" name="ss_reportType" value="quota"/>
-<div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
-   <br/>
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.quota"/></span>
-   <br/>
-   <br/>
-	<div>
-	<input type="radio" name="ssQuotaOption" value="UsersOnly" id="usersOnlyQuota" checked="checked"/><label for="usersOnlyQuota"><span><ssf:nlt tag="administration.report.quota.option.usersOnly"/></span></label><br/>
-	<input type="radio" name="ssQuotaOption" value="WorkspacesOnly" id="workspacesOnlyQuota"/><label for="workspacesOnlyQuota"><span><ssf:nlt tag="administration.report.quota.option.workspacesOnly"/></span></label><br/>
-	<input type="radio" name="ssQuotaOption" value="UsersAndWorkspaces" id="bothQuota"/><label for="bothQuota"><span><ssf:nlt tag="administration.report.quota.option.both"/></span></label><br/>
-	</div>
-	<div>
-	<label for="quotaThreshold"><span><ssf:nlt tag="administration.report.quota.threshold"/></span></label><input type="text" name="ssQuotaThreshold" id="quotaThreshold" value="0" onkeypress="return ss_numbers_only(event)"/>
-	</div>
-   <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-   </div>
-</form>
-<br>
-</td></tr></table>
+	<table class="ss_style" width="100%"><tr><td>
+	<form class="ss_style ss_form" 
+		action="<ssf:url webPath="reportDownload"/>" 
+		method="post" 
+		name="${formName}">
+
+		<input type="hidden" name="ss_reportType" value="quota"/>
+		<div class="ss_buttonBarRight">
+			<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+				  onClick="return handleCloseBtn();"/>
+		</div>
+	   
+   		<div class="ss_largeprint ss_bold marginbottom3"><ssf:nlt tag="administration.report.quota"/></div>
+		
+		<div class="roundcornerSM" style="border: 1px solid #cccccc; padding: 10px; background-color: #ededed;">
+			<div class="margintop2">
+				<input type="radio" name="ssQuotaOption" value="UsersOnly" id="usersOnlyQuota" checked="checked"/><label for="usersOnlyQuota"><span><ssf:nlt tag="administration.report.quota.option.usersOnly"/></span></label><br/>
+			</div>
+			<div class="margintop2">
+				<input type="radio" name="ssQuotaOption" value="WorkspacesOnly" id="workspacesOnlyQuota"/><label for="workspacesOnlyQuota"><span><ssf:nlt tag="administration.report.quota.option.workspacesOnly"/></span></label><br/>
+			</div>
+			<div class="margintop2">
+				<input type="radio" name="ssQuotaOption" value="UsersAndWorkspaces" id="bothQuota"/><label for="bothQuota"><span><ssf:nlt tag="administration.report.quota.option.both"/></span></label><br/>
+			</div>
+			<div class="margintop3 marginleft2">
+				<label for="quotaThreshold"><span><ssf:nlt tag="administration.report.quota.threshold"/></span></label>
+				<div class="margintop1"><input style="width: 60px" type="text" name="ssQuotaThreshold" id="quotaThreshold" value="0" onKeyPress="return ss_numbers_only(event)"/><span style="padding-left: 5px;"><ssf:nlt tag="administration.report.quota.threshold2"/></span></div>
+			</div>
+			
+			<div class="margintop3 marginbottom1" style="margin-left: 5px;">
+				<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
+			</div>
+		</div>
+	   <div class="ss_buttonBarRight" style="margin-top: 10px;">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+			  onClick="return handleCloseBtn();"/>
+	   </div>
+	</form>
+	</td></tr></table>
 </ssf:form>
 </div>
 </div>

@@ -87,32 +87,28 @@ var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param
 
 <c:if test="${ss_quotasEnabled}">
 <ssf:form titleTag="administration.report.title.disk_quota_exceeded">
-<table class="ss_style" width="100%"><tr><td>
-<form class="ss_style ss_form" 
-	action="<ssf:url webPath="reportDownload"/>" 
-	method="post" 
-	name="${formName}">
-<input type="hidden" name="ss_reportType" value="quota_exceeded"/>
-<div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
-   <br/>
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.disk_quota_exceeded"/></span>
-   <br/>
-   <br/>
-   <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-   </div>
-</form>
-<br>
-</td></tr></table>
+	<table class="ss_style" width="100%"><tr><td>
+		<form class="ss_style ss_form" 
+			action="<ssf:url webPath="reportDownload"/>" 
+			method="post" 
+			name="${formName}">
+
+			<input type="hidden" name="ss_reportType" value="quota_exceeded"/>
+			<div class="ss_buttonBarRight">
+				<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+					  onClick="return handleCloseBtn();"/>
+			</div>
+			
+			<div class="marginbottom2 ss_bold"><ssf:nlt tag="administration.report.disk_quota_exceeded"/></div>
+		
+			<div class="roundcornerSM" style="border: 1px solid #cccccc; padding: 10px; background-color: #ededed;">
+				<div class="margintop3 marginbottom1" style="margin-left: 5px;">
+					<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
+				</div>
+			</div>	
+		</form>
+
+	</td></tr></table>
 </ssf:form>
 </c:if>
 

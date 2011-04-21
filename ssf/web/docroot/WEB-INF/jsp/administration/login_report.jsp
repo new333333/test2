@@ -66,125 +66,104 @@
 </script>
 
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
+
 <div class="ss_pseudoPortal">
-<div class="ss_style ss_portlet">
-<ssf:form titleTag="administration.report.title.login">
+	<div class="ss_style ss_portlet">
+	
+	<ssf:form titleTag="administration.report.title.login">
 
-<c:set var="formName" value="${renderResponse.namespace}fm"/>
-<script type="text/javascript">
-var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
-</script>
+	<c:set var="formName" value="${renderResponse.namespace}fm"/>
+	<script type="text/javascript">
+	var ssReportURL="<ssf:url action="login_report" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
+	</script>
 
-<table class="ss_style" width="100%"><tr><td>
-<form class="ss_style ss_form" 
-	action="<ssf:url webPath="reportDownload"/>" 
-	method="post" 
-	name="${formName}">
-<input type="hidden" name="ss_reportType" value="login"/>
-<div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-</div>
-   <br/>
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.login2"/></span>
-   <br/>
-   <br/>
-   <ssf:nlt tag="administration.report.dates"/>
-   <div style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-				 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
-				 immediateMode="false" 
-				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-				 />
-   </div>
-   <div id="ss_startPopup" class="ss_calPopupDiv"></div>
-   <ssf:nlt tag="smallWords.and"/>
-   <div style="display:inline;"><ssf:datepicker formName="${formName}" showSelectors="true" 
-				 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
-				 immediateMode="false" 
-				 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-				 />
-   </div>
-   <br/>
-   <div id="ss_endPopup" class="ss_calPopupDiv"></div>
-   
-   <br/>
-   
-   <div>	
-  
-	<br>
-	<!-- Find people -->
-		<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
-	     onMouseOver="this.style.cursor = 'pointer';">
-		<ssf:find formName="${formName}" formElement="users" type="user" width="200px"/>
+
+	<table class="ss_style" width="100%"><tr><td>
+		<form class="ss_style ss_form" 
+			action="<ssf:url webPath="reportDownload"/>" 
+			method="post" 
+			name="${formName}">
+		<input type="hidden" name="ss_reportType" value="login"/>
+		<div class="ss_buttonBarRight">
+			 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+				  onClick="return handleCloseBtn();"/>
 		</div>
-  
-   </div>
-  
-   <br>  
-   
-   <div>
-   
-   <input type="radio" name="ss_reportOptionType" value="shortReport" id="shortReport" checked/> 
-   <label for="shortReport"><ssf:nlt tag="administration.report.option.short"/></label>
-   
-   </div>
-   
-   <br/>
-   
-   <div style="margin-left:35px;">
-   
-   <label for="ss_reportSortType"><ssf:nlt tag="administration.report.sort"/></label>
-   
-   <select name="ss_reportSortType" id="ss_reportSortType">
-   <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></span></option>
-   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
-   <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></span></option>
-   <option value = "login_count_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_count"/></span></option>   
-   </select>
-   
-   </div>
+		<div class="ss_largeprint ss_bold marginbottom3"><ssf:nlt tag="administration.report.login2"/></div>
+	  <div class="ss_largeprint ss_bold marginbottom1"><ssf:nlt tag="administration.report.dates"/></div>
+		<div class="roundcornerSM" style="border: 1px solid #cccccc; padding: 5px; background-color: #ededed;">
+		
+		   <div class="n_date_picker" style="display:inline; vertical-align: middle; padding-right: 10px;">
+		   		<ssf:datepicker formName="${formName}" showSelectors="true" 
+				popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
+				immediateMode="false" 
+				altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+				/>
+		   </div>
+		   <div id="ss_startPopup" class="ss_calPopupDiv"></div>
+		   <ssf:nlt tag="smallWords.and"/>
+		   <div class="n_date_picker" style="display:inline; vertical-align: middle;">
+		   		<ssf:datepicker formName="${formName}" showSelectors="true" 
+				popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
+				immediateMode="false" 
+				altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+				/>
+		   </div>
+		   <br/>
+		   <div id="ss_endPopup" class="ss_calPopupDiv"></div>
 
-   <br/>
-
-   <div>
-
-   <input type="radio" name="ss_reportOptionType" value="longReport" id="longReport"/> 
-   <label for="longReport"><ssf:nlt tag="administration.report.option.long"/></label>
-   <br/>
-   
-   </div>
-
-   <br/>
-
-   <div style="margin-left:35px;">
-   
-   <label for="ss_reportSortType_2"><ssf:nlt tag="administration.report.sort"/></label>
-   
-   <select name="ss_reportSortType_2" id="ss_reportSortType_2">
-   <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></span></option>   
-   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
-   </select>
-   
-   </div>
-
-   <br/>
-   
-   <br/>
-      
-   <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
-   </div>
-</form>
-<br>
-</td></tr></table>
+			<div class="marginleft1">
+			   <div class="margintop3">		  
+				<!-- Find people -->
+					<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
+					 onMouseOver="this.style.cursor = 'pointer';">
+					<ssf:find formName="${formName}" formElement="users" type="user" width="200px"/>
+					</div>
+			   </div>
+			  
+			   <div class="margintop3">
+				   <input type="radio" name="ss_reportOptionType" value="shortReport" id="shortReport" checked/> 
+				   <label for="shortReport"><ssf:nlt tag="administration.report.option.short"/></label>		   
+			   </div>
+	
+			   <div style="margin-left:35px;">
+				   <label for="ss_reportSortType"><ssf:nlt tag="administration.report.sort"/></label>
+				   
+				   <select name="ss_reportSortType" id="ss_reportSortType">
+				   <option value = "none_sort"><span class="ss_labelRight"><ssf:nlt tag="common.select.none"/></span></option>
+				   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
+				   <option value = "last_login_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.last_login"/></span></option>
+				   <option value = "login_count_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_count"/></span></option>   
+				   </select>		   
+			   </div>
+			   
+			   <div class="margintop3">
+				   <input type="radio" name="ss_reportOptionType" value="longReport" id="longReport"/> 
+				   <label for="longReport"><ssf:nlt tag="administration.report.option.long"/></label>
+			   </div>
+	
+			   <div style="margin-left:35px;">
+				   <label for="ss_reportSortType_2"><ssf:nlt tag="administration.report.sort"/></label>
+				   
+				   <select name="ss_reportSortType_2" id="ss_reportSortType_2">
+				   <option value = "login_date_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.login_date"/></span></option>   
+				   <option value = "user_sort"><span class="ss_labelRight"><ssf:nlt tag="report.columns.user"/></span></option>
+				   </select>
+			   </div>
+			</div>
+			
+			<div class="margintop3 marginbottom1" style="margin-left: 5px;">
+		   		<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
+			</div>
+		</div>
+			  
+	   <div class="ss_buttonBarRight" style="margin-top: 10px;">
+		<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+			  onClick="return handleCloseBtn();"/>
+	   </div>
+		</form>
+	</td></tr></table>
 </ssf:form>
 </div>
 </div>

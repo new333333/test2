@@ -94,9 +94,7 @@ function ss_saveChangeLogEntryId(id) {
   name="ss_changeLogForm" method="post" 
   action="<ssf:url action="view_change_log" actionUrl="true"/>">
 
-<br/>
-<br/>
-<table style="background-color: #eeeeee;" border="1">
+<table class="roundcornerSM margintop3" style="background-color: #ededed; border: 1px solid #cccccc; padding: 6px;">
 <tr>
   <td valign="top" width="350">
   <span><ssf:nlt tag="changeLog.findFolder"/></span><br/><br/>

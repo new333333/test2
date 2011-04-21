@@ -156,6 +156,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height: 14px;
 	width: 70px; 	
 	}
+
+#reportForm .ss_combobox_autocomplete {
+	width: 200px; 	
+	font-weight: bold;
+}
 /******** SEARCH - MASTHEAD*****/	
 .ss_combobox_search {
 	background-image: none;

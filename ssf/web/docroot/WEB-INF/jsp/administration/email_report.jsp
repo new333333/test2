@@ -436,7 +436,7 @@ function ss_selectUser${renderResponse.namespace}(id, obj)
 					<label class="ss_radio_label" for="errorsReport"><ssf:nlt tag="administration.report.label.emailErrors"/></label>
 			   </span>
 			   <div class="margintop3 marginbottom1" style="margin-left: 5px;">
-					<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.email" />"
+					<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />"
 					onclick="getEmailReport();ss_startSpinner();return false;">
 				</div>
 			  </div>
