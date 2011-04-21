@@ -55,15 +55,15 @@
 		<input type="text" class="ss_text" name="title" id="title" size="40"
 		 <c:if test="${empty ssDefinitionEntry.title}">
 		   <c:if test="${empty ssEntryTitle && !empty ssEntry && empty ssDefinitionEntry}">
-		     value="<ssf:nlt tag="reply.re.title"><ssf:param 
-		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt>"
+		     value="<ssf:escapeQuotes><ssf:nlt tag="reply.re.title"><ssf:param 
+		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt></ssf:escapeQuotes>"
 		   </c:if>
 		   <c:if test="${!empty ssEntryTitle || empty ssEntry}">
-		     value="<c:out value="${ssEntryTitle}"/>"
+		     value="<ssf:escapeQuotes><c:out value="${ssEntryTitle}"/></ssf:escapeQuotes>"
 		   </c:if>
 		 </c:if>
 		 <c:if test="${!empty ssDefinitionEntry.title}">
-		   value="<c:out value="${ssDefinitionEntry.title}"/>"
+		   value="<ssf:escapeQuotes><c:out value="${ssDefinitionEntry.title}"/></ssf:escapeQuotes>"
 		 </c:if>
 		 />
 		</div>

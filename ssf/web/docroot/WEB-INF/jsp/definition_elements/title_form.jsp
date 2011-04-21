@@ -103,11 +103,11 @@ ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 		       name="value" useBody="true">${ssEntry.title}</ssf:param></ssf:nlt></ssf:escapeQuotes>"
 		   </c:if>
 		   <c:if test="${!empty ssEntryTitle || empty ssEntry}">
-		     value="<c:out value="${ssEntryTitle}"/>"
+		     value="<ssf:escapeQuotes><c:out value="${ssEntryTitle}"/></ssf:escapeQuotes>"
 		   </c:if>
 		 </c:if>
 		 <c:if test="${!empty ssDefinitionEntry.title}">
-		   value="<c:out value="${ssDefinitionEntry.title}"/>"
+		   value="<ssf:escapeQuotes><c:out value="${ssDefinitionEntry.title}"/></ssf:escapeQuotes>"
 		 </c:if>
 		 >
 		</div>
