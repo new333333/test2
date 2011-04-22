@@ -1773,10 +1773,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String iCalURL = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ICAL_URL, null);
 		
 		if (folderId != -1) {
-			HttpURL hrl = getHttpURL(iCalURL);
-			HttpClient httpClient = getHttpClient(hrl);
-			GetMethod getMethod = new GetMethod(hrl.getPathQuery());
+			GetMethod getMethod = null;
 			try {
+				HttpURL hrl = getHttpURL(iCalURL);
+				HttpClient httpClient = getHttpClient(hrl);
+				getMethod = new GetMethod(hrl.getPathQuery());
 				int statusCode = httpClient.executeMethod(getMethod);
 				if (statusCode == 200) {
 					// Get the response as an InputStream.
@@ -1795,7 +1796,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 				response.setRenderParameter("ssICalendarException", "wrongURL");
 			} finally{
 				//release the connection
-				getMethod.releaseConnection();
+				if (null != getMethod) {
+					getMethod.releaseConnection();
+				}
 			}
 		}
 			
