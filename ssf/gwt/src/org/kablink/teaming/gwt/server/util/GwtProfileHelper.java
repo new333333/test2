@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,28 +39,22 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-import org.apache.taglibs.standard.tag.common.fmt.FormatNumberSupport;
-import org.apache.taglibs.standard.tag.el.fmt.FormatNumberTag;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CommaSeparatedValue;
@@ -70,7 +64,6 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.gwt.client.GwtUser;
@@ -82,7 +75,6 @@ import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
-import org.kablink.teaming.gwt.server.GwtRpcServiceImpl;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.presence.PresenceManager;
 import org.kablink.teaming.search.SearchUtils;
@@ -95,9 +87,7 @@ import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -105,6 +95,7 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Criteria;
 
+@SuppressWarnings("unchecked")
 public class GwtProfileHelper {
 	
 	
@@ -630,15 +621,22 @@ public class GwtProfileHelper {
 		    		    				if(name.equals("picture") && (attach instanceof FileAttachment)){
 			    							String webPath;
 			    							String path;
+			    							String scaledPath;
 			    							String fileName;
 			    							
 			    							webPath = WebUrlUtil.getServletRootURL(request);
 			    							fileName = attach.toString();
 			    							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+			    							scaledPath = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_SCALED, attach.getOwner().getEntity(), fileName);
 			    							
 			    							//Check if null, this will guarantee we use the first picture we come across
-			    							if(profile != null && Validator.isNull(profile.getPictureUrl())){
-			    								profile.addPictureUrl(path);
+			    							if(profile != null) {
+			    								if (Validator.isNull(profile.getPictureUrl())){
+			    									profile.addPictureUrl(path);
+			    								}
+			    								if (Validator.isNull(profile.getPictureScaledUrl())){
+			    									profile.addPictureScaledUrl(scaledPath);
+			    								}
 			    							}
 			    							
 			    							//Create a new Profile Attribute to convert the data to
@@ -895,7 +893,6 @@ public class GwtProfileHelper {
      * @param binderId
      * @return
      */
-    @SuppressWarnings("unchecked")
 	public static int getRecentEntries(AllModulesInjected bs, String binderId){
     	
     	List<String> binderIds = new ArrayList<String>();

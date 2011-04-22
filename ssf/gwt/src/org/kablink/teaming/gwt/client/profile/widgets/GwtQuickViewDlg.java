@@ -64,6 +64,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -442,10 +443,10 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 
 			public void onSuccess(ProfileInfo profile) {		
 				boolean isPictureEnabled = profile.isPictureEnabled();
-				String url = profile.getPictureUrl();
+				String url = profile.getPictureScaledUrl();
 				if(isPictureEnabled) {
 					if(url != null && !url.equals("")){
-						avatar.setUrl(profile.getPictureUrl());
+						avatar.setUrl(url);
 					} else {
 						FlowPanel w = (FlowPanel)avatar.getParent();
 						w.removeStyleName("qViewPhoto");
