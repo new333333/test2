@@ -1898,7 +1898,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		Folder folder = (Folder)folderModule.getFolder(folderId);
 		return parseToEntries(folder, null, icalFile);
 	}
+	@SuppressWarnings("unchecked")
 	public AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile) throws IOException, ParserException {
+		return parseToEntries(folder, def, icalFile, new HashMap());
+	}
+	@SuppressWarnings("unchecked")
+	public AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile, final Map baseInputData) throws IOException, ParserException {
 
 		final AttendedEntries attendedEntries = new AttendedEntries();
 		if (def == null) {
@@ -1916,6 +1921,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			public void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
+				String baseDesc = getBaseDesc(baseInputData);
+				if (MiscUtil.hasString(baseDesc)) {
+					description = baseDesc;
+				}
 				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				formData.put("location", new String[] {location});
@@ -1930,6 +1939,10 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
+				String baseDesc = getBaseDesc(baseInputData);
+				if (MiscUtil.hasString(baseDesc)) {
+					description = baseDesc;
+				}
 				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				formData.put("priority", new String[] {priority});
@@ -1960,7 +1973,6 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				formData.put("title", new String[] {summary != null ? summary : ""});
 			}
 			
-			@SuppressWarnings("unchecked")
 			private void addOrModifyEntry(Event event, MapInputData inputData) {
 				try {
 					Event eventToUpdate = findEventByUid(folder.getId(), event);
@@ -1980,7 +1992,25 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				} catch (WriteEntryDataException e) {
 					logger.warn("Cannot create entry from iCal file.", e);
 				}
-			}			
+			}
+			
+			private String getBaseDesc(Map baseInputData) {
+				Object descO = ((null == baseInputData) ? null : baseInputData.get("description"));
+				if (null == descO) {
+					return null;
+				}
+				String reply = null;
+				if (descO instanceof String) {
+					reply = ((String) descO);
+				}
+				else if (descO instanceof String[]) {
+					String[] descs = ((String[]) descO);
+					if (0 < descs.length) {
+						reply = descs[0];
+					}
+				}
+				return reply;
+			}
 		};
 
 		parseEvents(new InputStreamReader(icalFile), entryCreator);

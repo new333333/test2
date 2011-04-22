@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -57,6 +58,7 @@ import net.fortuna.ical4j.model.property.Attendee;
  * @author Joe
  *
  */
+@SuppressWarnings("unchecked")
 public interface IcalModule {
 	
 	/*
@@ -136,6 +138,7 @@ public interface IcalModule {
 	 * @param folderId
 	 * @param defId Definition id or null
 	 * @param icalFile
+	 * @param baseInputData
 	 * @return id list of created entries
 	 * @throws IOException
 	 * @throws ParserException
@@ -144,6 +147,9 @@ public interface IcalModule {
 		throws IOException, ParserException;
 
 	AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile)
+		throws IOException, ParserException;
+
+	AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile, Map baseInputData)
 		throws IOException, ParserException;
 
 	public Calendar generate(DefinableEntity entry, Collection events, String defaultTimeZoneId);
