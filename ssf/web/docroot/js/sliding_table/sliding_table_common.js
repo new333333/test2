@@ -78,6 +78,10 @@ function ss_showSlidingTableCols200() {
 
 function ss_showSlidingTableCols() {
     if (typeof ss_slidingTableId_2 == "undefined") return;
+    var sto = self.document.getElementById(ss_slidingTableId_2);
+    if (sto == null || typeof sto.style == "undefined" || typeof sto.style.marginTop == "undefined" || 
+    		typeof sto.style.marginLeft == "undefined" || typeof sto.style.marginRight == "undefined" || 
+    		typeof sto.style.marginBottom == "undefined") return;
 	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
 	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
 	ss_sTableMarginTop = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginTop)
