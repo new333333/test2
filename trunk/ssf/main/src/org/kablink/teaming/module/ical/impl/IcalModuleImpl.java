@@ -1920,11 +1920,13 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			
 			public void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
-				
-				String baseDesc = getBaseDesc(baseInputData);
-				if (MiscUtil.hasString(baseDesc)) {
-					description = baseDesc;
-				}
+
+				/*
+					String baseDesc = getBaseDesc(baseInputData);
+					if (MiscUtil.hasString(baseDesc)) {
+						description = baseDesc;
+					}
+				*/
 				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				formData.put("location", new String[] {location});
@@ -1938,11 +1940,13 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
-				
-				String baseDesc = getBaseDesc(baseInputData);
-				if (MiscUtil.hasString(baseDesc)) {
-					description = baseDesc;
-				}
+
+				/*
+					String baseDesc = getBaseDesc(baseInputData);
+					if (MiscUtil.hasString(baseDesc)) {
+						description = baseDesc;
+					}
+				*/
 				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				formData.put("priority", new String[] {priority});
@@ -1994,6 +1998,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				}
 			}
 			
+			@SuppressWarnings("unused")
 			private String getBaseDesc(Map baseInputData) {
 				Object descO = ((null == baseInputData) ? null : baseInputData.get("description"));
 				if (null == descO) {
