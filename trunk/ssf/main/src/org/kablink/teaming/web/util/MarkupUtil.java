@@ -124,13 +124,13 @@ public class MarkupUtil {
 	protected final static Pattern youtubeLinkPattern = Pattern.compile("(<a [^>]*class\\s*=\\s*\"\\s*ss_youtube_link\\s*\"[^>]*>)([^<]*)</a>");
 	protected final static Pattern youtubeLinkRelPattern = Pattern.compile("rel=\\s*\"([^\"]*)");
 	
-	protected final static Pattern permaLinkUrlPattern = Pattern.compile("(href\\s*=\\s*[\"']https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*)");
+	protected final static Pattern permaLinkUrlPattern = Pattern.compile("(href\\s*=\\s*[\"']https?://[^\\s\"'>]*/ssf/a/c/[^\\s\"'>]*/action/view_permalink/[^\\s\"'>]*)");
 	protected final static Pattern permaLinkHrefPattern = Pattern.compile("(href\\s*=\\s*[\"'])https?://[^\\s]*/ssf/a/c/[^\\s]*/action/view_permalink/[^\\s\"']*");
-	protected final static Pattern permaLinkEntityTypePattern = Pattern.compile("/entityType/([^\\s/]*)");
-	protected final static Pattern permaLinkEntryIdPattern = Pattern.compile("/entryId/([^\\s/]*)");
+	protected final static Pattern permaLinkEntityTypePattern = Pattern.compile("/entityType/([^\\s\"'/]*)");
+	protected final static Pattern permaLinkEntryIdPattern = Pattern.compile("/entryId/([0-9]*)");
 	protected final static Pattern permaLinkEntryTitlePattern = Pattern.compile("/title/([^\\s/]*)");
-	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([^\\s/]*)");
-	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s/]*)");
+	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([0-9]*)");
+	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s\"'/]*)");
 
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");

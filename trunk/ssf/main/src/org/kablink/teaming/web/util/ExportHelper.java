@@ -1641,13 +1641,23 @@ public class ExportHelper {
 		while (itBinders.hasNext()) {
 			Map.Entry me = (Map.Entry) itBinders.next();
 			Binder binder = binderModule.getBinder((Long) me.getValue());
-			MarkupUtil.fixupImportedLinks(binder, (Long)me.getKey(), binderIdMap, entryIdMap);
+			try {
+				MarkupUtil.fixupImportedLinks(binder, (Long)me.getKey(), binderIdMap, entryIdMap);
+			} catch(Exception e) {
+				//Something couldn't be fixed up, log an error and leave the link as is
+				logger.error(e);
+			}
 		}
 		Iterator itEntries = entryIdMap.entrySet().iterator();
 		while (itEntries.hasNext()) {
 			Map.Entry me = (Map.Entry) itEntries.next();
 			FolderEntry entry = folderModule.getEntry(null, (Long) me.getValue());
-			MarkupUtil.fixupImportedLinks(entry, (Long)me.getKey(), binderIdMap, entryIdMap);
+			try {
+				MarkupUtil.fixupImportedLinks(entry, (Long)me.getKey(), binderIdMap, entryIdMap);
+			} catch(Exception e) {
+				//Something couldn't be fixed up, log an error and leave the link as is
+				logger.error(e);
+			}
 		}
 		Iterator itTaskLinkages = taskLinkageMap.entrySet().iterator();
 		while (itTaskLinkages.hasNext()) {
