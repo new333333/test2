@@ -30,6 +30,18 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+/**
+ * 
+ */
+function ss_invokeTagDlg( entryId, entryTitle, tagDivId )
+{
+	if ( typeof window.top.ss_invokeTagDlg != "undefined" )
+	{
+		window.top.ss_invokeTagDlg( entryId, entryTitle, tagDivId );
+	}
+}
+
+
  function ss_tagShowHide(namespace, divNumber) {
 	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
 	var divObj = document.getElementById(divId);

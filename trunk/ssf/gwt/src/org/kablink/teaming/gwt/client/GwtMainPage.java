@@ -33,6 +33,8 @@
 
 package org.kablink.teaming.gwt.client;
 
+import java.util.ArrayList;
+
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -44,6 +46,7 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
+import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -55,10 +58,15 @@ import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.IFrameElement;
+import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
@@ -86,9 +94,11 @@ public class GwtMainPage extends Composite
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
 	private LoginDlg m_loginDlg = null;
+	private TagThisDlg m_tagThisDlg = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private EditSuccessfulHandler m_editPersonalPrefsSuccessHandler = null;
+	private EditSuccessfulHandler m_editTagsSuccessHandler = null;
 	private FlowPanel m_contentPanel;
 	private FlowPanel m_teamingRootPanel;
 	private MainMenuControl m_mainMenuCtrl;
@@ -139,6 +149,9 @@ public class GwtMainPage extends Composite
 		
 		// Initialize the JavaScript that calls the login dialog.
 		initInvokeLoginDlgJS( this );
+		
+		// Initialize the JavaScript that invokes the Tag dialog
+		initInvokeTagDlgJS( this );
 		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
@@ -394,6 +407,16 @@ public class GwtMainPage extends Composite
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
 		}//end ss_invokeSimpleProfile
 	}-*/;	
+
+	/*
+	 * Called to create a JavaScript method that can be called to invoke the Tag dialog.
+	 */
+	private native void initInvokeTagDlgJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_invokeTagDlg = function( entryId, entryTitle, tagsDivId )
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeTagDlg(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( entryId, entryTitle, tagsDivId );
+		}
+	}-*/;
 
 	/*
 	 * Copies the <title> text from the GWT content IFRAME to the
@@ -1283,6 +1306,133 @@ public class GwtMainPage extends Composite
 		};
 		m_loginDlg.setPopupPositionAndShow( posCallback );
 	}// end invokeLoginDlg()
+	
+	
+	/**
+	 * This method is used to invoke the "Tag this" dialog from the old jsp code.
+	 */
+	private void invokeTagDlg( String entryId, String entryTitle, final String tagDivId )
+	{
+		int x;
+		int y;
+		
+		x = m_contentCtrl.getAbsoluteLeft() + 500;
+		y = m_contentCtrl.getAbsoluteTop() + 25;
+
+		if ( m_tagThisDlg == null )
+		{
+			if ( m_editTagsSuccessHandler == null )
+			{
+				m_editTagsSuccessHandler = new EditSuccessfulHandler()
+				{
+					private String m_tagDivId = tagDivId;
+					
+					/**
+					 * This method gets called after the user presses ok in the "Tag This" dialog
+					 * and the tags have been written to the db.  We will update the "Tags" tab
+					 * with the new list of tags.
+					 */
+					@SuppressWarnings("unchecked")
+					public boolean editSuccessful( Object obj )
+					{
+						if ( obj != null && obj instanceof ArrayList )
+						{
+							com.google.gwt.dom.client.Element tagPanelElement;
+							com.google.gwt.dom.client.Element tmpElement;
+							IFrameElement iframeElement;
+							
+							// Get the <iframe> that holds the entry.
+							tmpElement = Document.get().getElementById( "ss_showentryframe" );
+							if ( tmpElement == null )
+								return true;
+							
+							iframeElement = IFrameElement.as( tmpElement );
+							if ( iframeElement == null )
+								return true;
+							
+							// Replace the current list of tags with the new list of tags.
+							// Get the <div> that holds the list of tags.
+							tagPanelElement = iframeElement.getContentDocument().getElementById( m_tagDivId );
+							if ( tagPanelElement != null )
+							{
+								ArrayList<ArrayList<TagInfo>> tagData;
+								ArrayList<TagInfo> personalTags;
+								ArrayList<TagInfo> globalTags;
+								String tagName;
+								AnchorElement anchorElement;
+								SpanElement spanElement;
+								
+								// Remove the names of the previous tags
+								tagPanelElement.setInnerHTML( "" );
+								
+								tagData = (ArrayList<ArrayList<TagInfo>>) obj;
+								personalTags = tagData.get( 0 );
+								globalTags = tagData.get( 1 );
+								
+								if ( personalTags != null )
+								{
+									for (TagInfo tagInfo : personalTags)
+									{
+										tagName = tagInfo.getTagName();
+										
+										// Create an anchor
+										anchorElement = iframeElement.getContentDocument().createAnchorElement();
+										anchorElement.setTitle( tagName );
+										anchorElement.setAttribute( "onclick", "ss_tagSearchObj(this); return false;" );
+										anchorElement.setHref( "javascript:;" );
+										
+										// Create a span
+										spanElement = iframeElement.getContentDocument().createSpanElement();
+										spanElement.setTitle( tagName );
+										spanElement.setClassName( "ss_muted_cloud_tag" );
+										spanElement.setInnerText( tagName );
+										
+										// Add the <span> to the <a>
+										anchorElement.appendChild( spanElement );
+										
+										// Add the <a> to the <div> that holds all the tag names.
+										tagPanelElement.appendChild( anchorElement );
+									}
+								}
+								
+								if ( globalTags != null )
+								{
+									for (TagInfo tagInfo : globalTags)
+									{
+										tagName = tagInfo.getTagName();
+										
+										// Create an anchor
+										anchorElement = iframeElement.getContentDocument().createAnchorElement();
+										anchorElement.setTitle( tagName );
+										anchorElement.setAttribute( "onclick", "ss_tagSearchObj(this); return false;" );
+										anchorElement.setHref( "javascript:;" );
+										
+										// Create a span
+										spanElement = iframeElement.getContentDocument().createSpanElement();
+										spanElement.setTitle( tagName );
+										spanElement.setClassName( "ss_muted_cloud_tag" );
+										spanElement.setInnerText( tagName );
+										
+										// Add the <span> to the <a>
+										anchorElement.appendChild( spanElement );
+										
+										// Add the <a> to the <div> that holds all the tag names.
+										tagPanelElement.appendChild( anchorElement );
+									}
+								}
+							}
+						}
+						return true;
+					}
+				};
+			}
+			
+			m_tagThisDlg = new TagThisDlg( false, true, m_editTagsSuccessHandler, x, y, GwtTeaming.getMessages().tagThisEntry() );
+		}
+		
+		m_tagThisDlg.init( entryId, entryTitle );
+		m_tagThisDlg.showDlg( true, x, y );
+	}
 	
 	
 	/*

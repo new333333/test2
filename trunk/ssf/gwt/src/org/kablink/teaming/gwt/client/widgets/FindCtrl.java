@@ -644,6 +644,14 @@ public class FindCtrl extends Composite
 	}
 	
 	/**
+	 * Add a key up handler
+	 */
+	public HandlerRegistration addKeyUpHandler( KeyUpHandler handler )
+	{
+		return m_txtBox.addKeyUpHandler( handler );
+	}
+	
+	/**
 	 * Clear the text in the text box.
 	 */
 	public void clearText()
