@@ -71,60 +71,67 @@
 <c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 <ssf:form title='<%= NLT.get("administration.report.title.activityByUser") %>'>
-<table class="ss_style" width="100%"><tr><td nowrap>
-<form class="ss_style ss_form" 
-	action="<ssf:url webPath="reportDownload"/>" 
-	method="post" 
-	name="${formName}">
-  <input type="hidden" name="ss_reportType" id="ss_reportType" value="activityByUser"/>
-  <div class="ss_buttonBarRight">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="return handleCloseBtn();">
-  </div>
-  <br/>
-  <ssf:nlt tag="administration.report.dates"/>
-  <div class="ss_toolbar_color" style="display:inline;">
-    <ssf:datepicker formName="${formName}" showSelectors="true" 
-	 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
-	 immediateMode="false" 
-	 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-	 />
-  </div>
-  <div id="ss_startPopup" class="ss_calPopupDiv"></div>
-  <ssf:nlt tag="smallWords.and"/>
-  <div class="ss_toolbar_color" style="display:inline;">
-    <ssf:datepicker formName="${formName}" showSelectors="true" 
-	 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
-	 immediateMode="false" 
-	 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
-	 />
-  </div>
-  <div id="ss_endPopup" class="ss_calPopupDiv"></div>
-  <br/>				 
-  <div id="ss_report_panel_forum">
-   <br/>
-   <span class="ss_bold"><ssf:nlt tag="administration.report.label.selectUsers"/></span>
-   <br/>
-  <ssf:find formName="${formName}" formElement="users" 
-    type="user" width="150px" />
-   <br/>
-   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" id="summary" checked="checked" />
-   <label class="ss_radio_label" for="summary"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
-   <br/>
-   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="activity" id="activity" />
-   <label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
-   <br/>
-  </div>
-   <br/>
-  <div class="ss_buttonBarLeft">
-    <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="return handleCloseBtn();">
-  </div>
-</form>
-<br>
-</td></tr></table>
+
+<div class="ss_style">
+	<div class="ss_buttonBarRight">
+		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="return handleCloseBtn();">
+	</div>
+	<div class="ss_largeprint ss_bold"><ssf:nlt tag="administration.report.activity"/></div>
+	<div class="ss_largeprint ss_bold margintop3"><ssf:nlt tag="administration.report.dates"/></div>
+	<div class="roundcornerSM margintop1" style="border: 1px solid #cccccc; padding: 5px; background-color: #ededed;">
+
+	<form class="ss_form" 
+		action="<ssf:url webPath="reportDownload"/>" 
+		method="post" 
+		name="${formName}">
+	  <input type="hidden" name="ss_reportType" id="ss_reportType" value="activityByUser"/>
+
+		<div class="n_date_picker" style="display:inline; vertical-align: middle; padding-right: 10px;">
+			<ssf:datepicker formName="${formName}" showSelectors="true" 
+			 popupDivId="ss_startPopup" id="ss_startDate" initDate="${startDate}"
+			 immediateMode="false" 
+			 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+			 />
+		</div>
+		
+		<div id="ss_startPopup" class="ss_calPopupDiv"></div>
+		<ssf:nlt tag="smallWords.and"/>
+		<div class="n_date_picker" style="display:inline; vertical-align: middle; padding-right: 10px;">
+			<ssf:datepicker formName="${formName}" showSelectors="true" 
+			 popupDivId="ss_endPopup" id="ss_endDate" initDate="${endDate}"
+			 immediateMode="false" 
+			 altText='<%= org.kablink.teaming.util.NLT.get("calendar.view.popupAltText") %>'
+			 />
+		</div>
+		<div id="ss_endPopup" class="ss_calPopupDiv"></div>
+	  <div class="margintop3" id="ss_report_panel_forum">
+
+		<div class="marginleft1">
+			   <div><ssf:nlt tag="administration.report.label.selectUsers"/></div>
+
+		<ssf:find formName="${formName}" formElement="users" 
+		type="user" width="200px" />
+		</div>
+	   <div>
+	   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="summary" id="summary" checked="checked" />
+	   <label class="ss_radio_label" for="summary"><ssf:nlt tag="administration.report.label.activitySummary"/></label>
+	   </div>
+	   <div>
+	   <input type="radio" class="ss_radio" name="ss_reportFlavor" value="activity" id="activity" />
+	   <label class="ss_radio_label" for="activity"><ssf:nlt tag="administration.report.label.activity"/></label>
+	   </div>
+	   
+	  </div>
+			<div class="margintop3 marginbottom1" style="margin-left: 5px;">
+		   		<input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="administration.create.report" />">
+			</div>
+	</form>
+	</div>
+   <div class="ss_buttonBarRight" style="margin-top: 10px;">
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+		  onClick="return handleCloseBtn();"/>
+   </div>
+</div>
 </ssf:form>
 
 </body>
