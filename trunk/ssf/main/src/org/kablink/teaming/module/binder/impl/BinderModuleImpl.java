@@ -909,6 +909,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (binderQuota.getDiskQuota() != null) {
 						Long quota = binderQuota.getDiskQuota();
 						Long diskSpaceUsedCumulative = binderQuota.getDiskSpaceUsedCumulative();
+						if (diskSpaceUsedCumulative == null) {
+							diskSpaceUsedCumulative = 0L;
+						}
 						if (diskSpaceUsedCumulative + fileSize > quota) {
 							//This will exceed the quota
 							return false;
