@@ -396,6 +396,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     		bq.setBinderId(binder.getId());
     		Long diskSpaceUsed = getCoreDao().computeDiskSpaceUsed(zoneId, binder.getId());
     		bq.setDiskSpaceUsed(diskSpaceUsed);
+    		bq.setDiskSpaceUsedCumulative(diskSpaceUsed);
     	}
     	return bq;
     }

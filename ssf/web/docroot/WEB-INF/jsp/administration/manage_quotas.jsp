@@ -230,6 +230,10 @@ function ss_checkForAllUsersGroup() {
 	      <div id="ss_operation_status">
 	      </div>
 	    </div>
+
+	  <div style="padding: 10px 0px;">
+		<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+	  </div>
 	</fieldset>
 	
 	<br/>
