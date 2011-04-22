@@ -49,12 +49,14 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
+<c:if test="${0 == 1}">  <!--  What's Hot has been removed due to performance problems  -->
 	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_green"><ssf:nlt tag="relevance.whatsHot"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 	</ssf:canvas>
+</c:if>
 	
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">

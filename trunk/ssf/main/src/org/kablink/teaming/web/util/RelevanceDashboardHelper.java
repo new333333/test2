@@ -748,6 +748,7 @@ public class RelevanceDashboardHelper {
 	}
 	
 	public static void setupWhatsHotBean(AllModulesInjected bs, Map model) {
+		/** This function has been removed because it did not perfrom well
 		String page = "0";
 		page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
@@ -773,6 +774,7 @@ public class RelevanceDashboardHelper {
 		if (hotEntries != null && hotEntries.size() > pageStart) {
 			model.put(WebKeys.WHATS_HOT, hotEntries.subList(pageStart, hotEntries.size()));
 		}
+		*/
 	}
 	
 	public static void setupMyTagsBeans(AllModulesInjected bs, Map model) {
