@@ -2030,6 +2030,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 		{
 	 		}
 
+	 		// Note:  See AbstractZoneModule.resetZoneUpgradeTasks()
+	 		// for the conditions under which this version and the
+	 		// admin upgrade task flags get cleared.
 	 		if ( top != null )
 	 			upgradeVersionCurrent = (String)top.getProperty( ObjectKeys.BINDER_PROPERTY_UPGRADE_VERSION );
 	 		else

@@ -38,7 +38,7 @@ import org.kablink.teaming.security.function.WorkArea;
 
 @SuppressWarnings("unchecked")
 public class ZoneConfig extends ZonedObject implements WorkArea {
-	public static Integer ZONE_LATEST_VERSION=7;  //This is used to introduce changes and fix things up between releases.
+	public static Integer ZONE_LATEST_VERSION=8;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;
