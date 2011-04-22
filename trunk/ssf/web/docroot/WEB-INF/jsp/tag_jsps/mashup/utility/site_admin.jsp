@@ -47,10 +47,23 @@
 <li>
 <% } %>
 
+<script type="text/javascript">
+	/**
+	 *
+	 */
+	function ss_invokeAdminPage()
+	{
+		if ( typeof window.top.ss_invokeAdminPage != "undefined" )
+		{
+			window.top.ss_invokeAdminPage();
+		}
+	}
+</script>
+
 <div>
-  <a href="<ssf:url actionUrl="false" action="site_administration" binderId="${ssBinder.id}"/>" >
-     <span><ssf:nlt tag="mashup.siteAdmin.view"/></span>
-   </a>
+  	<a href="javascript:;" onClick="ss_invokeAdminPage(); return false;">
+    	<span><ssf:nlt tag="mashup.siteAdmin.view"/></span>
+	</a>
 </div>
 <% if (ss_mashupListDepth > 0) { %>
 </li>

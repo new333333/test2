@@ -153,6 +153,9 @@ public class GwtMainPage extends Composite
 		// Initialize the JavaScript that invokes the Tag dialog
 		initInvokeTagDlgJS( this );
 		
+		// Initialize the JavaScript that invokes the admin page.
+		initInvokeAdminPageJS( this );
+		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
 		m_uiStateManager.addActionHandler( this );
@@ -375,6 +378,16 @@ public class GwtMainPage extends Composite
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::handlePageWithGWT(Ljava/lang/String;)( pageName );
 		}//end ss_handlePageWithGWT()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that can be called to invoke the admin page.
+	 */
+	private native void initInvokeAdminPageJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_invokeAdminPage = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeAdminPage()();
+		}
 	}-*/;
 
 	/*
@@ -1248,6 +1261,15 @@ public class GwtMainPage extends Composite
 		// Invoke the login dialog.
 		invokeLoginDlg( false );
 	}
+	
+	/**
+	 * Invoke the administration page
+	 */
+	private void invokeAdminPage()
+	{
+		handleAction( TeamingAction.ADMINISTRATION, null );
+	}
+	
 	
 	/**
 	 * Invoke the "login" dialog.
