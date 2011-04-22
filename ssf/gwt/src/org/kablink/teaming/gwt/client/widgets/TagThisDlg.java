@@ -43,7 +43,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -56,8 +55,8 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyPressEvent;
-import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
@@ -84,12 +83,12 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class TagThisDlg extends DlgBox
-	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler, KeyPressHandler
+	implements ActionHandler, EditSuccessfulHandler, EditCanceledHandler, KeyUpHandler
 {
 	private final static int	MAX_TAG_LENGTH		= 60;				// As per ObjectKeys.MAX_TAG_LENGTH.
 	private final static int	VISIBLE_TAG_LENGTH	= 20;				// Any better guesses?
 
-	private ActionTrigger m_actionTrigger;			// Interface to use to trigger teaming actions.
+	private EditSuccessfulHandler m_onEditSuccessfulHandler;
 	private String m_binderId;						// Id of the binder we are working with.  This can be null if m_entryId is not null.
 	private BinderType m_binderType;				// Type of binder we are workith with.  This can be null
 	private String m_entryId;						// Id of the entry we are working with.  This can be null if m_binderId is not null.
@@ -109,12 +108,14 @@ public class TagThisDlg extends DlgBox
 	private RadioButton m_personalRB;
 	private RadioButton m_communityRB;
 	private FindCtrl m_findCtrl;
-	private Label m_listLabel;
 	private FlexTable m_table;						// Holds a list of tags applied to the given binder/entry.
 	private FlowPanel m_tagTablePanel;
 	private FlexTable.FlexCellFormatter m_cellFormatter;
 	private ImageResource m_deleteImgR;
 	private TagSortOrder m_sortOrder;
+	private FlowPanel m_errorPanel;
+	private Label m_errorLabel;
+	
 
 	/**
 	 * This widget is used to delete a tag.
@@ -171,7 +172,7 @@ public class TagThisDlg extends DlgBox
 	public TagThisDlg(
 		boolean autoHide,
 		boolean modal,
-		ActionTrigger actionTrigger,
+		EditSuccessfulHandler editSuccessfulHandler,
 		int left,
 		int top,
 		String dlgCaption )
@@ -180,7 +181,7 @@ public class TagThisDlg extends DlgBox
 		super(autoHide, modal, left, top );
 
 		// ...initialize everything else...
-		m_actionTrigger = actionTrigger;
+		m_onEditSuccessfulHandler = editSuccessfulHandler;
 		m_messages = GwtTeaming.getMessages();
 		m_images = GwtTeaming.getMainMenuImageBundle();
 		m_toBeAdded = new ArrayList<TagInfo>();
@@ -503,7 +504,7 @@ public class TagThisDlg extends DlgBox
 			mainPanel.add( table );
 			
 			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PERSONAL_TAGS );
-			m_findCtrl.addKeyPressHandler( this );
+			m_findCtrl.addKeyUpHandler( this );
 			table.setWidget( 0, 0, m_findCtrl );
 	
 			// Add an "add tag" image.
@@ -540,12 +541,17 @@ public class TagThisDlg extends DlgBox
 			}
 		}
 		
-		// Add a label that says "Tags associated with this entry/folder/workspace"
+		// Add a panel where errors dealing with tag names will be displayed.
 		{
-			// The text of the label will be filled in in init().
-			m_listLabel = new Label();
-			m_listLabel.addStyleName( "tagThisDlg_ListOfTagsLabel" );
-			mainPanel.add( m_listLabel );
+			m_errorPanel = new FlowPanel();
+			m_errorPanel.addStyleName( "dlgErrorPanel" );
+			m_errorPanel.setVisible( false );
+
+			m_errorLabel = new Label();
+			m_errorLabel.addStyleName( "dlgErrorLabel" );
+			m_errorPanel.add( m_errorLabel );
+			
+			mainPanel.add( m_errorPanel );
 		}
 		
 		// Create a table to hold the list of tags that are associated with the given binder/entry.
@@ -725,6 +731,17 @@ public class TagThisDlg extends DlgBox
 	public boolean editSuccessful( Object callbackData )
 	{
 		saveTags();
+		
+		if ( m_onEditSuccessfulHandler != null )
+		{
+			ArrayList<ArrayList<TagInfo>> data;
+			
+			// Gather up the list of personal and global tags and pass them back to the handler.
+			data = new ArrayList<ArrayList<TagInfo>>();
+			data.add( m_currentListOfPersonalTags );
+			data.add( m_currentListOfGlobalTags );
+			m_onEditSuccessfulHandler.editSuccessful( data );
+		}
 
 		return true;
 	}
@@ -854,18 +871,20 @@ public class TagThisDlg extends DlgBox
 				// Get the type of tag we are dealing with.
 				tagType = getSelectedTagType();
 				
-				// Is the tag valid?
-				tagName = validateTagName( tagName, tagType );
-				if ( GwtClientHelper.hasString( tagName ) == false )
+				// Is this tag already in our list of tags?
+				if ( isTagADuplicate( tagName, tagType ) )
 				{
-					// No!  validateTagName() will have told the user
-					// about any problems.  Simply bail.
+					// Yes,  isTagADuplicate() will have told the user
+					// about the problem.  Simply bail.
 					
 					// Hide the search-results widget.
 					m_findCtrl.hideSearchResults();
 
 					return;
 				}
+				
+				// Hide any error message that may be visible.
+				hideError();
 				
 				// If we get here the tag is valid.
 				// Create a TagInfo object and initialize it.
@@ -900,14 +919,23 @@ public class TagThisDlg extends DlgBox
 		// Get the type of tag we are dealing with.
 		tagType = getSelectedTagType();
 		
-		// Is the tag valid?
-		tagName = validateTagName( tagName, tagType );
-		if ( GwtClientHelper.hasString( tagName ) == false )
+		// Is the tag name valid?
+		if ( isTagNameValid( tagName ) == false )
 		{
-			// No!  validateTagName() will have told the user
+			// No, isTagNameValid() will have told the user about the problem.
+			return;
+			
+		}
+		// Is the tag a duplicate?
+		if ( isTagADuplicate( tagName, tagType ) )
+		{
+			// Yes!  isTagADuplicate() will have told the user
 			// about any problems.  Simply bail.
 			return;
 		}
+		
+		// Clear what the user has typed.
+		m_findCtrl.clearText();
 		
 		// If we get here the tag is valid.
 		// Create a TagInfo object and initialize it.
@@ -1039,6 +1067,14 @@ public class TagThisDlg extends DlgBox
 		saveSortOrder();
 	}
 	
+	
+	/**
+	 * Hide any error message that may be visible.
+	 */
+	private void hideError()
+	{
+		m_errorPanel.setVisible( false );
+	}
 	
 	/**
 	 * Initialize the dialog for the given binderId.
@@ -1179,26 +1215,12 @@ public class TagThisDlg extends DlgBox
 		if ( m_binderId != null && m_binderId.length() > 0 )
 		{
 			// Yes
-			// Update the label above the list of tags.
-			if ( m_binderType != null )
-			{
-				if ( m_binderType == BinderType.FOLDER )
-					m_listLabel.setText( m_messages.listOfFolderTagsLabel() );
-				else if ( m_binderType == BinderType.WORKSPACE )
-					m_listLabel.setText( m_messages.listOfWorkspaceTagsLabel() );
-				else
-					m_listLabel.setText( "unknown binder type" );
-			}
-			
 			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue the call to read the tags.
 			GwtTeaming.getRpcService().getTagRightsForBinder( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rightsCallback );
 		}
 		else if ( m_entryId != null && m_entryId.length() > 0 )
 		{
-			// Update the label above the list of tags
-			m_listLabel.setText( m_messages.listOfEntryTagsLabel() );
-			
 			// We are working with an entry.
 			// Issue a request to see what rights the user has regarding tags on a binder.
 			// The onSuccess() method will issue a request to get the tags associated with the given entry.
@@ -1212,25 +1234,33 @@ public class TagThisDlg extends DlgBox
 	}
 
 
-	/**
-	 * This method gets called when the user types in the name of a tag.
-	 * We only want to let the user enter numbers.
+	/*
+	 * Checks to see if the given tag name already exists in the list of tags.
 	 */
-	public void onKeyPress( KeyPressEvent event )
+	private boolean isTagADuplicate( String tagName, TagType tagType )
 	{
-        int keyCode;
-
-        // Get the key the user pressed
-        keyCode = event.getNativeEvent().getKeyCode();
-        
-        // Did the user press Enter?
-        if ( keyCode == KeyCodes.KEY_ENTER )
-        {
-			// Yes, try to add a new tag.
-			handleClickOnAddTag();
-        }
-	}
+		boolean alreadyInList;
+		
+		// Do we have a tag name?
+		if ( GwtClientHelper.hasString( tagName ) == false )
+			return false;
 	
+		if ( tagType == TagType.PERSONAL )
+			alreadyInList = isTagInList( m_currentListOfPersonalTags, tagName );
+		else
+			alreadyInList = isTagInList( m_currentListOfGlobalTags, tagName );
+		
+		// Is the tag already in the list?
+		if ( alreadyInList )
+		{
+			// Yes
+			// ...tell the user that's not valid and bail.
+			showError( m_messages.mainMenuTagThisDlgErrorDuplicateTag() );
+		}
+		
+		return alreadyInList;
+	}
+
 	/**
 	 * Is the given tag name in the given list.
 	 */
@@ -1250,6 +1280,101 @@ public class TagThisDlg extends DlgBox
 		
 		// If we get here the given tag name is not in the given list.
 		return false;
+	}
+	
+	
+	/**
+	 * Check to see if the tag name is valid.  A tag name is invalid if it contains spaces,
+	 * underscores, or punctuation characters.
+	 */
+	private boolean isTagNameValid( String tagName )
+	{
+		if ( GwtClientHelper.hasString( tagName ) == false )
+			return false;
+		
+		// If the tag contains spaces...
+		if ( 0 <= tagName.indexOf(" ") )
+		{
+			// ...tell the user that's not valid and bail.
+			showError( m_messages.mainMenuTagThisDlgErrorTagHasSpaces() );
+			return false;
+		}
+
+		// If the tag contains underscores...
+		if ( 0 <= tagName.indexOf("_") )
+		{
+			// ...tell the user that's not valid and bail.
+			showError( m_messages.mainMenuTagThisDlgErrorTagHasUnderscores() );
+			return false;
+		}
+
+		// If the tag is too long...
+		if ( MAX_TAG_LENGTH < tagName.length() )
+		{
+			// ...tell the user and truncate it.
+			showError( m_messages.mainMenuTagThisDlgWarningTagTruncated() );
+			return false;
+		}
+
+		// If the tag contains punctuation characters...
+		if ( containsPunctuation( tagName ) )
+		{
+			// ...tell the user that's not valid and bail.
+			showError( m_messages.mainMenuTagThisDlgErrorTagHasPunctuation() );
+			return false;
+		}
+
+		// If we get here, the tag name is valid.
+		return true;
+	}
+	
+	
+	/**
+	 * Handles the KeyUpEvent
+	 */
+	public void onKeyUp( KeyUpEvent event )
+	{
+        final int keyCode;
+        Scheduler.ScheduledCommand cmd;
+
+        // Get the key the user pressed
+        keyCode = event.getNativeEvent().getKeyCode();
+
+        // Did the user press Enter?
+        if ( keyCode == KeyCodes.KEY_ENTER )
+        {
+			// Yes, kill the keystroke.
+        	event.stopPropagation();
+        	event.preventDefault();
+        }
+
+        cmd = new Scheduler.ScheduledCommand()
+        {
+			public void execute()
+			{
+		        // Did the user press Enter?
+		        if ( keyCode == KeyCodes.KEY_ENTER )
+		        {
+					// Yes, try to add a new tag.
+					handleClickOnAddTag();
+		        }
+		        else
+		        {
+		        	String tagName;
+		        	
+		    		tagName = m_findCtrl.getText();
+
+		    		// Check if the tag name entered so far is valid.  If it is not, isTagNameValid()
+		        	// will display an error message.
+		        	if ( GwtClientHelper.hasString( tagName ) == false || isTagNameValid( tagName ) )
+		        	{
+		        		// The tag name is valid, hide any error messages that were previously visible.
+		        		hideError();
+		        	}
+		        }
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 	}
 	
 	
@@ -1408,6 +1533,20 @@ public class TagThisDlg extends DlgBox
 		setPopupPositionAndShow( posCallback );
 	}
 	
+	/**
+	 * Display the given error to the user.
+	 */
+	private void showError( String errMsg )
+	{
+		// Make the error panel the same width as the find control.
+		m_errorPanel.setWidth( String.valueOf( m_findCtrl.getOffsetWidth() ) + "px" );
+
+		m_findCtrl.hideSearchResults();
+
+		m_errorLabel.setText( errMsg );
+		m_errorPanel.setVisible( true );
+	}
+	
 	
 	/**
 	 * Sort the list of tags based on the sort order found in m_sortOrder
@@ -1462,75 +1601,5 @@ public class TagThisDlg extends DlgBox
 				m_cellFormatter.addStyleName( row, i, "oltLastRowBorderBottom" );
 			}
 		}
-	}
-	
-	
-	/*
-	 * Does what's needed to validate tagName.  The user is informed
-	 * if any errors are detected.
-	 * 
-	 * If the string needs to be modified to be validated, the modified
-	 * string is returned.
-	 * 
-	 * Implementation logic is based on that in the ss_tagModify()
-	 * method in ss_tags.js.
-	 */
-	private String validateTagName( String tagName, TagType tagType )
-	{
-		// Do we have a tag name to validate?
-		String reply = ((null == tagName) ? tagName : tagName.trim());
-	
-		if (GwtClientHelper.hasString(reply)) {
-			// Yes!  If the tag contains spaces...
-			if (0 <= reply.indexOf(" ")) {
-				// ...tell the user that's not valid and bail.
-				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasSpaces());
-				return "";
-			}
-
-			// If the tag contains underscores...
-			if (0 <= reply.indexOf("_")) {
-				// ...tell the user that's not valid and bail.
-				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasUnderscores());
-				return "";
-			}
-
-			// If the tag is too long...
-			if (MAX_TAG_LENGTH < reply.length()) {
-				// ...tell the user and truncate it.
-				Window.alert(m_messages.mainMenuTagThisDlgWarningTagTruncated());
-				reply = reply.substring(0, (MAX_TAG_LENGTH - 1));
-			}
-
-			// If the tag contains punctuation characters...
-			if (containsPunctuation(reply)) {
-				// ...tell the user that's not valid and bail.
-				Window.alert(m_messages.mainMenuTagThisDlgErrorTagHasPunctuation());
-				return "";
-			}
-
-			// Check to make sure the tag name is not already in our list.
-			{
-				boolean alreadyInList;
-				
-				if ( tagType == TagType.PERSONAL )
-					alreadyInList = isTagInList( m_currentListOfPersonalTags, tagName );
-				else
-					alreadyInList = isTagInList( m_currentListOfGlobalTags, tagName );
-				
-				// Is the tag already in the list?
-				if ( alreadyInList )
-				{
-					// Yes
-					// ...tell the user that's not valid and bail.
-					Window.alert( m_messages.mainMenuTagThisDlgErrorDuplicateTag() );
-					return "";
-				}
-			}
-		}
-		
-		// If we get here, reply refers to the validated string or an
-		// empty string if the tag was not valid.  Return it.
-		return reply;
 	}
 }

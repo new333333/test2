@@ -33,6 +33,13 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="org.kablink.util.ParamUtil" %>
+
+<%
+	String entryId = ParamUtil.get(request, "entryId", "");
+	String title = ParamUtil.get(request, "title", "");
+%>
+
 <c:if test="${!ss_seenTagView}">
 <c:if test="${!ss_pseudoEntity}">
 <c:set var="ss_seenTagView" value="true" scope="request" />
@@ -69,7 +76,7 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 		 <td valign="top" style="padding-right:10px;">
 		<div style="padding-left: 5px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
-			onClick="ss_tagShowHide('${ss_tagViewNamespace}','${ss_tagDivNumber}'); return false;"
+			onClick="ss_invokeTagDlg( '<%= entryId %>','<%= title %>', 'ss_tags'+ '${ss_tagViewNamespace}' + '_' + '${ss_tagDivNumber}' ); return false;"
 			<ssf:title tag="title.open.tag.menu" />
 		  >
 			<!-- The help spot is positioned relative to the position of its parent. -->
