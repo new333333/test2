@@ -128,7 +128,8 @@
 				</div>	
 				</c:if>
 				
-				<c:if test="${ss_type3 == 'site'}">
+				<c:if test="${0 == 1 && ss_type3 == 'site'}">  
+					<!-- What's Hot has been turned off due to bad performance  -->
 					<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
 						<div id="ss_dashboardWhatsHot${renderResponse.namespace}">
 						  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
