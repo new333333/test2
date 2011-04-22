@@ -94,97 +94,107 @@ function ss_saveChangeLogEntryId(id) {
   name="ss_changeLogForm" method="post" 
   action="<ssf:url action="view_change_log" actionUrl="true"/>">
 
-<table class="roundcornerSM margintop3" style="background-color: #ededed; border: 1px solid #cccccc; padding: 6px;">
-<tr>
-  <td valign="top" width="350">
-  <span><ssf:nlt tag="changeLog.findFolder"/></span><br/><br/>
-	 <ssf:find formName="ss_changeLogForm" 
-	    formElement="binderId2" 
-	    type="places"
-	    width="300px" 
-	    binderId="${binderId}"
-	    searchSubFolders="false"
-	    foldersOnly="false"
-	    singleItem="true"
-	    clickRoutine="ss_saveChangeLogBinderId"
-	    /> 
-  </td>
-  <td valign="top" width="350">
-    <span><ssf:nlt tag="changeLog.findEntry"/></span>
-    <div id="ss_changeLogEntryForm">
-      <iframe id="ss_changeLogIframe" title="<ssf:nlt tag="changeLog.findEntry"/>" frameborder="0" 
-        style="height:230px; width:330px; padding-top:9px;"
-      src="<ssf:url 
-		adapter="true" 
-		portletName="ss_forum" 
-		action="__ajax_request" 
-		actionUrl="true" >
-		<ssf:param name="operation" value="get_change_log_entry_form" />
-		</ssf:url>">xxx</iframe>
-    </div>
-  </td>
-</tr>
-</table>
-<table>
-<tr>
-  <td valign="top" width="250" align="center" nowrap><label for="binderId">BinderId: </label><input type="text" name="binderId" id="binderId" size="8"/></td>
-  <td valign="top" width="250" align="center" nowrap><label for="entityId">EntityId: </label><input type="text" name="entityId" id="entityId" size="8"><br/>
-  <label for="entityType">EntityType: </label>
-<select name="entityType" id="entityType">
-  <option value="">----</option>
-    <option value="folderEntry">folderEntry</option>
-    <option value="user">user</option>
-    <option value="group">group</option>
-    <option value="folder">folder</option>
-    <option value="workspace">workspace</option>
-    <option value="profiles">profiles</option>
- </select>
-</td></tr>
-</table>
-<br/>
-<table>
-<tr>
-  <td><label for="operation"><ssf:nlt tag="changeLogs.filterByOperation"/></label>
-	<select name="operation" id="operation">
-	  <option value=""><ssf:nlt tag="changeLog.showAllChanges"/></option>
-	    <option value="addEntry">addEntry</option>
-	    <option value="modifyEntry">modifyEntry</option>
-	    <option value="deleteEntry">deleteEntry</option>
-	    <option value="startWorkflow">startWorkflow</option>
-	    <option value="modifyWorkflowState">modifyWorkflowState</option>
-	    <option value="addWorkflowResponse">addWorkflowResponse</option>
-	    <option value="moveEntry">moveEntry</option>
-	    <option value="addFile">addFile</option>
-	    <option value="modifyFile">modifyFile</option>
-	    <option value="deleteFile">deleteFile</option>
-	    <option value="deleteVersion">deleteVersion</option>
-	    <option value="renameFile">renameFile</option>
-	    <option value="addBinder">addBinder</option>
-	    <option value="modifyBinder">modifyBinder</option>
-	    <option value="deleteBinder">deleteBinder</option>
-	    <option value="moveBinder">moveBinder</option>
-	    <option value="modifyAccess">modifyAccess</option>
-	    <option value="deleteAccess">deleteAccess</option>
-	 </select>
-  </td>
-</tr>
-</table>
-<br/>
-<div class="ss_buttonBarLeft">
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
-	  onClick="if (${ssNamespace}_getChanges) {${ssNamespace}_getChanges()};return false;">
+	<div class="ss_buttonBarRight">
+	
+	<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" />"
+		onClick="return handleCloseBtn();"/>
+	</div>
 
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-	onClick="return handleCloseBtn();"/>
-</div>
+	<div class="roundcornerSM margintop2" style="border: 1px solid #cccccc; padding: 10px; background-color: #ededed;">
+		
+		<div><ssf:nlt tag="changeLog.description"/></div>
+	
+	
+	
+		<table class="roundcornerSM margintop3">
+			<tr>
+			  <td valign="top">
+				<div><ssf:nlt tag="changeLog.findFolder"/></div>
+				<div>
+					<ssf:find formName="ss_changeLogForm" 
+						formElement="binderId2" 
+						type="places"
+						width="300px" 
+						binderId="${binderId}"
+						searchSubFolders="false"
+						foldersOnly="false"
+						singleItem="true"
+						clickRoutine="ss_saveChangeLogBinderId"
+					/>
+				</div>	
+			  </td>
+  			  	<td valign="top">
+			  		<div><label for="binderId">Binder Id: </label></div>
+					<div><input type="text" name="binderId" id="binderId" size="8"/></div>
+				</td>
+			</tr>
+			  <td valign="top">
+				<div class="margintop3"><ssf:nlt tag="changeLog.findEntry"/></div>
+				<div id="ss_changeLogEntryForm" style="padding: 0px;">
+				  <iframe id="ss_changeLogIframe" title="<ssf:nlt tag="changeLog.findEntry"/>" frameborder="0" 
+					style="width:350px; height: 150px;"
+					src="<ssf:url 
+					adapter="true" 
+					portletName="ss_forum" 
+					action="__ajax_request" 
+					actionUrl="true" >
+					<ssf:param name="operation" value="get_change_log_entry_form" />
+					</ssf:url>">xxx</iframe>
+				</div>
+			  </td>
+			  <td valign="top">
+			  	<div style="margin-top: 20px;"><label for="entityId">Entity Id: </label></div>
+				<div><input type="text" name="entityId" id="entityId" size="8"></div>
+				<div class="margintop2"><label for="entityType">Entity Type:</label></div>
+				<div>
+					<select name="entityType" id="entityType">
+					  <option value="">----</option>
+						<option value="folderEntry">folderEntry</option>
+						<option value="user">user</option>
+						<option value="group">group</option>
+						<option value="folder">folder</option>
+						<option value="workspace">workspace</option>
+						<option value="profiles">profiles</option>
+					 </select>
+				</div>
+			</td>
+
+			</tr>
+			<tr>
+			  <td><label for="operation"><ssf:nlt tag="changeLogs.filterByOperation"/></label>
+				<select name="operation" id="operation">
+				  <option value=""><ssf:nlt tag="changeLog.showAllChanges"/></option>
+					<option value="addEntry">addEntry</option>
+					<option value="modifyEntry">modifyEntry</option>
+					<option value="deleteEntry">deleteEntry</option>
+					<option value="startWorkflow">startWorkflow</option>
+					<option value="modifyWorkflowState">modifyWorkflowState</option>
+					<option value="addWorkflowResponse">addWorkflowResponse</option>
+					<option value="moveEntry">moveEntry</option>
+					<option value="addFile">addFile</option>
+					<option value="modifyFile">modifyFile</option>
+					<option value="deleteFile">deleteFile</option>
+					<option value="deleteVersion">deleteVersion</option>
+					<option value="renameFile">renameFile</option>
+					<option value="addBinder">addBinder</option>
+					<option value="modifyBinder">modifyBinder</option>
+					<option value="deleteBinder">deleteBinder</option>
+					<option value="moveBinder">moveBinder</option>
+					<option value="modifyAccess">modifyAccess</option>
+					<option value="deleteAccess">deleteAccess</option>
+				 </select>
+			  </td>
+			</tr>
+		</table>
+	<div class="margintop3"><input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>" 
+		  onClick="if (${ssNamespace}_getChanges) {${ssNamespace}_getChanges()};return false;"></div>
+	</div>
 </form>
-<br/>
-<iframe id="${ssNamespace}_display" name="${ssNamespace}_display" style="width:98%; height:350px; 
-    display:block; position:relative; left:5px;" title="<ssf:nlt tag="administration.view_change_log"/>"
+
+<iframe class="roundcornerSM margintop2" id="${ssNamespace}_display" name="${ssNamespace}_display" style="width:100%; height:350px; border: 1px solid #cccccc;
+    display:block; position:relative;" title="<ssf:nlt tag="administration.view_change_log"/>"
     src="<html:rootPath/>js/forum/null.html" 
     >xxx</iframe>
-</div>
 <script type="text/javascript">
 var rn = Math.round(Math.random()*999999);
 
