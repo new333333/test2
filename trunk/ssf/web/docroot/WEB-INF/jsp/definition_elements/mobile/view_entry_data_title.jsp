@@ -92,11 +92,9 @@
   <c:set var="ss_title_breadcrumbs_seen" value="1" scope="request"/>
 
 <div class="entry-title">
-  <%
-	  if (!ssSeenMap.checkIfSeen(title_entry)) {
-		%><img border="0" align="absbottom" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png"><%
-	  }
-  %>
+<c:if test="${!ssSeenEntries[title_entry.id]}">
+  <img border="0" align="absbottom" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.png">
+</c:if>
   <c:if test="${!empty ssDefinitionEntry.docNumber && !empty ssFolderColumns['number']}">
 	<div class="doc-number">${ssDefinitionEntry.docNumber}.</div>
   </c:if>

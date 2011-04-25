@@ -622,6 +622,9 @@ public class BinderHelper {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE);
+			if (model.containsKey(WebKeys.URL_OPERATION2)) {
+				adapterUrl.setParameter(WebKeys.URL_OPERATION2, (String)model.get(WebKeys.URL_OPERATION2));
+			}
 			model.put(WebKeys.URL, adapterUrl);
 			if (bs.getAdminModule().isMobileAccessEnabled()) {
 				return "mobile/show_login_form";
