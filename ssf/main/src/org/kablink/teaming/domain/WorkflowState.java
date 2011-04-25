@@ -59,6 +59,9 @@ public class WorkflowState extends ZonedObject {
     protected Long timerId=null;
     protected HistoryStamp workflowChange;
 
+    // This in-memory only field is used to prevent infinite cyclic execution of 
+    // state transitions involving parallel workflow threads.
+    private transient boolean inExecution = false; 
 
 	//cached during transaction as needed 
 	protected Map wfAcls=null;
@@ -209,4 +212,12 @@ public class WorkflowState extends ZonedObject {
 		return element;
     	
     }
+	
+	public boolean isInExecution() {
+		return inExecution;
+	}
+	public void setInExecution(boolean inExecution) {
+		this.inExecution = inExecution;
+	}
+	
 }

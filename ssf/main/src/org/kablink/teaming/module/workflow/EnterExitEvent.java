@@ -126,76 +126,82 @@ public class EnterExitEvent extends AbstractActionHandler {
 		boolean isEnter = true;
 		if (debugEnabled) logger.debug("Workflow event (" + executionContext.getEvent().getEventType() + ")");
 		if (ws != null) {
-			List items;
-			if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
-				if (!state.equals(executionContext.getContextInstance().getTransientVariable(WorkflowModule.FORCE_STATE))) {
-					Date current = new Date();
-					HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), current);
-					if (entry.getWorkflowChange() == null) {
-						entry.setWorkflowChange(stamp);
-					} else if ((entry.getWorkflowChange().getDate() != null) && current.after(entry.getWorkflowChange().getDate())) {
-						entry.setWorkflowChange(stamp);
+			ws.setInExecution(true);
+			try {
+				List items;
+				if (Event.EVENTTYPE_NODE_ENTER.equals(executionContext.getEvent().getEventType())) {
+					if (!state.equals(executionContext.getContextInstance().getTransientVariable(WorkflowModule.FORCE_STATE))) {
+						Date current = new Date();
+						HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser(), current);
+						if (entry.getWorkflowChange() == null) {
+							entry.setWorkflowChange(stamp);
+						} else if ((entry.getWorkflowChange().getDate() != null) && current.after(entry.getWorkflowChange().getDate())) {
+							entry.setWorkflowChange(stamp);
+						}
+						//	record when we enter the state
+						ws.setWorkflowChange(stamp);
 					}
-					//	record when we enter the state
-					ws.setWorkflowChange(stamp);
-				}
-				ws.setState(state);
-				if (debugEnabled) logger.debug("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
-				//remove old responses associated with this state
-				Set names = WorkflowProcessUtils.getQuestionNames(ws.getDefinition(), ws.getState());
-				if (!names.isEmpty()) {
-					//now see if response to this question from this user exists
-					Set<WorkflowResponse> responses = new HashSet<WorkflowResponse>(entry.getWorkflowResponses());
-					for (WorkflowResponse wr:responses) {
-						if (ws.getDefinition().getId().equals(wr.getDefinitionId())) {
-							String name = wr.getName();
-							//if question is defined here, clear any old answers
-							if (names.contains(name)) entry.removeWorkflowResponse(wr);
-						}			
+					ws.setState(state);
+					if (debugEnabled) logger.debug("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
+					//remove old responses associated with this state
+					Set names = WorkflowProcessUtils.getQuestionNames(ws.getDefinition(), ws.getState());
+					if (!names.isEmpty()) {
+						//now see if response to this question from this user exists
+						Set<WorkflowResponse> responses = new HashSet<WorkflowResponse>(entry.getWorkflowResponses());
+						for (WorkflowResponse wr:responses) {
+							if (ws.getDefinition().getId().equals(wr.getDefinitionId())) {
+								String name = wr.getName();
+								//if question is defined here, clear any old answers
+								if (names.contains(name)) entry.removeWorkflowResponse(wr);
+							}			
+						}
+	
 					}
-
+					items  = WorkflowProcessUtils.getOnEntry(ws.getDefinition(), state);
+				} else {
+					isEnter = false;
+					//cancel timers associated with this state.  onElapsedTime timers cancelled by jbpm
+					executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
+					items  = WorkflowProcessUtils.getOnExit(ws.getDefinition(), state);				
 				}
-				items  = WorkflowProcessUtils.getOnEntry(ws.getDefinition(), state);
-			} else {
-				isEnter = false;
-				//cancel timers associated with this state.  onElapsedTime timers cancelled by jbpm
-				executionContext.getJbpmContext().getSchedulerSession().cancelTimersByName("onDataValue", token);
-				items  = WorkflowProcessUtils.getOnExit(ws.getDefinition(), state);				
+				for (int i=0; i<items.size(); ++i) {
+					Element item = (Element)items.get(i);
+		   			String name = item.attributeValue("name","");
+		   			if ("variable".equals(name)) {
+		   				WorkflowProcessUtils.setVariable(item, executionContext, entry, ws);
+		   			} else if ("notifications".equals(name)) {
+		   				//don't send mail if forcing state
+		   				if (isEnter && ws.getState().equals(executionContext.getContextInstance().getTransientVariable(WorkflowModule.FORCE_STATE))) continue;
+		   				//since permalinks no longer contain binderIds, this can be done at any time (doesn't have to worry about a move
+		   				doNotification(item, executionContext, entry, ws);	   			
+		   			} else if ("moveEntry".equals(name)) {
+		   				moveEntry(item, executionContext, entry, ws);	   				
+		   			} else if ("copyEntry".equals(name)) {
+		   				copyEntry(item, executionContext, entry, ws);	   				
+		   			} else if ("startParallelThread".equals(name)) {
+		   				startThread(item, executionContext, entry, ws);
+		   			} else if ("stopParallelThread".equals(name)) {
+		   				stopThread(item, executionContext, entry, ws); 
+		   			} else if ("workflowAction".equals(name)) {
+		   				startCustomAction(item, executionContext, entry, ws);
+		   			} else if ("workflowRemoteApp".equals(name)) {
+		   				startRemoteApp(item, executionContext, entry, ws);
+		   			} else if ("startProcess".equals(name)) {
+		   				startProcess(item, executionContext, entry, ws);
+		   			}
+	
+		   		}
+				if (Event.EVENTTYPE_NODE_LEAVE.equals(executionContext.getEvent().getEventType())) {
+					//leaving a state - logit
+					WorkflowHistory history = new WorkflowHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
+					getCoreDao().save(history);
+				}
+				//See if other threads conditions are now met.
+				WorkflowProcessUtils.processConditions(entry, token);
 			}
-			for (int i=0; i<items.size(); ++i) {
-				Element item = (Element)items.get(i);
-	   			String name = item.attributeValue("name","");
-	   			if ("variable".equals(name)) {
-	   				WorkflowProcessUtils.setVariable(item, executionContext, entry, ws);
-	   			} else if ("notifications".equals(name)) {
-	   				//don't send mail if forcing state
-	   				if (isEnter && ws.getState().equals(executionContext.getContextInstance().getTransientVariable(WorkflowModule.FORCE_STATE))) continue;
-	   				//since permalinks no longer contain binderIds, this can be done at any time (doesn't have to worry about a move
-	   				doNotification(item, executionContext, entry, ws);	   			
-	   			} else if ("moveEntry".equals(name)) {
-	   				moveEntry(item, executionContext, entry, ws);	   				
-	   			} else if ("copyEntry".equals(name)) {
-	   				copyEntry(item, executionContext, entry, ws);	   				
-	   			} else if ("startParallelThread".equals(name)) {
-	   				startThread(item, executionContext, entry, ws);
-	   			} else if ("stopParallelThread".equals(name)) {
-	   				stopThread(item, executionContext, entry, ws); 
-	   			} else if ("workflowAction".equals(name)) {
-	   				startCustomAction(item, executionContext, entry, ws);
-	   			} else if ("workflowRemoteApp".equals(name)) {
-	   				startRemoteApp(item, executionContext, entry, ws);
-	   			} else if ("startProcess".equals(name)) {
-	   				startProcess(item, executionContext, entry, ws);
-	   			}
-
-	   		}
-			if (Event.EVENTTYPE_NODE_LEAVE.equals(executionContext.getEvent().getEventType())) {
-				//leaving a state - logit
-				WorkflowHistory history = new WorkflowHistory(ws, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()), false);
-				getCoreDao().save(history);
+			finally {
+				ws.setInExecution(false);
 			}
-			//See if other threads conditions are now met.
-			WorkflowProcessUtils.processConditions(entry, token);
 		}
 	}
 	protected void startCustomAction(final Element action, final ExecutionContext executionContext, final WorkflowSupport wfEntry, final WorkflowState currentWs) {

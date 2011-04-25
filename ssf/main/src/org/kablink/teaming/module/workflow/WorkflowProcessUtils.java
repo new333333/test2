@@ -682,6 +682,9 @@ public static void resumeTimers(WorkflowSupport entry) {
 	
 				for (Iterator iter=states.iterator(); iter.hasNext(); ) {
 					WorkflowState ws = (WorkflowState)iter.next();
+					if(ws.isInExecution()) {
+						continue;
+					}
 					if ((current != null) && (ws.getTokenId().longValue() == current.getId())) continue;
 					Token t = context.loadTokenForUpdate(ws.getTokenId().longValue());
 					//	make sure state hasn't been removed as the result of another thread
