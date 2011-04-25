@@ -85,7 +85,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private ArrayList<EnhancedViewInfo> m_views;
 	private LandingPageEditor m_lpe;
 	
-	// The following data members are used if the user has checked the "Associate a folder with this custom jsp"
+	// The following data members are used if a folder is associated with the view.
 	private String m_folderId = null;
 	private Panel m_selectFolderPanel = null;
 	private FlowPanel m_folderFindPanel;
@@ -95,7 +95,7 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private InlineLabel m_currentFolderNameLabel = null;
 	private Button m_folderEditBtn;
 	
-	// The following data members are used if the user has checked the "Associate an entry with this custom jsp"
+	// The following data members are used if an entry is associated with this view"
 	private String m_entryId = null;
 	private Panel m_selectEntryPanel = null;
 	private FindCtrl m_entryFindCtrl = null;
@@ -547,6 +547,9 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			{
 				// Yes, show the ui for selecting a folder.
 				m_selectFolderPanel.setVisible( true );
+				
+				// Show/hide the "Show title" checkbox.
+				m_showFolderTitleCkBox.setVisible( evInfo.getTitleOptional() );
 			}
 			
 			// Does the selected view require the user to select an entry?
@@ -554,6 +557,9 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			{
 				// Yes, show the ui for selecting an entry.
 				m_selectEntryPanel.setVisible( true );
+
+				// Show/hide the "Show title" checkbox.
+				m_showEntryTitleCkBox.setVisible( evInfo.getTitleOptional() );
 			}
 		}
 	}
