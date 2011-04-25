@@ -98,7 +98,7 @@ div.ss_mashup_folder_header_form a span {
 }
   
 div.ss_mashup_folder_header_view {
-  padding:10px;
+  padding: 5px 10px;
   margin-bottom: 2px;
   background: #949494;
   -moz-border-radius: 6px;
@@ -109,7 +109,8 @@ div.ss_mashup_folder_header_view span {
   color: #ededed;
 }
 div.ss_mashup_folder_header_view a span {
-  font-size: 20px;
+  font-size: 17px;
+  font-weight: bold;
   color: #ededed;
 }  
 div.ss_mashup_folder_description {
@@ -131,13 +132,13 @@ div.ss_mashup_folder_list_open span.ss_size_20px {
 
 div.ss_mashup_folder_list_open {
   background: #ededed;
-  padding: 5px 6px;
+  padding: 5px;
   margin-bottom: 2px;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   }
 div.ss_mashup_folder_list_open_title {
-  padding:6px;
+  padding: 5px 5px 0 5px;
   font-size: 15px;
   font-weight: bold;
   }
@@ -146,7 +147,7 @@ div.ss_mashup_folder_list_open_title {
   }
 
 div.ss_mashup_folder_list_open_entry {
-  padding: 6px;
+  padding: 5px 5px 0 5px;
   }
 div.ss_mashup_folder_list_open ul {
   list-style: circle;
@@ -168,7 +169,7 @@ div.ss_mashup_entry_header  span.ss_size_20px {
   
 div.ss_mashup_entry_content {
   background: #ededed;
-  padding:2px 12px;
+  padding: 3px 10px;
   -moz-border-radius-bottomleft: 6px;
   -moz-border-radius-bottomright: 6px;
   -webkit-border-bottom-left-radius: 6px;
