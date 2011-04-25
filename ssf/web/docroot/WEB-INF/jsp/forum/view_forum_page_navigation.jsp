@@ -134,9 +134,9 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						  title="<ssf:nlt tag="title.goto.first.page"/>"
-						  onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '1', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						  onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '0', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						   <ssf:title tag="title.goto.first.page"
-						  ><ssf:param name="value" value="1" /></ssf:title> 
+						  ><ssf:param name="value" value="0" /></ssf:title> 
 						><img src="<html:rootPath/>images/pics/sym_arrow_gotoStart.png" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" />
 					</a>
 					</td>
