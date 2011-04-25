@@ -538,6 +538,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileLogin(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, String portletName, String operation) throws Exception {
 		Map model = new HashMap();
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
         HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
     	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
     	if(ex != null) {
@@ -557,6 +558,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, portletName, true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 				adapterUrl.setParameter(WebKeys.URL_OPERATION, operation);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION2, operation2);
 				model.put(WebKeys.URL, adapterUrl);
 			}
 		}
@@ -584,6 +586,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileFrontPage(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		model.put(WebKeys.URL_OPERATION2, op2);
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.SEEN_MAP, seen);
 		String view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, "mobile/show_front_page");
@@ -1366,18 +1370,29 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);
+			Map seenEntries = new HashMap();
+			
 			model.put(WebKeys.SEEN_MAP, seen);
+			model.put(WebKeys.SEEN_ENTRIES, seenEntries);
 			List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 			if (replies != null)  {
 				accessControlMap.put(entry.getId(), entryAccessMap);
 				for (int i=0; i<replies.size(); i++) {
 					FolderEntry reply = (FolderEntry)replies.get(i);
 					accessControlMap.put(reply.getId(), entryAccessMap);
+					if (!seen.checkIfSeen(reply)) {  
+						seenEntries.put(reply.getId(), false);
+						getProfileModule().setSeen(null, reply);
+					} else {
+						seenEntries.put(reply.getId(), true);
+					}
 				}
 			}
-			if (!seen.checkIfSeen(entry)) { 
-				//only mark top entries as seen
+			if (!seen.checkIfSeen(entry)) {  
+				seenEntries.put(entry.getId(), false);
 				getProfileModule().setSeen(null, entry);
+			} else {
+				seenEntries.put(entry.getId(), true);
 			}
 			Document defDoc = entry.getEntryDefDoc(); //cannot be null here
 			Element familyEle = (Element) defDoc.getRootElement().selectSingleNode("./properties/property[@name='family']");
@@ -1757,7 +1772,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		searchText = searchText.replaceAll(" \\*", "\\*");
 	    searchText = searchText.trim() + "*";
 			    
-		searchTermFilter.addTitleFilter(searchText);
 		if (type.equals("group")) {
 			searchTermFilter.addGroupNameFilter(searchText);
 		} else if (type.equals("team")) {

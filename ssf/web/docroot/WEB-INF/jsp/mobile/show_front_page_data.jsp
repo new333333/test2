@@ -41,10 +41,13 @@
 
 <%@ include file="/WEB-INF/jsp/mobile/action_bar.jsp" %>
 
-<c:set var="ssProfileUser" value="${ssUser}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
+<c:if test="${operation2 != 'whatsnew'}">
+  <c:set var="ssProfileUser" value="${ssUser}" scope="request"/>
+  <%@ include file="/WEB-INF/jsp/mobile/user_profile.jsp" %>
+</c:if>
 
 <div class="folders">
+<c:if test="${operation2 != 'whatsnew'}">
   <div class="folder-content">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="__ajax_mobile"
@@ -74,13 +77,15 @@
 		</div>    
     </a>
   </div>
+</c:if>
 
   <div class="folder-content">
     <div class="folder-head" style="letter-spacing: 0">
 		<form id="whatsNewForm" name="whatsNewForm" 
 		  method="post" 
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="true" />"
+		    action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="true" ><ssf:param 
+			name="operation2" value="${operation2}"/></ssf:url>"
 		>
         <table cellspacing="0" cellpadding="0" width="100%">
         <tr>
@@ -103,31 +108,36 @@
 		      		<div class="menu-item">
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
-				        actionUrl="true" ><ssf:param name="whats_new" value="teams"/></ssf:url>"
+				        actionUrl="true" ><ssf:param name="whats_new" value="teams"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
 				      ><ssf:nlt tag="navigation.myTeams"/></a>
 				    </div>
 				    <div class="menu-item">		      
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
-				        actionUrl="true" ><ssf:param name="whats_new" value="tracked"/></ssf:url>"
+				        actionUrl="true" ><ssf:param name="whats_new" value="tracked"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
 				      ><ssf:nlt tag="mobile.whatsNewTracked"/></a>
 				    </div>
 				    <div class="menu-item">		      
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
-				        actionUrl="true" ><ssf:param name="whats_new" value="favorites"/></ssf:url>"
+				        actionUrl="true" ><ssf:param name="whats_new" value="favorites"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
 				      ><ssf:nlt tag="mobile.whatsNewFavorites"/></a>
 				    </div>
 				    <div class="menu-item">		      
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
-				        actionUrl="true" ><ssf:param name="whats_new" value="site"/></ssf:url>"
+				        actionUrl="true" ><ssf:param name="whats_new" value="site"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
 				      ><ssf:nlt tag="mobile.whatsNewSite"/></a>
 				    </div>
 				    <div class="menu-item">		      
 				      <a href="<ssf:url adapter="true" portletName="ss_forum" 
 				        action="__ajax_mobile" operation="mobile_show_front_page" 
-				        actionUrl="true" ><ssf:param name="whats_new" value="microblog"/></ssf:url>"
+				        actionUrl="true" ><ssf:param name="whats_new" value="microblog"/><ssf:param 
+				        name="operation2" value="${operation2}"/></ssf:url>"
 				      ><ssf:nlt tag="mobile.whatsNewMicroBlogs"/></a>
 				    </div>
 				</div>
@@ -143,6 +153,7 @@
 						action="__ajax_mobile" 
 						operation="mobile_show_front_page" 
 						actionUrl="false" ><ssf:param 
+				        name="operation2" value="${operation2}"/><ssf:param 
 						name="quickSearch" value="true"/><ssf:param 
 						name="searchText" value="${ss_searchText}"/><ssf:param 
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
@@ -161,6 +172,7 @@
 						action="__ajax_mobile" 
 						operation="mobile_show_front_page" 
 						actionUrl="false" ><ssf:param 
+				        name="operation2" value="${operation2}"/><ssf:param 
 						name="quickSearch" value="true"/><ssf:param 
 						name="searchText" value="${ss_searchText}"/><ssf:param 
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
@@ -284,6 +296,7 @@
 							action="__ajax_mobile" 
 							operation="mobile_show_front_page" 
 							actionUrl="false" ><ssf:param 
+				        	name="operation2" value="${operation2}"/><ssf:param 
 							name="quickSearch" value="true"/><ssf:param 
 							name="searchText" value="${ss_searchText}"/><ssf:param 
 							name="tabId" value="${ss_tab_id}"/><ssf:param 
@@ -302,6 +315,7 @@
 							action="__ajax_mobile" 
 							operation="mobile_show_front_page" 
 							actionUrl="false" ><ssf:param 
+				        	name="operation2" value="${operation2}"/><ssf:param 
 							name="quickSearch" value="true"/><ssf:param 
 							name="searchText" value="${ss_searchText}"/><ssf:param 
 							name="tabId" value="${ss_tab_id}"/><ssf:param 
