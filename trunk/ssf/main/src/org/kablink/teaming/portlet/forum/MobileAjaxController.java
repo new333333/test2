@@ -1770,7 +1770,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		SearchFilter searchTermFilter = new SearchFilter();
 				
 		searchText = searchText.replaceAll(" \\*", "\\*");
-	    searchText = searchText.trim() + "*";
+	    if (!searchText.equals("")) {
+	    	searchText = searchText.trim() + "*";
+	    }
 			    
 		if (type.equals("group")) {
 			searchTermFilter.addGroupNameFilter(searchText);
