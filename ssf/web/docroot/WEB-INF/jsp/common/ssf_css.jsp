@@ -3026,6 +3026,7 @@ div.ss_cal_monthGrid {
   position: relative;
   width: 99.8%;
   height: 320px;
+  background-color: #fff;
 }
 
 
@@ -3056,7 +3057,7 @@ div.ss_cal_monthGridDayBadgeCurrent, div.ss_cal_monthGridDayBadge {
   border-top: 1px solid #DDDDDD;
   border-left: 1px solid #DDDDDD;
   text-align: right;
-  padding-right: 5px;
+  padding-right: 0px;
   font-family: sans-serif;
 }
 
