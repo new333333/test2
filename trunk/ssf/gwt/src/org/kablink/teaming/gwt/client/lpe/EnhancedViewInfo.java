@@ -45,6 +45,7 @@ public class EnhancedViewInfo
 	private String m_jspName;
 	private boolean m_folderRequired;
 	private boolean m_entryRequired;
+	private boolean m_titleOptional;	// Can the user specify whether to display the title?
 	
 	/**
 	 * 
@@ -53,6 +54,7 @@ public class EnhancedViewInfo
 	{
 		GwtTeamingMessages messages;
 		
+		m_titleOptional = false;
 		messages = GwtTeaming.getMessages();
 		
 		if ( jspName.equalsIgnoreCase( "landing_page_entry.jsp" ) )
@@ -89,6 +91,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayRecentEntriesListSortedDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_titleOptional = true;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_folder_list_sorted_files.jsp" ) )
 		{
@@ -96,6 +99,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayFileListSortedDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_titleOptional = true;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_calendar.jsp" ) )
 		{
@@ -103,6 +107,7 @@ public class EnhancedViewInfo
 			m_desc = messages.enhancedViewDisplayCalendarFolderDesc();
 			m_folderRequired = true;
 			m_entryRequired = false;
+			m_titleOptional = true;
 		}
 		else if ( jspName.equalsIgnoreCase( "landing_page_task_folder.jsp" ) )
 		{
@@ -152,6 +157,15 @@ public class EnhancedViewInfo
 	{
 		return m_jspName;
 	}
+	
+	/**
+	 * For this view, can the user specify whether to show the title?
+	 */
+	public boolean getTitleOptional()
+	{
+		return m_titleOptional;
+	}
+	
 	
 	/**
 	 * Does this view require the user to select an entry?
