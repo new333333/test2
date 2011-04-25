@@ -158,27 +158,29 @@ public class SearchUtils {
 			Enumeration flds = doc.fields(); 
 			while (flds.hasMoreElements()) {
 				fld = (Field)flds.nextElement();
-				//TODO This hack needs to go.
-				if (SearchUtils.isDateField(fld.name())) {
-					try {
-						ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
-	            		} catch (ParseException e) {ent.put(fld.name(),new Date());
-	            	}	
-	            } else if (!ent.containsKey(fld.name())) {
-	            	ent.put(fld.name(), fld.stringValue());
-	            } else {
-	            	Object obj = ent.get(fld.name());
-	            	SearchFieldResult val;
-	            	if (obj instanceof String) {
-	            		val = new SearchFieldResult();
-	            		//replace
-	            		ent.put(fld.name(), val);
-	            		val.addValue((String)obj);
-	            	} else {
-	            		val = (SearchFieldResult)obj;
-	            	}
-	            	val.addValue(fld.stringValue());
-	            } 
+				if (fld.isStored()) {
+					//TODO This hack needs to go.
+					if (SearchUtils.isDateField(fld.name())) {
+						try {
+							ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
+		            		} catch (ParseException e) {ent.put(fld.name(),new Date());
+		            	}	
+		            } else if (!ent.containsKey(fld.name())) {
+		            	ent.put(fld.name(), fld.stringValue());
+		            } else {
+		            	Object obj = ent.get(fld.name());
+		            	SearchFieldResult val;
+		            	if (obj instanceof String) {
+		            		val = new SearchFieldResult();
+		            		//replace
+		            		ent.put(fld.name(), val);
+		            		val.addValue((String)obj);
+		            	} else {
+		            		val = (SearchFieldResult)obj;
+		            	}
+		            	val.addValue(fld.stringValue());
+		            } 
+				}
 			}
 		}
 		return childEntries;
