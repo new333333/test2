@@ -1921,6 +1921,16 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			public void handleEvent(Event event, String description, String summary, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 
+				// Bugzilla 685934:
+				//    The following was an attempt to fix the issue of
+				//    sending an HTML formatted event into Vibe and
+				//    losing the HTML data.  When Vibe receives an
+				//    an email with an iCal attachment, it uses the
+				//    description, which is in plain text, from the
+				//    iCal instead of the HTML mime from the message.
+				//    This fix had the undesirable affect of including
+				//    extra information the sender (e.g., GW) includes
+				//    in the HTML mime.
 				/*
 					String baseDesc = getBaseDesc(baseInputData);
 					if (MiscUtil.hasString(baseDesc)) {
@@ -1941,6 +1951,16 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List<Attendee> attendees) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 
+				// Bugzilla 685934:
+				//    The following was an attempt to fix the issue of
+				//    sending an HTML formatted event into Vibe and
+				//    losing the HTML data.  When Vibe receives an
+				//    an email with an iCal attachment, it uses the
+				//    description, which is in plain text, from the
+				//    iCal instead of the HTML mime from the message.
+				//    This fix had the undesirable affect of including
+				//    extra information the sender (e.g., GW) includes
+				//    in the HTML mime.
 				/*
 					String baseDesc = getBaseDesc(baseInputData);
 					if (MiscUtil.hasString(baseDesc)) {
