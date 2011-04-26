@@ -279,6 +279,7 @@ public class WorkspaceTreeHelper {
 			BinderHelper.buildWorkspaceTreeBean(bs, binder, model, null);
 			
 			//See if this is a user workspace
+			boolean showProfile = false;
 			if ((binder.getDefinitionType() != null) && 
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
@@ -329,9 +330,7 @@ public class WorkspaceTreeHelper {
 						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 						String profile = PortletRequestUtils.getStringParameter(request,WebKeys.URL_PROFILE, "");
 						
-						//if we don't find a Url Type look to see if there is a profile value
-						boolean showProfile = false;
-						
+						//if we don't find a Url Type look to see if there is a profile value						
 						if(type.equals("")) {
 							if(profile.equals("")){
 								//check for the Operation first, this would be a direct action to request the 
@@ -400,7 +399,18 @@ public class WorkspaceTreeHelper {
 			}
 			
 			//Set up more standard beans
-			DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+			//See if this is a user workspace
+			if ((binder.getDefinitionType() != null) && 
+					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+				if (!showProfile && model.containsKey("ssRDCurrentTab")) {
+					if ( ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW.equalsIgnoreCase( (String)model.get("ssRDCurrentTab") ) ) {
+						//This user workspace is showing the accessories tab, so set up those beans
+						DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+					}
+				}
+			} else {
+				DashboardHelper.getDashboardMap(binder, userProperties.getProperties(), model);
+			}
 			if (!model.containsKey(WebKeys.SEEN_MAP)) 
 				model.put(WebKeys.SEEN_MAP,bs.getProfileModule().getUserSeenMap(user.getId()));
 			//See if the user has selected a specific view to use
