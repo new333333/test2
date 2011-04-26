@@ -33,8 +33,6 @@
 package org.kablink.teaming.gwt.client;
 
 
-import org.kablink.teaming.gwt.client.widgets.BrandingPanel;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 
@@ -156,7 +154,11 @@ public class GwtBrandingDataExt
     	xml.append( " brandingImgName=\"" );
     	brandingImgName = getBrandingImgName();
     	if ( brandingImgName != null && brandingImgName.length() > 0 )
+    	{
+    		// Replace '&' with "&amp;"
+    		brandingImgName = brandingImgName.replaceAll( "&", "&amp;" );
     		xml.append( brandingImgName );
+    	}
     	xml.append( "\"" );
     	
     	// Add the brandingType attribute.
@@ -188,7 +190,11 @@ public class GwtBrandingDataExt
     	xml.append( " imgName=\"" );
     	bgImgName = getBackgroundImgName();
     	if ( bgImgName != null && bgImgName.length() > 0 )
+    	{
+    		// Replace '&' with "&amp;"
+    		bgImgName = bgImgName.replaceAll( "&", "&amp;" );
     		xml.append( bgImgName );
+    	}
     	xml.append( "\"" );
     	
     	// Add the stretchImg attribute
