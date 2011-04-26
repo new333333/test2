@@ -220,7 +220,14 @@ public class EntryDropWidget extends DropWidget
 			// Yes
 			// Open a window where we will view this entry.
 			if ( m_viewEntryUrl != null )
-				Window.open( m_viewEntryUrl, "ViewEntryWnd", "height=750,resizeable,scrollbars,width=750" );
+			{
+				int height;
+				int width;
+				
+				width = Window.getClientWidth();
+				height = Window.getClientHeight();
+				Window.open( m_viewEntryUrl, "ViewEntryWnd", "height=" + String.valueOf( height ) + ",resizeable,scrollbars,width=" + String.valueOf( width ) );
+			}
 		}
 	}// end onClick()
 	
