@@ -112,6 +112,16 @@ div.ss_mashup_folder_header_view a span {
   font-size: 17px;
   font-weight: bold;
   color: #ededed;
+}
+div.ss_mashup_folder_header_view a:hover {
+  background-color: transparent;
+}  
+div.ss_mashup_folder_header_view a span:hover {
+  background-color: #cce9ee;
+  color: #135c8f;
+  padding: 0 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
 }  
 div.ss_mashup_folder_description {
   padding: 5px 10px 5px 0px;
