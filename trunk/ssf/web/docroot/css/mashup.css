@@ -99,6 +99,16 @@ div.ss_mashup_folder_header_view a span {
   font-size: 20px;
   color: #5691A6;
 }
+div.ss_mashup_folder_header_view a:hover {
+  background-color: transparent;
+}  
+div.ss_mashup_folder_header_view a span:hover {
+  background-color: #cce9ee;
+  color: #135c8f;
+  padding: 0 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}  
   
 div.ss_mashup_folder_description {
   padding: 0px;
