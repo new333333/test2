@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.SslErrorHandler;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -56,6 +57,7 @@ public class Kablink extends Activity {
     protected static final String PREFS_SEED = "seed";
 
     private WebView mWebView;
+    private WebBackForwardList mWebBackForwardList;
     private Uri mUri;
     private Cursor mCursor;
 	private Double mOneTimeCodeLong;
@@ -134,12 +136,17 @@ public class Kablink extends Activity {
 
 	        //Set up the web view and javascript callout
 	        mWebView = (WebView) findViewById(R.id.webview);
+	        if (savedInstanceState != null) {
+	        	//restore the history from before
+	        	mWebView.restoreState(savedInstanceState);
+	        }
 	        mWebView.setWebViewClient(new MyWebViewClient()); 
 	        mWebView.getSettings().setJavaScriptEnabled(true);
 	        mWebView.addJavascriptInterface(new JavaScriptInterface(this), "Android");	
 	        
+	        
 	        // Get the sites!
-	        if (mSites == null) {
+	        if (mSites == null || mSites.isEmpty()) {
 		        mSites = new ArrayList<KablinkSite>();
 		        mUri = SiteColumns.CONTENT_URI;
 		        mCursor = managedQuery(mUri, PROJECTION, null, null, null);
@@ -327,6 +334,11 @@ public class Kablink extends Activity {
     	}
     	mOneTimeCodeLong++;
     	return String.valueOf(mOneTimeCodeLong);
+    }
+    
+    protected void onSaveInstanceState (Bundle outState) {
+    	//Save the history
+    	mWebBackForwardList = mWebView.saveState(outState);
     }
 
     @Override
