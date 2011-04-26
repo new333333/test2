@@ -96,6 +96,7 @@ public class QueryBuilder {
 	private static final String TEAM_ALL_GLOBAL=TEAM_PREFIX+Constants.READ_ACL_GLOBAL;
 	private static final String ENTRY_ALL_USERS=ENTRY_PREFIX+Constants.READ_ACL_ALL_USERS;
 	private static final String BINDER_OWNER_PREFIX=Constants.BINDER_OWNER_ACL_FIELD + ":";
+	private static final String ENTRY_OWNER_PREFIX=Constants.ENTRY_OWNER_ACL_FIELD + ":";
 
 	private Set userPrincipals;
 	private Set applicationPrincipals;
@@ -789,6 +790,8 @@ public class QueryBuilder {
 				qString.append(" OR (" + entryAll  + " AND (" +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
 						getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + ") AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
+				qString.append(" OR (" + getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + " AND " +
+						ENTRY_OWNER_PREFIX + userId.toString() + ")");
 			}
 			if (!canOnlySeeCommonGroupMembers) {
 				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
@@ -806,6 +809,8 @@ public class QueryBuilder {
 			if(userId != null) {
 				qString.append(" OR (" + getConditionExp(FOLDER_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + ") AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
+				qString.append(" OR (" + getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + " AND " + //OR (entryAcl:own AND eOwnerAcl:<user>)
+						ENTRY_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(") AND (");			//) AND (
 			qString.append("(" + entryAll);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)

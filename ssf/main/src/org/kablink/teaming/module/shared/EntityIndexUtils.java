@@ -643,6 +643,11 @@ public class EntityIndexUtils {
     	String[] acls = StringUtil.split(getEntryAclString(binder, entry), " ");
     	for(String acl:acls)
     		doc.add(new Field(Constants.ENTRY_ACL_FIELD, acl, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));
+		//add entry owner
+		Long owner = entry.getOwnerId();
+		String ownerStr = Constants.EMPTY_ACL_FIELD;
+		if (owner != null) ownerStr = String.valueOf(owner);  
+		doc.add(new Field(Constants.ENTRY_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.NOT_ANALYZED_NO_NORMS));    	
     }
 
     private static void addDefaultEntryAcls(Document doc, Binder binder, Entry entry) {
