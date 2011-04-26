@@ -99,6 +99,7 @@ public class AdminControl extends Composite
 		public AdminActionControl( GwtAdminAction adminAction )
 		{
 			FlowPanel mainPanel;
+			String id;
 			
 			// Remember the action we are associated with.
 			m_adminAction = adminAction;
@@ -111,6 +112,10 @@ public class AdminControl extends Composite
 			m_actionName.addMouseOutHandler( this );
 			m_actionName.addStyleName( "adminActionControl" );
 			m_actionName.addStyleName( "cursorPointer" );
+			
+			// For automation purposes, give the label a unique id.
+			id = "adminAction-" + String.valueOf( adminAction.getActionType().ordinal() );
+			m_actionName.getElement().setId( id );
 			
 			mainPanel.add( m_actionName );
 			
