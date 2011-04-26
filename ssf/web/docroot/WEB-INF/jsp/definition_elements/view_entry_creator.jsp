@@ -40,7 +40,6 @@
     <ssf:showUser user="${ssDefinitionEntry.creation.principal}" showHint="true" />
 
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
-    <br/>
     <span title="<c:out value="${ssDefinitionEntry.postedBy}"/>">
       (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
     </span>
@@ -50,7 +49,6 @@
     	<c:if test="${status.count == 1}"><c:set var="guestNameEntered" value="${guestName}"/></c:if>
     	<c:if test="${status.count == 2}"><c:set var="guestEmailEntered" value="${guestName}"/></c:if>
     </c:forEach>
-    <br/>
     <span>(<c:if test="${!empty guestNameEntered}">${guestNameEntered}<c:if test="${!empty guestEmailEntered}">, </c:if></c:if>${guestEmailEntered})</span>
   </c:if>
 </c:if>
