@@ -2117,7 +2117,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		return upgradeInfo;
-	}// end getSiteBrandingData()
+	}
 	
 	
 	/**
