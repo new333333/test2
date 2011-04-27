@@ -62,7 +62,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource folder_calendar();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_comment.png")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_microblog.gif")
 	public ImageResource folder_comment();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -70,7 +70,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource folder_file();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_generic.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder.png")
 	public ImageResource folder_generic();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -86,7 +86,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource folder_photo();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_survey.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_survey.png")
 	public ImageResource folder_survey();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -102,7 +102,7 @@ public interface GwtTeamingWorkspaceTreeImageBundle extends ClientBundle {
 	public ImageResource folder_wiki();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/folder_workspace.gif")
+	@Source("org/kablink/teaming/gwt/public/images/WorkspaceTree/workspace_generic.png")
 	public ImageResource folder_workspace();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
