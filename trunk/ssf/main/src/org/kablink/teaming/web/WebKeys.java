@@ -1053,6 +1053,7 @@ public class WebKeys {
     public static final String MOBILE_TEAMS_LIST="ss_mobileTeamsList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MOBILE_URL="ssMobileUrl"; 
+    public static final String MOBILE_WHATSNEW_URL="ssMobileWhatsNewUrl"; 
     public static final String MOBILE_WHATS_NEW_SITE="ss_whatsNewSite"; 
     public static final String MODIFY_ENTRY_ALLOWED="ss_modifyEntryAllowed";
     public static final String MODIFY_ENTRY_ADAPTER="ss_modifyEntryAdapter";
