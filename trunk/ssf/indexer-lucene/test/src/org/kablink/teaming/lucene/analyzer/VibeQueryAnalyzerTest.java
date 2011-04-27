@@ -145,7 +145,7 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
-				new String[] {"l", "ephemeride", "guterzug", "novell", "uberfuhr", "by", "danemark", "caractere", "to", "brulante", "vibe", "evenement"}); 
+				new String[] {"l", "éphéméride", "ephemeride", "güterzug", "guterzug", "novell", "überfuhr", "uberfuhr", "by", "dänemark", "danemark", "caractère", "caractere", "to", "brûlante", "brulante", "vibe", "évènement", "evenement"}); 
 	}
 	
 	public void testDefaultConfiguration() throws Exception {
@@ -170,6 +170,21 @@ public class VibeQueryAnalyzerTest extends TestCase {
 		String text = "technicité";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"techniqu", "technicit"}); 
+	}
+
+	public void testGermanStemmer() throws Exception {
+		Analyzer analyzer = new VibeQueryAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET,  
+				"German", 
+				true, 
+				false,
+				false);
+		String text = "gegessen";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"gegess"}); 
 	}
 
 }

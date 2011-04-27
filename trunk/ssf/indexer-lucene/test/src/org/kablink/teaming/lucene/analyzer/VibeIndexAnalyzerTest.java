@@ -170,6 +170,21 @@ public class VibeIndexAnalyzerTest extends TestCase {
 		String text = "technicité";
 		AnalyzerUtils.displayTokens(analyzer, text);
 		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"technicité", "techniqu", "technicite", "technicit"}); 
+	}
+
+	public void testGermanStemmer() throws Exception {
+		Analyzer analyzer = new VibeIndexAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET,  
+				"German", 
+				true, 
+				false,
+				false);
+		String text = "gegessen";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
+				new String[] {"gegessen", "gegess"}); 
 	}
 
 }
