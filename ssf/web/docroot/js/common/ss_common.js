@@ -6768,7 +6768,7 @@ function ss_checkForRequiredFields(obj) {
 						if (formObj.elements[j].name == timeId) ftObj = formObj.elements[j];
 					}
 					if (ftObj != null && typeof(ftObj) != 'undefined' && typeof(ftObj.length) != 'undefined') ftObj = ftObj[0];
-					if ((fnObj != null && fnObj.value != '') || (ftObj != null && ftObj.value != '')) {
+					if ((fnObj != null && fnObj.value != null && fnObj.value != '')) {
 						// alert('create file found: '+fnObj.value);
 						continue;
 					}					
