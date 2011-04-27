@@ -174,11 +174,8 @@ public class EditBrandingDlg extends DlgBox
 		FlowPanel mainPanel = null;
 		Label spacer;
 		FlexTable table = null;
-		GwtBrandingData brandingData;
 		int nextRow;
 		
-		brandingData = (GwtBrandingData) props;
-
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 
@@ -958,6 +955,7 @@ public class EditBrandingDlg extends DlgBox
 		if ( m_addFileAttachmentDlg != null )
 		{
 			// Yes, clear any content from a previous invocation.
+			m_addFileAttachmentDlg.setBinderId( m_origBrandingData.getBinderId() );
 			m_addFileAttachmentDlg.clearContent();
 			m_addFileAttachmentDlg.setPopupPosition( x, y );
 		}

@@ -506,4 +506,16 @@ public class AddFileAttachmentDlg extends DlgBox
 		}
 	}// end removeFileUploadControl()
 	
+	
+	/**
+	 * Set the id of the binder we are working with.
+	 */
+	public void setBinderId( String binderId )
+	{
+		m_binderId = binderId;
+		
+		// Issue an ajax request to get the url needed to modify this binder.
+		getModifyBinderUrl();
+	}
+	
 }// end AddFileAttachmentDlg
