@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,9 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.servlet.ParamsWrappedHttpServletRequest;
 import org.kablink.util.Http;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 
 
@@ -1053,4 +1056,31 @@ public class WebUrlUtil {
 			return true;
 		}
 	}
+	
+	public static HttpServletRequest getNormalizedRequest(HttpServletRequest req) {
+		String pathInfo = req.getPathInfo();
+		if(pathInfo.startsWith("/c/")) { // adapter url for crawler
+			Map pathParams = getPathParams(pathInfo.substring(3));
+			if(pathParams != null && pathParams.size() > 0) {
+				pathParams.putAll(req.getParameterMap());
+				return new ParamsWrappedHttpServletRequest(req, pathParams);
+			}
+		}
+		return req;
+	}
+	
+	protected static Map<String, String[]> getPathParams(String pathInfo) {
+		if(pathInfo == null)
+			return null;
+		String[] pathElems = StringUtil.split(pathInfo, "/");
+		if(pathElems == null || pathElems.length < 2)
+			return null;
+		Map map = new HashMap();
+		int count = pathElems.length / 2;
+		for(int i = 0; i < count; i++) {
+			map.put(pathElems[i*2], new String[]{pathElems[i*2+1]});
+		}
+		return map;
+	}
+	
 }
