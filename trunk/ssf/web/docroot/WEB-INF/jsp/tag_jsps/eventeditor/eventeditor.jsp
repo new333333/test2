@@ -716,10 +716,16 @@
 		 */
 		function ss_clearStartEnd() {
 			var e;
-			e = document.getElementById("event_end_${prefix}");        if (null != e) dijit.byId("event_end_${prefix}"       ).reset(); 
-			e = document.getElementById("event_end_time_${prefix}");   if (null != e) dijit.byId("event_end_time_${prefix}"  ).reset(); 
-			e = document.getElementById("event_start_${prefix}");      if (null != e) dijit.byId("event_start_${prefix}"     ).reset(); 
-			e = document.getElementById("event_start_time_${prefix}"); if (null != e) dijit.byId("event_start_time_${prefix}").reset(); 
+			if (null != document.getElementById("event_end_${prefix}"       )) ss_clearOneByDijitId("event_end_${prefix}"       ); 
+			if (null != document.getElementById("event_end_time_${prefix}"  )) ss_clearOneByDijitId("event_end_time_${prefix}"  ); 
+			if (null != document.getElementById("event_start_${prefix}"     )) ss_clearOneByDijitId("event_start_${prefix}"     ); 
+			if (null != document.getElementById("event_start_time_${prefix}")) ss_clearOneByDijitId("event_start_time_${prefix}"); 
+		}
+		
+		function ss_clearOneByDijitId(dijitId) {
+			var e = dijit.byId(dijitId);
+			e.reset();
+			e.attr('value',null);
 		}
 
 		ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);		 
