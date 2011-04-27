@@ -56,7 +56,6 @@ import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
@@ -80,10 +79,25 @@ import org.springframework.web.portlet.ModelAndView;
 public class AddEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+		Long binderId;
+		
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);
-		ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
-		Long binderId = profilesBinder.getId();
+		
+		try
+		{
+			binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		}
+		catch (Exception ex)
+		{
+			// We can't just call getProfileModule().getProfileBinder() all the time because
+			// getProfileBinder() requires the user to have read access to the personal
+			// workspaces binder.  For self registration, the guest user only needs "create entries"
+			// rights to the personal workspaces binder.
+			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
+			binderId = profilesBinder.getId();
+		}
+		
 		String context = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CONTEXT, "");				
 		//See if the add entry form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
@@ -201,18 +215,18 @@ public class AddEntryController extends SAbstractController {
 		Map model = new HashMap();
 		//Adding an entry; get the specific definition
 		try {
-			ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
 			Map folderEntryDefs = getProfileModule().getProfileBinderEntryDefsAsMap();
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 			if (entryType.equals("")) {
+				ProfileBinder profilesBinder = getProfileModule().getProfileBinder();
 				List defaultEntryDefinitions = profilesBinder.getEntryDefinitions();
 				if (!defaultEntryDefinitions.isEmpty()) {
 					// Only one option
 					Definition def = (Definition) defaultEntryDefinitions.get(0);
 					entryType = def.getId();
 				}
+				model.put(WebKeys.FOLDER, profilesBinder);
 			}
-			model.put(WebKeys.FOLDER, profilesBinder);
 			model.put(WebKeys.ENTRY_TYPE, entryType);
 			model.put(WebKeys.BINDER_ID, getProfileModule().getProfileBinderId());
 			model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
