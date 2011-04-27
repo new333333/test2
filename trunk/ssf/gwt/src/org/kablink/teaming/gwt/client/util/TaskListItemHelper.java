@@ -129,8 +129,8 @@ public class TaskListItemHelper {
 				}
 				
 				// If we find any subtasks, besides skipThisTask that
-				// are not completed...
-				if (!(subtask.getTask().isTaskCompleted())) {
+				// are not completed or canceled...
+				if (!(subtask.getTask().isTaskCompleted() || subtask.getTask().isTaskCancelled())) {
 					// ...we're done and return false.
 					return false;
 				}
