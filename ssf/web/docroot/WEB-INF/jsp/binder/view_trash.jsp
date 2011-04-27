@@ -526,7 +526,7 @@
 											height="12"
 											width="12"
 											class="ss_sliding_table_column_image"
-											src="<html:imagesPath/>pics/entry_icon.gif"/>
+											src="<html:imagesPath/>pics/entry16.png"/>
 									</c:if>
 									<c:if test="${entry1._docType != 'entry'}">
 										<c:if test="${entry1._entityType == 'workspace'}">
@@ -537,7 +537,7 @@
 												height="12"
 												width="12"
 												class="ss_sliding_table_column_image"
-												src="<html:imagesPath/>icons/folder_workspace.gif"/>
+												src="<html:imagesPath/>icons/workspace.gif"/>
 										</c:if>
 										<c:if test="${entry1._entityType != 'workspace'}">
 											<img
@@ -547,7 +547,7 @@
 												height="12"
 												width="12"
 												class="ss_sliding_table_column_image"
-												src="<html:imagesPath/>icons/folder_blue.gif"/>
+												src="<html:imagesPath/>icons/folder.png"/>
 										</c:if>
 									</c:if>
 
