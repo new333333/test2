@@ -721,7 +721,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					emailLog.setStatus(EmailLogStatus.error);
 		    	}
 			}
-			getReportModule().addEmailLog(emailLog);
+			
+			try {
+				getReportModule().addEmailLog(emailLog);
+			} catch (Exception ex) {
+	       		logger.error("EXCEPTION:  Could not log subscription information in email log:  " + getMessage(ex));
+				logger.debug("EXCEPTION", ex);
+			}
+			
 		}
 
 	}
