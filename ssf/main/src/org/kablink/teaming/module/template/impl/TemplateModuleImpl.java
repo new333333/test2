@@ -521,6 +521,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	      	if (parent != null) {
 				parent.addBinder(config);
 	      		getCoreDao().updateFileName(parent, config, null, config.getTitle());
+	      		// Flush so that correct binderSortKey be written out for this node
+	      		// before the caller continues to the next sibling of this node.
+	      		// Otherwise, we will get UNIQUE KEY constraint error (bug #659137)
+	      		getCoreDao().flush();
 	      	} else {
 	      		config.setupRoot();
 	      		getCoreDao().flush();//flush cause binderSortKey is null before setup
