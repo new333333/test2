@@ -193,7 +193,7 @@
     <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
     <attribute name="title" type="string">__template_folder_task</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_task.gif</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
