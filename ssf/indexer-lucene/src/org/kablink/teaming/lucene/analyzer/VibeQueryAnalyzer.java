@@ -85,7 +85,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 		}
 		result = new LowerCaseFilter(result);
 		if(foldToAscii)
-			result = new VibeASCIIFoldingFilter(result, false);
+			result = new VibeASCIIFoldingFilter(result, true);
 		if (stopSet != null && stopSet.size() > 0)
 			result = new StopFilter(true, result, stopSet);
 		if(stemmerName != null && !stemmerName.equals(""))
@@ -116,7 +116,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 			}
 			streams.result = new LowerCaseFilter((streams.result == null)? streams.source : streams.result);
 			if(foldToAscii)
-				streams.result = new VibeASCIIFoldingFilter((streams.result == null)? streams.source : streams.result, false);
+				streams.result = new VibeASCIIFoldingFilter((streams.result == null)? streams.source : streams.result, true);
 			if (stopSet != null && stopSet.size() > 0)
 				streams.result = new StopFilter(true, (streams.result == null)? streams.source : streams.result, stopSet);
 			if(stemmerName != null && !stemmerName.equals(""))

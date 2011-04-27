@@ -160,6 +160,17 @@ public class VibeIndexAnalyzerTest extends TestCase {
 		AnalyzerUtils.assertAnalyzesTo(analyzer, text, 
 				new String[] {"kunde", "kund", "karlsruhe", "karlsruh", "update", "updat", "update", "updat", "von", "ibm"}); 
 	}
+	
+	public void testFrenchStemmer() throws Exception {
+		Analyzer analyzer = new VibeIndexAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET,  
+				"French", 
+				true, 
+				false,
+				false);
+		String text = "technicité";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+	}
 
 }
 

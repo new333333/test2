@@ -161,5 +161,16 @@ public class VibeQueryAnalyzerTest extends TestCase {
 				new String[] {"kund", "karlsruh", "updat", "updat", "von", "ibm"}); 
 	}
 
+	public void testFrenchStemmer() throws Exception {
+		Analyzer analyzer = new VibeQueryAnalyzer(StopAnalyzer.ENGLISH_STOP_WORDS_SET,  
+				"French", 
+				true, 
+				false,
+				false);
+		String text = "technicité";
+		AnalyzerUtils.displayTokens(analyzer, text);
+		System.out.println();
+	}
+
 }
 
