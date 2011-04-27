@@ -159,7 +159,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorAccessory();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_custom_jsp.png")
 	public ImageResource landingPageEditorCustomJsp();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -167,7 +167,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorEntry();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_folder.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_folder.png")
 	public ImageResource landingPageEditorFolder();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -187,15 +187,15 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorIFrame();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_link_entry.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_entry.png")
 	public ImageResource landingPageEditorLinkEntry();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_link_folder.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_folder.png")
 	public ImageResource landingPageEditorLinkFolder();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_link_url.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_link_url.png")
 	public ImageResource landingPageEditorLinkUrl();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -211,7 +211,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource landingPageEditorTable();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.gif")
+	@Source("org/kablink/teaming/gwt/public/images/lpe_utility_element.png")
 	public ImageResource landingPageEditorUtilityElement();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
