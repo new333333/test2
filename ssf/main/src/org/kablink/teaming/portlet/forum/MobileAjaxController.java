@@ -608,6 +608,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} else {
 			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.TRUE);
 		}
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", false);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, "mobile_show_front_page");
+		adapterUrl.setParameter(WebKeys.URL_OPERATION2, "whatsnew");
+		model.put(WebKeys.MOBILE_WHATSNEW_URL, adapterUrl);
+
 		String view = "mobile/app_login";
 		return new ModelAndView(view, model);
 	}
