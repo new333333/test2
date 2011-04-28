@@ -877,7 +877,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         		fileSize += ((FileAttachment)att).getFileItem().getLength();
         	}
         }
-		if (!getBinderModule().isBinderDiskQuotaOk(destination, fileSize)) {
+		if (!processor.checkMoveEntryQuota(entry.getParentBinder(), destination, entry)) {
 			//Adding this file would cause the quota to be exceeded
 			throw new DataQuotaException("quota.binder.exceeded.error.message", new Object[]{entry.getTitle()});
 		}

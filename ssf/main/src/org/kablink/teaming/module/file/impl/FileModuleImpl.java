@@ -832,6 +832,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	//first register file names, so if one fails, files are not copied
     	for(FileAttachment fa :atts) {    			
+        	//Decrement and increment the various quota counts
+    		Long totalFileSizes = 0L;
+        	for (FileAttachment att : atts) {
+        		Set<VersionAttachment> fileVersions = att.getFileVersions();
+        		for (VersionAttachment fv : fileVersions) {
+        			//Count the file sizes for all versions in the entry
+        			totalFileSizes += fv.getFileItem().getLength();
+        		}
+        	}
+        	if (!binder.isMirrored()) {
+        		getBinderModule().decrementDiskSpaceUsed(binder, totalFileSizes);
+        	}
+        	if (!destBinder.isMirrored()) {
+        		getBinderModule().incrementDiskSpaceUsed(destBinder, totalFileSizes);
+        	}
+
    			if (binder.isLibrary() && !binder.equals(entity))
    				getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
     		if (destBinder.isLibrary() && !destBinder.equals(destEntity))

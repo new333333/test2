@@ -197,6 +197,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
 		return false;
 	}
+	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
+		return false;
+	}
     //*******************************************************************/
     //inside write transaction    
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {

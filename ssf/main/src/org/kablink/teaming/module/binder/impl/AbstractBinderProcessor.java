@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
@@ -75,6 +76,7 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
@@ -1071,6 +1073,59 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    			if (parentBinder.equals(destination)) {
 		    				//This binder is an ancestor, so the quota is not going to change
 		    				return true;
+		    			}
+		    			parentBinder = parentBinder.getParentBinder();
+		    		}
+		    		//Destination does not have the quota for this move.
+		    		return false;
+		    	}
+			} catch(NoObjectByTheIdException e) {
+				//Skip any binders that don't have a quota set up (shouldn't happen, but...)
+				//If there is no quota set up, just let the move be done
+			}
+    	}
+
+    	return true;
+    }
+
+    //Check to see if destination folder has enough quota
+    public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
+    	SortedSet<FileAttachment> atts = entry.getFileAttachments();
+    	Long totalFileSizes = 0L;
+    	for (FileAttachment att : atts) {
+    		Set<VersionAttachment> fileVersions = att.getFileVersions();
+    		for (VersionAttachment fv : fileVersions) {
+    			totalFileSizes += fv.getFileItem().getLength();
+    		}
+    	}
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	if (getBinderModule().isBinderDiskQuotaEnabled()) {
+	    	Long minQuotaLeft = getBinderModule().getMinBinderQuotaLeft(destination);
+	    	try {
+		    	if (minQuotaLeft != null && minQuotaLeft < totalFileSizes) {
+		    		//There is not enough quota in the destination. See if destination is a parent binder of the source
+		    		Binder parentBinder = source;
+		    		while (parentBinder != null) {
+		    			if (parentBinder.equals(destination)) {
+		    				//This binder is an ancestor, so the quota is not going to change
+		    				return true;
+		    			}
+		    			parentBinder = parentBinder.getParentBinder();
+		    		}
+		    		//Also see if moving down in the hierarchy and the destination has room
+		    		parentBinder = destination;
+		    		BinderQuota parentBinderQuota = getCoreDao().loadBinderQuota(zoneId, destination.getId());
+		    		while (parentBinder != null) {
+		    			//See if the parent binder would have the room in its quota
+		    			if (parentBinderQuota.getDiskQuota() == null ||
+		    					totalFileSizes < parentBinderQuota.getDiskQuota() - parentBinderQuota.getDiskSpaceUsed()) {
+			    			if (parentBinder.equals(source)) {
+			    				//This binder is an descendant, so the quota is not going to change
+			    				return true;
+			    			}
+		    			} else {
+		    				//This parent doesn't have the room in its quota
+		    				return false;
 		    			}
 		    			parentBinder = parentBinder.getParentBinder();
 		    		}
