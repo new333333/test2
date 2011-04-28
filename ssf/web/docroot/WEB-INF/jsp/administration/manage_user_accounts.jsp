@@ -271,6 +271,7 @@ function ss_confirmDelete(obj) {
 			<div class="ss_diagDivContent">
 				<table>
 			    <c:forEach var="user" items="${ss_activeUserAccounts}">
+			      <c:if test="${user['_loginName'] != 'guest'}">
 			      <tr>
 			        <td class="leftend">
 			          <input type="checkbox" name="disableUser_${user['_docId']}" />
@@ -282,6 +283,7 @@ function ss_confirmDelete(obj) {
 			          ${user['_loginName']}
 			        </td>
 			      </tr>
+			      </c:if>
 			    </c:forEach>
 				</table>
 			</div>

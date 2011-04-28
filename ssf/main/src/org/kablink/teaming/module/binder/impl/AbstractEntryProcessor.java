@@ -1248,6 +1248,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             	}
         	}
 
+           	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_IS_PERSON) && 
+           			(Boolean)options.get(ObjectKeys.SEARCH_IS_PERSON)) {
+           		SearchFilter searchTermFilter = new SearchFilter();
+           		searchTermFilter.addAndPersonFlagFilter( String.valueOf( Boolean.TRUE ) );
+               	searchFilter.appendFilter(searchTermFilter.getFilter());
+           	}
+
         	Binder searchBinder = binder;
         	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_MODE_TYPE)) {
         		ListFolderHelper.ModeType mode = ((ListFolderHelper.ModeType) options.get(ObjectKeys.FOLDER_MODE_TYPE));
