@@ -1265,12 +1265,19 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	if (event != null && typeof event != 'undefined') {
 		x = event.clientX;
 	}
-	var topOffset = parseInt(parseInt(y) + dojo.contentBox(parentObj).h + 4)
+	var topOffset = parseInt(parseInt(y) + dojo.contentBox(parentObj).h)
 	topOffset += offsetY;
 	ss_setObjectTop(divObj, topOffset + "px")
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 	divObj.style.visibility = "visible";
 	divObj.style.display = "block";
+	var h = ss_getObjectHeight(divObj);
+	var wh = ss_getWindowHeight();
+	var scrollTop = ss_getScrollXY()[1];
+	if (wh < topOffset - scrollTop + h) {
+		topOffset = parseInt(parseInt(y) - h - offsetY - 16)
+		ss_setObjectTop(divObj, topOffset + "px")
+	}
 }
 function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
