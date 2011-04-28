@@ -1395,7 +1395,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				}
 			}
 			if (!seen.checkIfSeen(entry)) {  
-				seenEntries.put(entry.getId(), false);
+				seenEntries.put(entry.getId(), true);	//always show main entry as having been seen
 				getProfileModule().setSeen(null, entry);
 			} else {
 				seenEntries.put(entry.getId(), true);
