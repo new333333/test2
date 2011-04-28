@@ -1225,7 +1225,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		//Now check if the top entry is unseen or not
 		if (!seen.checkIfSeen(entry)) {  
-			seenEntries.put(entry.getId(), false);
+			seenEntries.put(entry.getId(), true);		//always show the entry as "seen"
 			getProfileModule().setSeen(null, entry);
 		} else {
 			seenEntries.put(entry.getId(), true);
