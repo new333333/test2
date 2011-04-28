@@ -59,9 +59,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 %>
 			  <c:if test="${not empty fileEntry._fileID}">
 			    <div>
-			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}', null, -10, 24)" 
-			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
-			      href="<ssf:url crawlable="true"    
+			    <a href="<ssf:url crawlable="true"    
 				    adapter="true" 
 				    portletName="ss_forum" 
 				    binderId="${ssBinder.id}" 
@@ -70,7 +68,10 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				    operation="view_photo"
 				    actionUrl="true" />"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
-			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br/>
+			    <img <ssf:alt text="${fileEntry.title}"/> border="0" 
+			      onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}', null, -10, 24)" 
+			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
+			      src="<ssf:fileUrl webPath="readThumbnail" search="${fileEntry}"/>"></a><br/>
 			    
 			    <% if (!ssSeenMap.checkIfSeen(fileEntry)) { %>
 								    
