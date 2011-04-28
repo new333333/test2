@@ -62,9 +62,9 @@ public class Kablink extends Activity {
     private Cursor mCursor;
 	private Double mOneTimeCodeLong;
 	private String mOneTimeCode = "";
-	private String mKablinkStartUrl = "/ssf/a/c/p_name/ss_forum/p_action/0/action/__ajax_mobile/operation/mobile_app_login";
-	private String mKablinkRedirectUrl = "/a/c/p_name/ss_forum/p_action/0/action/__ajax_mobile/operation/mobile_show_front_page/operation2/whatsnew";
-	private String mOneTimeCodeUrlPrefix = "/operation2/";
+	private String mKablinkStartUrl = "/ssf/a/do?p_name=ss_mobile&p_action=0&action=__ajax_mobile&operation=mobile_app_login";
+	private String mKablinkRedirectUrl = "/a/c/p_name/ss_mobile/p_action/0/action/__ajax_mobile/operation/mobile_show_front_page/operation2/whatsnew";
+	private String mOneTimeCodeUrlPrefix = "&operation2=";
 	private String mLoginUrl = "/ssf/s/portalLogin";
 	protected static List<KablinkSite> mSites;
 	protected static KablinkSite mCurrentSite;
@@ -121,6 +121,9 @@ public class Kablink extends Activity {
         String action = getIntent().getAction();
         if (Intent.ACTION_SHUTDOWN.equals(action)) {
         	//This is a request to exit
+        	//First, clear the cache that is left behind
+        	getBaseContext().deleteDatabase("webview.db");
+        	getBaseContext().deleteDatabase("webviewCache.db");
         	finish();
         	
         } else {
