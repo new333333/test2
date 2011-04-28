@@ -88,8 +88,6 @@ public interface MailModule {
 	public static final String ICAL_FILE_EXTENSION = ".ics";
 	public static final String HEADER_X_VIBE_ONPREM = "X-Vibe-OnPrem";
 	public static final String HEADER_X_ROOTVIBE_ONPREM = "X-RootVibe-OnPrem";
-	public static final String HEADER_X_VIBE_ONPREM_IN_REPLY_TO = "X-Vibe-OnPrem-In-Reply-To";
-	public static final String HEADER_X_VIBE_ONPREM_MESSAGE_ID = "X-Vibe-OnPrem-Message-ID";
 	public static final String HEADER_IN_REPLY_TO = "In-Reply-To";
 	public static final String HEADER_MESSAGE_ID = "Message-ID";
 	
