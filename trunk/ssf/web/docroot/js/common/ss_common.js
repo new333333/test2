@@ -1271,11 +1271,11 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 	divObj.style.visibility = "visible";
 	divObj.style.display = "block";
-	var h = ss_getObjectHeight(divObj);
+	var h = dojo.coords(divObj, true).h;
 	var wh = ss_getWindowHeight();
 	var scrollTop = ss_getScrollXY()[1];
 	if (wh < topOffset - scrollTop + h) {
-		topOffset = parseInt(parseInt(y) - h - offsetY - 16)
+		topOffset = parseInt(parseInt(y) - h - offsetY)
 		ss_setObjectTop(divObj, topOffset + "px")
 	}
 }
