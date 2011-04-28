@@ -246,7 +246,6 @@
 {
 	color: #333333;
 	font-size: 12px;
-	display: block;
 	margin-top: 4px;
 	margin-left: 1px;
 }
@@ -523,14 +522,12 @@
 /* on a new line in the activity stream control. */
 .activityStreamEntryDesc > p
 {
-	display: inline;
 	margin: 0px;
 	padding-right: 3px;
 }
 
 .activityStreamEntryDesc > div
 {
-	display: inline;
 	margin: 0px;
 	padding-right: 3px;
 }

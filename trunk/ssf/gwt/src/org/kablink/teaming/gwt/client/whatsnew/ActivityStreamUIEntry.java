@@ -88,7 +88,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private ClickHandler m_presenceClickHandler;
 	private Label m_author;
 	private Label m_date;
-	private InlineLabel m_desc;
+	private FlowPanel m_desc;
 	@SuppressWarnings("unused")
 	private String m_authorId;
 	private String m_authorWSId;	// Id of the author's workspace.
@@ -270,8 +270,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_date = new Label();
 		m_date.addStyleName( getDateStyleName() );
 		panel.add( m_date );
-		
-		m_desc = new InlineLabel();
+
+		// Add a <div> for the description to live in.
+		m_desc = new FlowPanel();
 		m_desc.addStyleName( getDescStyleName() );
 		panel.add( m_desc );
 		
