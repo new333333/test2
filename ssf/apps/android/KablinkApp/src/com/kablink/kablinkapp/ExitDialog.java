@@ -4,25 +4,15 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import com.kablink.kablinkapp.Kablink.KablinkSite;
 
 public class ExitDialog extends Activity {
-    private static String TAG = "ExitDialog";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.exit_dialog);
-        
-        final Intent intent = getIntent();
-        final String action = intent.getAction();
         
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(getString(R.string.exitAppWarning))
@@ -37,7 +27,7 @@ public class ExitDialog extends Activity {
 					   startActivity(intent);
                    }
                })
-			.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+               .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
                 	   Intent intent = new Intent(getBaseContext(), Kablink.class);
 					   intent.setAction(Intent.ACTION_SHUTDOWN);

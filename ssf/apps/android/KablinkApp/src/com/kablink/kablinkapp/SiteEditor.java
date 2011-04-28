@@ -16,11 +16,6 @@
 
 package com.kablink.kablinkapp;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.kablink.kablinkapp.R;
 import com.kablink.kablinkapp.SiteData.SiteColumns;
 
@@ -30,7 +25,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -317,6 +311,8 @@ public class SiteEditor extends Activity {
                 getContentResolver().update(mUri, values, null, null);
             }
         }
+        //Force the database to re-reed the site list
+        Kablink.mSites = null;
     }
 
     /**
@@ -332,6 +328,7 @@ public class SiteEditor extends Activity {
             mUsername.setText("");
             mPassword.setText("");
         }
+        Kablink.mCurrentSite = null;
         setResult(RESULT_CANCELED);
     }
 
