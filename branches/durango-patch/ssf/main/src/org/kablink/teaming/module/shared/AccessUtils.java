@@ -428,11 +428,11 @@ public class AccessUtils  {
 	}
     
 	private static void operationCheck(User user, Binder binder, WorkflowSupport entry, WorkAreaOperation operation) {
-		WfAcl.AccessType accessType = WfAcl.AccessType.delete;
+		WfAcl.AccessType accessType = null;
 		if (WorkAreaOperation.READ_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.read;
 		if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.write;
 		if (WorkAreaOperation.DELETE_ENTRIES.equals(operation)) accessType = WfAcl.AccessType.delete; 
- 		if (!entry.hasAclSet()) {
+ 		if (accessType == null || !entry.hasAclSet()) {
 			//This entry does not have a workflow ACL set, so just go check for entry level access
  			operationCheck(user, binder, (Entry)entry, operation);
 		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
