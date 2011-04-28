@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -79,6 +80,7 @@ public interface BinderProcessor {
 		throws AccessControlException, WriteFilesException, WriteEntryDataException;
     public void moveBinder(Binder source, Binder destination, Map options);
     public boolean checkMoveBinderQuota(Binder source, Binder destination);
+    public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry);
     /**
      * Fix up a binder after its parent have been moved
      * Needs to be public, since calls cross binders and may be

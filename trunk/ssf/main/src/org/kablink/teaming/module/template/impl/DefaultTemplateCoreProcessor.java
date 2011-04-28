@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.impl.AbstractBinderProcessor;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -84,6 +85,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	
 	}
 	public boolean checkMoveBinderQuota(Binder source, Binder destination) {
+		return false;
+	}
+	public boolean checkMoveEntryQuota(Binder source, Binder destination, FolderEntry entry) {
 		return false;
 	}
     public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
