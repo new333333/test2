@@ -431,7 +431,6 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_TAG_SORT_ORDER = "tagSortOrder";
 	public static final String USER_PROPERTY_TEAMING_LIVE_WHATS_NEW_TYPE = "teaming_live_whats_new_type";
     public static final String USER_PROPERTY_TUTORIAL_PANEL_STATE = "userTutorialPanelState";
-    public static final String USER_PROPERTY_UPGRADE_ACCESS_CONTROLS = "upgradeAccessControls";
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
     public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";

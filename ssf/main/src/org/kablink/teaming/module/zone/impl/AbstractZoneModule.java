@@ -100,6 +100,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+@SuppressWarnings({ "unchecked", "unused", "deprecation" })
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
 	/**
@@ -902,7 +903,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
     		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
-    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, "true");
     		
     		//flush these changes, other reads may re-load
     		getCoreDao().flush();
@@ -1494,14 +1494,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private void resetZoneUpgradeTasks(int oldVersion, Long superUId, Long topWSId) {
 		// Based on the version, decide which admin tasks need to be
 		// performed.
-		boolean forceACLWarning         = false;
 		boolean forceDefinitionsWarning = false;
 		boolean forceIndexWarning       = false;
 		boolean forceTemplatesWarning   = false;
 		boolean forceVersionReset       = false;
 		switch (oldVersion) {
 		default:
-			forceACLWarning         =
 			forceDefinitionsWarning =
 			forceIndexWarning       =
 			forceTemplatesWarning   =
@@ -1511,7 +1509,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		
 		ProfileModule pm = getProfileModule();
-		if (forceACLWarning)         pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS, null);
 		if (forceDefinitionsWarning) pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS,     null);
 		if (forceIndexWarning)       pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX,    null);
 		if (forceTemplatesWarning)   pm.setUserProperty(           superUId, ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES,       null);

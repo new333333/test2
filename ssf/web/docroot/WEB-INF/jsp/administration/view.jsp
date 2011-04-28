@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -225,8 +225,7 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
   </div>
  <c:if test="${empty ssUserProperties.upgradeDefinitions || 
  		empty ssUserProperties.upgradeTemplates || 
- 		empty ssUserProperties.upgradeSearchIndex || 
- 		empty ssUserProperties.upgradeAccessControls}">
+ 		empty ssUserProperties.upgradeSearchIndex}">
   <div>
 	<ul>
 	  <c:if test="${empty ssUserProperties.upgradeDefinitions}">
@@ -237,9 +236,6 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 	  </c:if>
 	  <c:if test="${empty ssUserProperties.upgradeSearchIndex}">
 	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeSearchIndex"/></li>
-	  </c:if>
-	  <c:if test="${empty ssUserProperties.upgradeAccessControls}">
-	    <li><span class="ss_errorLabel"><ssf:nlt tag="administration.upgradeAccessControls"/></li>
 	  </c:if>
 	</ul>
   </div>

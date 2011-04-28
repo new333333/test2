@@ -2052,8 +2052,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
  		 			// See if all upgrade tasks have been done
  		 			if ( "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX ) ) &&
  		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS ) ) &&
- 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES ) ) &&
- 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS ) ) )
+ 		 				 "true".equals( adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES ) ) )
  		 			{
  		 				// All upgrade tasks are done, mark the upgrade complete
  		 				if ( top != null )
@@ -2103,14 +2102,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		 			{
 		 				// Yes
 		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_SEARCH_INDEX );
-		 			}
-		 			
-		 			// Do access controls need to be defined for all applications?
-		 			property = (String) adminUserProperties.getProperty( ObjectKeys.USER_PROPERTY_UPGRADE_ACCESS_CONTROLS );
-		 			if ( property == null || property.length() == 0 )
-		 			{
-		 				// Yes
-		 				upgradeInfo.addUpgradeTask( GwtUpgradeInfo.UpgradeTask.UPGRADE_ACCESS_CONTROLS );
 		 			}
 		 		}
 	 		}
