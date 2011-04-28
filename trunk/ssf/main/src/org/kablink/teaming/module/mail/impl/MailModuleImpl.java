@@ -34,7 +34,6 @@
 package org.kablink.teaming.module.mail.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -67,7 +66,6 @@ import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
@@ -99,6 +97,7 @@ import org.kablink.teaming.module.mail.MimeEntryPreparator;
 import org.kablink.teaming.module.mail.MimeMapPreparator;
 import org.kablink.teaming.module.mail.MimeMessagePreparator;
 import org.kablink.teaming.module.mail.MimeNotifyPreparator;
+import org.kablink.teaming.module.mail.VibeMimeMessage;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FilePathUtil;
@@ -114,7 +113,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.transaction.TransactionStatus;
@@ -133,6 +131,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  *
  */
+@SuppressWarnings("unchecked")
 public class MailModuleImpl extends CommonDependencyInjection implements MailModule, ZoneSchedule, InitializingBean {
 	protected ConcurrentHashMap<String, List> mailPosters = new ConcurrentHashMap();
 	protected Map<String, JavaMailSender> mailSenders = new HashMap();
@@ -689,7 +688,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					} else {
 						mHelper.setToAddrs( subList);
 					}
-					MimeMessage mimeMessage = mailSender.createMimeMessage();
+					MimeMessage mimeMessage = new VibeMimeMessage(mailSender.getSession());
 					mHelper.prepare(mimeMessage);
 					if (mimeMessage.getSentDate() == null) {
 						mimeMessage.setSentDate(new Date());

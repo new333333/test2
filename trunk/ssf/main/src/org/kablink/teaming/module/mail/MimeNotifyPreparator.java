@@ -59,8 +59,10 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.ical.IcalModule;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -71,16 +73,15 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 
 /**
- * 
  * @author ?
  */
+@SuppressWarnings({"unchecked","unused"})
 public class MimeNotifyPreparator extends AbstractMailPreparator {
 	EmailFormatter processor;
 	Binder binder;
 	Collection<String> ccAddrs;
 	Collection<String> bccAddrs;
 	Collection<String> toAddrs;
-	@SuppressWarnings("unchecked")
 	Collection entries;
 	Entry entry;
 	Notify.NotifyType messageType;
@@ -193,7 +194,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	 * 
 	 * @param entries
 	 */
-	@SuppressWarnings("unchecked")
 	public void setEntries(Collection entries) {
 		this.entries = entries;
 	}
@@ -312,7 +312,6 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	 * 
 	 * @param mimeMessage
 	 */
-	@SuppressWarnings("unchecked")
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		// Make sure nothing saved yet.
 		notify = new Notify(messageType, locale, timezone, startDate);
@@ -344,6 +343,36 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		// Set any X-* fields required for GW integration.
 		if (MiscUtil.hasString(entryPermalinkUrl)) mimeMessage.addHeader(MailModule.HEADER_X_VIBE_ONPREM,     entryPermalinkUrl);
 		if (MiscUtil.hasString(rootPermalinkUrl )) mimeMessage.addHeader(MailModule.HEADER_X_ROOTVIBE_ONPREM, rootPermalinkUrl );
+
+		// Bugzilla 689724:
+		//    Commented out until we decide what type of field these
+		//    should actually use, the standard fields or X-* fields.
+		/*
+			// Do we have an Entry for this mimeMessage?
+			if (null != entry) {
+				// Yes!  Use it to construct a Message-ID header for the
+				// message.
+				String vibeMessageId = buildMessageId(entry.getId());
+				if (mimeMessage instanceof VibeMimeMessage) {
+					((VibeMimeMessage) mimeMessage).setVibeMessageId(vibeMessageId);
+				}
+				mimeMessage.addHeader(MailModule.HEADER_MESSAGE_ID, vibeMessageId);
+				
+				// Is the Entry we've got a FolderEntry?
+				if (entry instanceof FolderEntry) {
+					// Yes!  Is it a reply to another FolderEntry?
+					FolderEntry entryParent = ((FolderEntry) entry).getParentEntry();
+					if (null != entryParent) {
+						// Yes!  Add an In-Reply-To header for the message
+						// this is in reply to.
+						mimeMessage.addHeader(
+							MailModule.HEADER_IN_REPLY_TO,
+							buildMessageId(
+								entryParent.getId()));
+					}
+				}
+			}
+		*/
 
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
@@ -400,10 +429,19 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		// to re-send it.
 		message = mimeMessage;
 	}
+
+	/*
+	 * Returns a MimeMessage compatible Message-ID based on an entry
+	 * ID.
+	 * 
+	 * Format:  <entryId@host>
+	 */
+	private static String buildMessageId(Long entryId) {
+		return ("<" + String.valueOf(entryId.longValue()) + "@" + SPropsUtil.getDefaultHost() + ">");
+	}
 	
 	/*
 	 */
-	@SuppressWarnings("unchecked")
 	protected void prepareICalendars(MimeMessageHelper helper) throws MessagingException {
 		int c = 0;
 		int eventsSize = notify.getEvents().size();
