@@ -46,6 +46,13 @@
 	User currentUser = null;
 %>
 
+<script type="text/javascript">
+
+// m_searchCount is used to keep track of how many search filters have been created.
+var m_searchCount = 0;
+
+</script>
+
 <body class="ss_style_body tundra" onUnload="onUnloadEventHandler();">
 <div class="ss_pseudoPortal">
 	<div class="ss_style ss_portlet">
@@ -1024,10 +1031,27 @@ ssPage = {
 	createSearchEntry : function($listDiv, baseDn, filter, ss)
 	{
 		var $newSearch = jQuery('#ldapSearchTemplate').children().clone();
+		
 		$newSearch
 			.find('.ldapBaseDn').val(baseDn).end()
 			.find('.ldapFilter').val(filter).end()
 			.find('.ldapSearchSubtree').val([ss]).end();
+		
+		// Give the "Search subtree" checkbox a unique id and update the <label for="xxx">
+		// so it is tied to the "Search subtree" checkbox.  This is the fix for bug 684965
+		{
+			var newId;
+			
+			// Give the "Search subtree" checkbox a unique id.
+			newId = 'ldapSearchSubtree' + m_searchCount;
+			$newSearch.find( '#ldapSearchSubtree' ).attr( 'id', newId );
+			
+			// Associate the <label> with the id of the "Search subtree" checkbox.
+			$newSearch.find( '#ldapSearchSubtreeLabel' ).attr( 'for', newId );
+			
+			++m_searchCount;
+		}
+		
 		jQuery("button.deleteSearch", $newSearch).click(function() {
 			var		msg;
 
@@ -1802,7 +1826,7 @@ jQuery(document).ready(function() {
 					<td></td>
 					<td>
 						<input type="checkbox" class="ldapSearchSubtree" id="ldapSearchSubtree" value="true" />
-						<label for="ldapSearchSubtree"><span style="padding-left: 4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
+						<label for="ldapSearchSubtree" id="ldapSearchSubtreeLabel"><span style="padding-left: 4px;"><ssf:nlt tag="ldap.search.searchSubtree" /></span></label>
 					</td>
 				</tr>
 			</table>
