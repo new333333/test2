@@ -47,6 +47,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
@@ -96,10 +97,18 @@ public class ManageUserAccountsController extends SAbstractController {
 					if (formData.containsKey("deleteBtn")) {
 						//This is a request to delete accounts
 						Map options = new HashMap();
-						getProfileModule().deleteEntry(id, options);
+						try {
+							getProfileModule().deleteEntry(id, options);
+						} catch(NotSupportedException e) {
+							//Ignore attempts to disable accounts such as _emailPostingAgent
+						}
 					} else {
 						//This is a request just to disable the accounts
-						getProfileModule().disableEntry(id, true);
+						try {
+							getProfileModule().disableEntry(id, true);
+						} catch(NotSupportedException e) {
+							//Ignore attempts to disable accounts such as _emailPostingAgent
+						}
 					}
 				}
 			}
@@ -154,6 +163,7 @@ public class ManageUserAccountsController extends SAbstractController {
     	options.put(ObjectKeys.SEARCH_OFFSET, pageNumber * maxHits);
     	options.put(ObjectKeys.SEARCH_MAX_HITS, maxHits);
 		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_IS_PERSON, new Boolean(true));
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		Map allUsers = getProfileModule().getUsers(options);
 		
