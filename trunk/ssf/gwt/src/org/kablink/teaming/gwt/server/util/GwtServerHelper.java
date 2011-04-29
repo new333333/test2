@@ -168,7 +168,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.teaming.web.util.Tabs.TabEntry;
-import org.kablink.util.Html;
 import org.kablink.util.PropertyNotFoundException;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -187,13 +186,13 @@ public class GwtServerHelper {
 	// placed in buckets in a workspace tree control.
 	private static final boolean ENABLE_BUCKETS      = true;
 	private static       int     BUCKET_SIZE         = (-1);
-	private static final int     BUCKET_SIZE_DEFAULT = 25;
+	private static final int     BUCKET_SIZE_DEFAULT = 100;
 	private static final String  BUCKET_SIZE_KEY     = "wsTree.maxBucketSize";
 
 	// The following controls when we're bucketing, if we only bucket
 	// super containers that exceed the threshold or any binder that
 	// does.
-	private static boolean ONLY_BUCKET_SUPER_CONTAINERS = ENABLE_BUCKETS;
+	private static boolean ONLY_BUCKET_SUPER_CONTAINERS = false;
 
 	// The following is used to control how workspace trees are
 	// sorted and displayed.  The value meanings are:
