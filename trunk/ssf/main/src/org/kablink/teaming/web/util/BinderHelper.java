@@ -977,7 +977,8 @@ public class BinderHelper {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			}
 			action.put("url", adapterUrl.toString());
-			actions.add(action);
+			//This has been turned off waiting for a future decision
+			//actions.add(action);
 		}
 	}
 
