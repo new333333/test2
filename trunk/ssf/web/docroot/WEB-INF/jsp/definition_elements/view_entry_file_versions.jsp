@@ -85,15 +85,15 @@ var ss_deleteFileVersionsConfirmText = "<ssf:nlt tag='file.command.deleteVersion
 <tbody>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <tr class="ss_tab_table_columnhead">
-  <td>&nbsp;</td>
-  <td><ssf:nlt tag="file.name"/></td>
-  <td><ssf:nlt tag="entry.Version"/></td>
-  <td><ssf:nlt tag="file.status"/></td>
-  <td><ssf:nlt tag="file.date"/></td>
-  <td><ssf:nlt tag="file.size"/></td>
-  <td><ssf:nlt tag="entry.modifiedBy"/></td>
-  <td><ssf:nlt tag="toolbar.actions"/></td>
-  <td colspan="2"><ssf:nlt tag="Edit"/></td>
+  <th>&nbsp;</th>
+  <th><ssf:nlt tag="file.name"/></th>
+  <th><ssf:nlt tag="entry.Version"/></th>
+  <th><ssf:nlt tag="file.status"/></th>
+  <th><ssf:nlt tag="file.date"/></th>
+  <th><ssf:nlt tag="file.size"/></th>
+  <th><ssf:nlt tag="entry.modifiedBy"/></th>
+  <th><ssf:nlt tag="toolbar.actions"/></th>
+  <th colspan="2"><ssf:nlt tag="Edit"/></th>
 </tr>
 </c:if>
 

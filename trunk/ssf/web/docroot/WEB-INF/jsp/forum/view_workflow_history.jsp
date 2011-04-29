@@ -63,13 +63,13 @@
 	 <br/>
     	<table width="100%" align="center" border="0" cellpadding="0" cellspacing="0">
     		<tr class="ss_tab_table_columnhead">
-				<td><ssf:nlt tag="entry.eventNumber"/></td>
-				<td><ssf:nlt tag="entry.modifiedOn"/></td>
-				<td><ssf:nlt tag="entry.modifiedBy"/></td>
-				<td><ssf:nlt tag="entry.operation"/></td>
-				<td><ssf:nlt tag="entry.processName"/></td>
-				<td><ssf:nlt tag="entry.threadName"/></td>
-				<td><ssf:nlt tag="entry.state"/></td>
+				<th><ssf:nlt tag="entry.eventNumber"/></th>
+				<th><ssf:nlt tag="entry.modifiedOn"/></th>
+				<th><ssf:nlt tag="entry.modifiedBy"/></th>
+				<th><ssf:nlt tag="entry.operation"/></th>
+				<th><ssf:nlt tag="entry.processName"/></th>
+				<th><ssf:nlt tag="entry.threadName"/></th>
+				<th><ssf:nlt tag="entry.state"/></th>
 			</tr>
 			
 			<c:forEach var="change" items="${ss_changeLogList}">
