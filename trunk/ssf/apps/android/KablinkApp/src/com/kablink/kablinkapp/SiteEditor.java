@@ -20,7 +20,9 @@ import com.kablink.kablinkapp.R;
 import com.kablink.kablinkapp.SiteData.SiteColumns;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -81,6 +83,8 @@ public class SiteEditor extends Activity {
     private String mOriginalVersion;
     private static Button mSaveButton;
     private static Button mCancelButton;
+    private static Button mDeleteButton;
+    private AlertDialog.Builder mBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,15 +188,40 @@ public class SiteEditor extends Activity {
            }
        });
 
-        mCancelButton = (Button) findViewById(R.id.cancelButton);
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Log.d(TAG, "mDoneButton clicked");
-                Intent i = new Intent(v.getContext(), Kablink.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
-            }
-        });
+       mCancelButton = (Button) findViewById(R.id.cancelButton);
+       mCancelButton.setOnClickListener(new View.OnClickListener() {
+           public void onClick(View v) {
+               Log.d(TAG, "mDoneButton clicked");
+               Intent i = new Intent(v.getContext(), Kablink.class);
+               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               startActivity(i);
+           }
+       });
+
+       mDeleteButton = (Button) findViewById(R.id.deleteButton);
+       mDeleteButton.setOnClickListener(new View.OnClickListener() {
+           public void onClick(View v) {
+               Log.d(TAG, "mDeleteButton clicked");
+               mBuilder = new AlertDialog.Builder(v.getContext());
+               mBuilder.setMessage(getString(R.string.deleteSiteWarning))
+                      .setCancelable(false)
+                      .setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int id) {
+                        	  deleteSite();
+                              Intent i = new Intent(getBaseContext(), Kablink.class);
+                              i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                              startActivity(i);
+                          }
+                      })
+                      .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+                          public void onClick(DialogInterface dialog, int id) {
+                               dialog.cancel();
+                          }
+                      });
+		        AlertDialog alert = mBuilder.create();
+		        alert.show();
+           }
+       });
     }
 
     @Override

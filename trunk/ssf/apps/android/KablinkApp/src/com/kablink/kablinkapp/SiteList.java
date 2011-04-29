@@ -43,14 +43,17 @@ public class SiteList extends Activity {
         	textBtn.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
+					String action = Intent.ACTION_MAIN;
 					Button thisButton = (Button) v;
 					KablinkSite buttonSite = (KablinkSite)thisButton.getTag(R.id.tag_button_site);
 					if (!buttonSite.equals(Kablink.mCurrentSite)) {
 						//Changing sites
 						Kablink.mCurrentSite = buttonSite;
 						Kablink.mViewingSite = false;
+						action = Intent.ACTION_GET_CONTENT;
 					}
 	                Intent i = new Intent(v.getContext(), Kablink.class);
+	                i.setAction(action);
 	                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	                startActivity(i);
 				}

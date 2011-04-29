@@ -97,6 +97,13 @@
             android:layout_below="@+id/password"
             android:layout_toRightOf="@+id/saveButton"/>
 
+    <Button android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/deleteButton"
+            android:text="@string/menu_delete"
+            android:layout_below="@+id/password"
+            android:layout_toRightOf="@+id/cancelButton"/>
+
 </RelativeLayout>
 </ScrollView>
 </RelativeLayout>
