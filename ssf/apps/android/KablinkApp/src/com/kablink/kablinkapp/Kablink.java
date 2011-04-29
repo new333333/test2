@@ -121,12 +121,24 @@ public class Kablink extends Activity {
         String action = getIntent().getAction();
         if (Intent.ACTION_SHUTDOWN.equals(action)) {
         	//This is a request to exit
-        	//First, clear the cache that is left behind
-        	getBaseContext().deleteDatabase("webview.db");
-        	getBaseContext().deleteDatabase("webviewCache.db");
+        	clearCache();
+        	mSites = null;
+        	mCurrentSite = null;
+        	mViewingSite = false;
+        	mLastUrlViewed = null;
         	finish();
         	
         } else {
+        	Intent intent = getIntent();
+        	if (Intent.ACTION_GET_CONTENT.equals(action)) {
+            	//Switching to new site
+            	clearCache();
+            	mSites = null;
+            	mCurrentSite = null;
+            	mViewingSite = false;
+            	mLastUrlViewed = null;
+        	}
+        	intent.setAction(Intent.ACTION_MAIN);
             SharedPreferences preferences = getSharedPreferences(PREFS, 0);
             if (!preferences.contains(PREFS_SEED)) {
             	//Initialize the seed
@@ -185,9 +197,9 @@ public class Kablink extends Activity {
 	        if (mSites.size() == 0) {
 	        	//There aren't any sites yet, go add one
 	            // Launch activity to insert a new item
-	            Intent intent = new Intent(getBaseContext(), SiteEditor.class);
-	            intent.setAction(Intent.ACTION_INSERT);
-	            startActivity(intent);
+	            Intent i = new Intent(getBaseContext(), SiteEditor.class);
+	            i.setAction(Intent.ACTION_INSERT);
+	            startActivity(i);
 	            
 	        } else if(mCurrentSite != null) {
 	            //There is a site already selected
@@ -204,13 +216,19 @@ public class Kablink extends Activity {
 	        	
 	        } else {
 	        	//There are more than one. List them.
-	            Intent intent = new Intent(this, SiteList.class);
-	            intent.setAction(Intent.ACTION_VIEW);
-	            startActivity(intent);
+	            Intent i = new Intent(this, SiteList.class);
+	            i.setAction(Intent.ACTION_VIEW);
+	            startActivity(i);
 	        }
         }
     }
     
+    protected void clearCache() {
+    	//Clear the cache that is left behind
+    	getBaseContext().deleteDatabase("webview.db");
+    	getBaseContext().deleteDatabase("webviewCache.db");
+    }
+
     private void launchSite(KablinkSite site) {
     	mCurrentSite = site;
     	mViewingSite = true;
@@ -343,7 +361,7 @@ public class Kablink extends Activity {
     	//Save the history
     	mWebBackForwardList = mWebView.saveState(outState);
     }
-
+    
     @Override
     protected void onResume() {
         //if (Config.LOGD) Log.d(TAG, "onResume");
