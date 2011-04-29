@@ -94,9 +94,9 @@
 	<table cellpadding="4" class="ss_table_rounded">
 	 <tbody>
 	  <tr class="ss_tab_table_columnhead">
-	   <td colspan="2" style="text-align: center;"><ssf:nlt tag="folder.column.columns"/></td>
-	   <td colspan="1" style="text-align: center;"><ssf:nlt tag="folder.column.custom"/></td>
-	   <td colspan="2" style="text-align: left;"><ssf:nlt tag="folder.column.sort"/></td>	   
+	   <th colspan="2" style="text-align: center;"><ssf:nlt tag="folder.column.columns"/></th>
+	   <th colspan="1" style="text-align: center;"><ssf:nlt tag="folder.column.custom"/></th>
+	   <th colspan="2" style="text-align: left;"><ssf:nlt tag="folder.column.sort"/></th>	   
 	  </tr>
  
 <c:forEach var="colName" items="${allColumns}">
