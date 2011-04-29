@@ -3225,6 +3225,9 @@ a.gwtTaskList_task-icon:hover
 {
 	background: none !important;
 }
+.gwtTaskList_task-name
+{
+}
 /* End:  GWT Task Folder Listing styles. */
 
 

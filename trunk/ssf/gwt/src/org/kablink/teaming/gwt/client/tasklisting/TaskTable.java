@@ -2690,7 +2690,9 @@ public class TaskTable extends Composite implements ActionHandler {
 		fp.add(ta);
 
 		// Finally, put the FlowPanel in the table.
-		m_flexTable.setWidget(row, getColumnIndex(Column.TASK_NAME), fp);
+		int col = getColumnIndex(Column.TASK_NAME);
+		m_flexTableCF.addStyleName(row, col, "gwtTaskList_task-name");
+		m_flexTable.setWidget(row, col, fp);
 	}
 
 	/*
