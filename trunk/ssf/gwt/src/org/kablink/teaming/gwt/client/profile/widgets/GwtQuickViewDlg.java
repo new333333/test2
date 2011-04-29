@@ -514,6 +514,22 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 				{
 					OnSelectBinderInfo osbInfo;
 					
+					if ( binderUrl == null || binderUrl.length() == 0 )
+					{
+						if ( showProfile )
+						{
+							// The user does not have a workspace.  Tell the user about it.
+							Window.alert( GwtTeaming.getMessages().qViewErrorNoProfile() );
+						}
+						else
+						{
+							// The user does not have a workspace.  Tell the user about it.
+							Window.alert( GwtTeaming.getMessages().qViewErrorDeletedWorkspace() );
+						}
+						
+						return;
+					}
+					
 					if(showProfile){
 						binderUrl = GwtClientHelper.appendUrlParam( binderUrl, "operation", "showProfile" );
 					} else {

@@ -721,6 +721,8 @@ public interface GwtTeamingMessages extends Messages
 	String qViewInstantMessage();
 	String qViewInstantMessageTitle();
 	String qViewErrorWorkspaceDoesNotExist();
+	String qViewErrorDeletedWorkspace();
+	String qViewErrorNoProfile();
 
 	//Profile
 	String profileCallMe();
