@@ -57,7 +57,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 			} else if(args[0].equals("getUser")) {
 				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUserByName")) {
-				wsClient.fetchAndPrintDE("TeamingServiceV1", "profile_getUserByName", new Object[] {null, args[1], Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintUser("TeamingServiceV1", "profile_getUserByName", new Object[] {null, args[1], Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getUsersByEmail")) {
 				String emailType = null;
 				if(args.length > 2)
