@@ -291,7 +291,7 @@ public class TeamingServiceClientWithStub {
 		.add(eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY)) // only entries, not binders or attachments
 		.add(eq(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_CALENDAR)) // only calendar family
 		.add(eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY)) // only entries, not replied
-		.add(between(Constants.MODIFICATION_DATE_FIELD, "20100801000000", "20111031235959")) // modification time should fall in this range (inclusive)
+		.add(between(Constants.MODIFICATION_DATE_FIELD, "20110401000000", "20111031235959")) // modification time should fall in this range (inclusive)
 		.add(in(Constants.BINDER_ID_FIELD, new String[] {"43", "148"}));
 		
 		System.out.println("Here's the search string in XML");
@@ -308,7 +308,11 @@ public class TeamingServiceClientWithStub {
     		FolderEntryBrief entry = entries[i];
     		System.out.println("id=" + entry.getId() + ", binderId=" + entry.getBinderId() + 
     				", docNumber=" + entry.getDocNumber() + ", docLevel=" + entry.getDocLevel() + 
-    				", title=" + entry.getTitle() + ", permalink=" + entry.getPermaLink());
+    				", title=" + entry.getTitle() + ", permalink=" + entry.getPermaLink() +
+    				", creation time=" + entry.getCreation().getDate().getTime() +
+    				", creation timezone=" + entry.getCreation().getDate().getTimeZone() +
+    				", modification time=" + entry.getModification().getDate().getTime() +
+    				", modification timezone=" + entry.getModification().getDate().getTimeZone());
     	}
 	}
 	
