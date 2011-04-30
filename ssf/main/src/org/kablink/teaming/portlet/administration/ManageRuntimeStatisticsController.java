@@ -135,6 +135,7 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head></head><body>").
+			append("Search query = [" + qry + "]<p>").
 			append("BinderModule.executeSearchQuery(Document,int,int) took ").append(duration).append(" milliseconds to execute<p>");
 			List entrylist = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
 			Iterator entryIterator = entrylist.listIterator();
