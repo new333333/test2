@@ -585,6 +585,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				}
 			}
 		}
+		if(version.intValue() <= 7) {
+			User synchAgent = getSynchronizationAgent(zoneConfig.getZoneId());
+			if(synchAgent != null)
+				setTokenRequesterInitialMembership(zoneConfig, synchAgent);
+		}
   	}
  	/**
  	 * Fix up duplicate definitions.  1.0 allowed definitions with the same name
@@ -700,11 +705,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().indexEntry(u);
 		}
 		//make sure synchronization agent exists
-		try {
-			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
-		} catch (NoUserByTheNameException nu) {
+		if(getSynchronizationAgent(zone.getId()) == null) {
 			//need to add it
 			User u = addSynchronizationAgent(superU.getParentBinder(), new HistoryStamp(superU));
+			setTokenRequesterInitialMembership(zoneConfig, u);
 			//updates cache
 			getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(u);
@@ -1369,8 +1373,42 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getFunctionManager().addFunction(function);
 		return function;
 	}
+	
+	private User getSynchronizationAgent(Long zoneId) {
+		try {
+			return getProfileDao().getReservedUser(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID, zoneId);
+		} catch (NoUserByTheNameException nu) {
+			return null;
+		}
+	}
+	
+	private void setTokenRequesterInitialMembership(ZoneConfig zoneConfig, User synchAgent) {
+		List<Function> functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
+		Function function = null;
+		for(Function f:functions) {
+			if(ObjectKeys.FUNCTION_TOKEN_REQUESTER_INTERNALID.equals(f.getInternalId()) &&
+					ObjectKeys.ROLE_TOKEN_REQUESTER.equals(f.getName())) {
+				function = f;
+				break;
+			}
+		}
+		if(function != null) {
+			WorkAreaFunctionMembership ms = getWorkAreaFunctionMembershipManager().
+				getWorkAreaFunctionMembership(zoneConfig.getZoneId(), zoneConfig, function.getId());
+			if(ms != null) {
+				Set<Long> memberIds = ms.getMemberIds();
+				if(!memberIds.contains(synchAgent.getId())) {
+					memberIds.add(synchAgent.getId());
+					ms.setMemberIds(memberIds);
+				}
+			}
+		}
+	}
+	
 	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
-		Set members = new HashSet(ids);
+		// Do not add default members for this.
+		//Set members = new HashSet(ids);
+		Set members = new HashSet();
 		Function function;
 		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		Map functionNames = new HashMap();
@@ -1420,7 +1458,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setZoneWide(true);
 			//generate functionId
 			getFunctionManager().addFunction(function);
-			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+			Set mbrs = new HashSet();
+			User synchAgent = getSynchronizationAgent(zoneConfig.getZoneId());
+			if(synchAgent != null)
+				mbrs.add(synchAgent);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, mbrs);
 		}
 			
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ONLY_SEE_GROUP_MEMBERS_INTERNALID)) {
@@ -1456,8 +1498,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
 		ms.setZoneId(zoneConfig.getZoneId());
 		ms.setFunctionId(function.getId());
-		// Do not add default members for this.
-		ms.setMemberIds(new HashSet());
+		ms.setMemberIds(members);
 		getCoreDao().save(ms);		
 	}
 
