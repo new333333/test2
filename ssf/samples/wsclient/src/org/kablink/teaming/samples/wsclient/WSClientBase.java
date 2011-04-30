@@ -399,6 +399,12 @@ public abstract class WSClientBase {
 		printDefinableEntity(entity);
 	}
 
+	void fetchAndPrintUser(String serviceName, String operation, Object[] args) throws Exception {
+		User user = (User) fetch(serviceName, operation, args);
+
+		printUser(user);
+	}
+
 	void fetchAndPrintBinder(String serviceName, String operation, Object[] args) throws Exception {
 		Binder binder = (Binder) fetch(serviceName, operation, args);
 
@@ -534,6 +540,11 @@ public abstract class WSClientBase {
 	void printBinder(Binder binder) {
 		printDefinableEntity(binder);
 		System.out.println("Path: " + binder.getPath());
+	}
+	
+	void printUser(User user) {
+		printDefinableEntity(user);
+		System.out.println("Workspace ID: " + user.getWorkspaceId());
 	}
 	
 	void printFileVersions(FileVersions fileVersions) {
