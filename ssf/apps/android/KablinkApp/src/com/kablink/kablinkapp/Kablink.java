@@ -71,6 +71,7 @@ public class Kablink extends Activity {
 	protected static boolean mViewingSite;
 	protected static String mLastUrlViewed;
 	protected static String mCryptoSeed = "123456789";
+	private Boolean mResumingFromStop = false; 
 	
 	public class KablinkSite {
 		private Long id;
@@ -126,17 +127,19 @@ public class Kablink extends Activity {
         	mCurrentSite = null;
         	mViewingSite = false;
         	mLastUrlViewed = null;
+        	if (savedInstanceState != null) savedInstanceState.clear();
         	finish();
         	
         } else {
         	Intent intent = getIntent();
-        	if (Intent.ACTION_GET_CONTENT.equals(action)) {
+        	if (Intent.ACTION_GET_CONTENT.equals(action) || mResumingFromStop) {
             	//Switching to new site
             	clearCache();
             	mSites = null;
-            	mCurrentSite = null;
             	mViewingSite = false;
             	mLastUrlViewed = null;
+            	if (savedInstanceState != null) savedInstanceState.clear();
+            	mResumingFromStop = false;
         	}
         	intent.setAction(Intent.ACTION_MAIN);
             SharedPreferences preferences = getSharedPreferences(PREFS, 0);
@@ -151,7 +154,7 @@ public class Kablink extends Activity {
 
 	        //Set up the web view and javascript callout
 	        mWebView = (WebView) findViewById(R.id.webview);
-	        if (savedInstanceState != null) {
+	        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
 	        	//restore the history from before
 	        	mWebView.restoreState(savedInstanceState);
 	        }
@@ -266,6 +269,7 @@ public class Kablink extends Activity {
             //Use the back button to go back on page
         	if (mWebView.canGoBackOrForward(-2)) {
         		mWebView.goBack();
+        		mLastUrlViewed = mWebView.getUrl();
         		return true;
         	} else {
         		//There is nothing left in the history list. Ask if the user wants to exit the app
@@ -366,6 +370,16 @@ public class Kablink extends Activity {
     protected void onResume() {
         //if (Config.LOGD) Log.d(TAG, "onResume");
         super.onResume();
+        if (mResumingFromStop) {
+        	mSites = null;
+        	mViewingSite = false;
+        	mLastUrlViewed = null;
+        	mResumingFromStop = false;
+
+	        Intent i = new Intent(getBaseContext(), Kablink.class);
+	        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+	        startActivity(i);
+        }
     }
     
     @Override
@@ -377,6 +391,8 @@ public class Kablink extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        //On restart, make sure to go through the normal startup
+    	mResumingFromStop = true;
     }
 
     @Override

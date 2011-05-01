@@ -28,7 +28,7 @@
       	android:ems="25"
         android:layout_height="wrap_content" 
         android:autoText="true"
-        android:capitalize="words"
+        android:inputType="textCapWords"
         android:scrollHorizontally="true" 
         android:layout_below="@+id/titleLabelSiteTitle"/>
 
@@ -45,7 +45,7 @@
       	android:ems="25"
         android:layout_height="wrap_content" 
         android:autoText="true"
-        android:capitalize="none"
+        android:inputType="text"
         android:scrollHorizontally="true" 
         android:layout_below="@+id/titleLabelSiteUrl"/>
 
@@ -62,7 +62,7 @@
       	android:ems="25"
         android:layout_height="wrap_content" 
         android:autoText="true"
-        android:capitalize="none"
+        android:inputType="text"
         android:scrollHorizontally="true" 
         android:layout_below="@+id/titleLabelLoginName"/>
 
@@ -80,7 +80,7 @@
       	android:ems="25"
         android:layout_height="wrap_content" 
         android:autoText="true"
-        android:capitalize="none"
+        android:inputType="text"
         android:scrollHorizontally="true" 
         android:layout_below="@+id/titleLabelPassword"/>
 

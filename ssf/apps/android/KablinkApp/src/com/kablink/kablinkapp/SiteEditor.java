@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -154,10 +155,12 @@ public class SiteEditor extends Activity {
 
        // The url view for our site, identified by its ID in the XML file.
        mUrl = (EditText) findViewById(R.id.siteUrl);
+       mUrl.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
        if (mCursor.getCount() > 0) mUrl.setText(mCursor.getString(COLUMN_INDEX_URL));
 
        // The username view for our site, identified by its ID in the XML file.
        mUsername = (EditText) findViewById(R.id.loginName);
+       mUsername.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
        if (mCursor.getCount() > 0) mUsername.setText(mCursor.getString(COLUMN_INDEX_USERNAME));
 
        // The password view for our site, identified by its ID in the XML file.
@@ -199,6 +202,9 @@ public class SiteEditor extends Activity {
        });
 
        mDeleteButton = (Button) findViewById(R.id.deleteButton);
+       if (Intent.ACTION_INSERT.equals(action)) {
+    	   mDeleteButton.setVisibility(Button.GONE);
+       }
        mDeleteButton.setOnClickListener(new View.OnClickListener() {
            public void onClick(View v) {
                Log.d(TAG, "mDeleteButton clicked");
@@ -342,6 +348,8 @@ public class SiteEditor extends Activity {
         }
         //Force the database to re-reed the site list
         Kablink.mSites = null;
+        Kablink.mCurrentSite = null;
+        Kablink.mLastUrlViewed = null;
     }
 
     /**
