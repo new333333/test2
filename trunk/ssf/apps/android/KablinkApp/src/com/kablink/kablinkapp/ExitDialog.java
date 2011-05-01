@@ -19,7 +19,6 @@ public class ExitDialog extends Activity {
                .setCancelable(false)
                .setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                    public void onClick(DialogInterface dialog, int id) {
-                	   Kablink.mLastUrlViewed = null;
                 	   Intent intent = new Intent(getBaseContext(), Kablink.class);
 					   intent.setAction(Intent.ACTION_VIEW);
 					   intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
