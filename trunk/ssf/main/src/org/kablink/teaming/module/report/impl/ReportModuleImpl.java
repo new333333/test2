@@ -319,7 +319,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	public void addEmailLog(EmailLog emailLog) {
-		getCoreDao().save(emailLog);
+		try {
+			getCoreDao().save(emailLog);
+		} catch (Exception ex) {
+			logger.error("Failed to add an email log", ex);
+		}
 	}
 	
 	public void addLicenseStats(LicenseStats stats) {
