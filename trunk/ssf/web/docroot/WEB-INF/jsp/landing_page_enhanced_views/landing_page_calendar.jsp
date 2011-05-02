@@ -45,6 +45,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "url");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+%>
 <%@ page import="java.util.TreeMap" %>
 <%@ page import="org.kablink.teaming.comparator.StringComparator" %>
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
@@ -56,6 +65,11 @@
 <c:set var="mashupBinderId" value="${mashup_attributes['folderId']}"/>
 <c:set var="mashupBinder" value="${ss_mashupBinders[mashupBinderId]}"/>
 
+<% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
+<li>
+</c:if>
+<% } %>
 <div class="ss_mashup_element">
     <div class="ss_mashup_round_top"><div></div></div>
       <c:if test="${!empty mashup_attributes['showTitle']}">
@@ -88,3 +102,8 @@
 	</div>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
+<% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupBinder}">
+</li>
+</c:if>
+<% } %>
