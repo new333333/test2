@@ -45,6 +45,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%  
+	Long ss_mashupTableNumber = (Long) request.getAttribute("ss_mashupTableNumber");
+	Long ss_mashupTableDepth = (Long) request.getAttribute("ss_mashupTableDepth");
+	Map ss_mashupTableItemCount = (Map) request.getAttribute("ss_mashupTableItemCount");
+	ss_mashupTableItemCount.put(ss_mashupTableNumber, "folder");  
+	request.setAttribute("ss_mashupTableItemCount", ss_mashupTableItemCount);
+
+	Long ss_mashupListDepth = (Long) request.getAttribute("ss_mashupListDepth");
+%>
 <c:set var="mashupEntryId" value="${mashup_attributes['entryId']}"/>
 <c:set var="mashupEntry" value="${ss_mashupEntries[mashupEntryId]}"/>
 <c:set var="mashupEntryReplies" value="${ss_mashupEntryReplies[mashupEntryId]}"/>
@@ -63,6 +72,11 @@
 %>
 <c:set var="configEle" value="<%= configEle %>" />
 
+<% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupEntry}">
+<li>
+</c:if>
+<% } %>
 <div class="ss_mashup_element">
   <div class="ss_mashup_round_top"><div></div></div>
   <div class="ss_mashup_folder_list_open">
@@ -95,6 +109,12 @@
   </div>
   <div class="ss_mashup_round_bottom"><div></div></div>
 </div>
+<% if (ss_mashupListDepth > 0) { %>
+<c:if test="${!empty mashupEntry}">
+</li>
+</c:if>
+<% } %>
+
 <c:set var="ssDefinitionEntry" value="${originalDefinitionEntry}" scope="request"/>
 <c:set var="ssBinder" value="${originalBinder}" scope="request"/>
 <c:set var="ssEntry" value="${originalEntry}" scope="request"/>
