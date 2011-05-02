@@ -161,6 +161,11 @@ import org.kablink.util.search.Criteria;
 
 @SuppressWarnings("unchecked")
 public class BinderHelper {
+	// The following control aspects of code in Vibe OnPrem that has
+	// been added to assist in debugging.
+	public static final boolean BINDER_DEBUG_ENABLED = SPropsUtil.getBoolean("binders.debug.enabled", false);
+	public static final String  BINDER_MAGIC_TITLE   = "create.binders.";
+	
 	protected static final Log logger = LogFactory.getLog(Binder.class);
 	
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,18 +47,18 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
@@ -75,6 +75,7 @@ import org.springframework.web.portlet.ModelAndView;
  * @author Janet McCann
  *
  */
+@SuppressWarnings("unchecked")
 public class AddFolderController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
@@ -86,8 +87,16 @@ public class AddFolderController extends SAbstractController {
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
-			Long newId = getTemplateModule().addBinder(cfgType, binderId, 
-						PortletRequestUtils.getStringParameter(request, "title", ""), null).getId();
+			Long newId = null;
+			boolean createTestFolders = BinderHelper.BINDER_DEBUG_ENABLED;
+			if (createTestFolders) {
+				newId = createDebugFolders(request, response, cfgType, binderId);						
+				createTestFolders = (null != newId);
+			}
+			if (!createTestFolders){
+				newId = getTemplateModule().addBinder(cfgType, binderId, 
+					PortletRequestUtils.getStringParameter(request, "title", ""), null).getId();
+			}
 			Binder newBinder = getBinderModule().getBinder(newId);
 			
 			//Now process the rest of the form
@@ -136,6 +145,7 @@ public class AddFolderController extends SAbstractController {
 					}
 					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
+						@SuppressWarnings("unused")
 						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,
 								NLT.get("binder.announcement", new Object[] {Utils.getUserTitle(user), newBinder.getTitle()}), 
 								new Description(messageBody, Description.FORMAT_HTML));
@@ -270,6 +280,51 @@ public class AddFolderController extends SAbstractController {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
+	
+    /*
+     * The following method is used to aid in testing folders.  It
+     * allows one to easily generate an arbitrary number of folders in
+     * the given binder.
+     * 
+     * Conditions:
+     * 1. binders.debug.enabled=true in some ssf*.properties file.
+     * 2. An entry titled 'create.binders.<nnn>' is being created where
+     *    '<nnn>' is some integer value.
+     * 
+     * If these conditions are met, <nnn> folders named folder.1,
+     * folder.2, ... folder.nnn will be created with the ID of the last
+     * folder created being returned.  If these conditions are not met,
+     * null is returned.
+     */
+	private Long createDebugFolders(ActionRequest request, ActionResponse response, Long cfgType, Long binderId) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		// Is binder debugging enabled?
+		Long reply = null; 
+		if (BinderHelper.BINDER_DEBUG_ENABLED) {
+			// Yes!  Does the folder being created have the magic name?
+			String title = PortletRequestUtils.getStringParameter(request, "title", "");
+			if (null == title) {
+				title = "";
+			}
+			if (title.startsWith(BinderHelper.BINDER_MAGIC_TITLE)) {
+				// Yes!  Are we being asked to create 1 or more folders?
+				String countS = title.substring(BinderHelper.BINDER_MAGIC_TITLE.length());
+				int count;
+				try                  {count = Integer.parseInt(countS);}
+				catch (Exception ex) {count = 0;}
+				if (0 < count) {
+					// Yes!  Create them.
+					logger.info("AddFolderController.createDebugFolders():  Creating " + count + " folders.");
+					for (int i = 1; i <= count; i += 1) {
+						logger.info("...creating folder " + i + " of " + count);
+						reply = getTemplateModule().addBinder(cfgType, binderId, 
+							("folder." + i), null).getId();
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply is null or refers to the ID of the
+		// last folder created.  Return it.
+		return reply;
+	}	
 }
-
-
