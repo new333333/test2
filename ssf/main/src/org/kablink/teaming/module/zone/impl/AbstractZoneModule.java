@@ -1408,7 +1408,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	private void addGlobalFunctions(ZoneConfig zoneConfig, List ids) {
 		// Do not add default members for this.
 		//Set members = new HashSet(ids);
-		Set members = new HashSet();
+		Set<Long> members = new HashSet();
 		Function function;
 		List functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		Map functionNames = new HashMap();
@@ -1458,10 +1458,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setZoneWide(true);
 			//generate functionId
 			getFunctionManager().addFunction(function);
-			Set mbrs = new HashSet();
+			Set<Long> mbrs = new HashSet();
 			User synchAgent = getSynchronizationAgent(zoneConfig.getZoneId());
 			if(synchAgent != null)
-				mbrs.add(synchAgent);
+				mbrs.add(synchAgent.getId());
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, mbrs);
 		}
 			
@@ -1492,13 +1492,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 	}
 	
-	private void setGlobalWorkareaFunctionMembership(ZoneConfig zoneConfig, Function function, Set members) {
+	private void setGlobalWorkareaFunctionMembership(ZoneConfig zoneConfig, Function function, Set<Long> memberIds) {
 		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
 		ms.setWorkAreaId(zoneConfig.getWorkAreaId());
 		ms.setWorkAreaType(zoneConfig.getWorkAreaType());
 		ms.setZoneId(zoneConfig.getZoneId());
 		ms.setFunctionId(function.getId());
-		ms.setMemberIds(members);
+		ms.setMemberIds(memberIds);
 		getCoreDao().save(ms);		
 	}
 
