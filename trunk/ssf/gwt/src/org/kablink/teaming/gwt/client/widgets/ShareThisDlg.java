@@ -827,6 +827,7 @@ public class ShareThisDlg extends DlgBox
 							for ( GwtUser nextUser : usersWithoutReadRights )
 							{
 								label = new Label( nextUser.getShortDisplayName() );
+								label.addStyleName( "bulletListItem" );
 								errorPanel.add( label );
 							}
 							
@@ -859,6 +860,7 @@ public class ShareThisDlg extends DlgBox
 							for ( String nextErrMsg : errorMessages )
 							{
 								label = new Label( nextErrMsg );
+								label.addStyleName( "bulletListItem" );
 								errorPanel.add( label );
 							}
 						}
@@ -869,7 +871,7 @@ public class ShareThisDlg extends DlgBox
 					{
 						// Yes
 						// Make the error panel visible.
-						showErrorPanel();
+						showErrors();
 					}
 					else
 					{
@@ -1218,6 +1220,8 @@ public class ShareThisDlg extends DlgBox
 		init( title, entryId );
 		
 		hideErrorPanel();
+		showContentPanel();
+		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
 		
 		posCallback = new PopupPanel.PositionCallback()
 		{

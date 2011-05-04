@@ -69,6 +69,8 @@ public abstract class DlgBox extends PopupPanel
 	protected boolean m_modal;
 	protected boolean m_visible = false;
 	private FlowPanel m_errorPanel;
+	private Panel m_contentPanel;
+	private FlowPanel m_footerPanel;
     	
 	protected static int m_numDlgsVisible = 0;	// Number of dialogs that are currently visible.
 	
@@ -133,7 +135,6 @@ public abstract class DlgBox extends PopupPanel
 		Object properties ) 					// Where properties used in the dialog are read from and saved to.
 	{
 		FlowPanel	panel;
-		Panel		content;
 		Panel		header;
 		Panel		footer;
 		
@@ -150,8 +151,8 @@ public abstract class DlgBox extends PopupPanel
 		panel.add( m_errorPanel );
 
 		// Add the main content of the dialog box.
-		content = createContent( properties );
-		panel.add( content );
+		m_contentPanel = createContent( properties );
+		panel.add( m_contentPanel );
 		
 		// Create the footer.
 		footer = createFooter();
@@ -170,41 +171,82 @@ public abstract class DlgBox extends PopupPanel
 	 */
 	public Panel createFooter()
 	{
-		FlowPanel panel;
-		
-		panel = new FlowPanel();
+		m_footerPanel = new FlowPanel();
 		
 		// Associate this panel with its stylesheet.
-		panel.setStyleName( "teamingDlgBoxFooter" );
-
-		switch (m_dlgBtnMode) {
+		m_footerPanel.setStyleName( "teamingDlgBoxFooter" );
+		
+		// Create the appropriate buttons based on the value of m_dlgBtnMode.
+		createFooterButtons( m_dlgBtnMode );
+		
+		return m_footerPanel;
+	}
+	
+	
+	/**
+	 * Create the appropriate buttons based on the value of dlgBtnMode.
+	 */
+	public void createFooterButtons( DlgButtonMode dlgBtnMode )
+	{
+		switch ( dlgBtnMode ) {
 		case Close:
-			m_cancelBtn = new Button( GwtTeaming.getMessages().close() );
-			m_cancelBtn.addClickHandler( this );
-			m_cancelBtn.addStyleName( "teamingButton" );
-			panel.add( m_cancelBtn );
+			if ( m_cancelBtn == null )
+			{
+				m_cancelBtn = new Button( GwtTeaming.getMessages().close() );
+			
+				m_cancelBtn.addClickHandler( this );
+				m_cancelBtn.addStyleName( "teamingButton" );
+				m_footerPanel.add( m_cancelBtn );
+			}
+			else
+			{
+				// m_cancelBtn is used for both Cancel and Close.  Make sure the button
+				// says Close.
+				m_cancelBtn.setText( GwtTeaming.getMessages().close() );
+			}
+			
+			m_cancelBtn.setVisible( true );
+			m_okBtn.setVisible( false );
 			
 			break;
 			
 		case Ok:
 		case OkCancel:
-			m_okBtn = new Button( GwtTeaming.getMessages().ok() );
-			m_okBtn.addClickHandler( this );
-			m_okBtn.addStyleName( "teamingButton" );
-			panel.add( m_okBtn );
+			if ( m_okBtn == null )
+			{
+				m_okBtn = new Button( GwtTeaming.getMessages().ok() );
+				m_okBtn.addClickHandler( this );
+				m_okBtn.addStyleName( "teamingButton" );
+				m_footerPanel.add( m_okBtn );
+			}
+			m_okBtn.setVisible( true );
 			
 			if (DlgButtonMode.OkCancel == m_dlgBtnMode) {
-				m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
-				m_cancelBtn.addClickHandler( this );
-				m_cancelBtn.addStyleName( "teamingButton" );
-				panel.add( m_cancelBtn );
+				if ( m_cancelBtn == null )
+				{
+					m_cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
+
+					m_cancelBtn.addClickHandler( this );
+					m_cancelBtn.addStyleName( "teamingButton" );
+					m_footerPanel.add( m_cancelBtn );
+				}
+				else
+				{
+					// m_cancelBtn is used for both Cancel and Close.  Make sure the button
+					// says Cancel.
+					m_cancelBtn.setText( GwtTeaming.getMessages().cancel() );
+				}
+			}
+			else
+			{
+				if ( m_cancelBtn != null )
+					m_cancelBtn.setVisible( false );
 			}
 			
 			break;
 		}
 		
-		return panel;
-	}// end createFooter()
+	}
 	
 	
 	/**
@@ -310,6 +352,16 @@ public abstract class DlgBox extends PopupPanel
 		
 		super.hide();
 	}// end hide()
+	
+	/**
+	 * Hide the panel that holds all the content.
+	 */
+	public void hideContentPanel()
+	{
+		if ( m_contentPanel != null )
+			m_contentPanel.setVisible( false );
+	}
+	
 	
 	/**
 	 * Hide the panel that displays the errors.
@@ -462,6 +514,34 @@ public abstract class DlgBox extends PopupPanel
 		show( false );
 	}// end show()
 	
+	
+	/**
+	 * Show the panel that displays all the content.
+	 */
+	public void showContentPanel()
+	{
+		if ( m_contentPanel != null )
+			m_contentPanel.setVisible( true );
+	}
+	
+	
+	/**
+	 * Show the panel that displays the error, hide the content of the dialog and change
+	 * the buttons to just a close button.
+	 */
+	public void showErrors()
+	{
+		// Show the error panel.
+		showErrorPanel();
+		
+		// Hide the content panel.
+		hideContentPanel();
+		
+		// Change the buttons on the dialog from Ok/Cancel to just Close
+		createFooterButtons( DlgBox.DlgButtonMode.Close );
+	}
+
+	
 	/**
 	 * Show the panel that displays the errors.
 	 */
@@ -469,4 +549,4 @@ public abstract class DlgBox extends PopupPanel
 	{
 		m_errorPanel.setVisible( true );
 	}
-}// end DlgBox
+}
