@@ -44,10 +44,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
@@ -340,12 +338,21 @@ public interface ProfileModule {
      * @return
      */
     public UserProperties getUserProperties(Long userId, Long folderId);
+    
     /**
      * Get user by name
      * @param name
      * @return
      */
     public User getUser(String name);
+    
+    /**
+     * Get user by name even deleted or disabled users.
+     * @param name
+     * @return
+     */
+    public User getUserDeadOrAlive( String name );
+    
     /**
 	 * Return search results for users
      * @return
