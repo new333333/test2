@@ -1236,7 +1236,25 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  	  if (!(p instanceof User)) throw new NoUserByTheNameException(name);
  	  return (User)p;
     }
+
     
+    /**
+     * Get user by name even deleted or disabled users.
+     * @param name
+     * @return
+     */
+    //RO transaction
+    public User getUserDeadOrAlive( String name )
+    {
+ 	  Principal principal;
+ 	  
+ 	  principal = getProfileDao().findUserByNameDeadOrAlive( name, RequestContextHolder.getRequestContext().getZoneName() );
+ 	  if ( !(principal instanceof User) )
+ 		  throw new NoUserByTheNameException( name );
+ 	  
+ 	  return (User)principal;
+    }
+
     //RO transaction
    public Map getUsers() {
     	Map options = new HashMap();

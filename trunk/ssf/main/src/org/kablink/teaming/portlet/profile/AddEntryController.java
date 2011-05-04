@@ -52,6 +52,7 @@ import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
+import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -119,10 +120,14 @@ public class AddEntryController extends SAbstractController {
         	//if not found catch exception, and go ahead and add the new user
         	try
         	{
-        		User user = getProfileModule().getUser(name);
+        		User user = getProfileModule().getUserDeadOrAlive( name );
         		throw new UserExistsException("errorcode.user.alreadyExists", (Object[])null);
         	} catch (NoPrincipalByTheNameException nue){
         		//if user not found continue, this is what we want
+        	}
+        	catch ( NoUserByTheNameException ex )
+        	{
+        		// A user with the given name was not found.  Ok to continue.
         	}
         	
         	String password = inputData.getSingleValue(WebKeys.USER_PROFILE_PASSWORD);
