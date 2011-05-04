@@ -153,6 +153,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -216,7 +217,36 @@ public class GwtServerHelper {
 	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
 	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
 
-	/**
+	/*
+	 * Inner class used assist in the construction of the
+	 * List<TreeInfo> for buckets workspace trees.
+	 */
+	private static class BucketBinderData {
+		private Long   m_binderId;		//
+		private String m_binderTitle;	//
+		
+		/**
+		 * Class constructor.
+		 */
+		public BucketBinderData() {
+			// Nothing to do.
+		}
+		
+		/**
+		 * Get'er / Set'er methods.
+		 * 
+		 * @param
+		 * 
+		 * @return
+		 */
+		private Long   getBinderId()    {return m_binderId;   }
+		private String getBinderTitle() {return m_binderTitle;}
+		
+		private void setBinderId(   Long   binderId)    {m_binderId    = binderId;   }
+		private void setBinderTitle(String binderTitle) {m_binderTitle = binderTitle;}
+	}
+	   
+	/*
 	 * Inner class used compare two GwtAdminAction objects.
 	 */
 	private static class GwtAdminActionComparator implements Comparator<GwtAdminAction>
@@ -255,8 +285,8 @@ public class GwtServerHelper {
 
 			return 	m_collator.compare( s1, s2 );
 		}// end compare()
-	}// end GwtAdminActionComparator	   
-	   
+	}// end GwtAdminActionComparator
+
 	/**
 	 * Inner class used within the GWT server code to dump profiling
 	 * information to the system log.
@@ -279,11 +309,13 @@ public class GwtServerHelper {
 		 * If the logger has debugging enabled, dumps a message
 		 * to the log regarding how long an operation took.
 		 */
-		public void end() {
+		public void end() {			
 			if (m_debugEnabled) {
 				long diff = System.currentTimeMillis() - m_debugBegin;
 				m_debugLogger.debug(m_debugFrom + ":  Ended in " + diff + "ms");
 			}
+			
+			SimpleProfiler.stop(m_debugFrom);
 		}
 		
 		/**
@@ -296,16 +328,17 @@ public class GwtServerHelper {
 		 * 
 		 * @return
 		 */
-		public static GwtServerProfiler start(Log logger, String from) {
+		public static GwtServerProfiler start(Log logger, String from) {			
 			GwtServerProfiler reply = new GwtServerProfiler(logger);
+			reply.m_debugFrom = from;
 			
 			if (reply.m_debugEnabled) {
-				reply.m_debugFrom = from;
 				reply.m_debugBegin = System.currentTimeMillis();
 				
 				reply.m_debugLogger.debug(from + ":  Starting...");
 			}
 			
+			SimpleProfiler.start(reply.m_debugFrom);
 			return reply;
 		}
 		
@@ -601,56 +634,63 @@ public class GwtServerHelper {
 	 * Builds the TreeInfo objects for a list of child Binder IDs into
 	 * buckets.
 	 */
-	private static void buildChildBucketTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
-		// Do we have so many Binder IDs that the number of buckets
-		// we'll have will exceed our bucket size?
-		int binders    = childBinderList.size();
-		int bucketSize = getBucketSize();
-		if (binders > (bucketSize * bucketSize)) {
-			// Yes!  Then we increase the bucket size for this list so
-			// that we only have the bucket size number of buckets.
-			int newBucketSize = (binders / bucketSize);
-			if (binders > (newBucketSize * bucketSize)) {
-				newBucketSize += 1;
+	private static void buildChildBucketTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<BucketBinderData> childBinderList, List<Long> expandedBindersList, int depth) {
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildBucketTIs()");
+		try {
+			// Do we have so many Binder IDs that the number of buckets
+			// we'll have will exceed our bucket size?
+			int binders    = childBinderList.size();
+			int bucketSize = getBucketSize();
+			if (binders > (bucketSize * bucketSize)) {
+				// Yes!  Then we increase the bucket size for this list so
+				// that we only have the bucket size number of buckets.
+				int newBucketSize = (binders / bucketSize);
+				if (binders > (newBucketSize * bucketSize)) {
+					newBucketSize += 1;
+				}
+				bucketSize = newBucketSize;
 			}
-			bucketSize = newBucketSize;
+			
+			// Scan the list.
+			for (int i = 0; i < binders; i += bucketSize) {
+				// Does this bucket have only a single item?
+				List<BucketBinderData> bucketList = childBinderList.subList(i, Math.min((i + bucketSize), binders));
+				switch (bucketList.size()) {
+				case 0:
+					// This should never happen.
+					break;
+					
+				case 1:
+					// If there's only a single entry in the bucket, just
+					// display it directly.  This should only happen for
+					// the last bucket.
+					List<Long> singleBinderList = new ArrayList<Long>();
+					singleBinderList.add(bucketList.get(0).getBinderId());
+					buildChildTIs(
+						request,
+						bs,
+						childTIList,
+						singleBinderList,
+						expandedBindersList,
+						depth);
+					
+					break;
+					
+				default:
+					// For bucket with more than one item, create a
+					// TreeInfo that represents the bucket.
+					TreeInfo bucketTI = new TreeInfo();
+					BucketBinderData firstBinder = bucketList.get(0);
+					BucketBinderData lastBinder  = bucketList.get(bucketList.size() - 1);
+					bucketTI.setBucketInfo(cloneBucketBinderIds(bucketList), firstBinder.getBinderTitle(), lastBinder.getBinderTitle());
+					childTIList.add(bucketTI);
+					
+					break;
+				}
+			}
 		}
-		
-		// Scan the list.
-		for (int i = 0; i < binders; i += bucketSize) {
-			// Does this bucket have only a single item?
-			List<Long> bucketList = childBinderList.subList(i, Math.min((i + bucketSize), binders));
-			switch (bucketList.size()) {
-			case 0:
-				// This should never happen.
-				break;
-				
-			case 1:
-				// If there's only a single entry in the bucket, just
-				// display it directly.  This should only happen for
-				// the last bucket.
-				buildChildTIs(
-					request,
-					bs,
-					childTIList,
-					bucketList,
-					expandedBindersList,
-					depth);
-				
-				break;
-				
-			default:
-				// For bucket with more than one item, create a
-				// TreeInfo that represents the bucket.
-				TreeInfo bucketTI = new TreeInfo();
-				BinderModule bm = bs.getBinderModule();
-				Binder firstBinder = bm.getBinder(bucketList.get(0));
-				Binder lastBinder  = bm.getBinder(bucketList.get(bucketList.size() - 1));
-				bucketTI.setBucketInfo(cloneSublist(bucketList), treeBinderTitle(firstBinder), treeBinderTitle(lastBinder));
-				childTIList.add(bucketTI);
-				
-				break;
-			}
+		finally {
+			gsp.end();
 		}
 	}
 	
@@ -658,16 +698,32 @@ public class GwtServerHelper {
 	 * Builds the TreeInfo objects for a list of child Binder IDs.
 	 */
 	private static void buildChildTIs(HttpServletRequest request, AllModulesInjected bs, List<TreeInfo> childTIList, List<Long> childBinderList, List<Long> expandedBindersList, int depth) {
-		BinderModule bm = bs.getBinderModule();
-		for (Iterator<Long> biIT = childBinderList.iterator(); biIT.hasNext(); ) {
-			// ...creating a TreeInfo for each...
+		SortedSet<Binder> binders = null;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( READ )");
+		try {
 			try {
-				Binder subBinder = bm.getBinder(biIT.next());
-				TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
-				childTIList.add(subWsTI);
+				binders = bs.getBinderModule().getBinders(childBinderList);
 			} catch(AccessControlException ace) {
 			} catch(NoBinderByTheIdException nbe) {}
-			
+		}
+		finally {
+			gsp.end();
+		}
+		
+		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( PROCESS )");
+		try {
+			if (null != binders) {
+				for (Binder subBinder:  binders) {
+					try {
+						TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+						childTIList.add(subWsTI);
+					} catch(AccessControlException ace) {
+					} catch(NoBinderByTheIdException nbe) {}
+				}
+			}
+		}
+		finally {
+			gsp.end();
 		}
 	}
 	
@@ -716,10 +772,10 @@ public class GwtServerHelper {
 		if (expandBinder) {
 			// Yes!  Get the sort list of the binder's children.
 			List<TreeInfo> childTIList = reply.getChildBindersList(); 
-			List<Long> childBinderList = getSortedBinderChildIds(bs, binder.getId());
+			List<BucketBinderData> childBinderList = getSortedBinderChildIds(bs, binder.getId());
 			
 			// Do we need to display the list in buckets?
-			if (useBucketsForBinder(binder, childBinderList)) {
+			if (useBucketsForBinder(binder, childBinderList.size())) {
 				// Yes!  Build the TreeInfo objects for putting the
 				// Binder's children into buckets.
 				buildChildBucketTIs(
@@ -737,7 +793,7 @@ public class GwtServerHelper {
 					request,
 					bs,
 					childTIList,
-					childBinderList,
+					cloneBucketBinderIds(childBinderList),
 					expandedBindersList,
 					(depth + 1));
 			}
@@ -773,10 +829,9 @@ public class GwtServerHelper {
 	}
 
 	/*
-	 * Clones a List<Long> that was extracted as a sublist from a
-	 * parent List<Long>.
+	 * Clones the IDs from a List<BucketBinderData> as a List<Long>.
 	 */
-	private static List<Long> cloneSublist(List<Long> srcList) {
+	private static List<Long> cloneBucketBinderIds(List<BucketBinderData> srcList) {
 		// If there is not source list...
 		List<Long> reply;
 		if (null == srcList) {
@@ -784,15 +839,16 @@ public class GwtServerHelper {
 			reply = null;
 		}
 		else {
-			// ...otherwise, copy the source list to a new list.
+			// ...otherwise, copy the ID's from source list to a new
+			// ...list.
 			reply = new ArrayList<Long>();
-			for (Iterator<Long> itL = srcList.iterator(); itL.hasNext(); ) {
-				reply.add(itL.next());
+			for (BucketBinderData bbd:  srcList) {
+				reply.add(bbd.getBinderId());
 			}
 		}
 		
-		// If we get here, reply refers to the clone of the List<Long>
-		// we were given.  Return it.
+		// If we get here, reply refers to the List<Long> of the IDs.
+		// Return it.
 		return reply;
 	}
 
@@ -976,9 +1032,9 @@ public class GwtServerHelper {
 			
 			// ...and perform the expansion.
 			ArrayList<TreeInfo> childTIList = new ArrayList<TreeInfo>(); 
-			if (useBucketsForBinderList(bucketList))
-				 buildChildBucketTIs(request, bs, childTIList, bucketList, expandedBindersList, (-1));
-			else buildChildTIs(      request, bs, childTIList, bucketList, expandedBindersList, (-1));
+			if (useBucketsForBinderList(bucketList.size()))
+				 buildChildBucketTIs(request, bs, childTIList, getBucketBinderData(bs, bucketList), expandedBindersList, (-1));
+			else buildChildTIs(      request, bs, childTIList,                         bucketList,  expandedBindersList, (-1));
 			reply.setChildBindersList(childTIList);
 		}
 		
@@ -2265,6 +2321,26 @@ public class GwtServerHelper {
 		
 		return reply;
 	}
+
+	/*
+	 * Given a List<Long> of binderIds, returns the matching
+	 * List<BucketBinderData>.
+	 */
+	private static List<BucketBinderData> getBucketBinderData(AllModulesInjected bs, List<Long> binderIds) {
+		List<BucketBinderData>	reply = new ArrayList<BucketBinderData>();
+		
+		if ((null != binderIds) && (!(binderIds.isEmpty()))) {
+			SortedSet<Binder> binders = bs.getBinderModule().getBinders(binderIds);
+			for (Binder b:  binders) {
+				BucketBinderData bbd = new BucketBinderData();
+				bbd.setBinderId(b.getId());
+				bbd.setBinderTitle(treeBinderTitle(b));
+				reply.add(bbd);
+			}
+		}
+		
+		return reply;
+	}
 	
 	/**
 	 * Returns the User object of the currently logged in user.
@@ -3133,19 +3209,12 @@ public class GwtServerHelper {
 		return SearchUtils.getTrackedPlacesIds(bs, userId);
 	}
 	
-	/**
-	 * Using a search query, returns an ArrayList<Long> containing the
-	 * IDs of the sorted list the children of a given binder.
-	 * 
-	 * @param bs
-	 * @param binderId
-	 * @param start
-	 * @param count
-	 * 
-	 * @return
+	/*
+	 * Using a search query, returns a List<BucketBinderData> containing
+	 * the sorted list the children of a given binder.
 	 */
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Long> getSortedBinderChildIds(AllModulesInjected bs, Long binderId, int start, int count) {
+	private static List<BucketBinderData> getSortedBinderChildIds(AllModulesInjected bs, Long binderId, int start, int count) {
 		// Construct the search Criteria...
 		Criteria crit = new Criteria();
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
@@ -3153,23 +3222,40 @@ public class GwtServerHelper {
 		crit.addOrder(new Order(treeBinderSortField(), true));	// true -> Ascending.
 
 		// ...issue the search query...
-		Map bindersMap = bs.getBinderModule().executeSearchQuery(crit, start, count);
+		Map bindersMap;
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.getSortedBinderChildIds( SEARCH )");
+		try {
+			bindersMap = bs.getBinderModule().executeSearchQuery(crit, start, count);
+		}
+		finally {
+			gsp.end();
+		}
 
 		// ...scan the results... 
-		ArrayList<Long> reply = new ArrayList<Long>();
+		List<BucketBinderData> reply = new ArrayList<BucketBinderData>();
 		ArrayList hierarchyAL = ((ArrayList) bindersMap.get(ObjectKeys.SEARCH_ENTRIES));
-        for (Iterator bindersIT = hierarchyAL.iterator(); bindersIT.hasNext();) {
-        	// ...tracking the IDs of the child binders.
-        	Map binderMap = ((Map) bindersIT.next());
-			reply.add(Long.valueOf((String) binderMap.get("_docId")));
-        }
+		String titleKey = treeBinderSortField();
+		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.getSortedBinderChildIds( PROCESS )");
+		try {
+	        for (Iterator bindersIT = hierarchyAL.iterator(); bindersIT.hasNext();) {
+	        	// ...tracking the IDs of the child binders.
+	        	Map binderMap = ((Map) bindersIT.next());
+	        	BucketBinderData bbd = new BucketBinderData();
+	        	bbd.setBinderId(Long.valueOf((String) binderMap.get(Constants.DOCID_FIELD)));
+	        	bbd.setBinderTitle((String) binderMap.get(titleKey));
+				reply.add(bbd);
+	        }
+		}
+		finally {
+			gsp.end();
+		}
 
         // If we get here, reply refers to an ArrayList<Long> of the
         // IDs of the sorted children of the given binder.  Return it.
 		return reply;
 	}
 	
-	public static ArrayList<Long> getSortedBinderChildIds(AllModulesInjected bs, Long binderId) {
+	private static List<BucketBinderData> getSortedBinderChildIds(AllModulesInjected bs, Long binderId) {
 		// Always use the initial form of the method.
 		return getSortedBinderChildIds(bs, binderId, 0, Integer.MAX_VALUE);
 	}
@@ -3948,13 +4034,12 @@ public class GwtServerHelper {
 	 * Returns true if the number of binder IDs in a List<Long>
 	 * requires displaying them in buckets and false otherwise.
 	 */
-	private static boolean useBucketsForBinderList(List<Long> binderList) {
+	private static boolean useBucketsForBinderList(int binders) {
 		// Is bucketing enabled?
 		boolean reply = false;
 		if (ENABLE_BUCKETS) {
 			// Yes!  How does the count of IDs in the list compare with
 			// the bucketing threshold?
-			int binders = ((null == binderList) ? 0 : binderList.size());
 			reply = (binders > getBucketSize());
 		}
 
@@ -3967,7 +4052,7 @@ public class GwtServerHelper {
 	 * Returns true if a binder and a List<Long> of binder IDs requires
 	 * displaying the list in buckets and false otherwise.
 	 */
-	private static boolean useBucketsForBinder(Binder binder, List<Long> binderList) {
+	private static boolean useBucketsForBinder(Binder binder, int binders) {
 		// Is bucketing enabled?
 		boolean reply = false;
 		if (ENABLE_BUCKETS) {
@@ -3996,7 +4081,7 @@ public class GwtServerHelper {
 			// If we need to check the count of IDs in the list...
 			if (checkCounts) {
 				// ...check them.
-				reply = useBucketsForBinderList(binderList);
+				reply = useBucketsForBinderList(binders);
 			}
 		}
 		
