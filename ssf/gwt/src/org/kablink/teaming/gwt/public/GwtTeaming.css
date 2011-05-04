@@ -640,6 +640,11 @@ body, table td, select
 	font-weight: bold;
 }
 
+.bulletListItem
+{
+	margin-left: 1em;
+}
+
 .smalltext  { color: black; font-size: 0.75em;  line-height: 1em;   }
 .mediumtext { color: black; font-size: 0.85em;  line-height: 1.1em; }
 .largetext  { color: black; font-style: normal; line-height: 1.1em; font-weight: normal; font-size: 1em; }
