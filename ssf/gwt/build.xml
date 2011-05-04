@@ -62,8 +62,10 @@
 	
 	<!-- Set the desired classpath. -->
 	<fileset id="gwtjars" dir="${gwt.dir}">
-		<include name="gwt-user.jar"   />
-		<include name="${gwt.dev.jar}" />
+		<include name="gwt-user.jar"                        />
+		<include name="validation-api-1.0.0.GA.jar"         />
+		<include name="validation-api-1.0.0.GA-sources.jar" />
+		<include name="${gwt.dev.jar}"                      />
 	</fileset>
 	<fileset id="libjars" dir="${lib.dir}">
 		<include name="*jar" />
@@ -93,7 +95,7 @@
 	<target name="compile-gwt" depends="init-gwt-build">
 		<!-- Compile the GWT stuff into www. -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/${gwt.dev.jar}:"
+				classpath="src:${gwt.dir}/gwt-user.jar:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${gwt.dir}/${gwt.dev.jar}:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">
