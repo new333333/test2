@@ -307,6 +307,15 @@ public class RequestInfo extends JavaScriptObject
 		return this.getBFromS( this.isUserLoggedIn );
 	}-*/;
 
+	
+	/**
+	 * Return whether the tinyMCE editor can run on the device the user is running on. 
+	 */
+	public final native boolean isTinyMCECapable()
+	/*-{
+		return this.getBFromS( this.isTinyMCECapable );
+	}-*/;
+	
 
 	/**
 	 * Return the flag that tells us if we should prompt for login

@@ -1218,6 +1218,7 @@ public class GwtUIHelper {
 	 * Items included are:
 	 * - sessionCaptive
 	 * - isNovellTeaming
+	 * - isTinyMCECapable
 	 * - vibeProduct
 	 * - productName
 	 * - ss_helpUrl
@@ -1242,6 +1243,21 @@ public class GwtUIHelper {
 		// Kablink Vibe.
 		String isNovellTeaming = Boolean.toString(ReleaseInfo.isLicenseRequiredEdition());
 		model.put( "isNovellTeaming", isNovellTeaming );
+		
+		// Put out the flag that tells us if the tinyMCE editor will work on the device we are running on.
+		{
+			boolean isCapable;
+			String unsupportedUserAgents;
+			HttpServletRequest hRequest;
+			
+			// Get the list of user agents that the tinyMCE editor won't run on.
+			hRequest = WebHelper.getHttpServletRequest( request );
+			unsupportedUserAgents = SPropsUtil.getString( "TinyMCE.notSupportedUserAgents", "" );
+			
+			// See if the tinyMCE editor is capable of running on the current device.
+			isCapable = BrowserSniffer.is_TinyMCECapable( hRequest, unsupportedUserAgents );
+			model.put( "isTinyMCECapable", Boolean.toString( isCapable ) );
+		}
 
 		// Put out the name of the product (Novell or Kablink Vibe)
 		// that's running.
