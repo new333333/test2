@@ -867,6 +867,7 @@ public interface GwtTeamingMessages extends Messages
 	String addTag();
 	String community();
 	String deleteTagHint();
+	String noTagRights();
 	String noTagsForEntry();
 	String noTagsForFolder();
 	String noTagsForWorkspace();
