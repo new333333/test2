@@ -1176,6 +1176,8 @@ public class TagThisDlg extends DlgBox
 				 */
 				public void onSuccess( ArrayList<Boolean> tagRights )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					// If the user can't manage personal tags then hide the "Personal tag" radio button.
 					m_canManagePersonalTags = tagRights.get( 0 ).booleanValue();
 					m_personalRB.setVisible( m_canManagePersonalTags );
@@ -1184,29 +1186,60 @@ public class TagThisDlg extends DlgBox
 					m_canManageGlobalTags = tagRights.get( 1 ).booleanValue();
 					m_communityRB.setVisible( m_canManageGlobalTags );
 					
-					if ( m_canManagePersonalTags )
+					cmd = new Scheduler.ScheduledCommand()
 					{
-						m_personalRB.setValue( Boolean.TRUE );
-						m_findCtrl.setSearchType( SearchType.PERSONAL_TAGS );
-					}
-					else
-					{
-						m_communityRB.setValue( Boolean.TRUE );
-						m_findCtrl.setSearchType( SearchType.COMMUNITY_TAGS );
-					}
-					
-					// Are we working with a binder?
-					if ( m_binderId != null && m_binderId.length() > 0 )
-					{
-						// Yes, Issue a request to get the tags associated with the given binder.
-						GwtTeaming.getRpcService().getBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_readTagsCallback );
-					}
-					else if ( m_entryId != null && m_entryId.length() > 0 )
-					{
-						// We are working with an entry.
-						// Issue a request to get the tags associated with the given entry.
-						GwtTeaming.getRpcService().getEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readTagsCallback );
-					}
+						/**
+						 * 
+						 */
+						public void execute()
+						{
+							// Does the user have rights to do anything?
+							if ( m_canManagePersonalTags == false && m_canManageGlobalTags == false )
+							{
+								FlowPanel errorPanel;
+								Label label;
+								
+								// No
+								// Get the panel that holds the errors.
+								errorPanel = getErrorPanel();
+								errorPanel.clear();
+
+								// Display a message telling the user they don't have rights to do anything.
+								label = new Label( GwtTeaming.getMessages().noTagRights() );
+								label.addStyleName( "dlgErrorLabel" );
+								errorPanel.add( label );
+								showErrors();
+							}
+							else
+							{
+								// Yes
+								if ( m_canManagePersonalTags )
+								{
+									m_personalRB.setValue( Boolean.TRUE );
+									m_findCtrl.setSearchType( SearchType.PERSONAL_TAGS );
+								}
+								else
+								{
+									m_communityRB.setValue( Boolean.TRUE );
+									m_findCtrl.setSearchType( SearchType.COMMUNITY_TAGS );
+								}
+								
+								// Are we working with a binder?
+								if ( m_binderId != null && m_binderId.length() > 0 )
+								{
+									// Yes, Issue a request to get the tags associated with the given binder.
+									GwtTeaming.getRpcService().getBinderTags( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_readTagsCallback );
+								}
+								else if ( m_entryId != null && m_entryId.length() > 0 )
+								{
+									// We are working with an entry.
+									// Issue a request to get the tags associated with the given entry.
+									GwtTeaming.getRpcService().getEntryTags( HttpRequestInfo.createHttpRequestInfo(), m_entryId, m_readTagsCallback );
+								}
+							}
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 		}
@@ -1504,6 +1537,10 @@ public class TagThisDlg extends DlgBox
 	{
 		PopupPanel.PositionCallback posCallback;
 		
+		hideErrorPanel();
+		showContentPanel();
+		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
+
 		posCallback = new PopupPanel.PositionCallback()
 		{
 			/**
