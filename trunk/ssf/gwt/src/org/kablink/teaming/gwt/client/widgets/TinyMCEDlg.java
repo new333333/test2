@@ -34,12 +34,16 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextArea;
 
 
 /**
@@ -50,6 +54,7 @@ import com.google.gwt.user.client.ui.Panel;
 public class TinyMCEDlg extends DlgBox
 {
 	TinyMCE m_tinyMCE = null;
+	TextArea m_textArea = null;	// This is used if we are running on a device that doesn't support the tinyMCE editor.
 	AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
 	
 	
@@ -90,12 +95,29 @@ public class TinyMCEDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
+		RequestInfo reqInfo;
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 	
-		m_tinyMCE = new TinyMCE( m_tinyMCEConfig, 300, 15 );
-		mainPanel.add( m_tinyMCE );
+		// Can the tinyMCE editor run on the device we are running on?
+		reqInfo = GwtClientHelper.getRequestInfo();
+		if ( reqInfo.isTinyMCECapable() )
+		{
+			// Yes
+			m_tinyMCE = new TinyMCE( m_tinyMCEConfig, 300, 15 );
+			mainPanel.add( m_tinyMCE );
+		}
+		else
+		{
+			// No, create a textarea instead of a tinyMCE editor
+			m_textArea = new TextArea();
+			m_textArea.setCharacterWidth( 300 );
+			m_textArea.setVisibleLines( 15 );
+	        DOM.setStyleAttribute( m_textArea.getElement(), "width", "100%" );
+			
+			mainPanel.add( m_textArea );
+		}
 		
 		init( props );
 
@@ -108,7 +130,21 @@ public class TinyMCEDlg extends DlgBox
 	 */
 	public Object getDataFromDlg()
 	{
-		return m_tinyMCE.getText();
+		// Do we have a tinyMCE editor?
+		if ( m_tinyMCE != null )
+		{
+			// Yes
+			return m_tinyMCE.getText();
+		}
+		
+		// If we get here we don't have a tinyMCE editor
+		if ( m_textArea != null )
+		{
+			return m_textArea.getText();
+		}
+		
+		// We should never get here.
+		return "";
 	}// end getDataFromDlg()
 	
 	
@@ -128,7 +164,8 @@ public class TinyMCEDlg extends DlgBox
 	{
 		super.hide();
 		
-		m_tinyMCE.unload();
+		if ( m_tinyMCE != null )
+			m_tinyMCE.unload();
 	}// end hide()
 	
 	
@@ -149,10 +186,22 @@ public class TinyMCEDlg extends DlgBox
 	 */
 	public void setText( String text )
 	{
-		if ( text != null )
-			m_tinyMCE.setText( text );
-		else
-			m_tinyMCE.setText( "" );
+		// Do we have a tinyMCE editor?
+		if ( m_tinyMCE != null )
+		{
+			// Yes
+			if ( text != null )
+				m_tinyMCE.setText( text );
+			else
+				m_tinyMCE.setText( "" );
+		}
+		else if ( m_textArea != null )
+		{
+			if ( text != null )
+				m_textArea.setText( text );
+			else
+				m_textArea.setText( "" );
+		}
 	}// end setText()
 	
 
@@ -173,9 +222,12 @@ public class TinyMCEDlg extends DlgBox
 		{
 			public void execute()
 			{
-            	m_tinyMCE.setFocus();
+				if ( m_tinyMCE != null )
+					m_tinyMCE.setFocus();
+				else if ( m_textArea != null )
+					m_textArea.setFocus( true );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
-	}// end show()
-}// end TinyMCEDlg
+	}
+}

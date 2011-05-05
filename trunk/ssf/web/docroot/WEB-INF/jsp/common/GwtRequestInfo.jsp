@@ -50,6 +50,7 @@
 		isNovellTeaming:					'${isNovellTeaming}',
 		isQuotasDiskQuotaExceeded:			'${ss_diskQuotaExceeded}',
 		isQuotasEnabled:					'${ss_quotasEnabled}',
+		isTinyMCECapable:					'${isTinyMCECapable}',
 		isUserLoggedIn:						'${isUserLoggedIn}',
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',
 		language:							'${ssUser.locale.language}',
