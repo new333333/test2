@@ -197,14 +197,23 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtBrandingData brandingData )
+			public void onSuccess( final GwtBrandingData brandingData )
 			{
-				// Update the site branding panel with the branding data
-				m_siteBrandingData = brandingData;
-				m_siteBrandingPanel.updateBrandingPanel( brandingData );
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Update the site branding panel with the branding data
+						m_siteBrandingData = brandingData;
+						m_siteBrandingPanel.updateBrandingPanel( brandingData );
 
-				// Issue an ajax request to get the binder branding
-				getBinderBrandingDataFromServer();
+						// Issue an ajax request to get the binder branding
+						getBinderBrandingDataFromServer();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()
 		};
 
@@ -228,15 +237,25 @@ public class MastHead extends Composite
 			 * 
 			 * @param result
 			 */
-			public void onSuccess( GwtBrandingData brandingData )
+			public void onSuccess( final GwtBrandingData brandingData )
 			{
-				// Update the binder branding panel with the branding data
-				m_binderBrandingData = brandingData;
-				m_binderBrandingPanel.updateBrandingPanel( brandingData );
+				Scheduler.ScheduledCommand cmd;
 				
-				// Display site and binder branding based on the branding rule found in
-				// the site branding.
-				showBranding();
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					public void execute()
+					{
+						// Update the binder branding panel with the branding data
+						m_binderBrandingData = brandingData;
+						m_binderBrandingPanel.updateBrandingPanel( brandingData );
+						
+						// Display site and binder branding based on the branding rule found in
+						// the site branding.
+						showBranding();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+				
 			}// end onSuccess()
 		};
 
@@ -897,11 +916,20 @@ public class MastHead extends Composite
 			{
 				public void execute()
 				{
+					Scheduler.ScheduledCommand cmd2;
+
 					if ( m_siteBrandingPanel != null )
 						m_siteBrandingPanel.adjustBrandingPanelHeight();
 					
-					if ( m_binderBrandingPanel != null )
-						m_binderBrandingPanel.adjustBrandingPanelHeight();
+					cmd2 = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							if ( m_binderBrandingPanel != null )
+								m_binderBrandingPanel.adjustBrandingPanelHeight();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd2 );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -996,5 +1024,32 @@ public class MastHead extends Composite
 		
 		// Set the font color used in the global actions panel.
 		setGlobalActionsFontColor();
+
+		// Adjust the height of the branding panels.
+		{
+			Scheduler.ScheduledCommand cmd;
+	
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				public void execute()
+				{
+					Scheduler.ScheduledCommand cmd2;
+	
+					if ( m_siteBrandingPanel != null )
+						m_siteBrandingPanel.adjustBrandingPanelHeight();
+					
+					cmd2 = new Scheduler.ScheduledCommand()
+					{
+						public void execute()
+						{
+							if ( m_binderBrandingPanel != null )
+								m_binderBrandingPanel.adjustBrandingPanelHeight();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd2 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}// end showBranding()
 }// end MastHead
