@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
@@ -149,7 +150,11 @@ public class GwtClientHelper {
 		if      (null != GwtMainPage.m_requestInfo)         reply = GwtMainPage.m_requestInfo;
 		else if (null != GwtProfilePage.profileRequestInfo) reply = GwtProfilePage.profileRequestInfo;
 		else if (null != TaskListing.m_requestInfo)         reply = TaskListing.m_requestInfo;
-		else                                                reply = null;
+		else if ( LandingPageEditor.m_requestInfo != null )
+			reply = LandingPageEditor.m_requestInfo;
+		else
+			reply = null;
+
 		return reply;
 	}
 

@@ -48,12 +48,9 @@ import org.dom4j.Element;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.util.StatusTicket;
@@ -61,12 +58,11 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.CloseWrapperException;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.teaming.web.util.WebStatusTicket;
 import org.springframework.web.portlet.ModelAndView;
 
 
@@ -262,6 +258,10 @@ public class ModifyBinderController extends AbstractBinderController {
 			//Build the mashup beans
 			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			DefinitionHelper.buildMashupBeans(this, binder, configDocument, model, request );
+			
+			// Add the common data used by the GWT RequestInfo class
+			GwtUIHelper.setCommonRequestInfoData( request, this, model );
+
 
 			path = WebKeys.VIEW_MODIFY_BINDER;
 		} 
