@@ -473,6 +473,7 @@ public class BinderHelper {
 			model.put(WebKeys.BINDER_ID, binderId.toString());
 			if (user != null) {
 				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+				if (userFolderProperties == null) userFolderProperties = new UserProperties(user.getId(), binderId);
 				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties.getProperties());
 				model.put(WebKeys.USER_FOLDER_PROPERTIES_OBJ, userFolderProperties);
 				

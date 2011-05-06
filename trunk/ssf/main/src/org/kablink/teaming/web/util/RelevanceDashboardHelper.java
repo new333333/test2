@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,7 +59,6 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.SharedEntity;
 import org.kablink.teaming.domain.Tag;
@@ -68,7 +67,6 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.report.ReportModule.ActivityInfo;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
@@ -80,6 +78,7 @@ import org.kablink.util.search.Criteria;
 import static org.kablink.util.search.Constants.*;
 
 
+@SuppressWarnings("unchecked")
 public class RelevanceDashboardHelper {
 	
 	public static void setupRelevanceDashboardBeans(AllModulesInjected bs, RenderRequest request, 
@@ -98,7 +97,9 @@ public class RelevanceDashboardHelper {
 		if (binderId != null) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
-			if (relevanceTab == null) relevanceTab = "";
+			if (!(MiscUtil.hasString(relevanceTab))) {
+				relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_OVERVIEW;
+			}
 			if (!type.equals("") && !type.equals(relevanceTab)) {
 				//Remember the last tab
 				bs.getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_RELEVANCE_TAB, type);
