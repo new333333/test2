@@ -37,6 +37,7 @@
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+<%@ include file="/WEB-INF/jsp/common/GwtRequestInfo.jsp" %>
 <%@ page import="java.util.SortedSet" %>
 <%@ page import="org.kablink.teaming.domain.FileAttachment" %>
 <%@ page import="org.kablink.teaming.domain.FileItem" %>

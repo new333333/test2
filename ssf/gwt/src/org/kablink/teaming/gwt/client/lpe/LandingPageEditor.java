@@ -39,6 +39,7 @@ import java.util.Stack;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.RequestInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
@@ -91,7 +92,9 @@ public class LandingPageEditor extends Composite
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
 	private LPETinyMCEConfiguration m_tinyMCEConfig = null;
+	
 	private static TextArea m_textBox = null;//!!!
+	public static RequestInfo m_requestInfo = null;
 	
 	/**
 	 * 
@@ -105,6 +108,9 @@ public class LandingPageEditor extends Composite
 		int				i;
 		int				numItems;
 		boolean			doLog;
+
+		// Get the RequestInfo object that is a JavaScript object.
+		m_requestInfo = jsGetRequestInfo();
 
 		// Create an ArrayList that will hold all DropZones that are created.
 		m_dropZones = new ArrayList<DropZone>();
@@ -609,6 +615,15 @@ public class LandingPageEditor extends Composite
 	}// end isPaletteItemDragInProgress()
 
 	
+	/*
+	 * Uses JSNI to grab the JavaScript object that holds the
+	 * information about the request we are dealing with.
+	 */
+	private native RequestInfo jsGetRequestInfo() /*-{
+		// Return a reference to the JavaScript variable called, m_requestInfo.
+		return $wnd.m_requestInfo;
+	}-*/;
+
 	/**
 	 * This method is called by a DropZone when the mouse is leaving the DropZone.
 	 */
