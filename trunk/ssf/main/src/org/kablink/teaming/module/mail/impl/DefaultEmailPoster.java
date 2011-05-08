@@ -233,7 +233,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 						processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
 					}
 				} catch(Exception ex) {
-					emailLog.setComment("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+					emailLog.setComments("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 					emailLog.setStatus(EmailLogStatus.error);
 					throw ex;
 				} finally {

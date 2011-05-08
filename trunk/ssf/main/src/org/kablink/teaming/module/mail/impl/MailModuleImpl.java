@@ -703,7 +703,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				} catch (MailSendException sx) {
 		    		logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 					logger.debug("EXCEPTION", sx);
-					emailLog.setComment("Error sending mail:" + getMessage(sx));
+					emailLog.setComments("Error sending mail:" + getMessage(sx));
 					emailLog.setStatus(EmailLogStatus.error);
 		 			Exception[] exceptions = sx.getMessageExceptions();
 		 			if (exceptions != null && exceptions.length > 0) {
@@ -716,7 +716,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			   		//message gets thrown away here
 		       		logger.error("EXCEPTION:  " + getMessage(ex));
 					logger.debug("EXCEPTION", ex);
-					emailLog.setComment("Error handling subscriptions:" + getMessage(ex));
+					emailLog.setComments("Error handling subscriptions:" + getMessage(ex));
 					emailLog.setStatus(EmailLogStatus.error);
 		    	}
 			}
@@ -872,7 +872,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
- 			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+ 			emailLog.setComments(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
  			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
  			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
@@ -904,7 +904,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
         	emailLog.fillFromMimeMessage(mailMsg);
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
- 			emailLog.setComment(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+ 			emailLog.setComments(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
  			emailLog.setStatus(EmailLogStatus.error);
  			getReportModule().addEmailLog(emailLog);
 			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
@@ -925,7 +925,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	   		//message gets thrown away here
        		logger.error("EXCEPTION:  " + getMessage(ex));
 			logger.debug("EXCEPTION", ex);
-			emailLog.setComment("Error in sendMail:" + getMessage(ex));
+			emailLog.setComments("Error in sendMail:" + getMessage(ex));
 			emailLog.setStatus(EmailLogStatus.error);
     	}
 		emailLog.fillFromMimeMessage(msg);
@@ -979,11 +979,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
-				String emailLogComment = emailLog.getComment();
+				String emailLogComment = emailLog.getComments();
 				if (emailLogComment == null) emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
-				emailLog.setComment(emailLogComment);
+				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 
 				Exception[] exceptions = sx.getMessageExceptions();
@@ -1002,11 +1002,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
-				String emailLogComment = emailLog.getComment();
+				String emailLogComment = emailLog.getComments();
 				if (emailLogComment == null) emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
-				emailLog.setComment(emailLogComment);
+				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 
 				SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
@@ -1070,11 +1070,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		} catch (MailSendException sx) {
 	 			logger.error("EXCEPTION:  Error sending mail:" + getMessage(sx));
 				logger.debug("EXCEPTION", sx);
-				String emailLogComment = emailLog.getComment();
+				String emailLogComment = emailLog.getComments();
 				if (emailLogComment == null) emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Error sending mail:" + getMessage(sx);
-				emailLog.setComment(emailLogComment);
+				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 				
 	 			Exception[] exceptions = sx.getMessageExceptions();
@@ -1092,11 +1092,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("EXCEPTION:  Authentication Exception:" + getMessage(ax));				
 				logger.debug("EXCEPTION", ax);
-				String emailLogComment = emailLog.getComment();
+				String emailLogComment = emailLog.getComments();
 				if (emailLogComment == null) emailLogComment = "";
 				if (!emailLogComment.equals("")) emailLogComment += "\n";
 				emailLogComment += "Authentication Exception:" + getMessage(ax);
-				emailLog.setComment(emailLogComment);
+				emailLog.setComments(emailLogComment);
 				emailLog.setStatus(EmailLogStatus.error);
 				
 	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());

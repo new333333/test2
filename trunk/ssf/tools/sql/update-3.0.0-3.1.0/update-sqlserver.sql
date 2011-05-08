@@ -23,7 +23,7 @@ drop index access_shared on SS_SharedEntity;
 alter table SS_Events ALTER COLUMN dtStart datetime null;
 alter table SS_Events add dtCalcStart datetime null;
 alter table SS_Events add dtCalcEnd datetime null;
-create table SS_EmailLog (id char(32) not null, zoneId numeric(19,0) null, sendDate datetime not null, fromField nvarchar(255) null, subj nvarchar(255) null, comment ntext null, status varchar(16) not null, type varchar(32) not null, toEmailAddresses ntext null, fileAttachments ntext null, primary key (id));
+create table SS_EmailLog (id char(32) not null, zoneId numeric(19,0) null, sendDate datetime not null, fromField nvarchar(255) null, subj nvarchar(255) null, comments ntext null, status varchar(16) not null, type varchar(32) not null, toEmailAddresses ntext null, fileAttachments ntext null, primary key (id));
 create table SS_FunctionConditionMap (functionId numeric(19,0) not null, meet varchar(16) null, conditionId numeric(19,0) null);
 create table SS_FunctionConditions (id numeric(19,0) identity not null, type varchar(32) not null, zoneId numeric(19,0) not null, encodedSpec ntext null, title nvarchar(255) not null, description_text ntext null, description_format int null, primary key (id));
 alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions;
