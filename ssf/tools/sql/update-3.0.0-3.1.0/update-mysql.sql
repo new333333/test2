@@ -9,7 +9,7 @@ drop index access_shared on SS_SharedEntity;
 alter table SS_Events MODIFY dtStart datetime null DEFAULT null;
 alter table SS_Events add dtCalcStart datetime;
 alter table SS_Events add dtCalcEnd datetime;
-create table SS_EmailLog (id char(32) not null, zoneId bigint, sendDate datetime not null, fromField varchar(255), subj varchar(255), comment longtext, status varchar(16) not null, type varchar(32) not null, toEmailAddresses longtext, fileAttachments longtext, primary key (id)) ENGINE=InnoDB;
+create table SS_EmailLog (id char(32) not null, zoneId bigint, sendDate datetime not null, fromField varchar(255), subj varchar(255), comments longtext, status varchar(16) not null, type varchar(32) not null, toEmailAddresses longtext, fileAttachments longtext, primary key (id)) ENGINE=InnoDB;
 create table SS_FunctionConditionMap (functionId bigint not null, meet varchar(16), conditionId bigint) ENGINE=InnoDB;
 create table SS_FunctionConditions (id bigint not null auto_increment, type varchar(32) not null, zoneId bigint not null, encodedSpec longtext, title varchar(255) not null, description_text longtext, description_format integer, primary key (id)) ENGINE=InnoDB;
 alter table SS_FunctionConditionMap add constraint FK945D2AD8BCA364AE foreign key (functionId) references SS_Functions (id);

@@ -63,7 +63,7 @@ public class EmailLog extends ZonedObject {
 	protected Date sendDate;									//Date mail was sent
 	protected String from;										//Email address of sender
 	protected String subj;										//Subj line from mail message
-	protected String comment;									//Error message (if any)
+	protected String comments;									//Error message (if any)
 	protected EmailLogType type = EmailLogType.unknown;			//Type of mail
 	protected EmailLogStatus status = EmailLogStatus.unknown;	//sent, queued, error
 	protected String[] toEmailAddresses;						//comma separated list of email addresses
@@ -227,11 +227,11 @@ public class EmailLog extends ZonedObject {
 	public void setStatus(EmailLogStatus status) {
 		this.status = status;
 	}
-	public String getComment() {
-		return comment;
+	public String getComments() {
+		return comments;
 	}
-	public void setComment(String comment) {
-		this.comment = comment;
+	public void setComments(String comments) {
+		this.comments = comments;
 	}
 	public String[] getFileAttachments() {
 		return fileAttachments;

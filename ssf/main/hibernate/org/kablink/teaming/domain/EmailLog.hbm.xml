@@ -11,7 +11,7 @@
     <property name="sendDate" not-null="true" index="sendDate_emaillog"/>
     <property name="from" column="fromField" length="255"/>
     <property name="subj" length="255"/>
-    <property name="comment" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+    <property name="comments" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
     <property name="statusStr" column="status" length="16" not-null="true"/>
     <property name="typeStr" column="type" length="32" not-null="true"/>
     <!-- use length to force medium text in mysql -->
