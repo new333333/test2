@@ -501,8 +501,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                 	   //only returns active users
 	                 	   User user = (User)session.getNamedQuery("find-User-Company")
-	                             		.setString(ParameterNames.LOWER_USER_NAME, userName.toLowerCase())
-	                             		.setString(ParameterNames.UPPER_USER_NAME, userName.toUpperCase())
+	                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
 	                             		.setLong(ParameterNames.ZONE_ID, zoneId)
 	                             		.setCacheable(true)
 	                             		.uniqueResult();
@@ -584,8 +583,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		                    public Object doInHibernate(Session session) throws HibernateException {
 		                 	   //only returns active users
 		                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
-	                             			.setString(ParameterNames.LOWER_USER_NAME, name.toLowerCase())
-	                             			.setString(ParameterNames.UPPER_USER_NAME, name.toUpperCase())
+		                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
 		                             		.setLong(ParameterNames.ZONE_ID, zoneId)
 		                             		.setCacheable(true)
 		                             		.uniqueResult();
@@ -700,13 +698,11 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	               	new HibernateCallback() {
 	                		public Object doInHibernate(Session session) throws HibernateException {
 	                			String queryStr = "select x.principal from org.kablink.teaming.domain.EmailAddress x where " +
-	                			"x.address>=:lowerAddress and x.address<=:upperAddress";
+	          					"lower(x.address)=:address";
 	                			if(Validator.isNotNull(emailType))
 	                				queryStr += " and x.type=:type";
 	    	                  	Query q = session.createQuery(queryStr);
-	    	                  	q.setCacheable(true);
-	    	                  	q.setParameter("lowerAddress", email.toLowerCase());
-	    	                  	q.setParameter("upperAddress", email.toUpperCase());
+	    	                  	q.setParameter("address", email.toLowerCase());
 	                			if(Validator.isNotNull(emailType))
 	                				q.setParameter("type", emailType);
 	    	                  	List result = q.list();
@@ -1821,8 +1817,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                  	   //only returns active users
                  	   User user = (User)session.getNamedQuery("find-User-Company-DeadOrAlive")
-	                             	.setString(ParameterNames.LOWER_USER_NAME, userName.toLowerCase())
-	                             	.setString(ParameterNames.UPPER_USER_NAME, userName.toUpperCase())
+                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
                              		.setLong(ParameterNames.ZONE_ID, zoneId)
                              		.setCacheable(true)
                              		.uniqueResult();
