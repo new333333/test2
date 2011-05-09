@@ -631,6 +631,7 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_USER_TUTORIAL_PANEL_STATE = "save_user_tutorial_panel_state";
 	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 	public static final String OPERATION_SET_SUNBURST_VISIBILITY = "set_sunburst_visibility";
+	public static final String OPERATION_UNSET_SUNBURST_VISIBILITY = "unset_sunburst_visibility";
 	public static final String OPERATION_GET_UPLOAD_PROGRESS_STATUS = "get_upload_progress_status";
 	public static final String OPERATION_GET_WORKFLOW_APPLET = "get_workflow_applet";
 	public static final String OPERATION_VIEW_MINIBLOG = "view_miniblog";
