@@ -256,6 +256,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxSetSidebarVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_SUNBURST_VISIBILITY)) {
 				ajaxSetSunburstVisibility(request, response);
+			} else if (op.equals(WebKeys.OPERATION_UNSET_SUNBURST_VISIBILITY)) {
+				ajaxUnsetSunburstVisibility(request, response);
 			} else if (op.equals(WebKeys.OPERATION_PIN_ENTRY)) {
 				if (WebHelper.isMethodPost(request)) ajaxPinEntry(this, request, response);
 			} else if (op.equals( WebKeys.OPERATION_SET_FILE_STATUS )) {
@@ -2996,6 +2998,19 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		try {
 			getProfileModule().setSeen(user.getId(),getFolderModule().getEntry(binderId, entryId));
+		} catch(Exception e) {}
+	}
+	
+	private void ajaxUnsetSunburstVisibility(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long entryId = PortletRequestUtils.getLongParameter(request, "entryId");
+		List<Long> ids = new ArrayList<Long>();
+		ids.add(entryId);
+		
+		try {
+			getProfileModule().setUnseen(user.getId(), ids);
 		} catch(Exception e) {}
 	}
 	
