@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -410,6 +410,18 @@ ssSurvey.clearAnswers = function(questionIndex, answerIndexes, prefix) {
 			answerObj.value = '';
 		}
 	}
+}
+
+ssSurvey.voteViaEnter = function(evt, formId, binderId, entryId, requiredQuestions, prefix) {
+    evt = (evt) ? evt : event;
+    var charCode = (evt.charCode) ? evt.charCode : ((evt.which) ? evt.which : evt.keyCode);
+    if (charCode == 13) {
+		window.setTimeout(function() {
+			ssSurvey.vote(formId, binderId, entryId, requiredQuestions, prefix);
+		}, 100);
+		return false;
+    }
+    return true;
 }
 
 ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
