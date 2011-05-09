@@ -74,16 +74,18 @@ public class SessionListener implements HttpSessionListener {
 		final Long   userId = (Long)   ses.getAttribute(WebKeys.USER_ID);
 		final Long   zoneId = (Long)   ses.getAttribute(WebKeys.ZONE_ID);
 		
-		// Make sure to run it in the user's context.	
-		RunasTemplate.runas(new RunasCallback() {
-			public Object doAs() {
-				Tabs.saveUserTabs(ses, userId);
-				if(infoId != null) {
-					AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
-					accessTokenManager.destroyTokenInfoSession(infoId);
+		if(userId != null && zoneId != null) {
+			// Make sure to run it in the user's context.	
+			RunasTemplate.runas(new RunasCallback() {
+				public Object doAs() {
+					Tabs.saveUserTabs(ses, userId);
+					if(infoId != null) {
+						AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
+						accessTokenManager.destroyTokenInfoSession(infoId);
+					}
+					return null;
 				}
-				return null;
-			}
-		}, zoneId, userId);
+			}, zoneId, userId);
+		}
 	}
 }
