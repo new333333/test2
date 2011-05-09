@@ -1619,8 +1619,9 @@ public class GwtServerHelper {
 			adminCategories.add( systemCategory );
 
 			// Does the user have rights to "Form/View Designers"?
-			if ( definitionModule.testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition) ||
-				 definitionModule.testAccess(binder, Definition.WORKFLOW, DefinitionOperation.manageDefinition))
+			if ( ( null != top ) &&
+			     definitionModule.testAccess( top, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition ) ||
+				 definitionModule.testAccess( top, Definition.WORKFLOW,     DefinitionOperation.manageDefinition ) )
 			{
 				// Yes
 				title = NLT.get( "administration.definition_builder_designers" );
