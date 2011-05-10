@@ -1,17 +1,15 @@
-﻿Novell Vibe 3 On-Premise Software
-
+﻿Kablink Vibe OnPrem 3.1
 
 1.0  Getting Started
 
      Complete system requirements and detailed software installation instructions
-     are provided for the Kablink Vibe administrator in the "Vibe 3 On-Premise
-     Software Installation Guide." Vibe site setup as well as ongoing site
-     administration and maintenance instructions are available in the "Vibe 3
-     On-Premise Software Administration Guide."
+     are provided for the Kablink Vibe administrator in the "Vibe OnPrem 3.1
+     Installation Guide." Vibe site setup as well as ongoing site administration
+     and maintenance instructions are available in the "Vibe OnPrem 3.1
+     Administration Guide."
 
      After your Vibe site is set up, Vibe users can obtain instructions in the
-     "Vibe 3 On-Premise Software User Guide" and the "Vibe 3 On-Premise Software
-     Advanced User Guide".
+     "Vibe OnPrem 3.1 User Guide" and the "Vibe OnPrem 3.1 Advanced User Guide".
 
      You can display the Vibe online help when you log in to your Vibe site.
 
@@ -19,18 +17,18 @@
 2.0  Known Issues
 
      For an up-to-date list of known issues for this release, see the full
-     Kablink Vibe 3 product Readme located on the Kablink Vibe 3 On-Premise
-     Software Documentation Web site
-     (http://www.novell.com/documentation/kablinkvibe3_on_premise/index.html).
+     Kablink Vibe 3.1 product Readme located on the Kablink Vibe OnPrem 3.1
+     Documentation Web site
+     (http://www.novell.com/documentation/kablinkvibe_onprem31).
 
 
 3.0  Documentation
 
-     All Kablink Vibe 3 documentation is available at the Kablink Vibe 3
-     On-Premise Software Documentation Web site
-     (http://www.novell.com/documentation/kablinkvibe3_on_premise):
+     All Kablink Vibe 3.1 documentation is available at the Kablink Vibe OnPrem
+     3.1 Documentation Web site
+     (http://www.novell.com/documentation/vibe_onprem31):
 
-     -  Full Vibe 3 product Readme
+     -  Full Vibe 3.1 product Readme
 
      -  "Installation Guide"
 
@@ -39,6 +37,8 @@
      -  "User Guide"
 
      -  "Advanced User Guide"
+
+     -  "Quick Start"
 
      -  "Developer Guide"
 
@@ -91,7 +91,7 @@
      exporting Novell software. Novell assumes no responsibility for your failure
      to obtain any necessary export approvals.
 
-     Copyright © 2008-2010 Novell, Inc. All rights reserved. No part of this
+     Copyright © 2008-2011 Novell, Inc. All rights reserved. No part of this
      publication may be reproduced, photocopied, stored on a retrieval system, or
      transmitted without the express written consent of the publisher.
 
