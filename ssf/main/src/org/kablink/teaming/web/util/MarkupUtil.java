@@ -34,19 +34,14 @@ package org.kablink.teaming.web.util;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URLDecoder;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,7 +56,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -73,7 +67,6 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -87,7 +80,6 @@ import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
@@ -96,10 +88,13 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.gwt.dom.client.Document;
 
-
-
+/**
+ * ?
+ * 
+ * @author phurley@novell.com
+ */
+@SuppressWarnings({"unchecked","unused"})
 public class MarkupUtil {
 	protected static Log logger = LogFactory.getLog(MarkupUtil.class);
 	//From Doc: All of the state involved in performing a match resides in the matcher, so many matchers can share the same pattern. 
@@ -145,7 +140,7 @@ public class MarkupUtil {
 	protected final static Pattern youtubeUrlHeightPattern = Pattern.compile("height=([^\\s]*)");
 	protected final static Pattern hrefPattern = Pattern.compile("((<a[\\s]href[=\\s]\")([^\":]*)\")");
 	protected final static Pattern pageTitleUrlTextPattern = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
-	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]*)(==[=]*)(</p>)?");
+	protected final static Pattern sectionPattern =Pattern.compile("(<p>)?(==[=]*)([^=]+)(==[=]*)(</p>)?");	// See comments below regarding Bugzilla 692804.
 	protected final static Pattern httpPattern =Pattern.compile("^https*://[^/]*(/[^/]*)/s/readFile/(.*)$");
 	protected static Integer youtubeDivId = 0;
 
@@ -467,7 +462,7 @@ public class MarkupUtil {
 					return PermaLinkUtil.getTitlePermalink(Long.valueOf(binderId), zoneUUID, normalizedTitle);
 				}
 				String url = "";
-				PortletURL portletURL = portletURL = res.createActionURL();
+				PortletURL portletURL = res.createActionURL();
 				portletURL.setParameter(WebKeys.URL_BINDER_ID, binderId);
 				if (Validator.isNotNull(zoneUUID)) portletURL.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				if (normalizedTitle != null && !normalizedTitle.equals("")) {
@@ -1313,7 +1308,21 @@ public class MarkupUtil {
 		List bodyParts = new ArrayList();
     	Matcher m0 = sectionPattern.matcher(body);
     	if (m0.find()) {
-    		//The "prefix" is everything up to the first section title (where a title is: ==title text== or <p>==titleText==</p>)
+    		// The 'prefix' is everything up to the first section title
+    		// where a title is:
+    		//      '==title text==' or
+    		//      '<p>==titleText==</p>'
+    		//
+    		// Bugzilla 692804:
+    		//    Before fixing this bug, the sectionPattern regular
+    		//    expression was recognizing strings such as:
+    		//         '...[ERROR] =============== URL...'
+    		//    as a section title because it was checking for 0 or
+    		//    more non '=' characters (using '*' in the pattern)
+    		//    between the '=='s.  The fix for this bug was to
+    		//    change the regular expression to look for 1 or more
+    		//    non '=' characters (by using '+' in the pattern
+    		//    instead of '*'.)
 			Map part = new HashMap();
 			if (m0.start(1) >= 0) {
 				part.put("prefix", body.substring(0, m0.start(1)));
