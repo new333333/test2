@@ -183,6 +183,18 @@ if (typeof ss_workarea_showId == "undefined")
 <!-- end of iframe div -->
 </c:if>
 
+<!-- The following form is used by the simple search available -->
+<!-- from the GWT menu bar.                                    -->
+<!--                                                           -->
+<!-- See GwtClientHelper.jsInvokeSimpleSearch().               -->
+<form
+		action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param name="newTab" value="1"/><ssf:param name="quickSearch" value="true"/><ssf:param name="operation" value="ss_searchResults"/></ssf:url>"
+		method="post"
+		id="gwtSimpleSearchForm"
+		name="gwtSimpleSearchForm">
+	<input type="hidden" id="gwtSimpleSearchText" name="searchText" value="" />
+</form>
+
 <div id="ss_aboutBoxDiv" style="position:absolute; display:none;">
 	<c:if test="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>">
 		<img src="<html:rootPath/>images/pics/masthead/teaming_about_screen.png" border="0"/>

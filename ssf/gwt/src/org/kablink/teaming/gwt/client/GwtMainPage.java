@@ -1805,12 +1805,16 @@ public class GwtMainPage extends Composite
 	{
 		if ( ( null == obj ) || ( obj instanceof String ))
 		{
-			String searchFor;
-
 			// What are we searching for?
-			searchFor = ((null == obj ) ? "" : GwtClientHelper.jsEncodeURIComponent((String) obj));
-			String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + searchFor);
-			GwtClientHelper.loadUrlInContentFrame(searchUrl);
+			String searchFor = ((null == obj ) ? "" : ((String) obj));
+			if (GwtClientHelper.jsHasSimpleSearchForm()) {
+				GwtClientHelper.jsInvokeSimpleSearch( searchFor );
+			}
+			
+			else {
+				String searchUrl = (m_requestInfo.getSimpleSearchUrl() + "&searchText=" + GwtClientHelper.jsEncodeURIComponent( searchFor ));
+				GwtClientHelper.loadUrlInContentFrame( searchUrl );
+			}
 		}
 		else
 			Window.alert( "in simpleSearch() and obj is not a String object" );

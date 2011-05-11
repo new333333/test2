@@ -415,6 +415,24 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
+	 * Returns true if the GWT simple search form is available and
+	 * false otherwise.
+	 * 
+	 * @return
+	 */
+	public static native boolean jsHasSimpleSearchForm() /*-{
+		var reply = false;
+		var contentIFrame = $wnd.top.gwtContentIframe;
+		if (null != contentIFrame) {
+			var contentDoc = contentIFrame.document;
+			if (null != contentDoc) {
+				reply = (null != contentDoc.getElementById("gwtSimpleSearchForm"));
+			}
+		}
+		return reply;
+	}-*/;
+	
+	/**
 	 * Hides the popup entry iframe div if one exists.
 	 */
 	public static native void jsHideEntryPopupDiv() /*-{
@@ -441,6 +459,17 @@ public class GwtClientHelper {
 		$wnd.top.ss_editAppConfig();
 	}-*/;
 
+	/**
+	 * Invokes a simple search on the given string.
+	 * 
+	 * @param searchForThis
+	 */
+	public static native void jsInvokeSimpleSearch(String searchFor) /*-{
+		var contentDoc = $wnd.top.gwtContentIframe.document;
+		contentDoc.getElementById("gwtSimpleSearchText").value = searchFor;
+		contentDoc.getElementById("gwtSimpleSearchForm").submit();
+	}-*/;
+	
 	/**
 	 * Returns true if we're running in any flavor of IE and false
 	 * otherwise.
