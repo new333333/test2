@@ -1325,7 +1325,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 					//access check
 					Element accessEle = (Element)data.get("transitionAccessElement");
 					if (AccessUtils.doesManualTransitionAclExist(entry.getParentBinder(), entry, ws, accessEle)) {
-						//There is amanual transition acl, so check it.
+						//There is a manual transition acl, so check it.
 						AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
 						if (AccessUtils.checkIfTransitionInAclExists(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey())) {
 							//If there is an acl guarding transition in, test it
@@ -1335,7 +1335,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 					} else {
 						//There is no manual transition acl, so do the default check
 						if (testTransitionOutStateAllowed(entry, stateId)) {
-							AccessUtils.checkManualTransitionAccess(entry.getParentBinder(), entry, ws, accessEle);
 							AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
 							transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
 						}
