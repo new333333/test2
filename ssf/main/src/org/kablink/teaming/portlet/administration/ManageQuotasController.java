@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,12 +47,9 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -62,8 +59,7 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.springframework.web.portlet.ModelAndView;
 
 
-
-
+@SuppressWarnings({"unchecked","unused"})
 public class ManageQuotasController extends SAbstractController {
 
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -73,6 +69,9 @@ public class ManageQuotasController extends SAbstractController {
 		getAdminModule().checkAccess(AdminOperation.manageFunction);
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				String[] okBtnVals = request.getParameterValues("okBtn");
+				String okBtnVal = (((null != okBtnVals) && (0 < okBtnVals.length)) ? okBtnVals[0] : null);
+				boolean okBtnDelete = ((null != okBtnVal) && okBtnVal.equalsIgnoreCase("Delete"));;
 				if (formData.containsKey("enableQuotas")) {
 					getAdminModule().setQuotaEnabled(true);
 				} else {
@@ -148,12 +147,12 @@ public class ManageQuotasController extends SAbstractController {
 				Iterator itFormData = formData.keySet().iterator();
 				while (itFormData.hasNext()) {
 					String key = (String)itFormData.next();
-					if (key.indexOf("deleteUser_") == 0) {
+					if (okBtnDelete && (key.indexOf("deleteUser_") == 0)) {
 						String userId = key.substring(11, key.length());
 						userIds.add(Long.valueOf(userId));
 						quotaValues.put(userId, Long.valueOf(0));
 					}
-					if (key.indexOf("deleteGroup_") == 0) {
+					if (okBtnDelete && (key.indexOf("deleteGroup_") == 0)) {
 						String groupId = key.substring(12, key.length());
 						groupIds.add(Long.valueOf(groupId));
 						quotaValues.put(groupId, Long.valueOf(0));
