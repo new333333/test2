@@ -250,12 +250,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   </c:if>
 
   <c:if test="${columnName == 'comments' && !empty ssFolderColumns['comments']}">
-    <c:if test="${ss_folderViewStyle == 'folder'}">
-      <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Replies"/></c:set>
-    </c:if>
-    <c:if test="${ss_folderViewStyle != 'folder'}">
-      <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Comments"/></c:set>
-    </c:if>
+    <c:set var="ss_colHeaderText"><ssf:nlt tag="folder.column.Comments"/></c:set>
   	<c:if test="${!empty ssFolderColumnTitles['comments']}">
   	  <c:set var="ss_colHeaderText">${ssFolderColumnTitles['comments']}</c:set>
 	</c:if>
