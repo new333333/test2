@@ -42,6 +42,7 @@ create index startDate_wfhistory on SS_WorkflowHistory (zoneId, startDate);
 create index entity_Ratings on SS_Ratings (entityId, entityType);
 create index entity_Subscriptions on SS_Subscriptions (entityId, entityType);
 alter table SS_SeenMap add pruneDays number(19,0);
+INSERT INTO SS_SchemaInfo values (20);
 
 declare v_count integer;
 
@@ -56,7 +57,5 @@ begin
    end if;
 
 end;
-
-INSERT INTO SS_SchemaInfo values (20);
 
 /
