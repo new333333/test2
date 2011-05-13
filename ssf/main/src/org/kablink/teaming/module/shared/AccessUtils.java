@@ -744,7 +744,7 @@ public class AccessUtils  {
        	User user = RequestContextHolder.getRequestContext().getUser();
         if (user.isSuper()) return;
 		if (acl == null) {
-			operationCheck(user, binder, (Entry)entry, WorkAreaOperation.MODIFY_ENTRIES);
+			operationCheck(user, binder, (WorkflowSupport)entry, WorkAreaOperation.MODIFY_ENTRIES);
 			return;
 		}
 		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
@@ -756,7 +756,7 @@ public class AccessUtils  {
 			if (testAccess(user, allowedIds)) return;
  			
  			if (acl.isUseDefault()) { 		
- 				operationCheck(user, binder, (Entry)entry, WorkAreaOperation.MODIFY_ENTRIES);
+ 				operationCheck(user, binder, (WorkflowSupport)entry, WorkAreaOperation.MODIFY_ENTRIES);
  			} else throw new AclAccessControlException(user.getName(), acl.getType().toString());
 
  			
@@ -766,7 +766,7 @@ public class AccessUtils  {
 				 //optimization: if pass modify binder check, don't need to do read binder check
  				// all done if binder access is enough
  				try {
- 					operationCheck(user, binder, (Entry)entry, WorkAreaOperation.MODIFY_ENTRIES);
+ 					operationCheck(user, binder, (WorkflowSupport)entry, WorkAreaOperation.MODIFY_ENTRIES);
 					return;
  				} catch (AccessControlException ex) {} //move on to next checks
  			}
