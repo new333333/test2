@@ -493,13 +493,18 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 	}
 
 	@SuppressWarnings("unchecked")
-	public void folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
+	public Calendar folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
 		SimpleProfiler.start("folderService_modifyEntry");
 		try {
 			HashMap options = new HashMap();
 	 		getTimestamps(options, entry);
 			getFolderModule().modifyEntry(entry.getParentBinderId(), entry.getId(), 
 				new ModelInputData(entry), null, null, null, options);
+			// Read it back from the database
+			org.kablink.teaming.domain.Entry dEntry = getFolderModule().getEntry(entry.getParentBinderId(), entry.getId());
+			Calendar modCal = Calendar.getInstance();
+			modCal.setTime(dEntry.getModification().getDate());
+			return modCal;
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -507,7 +512,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		catch(WriteEntryDataException e) {
 			throw new RemotingException(e);
 		}
-		SimpleProfiler.stop("folderService_modifyEntry");
+		finally {
+			SimpleProfiler.stop("folderService_modifyEntry");
+		}
 	}
 
 	public void folder_deleteEntry(String accessToken, long entryId) {

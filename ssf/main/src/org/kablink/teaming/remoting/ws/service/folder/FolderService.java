@@ -80,7 +80,7 @@ public interface FolderService {
 	
 	public Long folder_addMicroBlog(String accessToken, String text);
 	
-	public void folder_modifyEntry(String accessToken, FolderEntry entry);
+	public Calendar folder_modifyEntry(String accessToken, FolderEntry entry);
 	
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
 	
