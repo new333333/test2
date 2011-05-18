@@ -47,15 +47,17 @@ public class TokenInfoApplication extends TokenInfo {
 	
 	private Long applicationId; 
 	private Long userId; 
+	private Long requesterId;
 	private Long binderId; // may be null
 	private Integer binderAccessConstraints; // access by field; meaningful and required only when binderId is specified
 	private String clientAddr;
 	
-	public TokenInfoApplication(Long applicationId, Long userId, Long binderId, 
+	public TokenInfoApplication(Long applicationId, Long userId, Long requesterId, Long binderId, 
 			AccessToken.BinderAccessConstraints binderAccessConstraints,
 			String clientAddr, Date lastAccessTime,
 			String seed) {
 		this(applicationId, userId, lastAccessTime);
+		this.requesterId = requesterId;
 		this.binderId = binderId;
 		setBinderAccessConstraints(binderAccessConstraints);
 		this.clientAddr = clientAddr;
@@ -76,6 +78,12 @@ public class TokenInfoApplication extends TokenInfo {
 	}
 	public void setApplicationId(Long applicationId) {
 		this.applicationId = applicationId;
+	}
+	public Long getRequesterId() {
+		return requesterId;
+	}
+	public void setRequesterId(Long requesterId) {
+		this.requesterId = requesterId;
 	}
 	public Long getBinderId() {
 		return binderId;

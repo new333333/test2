@@ -155,9 +155,10 @@ public interface AccessTokenManager {
 	 * 
 	 * @param applicationId
 	 * @param userId
+	 * @param requesterId
 	 * @return
 	 */
-	public AccessToken getApplicationScopedToken(Long applicationId, Long userId);
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long requesterId);
 	
 	/**
 	 * Returns an access token of application scoped.
@@ -168,7 +169,7 @@ public interface AccessTokenManager {
 	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long requesterId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints);
 	
 	/**

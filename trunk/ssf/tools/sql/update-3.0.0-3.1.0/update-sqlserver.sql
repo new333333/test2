@@ -34,6 +34,7 @@ alter table SS_ZoneConfig add binderQuotasEnabled tinyint;
 alter table SS_ZoneConfig add binderQuotasAllowOwner tinyint;
 alter table SS_ZoneConfig add holidays varchar(4000) null;
 alter table SS_ZoneConfig add weekendDays varchar(128) null;
+alter table SS_TokenInfo add requesterId numeric(19,0) null;
 create index entityOwner_clog on SS_ChangeLogs (entityType, entityId);
 create index operationDate_clog on SS_ChangeLogs (zoneId, operationDate);
 create index entityOwner_audit on SS_AuditTrail (entityType, entityId);

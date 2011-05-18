@@ -20,6 +20,7 @@ alter table SS_ZoneConfig add column binderQuotasEnabled bit;
 alter table SS_ZoneConfig add column binderQuotasAllowOwner bit;
 alter table SS_ZoneConfig add column holidays varchar(4000);
 alter table SS_ZoneConfig add column weekendDays varchar(128);
+alter table SS_TokenInfo add column requesterId bigint;
 create index entityOwner_clog on SS_ChangeLogs (entityType, entityId);
 create index operationDate_clog on SS_ChangeLogs (zoneId, operationDate);
 create index entityOwner_audit on SS_AuditTrail (entityType, entityId);

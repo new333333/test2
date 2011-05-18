@@ -88,9 +88,7 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 				// Update the request context with the newly obtained information 
 				// (performed as side effect of this interceptor)
 	            rc.setUserId(token.getUserId());
-	            rc.setApplicationId(token.getApplicationId());
-	            rc.setBinderId(token.getBinderId());
-	            rc.setBinderAccessConstraints(token.getBinderAccessConstraints());
+				rc.setAccessToken(token);
 			}
 			else {
 				if (args[0] == null) {

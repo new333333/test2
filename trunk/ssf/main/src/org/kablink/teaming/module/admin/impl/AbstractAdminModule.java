@@ -1241,7 +1241,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// check user exists
 		User user = getProfileDao().loadUser(userId, rc.getZoneId());
 
-		String result = getAccessTokenManager().getApplicationScopedToken(applicationId, userId).toStringRepresentation();
+		String result = getAccessTokenManager().getApplicationScopedToken
+		(applicationId, userId, RequestContextHolder.getRequestContext().getUserId())
+		.toStringRepresentation();
 		
 		getReportModule().addTokenInfo(rc.getUser(), user, applicationId);
 		

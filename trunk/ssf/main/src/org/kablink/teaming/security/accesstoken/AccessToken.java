@@ -81,6 +81,7 @@ public class AccessToken {
 	private Long binderId; 										// optional
 	private BinderAccessConstraints binderAccessConstraints; 	// optional, this value is meaningful iff binderId is non-null
 	private String infoId;										// required
+	private Long requesterId;									// optional, this value is meaningful iff scope is application
 	
 	public static AccessToken sessionScopedToken(String infoId, Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
@@ -161,6 +162,14 @@ public class AccessToken {
 
 	public void setBinderAccessConstraints(BinderAccessConstraints binderAccessConstraints) {
 		this.binderAccessConstraints = binderAccessConstraints;
+	}
+
+	public Long getRequesterId() {
+		return requesterId;
+	}
+
+	public void setRequesterId(Long requesterId) {
+		this.requesterId = requesterId;
 	}
 
 	/**

@@ -66,8 +66,8 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 			LoginInfo loginInfo = new LoginInfo(authenticator,
 					RequestContextHolder.getRequestContext().getUserId());
 			
-			if(rc.getApplicationId() != null)
-				loginInfo.setApplicationId(rc.getApplicationId());
+			if(rc.getAccessToken() != null)
+				loginInfo.setApplicationId(rc.getAccessToken().getApplicationId());
 			
 			getReportModule().addLoginInfo(loginInfo);		
 		}

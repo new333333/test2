@@ -39,6 +39,7 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
 import org.kablink.teaming.util.SpringContextUtil;
 
@@ -64,22 +65,14 @@ public class RequestContext {
      */
     private String userName;
     /*
-     * (Optional) Application ID.
-     */
-    private Long applicationId;
-    /*
      * (Optional) Session Context
      */
     private SessionContext sessionCtx; 
     /*
-     * (Optional) binder ID
+     * (Optional) Access Token - This value exists if and only if the access is being made 
+     * in the context of a remote application.
      */
-    private Long binderId;
-    /*
-     * (Optional) a flag indicating the level of access constraints around the specified binder.
-     * This value is meaningful if and only if binderId field is non-null.
-     */
-    private BinderAccessConstraints binderAccessConstraints;
+    private AccessToken accessToken;
     
     private boolean resolved = false;
     
@@ -169,12 +162,11 @@ public class RequestContext {
     	return this;
     }
     
-    public Long getApplicationId() {
-    	return applicationId;
+    public AccessToken getAccessToken() {
+    	return accessToken;
     }
-    
-    public RequestContext setApplicationId(Long applicationId) {
-    	this.applicationId = applicationId;
+    public RequestContext setAccessToken(AccessToken accessToken) {
+    	this.accessToken = accessToken;
     	return this;
     }
     
@@ -218,8 +210,8 @@ public class RequestContext {
      */
     public Application getApplication() {
     	if(resolved) {
-    		if(applicationId != null)
-    			return getProfileDao().loadApplication(applicationId, zoneId);
+    		if(accessToken != null && accessToken.getApplicationId() != null)
+    			return getProfileDao().loadApplication(accessToken.getApplicationId(), zoneId);
     		else
     			return null;
     	}
@@ -232,23 +224,6 @@ public class RequestContext {
     	return sessionCtx;
     }
     
-    public RequestContext setBinderId(Long binderId) {
-    	this.binderId = binderId;
-    	return this;
-    }
-    
-    public Long getBinderId() {
-    	return binderId;
-    }
-    
-    public BinderAccessConstraints getBinderAccessConstraints() {
-		return binderAccessConstraints;
-	}
-
-	public void setBinderAccessConstraints(BinderAccessConstraints binderAccessConstraints) {
-		this.binderAccessConstraints = binderAccessConstraints;
-	}
-
 	/**
      * Resolve the request context to full information.
      * If the request object is already resolved, this does nothing.
@@ -309,8 +284,8 @@ public class RequestContext {
 	}
 
 	public String toString() {
-		if(applicationId != null)
-			return "[" + zoneName + "," + userName + "," + applicationId + "]";
+		if(accessToken != null)
+			return "[" + zoneName + "," + userName + "," + accessToken.getApplicationId() + "]";
 		else 
 			return "[" + zoneName + "," + userName + "]";
 	}
