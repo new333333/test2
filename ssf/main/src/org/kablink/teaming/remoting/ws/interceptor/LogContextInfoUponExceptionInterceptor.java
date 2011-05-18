@@ -50,14 +50,13 @@ public class LogContextInfoUponExceptionInterceptor implements MethodInterceptor
 		catch(Throwable t) {
 			String zoneName = null;
 			String userName = null;
-			Long applicationId = null;
 			RequestContext rc = RequestContextHolder.getRequestContext();
 			if(rc != null) {
-				zoneName = rc.getZoneName();
-				userName = rc.getUserName();
-				applicationId = rc.getApplicationId();
+				logger.warn("WS request failed for user " + rc.toString());
 			}
-			logger.warn("WS request failed for user " + rc.toString());
+			else {
+				logger.warn("WS request failed and was made without user context");
+			}
 			throw t;
 		}
 	}

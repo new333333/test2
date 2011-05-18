@@ -163,6 +163,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 					// access to the lower-level tokeninfo object (ie, just serves as temporary cache).
 					token.setApplicationId(info.getApplicationId());
 					token.setUserId(info.getUserId());
+					token.setRequesterId(info.getRequesterId());
 					token.setBinderId(info.getBinderId());
 					token.setBinderAccessConstraints(info.getBinderAccessConstraints());
 				}
@@ -312,14 +313,14 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		}
 	}*/
 
-	public AccessToken getApplicationScopedToken(Long applicationId, Long userId) {
-		return getApplicationScopedToken(applicationId, userId, null, null);
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long requesterId) {
+		return getApplicationScopedToken(applicationId, userId, requesterId, null, null);
 	}
 
-	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getApplicationScopedToken(Long applicationId, Long userId, Long requesterId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
 		TokenInfoApplication info = new TokenInfoApplication
-		(applicationId, userId, binderId, binderAccessConstraints, 
+		(applicationId, userId, requesterId, binderId, binderAccessConstraints, 
 		ZoneContextHolder.getClientAddr(), new Date(), getRandomSeed());
 		
 		getSecurityDao().save(info);

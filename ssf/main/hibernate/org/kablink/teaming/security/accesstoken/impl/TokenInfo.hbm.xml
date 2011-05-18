@@ -27,6 +27,7 @@
 		<subclass name="org.kablink.teaming.security.accesstoken.impl.TokenInfoApplication" discriminator-value="A">
 	    	<property name="applicationId"/>
 	    	<property name="userId"/>
+	    	<property name="requesterId"/>
 	    	<property name="binderId"/>
 	    	<property name="binderAccessConstraints" type="integer" access="field"/>
 	    	<property name="clientAddr" length="128"/>

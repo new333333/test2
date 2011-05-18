@@ -57,6 +57,7 @@ import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -81,6 +82,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     private ProfileDao profileDao;
     private LicenseManager licenseManager;
     private Map synchAgentRights;
+    private Map synchAgentTokenBoostRights;
     
 	public void afterPropertiesSet() throws Exception {
 		synchAgentRights = new HashMap();
@@ -88,6 +90,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(strs != null) {
 			for(String str:strs)
 				synchAgentRights.put(str, str);
+		}
+		synchAgentTokenBoostRights = new HashMap();
+		String[] strs2 = SPropsUtil.getStringArray("synchronization.agent.token.boost.rights", ",");
+		if(strs2 != null) {
+			for(String str:strs2)
+				synchAgentTokenBoostRights.put(str, str);
 		}
 	}
 	
@@ -178,6 +186,17 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		return testOperation(user, workArea, workArea, workAreaOperation);
 		
 	}
+	
+	private boolean applicationPlaysNoRoleInAccessControl(Application application) {
+		return (application == null || application.isTrusted());
+	}
+	
+	private boolean userAccessGrantedViaSpecialMeans(User user, WorkAreaOperation workAreaOperation) {
+		return (user.isSuper() || 
+				isDirectSynchronizationWork(user, workAreaOperation) ||
+				isIndirectSynchronizationWork(workAreaOperation));
+	}
+	
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		if(isAccessCheckTemporarilyDisabled())
@@ -186,9 +205,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Application application = null;
 		if(RequestContextHolder.getRequestContext() != null)
-			application = RequestContextHolder.getRequestContext().getApplication();
-		if ((user.isSuper() || isSynchronizationWork(user, workAreaOperation)) && 
-				(application == null || application.isTrusted())) {
+			application = RequestContextHolder.getRequestContext().getApplication();		
+		
+		if(userAccessGrantedViaSpecialMeans(user, workAreaOperation) &&
+				applicationPlaysNoRoleInAccessControl(application)) {
 			return true;
 		}
 		if (user.isDisabled() || user.isDeleted()) {
@@ -338,8 +358,32 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		Boolean b = (Boolean) temporarilyDisableAccessCheckForThisThreadTL.get();
 		return (b != null && b.equals(Boolean.TRUE));
 	}
-	private boolean isSynchronizationWork(User user, WorkAreaOperation workAreaOperation) {
+	private boolean isDirectSynchronizationWork(User user, WorkAreaOperation workAreaOperation) {
 		return ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(user.getInternalId()) &&
 			(synchAgentRights.get(workAreaOperation.getName()) != null);
 	}
+	private boolean isIndirectSynchronizationWork(WorkAreaOperation workAreaOperation) {
+		AccessToken accessToken = RequestContextHolder.getRequestContext().getAccessToken();
+		User requester = null;
+		if(accessToken != null) {
+			Long requesterId = accessToken.getRequesterId();
+			if(requesterId != null) {
+				try {
+					// Don't use regular loadUser() method here. If you do, you will get infinite loop.
+					requester = getProfileDao().loadUserDeadOrAlive(requesterId, RequestContextHolder.getRequestContext().getZoneId());
+				}
+				catch(Exception e) {
+					// This means either the requester is no longer in the system or something else is wrong.
+					// Either way, the test fails.
+					return false;
+				}
+			}
+		}
+		if(requester != null)
+			return ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID.equals(requester.getInternalId()) &&
+				(synchAgentTokenBoostRights.get(workAreaOperation.getName()) != null);
+		else
+			return false;
+	}
+
 }
