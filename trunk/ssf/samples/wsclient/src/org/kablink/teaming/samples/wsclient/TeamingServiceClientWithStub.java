@@ -798,9 +798,9 @@ public class TeamingServiceClientWithStub {
 		}
 		*/
 
-		stub.folder_modifyEntry(null, entry);
+		Calendar modificationTime = stub.folder_modifyEntry(null, entry);
 		
-		System.out.println("ID of the modified entry: " + entry.getId());
+		System.out.println("Modification time: " + modificationTime.getTime().toString());
 	}
 	public static Binder modifyBinder(Binder binder) throws Exception {
 		TeamingServiceSoapBindingStub stub = getStub();
