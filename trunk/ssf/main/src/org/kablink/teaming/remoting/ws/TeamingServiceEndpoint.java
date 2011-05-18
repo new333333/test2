@@ -393,8 +393,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getFolderService().folder_addReply(accessToken, parentEntryId, reply, attachedFileName);
 	}
 
-	public void folder_modifyEntry(String accessToken, FolderEntry entry) {
-		getFolderService().folder_modifyEntry(accessToken, entry);
+	public Calendar folder_modifyEntry(String accessToken, FolderEntry entry) {
+		return getFolderService().folder_modifyEntry(accessToken, entry);
 	}
 
 	public byte[] folder_getAttachmentAsByteArray(String accessToken, long entryId, String attachmentId) {
