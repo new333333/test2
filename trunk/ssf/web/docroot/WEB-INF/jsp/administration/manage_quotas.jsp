@@ -66,6 +66,33 @@
 <script type="text/javascript" src="<html:rootPath />js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 var ss_validateStatusTicket = "validate"+ss_random++;
+var MAX_QUOTA_SIZE = 2147483647;
+
+/**
+ * Validate the value entered for the quota size.
+ */
+function ss_validateQuotaSize( obj )
+{
+	 // Did the user enter a valid number?
+	if ( ss_checkIfNumber( obj ) )
+	{
+		// Yes
+		// Is the number greater than 0 and less than the max quota size?
+		if ( obj.value > 0 && obj.value < MAX_QUOTA_SIZE )
+		{
+			// Yes, nothing to do.
+		}
+		else
+		{
+			// No, tell the user about the problem.
+			var msg;
+			
+			msg = '<ssf:nlt tag="administration.quota.invalidDefaultQuotaSize" />';
+			alert(msg);
+			obj.value="";
+		}
+	}
+}
 
 function ss_checkIfNumber(obj) {
 	if (!ss_isInteger(obj.value)) {
@@ -73,7 +100,10 @@ function ss_checkIfNumber(obj) {
 		msg = ss_replaceSubStr(msg, "xxxxxx", obj.value);
 		alert(msg);
 		obj.value="";
+		return false;
 	}
+	
+	return true;
 }
 function showAddUsersDiv() {
 	hideAllDivs();
@@ -252,7 +282,7 @@ function ss_checkForAllUsersGroup() {
 	</td>
 	<td style="padding-left:4px;">
 	  <input type="text" size="6" name="defaultQuota" value="${ss_quotasDefault}"
-	    onblur="ss_checkIfNumber(this);" style="text-align: right; font-weight: bold;"
+	    onblur="ss_validateQuotaSize(this);" style="text-align: right; font-weight: bold;"
 	  />
 	  <ssf:nlt tag="administration.quotas.mb"/>
 	</td>
