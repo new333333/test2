@@ -225,6 +225,11 @@ public class AdminControl extends Composite
 				m_mainTable.setWidget( row, 2, categoryName );
 				cellFormatter.setWidth( row, 2, "100%" );
 				
+				imgResource = GwtTeaming.getImageBundle().spacer1px();
+				img = new Image( imgResource );
+				m_mainTable.setWidget( row, 3, img );
+				cellFormatter.setWidth( row, 3, "100%" );
+				
 				++row;
 			}
 
@@ -371,7 +376,7 @@ public class AdminControl extends Composite
 					}
 					);
 					table.setWidget( 0, 1, img );
-					cellFormatter.setHorizontalAlignment( 0, 1, HasHorizontalAlignment.ALIGN_RIGHT );
+					cellFormatter.setHorizontalAlignment( 0, 1, HasHorizontalAlignment.ALIGN_LEFT );
 					cellFormatter.setWidth( 0, 1, "100%" );
 				}
 				
