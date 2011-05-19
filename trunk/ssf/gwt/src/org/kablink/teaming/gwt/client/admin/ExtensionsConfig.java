@@ -286,7 +286,7 @@ public class ExtensionsConfig  extends Composite {
 					try {
 						throw t;
 					} catch (ExtensionDefinitionInUseException exEx) {
-						Window.alert("Unable to remove extension. This extension has a definition that is in use. Remove all entries created using this extension and try again.");
+						Window.alert( GwtTeaming.getMessages().extensionsRemoveFailed() );
 						//extensionPanelStateText.setText( exEx.getMessage() );
 					} catch (Throwable e) {
 						// display error text if we can't get the tutorial panel state:

@@ -237,6 +237,7 @@ public interface GwtTeamingMessages extends Messages
 	String extensionsDesc();
 	String extensionsZone();
 	String extensionsRemove();
+	String extensionsRemoveFailed();
 	String extensionsConfirmDelete();
 	String extensionsWaiting();
 	String extensionsRPCError();
