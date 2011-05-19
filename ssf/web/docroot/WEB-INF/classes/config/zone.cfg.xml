@@ -49,6 +49,9 @@
 		<property name="deploy.seconds">300</property>
 	</extensionConfiguration>
 	<licenseConfiguration/>
+	<workflowConfiguration>
+		<property name="timeout.seconds">300</property>
+	</workflowConfiguration>
 	<!-- You can specify zone-specific settings by creating a separate nested element 
 	     with the name "zone" as shown here. This example illustrates a set of configuration 
 	     settings that are applicable only to the zone named "kablink" which happens to

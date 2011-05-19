@@ -24,6 +24,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <licenseConfiguration>
 	<xsl:apply-templates select="/zoneConfiguration/licenseConfiguration"/>
 </licenseConfiguration>
+<workflowConfiguration>
+	<xsl:apply-templates select="/zoneConfiguration/workflowConfiguration"/>
+</workflowConfiguration>
 
 </zoneConfiguration>
 </xsl:template>
@@ -65,7 +68,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:template match="licenseConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/licenseConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/licenseConfiguration/property/@name)]"/>
 </xsl:template>
-
+<xsl:template match="workflowConfiguration">
+	<xsl:copy-of select="$doc2/zoneConfiguration/workflowConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/workflowConfiguration/property/@name)]"/>
+</xsl:template>
 <xsl:template match="mailConfiguration">
 	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/property | ./property[not(@name=$doc2/zoneConfiguration/mailConfiguration/property/@name)]"/>
 	<xsl:copy-of select="$doc2/zoneConfiguration/mailConfiguration/account"/>
