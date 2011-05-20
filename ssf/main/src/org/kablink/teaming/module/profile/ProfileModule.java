@@ -740,4 +740,10 @@ public interface ProfileModule {
      * @return
      */
     public String[] getUsernameAndDecryptedPassword(String username);
+    
+    /**
+     * Returns a list of Groups that the user is a member of, either directly or indirectly.
+     */
+	public List<Group> getUserGroups(Long userId) throws AccessControlException;
+
 }
