@@ -96,6 +96,7 @@
 				marginheight="${marginHeight}"
 				marginwidth="${marginWidth}"
 				name="${name}"
+				id="lpIFrame"
 				${scrolling}
 				width="${width}">
 		</iframe>
