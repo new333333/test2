@@ -117,6 +117,12 @@ ss_setObjectLeft(document.getElementById("ss_mastheadWatermark${renderResponse.n
 
 <!-- Start of global toolbar -->
 <script type="text/javascript">
+var m_isLandingPage = false;
+
+<c:if test="${ !empty ss_mashupHideMasthead && !empty ss_mashupHideSidebar && !empty ss_mashupShowBranding }">
+	m_isLandingPage = true;
+</c:if>
+
 if (self != self.parent) {
 	//Check if this page is a full Teaming page inside a frame inside Teaming
 	try {

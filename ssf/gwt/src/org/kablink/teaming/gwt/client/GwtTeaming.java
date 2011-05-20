@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -134,11 +135,52 @@ public class GwtTeaming implements EntryPoint
 	
 	
 	/**
+	 * Use JSNI to get the name of the parent window.
+	 */
+	private native String getParentWindowName() /*-{
+		// Return the name of the parent window.
+		if ( $wnd.parent != null )
+			return $wnd.parent.name;
+		
+		return "";
+	}-*/;
+	
+	
+	/**
+	 * Use JSNI to see if we are running inside a landing page.
+	 */
+	private native boolean isInsideLandingPage() /*-{
+		if ( $wnd.parent != null )
+			return $wnd.parent.m_isLandingPage;
+			
+		return false;
+	}-*/;
+	
+
+	/**
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad()
 	{
 		RootPanel	rootPanel;
+		String parentWndName;
+
+		// Is the Vibe ui being loaded inside the content iframe?
+		parentWndName = getParentWindowName();
+		if ( parentWndName != null && parentWndName.equalsIgnoreCase( "gwtContentIframe" ) )
+		{
+			// Yes
+			// Is the content iframe inside a landing page.
+			if ( isInsideLandingPage() )
+			{
+				Label label;
+				
+				rootPanel = RootPanel.get();
+				label = new Label( getMessages().vibeInsideLandingPage() );
+				rootPanel.add( label );
+				return;
+			}
+		}
 		
 		// Are we in the the Landing Page Editor?
 		rootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );

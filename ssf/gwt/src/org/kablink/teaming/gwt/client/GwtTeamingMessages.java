@@ -216,6 +216,7 @@ public interface GwtTeamingMessages extends Messages
 	String showBorder();
 	String showTitle();
 	String title();
+	String vibeInsideLandingPage();
 	String close();
 	
 	// Strings used with the Utility Element widget in the landing page editor.
