@@ -65,6 +65,8 @@ import org.kablink.teaming.client.ws.model.FolderCollection;
 import org.kablink.teaming.client.ws.model.FolderEntry;
 import org.kablink.teaming.client.ws.model.FolderEntryBrief;
 import org.kablink.teaming.client.ws.model.FolderEntryCollection;
+import org.kablink.teaming.client.ws.model.GroupBrief;
+import org.kablink.teaming.client.ws.model.GroupCollection;
 import org.kablink.teaming.client.ws.model.Tag;
 import org.kablink.teaming.client.ws.model.TemplateBrief;
 import org.kablink.teaming.client.ws.model.TemplateCollection;
@@ -116,6 +118,8 @@ public abstract class WSClientBase {
 			org.kablink.teaming.client.ws.model.User.class,
 			org.kablink.teaming.client.ws.model.UserBrief.class,
 			org.kablink.teaming.client.ws.model.UserCollection.class,
+			org.kablink.teaming.client.ws.model.GroupBrief.class,
+			org.kablink.teaming.client.ws.model.GroupCollection.class,
 			org.kablink.teaming.client.ws.model.Workflow.class,
 			org.kablink.teaming.client.ws.model.WorkflowResponse.class,
 			org.kablink.teaming.client.ws.model.FileVersions.class,
@@ -479,6 +483,11 @@ public abstract class WSClientBase {
 		printFolderCollection(fc);
 	}
 	
+	void fetchAndPrintGC(String serviceName, String operation, Object[] args) throws Exception {
+		GroupCollection gc = (GroupCollection) fetch(serviceName, operation, args);
+		printGroupCollection(gc);
+	}
+	
 	void fetchAndPrintTC(String serviceName, String operation, Object[] args) throws Exception {
 		TemplateCollection tc = (TemplateCollection) fetch(serviceName, operation, args);
 		printTemplateCollection(tc);
@@ -572,6 +581,17 @@ public abstract class WSClientBase {
 			System.out.println("Folder " + i + " is library: " + fb[i].getLibrary());
 			System.out.println("Folder " + i + " path: " + fb[i].getPath());
 			System.out.println("Folder " + i + " permalink: " + fb[i].getPermaLink());
+		}
+	}
+	
+	void printGroupCollection(GroupCollection gc) {
+		GroupBrief[] gb = gc.getGroups();
+		System.out.println("Number of groups: " + gb.length);
+		for(int i = 0; i < gb.length; i++) {
+			System.out.println();
+			System.out.println("Group " + i + " id: " + gb[i].getId());
+			System.out.println("Group " + i + " name: " + gb[i].getName());
+			System.out.println("Group " + i + " title: " + gb[i].getTitle());
 		}
 	}
 	

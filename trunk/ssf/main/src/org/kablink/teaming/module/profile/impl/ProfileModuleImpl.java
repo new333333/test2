@@ -1870,5 +1870,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  return result;
   }
   
+	public List<Group> getUserGroups(Long userId) throws AccessControlException {
+		//does read access check
+		ProfileBinder binder = getProfileBinder();
+		Set<Long> groupIds = getProfileDao().getAllGroupMembership(userId, RequestContextHolder.getRequestContext().getZoneId());
+		return getProfileDao().loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
+	}
 }
 

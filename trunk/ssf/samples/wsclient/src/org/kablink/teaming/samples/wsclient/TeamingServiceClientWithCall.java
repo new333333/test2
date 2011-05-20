@@ -83,6 +83,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getTeams", new Object[] {null});
 			} else if(args[0].equals("getUserTeams")) {
 				wsClient.fetchAndPrintACK("TeamingServiceV1", "search_getUserTeams", new Object[] {null, Long.parseLong(args[1])});
+			} else if(args[0].equals("getUserGroups")) {
+				wsClient.fetchAndPrintGC("TeamingServiceV1", "profile_getUserGroups", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("getBinder")) {
 				wsClient.fetchAndPrintBinder("TeamingServiceV1", "binder_getBinder", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("getBinderTags")) {
@@ -306,6 +308,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		System.out.println("getUsersByEmail  <email address>  [<email type>]");
 		System.out.println("getGroup  <group id>  <includeAttachments>");
 		System.out.println("getGroupMembers  <groupName> <first> <max>");
+		System.out.println("getUserGroups <user id>");
 		System.out.println("getPrincipals <first> <max>");
 		System.out.println("getUsers <first> <max> [<captive>]");
 		System.out.println("getFolderEntries <folder id> <first> <max>"); 

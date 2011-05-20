@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
@@ -55,7 +56,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.UserProperties;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
@@ -63,9 +63,10 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.RemotingException;
 import org.kablink.teaming.remoting.ws.BaseService;
-import org.kablink.teaming.remoting.ws.model.Binder;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
+import org.kablink.teaming.remoting.ws.model.GroupBrief;
+import org.kablink.teaming.remoting.ws.model.GroupCollection;
 import org.kablink.teaming.remoting.ws.model.PrincipalBrief;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
 import org.kablink.teaming.remoting.ws.model.Timestamp;
@@ -473,4 +474,29 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 			return null;
 		}
 	}
+	
+	public GroupCollection profile_getUserGroups(String accessToken, long userId) {
+		List<org.kablink.teaming.domain.Group> groups = getProfileModule().getUserGroups(userId);
+		GroupBrief[] gbs = new GroupBrief[groups.size()];
+		for(int i=0; i < gbs.length; ++i) {
+			gbs[i] = toGroupBrief(groups.get(i));
+		}		
+		return new GroupCollection(gbs); 
+	}
+	
+	protected GroupBrief toGroupBrief(Group group) {
+		GroupBrief groupBrief = new GroupBrief(
+				group.getId(),
+				group.getParentBinder().getId(),
+				group.getEntryDefId(),
+				group.getTitle(),
+				group.getEmailAddress(),
+				group.getEntityType().toString(),
+				Boolean.valueOf(group.isDisabled()),
+				group.isReserved(),
+				group.getName()
+				);
+		return groupBrief;
+	}
+	
 }

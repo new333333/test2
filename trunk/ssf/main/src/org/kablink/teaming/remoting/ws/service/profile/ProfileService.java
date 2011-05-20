@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.ws.service.profile;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.Group;
+import org.kablink.teaming.remoting.ws.model.GroupCollection;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
 import org.kablink.teaming.remoting.ws.model.User;
 import org.kablink.teaming.remoting.ws.model.UserCollection;
@@ -99,4 +100,5 @@ public interface ProfileService {
 
 	public BinderBrief[] profile_getFavorites(String accessToken);
 
+	public GroupCollection profile_getUserGroups(String accessToken, long userId);
 }

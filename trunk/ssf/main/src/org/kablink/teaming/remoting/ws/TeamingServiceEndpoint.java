@@ -47,6 +47,7 @@ import org.kablink.teaming.remoting.ws.model.FolderEntry;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
 import org.kablink.teaming.remoting.ws.model.FunctionMembership;
 import org.kablink.teaming.remoting.ws.model.Group;
+import org.kablink.teaming.remoting.ws.model.GroupCollection;
 import org.kablink.teaming.remoting.ws.model.PrincipalCollection;
 import org.kablink.teaming.remoting.ws.model.Subscription;
 import org.kablink.teaming.remoting.ws.model.Tag;
@@ -547,6 +548,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getProfileService().profile_getUsers(accessToken, captive, firstRecord, maxRecords);
 	}
 
+	public GroupCollection profile_getUserGroups(String accessToken, long userId) {
+		return getProfileService().profile_getUserGroups(accessToken, userId);
+	}
 	public Group profile_getGroup(String accessToken, long groupId, boolean includeAttachments) {
 		return getProfileService().profile_getGroup(accessToken, groupId, includeAttachments);
 	}
