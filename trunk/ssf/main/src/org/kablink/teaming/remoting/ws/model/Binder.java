@@ -39,6 +39,7 @@ public class Binder extends DefinableEntity implements Serializable {
     protected Long preDeletedWhen;
     protected Long preDeletedBy;
     protected String path;
+    protected String family;
 
     public Boolean isPreDeleted() {
     	return ((null != preDeleted) && preDeleted);
@@ -66,5 +67,12 @@ public class Binder extends DefinableEntity implements Serializable {
 	}
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public String getFamily() {
+		return family;
+	}
+	public void setFamily(String family) {
+		this.family = family;
 	}
 }
