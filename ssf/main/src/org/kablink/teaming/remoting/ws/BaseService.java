@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.remoting.ws;
 
+import static org.kablink.util.search.Constants.FAMILY_FIELD;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.apache.lucene.document.Field;
 import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -324,6 +327,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		// Binder common
 		fillDefinableEntityModel(binderModel, binder);
 		binderModel.setPath(binder.getPathName());
+    	org.dom4j.Document def = binder.getEntryDefDoc();
+    	if(def != null) {
+	    	binderModel.setFamily(DefinitionUtils.getFamily(def));
+    	}
 	}
 	protected void fillUserModel(org.kablink.teaming.remoting.ws.model.User userModel, User user) {
 		// Principal common

@@ -549,6 +549,7 @@ public abstract class WSClientBase {
 	void printBinder(Binder binder) {
 		printDefinableEntity(binder);
 		System.out.println("Path: " + binder.getPath());
+		System.out.println("Family: " + binder.getFamily());
 	}
 	
 	void printUser(User user) {
