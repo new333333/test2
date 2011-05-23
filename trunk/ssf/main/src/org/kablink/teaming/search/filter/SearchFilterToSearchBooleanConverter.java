@@ -826,11 +826,15 @@ public class SearchFilterToSearchBooleanConverter {
     					if (value.trim().equals("")) value = "2*";
     				}
     				
-	    			if (value.contains("*")) {
-	    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "false");
-	    			} else {
-	    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
-	    			}
+    				String exactPhrase = "true";
+    				if((valueType == null && value.contains("*")) ||
+    						"text".equals(valueType))
+    					exactPhrase = "false";
+    				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, exactPhrase);
+    				
+    				if(valueType != null)
+    					field.addAttribute(Constants.VALUE_TYPE_ATTRIBUTE, valueType);
+    				
 	    			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    			if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
 	    				child.setText(RequestContextHolder.getRequestContext().getUserId().toString());
