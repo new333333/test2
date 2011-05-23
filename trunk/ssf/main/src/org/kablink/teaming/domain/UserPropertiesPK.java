@@ -84,4 +84,7 @@ public class UserPropertiesPK implements Serializable {
 	public int hashCode() {
 		return 31*binderId.hashCode() + principalId.hashCode();
 	}
+	public String toString() {
+		return "[principalId:" + principalId + ",binderId:" + binderId + "]";
+	}
 }
