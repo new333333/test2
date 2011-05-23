@@ -41,6 +41,7 @@ public class Constants {
 	public static final String ASCENDING_ATTRIBUTE = "ascending";
 	public static final String TAG_NAME_ATTRIBUTE = "tagname";
 	public static final String LANGUAGE_ATTRIBUTE = "language";
+	public static final String VALUE_TYPE_ATTRIBUTE = "valuetype";
 	public static final String QUERY_ELEMENT = "QUERY";
 	public static final String AND_ELEMENT = "AND";
 	public static final String OR_ELEMENT = "OR";
