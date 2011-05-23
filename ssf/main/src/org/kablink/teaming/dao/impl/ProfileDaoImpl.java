@@ -1066,7 +1066,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	    				se.getRootCause() instanceof ClassNotFoundException) {
 					//bad serialized data - get rid of it
 	    			executePropertiesDelete(id);
-				} else throw se;
+				} 
+	    		else if(se.getRootCause() instanceof java.io.EOFException) {
+	    			// the data in the blob is corrupt; this most likely means last update failed because
+	    			// the data exceeded the size limit - there's no way we can fix up this data, get rid of it
+	    			// (this is meant to be one time only cleanup on a system that already has corrupt lobs)
+	    			logger.error("User properties for " + id.toString() + " seems corrupt: Resetting it to empty value", se);
+	    			executePropertiesDelete(id);	    			
+	    		}
+	    		else {
+	    			throw se;
+	    		}
 			}
 	   		if (uProps == null) {
 				uProps = new UserProperties(id);
@@ -1098,7 +1108,17 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	    				se.getRootCause() instanceof ClassNotFoundException) {
 	    			//	bad serialized data - get rid of it
 	    			executePropertiesDelete(id);
-	    		} else throw se;
+	    		} 
+	    		else if(se.getRootCause() instanceof java.io.EOFException) {
+	    			// the data in the blob is corrupt; this most likely means last update failed because
+	    			// the data exceeded the size limit - there's no way we can fix up this data, get rid of it
+	    			// (this is meant to be one time only cleanup on a system that already has corrupt lobs)
+	    			logger.error("User properties for " + id.toString() + " seems corrupt: Resetting it to empty value", se);
+	    			executePropertiesDelete(id);	    			
+	    		}
+	    		else {
+	    			throw se;
+	    		}
 	    	}
 			if (uProps == null) {
 	        	uProps = new UserProperties(id);
@@ -1130,7 +1150,26 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		else schema = "";
     		statement = session.connection().createStatement();
     		statement.executeUpdate("delete from " + schema + "SS_UserProperties where principalId=" + id.getPrincipalId() + 
-    				" and binderId=" + id.getBinderId());;
+    				" and binderId=" + id.getBinderId());
+	   	} catch (SQLException sq) {
+	    		throw new HibernateException(sq);
+	   	} finally {
+	   		try {if (statement != null) statement.close();} catch (Exception ex) {};
+	   		session.close();
+	   	}
+
+	}
+	private void executeSeenmapDelete(final Long userId) {
+		//need to execute in new session, so it gets commited
+       	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+		Statement statement = null;
+    	try {
+    		String schema = ((SessionFactoryImplementor)session.getSessionFactory()).getSettings().getDefaultSchemaName();
+    		if (Validator.isNotNull(schema)) schema = schema+".";
+    		else schema = "";
+    		statement = session.connection().createStatement();
+    		statement.executeUpdate("delete from " + schema + "SS_SeenMap where principalId=" + userId);
 	   	} catch (SQLException sq) {
 	    		throw new HibernateException(sq);
 	   	} finally {
@@ -1423,7 +1462,22 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	public SeenMap loadSeenMap(Long userId) {
 		long begin = System.nanoTime();
 		try {
-	   		SeenMap seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);
+			SeenMap seen = null;
+			try {
+				seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);
+			}
+			catch(HibernateSystemException se) {
+				if(se.getRootCause() instanceof java.io.EOFException) {
+	    			// the data in the blob is corrupt; this most likely means last update failed because
+	    			// the data exceeded the size limit - there's no way we can fix up this data, get rid of it
+	    			// (this is meant to be one time only cleanup on a system that already has corrupt lobs)
+	    			logger.error("Seen map for user " + userId + " seems corrupt: Resetting it to empty value", se);
+	    			executeSeenmapDelete(userId);	    								
+				}
+				else {
+					throw se;
+				}
+			}
 	   		if (seen == null) {
 	   			seen = new SeenMap(userId);
 	   			//quick write
