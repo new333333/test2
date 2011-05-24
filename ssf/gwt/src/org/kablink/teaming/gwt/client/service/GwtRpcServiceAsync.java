@@ -291,6 +291,6 @@ public interface GwtRpcServiceAsync
 
 	// Take the given html and replace any Vibe markup with the appropriate html.
 	// For example, replace {{attachmentUrl: someimagename}} with the url to the image.
-	public void markupStringReplacement( HttpRequestInfo ri, String binderId, String html, AsyncCallback<String> callback );
+	public void markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type, AsyncCallback<String> callback );
 	
 }// end GwtRpcServiceAsync

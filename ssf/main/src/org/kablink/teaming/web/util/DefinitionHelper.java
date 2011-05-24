@@ -52,7 +52,6 @@ import java.util.regex.Pattern;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,7 +76,6 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -1085,6 +1083,10 @@ public class DefinitionHelper {
     			{
     				Description desc;
     				
+    				// ',', '=' and ';' characters have been replaced with "%2c", "%3d" and "%3b".
+    				// We need to unescape the html.
+   					html = decodeSeparators( html );
+    					
     				desc = new Description( html, Description.FORMAT_HTML );
     				
 					// Deal with any markup language transformations before storing the html
@@ -1093,8 +1095,10 @@ public class DefinitionHelper {
 					MarkupUtil.scanDescriptionForICLinks( desc );
 					MarkupUtil.scanDescriptionForYouTubeLinks( desc );
 					MarkupUtil.scanDescriptionForExportTitleUrls( desc );
-						
-					mashupValues[i] = ObjectKeys.MASHUP_TYPE_HTML + ",data=" + desc.getText();
+
+					// Replace ',' with "%2c", '=' with "%3d" and ';' with "%3b"
+					html = encodeSeparators( desc.getText() );
+					mashupValues[i] = ObjectKeys.MASHUP_TYPE_HTML + ",data=" + html;
     			}
     		}
     	}
@@ -1105,6 +1109,53 @@ public class DefinitionHelper {
     	}
     	return result;
     }
+
+	/**
+	 * Replace all occurrences of "%2c" with ',' and all occurrences of "%3b" with ';'
+	 */
+	public static String decodeSeparators( String encodedData )
+	{
+		String results = null;
+		
+		if ( encodedData != null )
+		{
+			results = encodedData.replaceAll( "%2c", "," );
+			results = results.replaceAll( "%3b", ";" );
+			results = results.replaceAll( "%3d", "=" );
+		}
+		
+		return results;
+	}
+	
+	
+	/**
+	 * Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b" and
+	 * all occurrences of '=' with "%3d".
+	 */
+	public static String encodeSeparators( String configData )
+	{
+		StringBuffer finalStr;
+		int i;
+		
+		finalStr = new StringBuffer();
+		for (i = 0; i < configData.length(); ++i)
+		{
+			char nextCh;
+			
+			nextCh = configData.charAt( i );
+			if ( nextCh == ',' )
+				finalStr.append( "%2c" );
+			else if ( nextCh == ';' )
+				finalStr.append( "%3b" );
+			else if ( nextCh == '=' )
+				finalStr.append( "%3d" );
+			else
+				finalStr.append( nextCh );
+		}
+
+		return finalStr.toString();
+	}
+
 
     public static String fixupMashupCanvasForExport(String mashupValue) {
 		ZoneInfo zoneInfo = ExportHelper.getZoneInfo();

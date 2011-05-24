@@ -263,6 +263,7 @@ public class ConfigData
 		{
 			results = encodedData.replaceAll( "%2c", "," );
 			results = results.replaceAll( "%3b", ";" );
+			results = results.replaceAll( "%3d", "=" );
 		}
 		
 		return results;
@@ -287,7 +288,8 @@ public class ConfigData
 	
 	
 	/**
-	 * Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b".
+	 * Replace all occurrences of ',' with "%2c" and all occurrences of ';' with "%3b" and
+	 * all occurrences of '=' with "%3d".
 	 */
 	public static String encodeSeparators( String configData )
 	{
@@ -304,6 +306,8 @@ public class ConfigData
 				finalStr.append( "%2c" );
 			else if ( nextCh == ';' )
 				finalStr.append( "%3b" );
+			else if ( nextCh == '=' )
+				finalStr.append( "%3d" );
 			else
 				finalStr.append( nextCh );
 		}

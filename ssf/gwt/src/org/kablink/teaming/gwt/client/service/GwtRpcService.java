@@ -298,6 +298,6 @@ public interface GwtRpcService extends RemoteService
 
 	// Take the given html and replace any Vibe markup with the appropriate html.
 	// For example, replace {{attachmentUrl: someimagename}} with the url to the image.
-	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html ) throws GwtTeamingException;
+	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException;
 	
 }// end GwtRpcService
