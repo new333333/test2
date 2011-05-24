@@ -3140,8 +3140,8 @@ a.gwtTaskToolsButton_WidgetAnchor:hover
 	font-size: 0.75em; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
-	padding-left: .5em;
-	padding-right: .5em;
+	padding-left: 0;
+	padding-right: .7em;
 	border-bottom: 1px solid #D2D5D1; 
 	white-space: nowrap;
 	background:url(images/blends/gray_blend8_28.png) repeat-x;
@@ -3163,7 +3163,7 @@ a.sort-column:hover {
 	{ 
 	background-color: #fff;
 	font-size:.75em;
-	padding: 3px 8px;
+	padding: 2px 6px 2px 0px;
 	border-bottom: 1px solid #d2d5d1;
 	white-space: nowrap;
 	}
@@ -3234,6 +3234,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-name
 {
+	
 }
 /* End:  GWT Task Folder Listing styles. */
 
