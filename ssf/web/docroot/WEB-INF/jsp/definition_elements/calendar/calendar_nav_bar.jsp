@@ -93,31 +93,26 @@
 						<td style="width: 200px; padding: 0 10px;">
 							<span id="ss_calViewDatesDescriptions${prefix}"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
 						</td>
-					</tr>
-				</table>
-			</td>
-			<c:set var="gotoId" value="ss_goto${prefix}" />
-			<td>
-				<table cellpadding="0" cellspacing="0">
-					<tr>
-						<td>
-								<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" method="post">
+						<c:set var="gotoId" value="ss_goto${prefix}" />
+						<td style="padding-right: 4px;">
+								<form name="ssCalNavBar${prefix}" id="ssCalNavBar${prefix}" action="${goto_form_url}" method="post" style="height: 25px;">
 									<ssf:datepicker formName="ssCalNavBar${prefix}" showSelectors="true" 
 									 popupDivId="ss_calDivPopup${prefix}" id="${gotoId}" initDate="${ssCurrentDate}"
 									 callbackRoutine="ss_getMonthCalendarEvents${prefix}" immediateMode="true" 
 									 altText='<%= NLT.get("calendar.view.popupAltText") %>' />
 								</form>
-						<td>
-							<span class="ss_calendarNaviBarOption ss_nobghover">
-								<a class="ss_calTodaySelectButton" id="ss_calTodaySelectButton${prefix}" href="javascript: ;" onclick="setMultipleValues_${gotoId}('<%= currentYear %>','<%= currentMonth %>','<%= currentDay %>'); return false;">
-									<img <ssf:alt tag="calendar.view.alt.navToToday"/> title="<ssf:nlt tag="calendar.view.alt.navToToday"/>" src="<html:imagesPath/>pics/1pix.gif" /></a>
-							</span>
-							<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>
-						</td>
+						</td>	
 					</tr>
-				</table>		
+				</table>
 			</td>
-			<td class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 10px;">
+			<td>
+				<span class="ss_calendarNaviBarOption ss_nobghover">
+					<a class="ss_calTodaySelectButton" id="ss_calTodaySelectButton${prefix}" href="javascript: ;" onclick="setMultipleValues_${gotoId}('<%= currentYear %>','<%= currentMonth %>','<%= currentDay %>'); return false;">
+						<img <ssf:alt tag="calendar.view.alt.navToToday"/> title="<ssf:nlt tag="calendar.view.alt.navToToday"/>" src="<html:imagesPath/>pics/1pix.gif" /></a>
+				</span>
+				<div id="ss_calDivPopup${prefix}" class="ss_calPopupDiv"></div>
+			</td>
+			<td class="ss_calendarNaviBarOption ss_calendarNaviBarOptionMiddleImg ss_nobghover" style="padding: 0 10px; white-space: nowrap;">
 					<a class="ss_calDaySelectButton" id="ss_calDaySelectButton${prefix}" href="javascript: ;" onclick="ss_calendar_${prefix}.switchView('daydelta'); return false;"><img <ssf:alt tag="alt.view1Day"/> title="<ssf:nlt tag="alt.view1Day"/>" 
 						src="<html:imagesPath/>pics/1pix.gif" /></a>
 					

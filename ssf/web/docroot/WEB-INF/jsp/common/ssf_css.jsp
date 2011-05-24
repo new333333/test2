@@ -3108,7 +3108,7 @@ a.ss_calDaySelectButton img,
 	a.ss_calModeSelectButton img, a.ss_calModeSelectButtonActive img {
 	width: 25px;
 	height: 25px;
-	margin: 0 5px 0 0;
+	margin: 0 2px 0 0;
 	border: 0px;
 	vertical-align: middle;
 }
@@ -3538,7 +3538,6 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_calendarNaviBarOption {	
-	padding: 0px 4px;
 	margin: 0px;	
 }
 
@@ -3562,6 +3561,7 @@ div.ss_calendarNaviBar {
 .ss_calendarNaviBar .ss_calHoursSelectorMenu {
  <c:if test="<%= isIE %>">
 	padding-top: 5px;
+	white-space: nowrap;
  </c:if>
 }
 
@@ -3580,6 +3580,10 @@ div.ss_calendarNaviBar {
 }
 
 .ss_calendarNaviBar .ss_calendarNaviBarOption a.ss_calendarButton img {
+ <c:if test="<%= isIE %>">
+	margin-top: 10px;
+ </c:if>
+
 }
 
 .ss_calendarNaviBar .ss_calViewDatesDescriptions td {	
