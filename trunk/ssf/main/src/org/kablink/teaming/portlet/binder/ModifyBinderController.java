@@ -42,6 +42,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -53,6 +54,8 @@ import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.MultipartFileSupport;
+import org.kablink.teaming.portletadapter.portlet.ActionRequestImpl;
+import org.kablink.teaming.portletadapter.portlet.PortletRequestImpl;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.TreeHelper;
@@ -75,6 +78,27 @@ public class ModifyBinderController extends AbstractBinderController {
 	throws Exception {
 
 		Map formData = request.getParameterMap();
+   		
+		// The call to request.getParameterMap() is unescaping the mashup data.  What came in as html,data=<p>%2c%3b%3d</p>;
+   		// is unescaped to html,data=<p>,;=</p>;  This causes problems later in DefinitionHelper.fixUpMashupConfiguration()
+   		// See bug 695289
+   		{
+   			HttpServletRequest servletReq;
+   			String mashupStr;
+   			
+   			servletReq = WebHelper.getHttpServletRequest( request );
+   			
+   			// Get the mashup string as it was passed to us.
+   			mashupStr = servletReq.getParameter( "mashup" );
+   			
+   			// Put this escaped string into the variable, mid, which is passed to modifyBinder()
+   			if ( mashupStr != null && mashupStr.length() > 0 )
+   			{
+   				formData = new HashMap( formData );
+   				formData.put( "mashup", mashupStr );
+   			}
+   		}
+
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -129,6 +153,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		   				mid = new MapInputData(formDataPlus);
 		   			}
 		   		}
+		   		
 		   		try {
 		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts, null);				
 		   			if (formData.containsKey("okBtn"))

@@ -166,7 +166,7 @@ public class HtmlProperties
 			// For example, replace {{attachmentUrl: somename.png}} with a url that looks like:
 			// http://somehost/ssf/s/readFile/.../somename.png.
 			m_isRpcInProgress = true;
-			GwtTeaming.getRpcService().markupStringReplacement( HttpRequestInfo.createHttpRequestInfo(), binderId, m_markedUpHtml, callback );
+			GwtTeaming.getRpcService().markupStringReplacement( HttpRequestInfo.createHttpRequestInfo(), binderId, m_markedUpHtml, "form", callback );
 		}
 	}
 	

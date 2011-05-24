@@ -2503,7 +2503,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * Parse the given html and replace any markup with the appropriate url.  For example,
 	 * replace {{attachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
 	 */
-	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html ) throws GwtTeamingException
+	public String markupStringReplacement( HttpRequestInfo ri, String binderId, String html, String type ) throws GwtTeamingException
 	{
 		String newHtml;
 		
@@ -2526,7 +2526,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 					// Parse the given html and replace any markup with the appropriate url.  For example,
 					// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, "view" );
+					newHtml = MarkupUtil.markupStringReplacement( null, null, getRequest( ri ), null, binder, html, type );
 				}
 			}
 			catch (Exception e)
