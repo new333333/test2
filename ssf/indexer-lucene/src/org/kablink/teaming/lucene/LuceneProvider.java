@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -149,8 +150,20 @@ public class LuceneProvider extends IndexSupport {
 	}
 	
 	private Analyzer getDefaultAnalyzer() {
-		if(defaultAnalyzer == null)
-			defaultAnalyzer = VibeIndexAnalyzer.getInstance();
+		if(defaultAnalyzer == null) {
+			Analyzer analyzer = VibeIndexAnalyzer.getInstance();
+			if(analyzer instanceof VibeIndexAnalyzer) {
+				// For title field, we disable stopword filtering so that type-to-find
+				// functionality can work properly.
+				((VibeIndexAnalyzer)analyzer).setStopSet(null);
+				PerFieldAnalyzerWrapper pfAnalyzer = new PerFieldAnalyzerWrapper(VibeIndexAnalyzer.getInstance());
+				pfAnalyzer.addAnalyzer(Constants.TITLE_FIELD, analyzer);
+				defaultAnalyzer = pfAnalyzer;
+			}
+			else {
+				defaultAnalyzer = analyzer;
+			}
+		}
 		return defaultAnalyzer;
 	}
 	

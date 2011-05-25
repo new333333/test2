@@ -183,8 +183,15 @@ public class TypeToFindAjaxController extends SAbstractController {
 		//Build the search query
 		SearchFilter searchTermFilter = new SearchFilter();
 		
+	    char[] characters = searchText.toCharArray();
+	    for(int i = 0; i < characters.length; i++) {
+	    	if(!Character.isLetterOrDigit(characters[i]) && characters[i] != '*')
+	    		characters[i] = ' ';
+	    }
+	    searchText = new String(characters);
+	    
 	    searchText = searchText.replaceAll(" \\*", "\\*").trim();
-	     
+	    
 		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
 		} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
