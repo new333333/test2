@@ -273,7 +273,7 @@ public class SearchFilter {
 		
 	}
 	public void addTitleFilter(String searchTerm) {
-		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm.toLowerCase());
 	}
 	
 	public void addLoginNameFilter(String searchTerm) {

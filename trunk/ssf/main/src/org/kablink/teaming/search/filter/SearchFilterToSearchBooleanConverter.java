@@ -828,7 +828,8 @@ public class SearchFilterToSearchBooleanConverter {
     				
     				String exactPhrase = "true";
     				if((valueType == null && value.contains("*")) ||
-    						"text".equals(valueType))
+    						"text".equals(valueType) ||
+    						Constants.TITLE_FIELD.equals(elementName))
     					exactPhrase = "false";
     				field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, exactPhrase);
     				

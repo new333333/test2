@@ -84,7 +84,16 @@ public class SearchObject {
 		BooleanQuery.setMaxClauseCount(SPropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES));
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
-			QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, VibeQueryAnalyzer.getInstance());
+			Analyzer analyzer = VibeQueryAnalyzer.getInstance();
+			if(analyzer instanceof VibeQueryAnalyzer) {
+				// For title field, we disable stopword filtering so that type-to-find
+				// functionality can work properly.
+				((VibeQueryAnalyzer)analyzer).setStopSet(null);
+				PerFieldAnalyzerWrapper pfAnalyzer = new PerFieldAnalyzerWrapper(VibeQueryAnalyzer.getInstance());
+				pfAnalyzer.addAnalyzer(Constants.TITLE_FIELD, analyzer);
+				analyzer = pfAnalyzer;
+			}	
+			QueryParser qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, analyzer);
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
 			qp = new QueryParser(Version.LUCENE_29, Constants.ALL_TEXT_FIELD, new WhitespaceAnalyzer());

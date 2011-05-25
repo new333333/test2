@@ -109,6 +109,46 @@ public abstract class VibeAnalyzer extends Analyzer {
 		init();
 	}
 
+	public String getStemmerName() {
+		return stemmerName;
+	}
+
+	public void setStemmerName(String stemmerName) {
+		this.stemmerName = stemmerName;
+	}
+
+	public Set<String> getStopSet() {
+		return stopSet;
+	}
+
+	public void setStopSet(Set<String> stopSet) {
+		this.stopSet = stopSet;
+	}
+
+	public boolean isFoldToAscii() {
+		return foldToAscii;
+	}
+
+	public void setFoldToAscii(boolean foldToAscii) {
+		this.foldToAscii = foldToAscii;
+	}
+
+	public boolean isDecomposeToken() {
+		return decomposeToken;
+	}
+
+	public void setDecomposeToken(boolean decomposeToken) {
+		this.decomposeToken = decomposeToken;
+	}
+
+	public boolean isUseStandard() {
+		return useStandard;
+	}
+
+	public void setUseStandard(boolean useStandard) {
+		this.useStandard = useStandard;
+	}
+
 	private void init() {
 		setOverridesTokenStreamMethod(getClass());
 	}
