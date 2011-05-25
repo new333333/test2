@@ -540,7 +540,16 @@ function ss_openTitleUrl(obj, showInParent) {
 			// This is a request to just open the url in the parent (if it
 			// exists and if not in the content frame)
 			var windowName = self.window.name    
-			if (windowName.indexOf("gwtContentIframe") == 0) {
+			//alert( 'windowName: ' + windowName );
+			if ( windowName == 'ss_showentryframe' )
+			{
+				// We are opening the entry from within the "show entry" frame.  Just change
+				// the url of the "show entry" frame to the new url.
+				// Fix for bug 658648
+				self.location.href = obj.href;
+				return false;
+			}
+			else if (windowName.indexOf("gwtContentIframe") == 0) {
 				self.location.href = obj.href;
 				return false;
 			} else if (typeof top.window.frames["gwtContentIframe"] != "undefined") {
