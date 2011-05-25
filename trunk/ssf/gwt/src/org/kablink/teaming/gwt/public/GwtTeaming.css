@@ -1292,6 +1292,7 @@ body, table td, select
 .lpeIFrameWidget
 {
 	border: 1px solid #AEAEAE;
+	overflow: auto;
 	padding: 6px;
 }
 
