@@ -1606,9 +1606,12 @@ div.ss_dashboardProtoDropTarget {
   }
 
 .ss_dashboard_config {
-  margin: 10px;
+  margin: 10px 1px;
   border: 1px solid ${ss_form_border_color};
-  background-color: ${ss_form_component_background_color};
+  background-color: #fff;
+  padding: 5px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
 <c:if test="<%= isIE %>">
   zoom:1; /* a workaround IE bug - font color not display correctly */
 </c:if>
