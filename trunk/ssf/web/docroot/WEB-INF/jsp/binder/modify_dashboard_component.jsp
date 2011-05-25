@@ -88,9 +88,9 @@
 		<p class="ss_bold"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></p>
 		<div style="margin:5px;">
 			<label for="title"><span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span><br/></label>
-			<input type="text" name="title" id="title" size="80" value="${ssDashboard.dashboard.components[id].title}"/><br/>
-			<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span><br/>
-			<div class="ss_indent_medium">
+			<input type="text" name="title" id="title" size="80" value="${ssDashboard.dashboard.components[id].title}"/>
+			<div class="ss_bold margintop2"><ssf:nlt tag="dashboard.componentStyle"/></div>
+			<div class="ss_indent_medium ">
 				<c:set var="checked" value=""/>
 				<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
 				              ssDashboard.dashboard.components[id].displayStyle != 'none'}">
