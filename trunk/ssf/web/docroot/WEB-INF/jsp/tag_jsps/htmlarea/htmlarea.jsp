@@ -87,29 +87,32 @@ var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
 --%><c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" ><%--
 --%><option value='<ssf:escapeJavaScript value="${selection.fileItem.name}"/>'>${selection.fileItem.name}</option><%--
 --%></c:forEach></select>";
+
+<c:choose>
+	<c:when test="${ssUser.locale.language == 'da'}"><c:set var="ss_user_lang" value="da" /></c:when>
+	<c:when test="${ssUser.locale.language == 'de'}"><c:set var="ss_user_lang" value="de" /></c:when>
+	<c:when test="${ssUser.locale.language == 'es'}"><c:set var="ss_user_lang" value="es" /></c:when>
+	<c:when test="${ssUser.locale.language == 'fr'}"><c:set var="ss_user_lang" value="fr" /></c:when>
+	<c:when test="${ssUser.locale.language == 'hu'}"><c:set var="ss_user_lang" value="hu" /></c:when>
+	<c:when test="${ssUser.locale.language == 'it'}"><c:set var="ss_user_lang" value="it" /></c:when>
+	<c:when test="${ssUser.locale.language == 'ja'}"><c:set var="ss_user_lang" value="ja" /></c:when>
+	<c:when test="${ssUser.locale.language == 'nl'}"><c:set var="ss_user_lang" value="nl" /></c:when>
+	<c:when test="${ssUser.locale.language == 'pl'}"><c:set var="ss_user_lang" value="pl" /></c:when>
+	<c:when test="${ssUser.locale.language == 'pt'}"><c:set var="ss_user_lang" value="pt" /></c:when>
+	<c:when test="${ssUser.locale.language == 'ru'}"><c:set var="ss_user_lang" value="ru" /></c:when>
+	<c:when test="${ssUser.locale.language == 'uk'}"><c:set var="ss_user_lang" value="uk" /></c:when>
+	<c:when test="${ssUser.locale.language == 'sv'}"><c:set var="ss_user_lang" value="sv" /></c:when>
+	<c:when test="${ssUser.locale.country == 'TW'}"><c:set var="ss_user_lang" value="tw" /></c:when>
+	<c:when test="${ssUser.locale.country == 'CN'}"><c:set var="ss_user_lang" value="zh" /></c:when>
+	<c:when test="${ssUser.locale.language == 'zh'}"><c:set var="ss_user_lang" value="zh" /></c:when>
+	<c:otherwise><c:set var="ss_user_lang" value="en" /></c:otherwise>
+</c:choose>
+
 tinyMCE.init({
   paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
   mode: "specific_textareas", editor_selector: "mceEditable_standard",
-  theme : "advanced", 
-<c:choose><%--
-    --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'es'}">language: 'es',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'fr'}">language: 'fr',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'hu'}">language: 'hu',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'it'}">language: 'it',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'ja'}">language: 'ja',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'nl'}">language: 'nl',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'pl'}">language: 'pl',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'pt'}">language: 'pt',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'ru'}">language: 'ru',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
-    --%><c:when test="${ssUser.locale == Locale.TAIWAN}">language: 'tw',</c:when><%--
-    --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
-    --%><c:otherwise>language: 'en',</c:otherwise><%--
---%></c:choose>
+  theme : "advanced",
+  language: "${ss_user_lang}",
   content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
   relative_urls: false, 
   remove_script_host : false,
@@ -139,7 +142,7 @@ tinyMCE.init({
   theme_advanced_resizing_min_height : 100,
   theme_advanced_resizing_use_cookie : true});
 
-tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
+tinyMCE.addI18n('${ss_user_lang}.ss_addimage_dlg',{
 overQuota : "${ss_quotaMessage} ",
 srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
@@ -149,16 +152,16 @@ imageSelectBox : ss_imageSelections${element_id},
 missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 });
 
-tinyMCE.addI18n('${ssUser.locale.language}.pdw',{
+tinyMCE.addI18n('${ss_user_lang}.pdw',{
 	description : "<ssf:nlt tag="editor.pdw.desc"/>"
 	});
-tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage',{
+tinyMCE.addI18n('${ss_user_lang}.ss_addimage',{
 desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
 });
-tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
+tinyMCE.addI18n('${ss_user_lang}.ss_wikilink',{
 desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 });
-tinyMCE.addI18n('${ssUser.locale.language}.ss_youtube',{
+tinyMCE.addI18n('${ss_user_lang}.ss_youtube',{
 desc : "<ssf:nlt tag="editor.youtube.title"/>",
 youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
 dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
@@ -167,26 +170,8 @@ dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
 tinyMCE.init({
 	paste_postprocess: function(pi,o){o.node.innerHTML=TinyMCEWebKitPasteFixup("paste_postprocess",o.node.innerHTML);},
 	mode: "specific_textareas", editor_selector: "mceEditable_minimal",
-	theme : "simple", 
-	<c:choose><%--
-	    --%><c:when test="${ssUser.locale.language == 'da'}">language: 'da',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'de'}">language: 'de',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'es'}">language: 'es',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'fr'}">language: 'fr',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'hu'}">language: 'hu',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'it'}">language: 'it',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'ja'}">language: 'ja',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'nl'}">language: 'nl',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'pl'}">language: 'pl',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'pt'}">language: 'pt',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'ru'}">language: 'ru',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'uk'}">language: 'uk',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'sv'}">language: 'sv',</c:when><%--
-    	--%><c:when test="${ssUser.locale == Locale.TAIWAN}">language: 'tw',</c:when><%--
-	    --%><c:when test="${ssUser.locale.language == 'zh'}">language: 'zh',</c:when><%--
-	    --%><c:otherwise>language: 'en',</c:otherwise><%--
-	--%></c:choose>
+	theme : "simple",
+	language: "${ss_user_lang}",
 	  content_css: "<ssf:url webPath="viewCss"><ssf:param name="sheet" value="editor"/></ssf:url>",
 	  relative_urls: false, 
 	  remove_script_host : false,
@@ -214,7 +199,7 @@ tinyMCE.init({
 	  theme_advanced_resizing_min_height : 100,
 	  theme_advanced_resizing_use_cookie : true});
 
-	tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage_dlg',{
+	tinyMCE.addI18n('${ss_user_lang}.ss_addimage_dlg',{
 	overQuota : "${ss_quotaMessage} ",
 	srcFile : "<ssf:nlt tag="editor.addimage.srcFile"/>",
 	addFile : "<ssf:nlt tag="editor.addimage.addFile"/>",
@@ -224,16 +209,16 @@ tinyMCE.init({
 	missing_img : "<ssf:nlt tag="editor.addimage.noImage"/>"
 	});
 
-	tinyMCE.addI18n('${ssUser.locale.language}.pdw',{
+	tinyMCE.addI18n('${ss_user_lang}.pdw',{
 		description : "<ssf:nlt tag="editor.pdw.desc"/>"
 		});
-	tinyMCE.addI18n('${ssUser.locale.language}.ss_addimage',{
+	tinyMCE.addI18n('${ss_user_lang}.ss_addimage',{
 		desc_no : "<ssf:nlt tag="editor.addimage.overQuota"/>"
 		});
-	tinyMCE.addI18n('${ssUser.locale.language}.ss_wikilink',{
+	tinyMCE.addI18n('${ss_user_lang}.ss_wikilink',{
 	desc : "<ssf:nlt tag="editor.wikilink.title"/>"
 	});
-	tinyMCE.addI18n('${ssUser.locale.language}.ss_youtube',{
+	tinyMCE.addI18n('${ss_user_lang}.ss_youtube',{
 	desc : "<ssf:nlt tag="editor.youtube.title"/>",
 	youTubeUrl : "<ssf:nlt tag="__youTubeUrl"/>",
 	dimensions : "<ssf:nlt tag="__youTubeDimensions"/>"
