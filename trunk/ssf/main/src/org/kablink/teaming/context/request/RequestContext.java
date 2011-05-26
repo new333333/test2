@@ -33,6 +33,7 @@
 package org.kablink.teaming.context.request;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.dao.ProfileDao;
@@ -41,6 +42,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.accesstoken.AccessToken.BinderAccessConstraints;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
@@ -81,6 +83,9 @@ public class RequestContext {
      * a request object is accessed from a single thread. 
      */
     private Map<String,Object> requestCache;
+    
+    private List<WorkAreaOperation> increaseByRights;
+    private List<WorkAreaOperation> decreaseByRights;
     
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
@@ -296,4 +301,21 @@ public class RequestContext {
 	public void setCacheEntry(String key, Object value) {
 		requestCache.put(key, value);
 	}
+
+	public List<WorkAreaOperation> getIncreaseByRights() {
+		return increaseByRights;
+	}
+
+	public void setIncreaseByRights(List<WorkAreaOperation> increaseByRights) {
+		this.increaseByRights = increaseByRights;
+	}
+
+	public List<WorkAreaOperation> getDecreaseByRights() {
+		return decreaseByRights;
+	}
+
+	public void setDecreaseByRights(List<WorkAreaOperation> decreaseByRights) {
+		this.decreaseByRights = decreaseByRights;
+	}
+	
 }
