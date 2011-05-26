@@ -850,7 +850,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 								.add(Projections.property("sendDate"))
 								.add(Projections.property("from"))
 								.add(Projections.property("subj"))
-								.add(Projections.property("comment"))
+								.add(Projections.property("comments"))
 								.add(Projections.property("typeStr"))
 								.add(Projections.property("statusStr"))
 								.add(Projections.property("toEmailAddressesStr"))
