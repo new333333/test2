@@ -59,6 +59,9 @@ import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.security.runwith.RunWithCallback;
+import org.kablink.teaming.security.runwith.RunWithTemplate;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.Utils;
@@ -102,12 +105,21 @@ public class AddFolderController extends SAbstractController {
 			//Now process the rest of the form
 			if (newBinder != null) {
 				//See if there are any team members specified
+				final boolean inheritTeamMembership;
 				if (PortletRequestUtils.getStringParameter(request, "inheritFromParent", "").equals("no")) {
 					//Save the inheritance state
-					getBinderModule().setTeamMembershipInherited(newId, false);
+					inheritTeamMembership = false;
 				} else {
-					getBinderModule().setTeamMembershipInherited(newId, true);
+					inheritTeamMembership = true;
 				}
+				final Long newIdCopy = newId;
+				RunWithTemplate.runWith(new RunWithCallback() {
+					public Object runWith() {
+						getBinderModule().setTeamMembershipInherited(newIdCopy, inheritTeamMembership);			
+						return null;
+					}
+				}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+				
 				if (!newBinder.isTeamMembershipInherited()) {
 					Set memberIds = new HashSet();
 					if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));

@@ -149,30 +149,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	        
         }    	
     }
-    /*
-    public void checkWorkAreaAccessControl(WorkArea workArea, 
-            WorkAreaOperation workAreaOperation) throws AccessControlException {
-        if(workArea.isFunctionMembershipInherited()) {
-            WorkArea parentWorkArea = workArea.getParentWorkArea();
-            if(parentWorkArea == null)
-                throw new InternalException("Cannot inherit function membership when it has no parent");
-            else
-                checkWorkAreaAccessControl(parentWorkArea, workAreaOperation);
-        }
-        else {
-	        Long zoneName = RequestContextHolder.getRequestContext().getZoneName();
-	        
-	        Set membersToLookup = RequestContextHolder.getRequestContext().getPrincipalIds();
-	        
-	        List functions = getFunctionManager().getFunctions(zoneName, workAreaOperation);
-	        
-	        boolean match = getWorkAreaFunctionMembershipManager().checkWorkAreaFunctionMembership(zoneName, workArea, membersToLookup, functions);
-	        
-	        if(!match)
-	            throw new AccessControlException("The user is not authorized to perform the operation '" + 
-	                    workAreaOperation.toString() + "' to the work area '" + workArea.getId() + "'");
-        }
-    }*/
     
     public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
@@ -236,16 +212,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if(application != null && !application.isTrusted()) {
 				membersToLookup = getProfileDao().getPrincipalIds(application);
 				// First, test against the zone-wide maximum set by the admin
-				if(!getWorkAreaFunctionMembershipManager()
-						.checkWorkAreaFunctionMembership(user.getZoneId(),
+				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
 								getCoreDao().loadZoneConfig(user.getZoneId()),
 								workAreaOperation,
 								membersToLookup)) {
 					return false;
 				}
 				// First test passed. Now test against the specified work area.
-				if(!getWorkAreaFunctionMembershipManager()
-						.checkWorkAreaFunctionMembership(user.getZoneId(),
+				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
 								workArea, 
 								workAreaOperation, 
 								membersToLookup)) {
@@ -294,8 +268,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				teamMembers = workAreaStart.getTeamMemberIds();
 			}
 			if (!Collections.disjoint(teamMembers, membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
-			return getWorkAreaFunctionMembershipManager()
-					.checkWorkAreaFunctionMembership(user.getZoneId(),
+			return checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, membersToLookup);
 		}
 
@@ -385,5 +358,21 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		else
 			return false;
 	}
+
+    private boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
+            WorkAreaOperation workAreaOperation, Set membersToLookup) {
+    	List<WorkAreaOperation> increaseByRights = RequestContextHolder.getRequestContext().getIncreaseByRights();
+    	List<WorkAreaOperation> decreaseByRights = RequestContextHolder.getRequestContext().getDecreaseByRights();
+    	
+    	if(increaseByRights != null && increaseByRights.contains(workAreaOperation))
+    		return true; // granted due to temporary boost
+    	
+    	if(decreaseByRights != null && decreaseByRights.contains(workAreaOperation))
+    		return false; // denied due to temporary setback
+    	
+    	// normal check
+    	return getWorkAreaFunctionMembershipManager().checkWorkAreaFunctionMembership
+    	(zoneId, workArea, workAreaOperation, membersToLookup);
+    }
 
 }

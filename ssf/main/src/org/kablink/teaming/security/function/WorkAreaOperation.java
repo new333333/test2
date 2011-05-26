@@ -124,17 +124,16 @@ public class WorkAreaOperation {
     	Instances.remove(name);
     }
     
-    /*
     public boolean equals(Object obj) {
         if(obj instanceof WorkAreaOperation)
-            return this.name.equals(((WorkAreaOperation) obj).name);
+            return this.name.equals(((WorkAreaOperation) obj).name) && (this.zoneWide == ((WorkAreaOperation)obj).zoneWide);
         else 
             return false;
     }
     
     public int hashCode() {
-        return this.name.hashCode();
-    }*/
+        return 31*Boolean.valueOf(zoneWide).hashCode() + this.name.hashCode();
+    }
     
     public String toString() {
         return getName();
