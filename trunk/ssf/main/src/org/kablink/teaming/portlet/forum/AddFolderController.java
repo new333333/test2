@@ -112,6 +112,13 @@ public class AddFolderController extends SAbstractController {
 				} else {
 					inheritTeamMembership = true;
 				}
+				// If we are still here, it means that the user had enough right to create a new binder.
+				// The following method for initializing team membership inheritance for the newly
+				// created binder normally requires "binder administration" right. Failing the user on
+				// this method who has the right to create a new binder is not our intention. 
+				// So, we temporarily grant the user with the "binder administration" right in case the
+				// user doesn't have it, so that we can successfully execute the following method without
+				// unintended side effect.
 				final Long newIdCopy = newId;
 				RunWithTemplate.runWith(new RunWithCallback() {
 					public Object runWith() {
