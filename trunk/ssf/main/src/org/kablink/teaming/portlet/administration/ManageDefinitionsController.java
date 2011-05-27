@@ -152,6 +152,8 @@ public class ManageDefinitionsController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 				url.setParameter("definitionType", String.valueOf(Definition.PROFILE_VIEW));
+				if ( binder != null )
+					url.setParameter( WebKeys.URL_BINDER_ID, binder.getId().toString() );
 				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 			}
 			
@@ -180,6 +182,8 @@ public class ManageDefinitionsController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 				url.setParameter("definitionType", String.valueOf(Definition.USER_WORKSPACE_VIEW));
+				if ( binder != null )
+					url.setParameter( WebKeys.URL_BINDER_ID, binder.getId().toString() );
 				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 			}
 			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
