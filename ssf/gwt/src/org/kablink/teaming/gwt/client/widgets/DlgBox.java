@@ -206,7 +206,9 @@ public abstract class DlgBox extends PopupPanel
 			}
 			
 			m_cancelBtn.setVisible( true );
-			m_okBtn.setVisible( false );
+			
+			if ( m_okBtn != null )
+				m_okBtn.setVisible( false );
 			
 			break;
 			
