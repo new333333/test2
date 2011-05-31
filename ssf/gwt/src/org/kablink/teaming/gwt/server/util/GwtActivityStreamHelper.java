@@ -1175,15 +1175,18 @@ public class GwtActivityStreamHelper {
 			// Get the user's properties
 			userProperties = bs.getProfileModule().getUserProperties( null );
 			
-			// Read the user's entries per page setting and store it in
-			// the ActivityStreamParams.
-			String eppS = MiscUtil.entriesPerPage( userProperties );
-			int epp = Integer.parseInt(eppS);
-			reply.setEntriesPerPage(epp);
-			
 			// Read the user's show setting for the what's new page.
 			showSetting = GwtServerHelper.getWhatsNewShowSetting( userProperties );
 			reply.setShowSetting( showSetting );
+
+			// Read the user's entries per page setting and store it in
+			// the ActivityStreamParams.
+			String eppS = MiscUtil.entriesPerPage( userProperties );
+			if ( eppS != null && eppS.length() > 0 )
+			{
+				int epp = Integer.parseInt(eppS);
+				reply.setEntriesPerPage(epp);
+			}
 		}
 		catch (Exception ex) {
 			// Ignore.  With any error, will just use the default from
