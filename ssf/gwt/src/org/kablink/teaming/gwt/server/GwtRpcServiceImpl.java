@@ -149,6 +149,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.Favorites;
+import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.MarkupUtil;
@@ -2600,7 +2601,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case profiles:   viewAction = "view_profile_listing"; break;
 		default:         viewAction = ""; break;
 		}
-		f.addFavorite( title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), viewAction, "" );
+		try {
+			f.addFavorite( title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), viewAction, "" );
+		} catch(FavoritesLimitExceededException flee) {
+			//There are already too many favorites, some must be deleted first
+			return Boolean.FALSE;
+		}
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
 		
 		return Boolean.TRUE;
@@ -2645,7 +2651,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FavoriteInfo fi;
 			
 			fi = fiIT.next();
-			f.addFavorite(fi.getName(), fi.getHover(), fi.getType(), fi.getValue(), fi.getAction(), fi.getCategory());
+			try {
+				f.addFavorite(fi.getName(), fi.getHover(), fi.getType(), fi.getValue(), fi.getAction(), fi.getCategory());
+			} catch(FavoritesLimitExceededException flee) {
+				//There are already too many favorites, skip the rest 
+				//  (This should never happen when editing existing favorites)
+			}
 		}
 		
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );

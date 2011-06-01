@@ -43,7 +43,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
 
 import net.sf.json.*;
@@ -81,12 +83,18 @@ public class Favorites {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
 		
+		List list = root.elements();
+		//Make sure this list doesn't get too large
+		Integer maxNumberOfFavorites = SPropsUtil.getInt("maxNumberOfFavorites", ObjectKeys.MAX_NUMBER_OF_FAVORITES);
+		boolean atSizeLimit = false;
+		if (list.size() >= maxNumberOfFavorites) {
+			atSizeLimit = true;
+		}
+			
 		int id = Integer.parseInt((String)root.attributeValue("nextId"));
 		
 		Element newFavorite = null;
 		if (categoryId.equals("")) {
-			
-			List list = root.elements();
 			
 			for (int i = 0; i < list.size(); i++) {
 				if (((Element)list.get(i)).attributeValue("value") != null) {
@@ -96,7 +104,13 @@ public class Favorites {
 					}
 				}
 			}
-			if (newFavorite == null) newFavorite = root.addElement("favorite");
+			if (newFavorite == null) {
+				if (atSizeLimit) {
+					throw new FavoritesLimitExceededException(
+							new Exception(NLT.get("errorcode.entry.not.imported")));
+				}
+				newFavorite = root.addElement("favorite");
+			}
 		} else {
 			
 			Element category = (Element)root.selectSingleNode("//category[@id='"+categoryId+"']");
