@@ -730,6 +730,10 @@ public class TagThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
+		// Add the text in the edit field as a tag.
+		handleClickOnAddTag();
+		
+		// Issue an ajax request to save the tags.
 		saveTags();
 		
 		if ( m_onEditSuccessfulHandler != null )
@@ -900,6 +904,9 @@ public class TagThisDlg extends DlgBox
 				
 				// Hide the search-results widget.
 				m_findCtrl.hideSearchResults();
+
+				// Clear what the user has typed.
+				m_findCtrl.clearText();
 			}
 		}
 	}
