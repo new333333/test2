@@ -47,6 +47,8 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
@@ -61,6 +63,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -83,6 +86,8 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
  * @author drfoster@novell.com
  */
 public class TaskHelper {
+	protected static Log m_logger = LogFactory.getLog(TaskHelper.class);
+	
 	// The following control aspects of code in Vibe OnPrem that has
 	// been added to assist in debugging task handling.
 	public static final boolean TASK_DEBUG_ENABLED = SPropsUtil.getBoolean("subtasks.debug.enabled", false);
@@ -631,15 +636,125 @@ public class TaskHelper {
 		else reply = ObjectKeys.FAMILY_TASK.equals(family);
 		return reply;
 	}
-
+	
 	/**
 	 * Called when a task is modified or created to process the
-	 * completion date.
+	 * completion value.
 	 * 
 	 * @param task
 	 * @param inputData
+	 * @param entryData
 	 */
-	public static void processTaskCompletion(Entry task, String completeS) {
+	@SuppressWarnings("unchecked")
+	public static void processTaskCompletion(Entry task, InputDataAccessor inputData, Map entryData) {
+		// Validate the completed value in the input data...
+		String c  = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		String cV = validateCompleted(c);
+		if (null != cV) {
+			c = cV;
+		}
+		
+		// ...and use that to update the completion date, as necessary.
+		processTaskCompletionDate(task, c);
+
+		// Does the entry data contain a completed value?
+		Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		boolean asString  = false;
+		boolean asStringA = false;
+		if (null != o) {
+			// Yes!  Validate it...
+			if      (o instanceof String)   {c = ((String)   o);    asString  = true;}
+			else if (o instanceof String[]) {c = ((String[]) o)[0]; asStringA = true;}
+			else                             c = null;
+			cV = validateCompleted(c);
+		
+			// ...and if it needs to be changed...
+			if (null != cV) {
+				// ...store the new value.
+				if      (asString)  o = cV;
+				else if (asStringA) o = new String[]{cV};
+				entryData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, o);
+			}
+		}
+	}
+
+	/*
+	 * Validates a task's completed value.  If the value passed in
+	 * is valid, null is returned.  Otherwise, a valid value for it
+	 * is returned.
+	 */
+	private static String validateCompleted(String completed) {
+		String reply = "c000";	// Default to 0%.
+		
+		// Do we have a completed value?
+		if (MiscUtil.hasString(completed)) {
+			// Yes!  Does it start with a 'c'?
+			char firstChar = completed.charAt(0);
+			if (('C' == firstChar) || ('c' == firstChar)) {
+				// Yes!  Does it contain stuff after the 'c'?
+				String percentS = completed.substring(1);
+				if (MiscUtil.hasString(percentS)) {
+					try {
+						// Yes!  Can we parse that as an integer?
+						int percentI = Integer.parseInt(percentS);
+						
+						// Yes!  Range check it between 0 and 100...
+						int fixedPercentI;
+						if      (  0 > percentI) fixedPercentI = 0;
+						else if (100 < percentI) fixedPercentI = 100;
+						else                     fixedPercentI = percentI;
+
+						// ...and round it to the nearest 10.
+						int tens = (fixedPercentI / 10);
+						int ones = (fixedPercentI % 10);
+						if (ones >= 5) {
+							tens += 1;
+						}
+						fixedPercentI = (tens * 10);
+						
+						// Do we need to change the percentage?
+						if (fixedPercentI == percentI) {
+							// No!  Return null.
+							reply = null;
+						}
+						
+						else {
+							// Yes, we need to change the percentage!
+							// Generate a new percentage string and
+							// return that.
+							percentS = String.valueOf(fixedPercentI);
+							int l =  percentS.length();
+							switch (l) {
+							case 1:  percentS = ("00" + percentS); break;
+							case 2:  percentS = ( "0" + percentS); break;
+							}
+							reply = ("c" + percentS);
+						}
+					}
+					catch (NumberFormatException nfe) {
+						// No, we couldn't parse it as an integer!
+					}
+				}
+			}
+		}
+
+		// If we generated a valid value and debugging is enabled...
+		if ((null != reply) && m_logger.isDebugEnabled()) {
+			// ...trace what we did.
+			m_logger.debug("TaskHelper.validateCompleted( " + ((null == completed) ? "<null>" : completed) + " ):  Changed to:  " + reply);
+		}
+
+		// If we get here, reply is null if the completed value was
+		// valid or it refers to a validate value for the completed
+		// value.
+		return reply;
+	}
+	
+	/*
+	 * Called when a task is modified or created to process the
+	 * completion date.
+	 */
+	private static void processTaskCompletionDate(Entry task, String completeS) {
 		// Do we have a 'complete' setting for a FolderEntry?
 		if ((!(MiscUtil.hasString(completeS))) || (!(task instanceof FolderEntry))) {
 			// No!  Nothing to do.

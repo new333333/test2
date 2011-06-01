@@ -431,7 +431,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	}
         }
         
-		TaskHelper.processTaskCompletion(entry, inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME));        
+		TaskHelper.processTaskCompletion(entry, inputData, entryData);        
         EntryBuilder.buildEntry(entry, entryData);
         
     }
@@ -726,7 +726,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	}
         }
         
-		TaskHelper.processTaskCompletion(entry, inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME));        
+		TaskHelper.processTaskCompletion(entry, inputData, entryData);        
         EntryBuilder.updateEntry(entry, entryData);
  
     }
