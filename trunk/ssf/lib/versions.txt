@@ -3,6 +3,7 @@ addressing 1.0 (WS-Addressing implementation; required by WSS4J)
 Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
+aopalliance 1.0 (needed and included by Spring)
 ASM 3.1.0 (from spring distribution, needed by cglib and jersey)
 Asm-attrs 1.5.3 (from spring distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
