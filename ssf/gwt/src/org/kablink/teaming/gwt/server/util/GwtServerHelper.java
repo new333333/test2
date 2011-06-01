@@ -713,13 +713,20 @@ public class GwtServerHelper {
 		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( PROCESS )");
 		try {
 			if (null != binders) {
-				for (Binder subBinder:  binders) {
-					try {
-						TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
-						childTIList.add(subWsTI);
-					} catch(AccessControlException ace) {
-					} catch(NoBinderByTheIdException nbe) {}
-				}
+				for (Long subBinderId:  childBinderList) {
+					long sbi = subBinderId.longValue();
+					for (Binder subBinder:  binders) {
+						if (subBinder.getId().longValue() == sbi) {
+							try {
+								TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, subBinder, expandedBindersList, false, depth);
+								childTIList.add(subWsTI);
+							} catch(AccessControlException ace) {
+							} catch(NoBinderByTheIdException nbe) {}
+							
+							break;
+						}
+					}
+				}				
 			}
 		}
 		finally {
