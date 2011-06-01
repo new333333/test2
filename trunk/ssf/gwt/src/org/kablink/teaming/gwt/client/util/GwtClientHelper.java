@@ -201,6 +201,12 @@ public class GwtClientHelper {
 					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
 					break;
 					
+				case FAVORITES_LIMIT_EXCEEDED:
+					errorMessage = messages.rpcFailure_AddFavoriteLimitExceeded();
+					cause = "";
+					displayAlert = true;
+					break;
+					
 				case NO_BINDER_BY_THE_ID_EXCEPTION:
 					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);

@@ -268,6 +268,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_AccessToFolderDenied();
 	String rpcFailure_AddBinderTag();
 	String rpcFailure_AddFavorite();
+	String rpcFailure_AddFavoriteLimitExceeded();
 	String rpcFailure_CanManagePublicTags();
 	String rpcFailure_CheckForActivityStreamChanges();
 	String rpcFailure_CollapseSubtasks();
