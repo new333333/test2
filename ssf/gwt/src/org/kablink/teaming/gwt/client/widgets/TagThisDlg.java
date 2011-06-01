@@ -731,7 +731,11 @@ public class TagThisDlg extends DlgBox
 	public boolean editSuccessful( Object callbackData )
 	{
 		// Add the text in the edit field as a tag.
-		handleClickOnAddTag();
+		if ( handleClickOnAddTag() == false )
+		{
+			// There was an error adding the tag.
+			return false;
+		}
 		
 		// Issue an ajax request to save the tags.
 		saveTags();
@@ -915,7 +919,7 @@ public class TagThisDlg extends DlgBox
 	 * This method gets called when the user clicks on the "add tag" image.  We will take the name
 	 * of the tag, validate it and try to add it.
 	 */
-	private void handleClickOnAddTag()
+	private boolean handleClickOnAddTag()
 	{
 		String tagName;
 		TagType tagType;
@@ -930,7 +934,7 @@ public class TagThisDlg extends DlgBox
 		if ( isTagNameValid( tagName ) == false )
 		{
 			// No, isTagNameValid() will have told the user about the problem.
-			return;
+			return false;
 			
 		}
 		// Is the tag a duplicate?
@@ -938,7 +942,7 @@ public class TagThisDlg extends DlgBox
 		{
 			// Yes!  isTagADuplicate() will have told the user
 			// about any problems.  Simply bail.
-			return;
+			return false;
 		}
 		
 		// Clear what the user has typed.
@@ -955,6 +959,8 @@ public class TagThisDlg extends DlgBox
 		
 		// Add this tag to our "to be added" list.
 		m_toBeAdded.add( tagInfo );
+		
+		return true;
 	}
 	
 	/**
@@ -1544,6 +1550,7 @@ public class TagThisDlg extends DlgBox
 	{
 		PopupPanel.PositionCallback posCallback;
 		
+		hideError();
 		hideErrorPanel();
 		showContentPanel();
 		createFooterButtons( DlgBox.DlgButtonMode.OkCancel );
