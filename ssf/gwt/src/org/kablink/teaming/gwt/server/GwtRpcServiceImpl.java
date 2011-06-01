@@ -2579,7 +2579,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	 * 
 	 * @return
 	 */
-	public Boolean addFavorite( HttpRequestInfo ri, String binderId )
+	public Boolean addFavorite( HttpRequestInfo ri, String binderId ) throws GwtTeamingException
 	{
 		Binder binder;
 		Favorites f;
@@ -2605,7 +2605,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			f.addFavorite( title, binder.getPathName(), Favorites.FAVORITE_BINDER, binderId.toString(), viewAction, "" );
 		} catch(FavoritesLimitExceededException flee) {
 			//There are already too many favorites, some must be deleted first
-			return Boolean.FALSE;
+			// Construct a GwtTeamingException for this error condition.
+			throw GwtServerHelper.getGwtTeamingException( flee );
 		}
 		getProfileModule().setUserProperty( null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString() );
 		

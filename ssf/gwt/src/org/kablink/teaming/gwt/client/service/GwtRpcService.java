@@ -163,7 +163,7 @@ public interface GwtRpcService extends RemoteService
 	
 	// The following are used in the implementation of the
 	// MainMenuControl.
-	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   );
+	public Boolean               addFavorite(                  HttpRequestInfo ri, String binderId                                   ) throws GwtTeamingException;
 	public Boolean               removeFavorite(               HttpRequestInfo ri, String favoriteId                                 );
 	public Boolean               updateFavorites(              HttpRequestInfo ri,                  List<FavoriteInfo> favoritesList );
 	public BinderInfo            getBinderInfo(                HttpRequestInfo ri, String binderId                                   );
