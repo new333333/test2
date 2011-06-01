@@ -1984,7 +1984,11 @@ function ss_calendarEngine(
 			}
 	
 			if (oldEventType != this.eventsType) {
-				if ((3 == oldEventType) || (3 == this.eventsType))
+				// Bugzilla 694339:
+				//    When changing the show type, we always need to
+				//    reload the list so that things show on the
+				//    correct day.
+				if (true) // ((3 == oldEventType) || (3 == this.eventsType))
 				     refreshFunction = function(){document.location.reload();};
 				else refreshFunction = function(){this.redrawAll();};			
 
