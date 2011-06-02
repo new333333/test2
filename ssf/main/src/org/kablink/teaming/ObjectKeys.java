@@ -228,6 +228,7 @@ public interface ObjectKeys {
     public static final int MAX_TAG_LENGTH = 60;
     public static final int MAX_NUMBER_OF_FAVORITES = 500;
     public static final int MAX_BINDER_ENTRIES_RESULTS = 2000;
+    public static final int MAX_EXPANDED_BINDERS = 2500;
     public static final long SEEN_TIMEOUT_DAYS = (long)30;  //entries older than 30 days are marked seen
     public static final long SEEN_MAP_TIMEOUT = (long)SEEN_TIMEOUT_DAYS*24*60*60*1000;  //older than 30 days return seen
     public static final int MAX_FILE_SIZE_DECIMAL_PLACES = 8;

@@ -3809,12 +3809,32 @@ public class GwtServerHelper {
 	 * Stores the expanded Binder's List in a UserProperties.
 	 */
 	private static void setExpandedBindersList(AllModulesInjected bs, List<Long> expandedBindersList) {
+		// Do we have an expanded binders list to save?
+		if (null == expandedBindersList) {
+			// No!  Simply save an empty list.
+			expandedBindersList = new ArrayList<Long>();
+		}
+		
+		else {
+			// Yes, we have an expanded binders list to save!  Is there
+			// a limit on how many entries that list may contain?
+			int maxExpandedBinders = SPropsUtil.getInt("maxExpandedBinders", ObjectKeys.MAX_EXPANDED_BINDERS);
+			if ((-1) != maxExpandedBinders) {
+				// Yes!  If it's contains too many, prune it to the
+				// maximum.
+				int c = expandedBindersList.size();
+				for (int i = (c - 1); i >= maxExpandedBinders; i -= 1) {
+					expandedBindersList.remove(i);
+				}
+			}
+		}		
+
+		// Finally, store the expanded binders list in the user's
+		// properties.
 		bs.getProfileModule().setUserProperty(
 			null,
 			ObjectKeys.USER_PROPERTY_EXPANDED_BINDERS_LIST,
-			((null == expandedBindersList) ?
-				new ArrayList<Long>()      :
-				expandedBindersList));
+			expandedBindersList);
 	}
 
 	/**
