@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
@@ -71,6 +72,12 @@ public class EnhancedViewProperties
 	private String m_zoneUUID;
 	private boolean m_rpcInProgress;
 	
+	// The following data members are used to define the width and height of the view.
+	private int m_width;
+	private Style.Unit m_widthUnits;
+	private int m_height;
+	private Style.Unit m_heightUnits;
+	
 	/**
 	 * 
 	 */
@@ -86,6 +93,12 @@ public class EnhancedViewProperties
 		m_parentBinderName = null;
 		m_zoneUUID = null;
 		m_rpcInProgress = false;
+		
+		// Default the width and height to 100%
+		m_width = 100;
+		m_widthUnits = Style.Unit.PCT;
+		m_height = 100;
+		m_heightUnits = Style.Unit.PCT;
 
 		// Create the callback that will be used when we issue an ajax call to get a GwtFolder object.
 		m_folderCallback = new AsyncCallback<GwtFolder>()
@@ -190,6 +203,10 @@ public class EnhancedViewProperties
 			m_parentBinderName = evProps.getParentBinderName();
 			m_showTitle = evProps.getShowTitleValue();
 			m_numEntriesToBeShown = evProps.getNumEntriesToBeShownValue();
+			m_width = evProps.getWidth();
+			m_widthUnits = evProps.getWidthUnits();
+			m_height = evProps.getHeight();
+			m_heightUnits = evProps.getHeightUnits();
 		}
 	}
 	
@@ -229,7 +246,21 @@ public class EnhancedViewProperties
 			if ( m_zoneUUID != null && m_zoneUUID.length() > 0 )
 				str += ",zoneUUID=" + m_zoneUUID;
 		}
+		
+		// Add the width
+		str += ",width=" + String.valueOf( m_width );
+		if ( m_widthUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
 
+		// Add the height
+		str += ",height=" + String.valueOf( m_height );
+		if ( m_heightUnits == Style.Unit.PCT )
+			str += "%";
+		else
+			str += "px";
+		
 		str += ";";
 		
 		return str;
@@ -297,6 +328,22 @@ public class EnhancedViewProperties
 		return m_folderName;
 	}
 	
+	/**
+	 * Return the value of height.
+	 */
+	public int getHeight()
+	{
+		return m_height;
+	}
+	
+	/**
+	 * Return the height units
+	 */
+	public Style.Unit getHeightUnits()
+	{
+		return m_heightUnits;
+	}
+	
 	
 	/**
 	 * Return the value of the jsp name property
@@ -331,6 +378,23 @@ public class EnhancedViewProperties
 	public boolean getShowTitleValue()
 	{
 		return m_showTitle;
+	}
+	
+	
+	/**
+	 * Return the value of width.
+	 */
+	public int getWidth()
+	{
+		return m_width;
+	}
+	
+	/**
+	 * Return the width units
+	 */
+	public Style.Unit getWidthUnits()
+	{
+		return m_widthUnits;
 	}
 	
 	
@@ -400,6 +464,23 @@ public class EnhancedViewProperties
 	/**
 	 * 
 	 */
+	public void setHeight( int height )
+	{
+		m_height = height;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHeightUnits( Style.Unit units )
+	{
+		m_heightUnits = units;
+	}
+	
+	
+	/**
+	 * 
+	 */
 	public void setJspName( String name )
 	{
 		m_jspName = name;
@@ -433,6 +514,23 @@ public class EnhancedViewProperties
 	}
 
 
+	/**
+	 * 
+	 */
+	public void setWidth( int width )
+	{
+		m_width = width;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setWidthUnits( Style.Unit units )
+	{
+		m_widthUnits = units;
+	}
+	
+	
 	/**
 	 * 
 	 */
