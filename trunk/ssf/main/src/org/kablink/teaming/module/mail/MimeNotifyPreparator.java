@@ -367,7 +367,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			}
 		}
 
-		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode, MailModule.CONTENT_ENCODING);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		setSubject(helper);
 		setCcAddrs(helper);

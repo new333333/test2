@@ -80,6 +80,7 @@ public interface MailModule {
 	public static final String HEADER_CONTENT_TRANSFER_ENCODING_8BIT = "8bit";
 	public static final String MULTIPART_SUBTYPE_ALTERNATIVE = "alternative";
 	public static final String CONTENT_TYPE_ALTERNATIVE = "text/alternative";
+	public static final String CONTENT_ENCODING = "utf-8";
 	public static final String CONTENT_TYPE_HTML = "text/html";
 	public static final String CONTENT_TYPE_CALENDAR = "text/calendar";
 	public static final String CONTENT_TYPE_CHARSET_SUFFIX = ";charset=";
