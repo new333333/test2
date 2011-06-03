@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -177,34 +177,38 @@ a:hover {
 	<ssf:nlt tag="credits.other"/>
 </span>
 
-<br/><br/><span class="ss_bold"><a href="http://www.antlr.org">antlr#</a></span>
+<br/><br/><span class="ss_bold"><a href="http://www.antlr.org/license.html">antlr#</a></span>
 <br/><br/><span class="ss_bold"><a href="http://aopalliance.sourceforge.net">aopalliance</a></span>
-<br/><br/><span class="ss_bold"><a href="http://asm.ow2.org/index.html">ASM</a></span>
+<br/><br/><span class="ss_bold"><a href="http://asm.ow2.org/license.html">ASM</a></span>
 <br/><br/><span class="ss_bold"><a href="http://sourceforge.net/projects/backport-jsr166/">backport-concurrent.jar</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.bouncycastle.org/licence.html">Bouncy Castle</a></span>
 <br/><br/><span class="ss_bold"><a href="http://g.oswego.edu/dl/classes/EDU/oswego/cs/dl/util/concurrent/intro.html">concurrent library</a></span>
-<br/><br/><span class="ss_bold"><a href="http://www.dojotoolkit.org/">dojo</a></span>
-<br/><br/><span class="ss_bold"><a href="http://www.dom4j.org/license.html">dom4j</a></span>
+<br/><br/><span class="ss_bold"><a href="http://dojotoolkit.org/license">dojo</a></span>
+<br/><br/><span class="ss_bold"><a href="http://dom4j.sourceforge.net/dom4j-1.6.1/license.html">dom4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://easymock.org/License.html">EasyMock</a></span>
-<br/><br/><span class="ss_bold"><a href="http://getfirebug.com/firebuglite">Firebug</a></span>
+<br/><br/><span class="ss_bold"><a href="https://addons.mozilla.org/af/firefox/addon/firebug/license/1.5.0">Firebug</a></span>
 <br/><br/><span class="ss_bold"><a href="http://m2.modularity.net.au/projects/ical4j/license.html">iCal4j</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.xom.nu/lib/normalizer_license.html">icu4j</a></span>
+<br/><br/><span class="ss_bold"><a href="http://glassfish.java.net/public/CDDL+GPL_1_1.html">JAXB</a></span>
 <br/><br/><span class="ss_bold"><a href="http://jaxen.codehaus.org/license.html">Jaxen</a></span>
+<br/><br/><span class="ss_bold"><a href="http://www.day.com/specs/jcr/2.0/license.html">JCR</a></span>
+<br/><br/><span class="ss_bold"><a href="http://glassfish.java.net/public/CDDL+GPL_1_1.html">Jersey</a></span>
 <br/><br/><span class="ss_bold"><a href="http://jtidy.sourceforge.net/license.html">JTidy</a></span>
 <br/><br/><span class="ss_bold"><a href="http://sourceforge.net/projects/jung/">jung#</a></span>
 <br/><br/><span class="ss_bold"><a href="http://contraintes.inria.fr/OADymPPaC/sourceforge/cvs/tra4cp/src/cp-infovis/license-junit.html">Junit</a></span>
-<br/><br/><span class="ss_bold"><a href="http://dev.jquery.com/browser/trunk/jquery/MIT-LICENSE.txt">jQuery</a></span>
+<br/><br/><span class="ss_bold"><a href="http://jquery.org/license/">jQuery</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.installjammer.com/docs/">locateJavaRuntime.tcl</a></span>
-<br/><br/><span class="ss_bold"><a href="http://demo.spars.info/j/frameset.cgi?compo_id=328164&packagename=md5&componame=md5.MD5Crypt&mode=frameset&ref=5&start_class=0">md5crypt.jar</a></span>
+<br/><br/><span class="ss_bold"><a href="http://www.freebsd.org/cgi/cvsweb.cgi/~checkout~/src/lib/libcrypt/crypt.c?rev=1.2">md5crypt</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.gnu.org/copyleft/gpl.html">MySQL Connector/J</a></span>
 <br/><br/><span class="ss_bold"><a href="https://glassfish.dev.java.net/public/CDDL+GPL.html">SAAJ</a></span>
 <br/><br/><span class="ss_bold"><a href="http://sourceforge.net/projects/saxpath/files/">saxpath</a></span>
+<br/><br/><span class="ss_bold"><a href="http://snowball.tartarus.org/license.php">Snowball</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.slf4j.org/license.html">SLF4J</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.opensource.org/licenses/mit-license.php">swfobject</a></span>
-<br/><br/><span class="ss_bold"><a href="http://www.tcl.tk/software/tcltk/">tclkit</a></span>
+<br/><br/><span class="ss_bold"><a href="http://www.tcl.tk/software/tcltk/license.html">tclkit</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.tcl.tk/software/tcltk/license.html">tcllib</a></span>
 <br/><br/><span class="ss_bold"><a href="http://www.eclipse.org/legal/cpl-v10.html">wsdl4j</a></span>
-<br/><br/><span class="ss_bold"><a href="http://xstream.codehaus.org/">xstream</a></span>
+<br/><br/><span class="ss_bold"><a href="http://xstream.codehaus.org/license.html">xstream</a></span>
 
 
 </ssf:form>
