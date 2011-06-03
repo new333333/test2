@@ -170,7 +170,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				ajaxMobileDoModifyEntry(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_DELETE_ENTRY)) {
 				ajaxMobileDoDeleteEntry(request, response);
-			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
+			} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM) ||
+					op.equals(WebKeys.OPERATION_MOBILE_FIND_USER_GROUP_TEAM)) {
 				ajaxMobileDoAddUserGroupTeam(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 				ajaxMobileDoFrontPage(this, request, response);
@@ -394,6 +395,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			data.put(elementName, ids);
 			getFolderModule().modifyEntry(entry.getParentBinder().getId(), entryId, 
 					new MapInputData(data), null, null, null, null);
+			
+		} else if (formData.containsKey("cancelBtn")) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_mobile", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(entry.getParentBinder().getId()));
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, String.valueOf(entryId));
+			response.sendRedirect(adapterUrl.toString());
 			
 		} else {
 			String sUrl = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MOBILE_URL, "");

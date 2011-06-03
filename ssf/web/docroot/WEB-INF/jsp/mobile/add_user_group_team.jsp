@@ -75,8 +75,11 @@ function ss_submitSelectForm${ssElementName}(url) {
 		    <c:if test="${ss_type == 'team'}"><span class="ss_bold"><ssf:nlt tag="navigation.findTeam"/></span></c:if>
 		  </label>
 		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
-		    value="${ss_searchText}"/><input 
+		    value="${ss_searchText}"/>
+		  <input 
 		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+		  <input 
+		    type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
 		  </form>
 		</div>
 
