@@ -880,6 +880,14 @@ public class DefinitionHelper {
 	        						Integer entriesToShow = Integer.valueOf(
 	        								(String)mashupItemAttributes.get(ObjectKeys.MASHUP_ATTR_ENTRIES_TO_SHOW));
 	        						options.put(ObjectKeys.SEARCH_MAX_HITS, entriesToShow);
+		        					//See if there was a search already done for this folder
+		        					if (mashupBinderEntries.containsKey(binder.getId().toString())) {
+		        						List fEntries = (List)mashupBinderEntries.get(binder.getId().toString());
+		        						if (fEntries.size() > entriesToShow) {
+		        							//Make sure not to truncate the existing list
+		        							options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(fEntries.size()));
+		        						}
+		        					}
 	        					}
 	        				} catch(Exception e) {
 		        				logger.debug("DefinitionHelper.buildMashupBeans(Exception:  '" + MiscUtil.exToString(e) + "'):  2:  Ignored");
