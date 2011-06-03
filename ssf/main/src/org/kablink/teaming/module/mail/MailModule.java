@@ -71,7 +71,7 @@ public interface MailModule {
 	public static final String BCC="BCC";	//Collection of InternetAddress
 	public static final String TEXT_MSG="TEXT"; //String
 	public static final String HTML_MSG="HTML"; //String
-	public static final String ATTACHMENTS="attachments"; //fileattachments
+	public static final String ATTACHMENTS="attachments"; //file attachments
 	public static final String ICALENDARS="icalendars"; //Collection of net.fortuna.ical4j.model.Calendar
 	public static final String FROM="FROM"; 	//InternetAddress
 	public static final String LOG_TYPE="LOG_TYPE"; 	//EmailLogType
