@@ -1310,9 +1310,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
        Folder folder = entry.getParentFolder();
        FolderCoreProcessor processor=loadProcessor(folder);
        //access checks - not a simple modify
-       checkTransitionOutStateAllowed(entry, stateId);
-       checkTransitionInStateAllowed(entry, stateId, toState);
-       processor.modifyWorkflowState(folder, entry, stateId, toState);
+       WorkflowState ws = entry.getWorkflowState(stateId);
+       Map transitions = getManualTransitions(entry, ws.getId());	//This checks both allowed transition out and in
+       //See if the toState is in this list. If so, then allow the modify
+       if (transitions.containsKey(toState)) {
+    	   processor.modifyWorkflowState(folder, entry, stateId, toState);
+       }
     }
 	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
