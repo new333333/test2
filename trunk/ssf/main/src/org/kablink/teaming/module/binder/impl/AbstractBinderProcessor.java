@@ -844,10 +844,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
     	
     	//Also re-index all of the direct children binders to get the correct folder extended title indexed
-    	if (!ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
-    		Iterator itBinders = binder.getBinders().iterator();
-    		while (itBinders.hasNext()) {
-    			indexBinder((Binder) itBinders.next(), false);
+    	if (ctx != null && !ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
+    		// If the title has changed for the binder, we must re-index all of children 
+    		// binders recursively so that their paths get updated in the index.
+    		List children = new ArrayList(binder.getBinders());
+    		while (!children.isEmpty()) {
+    			Binder child = (Binder)children.get(0);
+    			indexBinder(child, false);
+    			children.remove(0);
+    			children.addAll(child.getBinders());
     		}
     	}
     }
