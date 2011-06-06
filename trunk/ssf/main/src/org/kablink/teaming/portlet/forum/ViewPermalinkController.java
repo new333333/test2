@@ -312,12 +312,19 @@ public class ViewPermalinkController  extends SAbstractController {
 		boolean binderPreDeleted;
 		if (entityType.equals(EntityType.folderEntry)) { //folderEntry
 			if (isMobile && Validator.isNotNull(entryId)) {
-				entity = getFolderModule().getEntry(null, Long.valueOf(entryId));
-				url.setParameter(WebKeys.URL_BINDER_ID, entity.getParentBinder().getId().toString());
-				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
-				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
+				//entries move so the binderId may not be valid
+				Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
+				if (targetEntryId == null) {
+					response.setRenderParameter("notImportedException", "true");
+					return null;
+				} else {
+					entryId = targetEntryId.toString();
+					url = new AdaptedPortletURL(request, "ss_mobile", true);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
+					url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_ENTRY);
+				}
 			} else {
 				//entries move so the binderId may not be valid
 				if (Validator.isNotNull(entryId)) {
@@ -374,40 +381,52 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		} else	if (entityType.isBinder() || entityType.equals(EntityType.none)) {
 			Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
-			if (targetBinderId != null) {
-				binderId = String.valueOf(targetBinderId);
-				entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
-			}
-			if (null != entity) {
-				if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
-				else if (entity instanceof Folder)    binderPreDeleted = ((Folder)    entity).isPreDeleted();
-				else binderPreDeleted = false;
-				if (binderPreDeleted) {
-					throw new NoBinderByTheIdException(Long.valueOf(binderId));
-				}
-			}
-			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-			entityType = ((null == entity) ? EntityType.none : entity.getEntityType());
-			if (isMobile) {
+			if (isMobile && targetBinderId != null) {
+				url = new AdaptedPortletURL(request, "ss_mobile", true);
+				url.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(targetBinderId));
+				if (!zoneUUID.equals("")) url.setParameter(WebKeys.URL_ZONE_UUID, zoneUUID);
 				url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
-				if (entityType.equals(EntityType.workspace)) {
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
-				} else if (entityType.equals(EntityType.profiles)) {
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+				if (entityType.equals(EntityType.folder)) {
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);
 				} else {
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);				
-				}
-				if (!zoneUUID.equals("") && targetBinderId == null) {
-					//Go to the mobile ui to show the error message
-					url.setParameter(WebKeys.URL_BINDER_ID, "");
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
 				}
 			} else {
-				if (entityType.equals(EntityType.workspace)) {
-					url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
-				} else if (entityType.equals(EntityType.profiles)) {
-					url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
+				if (targetBinderId != null) {
+					binderId = String.valueOf(targetBinderId);
+					entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
+				}
+				if (null != entity) {
+					if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
+					else if (entity instanceof Folder)    binderPreDeleted = ((Folder)    entity).isPreDeleted();
+					else binderPreDeleted = false;
+					if (binderPreDeleted) {
+						throw new NoBinderByTheIdException(Long.valueOf(binderId));
+					}
+				}
+				url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+				entityType = ((null == entity) ? EntityType.none : entity.getEntityType());
+				if (isMobile) {
+					url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
+					if (entityType.equals(EntityType.workspace)) {
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+					} else if (entityType.equals(EntityType.profiles)) {
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
+					} else {
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_FOLDER);				
+					}
+					if (!zoneUUID.equals("") && targetBinderId == null) {
+						//Go to the mobile ui to show the error message
+						url.setParameter(WebKeys.URL_BINDER_ID, "");
+					}
 				} else {
-					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
+					if (entityType.equals(EntityType.workspace)) {
+						url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
+					} else if (entityType.equals(EntityType.profiles)) {
+						url.setParameter(WebKeys.URL_ACTION, "view_profile_listing");
+					} else {
+						url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");				
+					}
 				}
 			}
 			
@@ -427,6 +446,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 				}, user);
 	 			}
 				if (isMobile) {
+					url = new AdaptedPortletURL(request, "ss_mobile", true);
 					url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MOBILE_AJAX);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE);
 		 			url.setParameter(WebKeys.URL_BINDER_ID, entity.getId().toString());
