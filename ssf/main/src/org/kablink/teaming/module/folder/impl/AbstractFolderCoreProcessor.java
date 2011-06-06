@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -65,22 +65,27 @@ import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.AbstractEntryProcessor;
 import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.index.IndexUtils;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.EntryBuilder;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -91,6 +96,7 @@ import com.sitescape.team.domain.Statistics;
  *
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor 
 	implements FolderCoreProcessor {
   //***********************************************************************************************************	
@@ -735,6 +741,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public void copyEntries(final Binder source, Binder binder, final Map options) { 
 		//now copy entries
 		final Folder folder = (Folder)binder;
+		Map serializationMap = ((Map) folder.getProperty(ObjectKeys.BINDER_PROPERTY_TASK_LINKAGE));
+		final boolean hasTaskLinkage  = ((null != serializationMap) && (!(serializationMap.isEmpty())));
+		final List<Long>      sIds    = (hasTaskLinkage ? new ArrayList<Long>()     : null);
+		final Map<Long, Long> eIdsMap = (hasTaskLinkage ? new HashMap<Long, Long>() : null);
 		getTransactionTemplate().execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 		    	Boolean preserverDocNum = null;
@@ -771,6 +781,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       			for (int i=0; i<batch.size(); ++i) {
 		       				FolderEntry sEntry = (FolderEntry)batch.get(i);
 		       				FolderEntry dEntry = new FolderEntry(sEntry);
+		       				
 		       				if (sEntry.isTop()) {
 		       					sourceMap.clear();
 		       					if (preserverDocNum) folder.addEntry(dEntry, sEntry.getHKey().getLastNumber());
@@ -783,6 +794,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		       				sourceMap.put(sEntry, dEntry);
 		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
 		       				doCopy(sEntry, dEntry, entryTags);
+
+		       				// Does the folder we're copy entries from
+		       				// contain task linkage information?
+		       				if (hasTaskLinkage) {
+		       					// Yes!  Then we need to track the IDs
+		       					// of the source entries and a mapping
+		       					// between the source and destination
+		       					// entries.
+			       				Long sId = sEntry.getId();
+			       				sIds.add(sId);
+			       				eIdsMap.put(sId, dEntry.getId());
+		       				}
 		       			}
 		       			getCoreDao().flush();
 		       			//get rid of entries no longer needed
@@ -802,6 +825,37 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		        return null;
 		}});
 
+		// Does the folder we're copy entries from contain task linkage
+		// information?
+		if (hasTaskLinkage) {
+			// Yes!  Validate the linkage information based on the
+			// entries we copied...
+			ServerTaskLinkage tl = ServerTaskLinkage.loadSerializationMap(serializationMap);
+			tl.validateTaskLinkage(sIds);
+			
+			// ...map the source IDs to their target IDs...
+			Long destId = folder.getId();
+			ServerTaskLinkage.fixupAndStoreTaskLinkages(
+				((BinderModule) SpringContextUtil.getBean("binderModule")),
+				destId,
+				tl,
+				eIdsMap);
+
+			// ...and preserve the current user's sort information.
+			User user = RequestContextHolder.getRequestContext().getUser();
+			if (null != user) {
+			   Long userId = user.getId();
+			   ProfileModule pm = ((ProfileModule) SpringContextUtil.getBean("profileModule"));
+			   UserProperties ufp = pm.getUserProperties(userId, source.getId());
+			   if (null != ufp) {
+				   Object sort = ufp.getProperty(ObjectKeys.SEARCH_SORT_BY);
+				   if (null != sort) pm.setUserProperty(userId, destId, ObjectKeys.SEARCH_SORT_BY, sort);
+				   
+				   sort = ufp.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+				   if (null != sort) pm.setUserProperty(userId, destId, ObjectKeys.SEARCH_SORT_DESCEND, sort);
+			   }
+		   }
+		}
     }
 
     //***********************************************************************************************************
