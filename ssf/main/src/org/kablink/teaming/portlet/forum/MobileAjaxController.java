@@ -506,7 +506,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private void ajaxMobileDoShowEntry(AllModulesInjected bs, ActionRequest request, ActionResponse response) 
 			throws Exception {
 		Map formData = request.getParameterMap();
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long folderId =PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
 		
 		if (entryId != null) {
@@ -1316,8 +1316,12 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowEntry(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		if (entryId == null) {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (entryId != null && binderId == null) {
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			binderId = entry.getParentBinder().getId();
+		}
+		if (entryId == null && binderId != null) {
 			String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(binderId, title, zoneUUID);
@@ -1345,6 +1349,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response, Long entryId) throws Exception {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);		
+		if (entryId != null && binderId == null) {
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			binderId = entry.getParentBinder().getId();
+		}
 		Binder binder = getBinderModule().getBinder(binderId);
 		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
