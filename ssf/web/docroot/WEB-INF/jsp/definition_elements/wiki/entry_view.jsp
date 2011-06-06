@@ -38,7 +38,11 @@
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />
 <c:set var="ss_popular_view_seen" value="true" scope="request"/>
 <c:set var="ss_entry_view_style" value="wiki" scope="request"/>
+<c:set var="ss_commentsAndAttachmentsSectionRequested" value="false" scope="request"/>
 <c:set var="ss_delayShowingCommentsAndAttachments" value="true" scope="request"/>
+<c:set var="ss_seenHistoryTab" value="" scope="request"/>
+<c:set var="ss_pseudoEntity" value="" scope="request"/>
+<c:set var="ss_pseudoEntityRevert" value="" scope="request"/>
 <c:set var="binderDefinition" value="${ssBinder.entryDef.definition}" />
 <jsp:useBean id="binderDefinition" type="org.dom4j.Document" />
 <%
