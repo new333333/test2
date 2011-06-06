@@ -1250,26 +1250,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
     }
-    public boolean testIfWorkflowResponseAllowed(FolderEntry entry, Long stateId, String question) {
-    	WorkflowState ws = entry.getWorkflowState(stateId);
-    	if (!WorkflowProcessUtils.checkIfQuestionRespondersSpecified(entry, ws, question) &&
-				testAccess(entry, FolderOperation.modifyEntry)) {
-    		try {
-    			//No explicit responders is listed and this user can modify the entry.
-    			//Also test if the user is allowed to transition out of this state
-    			checkTransitionOutStateAllowed(entry, stateId);
-    		} catch(AccessControlException e) {
-    			return false;
-    		}
-    		return true;
-    	} else if (BinderHelper.checkIfWorkflowResponseAllowed(entry, ws, question) ||
-    			(WorkflowProcessUtils.checkIfQuestionRespondersIncludeForumDefault(entry, ws, question) &&
-    	    	testAccess((FolderEntry)entry, FolderOperation.modifyEntry))) {
-    		//The user was explicitly given the right to respond
-    		return true;
-    	}
-    	return false;
-    }
+
     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, Map options) {
     	//start a workflow on an entry
     	FolderEntry entry = loadEntry(folderId, entryId);
