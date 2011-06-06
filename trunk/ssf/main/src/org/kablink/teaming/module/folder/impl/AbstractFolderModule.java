@@ -1319,7 +1319,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 					} else {
 						//There is no manual transition acl, so do the default check
 						if (testTransitionOutStateAllowed(entry, stateId)) {
-							AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+							if (AccessUtils.checkIfTransitionInAclExists(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey())) {
+								//If there is an acl guarding transition in, test it
+								AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey()); 
+							}
 							transitionData.put(me.getKey(), (String)data.get("toStateCaption"));
 						}
 					}
