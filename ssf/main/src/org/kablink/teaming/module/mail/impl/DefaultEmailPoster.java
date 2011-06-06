@@ -75,6 +75,7 @@ import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -500,7 +501,9 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 			//Get the body text and turn it into html
 			TextToHtml textToHtml = new TextToHtml();
-			textToHtml.setBreakOnLines(false);
+			//Should we add breaks where the text has a cr/lf?
+			boolean breakOnLines = Boolean.valueOf(SPropsUtil.getString("mail.incoming.text.messages.breakOnLines", "false").trim());
+			textToHtml.setBreakOnLines(breakOnLines);
 			textToHtml.setStripHtml(false);
 			textToHtml.parseText(text);
 			val[0] = textToHtml.toString();
