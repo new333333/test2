@@ -53,7 +53,10 @@ public class LoggingInterceptor implements MethodInterceptor {
 			return result;
 		}
 		catch(Throwable t) {
-			logger.error(invocation.toString(), t);
+			if(logger.isDebugEnabled())
+				logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString(), t);
+			else
+				logger.warn(invocation.toString() + org.kablink.teaming.util.Constants.NEWLINE + t.toString());
 			throw t;
 		}
 	}
