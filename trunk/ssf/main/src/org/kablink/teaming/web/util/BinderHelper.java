@@ -1437,6 +1437,24 @@ public class BinderHelper {
 		return isCalendar;
 	}
 	
+	/**
+	 * Determines whether a binder is a Wiki.
+	 * 
+	 * @param binder
+	 * 
+	 * @return
+	 */
+	static public boolean isBinderWiki(Binder binder) {
+		boolean isWiki = (EntityIdentifier.EntityType.folder == binder.getEntityType());
+		if (isWiki) {
+			String dFamily = getBinderDefaultFamilyName(binder);
+			if (MiscUtil.hasString(dFamily)) {
+				isWiki = dFamily.equalsIgnoreCase("wiki");
+			}
+		}
+		return isWiki;
+	}
+	
 	static public void buildWorkspaceTreeBean(AllModulesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
 		if (binder instanceof TemplateBinder) return;
 		Binder workspaceBinder = binder;
