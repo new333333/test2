@@ -319,6 +319,14 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource report16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/resourceLib1.png")
+	public ImageResource resourceLib1();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/resourceLib2.png")
+	public ImageResource resourceLib2();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/resume.png")
 	public ImageResource resumeActivityStream();
 
