@@ -2242,8 +2242,8 @@ public class ListFolderHelper {
 		
 		//Set up the whatsNewToolbar links
 		//What's new
-        //What's new is not available to the guest user
-        if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+        //What's new is not available to the guest user or on a Wiki.
+        if ((!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) && (!BinderHelper.isBinderWiki(folder))) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
