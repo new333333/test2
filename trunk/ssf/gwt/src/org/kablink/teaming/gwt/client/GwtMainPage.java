@@ -1175,6 +1175,10 @@ public class GwtMainPage extends Composite
 				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
+			
+		case SHOW_RESOURCE_LIBRARY:
+			Window.open( "http://www.novell.com/products/vibe-onprem/resource-library/", "teaming_resource_library_window", "resizeable,scrollbars" );
+			break;
 
 		case TASK_DELETE:
 		case TASK_MOVE_DOWN:

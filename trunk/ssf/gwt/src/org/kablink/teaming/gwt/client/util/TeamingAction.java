@@ -77,6 +77,7 @@ public enum TeamingAction implements IsSerializable
 	SHOW_ALL_ENTRIES( "Show all entries" ),
 	SHOW_LEFT_NAVIGATION( "Show the Left Navigation Panel" ),
 	SHOW_MASTHEAD( "Show the Header" ),
+	SHOW_RESOURCE_LIBRARY( "Show the Resource Library page" ),
 	SHOW_UNREAD_ENTRIES( "Show unread entries" ),
 	SIMPLE_SEARCH( "Performs a Simple Search on a String" ),
 	SIZE_CHANGED( "The Size of Something Changed" ),

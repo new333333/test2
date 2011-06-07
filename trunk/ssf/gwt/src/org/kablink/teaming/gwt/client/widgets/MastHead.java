@@ -94,12 +94,15 @@ public class MastHead extends Composite
 	private Image m_loginImg2 = null;
 	private Image m_helpImg1 = null;
 	private Image m_helpImg2 = null;
+	private Image m_resourceLibImg1 = null;
+	private Image m_resourceLibImg2 = null;
 	private Anchor m_adminLink = null;
 	private Anchor m_personalPrefsLink = null;
 	private Anchor m_teamingFeedLink = null;
 	private Anchor m_logoutLink = null;
 	private Anchor m_loginLink = null;
 	private Anchor m_helpLink = null;
+	private Anchor m_resourceLibLink = null;
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
 
@@ -172,6 +175,7 @@ public class MastHead extends Composite
 			addPersonalPreferencesAction();
 			addTeamingFeedAction();
 			addLoginLogoutAction();
+			addResourceLibAction();
 			addHelpAction();
 			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
@@ -521,6 +525,38 @@ public class MastHead extends Composite
 	
 	
 	/**
+	 * Add the "Resource Library" action to the global actions part of the masthead.
+	 */
+	private void addResourceLibAction()
+	{
+		ImageResource imgResource;
+		Element linkElement;
+
+		m_resourceLibLink = new Anchor();
+		m_resourceLibLink.addStyleName( "brandingLink" );
+		m_resourceLibLink.addClickHandler( this );
+		m_resourceLibLink.addMouseOutHandler( this );
+		m_resourceLibLink.addMouseOverHandler( this );
+		// The string, "Resource Library", should not be localized.  That is why it is hard-coded here.
+		m_resourceLibLink.setTitle( "Resource Library" );
+		linkElement = m_resourceLibLink.getElement();
+		
+		// Add the mouse-out image to the link.
+		imgResource = GwtTeaming.getImageBundle().resourceLib1();
+		m_resourceLibImg1 = new Image( imgResource );
+		linkElement.appendChild( m_resourceLibImg1.getElement() );
+		
+		// Add the mouse-over image to the link.
+		imgResource = GwtTeaming.getImageBundle().resourceLib2();
+		m_resourceLibImg2 = new Image( imgResource );
+		m_resourceLibImg2.setVisible( false );
+		linkElement.appendChild( m_resourceLibImg2.getElement() );
+		
+		m_globalActionsPanel.add( m_resourceLibLink );
+	}
+	
+	
+	/**
 	 * If the user is logged in, add the "Teaming Feed" link to the global actions panel.
 	 */
 	private void addTeamingFeedAction()
@@ -591,6 +627,11 @@ public class MastHead extends Composite
 		{
 			m_helpImg1.setVisible( true );
 			m_helpImg2.setVisible( false );
+		}
+		else if ( eventSource == m_resourceLibLink )
+		{
+			m_resourceLibImg1.setVisible( true );
+			m_resourceLibImg2.setVisible( false );
 		}
 		else if ( eventSource == m_userName )
 		{
@@ -732,6 +773,10 @@ public class MastHead extends Composite
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.HELP, null );
 			}
+			else if ( eventSource == m_resourceLibLink )
+			{
+				actionHandlerIT.next().handleAction( TeamingAction.SHOW_RESOURCE_LIBRARY, null );
+			}
 			else if ( eventSource == m_userName )
 			{
 				actionHandlerIT.next().handleAction( TeamingAction.MY_WORKSPACE, null );
@@ -795,6 +840,11 @@ public class MastHead extends Composite
 		{
 			m_helpImg1.setVisible( false );
 			m_helpImg2.setVisible( true );
+		}
+		else if ( eventSource == m_resourceLibLink )
+		{
+			m_resourceLibImg1.setVisible( false );
+			m_resourceLibImg2.setVisible( true );
 		}
 		else if ( eventSource == m_userName )
 		{
