@@ -11,6 +11,15 @@
  * to positioning).
  */
  
+@media print
+{
+	body
+	{
+		white-space: normal;
+	}
+}
+
+
 .xportlet-minimum-height {
 	height: auto;
 	}
