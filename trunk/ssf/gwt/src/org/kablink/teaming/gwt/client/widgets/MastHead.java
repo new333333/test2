@@ -537,8 +537,7 @@ public class MastHead extends Composite
 		m_resourceLibLink.addClickHandler( this );
 		m_resourceLibLink.addMouseOutHandler( this );
 		m_resourceLibLink.addMouseOverHandler( this );
-		// The string, "Resource Library", should not be localized.  That is why it is hard-coded here.
-		m_resourceLibLink.setTitle( "Resource Library" );
+		m_resourceLibLink.setTitle( GwtTeaming.getMessages().resourceLibraryHint() );
 		linkElement = m_resourceLibLink.getElement();
 		
 		// Add the mouse-out image to the link.
