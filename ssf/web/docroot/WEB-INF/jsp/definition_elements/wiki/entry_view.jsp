@@ -43,6 +43,7 @@
 <c:set var="ss_seenHistoryTab" value="" scope="request"/>
 <c:set var="ss_pseudoEntity" value="" scope="request"/>
 <c:set var="ss_pseudoEntityRevert" value="" scope="request"/>
+<c:set var="ss_seenTagView" value="false" scope="request" />
 <c:set var="binderDefinition" value="${ssBinder.entryDef.definition}" />
 <jsp:useBean id="binderDefinition" type="org.dom4j.Document" />
 <%
