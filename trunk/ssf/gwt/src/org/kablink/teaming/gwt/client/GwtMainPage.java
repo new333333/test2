@@ -110,6 +110,7 @@ public class GwtMainPage extends Composite
 	private UIStateManager m_uiStateManager;
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 
+	private com.google.gwt.dom.client.Element m_tagPanelElement;
 	
 	/**
 	 * Class constructor. 
@@ -425,9 +426,9 @@ public class GwtMainPage extends Composite
 	 * Called to create a JavaScript method that can be called to invoke the Tag dialog.
 	 */
 	private native void initInvokeTagDlgJS( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_invokeTagDlg = function( entryId, entryTitle, tagsDivId )
+		$wnd.ss_invokeTagDlg = function( entryId, entryTitle, div )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeTagDlg(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)( entryId, entryTitle, tagsDivId );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::invokeTagDlg(Ljava/lang/String;Ljava/lang/String;Lcom/google/gwt/dom/client/Element;)( entryId, entryTitle, div );
 		}
 	}-*/;
 
@@ -1337,10 +1338,12 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method is used to invoke the "Tag this" dialog from the old jsp code.
 	 */
-	private void invokeTagDlg( String entryId, String entryTitle, final String tagDivId )
+	private void invokeTagDlg( String entryId, String entryTitle, com.google.gwt.dom.client.Element tagPanelElement )
 	{
 		int x;
 		int y;
+		
+		m_tagPanelElement = tagPanelElement;
 		
 		x = m_contentCtrl.getAbsoluteLeft() + 500;
 		y = m_contentCtrl.getAbsoluteTop() + 25;
@@ -1351,8 +1354,6 @@ public class GwtMainPage extends Composite
 			{
 				m_editTagsSuccessHandler = new EditSuccessfulHandler()
 				{
-					private String m_tagDivId = tagDivId;
-					
 					/**
 					 * This method gets called after the user presses ok in the "Tag This" dialog
 					 * and the tags have been written to the db.  We will update the "Tags" tab
@@ -1363,23 +1364,9 @@ public class GwtMainPage extends Composite
 					{
 						if ( obj != null && obj instanceof ArrayList )
 						{
-							com.google.gwt.dom.client.Element tagPanelElement;
-							com.google.gwt.dom.client.Element tmpElement;
-							IFrameElement iframeElement;
-							
-							// Get the <iframe> that holds the entry.
-							tmpElement = Document.get().getElementById( "ss_showentryframe" );
-							if ( tmpElement == null )
-								return true;
-							
-							iframeElement = IFrameElement.as( tmpElement );
-							if ( iframeElement == null )
-								return true;
-							
 							// Replace the current list of tags with the new list of tags.
 							// Get the <div> that holds the list of tags.
-							tagPanelElement = iframeElement.getContentDocument().getElementById( m_tagDivId );
-							if ( tagPanelElement != null )
+							if ( m_tagPanelElement != null )
 							{
 								ArrayList<ArrayList<TagInfo>> tagData;
 								ArrayList<TagInfo> personalTags;
@@ -1389,7 +1376,7 @@ public class GwtMainPage extends Composite
 								SpanElement spanElement;
 								
 								// Remove the names of the previous tags
-								tagPanelElement.setInnerHTML( "" );
+								m_tagPanelElement.setInnerHTML( "" );
 								
 								tagData = (ArrayList<ArrayList<TagInfo>>) obj;
 								personalTags = tagData.get( 0 );
@@ -1402,13 +1389,13 @@ public class GwtMainPage extends Composite
 										tagName = tagInfo.getTagName();
 										
 										// Create an anchor
-										anchorElement = iframeElement.getContentDocument().createAnchorElement();
+										anchorElement = m_tagPanelElement.getOwnerDocument().createAnchorElement();
 										anchorElement.setTitle( tagName );
 										anchorElement.setAttribute( "onclick", "ss_tagSearchObj(this); return false;" );
 										anchorElement.setHref( "javascript:;" );
 										
 										// Create a span
-										spanElement = iframeElement.getContentDocument().createSpanElement();
+										spanElement = m_tagPanelElement.getOwnerDocument().createSpanElement();
 										spanElement.setTitle( tagName );
 										spanElement.setClassName( "ss_muted_cloud_tag" );
 										spanElement.setInnerText( tagName );
@@ -1417,7 +1404,7 @@ public class GwtMainPage extends Composite
 										anchorElement.appendChild( spanElement );
 										
 										// Add the <a> to the <div> that holds all the tag names.
-										tagPanelElement.appendChild( anchorElement );
+										m_tagPanelElement.appendChild( anchorElement );
 									}
 								}
 								
@@ -1428,13 +1415,13 @@ public class GwtMainPage extends Composite
 										tagName = tagInfo.getTagName();
 										
 										// Create an anchor
-										anchorElement = iframeElement.getContentDocument().createAnchorElement();
+										anchorElement = m_tagPanelElement.getOwnerDocument().createAnchorElement();
 										anchorElement.setTitle( tagName );
 										anchorElement.setAttribute( "onclick", "ss_tagSearchObj(this); return false;" );
 										anchorElement.setHref( "javascript:;" );
 										
 										// Create a span
-										spanElement = iframeElement.getContentDocument().createSpanElement();
+										spanElement = m_tagPanelElement.getOwnerDocument().createSpanElement();
 										spanElement.setTitle( tagName );
 										spanElement.setClassName( "ss_muted_cloud_tag" );
 										spanElement.setInnerText( tagName );
@@ -1443,7 +1430,7 @@ public class GwtMainPage extends Composite
 										anchorElement.appendChild( spanElement );
 										
 										// Add the <a> to the <div> that holds all the tag names.
-										tagPanelElement.appendChild( anchorElement );
+										m_tagPanelElement.appendChild( anchorElement );
 									}
 								}
 							}
