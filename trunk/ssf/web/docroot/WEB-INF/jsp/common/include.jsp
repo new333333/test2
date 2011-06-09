@@ -54,7 +54,7 @@ var ss_GWT_main_page = true;
 --%><c:set var="licensedEdition" value="<%= org.kablink.teaming.util.ReleaseInfo.isLicenseRequiredEdition() %>"/><%--
 --%><c:if test="${licensedEdition}"><%--
 --%><c:set var="ss_watermark" scope="request"><%--
---%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductTitle} 3.0 Beta</span><%--
+--%><span style="color:red;font-size:12px;font-family:impact,arial black;">${ssProductTitle} 3.1</span><%--
 --%></c:set><%--
 --%></c:if><%--
 --%><c:set var="ss_watermark" value="" scope="request"/><%--
