@@ -191,6 +191,12 @@ if (self != self.parent) {
 		}
 	} catch(e) {}
 }
+if (self == self.top && typeof ss_GWT_main_page == "undefined") {
+	<c:if test="${!empty ssPermalink}">
+		self.location.href = "${ssPermalink}";
+	</c:if>
+}
+
 </script>
 
 <%
