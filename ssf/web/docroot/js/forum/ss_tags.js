@@ -37,7 +37,10 @@ function ss_invokeTagDlg( entryId, entryTitle, tagDivId )
 {
 	if ( typeof window.top.ss_invokeTagDlg != "undefined" )
 	{
-		window.top.ss_invokeTagDlg( entryId, entryTitle, tagDivId );
+		var div;
+		
+		div = document.getElementById( tagDivId );
+		window.top.ss_invokeTagDlg( entryId, entryTitle, div );
 	}
 }
 

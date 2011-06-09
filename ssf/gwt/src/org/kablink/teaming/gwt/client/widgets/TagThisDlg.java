@@ -730,11 +730,19 @@ public class TagThisDlg extends DlgBox
 	 */
 	public boolean editSuccessful( Object callbackData )
 	{
-		// Add the text in the edit field as a tag.
-		if ( handleClickOnAddTag() == false )
+		String tmp;
+		
+		// Is there any text in the control used to enter a tag name?
+		tmp = m_findCtrl.getText();
+		if ( tmp != null && tmp.length() > 0 )
 		{
-			// There was an error adding the tag.
-			return false;
+			// Yes
+			// Add the text in the edit field as a tag.
+			if ( handleClickOnAddTag() == false )
+			{
+				// There was an error adding the tag.
+				return false;
+			}
 		}
 		
 		// Issue an ajax request to save the tags.

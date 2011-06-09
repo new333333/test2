@@ -36,7 +36,6 @@
 <%@ page import="org.kablink.util.ParamUtil" %>
 
 <%
-	String entryId = ParamUtil.get(request, "entryId", "");
 	String title = ParamUtil.get(request, "title", "");
 %>
 
@@ -76,7 +75,7 @@ var ss_tagConfirmNoUnderscore = '<ssf:nlt tag="tags.noUnderscoreAllowed" />';
 		 <td valign="top" style="padding-right:10px;">
 		<div style="padding-left: 5px; padding-top: 10px; padding-bottom: 10px;">
 		  <a class="ss_tinyButton ss_fineprint ss_nowrap" href="javascript:;" 
-			onClick="ss_invokeTagDlg( '${ssEntry.id}','<%= title %>', 'ss_tags'+ '${ss_tagViewNamespace}' + '_' + '${ss_tagDivNumber}' ); return false;"
+			onClick="ss_invokeTagDlg( '${ss_tagObject.id}','<%= title %>', 'ss_tags'+ '${ss_tagViewNamespace}' + '_' + '${ss_tagDivNumber}' ); return false;"
 			<ssf:title tag="title.open.tag.menu" />
 		  >
 			<!-- The help spot is positioned relative to the position of its parent. -->
