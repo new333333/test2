@@ -198,34 +198,34 @@
 
 					<td class="entry-element" valign="top">
 					  <c:if test="${entryFol2.priority == 'p1'}">
-					    <span>Critical</span>
+					    <span><ssf:nlt tag="__task_priority_critical"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.priority == 'p2'}">
-					    <span>High</span>
+					    <span><ssf:nlt tag="__task_priority_high"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.priority == 'p3'}">
-					    <span>Medium</span>
+					    <span><ssf:nlt tag="__task_priority_medium"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.priority == 'p4'}">
-					    <span>Low</span>
+					    <span><ssf:nlt tag="__task_priority_low"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.priority == 'p5'}">
-					    <span>Least</span>
+					    <span><ssf:nlt tag="__task_priority_least"/></span>
 					  </c:if>
 					</td>
 
 					<td class="entry-element" valign="top">
 					  <c:if test="${entryFol2.status == 's1'}">
-					    <span>Needs Action</span>
+					    <span><ssf:nlt tag="__task_status_needs_action"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's2'}">
-					    <span>In Process</span>
+					    <span><ssf:nlt tag="__task_status_in_process"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's3'}">
-					    <span>Completed</span>
+					    <span><ssf:nlt tag="__task_status_completed"/></span>
 					  </c:if>
 					  <c:if test="${entryFol2.status == 's4'}">
-					    <span>Cancelled</span>
+					    <span><ssf:nlt tag="__task_status_cancelled"/></span>
 					  </c:if>
 					</td>
 
