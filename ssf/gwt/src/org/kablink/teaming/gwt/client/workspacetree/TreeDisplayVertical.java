@@ -226,7 +226,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// it.  Are we showing a collapsed bucket?
 				if (m_ti.isBucket()) {
 					// Yes!  Expand it.
-					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketList(), new AsyncCallback<TreeInfo>() {
+					rpcService.expandVerticalBucket( HttpRequestInfo.createHttpRequestInfo(), m_ti.getBucketInfo(), new AsyncCallback<TreeInfo>() {
 						public void onFailure(Throwable t) {
 							GwtClientHelper.handleGwtRPCFailure(
 								t,
@@ -648,9 +648,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		if (ti.isBucket()) {
 			// Yes!  Generate an appendage based on the range of names
 			// the bucket spans.
-			StringBuffer sb = new StringBuffer(String.valueOf(ti.getBucketList().get(0)));
+			BucketInfo bi = ti.getBucketInfo();
+			StringBuffer sb = new StringBuffer(String.valueOf(bi.getBucketTuple1()));
 			sb.append("_");
-			sb.append(ti.getBucketList().get(ti.getBucketList().size() - 1));
+			sb.append(bi.getBucketTuple2());
 			reply = sb.toString();
 		}
 
