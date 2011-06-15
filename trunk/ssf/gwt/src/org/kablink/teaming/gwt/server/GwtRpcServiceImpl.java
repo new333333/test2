@@ -120,6 +120,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.TopRankedInfo;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.whatsnew.ActionValidation;
+import org.kablink.teaming.gwt.client.workspacetree.BucketInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 import org.kablink.teaming.gwt.server.util.GwtActivityStreamHelper;
 import org.kablink.teaming.gwt.server.util.GwtProfileHelper;
@@ -2228,41 +2229,39 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	
 	/**
 	 * Returns a TreeInfo containing the display information for the
-	 * Binder hierarchy referred to by a List<Long> of Binder IDs
-	 * (i.e., a bucket list.)
+	 * Binder hierarchy referred to by a BucketInfo
 	 * 
 	 * The information returned is typically used for driving a
 	 * horizontal WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
-	 * @param bucketList
+	 * @param bucketInfo
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, List<Long> bucketList )
+	public TreeInfo expandHorizontalBucket( HttpRequestInfo ri, BucketInfo bucketInfo )
 	{
 		// Expand the bucket list without regard to persistent Binder
 		// expansions.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, null );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, null );
 	}//end expandHorizontalBucket()
 	
 	/**
 	 * Returns a TreeInfo containing the display information for the
-	 * Binder hierarchy referred to by a List<Long> of Binder IDs
-	 * (i.e., a bucket list.)
+	 * Binder hierarchy referred to by a BucketInfo.
 	 * 
 	 * The information returned is typically used for driving a
 	 * vertical WorkspaceTreeControl widget.
 	 * 
 	 * @param ri
-	 * @param bucketList
+	 * @param bucketInfo
 	 * 
 	 * @return
 	 */
-	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, List<Long> bucketList ) {
+	public TreeInfo expandVerticalBucket( HttpRequestInfo ri, BucketInfo bucketInfo ) {
 		// Expand the bucket list taking any persistent Binder
 		// expansions into account.
-		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketList, new ArrayList<Long>() );
+		return GwtServerHelper.expandBucket( getRequest( ri ), this, bucketInfo, new ArrayList<Long>() );
 	}
 
 	/**
