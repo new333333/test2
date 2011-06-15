@@ -32,8 +32,10 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.kablink.util.Validator;
@@ -49,6 +51,11 @@ public abstract class WorkflowControlledEntry extends Entry
 	protected Set iWorkflowStates;
     protected HistoryStamp workflowChange;//initialized by hiberate access=field  
     protected Set workflowResponses; //initialized by hiberate access=field  
+    
+    // This in-memory only list is used to prevent infinite cyclic execution of 
+    // state transitions.
+    private transient List workflowStatesLoopDetector = null; 
+
 	public WorkflowControlledEntry() {
 		super();
 	}
@@ -168,6 +175,23 @@ public abstract class WorkflowControlledEntry extends Entry
  
 	    return result;
 	    	
+	}
+	//Routines to protect against workflow state loops when processing state change requests
+	public void startWorkflowStateLoopDetector() {
+		workflowStatesLoopDetector = new ArrayList();
+	}
+	public void stopWorkflowStateLoopDetector() {
+		workflowStatesLoopDetector = null;
+	}
+	public boolean checkForWorkflowStateLoop(WorkflowState ws) {
+		String key = ws.getDefinition().getId() + "." + ws.getState();
+		if (workflowStatesLoopDetector != null && workflowStatesLoopDetector.contains(key)) {
+			//We have seen this state before
+			return true;
+		} else if (workflowStatesLoopDetector != null) {
+			workflowStatesLoopDetector.add(key);
+		}
+		return false;
 	}
 
     /*
