@@ -124,7 +124,7 @@ public class MastHead extends Composite
 	public MastHead( RequestInfo requestInfo )
 	{
 		Scheduler.ScheduledCommand cmd;
-		final boolean beta = false;
+		final boolean beta = true;
 		
         m_requestInfo = requestInfo;
         m_mastheadBinderId = m_requestInfo.getBinderId();
