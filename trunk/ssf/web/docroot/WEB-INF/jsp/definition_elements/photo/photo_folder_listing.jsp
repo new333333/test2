@@ -66,7 +66,9 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 				    action="view_folder_entry" 
 				    entryId="${fileEntry._docId}" 
 				    operation="view_photo"
-				    actionUrl="true" />"
+				    actionUrl="true" 
+				    ><ssf:param name="standalone" value="true"/>
+				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" 
 			      onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}', null, -10, 24)" 
