@@ -108,6 +108,7 @@ function ss_setImgSize(obj) {
 				    entryId="${ssEntry.id}" 
 				    operation="view_photo"
 				    actionUrl="true" ><ssf:param 
+				    name="standalone" value="true"/><ssf:param 
 				    name="operation2" value="view_previous"/></ssf:url>" 
 			  title="<ssf:nlt tag="general.previousPicture"/>">
             <img border="0" alt="<ssf:nlt tag="general.previousPicture"/>"
@@ -123,6 +124,7 @@ function ss_setImgSize(obj) {
 				    entryId="${ssEntry.id}" 
 				    operation="view_photo"
 				    actionUrl="true" ><ssf:param 
+				    name="standalone" value="true"/><ssf:param 
 				    name="operation2" value="view_next"/></ssf:url>" 
 			  title="<ssf:nlt tag="general.nextPicture"/>">
             <img border="0" alt="<ssf:nlt tag="general.nextPicture"/>"
