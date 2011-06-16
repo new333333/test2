@@ -48,7 +48,9 @@ function ss_loadPhotoEntryId${renderResponse.namespace}(id) {
 	    folderId="${ssBinder.id}" 
 	    action="view_folder_entry" 
 	    entryId="ss_entryIdPlaceholder" 
-	    actionUrl="true" ><ssf:param name="operation" value="view_photo"/></ssf:url>";
+	    actionUrl="true" ><ssf:param 
+	    name="operation" value="view_photo"/><ssf:param 
+	    name="standalone" value="true"/></ssf:url>";
 	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 	ss_openUrlInPortlet(url, "_blank");
 	return false;
