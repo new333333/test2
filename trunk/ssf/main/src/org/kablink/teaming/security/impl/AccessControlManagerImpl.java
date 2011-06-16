@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -76,6 +78,8 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class AccessControlManagerImpl implements AccessControlManager, InitializingBean {
     
+	private Log logger = LogFactory.getLog(getClass());
+	
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
     private CoreDao coreDao;
@@ -175,103 +179,115 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		if(isAccessCheckTemporarilyDisabled())
-			return true;
-		
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		Application application = null;
-		if(RequestContextHolder.getRequestContext() != null)
-			application = RequestContextHolder.getRequestContext().getApplication();		
-		
-		if(userAccessGrantedViaSpecialMeans(user, workAreaOperation) &&
-				applicationPlaysNoRoleInAccessControl(application)) {
-			return true;
-		}
-		if (user.isDisabled() || user.isDeleted()) {
-			//Whatever the operation, deny it if the user account is disabled or deleted
-			return false;
-		}
-		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
-				!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
-				!getLicenseManager().validLicense())return false;
-		if (workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
-			if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
+		long begin = System.nanoTime();
+
+		try {
+			if(isAccessCheckTemporarilyDisabled())
+				return true;
+			
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			Application application = null;
+			if(RequestContextHolder.getRequestContext() != null)
+				application = RequestContextHolder.getRequestContext().getApplication();		
+			
+			if(userAccessGrantedViaSpecialMeans(user, workAreaOperation) &&
+					applicationPlaysNoRoleInAccessControl(application)) {
+				return true;
+			}
+			if (user.isDisabled() || user.isDeleted()) {
+				//Whatever the operation, deny it if the user account is disabled or deleted
 				return false;
 			}
-		}
-		if (workArea.isFunctionMembershipInherited()) {
-			WorkArea parentWorkArea = workArea.getParentWorkArea();
-			if (parentWorkArea == null)
-				throw new InternalException(
-						"Cannot inherit function membership when it has no parent");
-			else
-				// use the original workArea owner
-				return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
-		} else {
-			Set membersToLookup = null;
-			if(application != null && !application.isTrusted()) {
-				membersToLookup = getProfileDao().getPrincipalIds(application);
-				// First, test against the zone-wide maximum set by the admin
-				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
-								getCoreDao().loadZoneConfig(user.getZoneId()),
-								workAreaOperation,
-								membersToLookup)) {
-					return false;
-				}
-				// First test passed. Now test against the specified work area.
-				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
-								workArea, 
-								workAreaOperation, 
-								membersToLookup)) {
+			if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && 
+					!workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE) && 
+					!getLicenseManager().validLicense())return false;
+			if (workAreaOperation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
+				if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 					return false;
 				}
 			}
-			membersToLookup = getProfileDao().getPrincipalIds(user);
-			Long allUsersId = Utils.getAllUsersGroupId();
-			if (allUsersId != null && !workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
-					&& membersToLookup.contains(allUsersId) && 
-					Utils.canUserOnlySeeCommonGroupMembers(user)) {
-				if (Utils.isWorkareaInProfilesTree(workArea)) {
-					//If this user does not share a group with the binder owner, remove the "All Users" group.
-					boolean remove = true;
-					if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
-							workArea.getWorkAreaType().equals(EntityType.folder.name())) {
-						List<Group> groups = workArea.getOwner().getMemberOf();
-						List gIds = new ArrayList();
-						for (Group g : groups) {
-							gIds.add(g.getId());
-							if (membersToLookup.contains(g.getId())) {
-								remove = false;
-								break;
-							}
-						}
-						if (remove) {
-							//There wasn't a direct match of groups, go look in the exploded list
-							Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
-							for (Long gId : userGroupIds) {
-								if (membersToLookup.contains(gId)) {
+			if (workArea.isFunctionMembershipInherited()) {
+				WorkArea parentWorkArea = workArea.getParentWorkArea();
+				if (parentWorkArea == null)
+					throw new InternalException(
+							"Cannot inherit function membership when it has no parent");
+				else
+					// use the original workArea owner
+					return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
+			} else {
+				Set membersToLookup = null;
+				if(application != null && !application.isTrusted()) {
+					membersToLookup = getProfileDao().getPrincipalIds(application);
+					// First, test against the zone-wide maximum set by the admin
+					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
+									getCoreDao().loadZoneConfig(user.getZoneId()),
+									workAreaOperation,
+									membersToLookup)) {
+						return false;
+					}
+					// First test passed. Now test against the specified work area.
+					if(!checkWorkAreaFunctionMembership(user.getZoneId(),
+									workArea, 
+									workAreaOperation, 
+									membersToLookup)) {
+						return false;
+					}
+				}
+				membersToLookup = getProfileDao().getPrincipalIds(user);
+				Long allUsersId = Utils.getAllUsersGroupId();
+				if (allUsersId != null && !workArea.getWorkAreaType().equals(EntityIdentifier.EntityType.zone.name()) 
+						&& membersToLookup.contains(allUsersId) && 
+						Utils.canUserOnlySeeCommonGroupMembers(user)) {
+					if (Utils.isWorkareaInProfilesTree(workArea)) {
+						//If this user does not share a group with the binder owner, remove the "All Users" group.
+						boolean remove = true;
+						if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
+								workArea.getWorkAreaType().equals(EntityType.folder.name())) {
+							List<Group> groups = workArea.getOwner().getMemberOf();
+							List gIds = new ArrayList();
+							for (Group g : groups) {
+								gIds.add(g.getId());
+								if (membersToLookup.contains(g.getId())) {
 									remove = false;
 									break;
 								}
 							}
+							if (remove) {
+								//There wasn't a direct match of groups, go look in the exploded list
+								Set<Long> userGroupIds = getProfileDao().getAllGroupMembership(workArea.getOwner().getId(), zoneId);
+								for (Long gId : userGroupIds) {
+									if (membersToLookup.contains(gId)) {
+										remove = false;
+										break;
+									}
+								}
+							}
 						}
+						if (remove) membersToLookup.remove(allUsersId);
 					}
-					if (remove) membersToLookup.remove(allUsersId);
 				}
+				//if current user is the workArea owner, add special Id to is membership
+				if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+				Set<Long> teamMembers = null;
+				if (workAreaStart instanceof FolderEntry) {
+					teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
+				} else {
+					teamMembers = workAreaStart.getTeamMemberIds();
+				}
+				if (!Collections.disjoint(teamMembers, membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+				return checkWorkAreaFunctionMembership(user.getZoneId(),
+								workArea, workAreaOperation, membersToLookup);
 			}
-			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
-			Set<Long> teamMembers = null;
-			if (workAreaStart instanceof FolderEntry) {
-				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
-			} else {
-				teamMembers = workAreaStart.getTeamMemberIds();
-			}
-			if (!Collections.disjoint(teamMembers, membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
-			return checkWorkAreaFunctionMembership(user.getZoneId(),
-							workArea, workAreaOperation, membersToLookup);
 		}
-
+		finally {
+			if(logger.isDebugEnabled()) {
+				double diff = (System.nanoTime() - begin)/1000000.0;
+				logger.debug("testOperation took " + diff + "ms: userName=" + user.getName() + " userId=" + user.getId() + 
+						" workAreStart=" + ((workAreaStart==null)? null:workAreaStart.getWorkAreaId()) + 
+						" workArea=" + ((workArea==null)? null:workArea.getWorkAreaId()) +
+						" workAreaOperation=" + workAreaOperation.getName());
+			}
+		}
 	}
 	
     public void checkOperation(WorkArea workArea, 
