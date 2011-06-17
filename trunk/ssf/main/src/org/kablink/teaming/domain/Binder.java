@@ -95,6 +95,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean postingEnabled;
     protected String type;
     protected Definition entryDef; // initialized by hibernate access=field
+    //File related settings
+    protected Boolean versionsEnabled;
+	protected Integer versionsToKeep;
+    protected Integer maxVersionAge;
+    protected Integer maxFileSize;
+    protected Boolean fileEncryptionEnabled;
     public Binder() {
     }
     /**
@@ -793,4 +799,38 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         setProperty(processorKey, processorClassName);
     }
     /*****************End InstanceLevelProcessorSupport interface stuff***********/	
+    
+    /*****************File Related Stuff***********/	
+    public Boolean isVersionsEnabled() {
+    	return versionsEnabled != null && versionsEnabled;
+	}
+	public void setVersionsEnabled(Boolean versionsEnabled) {
+		this.versionsEnabled = versionsEnabled;
+	}
+	public int getVersionsToKeep() {
+		return versionsToKeep;
+	}
+	public void setVersionsToKeep(int versionsToKeep) {
+		this.versionsToKeep = versionsToKeep;
+	}
+	public int getMaxVersionAge() {
+		return maxVersionAge;
+	}
+	public void setMaxVersionAge(int maxVersionAge) {
+		this.maxVersionAge = maxVersionAge;
+	}
+	public int getMaxFileSize() {
+		return maxFileSize;
+	}
+	public void setMaxFileSize(int maxFileSize) {
+		this.maxFileSize = maxFileSize;
+	}
+	public Boolean isFileEncryptionEnabled() {
+		return fileEncryptionEnabled != null && fileEncryptionEnabled;
+	}
+	public void setFileEncryptionEnabled(Boolean fileEncryptionEnabled) {
+		this.fileEncryptionEnabled = fileEncryptionEnabled;
+	}
+	/*****************End File Related Stuff***********/
+
 }
