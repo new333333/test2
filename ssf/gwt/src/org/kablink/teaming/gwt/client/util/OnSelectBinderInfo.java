@@ -32,7 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
+import org.kablink.teaming.gwt.client.util.TreeInfo;
 
 
 /**

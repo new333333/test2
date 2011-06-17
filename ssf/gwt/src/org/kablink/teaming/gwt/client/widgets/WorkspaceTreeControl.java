@@ -46,10 +46,10 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
-import org.kablink.teaming.gwt.client.workspacetree.TreeInfo;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;

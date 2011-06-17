@@ -363,6 +363,20 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_UpdateCalculatedDatesTask();
 	String rpcFailure_UpdateFavorites();
 
+	// Strings used to describe various code splitting load failures.
+	String codeSplitFailure_ActivityStreamCtrl();
+	String codeSplitFailure_AdminControl();
+	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_ExtensionsConfig();
+	String codeSplitFailure_LandingPageEditor();
+	String codeSplitFailure_MainMenuControl();
+	String codeSplitFailure_MainPage();
+	String codeSplitFailure_ProfilePage();
+	String codeSplitFailure_TaskListing();
+	String codeSplitFailure_UserStatusControl();
+	String codeSplitFailure_WorkspaceTreeControl_Breadcrumb();
+	String codeSplitFailure_WorkspaceTreeControl_Sidebar();
+	
 	// Strings used with the MastHead
 	String administrationHint();
 	String guest();
