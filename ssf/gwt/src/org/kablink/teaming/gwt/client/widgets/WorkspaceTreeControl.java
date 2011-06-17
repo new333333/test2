@@ -32,23 +32,20 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
@@ -67,11 +64,10 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * 
  * @author drfoster@novell.com
  */
-public class WorkspaceTreeControl extends Composite implements ActionRequestor, ActionTrigger {
+public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	private GwtMainPage m_mainPage;
 	private TreeDisplayBase m_treeDisplay;
 	private TreeMode m_tm;
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	
 	/**
 	 * The mode this WorkspaceTreeControl is running in.
@@ -149,17 +145,6 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget(mainPanel);
-	}
-
-	/**
-	 * Called to add an ActionHandler to this WorkspaceTreeControl.
-	 * 
-	 * Implements the ActionRequestor.addActionHandler() method.
-	 * 
-	 * @param actionHandler
-	 */
-	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add(actionHandler);
 	}
 
 	/**
@@ -397,11 +382,7 @@ public class WorkspaceTreeControl extends Composite implements ActionRequestor, 
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		// Scan the ActionHandler's that have been registered...
-		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
+		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
 	}
 	
 	public void triggerAction(TeamingAction action) {

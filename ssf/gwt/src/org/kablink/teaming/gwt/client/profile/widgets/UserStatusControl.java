@@ -33,17 +33,13 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
@@ -55,8 +51,8 @@ import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
@@ -67,7 +63,7 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.Widget;
 
-public class UserStatusControl extends Composite implements ActionRequestor, Event.NativePreviewHandler {
+public class UserStatusControl extends Composite implements Event.NativePreviewHandler {
 	
 	private final static int LINES = 3;
 	private final static int ONE_LINE = 1;
@@ -83,8 +79,6 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 	private InlineLabel limitExceeded;
 	private boolean savingUserStatusInProgress = false;
 	
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
-
 	public UserStatusControl () {
 
 		String userStatus = "";
@@ -219,7 +213,7 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 	private void initialize() {
 		//Register with GwtMainPage, so we can fire an event
 		try {
-			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
+			GwtClientHelper.jsFireEvent(null);
 		} catch(Exception e) {
 			if(GwtClientHelper.jsIsIE()) {
 				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
@@ -524,13 +518,6 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 			}
 		}
 	}
-
-    /**
-	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
-	 */
-	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add(actionHandler);
-	}
 	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
@@ -541,11 +528,7 @@ public class UserStatusControl extends Composite implements ActionRequestor, Eve
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		// Scan the ActionHandler's that have been registered...
-		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
+		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
 	}
 	
 	/**

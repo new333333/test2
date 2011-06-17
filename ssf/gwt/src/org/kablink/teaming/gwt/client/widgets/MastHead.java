@@ -33,15 +33,11 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActionRequestor;
@@ -69,12 +65,11 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
  * This widget will display the MastHead 
  */
 public class MastHead extends Composite
-	implements ActionRequestor, ClickHandler, MouseOutHandler, MouseOverHandler
+	implements ClickHandler, MouseOutHandler, MouseOverHandler
 {
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
@@ -106,7 +101,6 @@ public class MastHead extends Composite
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
 
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private GwtBrandingData m_siteBrandingData = null;
 	private GwtBrandingData m_binderBrandingData = null;
 	
@@ -284,10 +278,8 @@ public class MastHead extends Composite
 	 */
 	public void addActionHandler( ActionHandler actionHandler )
 	{
-		m_actionHandlers.add( actionHandler );
-		
-		m_siteBrandingPanel.addActionHandler( actionHandler );
-		m_binderBrandingPanel.addActionHandler( actionHandler );
+		//m_siteBrandingPanel.addActionHandler( actionHandler );
+		//m_binderBrandingPanel.addActionHandler( actionHandler );
 	}// end addActionHandler()
 	
 
@@ -371,12 +363,8 @@ public class MastHead extends Composite
 
 								// Since the user has administration rights, show them a list of
 								// upgrade tasks that still need to be performed.
-								// Notify all ActionHandler that have registered.
-								for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
-								{
-									// Calling each ActionHandler
-									actionHandlerIT.next().handleAction( TeamingAction.CHECK_FOR_UPGRADE_TASKS, null );
-								}
+								// Sent event to check for tasks
+								GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.CHECK_FOR_UPGRADE_TASKS, null));
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -744,42 +732,38 @@ public class MastHead extends Composite
 		// Display the mouse out-image for the link that was clicked on and hide the hint.
 		doMouseOutActions( eventSource );
 		
-		// Notify all ActionHandler that have registered.
-		for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
+		// Send Appropriate event
+		if ( eventSource == m_adminLink )
 		{
-			// Calling each ActionHandler
-			if ( eventSource == m_adminLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.ADMINISTRATION, null );
-			}
-			else if ( eventSource == m_personalPrefsLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.EDIT_PERSONAL_PREFERENCES, null );
-			}
-			else if ( eventSource == m_teamingFeedLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.TEAMING_FEED, null );
-			}
-			else if ( eventSource == m_logoutLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.LOGOUT, null );
-			}
-			else if ( eventSource == m_loginLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.LOGIN, null );
-			}
-			else if ( eventSource == m_helpLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.HELP, null );
-			}
-			else if ( eventSource == m_resourceLibLink )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.SHOW_RESOURCE_LIBRARY, null );
-			}
-			else if ( eventSource == m_userName )
-			{
-				actionHandlerIT.next().handleAction( TeamingAction.MY_WORKSPACE, null );
-			}
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.ADMINISTRATION, null ));
+		}
+		else if ( eventSource == m_personalPrefsLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.EDIT_PERSONAL_PREFERENCES, null ));
+		}
+		else if ( eventSource == m_teamingFeedLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.TEAMING_FEED, null ));
+		}
+		else if ( eventSource == m_logoutLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.LOGOUT, null ));
+		}
+		else if ( eventSource == m_loginLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.LOGIN, null ));
+		}
+		else if ( eventSource == m_helpLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.HELP, null ));
+		}
+		else if ( eventSource == m_resourceLibLink )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.SHOW_RESOURCE_LIBRARY, null ));
+		}
+		else if ( eventSource == m_userName )
+		{
+			GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.MY_WORKSPACE, null ));
 		}
 	}// end onClick()
 	

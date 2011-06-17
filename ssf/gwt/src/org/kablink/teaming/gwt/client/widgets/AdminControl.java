@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -44,9 +42,8 @@ import org.kablink.teaming.gwt.client.admin.AdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -78,9 +75,8 @@ import com.google.gwt.user.client.ui.Label;
  * that displays the page for the selected administration action.
  */
 public class AdminControl extends Composite
-	implements ActionRequestor, ActionTrigger 
+	implements ActionTrigger 
 {
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private AdminActionsTreeControl m_adminActionsTreeControl = null;
 	private ContentControl m_contentControl = null;
 
@@ -515,21 +511,6 @@ public class AdminControl extends Composite
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
 	}// end AdminControl()
-	
-	
-
-	/**
-	 * Called to add an ActionHandler to this AdminControl.
-	 * 
-	 * Implements the ActionRequestor.addActionHandler() interface method.
-	 * 
-	 * @param actionHandler
-	 */
-	public void addActionHandler( ActionHandler actionHandler )
-	{
-		m_actionHandlers.add( actionHandler );
-	}// end addActionHandler()
-
 
 	/**
 	 * This method gets called when the user selects one of the administration actions.
@@ -832,12 +813,7 @@ public class AdminControl extends Composite
 	 */
 	public void triggerAction( TeamingAction action, Object obj )
 	{
-		// Scan the ActionHandler's that have been registered...
-		for ( Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); )
-		{
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
+		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
 	}// end triggerAction()
 	
 	/**

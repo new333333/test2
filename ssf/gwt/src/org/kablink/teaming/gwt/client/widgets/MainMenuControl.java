@@ -33,14 +33,13 @@
 
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ManageMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarBox;
 import org.kablink.teaming.gwt.client.mainmenu.MenuBarButton;
@@ -53,8 +52,6 @@ import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -81,7 +78,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  * 
  * @author drfoster@novell.com
  */
-public class MainMenuControl extends Composite implements ActionRequestor, ActionTrigger {
+public class MainMenuControl extends Composite implements ActionTrigger {
 	private BinderInfo						m_contextBinder;
 	private ContextLoadInfo					m_lastContextLoaded;
 	private FlowPanel						m_buttonsPanel;
@@ -89,7 +86,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	private GwtMainPage						m_mainPage;
 	private GwtTeamingMainMenuImageBundle	m_images         = GwtTeaming.getMainMenuImageBundle();
 	private GwtTeamingMessages 				m_messages       = GwtTeaming.getMessages();
-	private List<ActionHandler>				m_actionHandlers = new ArrayList<ActionHandler>();
 	private MenuBarBox						m_closeAdminBox;
 	private MenuBarBox						m_myFavoritesBox;
 	private MenuBarBox						m_myTeamsBox;
@@ -178,18 +174,6 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 		// ...and finally, all composites must call initWidget() in
 		// ...their constructors.
 		initWidget(menuPanel);
-	}
-
-	/**
-	 * Called to add an ActionHandler to this MainMenuControl.
-	 * 
-	 * Implements the ActionRequestor.addActionHandler() interface
-	 * method.
-	 * 
-	 * @param actionHandler
-	 */
-	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add(actionHandler);
 	}
 
 	/*
@@ -653,11 +637,7 @@ public class MainMenuControl extends Composite implements ActionRequestor, Actio
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		// Scan the ActionHandler's that have been registered...
-		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
+		GwtTeaming.fireEvent(new TeamingActionEvent(action, obj));
 	}
 	
 	public void triggerAction(TeamingAction action) {

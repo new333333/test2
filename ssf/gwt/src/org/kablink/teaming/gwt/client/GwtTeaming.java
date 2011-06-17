@@ -44,6 +44,8 @@ import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.web.bindery.event.shared.Event;
+import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -56,6 +58,7 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingMainMenuImageBundle		m_mainMenuImageBundle		=                       GWT.create( GwtTeamingMainMenuImageBundle.class      );
 	private static final GwtTeamingTaskListingImageBundle	m_taskListingImageBundle	=                       GWT.create( GwtTeamingTaskListingImageBundle.class   );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
+	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class );
 	
 	private static GwtMainPage	m_mainPage = null;	
 	
@@ -301,5 +304,23 @@ public class GwtTeaming implements EntryPoint
 	public static native void passUrlToMainPage( String url ) /*-{
 		window.top.location.href = url;
 	}-*/;
+	
+	/**
+	 * Get the Event Bus for this Application
+	 * 
+	 * @return
+	 */
+	public static SimpleEventBus getEventBus() {
+		return m_eventBus;
+	}
+	
+	/**
+	 * Fire a global event on the event bus
+	 * 
+	 * @param event
+	 */
+	public static void fireEvent(Event<?> event) {
+		getEventBus().fireEvent(event);
+	}
 	
 }// end GwtTeaming

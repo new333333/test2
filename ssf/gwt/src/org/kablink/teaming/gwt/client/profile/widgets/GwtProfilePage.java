@@ -33,18 +33,13 @@
 
 package org.kablink.teaming.gwt.client.profile.widgets;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
@@ -59,14 +54,13 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
-public class GwtProfilePage extends Composite implements ActionRequestor, ActionTrigger {
+public class GwtProfilePage extends Composite implements ActionTrigger {
 	// profileRequestInfo is now public static to match the definition
 	// of the m_requestInfo in GwtMainPage.  This was necessary for the
 	// proper operation of HttpRequestInfo.createHttpRequestInfo() from
 	// both the main page and the profile page.
 	public static ProfileRequestInfo profileRequestInfo = null;
 	
-	private List<ActionHandler> m_actionHandlers = new ArrayList<ActionHandler>();
 	private ProfileMainPanel profileMainPanel;
 	private ProfileSidePanel profileSidePanel;
 	private FlowPanel profilePanel;
@@ -112,7 +106,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 
 		//Register with GwtMainPage, so we can fire an event
 		try {
-			GwtClientHelper.jsRegisterActionHandler((ActionRequestor) this);
+			GwtClientHelper.jsFireEvent(null);
 		} catch(Exception e) {
 			if(GwtClientHelper.jsIsIE()) {
 				Window.alert(GwtTeaming.getMessages().IEUseCompatibilityMode());
@@ -215,13 +209,6 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 		// Return a reference to the JavaScript variable called, m_requestInfo.
 		return $wnd.m_requestInfo;
 	}-*/;
-
-	/**
-	 * Add an action Handler.  This handler will perform the necessary action when an action is triggered.
-	 */
-	public void addActionHandler(ActionHandler actionHandler) {
-		m_actionHandlers.add(actionHandler);
-	}
 	
 	/**
 	 * Fires a TeamingAction at the registered ActionHandler's.
@@ -232,11 +219,7 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	 * @param obj
 	 */
 	public void triggerAction(TeamingAction action, Object obj) {
-		// Scan the ActionHandler's that have been registered...
-		for (Iterator<ActionHandler> ahIT = m_actionHandlers.iterator(); ahIT.hasNext(); ) {
-			// ...firing the action at each.
-			ahIT.next().handleAction(action, obj);
-		}
+		GwtClientHelper.jsFireEvent(new TeamingActionEvent(action, obj));
 	}
 	
 	/**
@@ -251,5 +234,4 @@ public class GwtProfilePage extends Composite implements ActionRequestor, Action
 	public void updateQuota(String usedQuota) {
 		profileSidePanel.updateQuota(usedQuota);
 	}
-
 }

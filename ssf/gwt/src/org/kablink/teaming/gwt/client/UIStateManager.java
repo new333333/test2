@@ -33,13 +33,9 @@
 
 package org.kablink.teaming.gwt.client;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Stack;
 
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
 /**
@@ -48,10 +44,8 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
  *
  */
 public class UIStateManager
-	implements ActionRequestor
 {
 	private Stack<UIState> m_uiStateStack = null;
-	private List<ActionHandler> m_actionHandlers = null;
 
 	/**
 	 * 
@@ -59,19 +53,7 @@ public class UIStateManager
 	public UIStateManager()
 	{
 		m_uiStateStack = new Stack<UIState>();
-		m_actionHandlers = new ArrayList<ActionHandler>();
 	}
-	
-	
-	/**
-	 * Called to add an ActionHandler
-	 * @param actionHandler
-	 */
-	public void addActionHandler( ActionHandler actionHandler )
-	{
-		m_actionHandlers.add( actionHandler );
-	}
-	
 
 	/**
 	 * Restore the UI state to whatever is on the stack.
@@ -86,25 +68,17 @@ public class UIStateManager
 			// Yes, get the saved ui state.
 			uiState = m_uiStateStack.pop();
 			
-			// Notify all ActionHandler that have registered.
-			for (Iterator<ActionHandler> actionHandlerIT = m_actionHandlers.iterator(); actionHandlerIT.hasNext(); )
-			{
-				ActionHandler actionHandler;
-				
-				actionHandler = actionHandlerIT.next();
-				
-				// Set the visibility of the masthead.
-				if ( uiState.getMastheadVisibility() == true )
-					actionHandler.handleAction( TeamingAction.SHOW_MASTHEAD, null );
-				else
-					actionHandler.handleAction( TeamingAction.HIDE_MASTHEAD, null );
-				
-				// Set the visibility of the sidebar.
-				if ( uiState.getSidebarVisibility() == true )
-					actionHandler.handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
-				else
-					actionHandler.handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
-			}
+			// Set the visibility of the masthead.
+			if ( uiState.getMastheadVisibility() == true )
+				GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.SHOW_MASTHEAD, null ));
+			else
+				GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.HIDE_MASTHEAD, null ));
+			
+			// Set the visibility of the sidebar.
+			if ( uiState.getSidebarVisibility() == true )
+				GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.SHOW_LEFT_NAVIGATION, null ));
+			else
+				GwtTeaming.fireEvent(new TeamingActionEvent( TeamingAction.HIDE_LEFT_NAVIGATION, null ));
 		}
 	}
 	
