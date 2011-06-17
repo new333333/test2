@@ -1785,6 +1785,21 @@ public class ListFolderHelper {
 		}
 		
 
+		//Set Version Controls
+		if (!folder.isMirrored() && 
+				(bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration) ||
+				bs.getAdminModule().testAccess(AdminOperation.manageFunction))) {
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_VERSION_CONTROLS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_SHOW_MENU, "true");
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.manage_folder_version_controls"), url, qualifiers);
+		}
+		
+
 		//set email
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail) &&
 				(folder.isTop() || bs.getAdminModule().getMailConfig().isPostingEnabled()))  {
