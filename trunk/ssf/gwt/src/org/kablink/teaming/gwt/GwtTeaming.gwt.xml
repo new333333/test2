@@ -13,6 +13,13 @@
 
 	<!-- Specify the app entry point class. -->
 	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>
+
+	<!-- Specify the initial split point that needs to be loaded. -->
+	<!--	
+		<extend-configuration-property
+			name="compiler.splitpoint.initial.sequence"
+			value="org.kablink.teaming.gwt.client.GwtMainPage"/>
+	-->
     
     <!-- Specify the application specific style sheet.              -->
     <!-- Note:  DRF - 20100913                                      -->

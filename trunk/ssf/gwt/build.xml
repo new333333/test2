@@ -35,11 +35,11 @@
 	</target>
 	<target name="init-gwt-development" if="development.build">
 		<echo message="Compiling ${build.gwt.module} for development."/>
-		<property name="gwt.base"           value="${build.gwt.module}_dev" />
-		<property name="gwt.localWorkers"   value="-localWorkers 2"         />
-		<property name="gwt.logLevel"       value="-logLevel INFO"          />
-		<property name="gwt.style"          value="-style DETAILED"         />
-		<property name="gwt.additionalArgs" value="-draftCompile -ea"       />
+		<property name="gwt.base"           value="${build.gwt.module}_dev"          />
+		<property name="gwt.localWorkers"   value="-localWorkers 2"                  />
+		<property name="gwt.logLevel"       value="-logLevel INFO"                   />
+		<property name="gwt.style"          value="-style DETAILED"                  />
+		<property name="gwt.additionalArgs" value="-draftCompile -ea -compileReport" />
 	</target>
 
 	
@@ -84,8 +84,9 @@
 			<fileset dir="." includes="${jar.file}" />
 		</delete>
 		<delete includeEmptyDirs="true" failonerror="false">
-			<fileset dir="www" />
 			<fileset dir="classes" />
+			<fileset dir="extras"  />
+			<fileset dir="www"     />
 		</delete>
 	</target>
 

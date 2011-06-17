@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.Event;
@@ -186,78 +188,159 @@ public class GwtTeaming implements EntryPoint
 		}
 		
 		// Are we in the the Landing Page Editor?
-		rootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
-		if ( rootPanel != null )
+		final RootPanel lpRootPanel = RootPanel.get( "gwtLandingPageEditorDiv" );
+		if ( lpRootPanel != null )
 		{
-			LandingPageEditor	lpEditor;
-			
-			// Yes
-			// Create a Landing Page Editor and add it to the page.
-			lpEditor = new LandingPageEditor();
-			rootPanel.add( lpEditor );
+			// Yes!  Load the landing page editor's split point.
+			GWT.runAsync( LandingPageEditor.class, new RunAsyncCallback()
+			{				
+				@Override
+				public void onSuccess()
+				{
+					LandingPageEditor	lpEditor;
+					
+					// Create a Landing Page Editor and add it to the page.
+					lpEditor = new LandingPageEditor();
+					lpRootPanel.add( lpEditor );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_LandingPageEditor() );
+				}// end onFailure()
+			} );
 			
 			return;
 		}
 
 		// Are we in the the Extensions page?
-		rootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
-		if ( rootPanel != null )
+		final RootPanel extRootPanel = RootPanel.get( "gwtExtensionsConfigDiv" );
+		if ( extRootPanel != null )
 		{
-			ExtensionsConfig cfgExtension;
-			
-			// Yes
-			// Create the Extensions ui and add it to the page.
-			cfgExtension = new ExtensionsConfig();
-			rootPanel.add( cfgExtension );
+			// Yes!  Load the extensions page split point.
+			GWT.runAsync( ExtensionsConfig.class, new RunAsyncCallback()
+			{				
+				@Override
+				public void onSuccess()
+				{
+					ExtensionsConfig cfgExtension;
+					
+					// Create the Extensions ui and add it to the page.
+					cfgExtension = new ExtensionsConfig();
+					extRootPanel.add( cfgExtension );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_ExtensionsConfig() );
+				}// end onFailure()
+			} );
 			
 			return;
 		}
 		
 		// Are we in the main page?
-		rootPanel = RootPanel.get( "gwtMainPageDiv" );
-		if ( rootPanel != null )
+		final RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
+		if ( mainRootPanel != null )
 		{
-			// Create the Teaming main page.
-			m_mainPage = new GwtMainPage();
-			rootPanel.add( m_mainPage );
+			// Yes!  Load the main page's split point.
+			GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
+			{
+				@Override
+				public void onSuccess()
+				{
+					// Create the Teaming main page.
+					m_mainPage = new GwtMainPage();
+					mainRootPanel.add( m_mainPage );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_MainPage() );
+				}// end onFailure()
+			} );
 			
 			return;
 		}
 		
 		
 		// Are we loading the profile page?
-		rootPanel = RootPanel.get( "gwtProfileDiv" );
-		if ( rootPanel != null )
+		final RootPanel profileRootPanel = RootPanel.get( "gwtProfileDiv" );
+		if ( profileRootPanel != null )
 		{
-			GwtProfilePage profilePage;
-			
-			profilePage = new GwtProfilePage();
-			rootPanel.add( profilePage );
+			// Yes!  Load the profile page's split point.
+			GWT.runAsync( GwtProfilePage.class, new RunAsyncCallback()
+			{				
+				@Override
+				public void onSuccess()
+				{
+					GwtProfilePage profilePage;
+					
+					profilePage = new GwtProfilePage();
+					profileRootPanel.add( profilePage );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_ProfilePage() );
+				}// end onFailure()
+			} );
 					
 			return;
 		}
 
 		
 		// Are we loading the profile page?
-		rootPanel = RootPanel.get( "gwtUserStatusDiv" );
-		if ( rootPanel != null )
+		final RootPanel usRootPanel = RootPanel.get( "gwtUserStatusDiv" );
+		if ( usRootPanel != null )
 		{
-			UserStatusControl userStatus;
-			
-			userStatus = new UserStatusControl();
-			rootPanel.add( userStatus );
+			// Yes!  Load the user status control's split point.
+			GWT.runAsync( UserStatusControl.class, new RunAsyncCallback()
+			{
+				
+				@Override
+				public void onSuccess()
+				{
+					UserStatusControl userStatus;
+					
+					userStatus = new UserStatusControl();
+					usRootPanel.add( userStatus );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_UserStatusControl() );
+				}// end onFailure()
+			} );
 					
 			return;
 		}
 		
 		// Are we loading the task listing?
-		rootPanel = RootPanel.get( "gwtTasks" );
-		if ( rootPanel != null )
+		final RootPanel taskRootPanel = RootPanel.get( "gwtTasks" );
+		if ( taskRootPanel != null )
 		{
-			TaskListing taskListing;
-			
-			taskListing = new TaskListing();
-			rootPanel.add( taskListing );
+			// Yes!  Load the task listing's split point.
+			GWT.runAsync( TaskListing.class, new RunAsyncCallback()
+			{				
+				@Override
+				public void onSuccess()
+				{
+					TaskListing taskListing = new TaskListing();
+					taskRootPanel.add( taskListing );
+				}// end onSuccess()
+				
+				@Override
+				public void onFailure(Throwable reason)
+				{
+					Window.alert( getMessages().codeSplitFailure_TaskListing() );
+				}// end onFailure()
+			} );
 			
 			return;
 		}
