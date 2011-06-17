@@ -103,6 +103,11 @@
       <property name="level" column="binder_level"/>
       <property name="sortKey" length="255" column="binder_sortKey" unique="true"/>
     </component>
+    <property name="versionsEnabled" access="field"/>
+    <property name="versionsToKeep" access="field"/>
+    <property name="maxVersionAge" access="field"/>
+    <property name="maxFileSize" access="field"/>
+    <property name="fileEncryptionEnabled" access="field"/>
     
     <many-to-one access="field" class="org.kablink.teaming.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
