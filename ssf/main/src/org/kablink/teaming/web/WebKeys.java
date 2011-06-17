@@ -340,6 +340,7 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_MANAGE_BINDER_QUOTA="manage_binder_quota";
+	public static final String ACTION_MANAGE_VERSION_CONTROLS="manage_version_controls";
 	public static final String ACTION_EXPORT_IMPORT="export_import";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
@@ -1553,6 +1554,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
     public static final String VIEW_MANAGE_BINDER_QUOTA="binder/manage_binder_quota";
+    public static final String VIEW_MANAGE_BINDER_VERSION_CONTROLS="binder/manage_binder_version_controls";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
