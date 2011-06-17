@@ -255,7 +255,7 @@ public class Tabs {
 		TabEntry tab = null;
 		for (int i = 0; i < tabList.size(); i += 1) {
 			tab = tabList.get(i);
-			if (type.equals(tab.type) && tabId == tab.tabId) {
+			if (type.equals(tab.type) && tabId.equals(tab.tabId)) {
 				tabList.remove(i);
 				tabList.add(0, tab);
 				return tab;
