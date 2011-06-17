@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
+import org.kablink.teaming.gwt.client.event.TeamingActionEventHandler;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
@@ -45,11 +47,11 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
@@ -64,26 +66,26 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.AnchorElement;
-import com.google.gwt.dom.client.Document;
-import com.google.gwt.dom.client.IFrameElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.web.bindery.event.shared.Event;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 
 /**
  * This widget will display the main Teaming page
  */
 public class GwtMainPage extends Composite
-	implements ActionHandler, ResizeHandler
+	implements ActionHandler, ResizeHandler, TeamingActionEventHandler
 {
 	public static boolean m_novellTeaming = true;
 	public static RequestInfo m_requestInfo;
@@ -111,6 +113,7 @@ public class GwtMainPage extends Composite
 	private ActivityStreamCtrl m_activityStreamCtrl = null;
 
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
+	private HandlerRegistration handlerRegistration;
 	
 	/**
 	 * Class constructor. 
@@ -120,6 +123,9 @@ public class GwtMainPage extends Composite
 		Element bodyElement;
 		String url;
 
+		// Initialize the eventBus Handlers
+		updateEventBusHandlers(true);
+		
 		// Initialize the context load handler used by the traditional
 		// UI to tell the GWT UI that a context has been loaded.
 		initContextLoadHandlerJS(this);
@@ -138,9 +144,9 @@ public class GwtMainPage extends Composite
 		// administration content panel.
 		initCloseAdministrationContentPanelJS( this );
 		
-		// Initialize ReguestActionHandler as native JavaScript to allow any content to register
-		//as an ActionRequestor - See GwtClientHelper:jsRegisterActionHandler
-		initRequestActionHandler( this );
+		// Initialize the native JavaScript to allow any content to fire an event on the main event bus for the application
+		// See GwtClientHelper:jsFireEvent
+		initFireEventOnEventBusJS( this );
 		
 		// Initialize JavaScript to perform Popup for User Profile
 		initSimpleUserProfileJS( this );
@@ -159,7 +165,6 @@ public class GwtMainPage extends Composite
 		
 		// Create a UIStateManager that we will use to save/restore the ui state.
 		m_uiStateManager = new UIStateManager();
-		m_uiStateManager.addActionHandler( this );
 		
 		// Set the class name on the <body> element to "mainGwtTeamingPage"
 		bodyElement = RootPanel.getBodyElement();
@@ -181,7 +186,6 @@ public class GwtMainPage extends Composite
 		
 		// Add the MastHead to the page.
 		m_mastHead = new MastHead( m_requestInfo );
-		registerActionHandler( m_mastHead );
 		m_teamingRootPanel.add( m_mastHead );
 
 		// Is there an error message to be displayed?
@@ -215,7 +219,6 @@ public class GwtMainPage extends Composite
 		
 		// Add the main menu to the page.
 		m_mainMenuCtrl = new MainMenuControl( this );
-		registerActionHandler( m_mainMenuCtrl );
 		m_teamingRootPanel.add( m_mainMenuCtrl );
 		
 		// Create a panel to hold the WorkspaceTree control and the content control
@@ -225,7 +228,6 @@ public class GwtMainPage extends Composite
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.VERTICAL );
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
-		registerActionHandler( m_wsTreeCtrl );
 		m_contentPanel.add( m_wsTreeCtrl );
 		
 		// Create the content control.
@@ -293,6 +295,28 @@ public class GwtMainPage extends Composite
 		}
 	}// end GwtMainPage()
 
+	/**
+	 * Add event handlers to the event bus
+	 * 
+	 * @param active - true passing true will add the event Handlers to the event bus
+	 * passing in false will remove the event handlers
+	 */
+	private void updateEventBusHandlers(boolean active) {
+		if(active) {
+			final  com.google.web.bindery.event.shared.HandlerRegistration teamingActionHandler = GwtTeaming.getEventBus().addHandler(TeamingActionEvent.TYPE, this);
+			this.handlerRegistration = new HandlerRegistration() {
+				public void removeHandler() {
+					teamingActionHandler.removeHandler();
+				}
+			};
+		} else {
+			if (handlerRegistration != null ) {
+				handlerRegistration.removeHandler();
+				handlerRegistration = null;
+			}
+		}
+	}
+	
 	/**
 	 * Returns the main menu control.
 	 * 
@@ -403,13 +427,15 @@ public class GwtMainPage extends Composite
 
 	/*
 	 * Called to create a JavaScript method that will allow independent Content pages that are not 
-	 * instantiated in the GWTMainPage to be able to register as a actionRequestor.
+	 * instantiated in the GWTMainPage to be able fire a event on the EventBus to notify any listeners.
+	 * 
+	 * com.google.web.bindery.event.shared.Event
 	 */
-	private native void initRequestActionHandler( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_registerActionHandler = function( actionRequestor )
+	private native void initFireEventOnEventBusJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_fireEvent = function( event )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::registerActionHandler(Lorg/kablink/teaming/gwt/client/util/ActionRequestor;)( actionRequestor );
-		}//end ss_registerActionHanler
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireEvent(Lcom/google/web/bindery/event/shared/Event;)( event );
+		}//end ss_fireEvent
 	}-*/;
 
 	/*
@@ -874,7 +900,6 @@ public class GwtMainPage extends Composite
 			{
 				// No, create it.
 				m_adminControl = new AdminControl();
-				registerActionHandler( m_adminControl );
 				m_contentPanel.add( m_adminControl );
 			}
 			
@@ -1589,7 +1614,6 @@ public class GwtMainPage extends Composite
 			// bread crumb browser.  Create one...
 			breadCrumbTree = new WorkspaceTreeControl( this, m_selectedBinderId, TreeMode.HORIZONTAL );
 			breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
-			registerActionHandler( breadCrumbTree );
 			m_breadCrumbBrowser = new TeamingPopupPanel(true);
 			GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
 			GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
@@ -2096,18 +2120,6 @@ public class GwtMainPage extends Composite
 		m_contentCtrl.reload();
 	}// end reloadContentPanel()
 	
-	
-	/*
-	 * Does what's necessary to wire the GwtMainPage to an
-	 * ActionRequestor.
-	 */
-	private void registerActionHandler( ActionRequestor actionRequestor )
-	{
-		// For now, all we need to do is add the GwtMainPage as an
-		// ActionHandler to the ActionRequestor.
-		actionRequestor.addActionHandler( this );
-	}// end registerActionHandler()
-	
 	/**
 	 * Restore the previous ui state.
 	 */
@@ -2115,7 +2127,6 @@ public class GwtMainPage extends Composite
 	{
 		m_uiStateManager.restoreUIState();
 	}
-	
 	
 	/*
 	 * Invoke the Simple Profile Dialog
@@ -2131,8 +2142,6 @@ public class GwtMainPage extends Composite
 		PopupPanel.PositionCallback posCallback;
 		
 		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
-		this.registerActionHandler(dlg);
-		
 		posCallback = new PopupPanel.PositionCallback()
 		{
 			public void setPosition(int offsetWidth, int offsetHeight)
@@ -2190,4 +2199,20 @@ public class GwtMainPage extends Composite
 	{
 		return ( ( null != m_adminControl ) && m_adminControl.isVisible() );
 	}// end isAdminActive()
+
+	@Override
+	public void onTeamingAction(TeamingActionEvent event) {
+		if(event != null) {
+			TeamingAction action = event.getAction();
+			Object obj = event.getSource();
+			
+			//call the old action handler
+			handleAction(action, obj);
+		}
+	}
+	
+	public void fireEvent(Event<?> event) {
+		GwtTeaming.fireEvent(event);
+	}
+	
 }// end GwtMainPage

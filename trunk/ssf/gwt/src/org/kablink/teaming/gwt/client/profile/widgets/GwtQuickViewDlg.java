@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.profile.widgets;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.presence.InstantMessageClickHandler;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
@@ -44,13 +45,11 @@ import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
-import org.kablink.teaming.gwt.client.util.ActionHandler;
-import org.kablink.teaming.gwt.client.util.ActionRequestor;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -64,9 +63,9 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -85,7 +84,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author nbjensen
  *
  */
-public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePreviewHandler{
+public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 
 	private String binderId;
 	private Grid grid;
@@ -98,7 +97,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 	private Label statusLabel;
 	
 	private String userName;
-	private ActionHandler actionHandler;
 	private Image avatar;
 	private Anchor miniBlogA;
 	private ProfileActionWidget instantMessageBtn;
@@ -537,7 +535,8 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 					}
 					osbInfo = new OnSelectBinderInfo( binderId, binderUrl, false, Instigator.OTHER );
 					
-					actionHandler.handleAction(TeamingAction.SELECTION_CHANGED, osbInfo );
+					//Fire Teaming action to notify that a selection has changed
+					GwtTeaming.fireEvent(new TeamingActionEvent(TeamingAction.SELECTION_CHANGED, osbInfo ));
 					
 					hide();
 				}// end onSuccess()
@@ -545,10 +544,6 @@ public class GwtQuickViewDlg extends DlgBox implements ActionRequestor, NativePr
 		}
 	}
 
-	public void addActionHandler(ActionHandler actionHandler) {
-		this.actionHandler = actionHandler;
-	}
-	
 	/**
 	 * Checks to see if the current User is following this person
 	 * @return

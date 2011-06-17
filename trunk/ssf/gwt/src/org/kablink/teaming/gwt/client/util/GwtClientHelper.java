@@ -53,6 +53,7 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.web.bindery.event.shared.Event;
 
 
 /**
@@ -546,11 +547,11 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Use to register as an ActionRequestor to the GwtMainPage
-	 * @param requestor
+	 * Use to pass an Event to the EventBus on GwtMainPage
+	 * @param GWTEvent -  Example TeamingActionEvent extends GWTEvent
 	 */
-	public static native void jsRegisterActionHandler( ActionRequestor requestor ) /*-{
-		$wnd.top.ss_registerActionHandler( requestor );
+	public static native void jsFireEvent( Event<?> event ) /*-{
+		$wnd.top.ss_fireEvent( event );
 	}-*/;
 
 	/**
