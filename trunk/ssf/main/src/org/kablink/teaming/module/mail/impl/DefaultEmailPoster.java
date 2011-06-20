@@ -85,6 +85,7 @@ import org.kablink.util.Validator;
 import org.springframework.util.FileCopyUtils;
 
 
+@SuppressWarnings("unchecked")
 public class DefaultEmailPoster  extends CommonDependencyInjection implements EmailPoster {
 	/*
 	 * Inner class used to track where an entry's description comes
@@ -189,7 +190,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
-	@SuppressWarnings("unchecked")
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser) {
 		//initialize collections
 		Map fileItems = new HashMap();
@@ -257,7 +257,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return errors;
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
 			List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
@@ -296,7 +295,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
 			List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
@@ -312,6 +310,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		if (!fileItems.isEmpty()) {
+			uniquifyFileItems(fileItems);
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
 			//Log the files that were attached
 			List<String> fileNames = new ArrayList<String>();
@@ -433,7 +432,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return user;
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
 		try {
 			descInfo.partEntry();
@@ -471,7 +469,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}	
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
 		try {
 			descInfo.multiPartEntry();
@@ -492,7 +489,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 
 	
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processText(Folder folder, Object content, Map inputData, DescInfo descInfo) {
 //		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		if (descInfo.saveDesc(DescInfo.Type.PLAIN)) {
@@ -513,7 +509,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processHTML(Folder folder, Object content, Map inputData, DescInfo descInfo) {
 		if (descInfo.saveDesc(DescInfo.Type.HTML)) {
 			String[] val = new String[1];
@@ -524,7 +519,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}	
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected void processICalendar(Folder folder, Object content, List iCalendars) throws IOException {
 		try {
 			iCalendars.add((InputStream)content);
@@ -533,7 +527,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected AttendedEntries processICalAttachments(Folder folder, Definition def, Map inputData, Map fileItems, List iCalendars) {
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator fileItemsIt = fileItems.entrySet().iterator();
@@ -560,7 +553,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return entryIdsFromICalendars;
 	}
 	//override to provide alternate processing 
-	@SuppressWarnings("unchecked")
 	protected AttendedEntries processICalInline(Folder folder,  Definition def, Map inputData, Map fileItems, List iCalendars) {
 		// process inline iCalendars
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
@@ -580,6 +572,50 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		return entryIdsFromICalendars;
 		
+	}
+	
+	/*
+	 * Given a Map of FileHandler's, ensure's that they're all referring to unique
+	 * filenames.
+	 */
+	private static void uniquifyFileItems(Map fileItems) {
+		// If there's nothing in the Map...
+		if ((null == fileItems) || fileItems.isEmpty()) {
+			// ...there's nothing to make unique.
+			return;
+		}
+		
+		// Scan the Map's keys.
+		Object[] keys = fileItems.keySet().toArray();
+		int c = keys.length;
+		for (int i = 0; i < (c - 1); i += 1) {
+			// Extract this FileHandler's filename.
+			FileHandler fh1 = ((FileHandler) fileItems.get(keys[i]));
+			String fn1 = fh1.getOriginalFilename();
+			
+			// Scan the Map's keys below the current one.
+			for (int j = (i + 1); j < c; j += 1) {
+				// Extract this FileHandler's filename.
+				FileHandler fh2 = ((FileHandler) fileItems.get(keys[j]));
+				String fn2 = fh2.getOriginalFilename();
+				
+				// Is the 2nd filename a duplicate of the 1st?
+				if (fn1.equalsIgnoreCase(fn2)) {
+					// Yes!  We need to make it unique.  We do this by
+					// appending an '_n' on the end of the filename
+					// part of the name.
+					int pPos = fn2.lastIndexOf(".");
+					if ((-1) == pPos) {
+						fh2.fileName = (fn2 + "_" + j);
+					}
+					else {
+						String p1 = fn2.substring(0, pPos);
+						String p2 = fn2.substring(   pPos);
+						fh2.fileName = (p1 + "_" + j + p2);
+					}
+				}
+			}
+		}
 	}
 	
 	public class FileHandler implements org.springframework.web.multipart.MultipartFile {
@@ -730,6 +766,6 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				logger.error("Could not transfer to file", ex);
 				throw new IOException("Could not transfer to file: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 			}
-		}
+		}		
 	}
 }
