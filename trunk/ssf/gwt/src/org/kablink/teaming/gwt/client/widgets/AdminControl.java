@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,7 +48,10 @@ import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -492,11 +495,9 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public AdminControl()
+	private AdminControl()
 	{
-		FlowPanel mainPanel;
-
-		mainPanel = new FlowPanel();
+		final FlowPanel mainPanel = new FlowPanel();
 		mainPanel.addStyleName( "adminControl" );
 		
 		// Create the control that holds all of the administration actions
@@ -504,9 +505,23 @@ public class AdminControl extends Composite
 		mainPanel.add( m_adminActionsTreeControl );
 		
 		// Create a control to hold the administration page for the selection administration action.
-		m_contentControl = new ContentControl( "adminContentControl" );
-		m_contentControl.addStyleName( "adminContentControl" );
-		mainPanel.add( m_contentControl );
+		ContentControl.createAsync(
+				"adminContentControl",
+				new ContentControlClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( ContentControl contentCtrl )
+			{
+				m_contentControl = contentCtrl;
+				m_contentControl.addStyleName( "adminContentControl" );
+				mainPanel.add( m_contentControl );
+			}// end onSuccess()
+		} );
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( mainPanel );
@@ -824,5 +839,38 @@ public class AdminControl extends Composite
 		// Always use the initial form of the method.
 		triggerAction( action, null );
 	}// end triggerAction()
-	
+
+	/**
+	 * Callback interface to interact with the admin control
+	 * asynchronously after it loads. 
+	 */
+	public interface AdminControlClient {
+		void onSuccess(AdminControl adminCtrl);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the AdminControl split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param adminCtrlClient
+	 */
+	public static void createAsync( final AdminControlClient adminCtrlClient )
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				AdminControl adminCtrl = new AdminControl();
+				adminCtrlClient.onSuccess( adminCtrl );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}// end onFailure()
+		} );
+	}// end createAsync()
 }// end AdminControl

@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Timer;
@@ -76,7 +77,7 @@ public class ExtensionsConfig  extends Composite {
 	/*
 	 * 
 	 */
-	public ExtensionsConfig() {
+	private ExtensionsConfig() {
 
 		fPanel.setStyleName("ss_form");
 		fPanel.add(new HTML("<br/>"));
@@ -306,5 +307,35 @@ public class ExtensionsConfig  extends Composite {
 			extensionPanelStateText.setText( GwtTeaming.getMessages().extensionsWaiting() );
 			gwtRpcService = (GwtRpcServiceAsync) GWT.create( GwtRpcService.class );
 			gwtRpcService.removeExtension(HttpRequestInfo.createHttpRequestInfo(), extInfo.getId(), callback);
+		}
+	
+		/**
+		 * Callback interface to interact with the extensions
+		 * configuration utility asynchronously after it loads. 
+		 */
+		public interface ExtensionsConfigClient {
+			void onSuccess(ExtensionsConfig ec);
+			void onUnavailable();
+		}
+	
+		/**
+		 * Loads the ExtensionsConfig split point and returns an
+		 * instance of it via the callback.
+		 * 
+		 * @param ecClient
+		 */
+		public static void createAsync(final ExtensionsConfigClient ecClient) {
+			GWT.runAsync(ExtensionsConfig.class, new RunAsyncCallback() {			
+				@Override
+				public void onSuccess() {
+					ExtensionsConfig ec = new ExtensionsConfig();
+					ecClient.onSuccess(ec);
+				}
+				
+				@Override
+				public void onFailure(Throwable reason) {
+					Window.alert(GwtTeaming.getMessages().codeSplitFailure_ExtensionsConfig());
+				}
+			});
 		}
 	}

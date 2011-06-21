@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,17 +36,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.BinderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 
 
 /**
@@ -79,13 +82,10 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem m_trackPersonTBI;			// The person tracking           toolbar item, if found.
 	private TagThisDlg m_tagThisDlg = null;
 
-	/**
+	/*
 	 * Class constructor.
-	 * 
-	 * @param actionTrigger
-	 * @param manageName
 	 */
-	public ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
+	private ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
 		// Simply initialize the super class.
 		super(actionTrigger, manageName);
 	}
@@ -540,24 +540,73 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				
 				// ...hide the menu...
 				hide();
-
-				if ( m_tagThisDlg == null )
-				{
-					m_tagThisDlg = new TagThisDlg(
-											false,	// false -> Don't auto hide.
-											true,	// true  -> Modal.
-											null,
-											m_menuLeft,
-											m_menuTop,
-											dlgCaption);
-					m_tagThisDlg.addStyleName("tagThisDlg");
+				
+				if (null == m_tagThisDlg) {
+					TagThisDlg.createAsync(
+							false,	// false -> Don't auto hide.
+							true,	// true  -> Modal.
+							null,
+							m_menuLeft,
+							m_menuTop,
+							dlgCaption,
+							new TagThisDlg.TagThisDlgClient() {						
+						@Override
+						public void onUnavailable() {
+							// Nothing to do.  Error handled in
+							// TagThisDlg.createAsync().
+						}
+						
+						@Override
+						public void onSuccess(TagThisDlg dlg) {
+							m_tagThisDlg = dlg;
+							showTagThisImpl();
+						}
+					});
 				}
 				
-				m_tagThisDlg.init( m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType() );
-				m_tagThisDlg.showDlg();
-
+				else {
+					showTagThisImpl();
+				}
 			}
 		});
 		addContentWidget(mtA);
+	}
+	
+	private void showTagThisImpl() {
+		m_tagThisDlg.init( m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType() );
+		m_tagThisDlg.showDlg();
+	}
+	
+	/**
+	 * Callback interface to interact with the manage menu popup
+	 * asynchronously after it loads. 
+	 */
+	public interface ManageMenuPopupClient {
+		void onSuccess(ManageMenuPopup mmp);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the ManageMenuPopup split point and returns an
+	 * instance of it via the callback.
+	 *
+	 * @param actionTrigger
+	 * @param name
+	 * @param mmpClient
+	 */
+	public static void createAsync(final ActionTrigger actionTrigger, final String name, final ManageMenuPopupClient mmpClient) {
+		GWT.runAsync(ManageMenuPopup.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess() {
+				ManageMenuPopup mmp = new ManageMenuPopup(actionTrigger, name);
+				mmpClient.onSuccess(mmp);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ManageMenuPopup());
+			}
+		});
 	}
 }

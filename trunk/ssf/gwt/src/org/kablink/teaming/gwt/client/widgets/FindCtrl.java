@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,6 +48,8 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -461,17 +463,7 @@ public class FindCtrl extends Composite
 	/**
 	 * 
 	 */
-	public FindCtrl(
-		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
-		GwtSearchCriteria.SearchType searchType )
-	{
-		this( actionHandler, searchType, 40 );
-	}// end FindCtrl()
-	
-	/**
-	 * 
-	 */
-	public FindCtrl(
+	private FindCtrl(
 		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		GwtSearchCriteria.SearchType searchType,
 		int visibleLength )
@@ -971,5 +963,54 @@ public class FindCtrl extends Composite
 		// Make the search results widget as wide as the text box.  We subtract 4 because of the border around the search results widget.
 		m_searchResultsWidget.setWidthInt( m_txtBox.getOffsetWidth() - 4 );
 		m_searchResultsWidget.setVisible( true );
-	}// end showSearchResults()		
+	}// end showSearchResults()
+	
+	/**
+	 * Callback interface to interact with the find control
+	 * asynchronously after it loads. 
+	 */
+	public interface FindCtrlClient {
+		void onSuccess(FindCtrl findCtrl);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the FindCtrl split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param actionHandler
+	 * @param searchType
+	 * @param visibleLength
+	 * @param findCtrlClient
+	 */
+	public static void createAsync(
+		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength,
+		final FindCtrlClient findCtrlClient )
+	{
+		GWT.runAsync( FindCtrl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				FindCtrl findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
+				findCtrlClient.onSuccess( findCtrl );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_FindCtrl() );
+			}// end onFailure()
+		} );
+	}// end createAsync()
+	
+	public static void createAsync(
+		ActionHandler actionHandler,
+		GwtSearchCriteria.SearchType searchType,
+		FindCtrlClient findCtrlClient )
+	{
+		createAsync( actionHandler, searchType, 40, findCtrlClient );
+	}// end createAsync()
 }// end FindCtrl

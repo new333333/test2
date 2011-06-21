@@ -367,15 +367,20 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ActivityStreamCtrl();
 	String codeSplitFailure_AdminControl();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_EditBrandingDlg();
 	String codeSplitFailure_ExtensionsConfig();
+	String codeSplitFailure_FindCtrl();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_MainMenuControl();
 	String codeSplitFailure_MainPage();
+	String codeSplitFailure_ManageMenuPopup();
+	String codeSplitFailure_ManageSavedSearchesDlg();
 	String codeSplitFailure_ProfilePage();
+	String codeSplitFailure_TagThisDlg();
 	String codeSplitFailure_TaskListing();
 	String codeSplitFailure_UserStatusControl();
-	String codeSplitFailure_WorkspaceTreeControl_Breadcrumb();
-	String codeSplitFailure_WorkspaceTreeControl_Sidebar();
+	String codeSplitFailure_ViewsMenuPopup();
+	String codeSplitFailure_WorkspaceTreeControl();
 	
 	// Strings used with the MastHead
 	String administrationHint();

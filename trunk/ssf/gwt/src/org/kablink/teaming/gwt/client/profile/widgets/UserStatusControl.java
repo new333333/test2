@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -79,7 +81,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private InlineLabel limitExceeded;
 	private boolean savingUserStatusInProgress = false;
 	
-	public UserStatusControl () {
+	private UserStatusControl () {
 
 		String userStatus = "";
 		
@@ -463,7 +465,8 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
      * @param modifyDate
      * @param date 
      */
-    private void setTime(Date modifyDate, Date currentDate) {
+    @SuppressWarnings("deprecation")
+	private void setTime(Date modifyDate, Date currentDate) {
     	
     	long sec = 1000;
     	long min = 60 * sec;
@@ -540,4 +543,33 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 		triggerAction(action, null);
 	}
 
+	/**
+	 * Callback interface to interact with the user status control
+	 * asynchronously after it loads. 
+	 */
+	public interface UserStatusControlClient {
+		void onSuccess(UserStatusControl usc);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the UserStatusControl split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param uscClient
+	 */
+	public static void createAsync(final UserStatusControlClient uscClient) {
+		GWT.runAsync(UserStatusControl.class, new RunAsyncCallback() {			
+			@Override
+			public void onSuccess() {
+				UserStatusControl usc = new UserStatusControl();
+				uscClient.onSuccess(usc);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_UserStatusControl());
+			}
+		});
+	}
 }

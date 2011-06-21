@@ -47,6 +47,8 @@ import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
@@ -289,10 +291,10 @@ public class TaskListing extends Composite implements ActionTrigger {
 		}
 	}
 	
-	/**
+	/*
 	 * Class constructor.
 	 */
-	public TaskListing() {
+	private TaskListing() {
 		super();
 		
 		// Initialize the JSNI components...
@@ -731,4 +733,35 @@ public class TaskListing extends Composite implements ActionTrigger {
 	public void triggerAction(TeamingAction action, Object obj) {
 		m_taskTable.handleAction(action, obj);
 	}	
+	
+	/**
+	 * Callback interface to interact with the task listing
+	 * asynchronously after it loads. 
+	 */
+	public interface TaskListingClient {
+		void onSuccess(TaskListing taskListing);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the TaskListing split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param taskListingClient
+	 */
+	public static void createAsync(final TaskListingClient taskListingClient) {
+		GWT.runAsync(TaskListing.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess() {
+				TaskListing taskListing = new TaskListing();
+				taskListingClient.onSuccess(taskListing);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_TaskListing() );
+			}
+		});
+	}
 }

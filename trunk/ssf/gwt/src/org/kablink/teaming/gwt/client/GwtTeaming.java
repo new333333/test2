@@ -33,17 +33,19 @@
 package org.kablink.teaming.gwt.client;
 
 import org.kablink.teaming.gwt.client.admin.ExtensionsConfig;
+import org.kablink.teaming.gwt.client.GwtMainPage.GwtMainPageClient;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
+import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorClient;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
+import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl.UserStatusControlClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
+import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.web.bindery.event.shared.Event;
@@ -192,23 +194,19 @@ public class GwtTeaming implements EntryPoint
 		if ( lpRootPanel != null )
 		{
 			// Yes!  Load the landing page editor's split point.
-			GWT.runAsync( LandingPageEditor.class, new RunAsyncCallback()
-			{				
+			LandingPageEditor.createAsync(
+					new LandingPageEditorClient() {
 				@Override
-				public void onSuccess()
+				public void onUnavailable()
 				{
-					LandingPageEditor	lpEditor;
-					
-					// Create a Landing Page Editor and add it to the page.
-					lpEditor = new LandingPageEditor();
-					lpRootPanel.add( lpEditor );
-				}// end onSuccess()
+				}// end onUnavailable()
 				
 				@Override
-				public void onFailure(Throwable reason)
+				public void onSuccess( LandingPageEditor lpe )
 				{
-					Window.alert( getMessages().codeSplitFailure_LandingPageEditor() );
-				}// end onFailure()
+					// Add the new Landing Page Editor to the page.
+					lpRootPanel.add( lpe );
+				}// end onSuccess()
 			} );
 			
 			return;
@@ -219,23 +217,19 @@ public class GwtTeaming implements EntryPoint
 		if ( extRootPanel != null )
 		{
 			// Yes!  Load the extensions page split point.
-			GWT.runAsync( ExtensionsConfig.class, new RunAsyncCallback()
+			ExtensionsConfig.createAsync( new ExtensionsConfig.ExtensionsConfigClient()
 			{				
 				@Override
-				public void onSuccess()
+				public void onUnavailable()
 				{
-					ExtensionsConfig cfgExtension;
-					
-					// Create the Extensions ui and add it to the page.
-					cfgExtension = new ExtensionsConfig();
-					extRootPanel.add( cfgExtension );
-				}// end onSuccess()
+				}// end onUnavailable()
 				
 				@Override
-				public void onFailure(Throwable reason)
+				public void onSuccess( ExtensionsConfig ec )
 				{
-					Window.alert( getMessages().codeSplitFailure_ExtensionsConfig() );
-				}// end onFailure()
+					// Add extensions configuration utility to the page.
+					extRootPanel.add(ec);
+				}// end onSuccess()
 			} );
 			
 			return;
@@ -246,21 +240,19 @@ public class GwtTeaming implements EntryPoint
 		if ( mainRootPanel != null )
 		{
 			// Yes!  Load the main page's split point.
-			GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
-			{
+			GwtMainPage.createAsync(
+					new GwtMainPageClient() {				
 				@Override
-				public void onSuccess()
+				public void onUnavailable()
 				{
-					// Create the Teaming main page.
-					m_mainPage = new GwtMainPage();
-					mainRootPanel.add( m_mainPage );
-				}// end onSuccess()
+				}// end onUnavailable()
 				
 				@Override
-				public void onFailure(Throwable reason)
+				public void onSuccess( GwtMainPage mainPage )
 				{
-					Window.alert( getMessages().codeSplitFailure_MainPage() );
-				}// end onFailure()
+					m_mainPage = mainPage;
+					mainRootPanel.add( mainPage );
+				}// end onSuccess()
 			} );
 			
 			return;
@@ -272,22 +264,18 @@ public class GwtTeaming implements EntryPoint
 		if ( profileRootPanel != null )
 		{
 			// Yes!  Load the profile page's split point.
-			GWT.runAsync( GwtProfilePage.class, new RunAsyncCallback()
-			{				
+			GwtProfilePage.createAsync(
+					new GwtProfilePage.GwtProfilePageClient() {				
 				@Override
-				public void onSuccess()
+				public void onUnavailable()
 				{
-					GwtProfilePage profilePage;
-					
-					profilePage = new GwtProfilePage();
-					profileRootPanel.add( profilePage );
-				}// end onSuccess()
+				}// end onUnavailable()
 				
 				@Override
-				public void onFailure(Throwable reason)
+				public void onSuccess( GwtProfilePage profilePage )
 				{
-					Window.alert( getMessages().codeSplitFailure_ProfilePage() );
-				}// end onFailure()
+					profileRootPanel.add( profilePage );
+				}// end onSuccess()
 			} );
 					
 			return;
@@ -299,23 +287,18 @@ public class GwtTeaming implements EntryPoint
 		if ( usRootPanel != null )
 		{
 			// Yes!  Load the user status control's split point.
-			GWT.runAsync( UserStatusControl.class, new RunAsyncCallback()
-			{
+			UserStatusControl.createAsync(
+					new UserStatusControlClient() {				
+				@Override
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
 				
 				@Override
-				public void onSuccess()
+				public void onSuccess( UserStatusControl usc )
 				{
-					UserStatusControl userStatus;
-					
-					userStatus = new UserStatusControl();
-					usRootPanel.add( userStatus );
+					usRootPanel.add( usc );
 				}// end onSuccess()
-				
-				@Override
-				public void onFailure(Throwable reason)
-				{
-					Window.alert( getMessages().codeSplitFailure_UserStatusControl() );
-				}// end onFailure()
 			} );
 					
 			return;
@@ -326,20 +309,18 @@ public class GwtTeaming implements EntryPoint
 		if ( taskRootPanel != null )
 		{
 			// Yes!  Load the task listing's split point.
-			GWT.runAsync( TaskListing.class, new RunAsyncCallback()
-			{				
+			TaskListing.createAsync(
+					new TaskListingClient() {				
 				@Override
-				public void onSuccess()
+				public void onUnavailable()
 				{
-					TaskListing taskListing = new TaskListing();
-					taskRootPanel.add( taskListing );
-				}// end onSuccess()
+				}// end onUnavailable()
 				
 				@Override
-				public void onFailure(Throwable reason)
+				public void onSuccess( TaskListing taskListing )
 				{
-					Window.alert( getMessages().codeSplitFailure_TaskListing() );
-				}// end onFailure()
+					taskRootPanel.add( taskListing );
+				}// end onSuccess()
 			} );
 			
 			return;
