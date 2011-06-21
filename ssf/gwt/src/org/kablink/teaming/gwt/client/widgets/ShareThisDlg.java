@@ -648,6 +648,8 @@ public class ShareThisDlg extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// onUnavailable()
 				
 				@Override

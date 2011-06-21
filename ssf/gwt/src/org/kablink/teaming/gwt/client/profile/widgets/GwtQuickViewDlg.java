@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,7 +105,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	private Element clientElement;
 	private FlowPanel pictureDiv;
 	
-	public GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
+	private GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName, Element element) {
 		super(autoHide, modal, pos, pos2);
 
@@ -858,4 +859,48 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 		}
 	}
 
+	/**
+	 * Callback interface to interact with the quick view dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface GwtQuickViewDlgClient {
+		void onSuccess(GwtQuickViewDlg qvd);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the GwtQuickViewDlg split point and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param pos
+	 * @param pos2
+	 * @param binderId
+	 * @param userName
+	 * @param element
+	 * @param qvdClient
+	 */
+	public static void createAsync(
+			final boolean autoHide,
+			final boolean modal,
+			final int pos,
+			final int pos2,
+			final String binderId,
+			final String userName,
+			final Element element,
+			final GwtQuickViewDlgClient qvdClient) {
+		GWT.runAsync(GwtQuickViewDlg.class, new RunAsyncCallback() {			
+			@Override
+			public void onSuccess() {
+				GwtQuickViewDlg qvd = new GwtQuickViewDlg(autoHide, modal, pos, pos2, binderId, userName, element);
+				qvdClient.onSuccess(qvd);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_QuickViewDlg());
+			}
+		});
+	}
 }

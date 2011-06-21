@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.UIStateManager.UIState;
 import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingActionEventHandler;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg;
+import org.kablink.teaming.gwt.client.profile.widgets.GwtQuickViewDlg.GwtQuickViewDlgClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
@@ -145,6 +146,8 @@ public class GwtMainPage extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}// end onUnavailable()
 			
 			@Override
@@ -174,6 +177,8 @@ public class GwtMainPage extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}// end onUnavailable()
 			
 			@Override
@@ -201,6 +206,8 @@ public class GwtMainPage extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}// end onUnavailable()
 			
 			@Override
@@ -228,6 +235,8 @@ public class GwtMainPage extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}// end onUnavailable()
 			
 			@Override
@@ -431,9 +440,6 @@ public class GwtMainPage extends Composite
 			}
 		}
 				
-		// All composites must call initWidget() in their constructors.
-		initWidget( m_teamingRootPanel );
-
 		// If we're running GroupWise integrations or otherwise require
 		// session captive mode...
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
@@ -445,7 +451,7 @@ public class GwtMainPage extends Composite
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
 		}
-	}// end GwtMainPage()
+	}// end initMainPage_Finish()
 
 	/**
 	 * Add event handlers to the event bus
@@ -886,6 +892,8 @@ public class GwtMainPage extends Composite
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override
@@ -1642,17 +1650,19 @@ public class GwtMainPage extends Composite
 					GwtTeaming.getMessages().tagThisEntry(),
 					new TagThisDlg.TagThisDlgClient() {						
 				@Override
-				public void onUnavailable() {
+				public void onUnavailable()
+				{
 					// Nothing to do.  Error handled in
-					// TagThisDlg.createAsync().
-				}
+					// asynchronous provider.
+				}// end onUnavailable()
 				
 				@Override
-				public void onSuccess(TagThisDlg dlg) {
+				public void onSuccess( TagThisDlg dlg )
+				{
 					m_tagThisDlg = dlg;
-					invokeTagDlgImpl(entryId, entryTitle, x, y);
-				}
-			});
+					invokeTagDlgImpl( entryId, entryTitle, x, y );
+				}// end onSuccess()
+			} );
 		}
 		
 		else
@@ -1810,6 +1820,8 @@ public class GwtMainPage extends Composite
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override
@@ -2348,24 +2360,41 @@ public class GwtMainPage extends Composite
 			return;
 		}
 		
-		final GwtQuickViewDlg dlg;
-		PopupPanel.PositionCallback posCallback;
-		
-		dlg = new GwtQuickViewDlg(false, true, 0, 0, binderId, userName, element);
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			public void setPosition(int offsetWidth, int offsetHeight)
+		GwtQuickViewDlg.createAsync(
+				false,
+				true,
+				0,
+				0,
+				binderId,
+				userName,
+				element,
+				new GwtQuickViewDlgClient() {			
+			@Override
+			public void onUnavailable()
 			{
-				int x;
-				int y;
-				
-				x = (Window.getClientWidth() - offsetWidth) / 2;
-				y = (Window.getClientHeight() - offsetHeight) / 3;
-				
-				dlg.setPopupPosition( x, y );
-			}// end setPosition()
-		};
-		dlg.setPopupPositionAndShow( posCallback );
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final GwtQuickViewDlg qvd )
+			{
+				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
+				{
+					public void setPosition(int offsetWidth, int offsetHeight)
+					{
+						int x;
+						int y;
+						
+						x = (Window.getClientWidth() - offsetWidth) / 2;
+						y = (Window.getClientHeight() - offsetHeight) / 3;
+						
+						qvd.setPopupPosition( x, y );
+					}// end setPosition()
+				};
+				qvd.setPopupPositionAndShow( posCallback );
+			}// end onSuccess()
+		} );
 	}
 
 	/*
@@ -2426,6 +2455,8 @@ public class GwtMainPage extends Composite
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override

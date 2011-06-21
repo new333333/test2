@@ -362,6 +362,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override
@@ -512,6 +514,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override

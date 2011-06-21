@@ -214,6 +214,8 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.PERSON, 30, new FindCtrlClient() {			
 			@Override
 			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
 			
 			@Override

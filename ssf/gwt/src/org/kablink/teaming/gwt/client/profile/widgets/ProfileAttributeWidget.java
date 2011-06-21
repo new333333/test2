@@ -41,6 +41,9 @@ import org.kablink.teaming.gwt.client.profile.ProfileAttribute;
 import org.kablink.teaming.gwt.client.profile.ProfileAttributeListElement;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -54,7 +57,7 @@ public class ProfileAttributeWidget  {
 	private Widget widget;
 	private boolean isEditMode = false;
 
-	public ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
+	private ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
 		isEditMode = editMode;
 		
 		createWidget(attr);
@@ -242,5 +245,38 @@ public class ProfileAttributeWidget  {
 			}
 		}
 		return index;
+	}
+	
+	/**
+	 * Callback interface to interact with the profile attribute widget
+	 * asynchronously after it loads. 
+	 */
+	public interface ProfileAttributeWidgetClient {
+		void onSuccess(ProfileAttributeWidget paw, int row);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the ProfileAttributeWidget split point and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param attr
+	 * @param editMode
+	 * @param row
+	 * @param pawClient
+	 */
+	public static void createAsync(final ProfileAttribute attr, final boolean editMode, final int row, final ProfileAttributeWidgetClient pawClient) {
+		GWT.runAsync(ProfileAttributeWidget.class, new RunAsyncCallback() {			
+			@Override
+			public void onSuccess() {
+				ProfileAttributeWidget paw = new ProfileAttributeWidget(attr, editMode);
+				pawClient.onSuccess(paw, row);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfileAttributeWidget());
+			}
+		});
 	}
 }

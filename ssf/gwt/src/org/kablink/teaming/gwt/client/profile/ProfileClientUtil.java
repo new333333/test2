@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,7 @@
 package org.kablink.teaming.gwt.client.profile;
 
 import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget;
+import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -51,7 +52,7 @@ public class ProfileClientUtil {
 	 * @param rowCount
 	 * @return
 	 */
-	public static int createProfileInfoSection(final ProfileCategory cat, Grid grid, int rowCount, boolean isEditable, boolean showHeading) {
+	public static int createProfileInfoSection(final ProfileCategory cat, final Grid grid, int rowCount, boolean isEditable, boolean showHeading) {
 		int row = rowCount;
 		
 		if(showHeading) {
@@ -80,14 +81,26 @@ public class ProfileClientUtil {
 			
 			Label title = new Label(attr.getTitle() + ":");
 			title.setStyleName("attrLabel");
-			Widget value = new ProfileAttributeWidget(attr, isEditable).getWidget();
-
 			grid.insertRow(row);
 			grid.setWidget(row, 0, title);
-			grid.setWidget(row, 1, value);
-			grid.getCellFormatter().setWidth(row, 1, "70%");
-			grid.getCellFormatter().setHorizontalAlignment(row, 1,
-					HasHorizontalAlignment.ALIGN_LEFT);
+			
+			ProfileAttributeWidget.createAsync(attr, isEditable, row, new ProfileAttributeWidgetClient() {				
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ProfileAttributeWidget paw, int row) {
+					Widget value = paw.getWidget();
+
+					grid.setWidget(row, 1, value);
+					grid.getCellFormatter().setWidth(row, 1, "70%");
+					grid.getCellFormatter().setHorizontalAlignment(row, 1,
+							HasHorizontalAlignment.ALIGN_LEFT);
+				}
+			});
 
 			row = row + 1;
 		}
