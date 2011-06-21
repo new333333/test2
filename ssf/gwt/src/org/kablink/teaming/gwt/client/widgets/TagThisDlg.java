@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,7 +50,10 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TagSortOrder;
 import org.kablink.teaming.gwt.client.util.TagType;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -169,7 +172,7 @@ public class TagThisDlg extends DlgBox
 	/**
 	 * Class constructor.
 	 */
-	public TagThisDlg(
+	private TagThisDlg(
 		boolean autoHide,
 		boolean modal,
 		EditSuccessfulHandler editSuccessfulHandler,
@@ -495,17 +498,31 @@ public class TagThisDlg extends DlgBox
 
 		// Add the find control.
 		{
-			FlexTable table;
 			HTMLTable.RowFormatter rowFormatter;
 
-			table = new FlexTable();
+			final FlexTable table = new FlexTable();
 			rowFormatter = table.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			mainPanel.add( table );
 			
-			m_findCtrl = new FindCtrl( this, GwtSearchCriteria.SearchType.PERSONAL_TAGS );
-			m_findCtrl.addKeyUpHandler( this );
-			table.setWidget( 0, 0, m_findCtrl );
+			final KeyUpHandler kuh = this;
+			FindCtrl.createAsync(
+					this,
+					GwtSearchCriteria.SearchType.PERSONAL_TAGS,
+					new FindCtrlClient() {				
+				@Override
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( FindCtrl findCtrl )
+				{
+					m_findCtrl = findCtrl;
+					m_findCtrl.addKeyUpHandler( kuh );
+					table.setWidget( 0, 0, m_findCtrl );
+				}// end onSuccess()
+			} );
 	
 			// Add an "add tag" image.
 			{
@@ -1661,4 +1678,55 @@ public class TagThisDlg extends DlgBox
 			}
 		}
 	}
+	
+	/**
+	 * Callback interface to interact with the dialog asynchronously
+	 * after it loads. 
+	 */
+	public interface TagThisDlgClient {
+		void onSuccess(TagThisDlg dlg);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the TagThisDlg split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param editSuccessfulHandler
+	 * @param left
+	 * @param top
+	 * @param dlgCaption
+	 * @param dlgClient
+	 */
+	public static void createAsync(
+			final boolean autoHide,
+			final boolean modal,
+			final EditSuccessfulHandler editSuccessfulHandler,
+			final int left,
+			final int top,
+			final String dlgCaption,
+			final TagThisDlgClient dlgClient) {
+		GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
+			@Override
+			public void onSuccess() {
+				TagThisDlg dlg = new TagThisDlg(
+					autoHide,
+					modal,
+					editSuccessfulHandler,
+					left,
+					top,
+					dlgCaption );
+				
+				dlgClient.onSuccess(dlg);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
+				dlgClient.onUnavailable();
+			}
+		});
+	}	
 }

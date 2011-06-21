@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -210,9 +211,18 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.add(rbPanel);
 
 		// ...and add a finder widget for it.
-		m_finderControl = new FindCtrl(this, GwtSearchCriteria.SearchType.PERSON, 30);
-		m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
-		m_mainPanel.add(m_finderControl);
+		FindCtrl.createAsync(this, GwtSearchCriteria.SearchType.PERSON, 30, new FindCtrlClient() {			
+			@Override
+			public void onUnavailable() {
+			}
+			
+			@Override
+			public void onSuccess(FindCtrl findCtrl) {
+				m_finderControl = findCtrl;
+				m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
+				m_mainPanel.add(m_finderControl);
+			}
+		});
 	}
 	
 	

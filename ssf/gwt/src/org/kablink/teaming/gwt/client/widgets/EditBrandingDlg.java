@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -109,7 +111,7 @@ public class EditBrandingDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public EditBrandingDlg(
+	private EditBrandingDlg(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
@@ -1100,6 +1102,7 @@ public class EditBrandingDlg extends DlgBox
 			/**
 			 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
 			 */
+			@SuppressWarnings("unused")
 			public boolean editSuccessful( Object obj )
 			{
 				if ( obj instanceof String )
@@ -1387,4 +1390,51 @@ public class EditBrandingDlg extends DlgBox
 			}
 		}
 	}// end updateSampleTextColor()
+	
+	/**
+	 * Callback interface to interact with the edit branding dialog
+	 * asynchronously after it loads. 
+	 */
+	public interface EditBrandingDlgClient {
+		void onSuccess(EditBrandingDlg ebDlg);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the EditBrandingDlg split point and returns an instance of it
+	 * via the callback.
+	 *
+	 * @param editSuccessfulHandler
+	 * @param editCanceledHandler
+	 * @param autoHide
+	 * @param modal
+	 * @param xPos
+	 * @param yPos 
+	 * @param ebDlgClient
+	 */
+	public static void createAsync(
+			final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
+			final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
+			final boolean autoHide,
+			final boolean modal,
+			final int xPos,
+			final int yPos,
+			final EditBrandingDlgClient ebDlgClient )
+	{
+		GWT.runAsync( EditBrandingDlg.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				EditBrandingDlg ebDlg = new EditBrandingDlg( editSuccessfulHandler, editCanceledHandler, autoHide, modal, xPos, yPos );
+				ebDlgClient.onSuccess( ebDlg );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditBrandingDlg() );
+			}// end onFailure()
+		} );
+	}// end createAsync()
 }// end EditBrandingDlg

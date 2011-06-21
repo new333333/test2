@@ -51,6 +51,8 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayBase;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayHorizontal;
 import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
@@ -87,7 +89,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * @param mainPage
 	 * @param tm
 	 */
-	public WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
+	private WorkspaceTreeControl(GwtMainPage mainPage, final String selectedBinderId, TreeMode tm) {
 		m_mainPage = mainPage;
 		m_tm       = tm;
 
@@ -306,7 +308,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	/*
 	 * Synchronously renders a vertical tree.
 	 */
-	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, String selectedBinderId, TreeInfo ti) {
+	private void renderVTreeNow(FlowPanel mainPanel, WorkspaceTreeControl wsTree, final String selectedBinderId, TreeInfo ti) {
 		// Construct the vertical tree display.
 		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
 		
@@ -314,7 +316,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		if (m_mainPage.getRequestInfo().isShowWhatsNewOnLogin()) {
 			// Yes!  Then we enter activity stream mode by
 			// default.  Tell the menu about the context...
-			m_mainPage.getMainMenu().setContext(selectedBinderId, false, "");
+			m_mainPage.setMenuContext(selectedBinderId, false, "");
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderId, mainPanel);
@@ -359,7 +361,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Called to reset the main menu context to that previously loaded.
 	 */
 	public void resetMenuContext() {
-		m_mainPage.getMainMenu().resetContext();
+		m_mainPage.resetMenuContext();
 	}
 	
 	/**
@@ -388,5 +390,39 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	public void triggerAction(TeamingAction action) {
 		// Always use the initial form of the method.
 		triggerAction(action, null);
+	}
+	
+	/**
+	 * Callback interface to interact with the workspace tree control
+	 * asynchronously after it loads. 
+	 */
+	public interface WorkspaceTreeControlClient {
+		void onSuccess(WorkspaceTreeControl wsTreeCtrl);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the WorkspaceTreeControl split point and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param mainPage
+	 * @param selectedBinderId
+	 * @param mode
+	 * @param wsTreeCtrlClient
+	 */
+	public static void createAsync(final GwtMainPage mainPage, final String selectedBinderId, final TreeMode mode, final WorkspaceTreeControlClient wsTreeCtrlClient) {
+		GWT.runAsync(WorkspaceTreeControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess() {
+				WorkspaceTreeControl wsTreeCtrl = new WorkspaceTreeControl(mainPage, selectedBinderId, mode);
+				wsTreeCtrlClient.onSuccess(wsTreeCtrl);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl() );
+			}
+		});
 	}
 }

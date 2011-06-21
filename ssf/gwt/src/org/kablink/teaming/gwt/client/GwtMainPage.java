@@ -52,16 +52,22 @@ import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.VibeProduct;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
+import org.kablink.teaming.gwt.client.widgets.AdminControl.AdminControlClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
+import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
+import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
+import org.kablink.teaming.gwt.client.widgets.MainMenuControl.MainMenuControlClient;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
+import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -119,7 +125,7 @@ public class GwtMainPage extends Composite
 	/**
 	 * Class constructor. 
 	 */
-	public GwtMainPage()
+	private GwtMainPage()
 	{
 		initMainPage_Start();
 		
@@ -131,116 +137,117 @@ public class GwtMainPage extends Composite
 	 * Various control loaders used to load the split points containing
 	 * the code for the controls in the main page.
 	 */
-	private void loadControl1( final GwtMainPage thisMainPage )
+	private void loadControl1()
 	{
-		GWT.runAsync( MainMenuControl.class, new RunAsyncCallback()
-		{			
+		MainMenuControl.createAsync(
+				this,
+				new MainMenuControlClient() {			
 			@Override
-			public void onSuccess()
+			public void onUnavailable()
 			{
-				m_mainMenuCtrl = new MainMenuControl( thisMainPage );
-				
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( MainMenuControl mainMenuCtrl )
+			{
+				m_mainMenuCtrl = mainMenuCtrl;				
 				Scheduler.ScheduledCommand loadNextControl;
 				loadNextControl = new Scheduler.ScheduledCommand() {
 					@Override
 					public void execute()
 					{
-						loadControl2( thisMainPage );
+						loadControl2();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainMenuControl() );
-			}// end onFailure()
-		} );
+		});
 	}// end loadControl1()
 
-	private void loadControl2( final GwtMainPage thisMainPage )
+	private void loadControl2()
 	{
-		GWT.runAsync( WorkspaceTreeControl.class, new RunAsyncCallback() {			
+		WorkspaceTreeControl.createAsync(
+				this,
+				m_selectedBinderId,
+				TreeMode.VERTICAL,
+				new WorkspaceTreeControlClient() {			
 			@Override
-			public void onSuccess()
+			public void onUnavailable()
 			{
-				m_wsTreeCtrl = new WorkspaceTreeControl( thisMainPage, m_selectedBinderId, TreeMode.VERTICAL );
-				
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
+			{
+				m_wsTreeCtrl = wsTreeCtrl;				
 				Scheduler.ScheduledCommand loadNextControl;
 				loadNextControl = new Scheduler.ScheduledCommand() {
 					@Override
 					public void execute()
 					{
-						loadControl3( thisMainPage );
+						loadControl3();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl_Sidebar() );
-			}// end onFailure()
 		} );
 	}// end loadControl2()
 
-	private void loadControl3( final GwtMainPage thisMainPage )
+	private void loadControl3()
 	{
-		GWT.runAsync( ContentControl.class, new RunAsyncCallback() {			
+		ContentControl.createAsync(
+				"gwtContentIframe",
+				new ContentControlClient() {			
 			@Override
-			public void onSuccess()
+			public void onUnavailable()
 			{
-				m_contentCtrl = new ContentControl( "gwtContentIframe" );
-				
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( ContentControl contentCtrl )
+			{
+				m_contentCtrl = contentCtrl;				
 				Scheduler.ScheduledCommand loadNextControl;
 				loadNextControl = new Scheduler.ScheduledCommand() {
 					@Override
 					public void execute()
 					{
-						loadControl4( thisMainPage );
+						loadControl4();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
-			}// end onFailure()
 		} );
 	}// end loadControl3()
 
-	private void loadControl4( final GwtMainPage thisMainPage )
+	private void loadControl4()
 	{
-		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback() {			
+		ActivityStreamCtrl.createAsync(
+				this,
+				new ActivityStreamCtrlClient() {			
 			@Override
-			public void onSuccess()
+			public void onUnavailable()
 			{
-				m_activityStreamCtrl = new ActivityStreamCtrl( thisMainPage );
-				
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( ActivityStreamCtrl asCtrl )
+			{
+				m_activityStreamCtrl = asCtrl;				
 				Scheduler.ScheduledCommand loadNextControl;
 				loadNextControl = new Scheduler.ScheduledCommand() {
 					@Override
 					public void execute()
 					{
-						loadControl5( thisMainPage );
+						loadControl5();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
-			}// end onFailure()
 		} );
 	}// end loadControl4()
 	
-	private void loadControl5( final GwtMainPage thisMainPage )
+	private void loadControl5()
 	{
 		initMainPage_Finish();
 	}// end loadControl5()
@@ -266,14 +273,13 @@ public class GwtMainPage extends Composite
 		m_teamingRootPanel = new FlowPanel();
 		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
 
-		final GwtMainPage thisMainPage = this;
 		Scheduler.ScheduledCommand step1;
 		step1 = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				loadControl1( thisMainPage );
+				loadControl1();
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( step1 );		
@@ -735,14 +741,14 @@ public class GwtMainPage extends Composite
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
-	private void editBranding( GwtBrandingData brandingData )
+	private void editBranding( GwtBrandingData brandingDataIn )
 	{
 		String brandingBinderId;
-		int x;
-		int y;
+		int xCalc;
+		int yCalc;
 		
 		// Will the user be editing the site branding?
-		if ( brandingData.isSiteBranding() == false )
+		if ( brandingDataIn.isSiteBranding() == false )
 		{
 			GwtBrandingData siteBrandingData;
 
@@ -759,21 +765,26 @@ public class GwtMainPage extends Composite
 		
 		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
 		// the binder we are working with.
-		brandingBinderId = brandingData.getBinderId();
-		if ( brandingData.isSiteBranding() == false && brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
+		brandingBinderId = brandingDataIn.getBinderId();
+		if ( brandingDataIn.isSiteBranding() == false && brandingBinderId.equalsIgnoreCase( m_mastHead.getBinderId() ) == false )
 		{
 			// Yes, start with empty branding data.
-			brandingData = new GwtBrandingData();
-			brandingData.setBinderId( m_selectedBinderId );
+			brandingDataIn = new GwtBrandingData();
+			brandingDataIn.setBinderId( m_selectedBinderId );
 		}
 		
+		final GwtBrandingData brandingData = brandingDataIn;
+		
 		// Get the position of the content control.
-		x = m_contentCtrl.getAbsoluteLeft();
-		if ( x < 75 )
-			x = 75;
-		y = m_contentCtrl.getAbsoluteTop();
-		if ( y < 75 )
-			y = 75;
+		xCalc = m_contentCtrl.getAbsoluteLeft();
+		if ( xCalc < 75 )
+			xCalc = 75;
+		yCalc = m_contentCtrl.getAbsoluteTop();
+		if ( yCalc < 75 )
+			yCalc = 75;
+		
+		final int x = xCalc;
+		final int y = yCalc;
 		
 		// Create a handler that will be called when the user presses the ok button in the dialog.
 		if ( m_editBrandingSuccessHandler == null )
@@ -864,14 +875,41 @@ public class GwtMainPage extends Composite
 		if ( m_editBrandingDlg == null )
 		{
 			// No, create one.
-			m_editBrandingDlg = new EditBrandingDlg( m_editBrandingSuccessHandler, m_editBrandingCancelHandler, false, true, x, y );
+			EditBrandingDlg.createAsync(
+					m_editBrandingSuccessHandler,
+					m_editBrandingCancelHandler,
+					false,
+					true,
+					x,
+					y,
+					new EditBrandingDlgClient() {				
+				@Override
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( EditBrandingDlg ebDlg )
+				{
+					m_editBrandingDlg = ebDlg;
+					editBrandingImpl( brandingData, x, y );
+				}// end onSuccess()
+			} );
 		}
 		
+		else
+		{
+			editBrandingImpl( brandingData, x, y );
+		}
+		
+		
+	}// end editBranding()
+	
+	private void editBrandingImpl( GwtBrandingData brandingData, int x, int y ) {
 		m_editBrandingDlg.init( brandingData );
 		m_editBrandingDlg.setPopupPosition( x, y );
 		m_editBrandingDlg.show();
-		
-	}// end editBranding()
+	}
 
 	
 	/**
@@ -1496,15 +1534,12 @@ public class GwtMainPage extends Composite
 	/**
 	 * This method is used to invoke the "Tag this" dialog from the old jsp code.
 	 */
-	private void invokeTagDlg( String entryId, String entryTitle, com.google.gwt.dom.client.Element tagPanelElement )
+	private void invokeTagDlg( final String entryId, final String entryTitle, com.google.gwt.dom.client.Element tagPanelElement )
 	{
-		int x;
-		int y;
-		
 		m_tagPanelElement = tagPanelElement;
 		
-		x = m_contentCtrl.getAbsoluteLeft() + 500;
-		y = m_contentCtrl.getAbsoluteTop() + 25;
+		final int x = m_contentCtrl.getAbsoluteLeft() + 500;
+		final int y = m_contentCtrl.getAbsoluteTop() + 25;
 
 		if ( m_tagThisDlg == null )
 		{
@@ -1597,10 +1632,37 @@ public class GwtMainPage extends Composite
 					}
 				};
 			}
-			
-			m_tagThisDlg = new TagThisDlg( false, true, m_editTagsSuccessHandler, x, y, GwtTeaming.getMessages().tagThisEntry() );
+
+			TagThisDlg.createAsync(
+					false,
+					true,
+					m_editTagsSuccessHandler,
+					x,
+					y,
+					GwtTeaming.getMessages().tagThisEntry(),
+					new TagThisDlg.TagThisDlgClient() {						
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// TagThisDlg.createAsync().
+				}
+				
+				@Override
+				public void onSuccess(TagThisDlg dlg) {
+					m_tagThisDlg = dlg;
+					invokeTagDlgImpl(entryId, entryTitle, x, y);
+				}
+			});
 		}
 		
+		else
+		{
+			invokeTagDlgImpl(entryId, entryTitle, x, y);
+		}
+		
+	}
+	
+	private void invokeTagDlgImpl(String entryId, String entryTitle, int x, int y) {
 		m_tagThisDlg.init( entryId, entryTitle );
 		m_tagThisDlg.showDlg( true, x, y );
 	}
@@ -1740,17 +1802,25 @@ public class GwtMainPage extends Composite
 		
 		if ( obj instanceof OnBrowseHierarchyInfo )
 		{
-			final GwtMainPage thisMainPage = this;
-			GWT.runAsync( WorkspaceTreeControl.class, new RunAsyncCallback()
-			{				
+			WorkspaceTreeControl.createAsync(
+					this,
+					m_selectedBinderId,
+					TreeMode.HORIZONTAL,
+					new WorkspaceTreeControlClient() {				
 				@Override
-				public void onSuccess() {
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
+				{
 					OnBrowseHierarchyInfo bhi;
 					WorkspaceTreeControl breadCrumbTree;
 					
 					// A WorkspaceTreeControl in horizontal mode serves as the
 					// bread crumb browser.  Create one...
-					breadCrumbTree = new WorkspaceTreeControl( thisMainPage, m_selectedBinderId, TreeMode.HORIZONTAL );
+					breadCrumbTree = wsTreeCtrl;
 					breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
 					m_breadCrumbBrowser = new TeamingPopupPanel(true);
 					GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
@@ -1765,12 +1835,6 @@ public class GwtMainPage extends Composite
 					// ...and play the opening effect.
 					m_breadCrumbBrowser.show();
 				}// end onSuccess()
-				
-				@Override
-				public void onFailure(Throwable reason)
-				{
-					Window.alert( GwtTeaming.getMessages().codeSplitFailure_WorkspaceTreeControl_Breadcrumb() );
-				}// end onFailure()
 			} );
 		}
 		else
@@ -2357,10 +2421,17 @@ public class GwtMainPage extends Composite
 		else
 		{
 			// ...otherwise, we load its split point...
-			GWT.runAsync(AdminControl.class, new RunAsyncCallback() {			
+			AdminControl.createAsync(
+					new AdminControlClient() {				
 				@Override
-				public void onSuccess(){
-					m_adminControl = new AdminControl();
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( AdminControl adminCtrl )
+				{
+					m_adminControl = adminCtrl;
 					m_contentPanel.add( m_adminControl );
 					
 					Scheduler.ScheduledCommand showAdminControl;
@@ -2375,12 +2446,6 @@ public class GwtMainPage extends Composite
 					};
 					Scheduler.get().scheduleDeferred( showAdminControl );
 				}// end onSuccess()
-				
-				@Override
-				public void onFailure(Throwable reason)
-				{
-					Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
-				}// end onFailure()
 			} );
 		}
 	}// end showAdminControl()
@@ -2410,5 +2475,47 @@ public class GwtMainPage extends Composite
 	
 	public void fireEvent(Event<?> event) {
 		GwtTeaming.fireEvent(event);
-	}	
+	}
+
+	public void resetMenuContext() {
+		m_mainMenuCtrl.resetContext();
+	}
+	
+	public void setMenuContext(String selectedBinderId, boolean inSearch, String searchTabId) {
+		m_mainMenuCtrl.setContext(selectedBinderId, inSearch, searchTabId);
+	}
+	
+	/**
+	 * Callback interface to interact with the main page asynchronously
+	 * after it loads. 
+	 */
+	public interface GwtMainPageClient {
+		void onSuccess(GwtMainPage mainPage);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the GwtMainPage split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param mainPageClient
+	 */
+	public static void createAsync( final GwtMainPageClient mainPageClient )
+	{
+		GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				GwtMainPage mainPage = new GwtMainPage();
+				mainPageClient.onSuccess( mainPage );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainPage() );
+			}// end onFailure()
+		} );
+	}// end createAsync()
 }// end GwtMainPage

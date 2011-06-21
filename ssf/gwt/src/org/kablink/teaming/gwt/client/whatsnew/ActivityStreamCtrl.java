@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.ActionHandler;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
@@ -59,6 +60,8 @@ import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -138,7 +141,7 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * 
 	 */
-	public ActivityStreamCtrl(
+	private ActivityStreamCtrl(
 		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
 	{
 		FlowPanel mainPanel;
@@ -1129,14 +1132,39 @@ public class ActivityStreamCtrl extends Composite
 		if ( m_tagThisDlg == null )
 		{
 			//!!! Pass in an ActionTrigger
-			m_tagThisDlg = new TagThisDlg( false, true, null, 0, 0, GwtTeaming.getMessages().tagThisEntry() );
+			TagThisDlg.createAsync(
+					false,
+					true,
+					null,
+					0,
+					0,
+					GwtTeaming.getMessages().tagThisEntry(),
+				new TagThisDlg.TagThisDlgClient() {						
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// TagThisDlg.createAsync().
+					}
+					
+					@Override
+					public void onSuccess(TagThisDlg dlg) {
+						m_tagThisDlg = dlg;
+						invokeTagThisDlgImpl( entry );
+					}
+				});
 		}
 		
-		m_tagThisDlg.init( entry.getEntryId(), entry.getEntryTitle() );
-
-		m_tagThisDlg.showDlg( true, Window.getClientWidth() - 75, entry.getAbsoluteTop() );
+		else
+		{
+			invokeTagThisDlgImpl( entry );
+		}
+		
 	}
 	
+	private void invokeTagThisDlgImpl( final ActivityStreamUIEntry entry ) {
+		m_tagThisDlg.init( entry.getEntryId(), entry.getEntryTitle() );
+		m_tagThisDlg.showDlg( true, Window.getClientWidth() - 75, entry.getAbsoluteTop() );
+	}	
 	
 	/**
 	 * Is the source of the activity stream a binder?
@@ -1682,6 +1710,7 @@ public class ActivityStreamCtrl extends Composite
 	/**
 	 * Update the mouse over text on the pause image
 	 */
+	@SuppressWarnings("deprecation")
 	private void updatePauseTitle()
 	{
 		String title = "";
@@ -1731,4 +1760,39 @@ public class ActivityStreamCtrl extends Composite
 		
 		m_showSettingLabel.setText( text );
 	}
+
+	/**
+	 * Callback interface to interact with the content control
+	 * asynchronously after it loads. 
+	 */
+	public interface ActivityStreamCtrlClient {
+		void onSuccess(ActivityStreamCtrl asCtrl);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the ActivityStreamCtrl split point and returns an instance of
+	 * it via the callback.
+	 * 
+	 * @param mainPage
+	 * @param asCtrlClient
+	 */
+	public static void createAsync( final GwtMainPage mainPage, final ActivityStreamCtrlClient asCtrlClient )
+	{
+		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( mainPage );
+				asCtrlClient.onSuccess( asCtrl );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
+			}// end onFailure()
+		} );
+	}// end createAsync()
 }// end ActivityStreamCtrl
