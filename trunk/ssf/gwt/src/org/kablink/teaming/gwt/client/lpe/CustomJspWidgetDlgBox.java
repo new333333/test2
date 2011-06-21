@@ -309,6 +309,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override
@@ -457,6 +459,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override

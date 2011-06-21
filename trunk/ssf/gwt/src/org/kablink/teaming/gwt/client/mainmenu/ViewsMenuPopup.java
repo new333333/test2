@@ -123,6 +123,8 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 								new ManageSavedSearchesDlgClient() {										
 									@Override
 									public void onUnavailable() {
+										// Nothing to do.  Error handled in
+										// asynchronous provider.
 									}
 									
 									@Override

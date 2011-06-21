@@ -229,6 +229,8 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override

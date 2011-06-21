@@ -193,8 +193,8 @@ public class TagThisDlg extends DlgBox
 		m_currentListOfGlobalTags = new ArrayList<TagInfo>();
 		
 		// Read the tag sort order from the user's properties.
-		getSortOrder();
-
+		getSortOrderAsync();
+		
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			dlgCaption,
@@ -513,6 +513,8 @@ public class TagThisDlg extends DlgBox
 				@Override
 				public void onUnavailable()
 				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
 				}// end onUnavailable()
 				
 				@Override
@@ -851,10 +853,22 @@ public class TagThisDlg extends DlgBox
 		return m_findCtrl.getFocusWidget();
 	}
 	
-	/**
+	/*
 	 * Issue an ajax request to get the tag sort order from the user's properties.
 	 */
-	private void getSortOrder()
+	private void getSortOrderAsync() {
+		Scheduler.ScheduledCommand getSortOrder;
+		getSortOrder = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute()
+			{
+				getSortOrderNow();
+			}// end execute()
+		};
+		Scheduler.get().scheduleDeferred( getSortOrder );
+	}
+	
+	private void getSortOrderNow()
 	{
 		AsyncCallback<TagSortOrder> callback;
 		

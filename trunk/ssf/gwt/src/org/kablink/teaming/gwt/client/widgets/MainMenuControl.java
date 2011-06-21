@@ -251,6 +251,8 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		ManageMenuPopup.createAsync(this, manageName, new ManageMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
 			
 			@Override
@@ -372,6 +374,8 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		ViewsMenuPopup.createAsync(this, inSearch, searchTabId, new ViewsMenuPopupClient() {			
 			@Override
 			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
 			
 			@Override

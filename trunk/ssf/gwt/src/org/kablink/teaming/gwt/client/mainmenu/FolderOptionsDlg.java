@@ -42,9 +42,12 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
@@ -83,17 +86,10 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		}
 	}
 
-	/**
+	/*
 	 * Class constructor.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 * @param left
-	 * @param top
-	 * @param calendarImportsList
-	 * @param folderViewsList
 	 */
-	public FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
+	private FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...
 		super(autoHide, modal, left, top);
 
@@ -416,4 +412,61 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 		grid.setWidget(row, 1, new DlgLabel(txt));
 		grid.getCellFormatter().setWidth(row, 1, "100%");
 	}
+	
+	/**
+	 * Callback interface to interact with the dialog asynchronously
+	 * after it loads. 
+	 */
+	public interface FolderOptionsDlgClient {
+		void onSuccess(FolderOptionsDlg dlg);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the FolderOptionsDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param left
+	 * @param top
+	 * @param binderId
+	 * @param configureColumnsTBI
+	 * @param calendarImportsList
+	 * @param folderViewsList
+	 * @param dlgClient
+	 */
+	public static void createAsync(
+			final boolean autoHide,
+			final boolean modal,
+			final int left,
+			final int top,
+			final String binderId,
+			final ToolbarItem configureColumnsTBI,
+			final List<ToolbarItem> calendarImportsList,
+			final List<ToolbarItem> folderViewsList,
+			final FolderOptionsDlgClient dlgClient) {
+		GWT.runAsync(FolderOptionsDlg.class, new RunAsyncCallback() {			
+			@Override
+			public void onSuccess() {
+				FolderOptionsDlg dlg = new FolderOptionsDlg(
+					autoHide,
+					modal,
+					left,
+					top,
+					binderId,
+					configureColumnsTBI,
+					calendarImportsList,
+					folderViewsList);
+				
+				dlgClient.onSuccess(dlg);
+			}
+			
+			@Override
+			public void onFailure(Throwable reason) {
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_FolderOptionsDlg());
+				dlgClient.onUnavailable();
+			}
+		});
+	}	
 }

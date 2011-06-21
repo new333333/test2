@@ -512,6 +512,8 @@ public class AdminControl extends Composite
 			@Override
 			public void onUnavailable()
 			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}// end onUnavailable()
 			
 			@Override

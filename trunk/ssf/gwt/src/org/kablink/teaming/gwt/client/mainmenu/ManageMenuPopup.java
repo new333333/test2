@@ -37,14 +37,17 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -406,28 +409,50 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		final String foId = (IDBASE + "FolderOptions");
 		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				// Remove the selection from the menu item...
-				Element menuItemElement = Document.get().getElementById(foId);
-				menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-				
-				// ...hide the menu...
-				hide();
-				
-				// ...and run the folder options dialog.
-				FolderOptionsDlg folderOptionsDlg = new FolderOptionsDlg(
-					false,	// false -> Don't auto hide.
-					true,	// true  -> Modal.
-					m_menuLeft,
-					m_menuTop,
-					m_currentBinder.getBinderId(),
-					m_configureColumnsTBI,
-					((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
-					((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()));
-				folderOptionsDlg.addStyleName("folderOptionsDlg");
-				folderOptionsDlg.show();
+				Scheduler.ScheduledCommand showDlg;
+				showDlg = new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute() {
+						showFolderOptionsAsync(foId, folderViewsTBI, calendarImportTBI);
+					}
+				};
+				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
 		addContentWidget(mtA);
+	}
+	
+	private void showFolderOptionsAsync(String foId, ToolbarItem folderViewsTBI, ToolbarItem calendarImportTBI) {
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(foId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+
+		FolderOptionsDlg.createAsync(
+				false,	// false -> Don't auto hide.
+				true,	// true  -> Modal.
+				m_menuLeft,
+				m_menuTop,
+				m_currentBinder.getBinderId(),
+				m_configureColumnsTBI,
+				((null == calendarImportTBI) ? null : calendarImportTBI.getNestedItemsList()),
+				((null == folderViewsTBI)    ? null : folderViewsTBI.getNestedItemsList()),
+			new FolderOptionsDlgClient() {					
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(FolderOptionsDlg dlg) {
+					// ...and run the folder options dialog.
+					dlg.addStyleName("folderOptionsDlg");
+					dlg.show();
+				}
+			});
 	}
 	
 	/**
@@ -504,8 +529,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		
 		if (m_currentBinder.isBinderFolder()) {
 			// Yes!  Define the menu and dialog labels to use.
-			menuText = m_messages.mainMenuManageTagThisFolder();
-			dlgCaption   = m_messages.mainMenuTagThisDlgHeaderFolder();
+			menuText   = m_messages.mainMenuManageTagThisFolder();
+			dlgCaption = m_messages.mainMenuTagThisDlgHeaderFolder();
 		}
 		
 		// No, the current binder isn't a folder!  Is it a workspace?
@@ -520,8 +545,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			}
 			
 			// Define the menu and dialog labels to use.
-			menuText = m_messages.mainMenuManageTagThisWorkspace();
-			dlgCaption   = m_messages.mainMenuTagThisDlgHeaderWorkspace();
+			menuText   = m_messages.mainMenuManageTagThisWorkspace();
+			dlgCaption = m_messages.mainMenuTagThisDlgHeaderWorkspace();
 		}
 		
 		else {
@@ -534,46 +559,57 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		final String menuId = (IDBASE + "TagThis");
 		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				// Remove the selection from the menu item...
-				Element menuItemElement = Document.get().getElementById(menuId);
-				menuItemElement.removeClassName("mainMenuPopup_ItemHover");
-				
-				// ...hide the menu...
-				hide();
-				
-				if (null == m_tagThisDlg) {
-					TagThisDlg.createAsync(
-							false,	// false -> Don't auto hide.
-							true,	// true  -> Modal.
-							null,
-							m_menuLeft,
-							m_menuTop,
-							dlgCaption,
-							new TagThisDlg.TagThisDlgClient() {						
-						@Override
-						public void onUnavailable() {
-							// Nothing to do.  Error handled in
-							// TagThisDlg.createAsync().
-						}
-						
-						@Override
-						public void onSuccess(TagThisDlg dlg) {
-							m_tagThisDlg = dlg;
-							showTagThisImpl();
-						}
-					});
-				}
-				
-				else {
-					showTagThisImpl();
-				}
+				Scheduler.ScheduledCommand showDlg;
+				showDlg = new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute() {
+						showTagThisAsync(menuId, dlgCaption);
+					}
+				};
+				Scheduler.get().scheduleDeferred(showDlg);
 			}
 		});
 		addContentWidget(mtA);
 	}
+
+	private void showTagThisAsync(String menuId, String dlgCaption) {
+		// Remove the selection from the menu item...
+		Element menuItemElement = Document.get().getElementById(menuId);
+		menuItemElement.removeClassName("mainMenuPopup_ItemHover");
+		
+		// ...hide the menu...
+		hide();
+		
+		if (null == m_tagThisDlg) {
+			TagThisDlg.createAsync(
+					false,	// false -> Don't auto hide.
+					true,	// true  -> Modal.
+					null,
+					m_menuLeft,
+					m_menuTop,
+					dlgCaption,
+					new TagThisDlgClient() {						
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(TagThisDlg dlg) {
+					m_tagThisDlg = dlg;
+					showTagThisNow();
+				}
+			});
+		}
+		
+		else {
+			showTagThisNow();
+		}
+	}
 	
-	private void showTagThisImpl() {
-		m_tagThisDlg.init( m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType() );
+	private void showTagThisNow() {
+		m_tagThisDlg.init(m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType());
 		m_tagThisDlg.showDlg();
 	}
 	

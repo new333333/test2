@@ -1143,7 +1143,7 @@ public class ActivityStreamCtrl extends Composite
 					@Override
 					public void onUnavailable() {
 						// Nothing to do.  Error handled in
-						// TagThisDlg.createAsync().
+						// asynchronous provider.
 					}
 					
 					@Override
