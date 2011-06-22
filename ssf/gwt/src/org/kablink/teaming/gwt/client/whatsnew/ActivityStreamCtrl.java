@@ -138,8 +138,10 @@ public class ActivityStreamCtrl extends Composite
 	private ShowSetting m_showSetting = ShowSetting.UNKNOWN;
 
 	
-	/**
-	 * 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ActivityStreamCtrl(
 		ActionHandler actionHandler )  // We will call this handler when the user selects an item from the search results.
@@ -1792,6 +1794,7 @@ public class ActivityStreamCtrl extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
+				asCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()

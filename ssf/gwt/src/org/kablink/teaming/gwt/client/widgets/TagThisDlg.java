@@ -169,8 +169,12 @@ public class TagThisDlg extends DlgBox
 	}
 	
 	
-	/**
+	/*
 	 * Class constructor.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private TagThisDlg(
 		boolean autoHide,
@@ -182,7 +186,7 @@ public class TagThisDlg extends DlgBox
 	{
 		// Initialize the superclass...
 		super(autoHide, modal, left, top );
-
+		
 		// ...initialize everything else...
 		m_onEditSuccessfulHandler = editSuccessfulHandler;
 		m_messages = GwtTeaming.getMessages();
@@ -1721,26 +1725,41 @@ public class TagThisDlg extends DlgBox
 			final int left,
 			final int top,
 			final String dlgCaption,
-			final TagThisDlgClient dlgClient) {
-		GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
+			final TagThisDlgClient dlgClient) {		
+		// The TagThisDlg is dependent on the FindCtrl.  Make sure
+		// it has been fetched before trying to use it.
+		FindCtrl.prefetch(new FindCtrlClient() {
 			@Override
-			public void onSuccess() {
-				TagThisDlg dlg = new TagThisDlg(
-					autoHide,
-					modal,
-					editSuccessfulHandler,
-					left,
-					top,
-					dlgCaption );
-				
-				dlgClient.onSuccess(dlg);
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				dlgClient.onUnavailable();
 			}
 			
 			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
-				dlgClient.onUnavailable();
+			public void onSuccess( FindCtrl findCtrl )
+			{
+				GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
+					@Override
+					public void onSuccess() {
+						TagThisDlg dlg = new TagThisDlg(
+							autoHide,
+							modal,
+							editSuccessfulHandler,
+							left,
+							top,
+							dlgCaption );
+						
+						dlgClient.onSuccess(dlg);
+					}
+					
+					@Override
+					public void onFailure(Throwable reason) {
+						Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
+						dlgClient.onUnavailable();
+					}
+				});
 			}
-		});
+		} );
 	}	
 }

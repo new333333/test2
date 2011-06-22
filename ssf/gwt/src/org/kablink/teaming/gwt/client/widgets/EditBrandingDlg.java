@@ -108,8 +108,10 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_ruleBinderOverridesRb = null;
 	
 
-	/**
-	 * 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private EditBrandingDlg(
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
@@ -1434,6 +1436,7 @@ public class EditBrandingDlg extends DlgBox
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditBrandingDlg() );
+				ebDlgClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()

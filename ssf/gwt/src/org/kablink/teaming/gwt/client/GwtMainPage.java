@@ -123,8 +123,12 @@ public class GwtMainPage extends Composite
 	private com.google.gwt.dom.client.Element m_tagPanelElement;
 	private HandlerRegistration handlerRegistration;
 	
-	/**
-	 * Class constructor. 
+	/*
+	 * Class constructor.
+	 *  
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private GwtMainPage()
 	{
@@ -2546,6 +2550,7 @@ public class GwtMainPage extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainPage() );
+				mainPageClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()

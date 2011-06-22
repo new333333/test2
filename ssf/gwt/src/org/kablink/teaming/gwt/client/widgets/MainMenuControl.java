@@ -126,8 +126,12 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 		}
 	}
 	
-	/**
+	/*
 	 * Constructor method.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private MainMenuControl(GwtMainPage mainPage) {
 		// Store the parameter.
@@ -699,6 +703,7 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_MainMenuControl() );
+				menuClient.onUnavailable();
 			}
 		});
 	}

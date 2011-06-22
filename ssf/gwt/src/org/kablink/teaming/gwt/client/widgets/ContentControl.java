@@ -55,8 +55,12 @@ public class ContentControl extends Composite
 {
 	private NamedFrame m_frame;
 	
-	/**
+	/*
 	 * Constructor method.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ContentControl( String name )
 	{
@@ -210,6 +214,7 @@ public class ContentControl extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+				contentCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()

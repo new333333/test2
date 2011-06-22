@@ -38,6 +38,7 @@ import org.kablink.teaming.gwt.client.event.TeamingActionEvent;
 import org.kablink.teaming.gwt.client.profile.ProfileCategory;
 import org.kablink.teaming.gwt.client.profile.ProfileInfo;
 import org.kablink.teaming.gwt.client.profile.ProfileRequestInfo;
+import org.kablink.teaming.gwt.client.profile.widgets.ProfileAttributeWidget.ProfileAttributeWidgetClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.ActionTrigger;
@@ -67,6 +68,11 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	private FlowPanel profilePanel;
 	private FlowPanel mainProfilePage;
 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
+	 */
 	private GwtProfilePage() {
 		// Get information about the request we are dealing with.
 		profileRequestInfo = getProfileRequestInfo();
@@ -252,16 +258,32 @@ public class GwtProfilePage extends Composite implements ActionTrigger {
 	 * @param profilePageClient
 	 */
 	public static void createAsync(final GwtProfilePageClient profilePageClient) {
-		GWT.runAsync(GwtProfilePage.class, new RunAsyncCallback() {			
+		// The GwtProfilePage is dependent on the
+		// ProfileAttributeWidget.  Make sure it has been fetched
+		// before trying to use it.
+		ProfileAttributeWidget.prefetch(new ProfileAttributeWidgetClient() {			
 			@Override
-			public void onSuccess() {
-				GwtProfilePage profilePage = new GwtProfilePage();
-				profilePageClient.onSuccess(profilePage);
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				profilePageClient.onUnavailable();
 			}
 			
 			@Override
-			public void onFailure(Throwable reason) {
-				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfilePage());
+			public void onSuccess(ProfileAttributeWidget paw, int row) {
+				GWT.runAsync(GwtProfilePage.class, new RunAsyncCallback() {			
+					@Override
+					public void onSuccess() {
+						GwtProfilePage profilePage = new GwtProfilePage();
+						profilePageClient.onSuccess(profilePage);
+					}
+					
+					@Override
+					public void onFailure(Throwable reason) {
+						Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfilePage());
+						profilePageClient.onUnavailable();
+					}
+				});
 			}
 		});
 	}
