@@ -1160,13 +1160,17 @@ public class ActivityStreamCtrl extends Composite
 		{
 			invokeTagThisDlgImpl( entry );
 		}
-		
-	}
+	}// end invokeTagThisDlg()
 	
-	private void invokeTagThisDlgImpl( final ActivityStreamUIEntry entry ) {
-		m_tagThisDlg.init( entry.getEntryId(), entry.getEntryTitle() );
-		m_tagThisDlg.showDlg( true, Window.getClientWidth() - 75, entry.getAbsoluteTop() );
-	}	
+	private void invokeTagThisDlgImpl( final ActivityStreamUIEntry entry )
+	{
+		TagThisDlg.initAndShow(
+			m_tagThisDlg,
+			entry.getEntryId(),
+			entry.getEntryTitle(),
+			(Window.getClientWidth() - 75),
+			entry.getAbsoluteTop());
+	}// end invokeTagThisDlgImpl()	
 	
 	/**
 	 * Is the source of the activity stream a binder?

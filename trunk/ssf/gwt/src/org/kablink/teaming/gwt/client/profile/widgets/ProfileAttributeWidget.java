@@ -261,18 +261,15 @@ public class ProfileAttributeWidget  {
 		void onUnavailable();
 	}
 
-	/**
-	 * Loads the ProfileAttributeWidget split point and returns an
-	 * instance of it via the callback.
-	 *
-	 * @param prefetch
-	 * @param attr
-	 * @param editMode
-	 * @param row
-	 * @param pawClient
+	/*
+	 * Asynchronously loads the ProfileAttributeWidget and performs
+	 * some operation against the code.
 	 */
-	private static void createAsync(
+	private static void doAsyncOperation(
+			// Prefetch parameters.  If true, only a prefetch is performed.
 			final boolean prefetch,
+			
+			// Creation parameters.
 			final ProfileAttribute attr,
 			final boolean editMode,
 			final int row,
@@ -295,17 +292,33 @@ public class ProfileAttributeWidget  {
 		});
 	}
 	
+	/**
+	 * Loads the ProfileAttributeWidget split point and returns an
+	 * instance of it via the callback.
+	 *
+	 * @param attr
+	 * @param editMode
+	 * @param row
+	 * @param pawClient
+	 */
 	public static void createAsync(
 			final ProfileAttribute attr,
 			final boolean editMode,
 			final int row,
 			final ProfileAttributeWidgetClient pawClient) {
-		createAsync(false, attr, editMode, row, pawClient);
+		doAsyncOperation(
+			false,	// false -> Not a prefetch.
+			attr,
+			editMode,
+			row,
+			pawClient);
 	}
 
 	/**
 	 * Causes the code split for the ProfileAttributeWidget to be
 	 * fetched.
+	 * 
+	 * @param pawClient
 	 */
 	public static void prefetch (ProfileAttributeWidgetClient pawClient) {
 		// If we weren't given a ProfileAttributeWidgetClient...
@@ -314,15 +327,22 @@ public class ProfileAttributeWidget  {
 			pawClient = new ProfileAttributeWidgetClient() {				
 				@Override
 				public void onUnavailable() {
+					// Unused.
 				}
 				
 				@Override
 				public void onSuccess(ProfileAttributeWidget paw, int row) {
+					// Unused.
 				}
 			};
 		}
 		
-		createAsync(true, null, false, -1, pawClient);
+		doAsyncOperation(
+			true,	// true -> Prefetch only.
+			null,	// Ignored.
+			false,	//    "
+			-1,		//    "
+			pawClient);
 	}
 	
 	public static void prefetch() {

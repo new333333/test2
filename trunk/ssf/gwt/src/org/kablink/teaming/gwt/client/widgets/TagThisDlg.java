@@ -1706,6 +1706,81 @@ public class TagThisDlg extends DlgBox
 		void onUnavailable();
 	}
 
+	/*
+	 * Asynchronously loads the TagThisDialog and performs some
+	 * operation against the code.
+	 */
+	private static void doAsyncOperation(
+			// Creation parameters.
+			final boolean autoHide,
+			final boolean modal,
+			final EditSuccessfulHandler editSuccessfulHandler,
+			final int left,
+			final int top,
+			final String dlgCaption,
+			final TagThisDlgClient dlgClient,
+
+			// First initAndShow variation parameters.
+			final TagThisDlg first_initAndShowDlg,
+			final String first_binderId,
+			final String first_binderTitle,
+			final BinderType first_binderType,
+	
+			// Second initAndShow variation parameters.
+			final TagThisDlg second_initAndShowDlg,
+			final String second_entryId,
+			final String second_entryTitle,
+			final int second_x,
+			final int second_y) {		
+		// The TagThisDlg is dependent on the FindCtrl.  Make sure
+		// it has been fetched before trying to use it.
+		FindCtrl.prefetch(new FindCtrlClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				dlgClient.onUnavailable();
+			}
+			
+			@Override
+			public void onSuccess( FindCtrl findCtrl )
+			{
+				GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
+					@Override
+					public void onSuccess() {
+						if ((null == first_initAndShowDlg) && (null == second_initAndShowDlg)) {
+							TagThisDlg dlg = new TagThisDlg(
+								autoHide,
+								modal,
+								editSuccessfulHandler,
+								left,
+								top,
+								dlgCaption );
+							
+							dlgClient.onSuccess(dlg);
+						}
+						
+						else if (null != first_initAndShowDlg) {
+							first_initAndShowDlg.init(first_binderId, first_binderTitle, first_binderType);
+							first_initAndShowDlg.showDlg();
+						}
+						
+						else if (null != second_initAndShowDlg){
+							second_initAndShowDlg.init( second_entryId, second_entryTitle );
+							second_initAndShowDlg.showDlg( true, second_x, second_y );
+						}
+					}
+					
+					@Override
+					public void onFailure(Throwable reason) {
+						Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
+						dlgClient.onUnavailable();
+					}
+				});
+			}
+		} );
+	}
+	
 	/**
 	 * Loads the TagThisDlg split point and returns an instance of it
 	 * via the callback.
@@ -1725,41 +1800,99 @@ public class TagThisDlg extends DlgBox
 			final int left,
 			final int top,
 			final String dlgCaption,
-			final TagThisDlgClient dlgClient) {		
-		// The TagThisDlg is dependent on the FindCtrl.  Make sure
-		// it has been fetched before trying to use it.
-		FindCtrl.prefetch(new FindCtrlClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-				dlgClient.onUnavailable();
-			}
+			final TagThisDlgClient dlgClient) {
+		doAsyncOperation(
+			autoHide,
+			modal,
+			editSuccessfulHandler,
+			left,
+			top,
+			dlgCaption,
+			dlgClient,
 			
-			@Override
-			public void onSuccess( FindCtrl findCtrl )
-			{
-				GWT.runAsync(TagThisDlg.class, new RunAsyncCallback() {			
-					@Override
-					public void onSuccess() {
-						TagThisDlg dlg = new TagThisDlg(
-							autoHide,
-							modal,
-							editSuccessfulHandler,
-							left,
-							top,
-							dlgCaption );
-						
-						dlgClient.onSuccess(dlg);
-					}
-					
-					@Override
-					public void onFailure(Throwable reason) {
-						Window.alert(GwtTeaming.getMessages().codeSplitFailure_TagThisDlg());
-						dlgClient.onUnavailable();
-					}
-				});
-			}
-		} );
-	}	
+			null,
+			null,
+			null,
+			null,
+			
+			null,
+			null,
+			null,
+			-1,
+			-1);
+	}
+
+	/**
+	 * Initialize and show the dialog (first variation.)
+	 * 
+	 * @param tagThisDlg
+	 * @param binderId
+	 * @param binderTitle
+	 * @param binderType
+	 */
+	public static void initAndShow(
+			final TagThisDlg tagThisDlg,
+			final String binderId,
+			final String binderTitle,
+			final BinderType binderType) {
+		doAsyncOperation(
+			// Ignore creation parameters.
+			false,
+			false,
+			null,
+			-1,
+			-1,
+			null,
+			null,
+			
+			tagThisDlg,
+			binderId,
+			binderTitle,
+			binderType,
+
+			// Ignore second initAndShow variation parameters.
+			null,
+			null,
+			null,
+			-1,
+			-1);
+	}
+
+	/**
+	 * Initialize and show the dialog (second variation.)
+	 * 
+	 * @param tagThisDlg
+	 * @param entryId
+	 * @param entryTitle
+	 * @param x
+	 * @param y
+	 */
+	public static void initAndShow(
+			final TagThisDlg tagThisDlg,
+			final String entryId,
+			final String entryTitle,
+			final int x,
+			final int y) {
+		doAsyncOperation(
+			// Ignore creation parameters.
+			false,
+			false,
+			null,
+			-1,
+			-1,
+			null,
+			null,
+			
+			// Ignore first initAndShow variation parameters.
+			null,
+			null,
+			null,
+			null,
+			
+			tagThisDlg,
+			entryId,
+			entryTitle,
+			x,
+			y);
+	}
 }
