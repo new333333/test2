@@ -78,6 +78,10 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 
 	/*
 	 * Class constructor.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ViewsMenuPopup(ActionTrigger actionTrigger, boolean inSearch, String searchTabId) {
 		// Initialize the super class...
@@ -406,6 +410,7 @@ public class ViewsMenuPopup extends MenuBarPopupBase {
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ViewsMenuPopup());
+				vmpClient.onUnavailable();
 			}
 		});
 	}

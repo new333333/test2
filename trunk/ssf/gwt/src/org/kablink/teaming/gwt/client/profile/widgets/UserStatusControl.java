@@ -80,7 +80,12 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 	private int totalChar = 0;
 	private InlineLabel limitExceeded;
 	private boolean savingUserStatusInProgress = false;
-	
+
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
+	 */
 	private UserStatusControl () {
 
 		String userStatus = "";
@@ -569,6 +574,7 @@ public class UserStatusControl extends Composite implements Event.NativePreviewH
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_UserStatusControl());
+				uscClient.onUnavailable();
 			}
 		});
 	}

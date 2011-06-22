@@ -57,6 +57,11 @@ public class ProfileAttributeWidget  {
 	private Widget widget;
 	private boolean isEditMode = false;
 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
+	 */
 	private ProfileAttributeWidget(ProfileAttribute attr, boolean editMode) {
 		isEditMode = editMode;
 		
@@ -262,21 +267,52 @@ public class ProfileAttributeWidget  {
 	 * 
 	 * @param attr
 	 * @param editMode
-	 * @param row
+	 * @param row		-1 will simply cause the code to be fetched.
 	 * @param pawClient
 	 */
 	public static void createAsync(final ProfileAttribute attr, final boolean editMode, final int row, final ProfileAttributeWidgetClient pawClient) {
 		GWT.runAsync(ProfileAttributeWidget.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				ProfileAttributeWidget paw = new ProfileAttributeWidget(attr, editMode);
+				ProfileAttributeWidget paw;
+				if ((-1) != row)
+				     paw = new ProfileAttributeWidget(attr, editMode);
+				else paw = null;
 				pawClient.onSuccess(paw, row);
 			}
 			
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ProfileAttributeWidget());
+				pawClient.onUnavailable();
 			}
 		});
+	}
+
+	/**
+	 * Causes the code split for the ProfileAttributeWidget to be
+	 * fetched.
+	 */
+	public static void prefetch (ProfileAttributeWidgetClient pawClient) {
+		// If we weren't given a ProfileAttributeWidgetClient...
+		if (null == pawClient) {
+			// ...create one we can use.
+			pawClient = new ProfileAttributeWidgetClient() {				
+				@Override
+				public void onUnavailable() {
+				}
+				
+				@Override
+				public void onSuccess(ProfileAttributeWidget paw, int row) {
+				}
+			};
+		}
+		
+		// A row of -1 will simply cause the code to be fetched.
+		createAsync(null, false, -1, pawClient);
+	}
+	
+	public static void prefetch() {
+		prefetch(null);
 	}
 }

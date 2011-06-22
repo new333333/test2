@@ -492,8 +492,10 @@ public class AdminControl extends Composite
 	}// end AdminActionsTreeControl
 
 	
-	/**
-	 * 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private AdminControl()
 	{
@@ -872,6 +874,7 @@ public class AdminControl extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+				adminCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()

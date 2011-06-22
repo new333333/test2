@@ -104,7 +104,12 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 	@SuppressWarnings("unused")
 	private Element clientElement;
 	private FlowPanel pictureDiv;
-	
+
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
+	 */
 	private GwtQuickViewDlg(boolean autoHide, boolean modal, int pos,
 			int pos2, String binderId, String userName, Element element) {
 		super(autoHide, modal, pos, pos2);
@@ -900,6 +905,7 @@ public class GwtQuickViewDlg extends DlgBox implements NativePreviewHandler{
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_QuickViewDlg());
+				qvdClient.onUnavailable();
 			}
 		});
 	}

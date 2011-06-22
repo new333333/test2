@@ -88,6 +88,10 @@ public class FolderOptionsDlg extends DlgBox implements EditSuccessfulHandler, E
 
 	/*
 	 * Class constructor.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private FolderOptionsDlg(boolean autoHide, boolean modal, int left, int top, String binderId, ToolbarItem configureColumnsTBI, List<ToolbarItem> calendarImportsList, List<ToolbarItem> folderViewsList) {
 		// Initialize the superclass...

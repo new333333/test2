@@ -96,6 +96,10 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 
 	/*
 	 * Class constructor.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ManageSavedSearchesDlg(boolean autoHide, boolean modal, ActionTrigger actionTrigger, int left, int top, List<SavedSearchInfo> ssList, String searchTabId) {
 		// Initialize the superclass...
@@ -545,6 +549,7 @@ public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHand
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ManageSavedSearchesDlg() );
+				mssdClient.onUnavailable();
 			}
 		});
 	}

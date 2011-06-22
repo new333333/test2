@@ -460,8 +460,10 @@ public class FindCtrl extends Composite
 	private RadioButton m_searchBinderRb;
 	private static int m_count = 0;
 	
-	/**
-	 * 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private FindCtrl(
 		ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
@@ -980,7 +982,7 @@ public class FindCtrl extends Composite
 	 * 
 	 * @param actionHandler
 	 * @param searchType
-	 * @param visibleLength
+	 * @param visibleLength	-1 will simply cause the code to be fetched.
 	 * @param findCtrlClient
 	 */
 	public static void createAsync(
@@ -994,7 +996,10 @@ public class FindCtrl extends Composite
 			@Override
 			public void onSuccess()
 			{
-				FindCtrl findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
+				FindCtrl findCtrl;
+				if ((-1) != visibleLength)
+				     findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
+				else findCtrl = null;
 				findCtrlClient.onSuccess( findCtrl );
 			}// end onSuccess()
 			
@@ -1002,10 +1007,11 @@ public class FindCtrl extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_FindCtrl() );
+				findCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()
-	
+
 	public static void createAsync(
 		ActionHandler actionHandler,
 		GwtSearchCriteria.SearchType searchType,
@@ -1013,4 +1019,35 @@ public class FindCtrl extends Composite
 	{
 		createAsync( actionHandler, searchType, 40, findCtrlClient );
 	}// end createAsync()
+
+	/**
+	 * Causes the code split for the FindCtrl to be fetched.
+	 */
+	public static void prefetch(FindCtrlClient findCtrlClient)
+	{
+		// If we weren't given a FindCtrlClient...
+		if (null == findCtrlClient) {
+			// ...create one we can use.
+			findCtrlClient = new FindCtrlClient() {			
+				@Override
+				public void onUnavailable()
+				{
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess(FindCtrl findCtrl)
+				{
+				}// end onSuccess()
+			};
+		}
+		
+		// A visibleLength of -1 will simply cause the code to be
+		// fetched.
+		createAsync( null, null, -1, findCtrlClient );
+	}// end prefetch()
+	
+	public static void prefetch()
+	{
+		prefetch( null );
+	}// end prefetch()
 }// end FindCtrl

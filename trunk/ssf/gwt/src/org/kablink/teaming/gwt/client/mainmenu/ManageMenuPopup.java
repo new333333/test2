@@ -87,6 +87,10 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 
 	/*
 	 * Class constructor.
+	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private ManageMenuPopup(ActionTrigger actionTrigger, String manageName) {
 		// Simply initialize the super class.
@@ -642,6 +646,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			@Override
 			public void onFailure(Throwable reason) {
 				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ManageMenuPopup());
+				mmpClient.onUnavailable();
 			}
 		});
 	}

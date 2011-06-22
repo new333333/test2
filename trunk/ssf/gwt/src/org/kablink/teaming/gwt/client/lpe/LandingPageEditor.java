@@ -97,8 +97,10 @@ public class LandingPageEditor extends Composite
 	private static TextArea m_textBox = null;//!!!
 	public static RequestInfo m_requestInfo = null;
 	
-	/**
-	 * 
+	/*
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
 	private LandingPageEditor()
 	{
@@ -1152,6 +1154,7 @@ public class LandingPageEditor extends Composite
 			public void onFailure( Throwable reason )
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageEditor() );
+				lpeClient.onUnavailable();
 			}// end onFailure()
 		} );
 	}// end createAsync()
