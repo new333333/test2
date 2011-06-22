@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.mainmenu.MyTeamsMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlacesMenuPopup;
 import org.kablink.teaming.gwt.client.mainmenu.SearchMenuPanel;
 import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite;
+import org.kablink.teaming.gwt.client.mainmenu.SearchOptionsComposite.SearchOptionsCompositeClient;
 import org.kablink.teaming.gwt.client.mainmenu.TeamManagementInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.ViewsMenuPopup;
@@ -161,19 +162,32 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 				final TeamingPopupPanel soPopup = new TeamingPopupPanel(true, false);
 				GwtClientHelper.rollDownPopup(soPopup);
 				soPopup.addStyleName("mainMenuSearchOptions_Browser roundcornerSM-bottom");
-				SearchOptionsComposite searchOptionsComposite = new SearchOptionsComposite(soPopup, mainMenu);
-				searchOptionsComposite.addStyleName("mainMenuSearchOptions");
-				soPopup.setWidget(searchOptionsComposite);
-				soPopup.setGlassEnabled(true);
-				soPopup.setGlassStyleName("mainMenuPopup_Glass");
-				
-				// ...and position and show it as per the position of
-				// ...the search panel on the menu.
-				soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-					public void setPosition(int offsetWidth, int offsetHeight) {
-						int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
-						int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
-						soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+				SearchOptionsComposite.createAsync(
+						soPopup,
+						mainMenu,
+						new SearchOptionsCompositeClient() {					
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(SearchOptionsComposite soc) {
+						soc.addStyleName("mainMenuSearchOptions");
+						soPopup.setWidget(soc);
+						soPopup.setGlassEnabled(true);
+						soPopup.setGlassStyleName("mainMenuPopup_Glass");
+						
+						// ...and position and show it as per the position of
+						// ...the search panel on the menu.
+						soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+							public void setPosition(int offsetWidth, int offsetHeight) {
+								int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+								int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
+								soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+							}
+						});
 					}
 				});
 			}});

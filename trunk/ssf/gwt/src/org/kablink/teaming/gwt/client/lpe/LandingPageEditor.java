@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -1141,21 +1143,37 @@ public class LandingPageEditor extends Composite
 	 */
 	public static void createAsync( final LandingPageEditorClient lpeClient )
 	{
-		GWT.runAsync( LandingPageEditor.class, new RunAsyncCallback()
-		{			
+		// The LandingPageEditor is dependent on the FindCtrl.  Make
+		// sure it has been fetched before trying to use it.
+		FindCtrl.prefetch( new FindCtrlClient() {			
 			@Override
-			public void onSuccess()
+			public void onUnavailable()
 			{
-				LandingPageEditor lpe = new LandingPageEditor();
-				lpeClient.onSuccess( lpe );
-			}// end onSuccess()
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				lpeClient.onUnavailable();
+			}
 			
 			@Override
-			public void onFailure( Throwable reason )
+			public void onSuccess( FindCtrl findCtrl )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageEditor() );
-				lpeClient.onUnavailable();
-			}// end onFailure()
+				GWT.runAsync( LandingPageEditor.class, new RunAsyncCallback()
+				{			
+					@Override
+					public void onSuccess()
+					{
+						LandingPageEditor lpe = new LandingPageEditor();
+						lpeClient.onSuccess( lpe );
+					}// end onSuccess()
+					
+					@Override
+					public void onFailure( Throwable reason )
+					{
+						Window.alert( GwtTeaming.getMessages().codeSplitFailure_LandingPageEditor() );
+						lpeClient.onUnavailable();
+					}// end onFailure()
+				} );
+			}
 		} );
 	}// end createAsync()
 }// end LandingPageEditor

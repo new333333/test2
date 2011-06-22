@@ -52,6 +52,8 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -128,13 +130,14 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		}
 	}
 	
-	/**
+	/*
 	 * Class constructor.
 	 * 
-	 * @param searchOptionsPopup
-	 * @param actionTrigger
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
-	public SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
+	private SearchOptionsComposite(PopupPanel searchOptionsPopup, ActionTrigger actionTrigger) {
 		// Store the parameter...
 		m_searchOptionsPopup = searchOptionsPopup;
 		m_actionTrigger = actionTrigger;
@@ -148,7 +151,6 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		m_mainPanel.addStyleName("searchOptionsDlg_Content");
 		addHeader();
 		addContent();
-		setFocusOnSearch();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget(m_mainPanel);
@@ -181,16 +183,17 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 		asPanel.addStyleName("searchOptionsDlg_AdvancedSearchPanel margintop3");
 		asPanel.add(asAnchor);
 		m_mainPanel.add(asPanel);
-	}
-	
+	}	
 	
 	/*
 	 * Adds the content to the main panel.
 	 */
 	private void addContent() {
 		addFinders();
-		addSavedSearches();
-		addAdvancedSearch();
+		
+		// After asynchronously loading and adding the FindCtrl,
+		// addFinders() will add the saved searches and advanced
+		// search widgets.
 	}
 
 	/*
@@ -223,6 +226,11 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 				m_finderControl = findCtrl;
 				m_finderControl.addStyleName("searchOptionsDlg_FinderWidget margintop2 marginbottom2");
 				m_mainPanel.add(m_finderControl);
+				
+				addSavedSearches();
+				addAdvancedSearch();
+				
+				setFocusOnSearch();
 			}
 		});
 	}
@@ -419,5 +427,53 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+	/**
+	 * Callback interface to interact with the search options composite
+	 * asynchronously after it loads. 
+	 */
+	public interface SearchOptionsCompositeClient {
+		void onSuccess(SearchOptionsComposite soc);
+		void onUnavailable();
+	}
+
+	/**
+	 * Loads the SearchOptionsComposite split point and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param searchOptionsPopup
+	 * @param actonTrigger
+	 * @param socClient
+	 */
+	public static void createAsync(final PopupPanel searchOptionsPopup, final ActionTrigger actionTrigger, final SearchOptionsCompositeClient socClient) {
+		// The SearchOptionsComposite is dependent on the FindCtrl.
+		// Make sure it has been fetched before trying to use it.
+		FindCtrl.prefetch(new FindCtrl.FindCtrlClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+				socClient.onUnavailable();
+			}
+			
+			@Override
+			public void onSuccess(FindCtrl findCtrl) {
+				GWT.runAsync(SearchOptionsComposite.class, new RunAsyncCallback()
+				{			
+					@Override
+					public void onSuccess() {
+						SearchOptionsComposite soc = new SearchOptionsComposite(searchOptionsPopup, actionTrigger);
+						socClient.onSuccess(soc);
+					}
+					
+					@Override
+					public void onFailure(Throwable reason) {
+						Window.alert( GwtTeaming.getMessages().codeSplitFailure_SearchOptionsComposite() );
+						socClient.onUnavailable();
+					}
+				});
+			}
+		});
 	}
 }
