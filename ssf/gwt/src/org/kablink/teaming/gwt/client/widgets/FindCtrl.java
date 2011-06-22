@@ -979,13 +979,15 @@ public class FindCtrl extends Composite
 	/**
 	 * Loads the FindCtrl split point and returns an instance of it
 	 * via the callback.
-	 * 
+	 *
+	 * @param prefetch
 	 * @param actionHandler
 	 * @param searchType
-	 * @param visibleLength	-1 will simply cause the code to be fetched.
+	 * @param visibleLength
 	 * @param findCtrlClient
 	 */
-	public static void createAsync(
+	private static void createAsync(
+		final boolean prefetch,
 		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength,
@@ -997,9 +999,9 @@ public class FindCtrl extends Composite
 			public void onSuccess()
 			{
 				FindCtrl findCtrl;
-				if ((-1) != visibleLength)
-				     findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
-				else findCtrl = null;
+				if (prefetch)
+				     findCtrl = null;
+				else findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
 				findCtrlClient.onSuccess( findCtrl );
 			}// end onSuccess()
 			
@@ -1013,11 +1015,20 @@ public class FindCtrl extends Composite
 	}// end createAsync()
 
 	public static void createAsync(
+		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength,
+		final FindCtrlClient findCtrlClient )
+	{
+		createAsync( false, actionHandler, searchType, visibleLength, findCtrlClient );
+	}
+	
+	public static void createAsync(
 		ActionHandler actionHandler,
 		GwtSearchCriteria.SearchType searchType,
 		FindCtrlClient findCtrlClient )
 	{
-		createAsync( actionHandler, searchType, 40, findCtrlClient );
+		createAsync( false, actionHandler, searchType, 40, findCtrlClient );
 	}// end createAsync()
 
 	/**
@@ -1041,9 +1052,7 @@ public class FindCtrl extends Composite
 			};
 		}
 		
-		// A visibleLength of -1 will simply cause the code to be
-		// fetched.
-		createAsync( null, null, -1, findCtrlClient );
+		createAsync( true, null, null, -1, findCtrlClient );
 	}// end prefetch()
 	
 	public static void prefetch()

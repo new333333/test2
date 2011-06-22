@@ -264,20 +264,26 @@ public class ProfileAttributeWidget  {
 	/**
 	 * Loads the ProfileAttributeWidget split point and returns an
 	 * instance of it via the callback.
-	 * 
+	 *
+	 * @param prefetch
 	 * @param attr
 	 * @param editMode
-	 * @param row		-1 will simply cause the code to be fetched.
+	 * @param row
 	 * @param pawClient
 	 */
-	public static void createAsync(final ProfileAttribute attr, final boolean editMode, final int row, final ProfileAttributeWidgetClient pawClient) {
+	private static void createAsync(
+			final boolean prefetch,
+			final ProfileAttribute attr,
+			final boolean editMode,
+			final int row,
+			final ProfileAttributeWidgetClient pawClient) {
 		GWT.runAsync(ProfileAttributeWidget.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
 				ProfileAttributeWidget paw;
-				if ((-1) != row)
-				     paw = new ProfileAttributeWidget(attr, editMode);
-				else paw = null;
+				if (prefetch)
+				     paw = null;
+				else paw = new ProfileAttributeWidget(attr, editMode);
 				pawClient.onSuccess(paw, row);
 			}
 			
@@ -287,6 +293,14 @@ public class ProfileAttributeWidget  {
 				pawClient.onUnavailable();
 			}
 		});
+	}
+	
+	public static void createAsync(
+			final ProfileAttribute attr,
+			final boolean editMode,
+			final int row,
+			final ProfileAttributeWidgetClient pawClient) {
+		createAsync(false, attr, editMode, row, pawClient);
 	}
 
 	/**
@@ -308,8 +322,7 @@ public class ProfileAttributeWidget  {
 			};
 		}
 		
-		// A row of -1 will simply cause the code to be fetched.
-		createAsync(null, false, -1, pawClient);
+		createAsync(true, null, false, -1, pawClient);
 	}
 	
 	public static void prefetch() {
