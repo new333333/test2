@@ -1671,15 +1671,19 @@ public class GwtMainPage extends Composite
 		
 		else
 		{
-			invokeTagDlgImpl(entryId, entryTitle, x, y);
-		}
-		
-	}
+			invokeTagDlgImpl( entryId, entryTitle, x, y );
+		}		
+	}// end invokeTagDlg()
 	
-	private void invokeTagDlgImpl(String entryId, String entryTitle, int x, int y) {
-		m_tagThisDlg.init( entryId, entryTitle );
-		m_tagThisDlg.showDlg( true, x, y );
-	}
+	private void invokeTagDlgImpl( String entryId, String entryTitle, int x, int y )
+	{
+		TagThisDlg.initAndShow(
+			m_tagThisDlg,
+			entryId,
+			entryTitle,
+			x,
+			y );
+	}// end invokeTagDlgImpl()
 	
 	
 	/*

@@ -976,18 +976,15 @@ public class FindCtrl extends Composite
 		void onUnavailable();
 	}
 
-	/**
-	 * Loads the FindCtrl split point and returns an instance of it
-	 * via the callback.
-	 *
-	 * @param prefetch
-	 * @param actionHandler
-	 * @param searchType
-	 * @param visibleLength
-	 * @param findCtrlClient
+	/*
+	 * Asynchronously loads the TagThisDialog and performs some
+	 * operation against the code.
 	 */
-	private static void createAsync(
+	private static void doAsyncOperation(
+		// Prefetch parameters.  If true, only a prefetch is performed.
 		final boolean prefetch,
+		
+		// Creation parameters.
 		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength,
@@ -1012,27 +1009,48 @@ public class FindCtrl extends Composite
 				findCtrlClient.onUnavailable();
 			}// end onFailure()
 		} );
-	}// end createAsync()
+	}// end doAsyncOperation()
 
+	/**
+	 * Loads the FindCtrl split point and returns an instance of it
+	 * via the callback.
+	 *
+	 * @param actionHandler
+	 * @param searchType
+	 * @param visibleLength
+	 * @param findCtrlClient
+	 */
 	public static void createAsync(
 		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		final GwtSearchCriteria.SearchType searchType,
 		final int visibleLength,
 		final FindCtrlClient findCtrlClient )
 	{
-		createAsync( false, actionHandler, searchType, visibleLength, findCtrlClient );
-	}
+		doAsyncOperation(
+			false,	// false -> Not a prefetch.
+			actionHandler,
+			searchType,
+			visibleLength,
+			findCtrlClient );
+	}// end createAsync()
 	
 	public static void createAsync(
 		ActionHandler actionHandler,
 		GwtSearchCriteria.SearchType searchType,
 		FindCtrlClient findCtrlClient )
 	{
-		createAsync( false, actionHandler, searchType, 40, findCtrlClient );
+		doAsyncOperation(
+			false,	// false -> Not a prefetch.
+			actionHandler,
+			searchType,
+			40,
+			findCtrlClient );
 	}// end createAsync()
 
 	/**
 	 * Causes the code split for the FindCtrl to be fetched.
+	 * 
+	 * @param findCtrlClient
 	 */
 	public static void prefetch(FindCtrlClient findCtrlClient)
 	{
@@ -1043,16 +1061,23 @@ public class FindCtrl extends Composite
 				@Override
 				public void onUnavailable()
 				{
+					// Unused.
 				}// end onUnavailable()
 				
 				@Override
 				public void onSuccess(FindCtrl findCtrl)
 				{
+					// Unused.
 				}// end onSuccess()
 			};
 		}
 		
-		createAsync( true, null, null, -1, findCtrlClient );
+		doAsyncOperation(
+			true,	// true -> Prefetch only.
+			null,	// Ignored.
+			null,	//    "
+			-1,		//    "
+			findCtrlClient );
 	}// end prefetch()
 	
 	public static void prefetch()

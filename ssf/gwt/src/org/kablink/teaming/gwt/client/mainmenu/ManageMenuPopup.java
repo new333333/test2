@@ -613,8 +613,11 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	}
 	
 	private void showTagThisNow() {
-		m_tagThisDlg.init(m_currentBinder.getBinderId(), m_currentBinder.getBinderTitle(), m_currentBinder.getBinderType());
-		m_tagThisDlg.showDlg();
+		TagThisDlg.initAndShow(
+			m_tagThisDlg,
+			m_currentBinder.getBinderId(),
+			m_currentBinder.getBinderTitle(),
+			m_currentBinder.getBinderType());
 	}
 	
 	/**
