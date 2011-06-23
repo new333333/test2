@@ -33,7 +33,7 @@
 package org.kablink.teaming.gwt.client.lpe;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
 import com.google.gwt.user.client.Timer;
@@ -104,7 +104,7 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
-	public DlgBox getPropertiesDlgBox( int xPos, int yPos )
+	public void getPropertiesDlgBox( int xPos, int yPos, DlgBoxClient dBoxClient )
 	{
 		// Have we already created a dialog?
 		if ( m_customJspDlgBox == null )
@@ -118,7 +118,7 @@ public class CustomJspDropWidget extends DropWidget
 			m_customJspDlgBox.initHandlers( this, this );
 		}
 		
-		return m_customJspDlgBox;
+		dBoxClient.onSuccess( m_customJspDlgBox );
 	}// end getPropertiesDlgBox()
 	
 	

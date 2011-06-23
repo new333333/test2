@@ -382,6 +382,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_SearchOptionsComposite();
 	String codeSplitFailure_TagThisDlg();
 	String codeSplitFailure_TaskListing();
+	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
 	String codeSplitFailure_WorkspaceTreeControl();

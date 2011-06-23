@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -138,8 +139,7 @@ public class MyTeamsMenuPopup extends MenuBarPopupBase {
 	 * Asynchronously shows the 'My Teams' popup menu.
 	 */
 	private void showMyTeamsMenuAsync(final List<TeamInfo> mtList) {
-		Scheduler.ScheduledCommand showMenu;
-		showMenu = new Scheduler.ScheduledCommand() {
+		ScheduledCommand showMenu = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showMyTeamsMenuNow(mtList);

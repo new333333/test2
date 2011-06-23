@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.BlurEvent;
@@ -218,8 +219,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		 * Asynchronously sets/clears a filter.
 		 */
 		private void filterListAsync(final String filter) {
-			Scheduler.ScheduledCommand doFilter;
-			doFilter = new Scheduler.ScheduledCommand() {
+			ScheduledCommand doFilter = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					filterListNow(filter);
@@ -339,8 +339,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		m_taskRootDIV.add(m_taskListingDIV);
 		
 		// ...populate the task panels...
-		Scheduler.ScheduledCommand populateCommand;
-		populateCommand = new Scheduler.ScheduledCommand() {
+		ScheduledCommand populateCommand = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateTaskDIVs();
@@ -626,8 +625,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * on the current size of the content frame.
 	 */
 	public void resize() {
-		Scheduler.ScheduledCommand resizeCommand;
-		resizeCommand = new Scheduler.ScheduledCommand() {
+		ScheduledCommand resizeCommand = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				resizeNow();
@@ -689,8 +687,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 	 * Shows the TaskBundle into the task listing DIV.
 	 */
 	private void showTaskBundle(final long readTime) {
-		Scheduler.ScheduledCommand showCommand;
-		showCommand = new Scheduler.ScheduledCommand() {
+		ScheduledCommand showCommand = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showTaskBundleNow(readTime);
@@ -706,8 +703,7 @@ public class TaskListing extends Composite implements ActionTrigger {
 		final long showTime = m_taskTable.showTasks(m_taskBundle);
 		if (newTaskTable) m_taskListingDIV.add(m_taskTable);
 		if (m_taskBundle.getIsDebug()) {
-			Scheduler.ScheduledCommand showTimeCommand;
-			showTimeCommand = new Scheduler.ScheduledCommand() {
+			ScheduledCommand showTimeCommand = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					Window.alert(m_messages.taskDebug_times(

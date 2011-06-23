@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 
 package org.kablink.teaming.gwt.client.widgets;
-
-import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -50,16 +48,16 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  */
 public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 {
-	private String m_binderId = null;	// Id of the binder we are dealing with.
-	private AsyncCallback<String> m_rpcCallback = null;
-	private ArrayList<String> m_listOfFileAttachments = null;
 	
 	/**
 	 * 
 	 */
 	public BrandingTinyMCEConfiguration( String binderId )
 	{
+		super();
+		
 		m_binderId = binderId;
+		m_rpcInProgress = false;
 
 		// Create the callback that will be used when we issue an ajax call to get
 		// the base url for the given binder.
@@ -74,6 +72,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetGeneric(),
 					m_binderId );
+				m_rpcInProgress = false;
 			}// end onFailure()
 	
 			/**
@@ -84,6 +83,7 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 			{
 				// Update the url that is used for the document base url when initializing the tinyMCE editor.
 				setDocumentBaseUrl( documentBaseUrl );
+				m_rpcInProgress = false;
 			}// end onSuccess()
 		};
 
@@ -220,31 +220,16 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	 * Issue an ajax request to get the base url for the binder we are working with.
 	 * This url will be used for the document_base_url.
 	 */
-	private void getDocumentBaseUrlFromServer()
+	protected void getDocumentBaseUrlFromServer()
 	{
 		GwtRpcServiceAsync rpcService;
 
 		rpcService = GwtTeaming.getRpcService();
 		
 		// Issue an ajax request to get the base url for the binder.
+		m_rpcInProgress = true;
 		rpcService.getDocumentBaseUrl( HttpRequestInfo.createHttpRequestInfo(), m_binderId, m_rpcCallback );
 	}// end getDocumentBaseUrlFromServer()
-	
-	
-	/**
-	 * This method should be called to notify us that we are now working with a new binder.
-	 */
-	public void setBinderId( String binderId )
-	{
-		// Is the binder id changing?
-		if ( m_binderId == null || m_binderId.equalsIgnoreCase( binderId ) == false )
-		{
-			// Yes
-			// Issue an ajax request to get the document base url for this binder.
-			m_binderId = binderId;
-			getDocumentBaseUrlFromServer();
-		}
-	}
 	
 	
 	/**
@@ -263,12 +248,4 @@ public class BrandingTinyMCEConfiguration extends AbstractTinyMCEConfiguration
 	{
 		language = GwtMainPage.m_requestInfo.getLanguage();
 	}
-	
-	/**
-	 * Set the list of file attachments the user can choose from when they invoke the "Add image" dialog.
-	 */
-	public void setListOfFileAttachments( 	ArrayList<String> listOfFileAttachments )
-	{
-		m_listOfFileAttachments = listOfFileAttachments;
-	}// end setListOfFileAttachments()
 }// end BrandingTinyMCEConfiguration

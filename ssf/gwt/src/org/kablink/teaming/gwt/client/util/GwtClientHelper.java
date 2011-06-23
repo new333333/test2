@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -125,16 +126,12 @@ public class GwtClientHelper {
 	 */
 	public static void deferredAlert(final String msg) {
 		if (hasString(msg)) {
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				public void execute()
-				{
+			ScheduledCommand cmd = new ScheduledCommand() {
+				public void execute() {
 					Window.alert(msg);
 				}
 			};
-			Scheduler.get().scheduleDeferred( cmd );
+			Scheduler.get().scheduleDeferred(cmd);
 		}
 	}
 

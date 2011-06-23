@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -136,8 +137,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously collapses the current row.
 		 */
 		private void doCollapseRowAsync() {
-			Scheduler.ScheduledCommand collapser;
-			collapser = new Scheduler.ScheduledCommand() {
+			ScheduledCommand collapser = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doCollapseRowNow();
@@ -162,8 +162,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 * Asynchronously expands the current row.
 		 */
 		private void doExpandRowAsync(final TreeInfo expandedTI) {
-			Scheduler.ScheduledCommand expander;
-			expander = new Scheduler.ScheduledCommand() {
+			ScheduledCommand expander = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					doExpandRowNow(expandedTI);
@@ -505,8 +504,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * sidebar.
 	 */
 	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI) {
-		Scheduler.ScheduledCommand asLoader;
-		asLoader = new Scheduler.ScheduledCommand() {
+		ScheduledCommand asLoader = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				enterActivityStreamModeNow(asRootTI, defaultASI);
@@ -1084,8 +1082,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * and optionally selects a binder.
 	 */
 	private void reRootTreeAsync(final String newRootBinderId, final Long selectedBinderId, final boolean exitingActivityStreamMode, final TreeInfo rootTI) {
-		Scheduler.ScheduledCommand treeRooter;
-		treeRooter = new Scheduler.ScheduledCommand() {
+		ScheduledCommand treeRooter = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				reRootTreeNow(
@@ -1243,8 +1240,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously selects a binder and/or re-roots the tree.
 	 */
 	private void selectRootWorkspaceIdAsync(final String binderId, final boolean forceReload, final TreeInfo targetTI, final String rootWorkspaceId) {
-		Scheduler.ScheduledCommand rootWSSelector;
-		rootWSSelector = new Scheduler.ScheduledCommand() {
+		ScheduledCommand rootWSSelector = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				selectRootWorkspaceIdNow(binderId, forceReload, targetTI, rootWorkspaceId);

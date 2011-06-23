@@ -45,9 +45,11 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -1094,12 +1096,7 @@ public class EditBrandingDlg extends DlgBox
 	 */
 	public void invokeEditAdvancedBrandingDlg( final int x, final int y )
 	{
-		PopupPanel.PositionCallback posCallback;
-		EditSuccessfulHandler editSuccessfulHandler;
-		EditCanceledHandler editCanceledHandler;
-		BrandingTinyMCEConfiguration tinyMCEConfig = null;
-		
-		editSuccessfulHandler = new EditSuccessfulHandler()
+		final EditSuccessfulHandler editSuccessfulHandler = new EditSuccessfulHandler()
 		{
 			/**
 			 * This method gets called when user user presses ok in the "Edit Advanced Branding" dialog.
@@ -1121,7 +1118,7 @@ public class EditBrandingDlg extends DlgBox
 			}// end editSuccessful()
 		};
 			
-		editCanceledHandler = new EditCanceledHandler()
+		final EditCanceledHandler editCanceledHandler = new EditCanceledHandler()
 		{
 			/**
 			 * This method gets called when the user presses cancel in the "Edit Advanced Branding" dialog.
@@ -1134,40 +1131,104 @@ public class EditBrandingDlg extends DlgBox
 			}// end editCanceled()
 		};
 
-		tinyMCEConfig = new BrandingTinyMCEConfiguration( m_origBrandingData.getBinderId() );
-		tinyMCEConfig.setListOfFileAttachments( m_listOfFileAttachments );
-
 		// No, create a "Edit Advanced Branding" dialog.
-		m_editAdvancedBrandingDlg = new TinyMCEDlg(
-											GwtTeaming.getMessages().editAdvancedBranding(),
-											tinyMCEConfig,
-											editSuccessfulHandler,
-											editCanceledHandler,
-											false,
-											true,
-											x,
-											y,
-											null );
-
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition( int offsetWidth, int offsetHeight )
+		TinyMCEDlg.createBrandingTinyMCEConfiguration(
+			m_origBrandingData.getBinderId(),
+			new TinyMCEDlgClient()
+		{				
+			@Override
+			public void onUnavailable()
 			{
-				int xPos;
-				int yPos;
-				
-				xPos = getAbsoluteLeft() - 50;
-				yPos = y;
-				
-				m_editAdvancedBrandingDlg.setPopupPosition( xPos, yPos );
-			}// end setPosition()
-		};
-		m_editAdvancedBrandingDlg.setPopupPositionAndShow( posCallback );
-		m_editAdvancedBrandingDlg.setText( m_advancedBranding );
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( AbstractTinyMCEConfiguration config )
+			{
+				final AbstractTinyMCEConfiguration tinyMCEConfig = new BrandingTinyMCEConfiguration( m_origBrandingData.getBinderId() );
+				tinyMCEConfig.setListOfFileAttachments( m_listOfFileAttachments );
+				Scheduler.ScheduledCommand dlgCreator;
+				dlgCreator = new Scheduler.ScheduledCommand() {
+					@Override
+					public void execute()
+					{
+						createTinyMCE(
+							tinyMCEConfig,
+							editSuccessfulHandler,
+							editCanceledHandler,
+							x,
+							y );
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( dlgCreator );
+			}// end onSuccess()
+			
+			@Override
+			public void onSuccess( TinyMCEDlg dlg )
+			{
+				// Unused.
+			}// end onSuccess()
+		} );
 	}// end invokeEditAdvancedBrandingDlg()
+	
+	private void createTinyMCE(
+		final AbstractTinyMCEConfiguration tinyMCEConfig,
+		final EditSuccessfulHandler editSuccessfulHandler,
+		final EditCanceledHandler editCanceledHandler,
+		final int x,
+		final int y)
+	{		
+		TinyMCEDlg.createAsync(
+			GwtTeaming.getMessages().editAdvancedBranding(),
+			tinyMCEConfig,
+			editSuccessfulHandler,
+			editCanceledHandler,
+			false,
+			true,
+			x,
+			y,
+			null,
+			new TinyMCEDlgClient()
+		{				
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// onUnavailable()
+			
+			@Override
+			public void onSuccess( AbstractTinyMCEConfiguration config )
+			{
+				// Unused.
+			}// end onSuccess()
+			
+			@Override
+			public void onSuccess( TinyMCEDlg dlg )
+			{
+				m_editAdvancedBrandingDlg = dlg;
+				PopupPanel.PositionCallback posCallback = new PopupPanel.PositionCallback()
+				{
+					/**
+					 * 
+					 */
+					public void setPosition( int offsetWidth, int offsetHeight )
+					{
+						int xPos;
+						int yPos;
+						
+						xPos = getAbsoluteLeft() - 50;
+						yPos = y;
+						
+						m_editAdvancedBrandingDlg.setPopupPosition( xPos, yPos );
+					}// end setPosition()
+				};
+				m_editAdvancedBrandingDlg.setPopupPositionAndShow( posCallback );
+				m_editAdvancedBrandingDlg.setText( m_advancedBranding );
+			}// end onSuccess()
+		} );
+	}// end createTinyMCE()
 
 
 	/**
@@ -1415,13 +1476,13 @@ public class EditBrandingDlg extends DlgBox
 	 * @param ebDlgClient
 	 */
 	public static void createAsync(
-			final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
-			final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
-			final boolean autoHide,
-			final boolean modal,
-			final int xPos,
-			final int yPos,
-			final EditBrandingDlgClient ebDlgClient )
+		final EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
+		final EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final EditBrandingDlgClient ebDlgClient )
 	{
 		GWT.runAsync( EditBrandingDlg.class, new RunAsyncCallback()
 		{			

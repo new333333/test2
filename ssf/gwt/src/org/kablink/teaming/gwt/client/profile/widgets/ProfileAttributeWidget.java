@@ -267,21 +267,51 @@ public class ProfileAttributeWidget  {
 	 */
 	private static void doAsyncOperation(
 			// Prefetch parameters.  If true, only a prefetch is performed.
+			final ProfileAttributeWidgetClient pawClient,
 			final boolean prefetch,
 			
 			// Creation parameters.
 			final ProfileAttribute attr,
 			final boolean editMode,
-			final int row,
-			final ProfileAttributeWidgetClient pawClient) {
+			final int row) {
+		loadControl1(
+			// Prefetch parameters.
+			pawClient,
+			prefetch,
+				
+			// Creation parameters.
+			attr,
+			editMode,
+			row);		
+	}
+	
+	/*
+	 * Various control loaders used to load the split points containing
+	 * the code for the controls by the LandingPageEditor.
+	 * 
+	 * Loads the split point for the ProfileAttributeWidget.
+	 */
+	private static void loadControl1(
+			// Prefetch parameters.  If true, only a prefetch is performed.
+			final ProfileAttributeWidgetClient pawClient,
+			final boolean prefetch,
+			
+			// Creation parameters.
+			final ProfileAttribute attr,
+			final boolean editMode,
+			final int row) {
 		GWT.runAsync(ProfileAttributeWidget.class, new RunAsyncCallback() {			
 			@Override
 			public void onSuccess() {
-				ProfileAttributeWidget paw;
-				if (prefetch)
-				     paw = null;
-				else paw = new ProfileAttributeWidget(attr, editMode);
-				pawClient.onSuccess(paw, row);
+				initPAW_Finish(
+					// Prefetch parameters.
+					pawClient,
+					prefetch,
+						
+					// Creation parameters.
+					attr,
+					editMode,
+					row);		
 			}
 			
 			@Override
@@ -290,6 +320,26 @@ public class ProfileAttributeWidget  {
 				pawClient.onUnavailable();
 			}
 		});
+	}
+	
+	/*
+	 * Finishes the initialization of the ProfileAttributeWidget
+	 * object.
+	 */
+	private static void initPAW_Finish(
+			// Prefetch parameters.  If true, only a prefetch is performed.
+			final ProfileAttributeWidgetClient pawClient,
+			final boolean prefetch,
+			
+			// Creation parameters.
+			final ProfileAttribute attr,
+			final boolean editMode,
+			final int row) {		
+		ProfileAttributeWidget paw;
+		if (prefetch)
+		     paw = null;
+		else paw = new ProfileAttributeWidget(attr, editMode);
+		pawClient.onSuccess(paw, row);
 	}
 	
 	/**
@@ -307,11 +357,14 @@ public class ProfileAttributeWidget  {
 			final int row,
 			final ProfileAttributeWidgetClient pawClient) {
 		doAsyncOperation(
-			false,	// false -> Not a prefetch.
+			// Prefetch parameters.  false -> Not a prefetch.  
+			pawClient,
+			false,
+			
+			// Required creation parameters.
 			attr,
 			editMode,
-			row,
-			pawClient);
+			row);
 	}
 
 	/**
@@ -338,11 +391,14 @@ public class ProfileAttributeWidget  {
 		}
 		
 		doAsyncOperation(
-			true,	// true -> Prefetch only.
-			null,	// Ignored.
-			false,	//    "
-			-1,		//    "
-			pawClient);
+			// Prefetch parameters.  true -> Prefetch only.  
+			pawClient,
+			true,
+			
+			// Creation parameters ignored.
+			null,
+			false,
+			-1);
 	}
 	
 	public static void prefetch() {

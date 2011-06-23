@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -125,8 +126,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 		 * Asynchronously triggers a selection changed action.
 		 */
 		private void triggerSelectionChangedAsync(final OnSelectBinderInfo osbi) {
-			Scheduler.ScheduledCommand changeSelection;
-			changeSelection = new Scheduler.ScheduledCommand() {
+			ScheduledCommand changeSelection = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					triggerSelectionChangedNow(osbi);
@@ -274,8 +274,7 @@ public class MyFavoritesMenuPopup extends MenuBarPopupBase {
 	 * Asynchronously shows the 'My Favorites' popup menu.
 	 */
 	private void showMyFavoritesMenuAsync(final List<FavoriteInfo> fList)  {
-		Scheduler.ScheduledCommand showMenu;
-		showMenu = new Scheduler.ScheduledCommand() {
+		ScheduledCommand showMenu = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showMyFavoritesMenuNow(fList);

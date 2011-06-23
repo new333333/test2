@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.workspacetree.TreeDisplayVertical;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -243,8 +244,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 		// mode.  Is it?
 		if (TreeMode.VERTICAL == m_tm) {
 			// Yes!  Force it to lay itself out again.
-			Scheduler.ScheduledCommand layouter;
-			layouter = new Scheduler.ScheduledCommand() {
+			ScheduledCommand layouter = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					relayoutPageNow();
@@ -274,8 +274,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Asynchronously renders a horizontal tree.
 	 */
 	private void renderHTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final List<TreeInfo> tiList) {
-		Scheduler.ScheduledCommand renderHTree;
-		renderHTree = new Scheduler.ScheduledCommand() {
+		ScheduledCommand renderHTree = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				renderHTreeNow(mainPanel, wsTree, selectedBinderId, tiList);
@@ -296,8 +295,7 @@ public class WorkspaceTreeControl extends Composite implements ActionTrigger {
 	 * Asynchronously renders a vertical tree.
 	 */
 	private void renderVTreeAsync(final FlowPanel mainPanel, final WorkspaceTreeControl wsTree, final String selectedBinderId, final TreeInfo ti) {
-		Scheduler.ScheduledCommand renderVTree;
-		renderVTree = new Scheduler.ScheduledCommand() {
+		ScheduledCommand renderVTree = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				renderVTreeNow(mainPanel, wsTree, selectedBinderId, ti);

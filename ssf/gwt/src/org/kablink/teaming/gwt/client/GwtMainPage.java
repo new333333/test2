@@ -73,6 +73,7 @@ import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTree
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -141,12 +142,14 @@ public class GwtMainPage extends Composite
 	/*
 	 * Various control loaders used to load the split points containing
 	 * the code for the controls in the main page.
+	 * 
+	 * Loads the split point for the MainMenuControl and instantiates
+	 * an object from it.
 	 */
 	private void loadControl1()
 	{
-		MainMenuControl.createAsync(
-				this,
-				new MainMenuControlClient() {			
+		MainMenuControl.createAsync( this, new MainMenuControlClient()
+		{			
 			@Override
 			public void onUnavailable()
 			{
@@ -158,8 +161,7 @@ public class GwtMainPage extends Composite
 			public void onSuccess( MainMenuControl mainMenuCtrl )
 			{
 				m_mainMenuCtrl = mainMenuCtrl;				
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
+				ScheduledCommand loadNextControl = new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
@@ -168,16 +170,17 @@ public class GwtMainPage extends Composite
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
-		});
+		} );
 	}// end loadControl1()
 
+	/*
+	 * Loads the split point for the WorkspaceTreeControl and
+	 * instantiates an object from it.
+	 */
 	private void loadControl2()
 	{
-		WorkspaceTreeControl.createAsync(
-				this,
-				m_selectedBinderId,
-				TreeMode.VERTICAL,
-				new WorkspaceTreeControlClient() {			
+		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
+		{			
 			@Override
 			public void onUnavailable()
 			{
@@ -189,8 +192,7 @@ public class GwtMainPage extends Composite
 			public void onSuccess( WorkspaceTreeControl wsTreeCtrl )
 			{
 				m_wsTreeCtrl = wsTreeCtrl;				
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
+				ScheduledCommand loadNextControl = new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
@@ -202,11 +204,14 @@ public class GwtMainPage extends Composite
 		} );
 	}// end loadControl2()
 
+	/*
+	 * Loads the split point for the ContentControl and instantiates an
+	 * object from it.
+	 */
 	private void loadControl3()
 	{
-		ContentControl.createAsync(
-				"gwtContentIframe",
-				new ContentControlClient() {			
+		ContentControl.createAsync( "gwtContentIframe", new ContentControlClient()
+		{			
 			@Override
 			public void onUnavailable()
 			{
@@ -218,8 +223,7 @@ public class GwtMainPage extends Composite
 			public void onSuccess( ContentControl contentCtrl )
 			{
 				m_contentCtrl = contentCtrl;				
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
+				ScheduledCommand loadNextControl = new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
@@ -231,11 +235,14 @@ public class GwtMainPage extends Composite
 		} );
 	}// end loadControl3()
 
+	/*
+	 * Loads the split point for the ActivityStreamCtrl and
+	 * instantiates an object from it.
+	 */
 	private void loadControl4()
 	{
-		ActivityStreamCtrl.createAsync(
-				this,
-				new ActivityStreamCtrlClient() {			
+		ActivityStreamCtrl.createAsync( this, new ActivityStreamCtrlClient()
+		{			
 			@Override
 			public void onUnavailable()
 			{
@@ -246,25 +253,12 @@ public class GwtMainPage extends Composite
 			@Override
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
-				m_activityStreamCtrl = asCtrl;				
-				Scheduler.ScheduledCommand loadNextControl;
-				loadNextControl = new Scheduler.ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						loadControl5();
-					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( loadNextControl );
+				m_activityStreamCtrl = asCtrl;
+				initMainPage_Finish();
 			}// end onSuccess()
 		} );
 	}// end loadControl4()
 	
-	private void loadControl5()
-	{
-		initMainPage_Finish();
-	}// end loadControl5()
-
 	/*
 	 * Starts the initializations of the main page.
 	 */
@@ -286,8 +280,7 @@ public class GwtMainPage extends Composite
 		m_teamingRootPanel = new FlowPanel();
 		m_teamingRootPanel.addStyleName( "mainTeamingPagePanel" );
 
-		Scheduler.ScheduledCommand step1;
-		step1 = new Scheduler.ScheduledCommand()
+		ScheduledCommand loadControls = new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -295,7 +288,7 @@ public class GwtMainPage extends Composite
 				loadControl1();
 			}// end execute()
 		};
-		Scheduler.get().scheduleDeferred( step1 );		
+		Scheduler.get().scheduleDeferred( loadControls );		
 	}// end initMainPage_Start();
 	
 	/*
@@ -361,11 +354,9 @@ public class GwtMainPage extends Composite
 		final String errMsg = m_requestInfo.getErrMsg();
 		if ( GwtClientHelper.hasString( errMsg ) )
 		{
-			Scheduler.ScheduledCommand cmd;
-
 			// Yes
 			// Execute a deferred command the will display it.
-			cmd = new Scheduler.ScheduledCommand()
+			ScheduledCommand cmd = new ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -425,15 +416,13 @@ public class GwtMainPage extends Composite
 			// Should we invoke the login dialog?
 			if ( m_requestInfo.promptForLogin() == true )
 			{
-				Scheduler.ScheduledCommand cmd;
-				
 				// Yes
 				// Hide the workspace tree control and the menu bar.
 				m_wsTreeCtrl.setVisible( false );
 				m_mainMenuCtrl.setVisible( false );
 				
 				// invoke the login dialog.
-				cmd = new Scheduler.ScheduledCommand()
+				ScheduledCommand cmd = new ScheduledCommand()
 				{
 					public void execute()
 					{
@@ -1097,8 +1086,6 @@ public class GwtMainPage extends Composite
 			break;
 			
 		case CLOSE_ADMINISTRATION:
-			Scheduler.ScheduledCommand cmd;
-			
 			// Hide the AdminControl.
 			if ( m_adminControl != null )
 				m_adminControl.hideControl();
@@ -1118,7 +1105,7 @@ public class GwtMainPage extends Composite
 			m_mainMenuCtrl.hideAdministrationMenubar();
 
 			// Restore the ui state to what it was before we opened the site administration.
-			cmd = new Scheduler.ScheduledCommand()
+			ScheduledCommand cmd = new ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -2323,9 +2310,7 @@ public class GwtMainPage extends Composite
 		}
 		else
 		{
-			Scheduler.ScheduledCommand cmd;
-
-			cmd = new Scheduler.ScheduledCommand()
+			ScheduledCommand cmd = new ScheduledCommand()
 			{
 				public void execute()
 				{
@@ -2473,8 +2458,7 @@ public class GwtMainPage extends Composite
 					m_adminControl = adminCtrl;
 					m_contentPanel.add( m_adminControl );
 					
-					Scheduler.ScheduledCommand showAdminControl;
-					showAdminControl = new Scheduler.ScheduledCommand()
+					ScheduledCommand showAdminControl = new ScheduledCommand()
 					{
 						@Override
 						public void execute()
