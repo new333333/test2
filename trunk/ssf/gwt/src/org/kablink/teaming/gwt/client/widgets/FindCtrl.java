@@ -982,24 +982,55 @@ public class FindCtrl extends Composite
 	 */
 	private static void doAsyncOperation(
 		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
 		final boolean prefetch,
 		
 		// Creation parameters.
 		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
 		final GwtSearchCriteria.SearchType searchType,
-		final int visibleLength,
-		final FindCtrlClient findCtrlClient )
+		final int visibleLength )
+	{
+		loadControl1(
+			// Prefetch parameters.
+			findCtrlClient,
+			prefetch,
+			
+			// Creation parameters.
+			actionHandler,
+			searchType,
+			visibleLength );				
+	}// end doAsyncOperation()
+	
+	/*
+	 * Various control loaders used to load the split points containing
+	 * the code for the controls in the find control.
+	 * 
+	 * Load the split point for the FindCtrl.
+	 */
+	private static void loadControl1(
+		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
+		final boolean prefetch,
+		
+		// Creation parameters.
+		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength )
 	{
 		GWT.runAsync( FindCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				FindCtrl findCtrl;
-				if (prefetch)
-				     findCtrl = null;
-				else findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
-				findCtrlClient.onSuccess( findCtrl );
+				initFindCtrl_Finish(
+					// Prefetch parameters.
+					findCtrlClient,
+					prefetch,
+					
+					// Creation parameters.
+					actionHandler,
+					searchType,
+					visibleLength );
 			}// end onSuccess()
 			
 			@Override
@@ -1010,6 +1041,26 @@ public class FindCtrl extends Composite
 			}// end onFailure()
 		} );
 	}// end doAsyncOperation()
+		
+	/*
+	 * Finishes the initialization of the FindCtrl object.
+	 */
+	private static void initFindCtrl_Finish(
+		// Prefetch parameters.  If true, only a prefetch is performed.
+		final FindCtrlClient findCtrlClient,
+		final boolean prefetch,
+		
+		// Creation parameters.
+		final ActionHandler actionHandler,  // We will call this handler when the user selects an item from the search results.
+		final GwtSearchCriteria.SearchType searchType,
+		final int visibleLength )
+	{
+		FindCtrl findCtrl;
+		if (prefetch)
+		     findCtrl = null;
+		else findCtrl = new FindCtrl( actionHandler, searchType, visibleLength );
+		findCtrlClient.onSuccess( findCtrl );
+	}// end initFindCtrl_Finish()
 
 	/**
 	 * Loads the FindCtrl split point and returns an instance of it
@@ -1027,11 +1078,14 @@ public class FindCtrl extends Composite
 		final FindCtrlClient findCtrlClient )
 	{
 		doAsyncOperation(
-			false,	// false -> Not a prefetch.
+			// Prefetch parameters.  false -> Not a prefetch.
+			findCtrlClient,
+			false,
+			
+			// Required creation parameters.
 			actionHandler,
 			searchType,
-			visibleLength,
-			findCtrlClient );
+			visibleLength );
 	}// end createAsync()
 	
 	public static void createAsync(
@@ -1040,11 +1094,14 @@ public class FindCtrl extends Composite
 		FindCtrlClient findCtrlClient )
 	{
 		doAsyncOperation(
-			false,	// false -> Not a prefetch.
+			// Prefetch parameters.  false -> Not a prefetch.
+			findCtrlClient,
+			false,
+			
+			// Required creation parameters.
 			actionHandler,
 			searchType,
-			40,
-			findCtrlClient );
+			40 );
 	}// end createAsync()
 
 	/**
@@ -1065,7 +1122,7 @@ public class FindCtrl extends Composite
 				}// end onUnavailable()
 				
 				@Override
-				public void onSuccess(FindCtrl findCtrl)
+				public void onSuccess( FindCtrl findCtrl )
 				{
 					// Unused.
 				}// end onSuccess()
@@ -1073,11 +1130,14 @@ public class FindCtrl extends Composite
 		}
 		
 		doAsyncOperation(
-			true,	// true -> Prefetch only.
-			null,	// Ignored.
-			null,	//    "
-			-1,		//    "
-			findCtrlClient );
+			// Prefetch parameters.  true -> Prefetch only.
+			findCtrlClient,
+			true,
+			
+			// Creation parameters ignore.
+			null,
+			null,
+			-1 );
 	}// end prefetch()
 	
 	public static void prefetch()

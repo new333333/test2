@@ -55,6 +55,7 @@ import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -417,16 +418,12 @@ public class SearchOptionsComposite extends Composite implements ActionHandler {
 	 * widget.
 	 */
 	private void setFocusOnSearch() {
-		Scheduler.ScheduledCommand cmd;
-
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			public void execute()
-			{
+		ScheduledCommand cmd = new ScheduledCommand() {
+			public void execute() {
     			m_finderControl.getFocusWidget().setFocus(true);
 			}
 		};
-		Scheduler.get().scheduleDeferred( cmd );
+		Scheduler.get().scheduleDeferred(cmd);
 	}
 	
 	/**

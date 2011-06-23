@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -413,8 +414,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		final String foId = (IDBASE + "FolderOptions");
 		MenuPopupAnchor mtA = new MenuPopupAnchor(foId, m_messages.mainMenuManageFolderOptions(), null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				Scheduler.ScheduledCommand showDlg;
-				showDlg = new Scheduler.ScheduledCommand() {
+				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showFolderOptionsAsync(foId, folderViewsTBI, calendarImportTBI);
@@ -563,8 +563,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		final String menuId = (IDBASE + "TagThis");
 		MenuPopupAnchor mtA = new MenuPopupAnchor(menuId, menuText, null, new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				Scheduler.ScheduledCommand showDlg;
-				showDlg = new Scheduler.ScheduledCommand() {
+				ScheduledCommand showDlg = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						showTagThisAsync(menuId, dlgCaption);

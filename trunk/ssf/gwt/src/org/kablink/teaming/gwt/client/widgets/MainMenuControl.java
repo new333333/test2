@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.util.TeamingAction;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -174,20 +175,33 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 					
 					@Override
 					public void onSuccess(SearchOptionsComposite soc) {
+						// Connect things together...
 						soc.addStyleName("mainMenuSearchOptions");
 						soPopup.setWidget(soc);
 						soPopup.setGlassEnabled(true);
 						soPopup.setGlassStyleName("mainMenuPopup_Glass");
 						
-						// ...and position and show it as per the position of
-						// ...the search panel on the menu.
-						soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-							public void setPosition(int offsetWidth, int offsetHeight) {
-								int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
-								int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
-								soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+						// ...and show the search options popup.  We do
+						// ...this as a scheduled command so that the
+						// ...asynchronous processing related to the
+						// ...creation of the SearchOptionsComposite
+						// ...has a chance to complete.
+						ScheduledCommand showSOPopup = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								// Position and show the popup as per
+								// the position of the search panel on
+								// the menu.
+								soPopup.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
+									public void setPosition(int offsetWidth, int offsetHeight) {
+										int soPopupLeft = ((m_soButton.getAbsoluteLeft() + m_soButton.getOffsetWidth()) - offsetWidth);
+										int soPopupTop  = mainMenu.getParent().getElement().getAbsoluteBottom();
+										soPopup.setPopupPosition(soPopupLeft, soPopupTop);
+									}
+								});
 							}
-						});
+						};
+						Scheduler.get().scheduleDeferred(showSOPopup);
 					}
 				});
 			}});
@@ -595,8 +609,7 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * Asynchronously shows the context that was loaded.
 	 */
 	private void showContextAsync(final BinderInfo binderInfo, final String binderId, final boolean inSearch, final String searchTabId) {
-		Scheduler.ScheduledCommand showContext;
-		showContext = new Scheduler.ScheduledCommand() {
+		ScheduledCommand showContext = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showContextNow(binderInfo, binderId, inSearch, searchTabId);
@@ -643,8 +656,7 @@ public class MainMenuControl extends Composite implements ActionTrigger {
 	 * Asynchronously shows the toolbar items.
 	 */
 	private void showToolbarItemsAsync(final boolean inSearch, final String searchTabId, final List<ToolbarItem> toolbarItemList, final TeamManagementInfo tmi) {
-		Scheduler.ScheduledCommand showTBIs;
-		showTBIs = new Scheduler.ScheduledCommand() {
+		ScheduledCommand showTBIs = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showToolbarItemsNow(inSearch, searchTabId, toolbarItemList, tmi);
