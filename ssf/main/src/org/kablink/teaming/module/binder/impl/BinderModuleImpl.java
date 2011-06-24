@@ -2358,6 +2358,130 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return getCoreDao().loadSimpleNames(binderId,
 				RequestContextHolder.getRequestContext().getZoneId());
 	}
+	
+	// no transaction
+	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		if (binderVersionsInherited) {
+			getTransactionTemplate().execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					binder.setVersionsInherited();
+					return binderVersionsInherited;
+				}
+			});
+		}
+	}
+
+	//Get the versionsEnabled setting from the first binder it is set in up the ancestor chain
+	public Boolean getBinderVersionsEnabled(Binder binder) {
+		Boolean result = binder.getVersionsEnabled();
+		Binder parent = binder;
+		while (parent.getParentBinder() != null) {
+			if (result != null) break;
+			result = parent.getVersionsEnabled();
+			parent = parent.getParentBinder();
+		}
+		return result;
+	}
+
+	// no transaction
+	public void setBinderVersionsEnabled(Long binderId, final Boolean binderVersionsEnabled)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setVersionsEnabled(binderVersionsEnabled);
+				return binderVersionsEnabled;
+			}
+		});
+	}
+
+    //Get the versionsToKeep setting from the first binder it is set in up the ancestor chain
+    public Integer getBinderVersionsToKeep(Binder binder) {
+    	Integer result = binder.getVersionsToKeep();
+		Binder parent = binder;
+		while (parent.getParentBinder() != null) {
+			if (result != null) break;
+			result = parent.getVersionsToKeep();
+			parent = parent.getParentBinder();
+		}
+		return result;
+    }
+    public void setBinderVersionsToKeep(Long binderId, final Integer binderVersionsToKeep)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setVersionsToKeep(binderVersionsToKeep);
+				return binderVersionsToKeep;
+			}
+		});
+	}
+
+	//Get the maxVersionAge setting from the first binder it is set in up the ancestor chain
+    public Integer getBinderMaxVersionAge(Binder binder) {
+    	Integer result = binder.getMaxVersionAge();
+		Binder parent = binder;
+		while (parent.getParentBinder() != null) {
+			if (result != null) break;
+			result = parent.getMaxVersionAge();
+			parent = parent.getParentBinder();
+		}
+		return result;
+    }
+
+    public void setBinderMaxVersionAge(Long binderId, final Integer maxVersionAge)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setMaxVersionAge(maxVersionAge);
+				return maxVersionAge;
+			}
+		});
+	}
+    
+	//Get the maxFileSize setting from the first binder it is set in up the ancestor chain
+    public Integer getBinderMaxFileSize(Binder binder) {
+    	Integer result = binder.getMaxFileSize();
+		Binder parent = binder;
+		while (parent.getParentBinder() != null) {
+			if (result != null) break;
+			result = parent.getMaxFileSize();
+			parent = parent.getParentBinder();
+		}
+		return result;
+    }
+
+    public void setBinderMaxFileSize(Long binderId, final Integer maxFileSize)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setMaxFileSize(maxFileSize);
+				return maxFileSize;
+			}
+		});
+	}
+
+	// no transaction
+	public void setBinderFileEncryptionEnabled(Long binderId, final Boolean fileEncryptionEnabled)
+			throws AccessControlException {
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageConfiguration);
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				binder.setFileEncryptionEnabled(fileEncryptionEnabled);
+				return fileEncryptionEnabled;
+			}
+		});
+	}
 
 	// no transaction
 	public void setPostingEnabled(Long binderId, final Boolean postingEnabled)
