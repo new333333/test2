@@ -48,11 +48,13 @@ import org.kablink.teaming.gwt.client.util.ActionTrigger;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.util.TeamingAction;
+import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -751,16 +753,35 @@ public class AdminControl extends Composite
 	/**
 	 * 
 	 */
-	public static void showAdminInfoDlg( GwtUpgradeInfo upgradeInfo, int x, int y )
+	public static void showAdminInfoDlg( final GwtUpgradeInfo upgradeInfo, final int x, final int y )
 	{
-		AdminInfoDlg adminInfoDlg = null;
-		
-		// Invoke the "Administration Information" dialog.
-		adminInfoDlg = new AdminInfoDlg( false, true, x, y );
-		
-		adminInfoDlg.refreshContent( upgradeInfo );
-		adminInfoDlg.show();
+		AdminInfoDlg.createAsync( false, true, x, y, new AdminInfoDlgClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final AdminInfoDlg adminInfoDlg )
+			{
+				ScheduledCommand initAndShowDlg = new ScheduledCommand() {
+					@Override
+					public void execute()
+					{
+						showAdminInfoDlgImpl( adminInfoDlg, upgradeInfo );
+					}// end execute()
+				};
+				Scheduler.get().scheduleDeferred( initAndShowDlg );
+			}// onSuccess()
+		} );
 	}// end showAdminInfoDlg()
+	
+	private static void showAdminInfoDlgImpl( final AdminInfoDlg adminInfoDlg, final GwtUpgradeInfo upgradeInfo ) {
+		AdminInfoDlg.initAndShow( adminInfoDlg, upgradeInfo );
+	}
 	
 	
 	/**

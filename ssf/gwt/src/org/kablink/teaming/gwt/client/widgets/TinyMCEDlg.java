@@ -535,7 +535,7 @@ public class TinyMCEDlg extends DlgBox
 	}// end createLPETinyMCEConfiguration()
 	
 	/**
-	 * Causes the code split for the TinyMCEDlg to be fetched.
+	 * Causes the split point for the TinyMCEDlg to be fetched.
 	 * 
 	 * @param dlgClient
 	 */

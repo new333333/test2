@@ -1105,7 +1105,7 @@ public class FindCtrl extends Composite
 	}// end createAsync()
 
 	/**
-	 * Causes the code split for the FindCtrl to be fetched.
+	 * Causes the split point for the FindCtrl to be fetched.
 	 * 
 	 * @param findCtrlClient
 	 */

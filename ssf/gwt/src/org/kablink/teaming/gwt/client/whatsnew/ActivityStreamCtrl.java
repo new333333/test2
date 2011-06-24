@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.SubscribeToEntryDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 
 import com.google.gwt.core.client.GWT;
@@ -1141,7 +1142,7 @@ public class ActivityStreamCtrl extends Composite
 					0,
 					0,
 					GwtTeaming.getMessages().tagThisEntry(),
-				new TagThisDlg.TagThisDlgClient() {						
+				new TagThisDlgClient() {						
 					@Override
 					public void onUnavailable() {
 						// Nothing to do.  Error handled in
