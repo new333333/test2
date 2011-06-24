@@ -368,7 +368,7 @@ public class ProfileAttributeWidget  {
 	}
 
 	/**
-	 * Causes the code split for the ProfileAttributeWidget to be
+	 * Causes the split point for the ProfileAttributeWidget to be
 	 * fetched.
 	 * 
 	 * @param pawClient

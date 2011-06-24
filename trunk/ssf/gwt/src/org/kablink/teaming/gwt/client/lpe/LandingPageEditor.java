@@ -1288,7 +1288,7 @@ public class LandingPageEditor extends Composite
 	}// end createAsync()
 	
 	/**
-	 * Causes the code split for the LandingPageEditor to be fetched.
+	 * Causes the split point for the LandingPageEditor to be fetched.
 	 * 
 	 * @param LandingPageEditorClient
 	 */

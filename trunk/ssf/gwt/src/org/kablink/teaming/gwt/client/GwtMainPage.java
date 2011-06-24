@@ -61,11 +61,13 @@ import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClien
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LoginDlg;
+import org.kablink.teaming.gwt.client.widgets.LoginDlg.LoginDlgClient;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl;
 import org.kablink.teaming.gwt.client.widgets.MainMenuControl.MainMenuControlClient;
 import org.kablink.teaming.gwt.client.widgets.MastHead;
 import org.kablink.teaming.gwt.client.widgets.PersonalPreferencesDlg;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
+import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.TreeMode;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -133,7 +135,7 @@ public class GwtMainPage extends Composite
 	 */
 	private GwtMainPage()
 	{
-		initMainPage_Start();
+		constructMainPage_Start();
 		
 		// All composites must call initWidget() in their constructors.
 		initWidget( m_teamingRootPanel );
@@ -146,7 +148,7 @@ public class GwtMainPage extends Composite
 	 * Loads the split point for the MainMenuControl and instantiates
 	 * an object from it.
 	 */
-	private void loadControl1()
+	private void loadMainMenuControl()
 	{
 		MainMenuControl.createAsync( this, new MainMenuControlClient()
 		{			
@@ -165,19 +167,19 @@ public class GwtMainPage extends Composite
 					@Override
 					public void execute()
 					{
-						loadControl2();
+						loadWorkspaceTreeControl();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
 		} );
-	}// end loadControl1()
+	}// end loadMainMenuControl()
 
 	/*
 	 * Loads the split point for the WorkspaceTreeControl and
 	 * instantiates an object from it.
 	 */
-	private void loadControl2()
+	private void loadWorkspaceTreeControl()
 	{
 		WorkspaceTreeControl.createAsync( this, m_selectedBinderId, TreeMode.VERTICAL, new WorkspaceTreeControlClient()
 		{			
@@ -196,19 +198,19 @@ public class GwtMainPage extends Composite
 					@Override
 					public void execute()
 					{
-						loadControl3();
+						loadContentControl();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
 		} );
-	}// end loadControl2()
+	}// end loadWorkspaceTreeControl()
 
 	/*
 	 * Loads the split point for the ContentControl and instantiates an
 	 * object from it.
 	 */
-	private void loadControl3()
+	private void loadContentControl()
 	{
 		ContentControl.createAsync( "gwtContentIframe", new ContentControlClient()
 		{			
@@ -227,19 +229,19 @@ public class GwtMainPage extends Composite
 					@Override
 					public void execute()
 					{
-						loadControl4();
+						ActivityStreamCtrl();
 					}// end execute()
 				};
 				Scheduler.get().scheduleDeferred( loadNextControl );
 			}// end onSuccess()
 		} );
-	}// end loadControl3()
+	}// end loadContentControl()
 
 	/*
 	 * Loads the split point for the ActivityStreamCtrl and
 	 * instantiates an object from it.
 	 */
-	private void loadControl4()
+	private void ActivityStreamCtrl()
 	{
 		ActivityStreamCtrl.createAsync( this, new ActivityStreamCtrlClient()
 		{			
@@ -254,15 +256,15 @@ public class GwtMainPage extends Composite
 			public void onSuccess( ActivityStreamCtrl asCtrl )
 			{
 				m_activityStreamCtrl = asCtrl;
-				initMainPage_Finish();
+				constructMainPage_Finish();
 			}// end onSuccess()
 		} );
-	}// end loadControl4()
+	}// end ActivityStreamCtrl()
 	
 	/*
 	 * Starts the initializations of the main page.
 	 */
-	private void initMainPage_Start()
+	private void constructMainPage_Start()
 	{
 		// Get information about the request we are dealing with.
 		m_requestInfo = getRequestInfo();
@@ -285,16 +287,16 @@ public class GwtMainPage extends Composite
 			@Override
 			public void execute()
 			{
-				loadControl1();
+				loadMainMenuControl();
 			}// end execute()
 		};
 		Scheduler.get().scheduleDeferred( loadControls );		
-	}// end initMainPage_Start();
+	}// end constructMainPage_Start();
 	
 	/*
 	 * Finishes the initialization of the main page.
 	 */
-	private void initMainPage_Finish()
+	private void constructMainPage_Finish()
 	{
 		Element bodyElement;
 		String url;
@@ -365,7 +367,7 @@ public class GwtMainPage extends Composite
 					{
 						// Yes
 						// Take the user to their workspace.
-						handleAction( TeamingAction.MY_WORKSPACE, null );
+						handleActionImpl( TeamingAction.MY_WORKSPACE, null );
 					}
 					
 					// Tell the user.  We do this as a deferred command
@@ -438,13 +440,13 @@ public class GwtMainPage extends Composite
 		if ((VibeProduct.GW == m_requestInfo.getVibeProduct()) || m_requestInfo.isSessionCaptive())
 		{
 			// ...we hide the masthead and sidebar by default.
-			handleAction(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
-			handleAction(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
+			handleActionImpl(TeamingAction.HIDE_MASTHEAD,        Boolean.FALSE);	// false -> Done resize the content now...
+			handleActionImpl(TeamingAction.HIDE_LEFT_NAVIGATION, Boolean.FALSE);	// ...will happen when the frame has loaded.
 			
 			// Have the masthead hide the logout link
 			m_mastHead.hideLogoutLink();
 		}
-	}// end initMainPage_Finish()
+	}// end constructMainPage_Finish()
 
 	/**
 	 * Add event handlers to the event bus
@@ -1046,7 +1048,7 @@ public class GwtMainPage extends Composite
 		if ( ( m_activityStreamCtrl != null ) && m_activityStreamCtrl.isVisible() )
 		{
 			// ...exit out it.
-			handleAction( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
+			handleActionImpl( TeamingAction.EXIT_ACTIVITY_STREAM_MODE, null );
 		}
 	}// end exitActivityStreamIfActive()	
 
@@ -1058,12 +1060,24 @@ public class GwtMainPage extends Composite
 		return $wnd.m_requestInfo;
 	}-*/;
 	
-	
 	/**
 	 * Handle the action that was requested by the user somewhere in the main page.
 	 * For example, the user clicked on "My Workspace" in the masthead.
+	 * 
+	 * Implements ActionHandler.handleActionImpl()
+	 * 
+	 * @param action
+	 * @param obj
 	 */
 	public void handleAction( TeamingAction action, Object obj )
+	{
+		handleAction( this, action, obj );
+	}// end handleAction()
+	
+	/*
+	 * Handles actions requested by the user somewhere.
+	 */
+	private void handleActionImpl( TeamingAction action, Object obj )
 	{
 		switch (action)
 		{
@@ -1162,7 +1176,7 @@ public class GwtMainPage extends Composite
 			if ( isAdminActive() )
 			{
 				// ...close it first.
-				handleAction( TeamingAction.CLOSE_ADMINISTRATION, null );
+				handleActionImpl( TeamingAction.CLOSE_ADMINISTRATION, null );
 			}
 			
 			// Change the browser's URL.
@@ -1346,7 +1360,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleAction( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
+				Window.alert( "In handleActionImpl( INVOKE_SIMPLE_PROFILE, obj ) obj is not a SimpleProfileParams object." );
 			}
 			break;
 			
@@ -1357,7 +1371,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleAction( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
+				Window.alert( "In handleActionImpl( VIEW_FOLDER_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
 			
@@ -1368,7 +1382,7 @@ public class GwtMainPage extends Composite
 			}
 			else
 			{
-				Window.alert( "In handleAction( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
+				Window.alert( "In handleActionImpl( SHOW_FORUM_ENTRY, obj ) obj is not a String object" );
 			}
 			break;
 			
@@ -1396,7 +1410,7 @@ public class GwtMainPage extends Composite
 			Window.alert( "Unknown action selected: " + action.getUnlocalizedDesc() );
 			break;
 		}
-	}// end handleAction()
+	}// end handleActionImpl()
 	
 	
 	/**
@@ -1416,9 +1430,9 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )
-				handleAction( TeamingAction.HIDE_LEFT_NAVIGATION, null );
+				handleActionImpl( TeamingAction.HIDE_LEFT_NAVIGATION, null );
 			else
-				handleAction( TeamingAction.SHOW_LEFT_NAVIGATION, null );
+				handleActionImpl( TeamingAction.SHOW_LEFT_NAVIGATION, null );
 			
 			// Figure out if we should show the masthead.
 			if ( hideMasthead == false || showBranding == true )
@@ -1428,9 +1442,9 @@ public class GwtMainPage extends Composite
 			
 			// Hide or show the masthead.
 			if ( showMasthead )
-				handleAction( TeamingAction.SHOW_MASTHEAD, null );
+				handleActionImpl( TeamingAction.SHOW_MASTHEAD, null );
 			else
-				handleAction( TeamingAction.HIDE_MASTHEAD, null );
+				handleActionImpl( TeamingAction.HIDE_MASTHEAD, null );
 		}
 	}// end handleLandingPageOptions()
 	
@@ -1443,7 +1457,7 @@ public class GwtMainPage extends Composite
 		if ( pageName != null && pageName.length() > 0 )
 		{
 			if ( pageName.equalsIgnoreCase( "login-page" ) )
-				handleAction( TeamingAction.LOGIN, null );
+				handleActionImpl( TeamingAction.LOGIN, null );
 			else
 			{
 				Window.alert( "In handlePageWithGWT(), unknown page: " + pageName );
@@ -1467,18 +1481,15 @@ public class GwtMainPage extends Composite
 	 */
 	private void invokeAdminPage()
 	{
-		handleAction( TeamingAction.ADMINISTRATION, null );
+		handleActionImpl( TeamingAction.ADMINISTRATION, null );
 	}
 	
 	
 	/**
 	 * Invoke the "login" dialog.
 	 */
-	private void invokeLoginDlg( boolean allowCancel )
+	private void invokeLoginDlg( final boolean allowCancel )
 	{
-		PopupPanel.PositionCallback posCallback;
-		String loginErr;
-		
 		if ( m_loginDlg == null )
 		{
 			String refererUrl;
@@ -1487,47 +1498,45 @@ public class GwtMainPage extends Composite
 			refererUrl = m_requestInfo.getLoginRefererUrl();
 			
 			// Create the login dialog.
-			m_loginDlg = new LoginDlg( false, true, 0, 0, null, m_requestInfo.getLoginUrl(), refererUrl );
+			LoginDlg.createAsync(
+				false,
+				true,
+				0,
+				0,
+				null,
+				m_requestInfo.getLoginUrl(),
+				refererUrl,
+				new LoginDlgClient()
+				{					
+					@Override
+					public void onUnavailable()
+					{
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}// end onUnavailable()
+					
+					@Override
+					public void onSuccess( LoginDlg dlg )
+					{
+						m_loginDlg = dlg;
+						invokeLoginDlgImpl( allowCancel );
+					}// end onSuccess()
+				} );
 		}
 		
-		// Tell the login dialog if we allow cancel.
-		m_loginDlg.setAllowCancel( allowCancel );
-		
-		// Was there an error from a previous login attempt?
-		// Is there an error from a previous login attempt?
-		loginErr = m_requestInfo.getLoginError();
-		if ( loginErr != null && loginErr.length() > 0 )
-		{
-			// Yes, tell the user the login failed.
-			m_loginDlg.showLoginFailedMsg();
-		}
 		else
 		{
-			// No, clear the login failed message.
-			m_loginDlg.hideLoginFailedMsg();
+			invokeLoginDlgImpl( allowCancel );
 		}
-		
-		m_loginDlg.hideAuthenticatingMsg();
-		
-		// Show the login dialog.
-		posCallback = new PopupPanel.PositionCallback()
-		{
-			/**
-			 * 
-			 */
-			public void setPosition(int offsetWidth, int offsetHeight)
-			{
-				int x;
-				int y;
-				
-				x = (Window.getClientWidth() - offsetWidth) / 2;
-				y = (Window.getClientHeight() - offsetHeight) / 3;
-				
-				m_loginDlg.setPopupPosition( x, y );
-			}// end setPosition()
-		};
-		m_loginDlg.setPopupPositionAndShow( posCallback );
 	}// end invokeLoginDlg()
+	
+	private void invokeLoginDlgImpl( final boolean allowCancel )
+	{
+		String loginErr = m_requestInfo.getLoginError();
+		boolean showLoginFailedMsg = ( loginErr != null && loginErr.length() > 0 );
+		
+		LoginDlg.initAndShow( m_loginDlg, allowCancel, showLoginFailedMsg );
+	}//end involeLoginDlgImpl()
 	
 	
 	/**
@@ -1639,7 +1648,7 @@ public class GwtMainPage extends Composite
 					x,
 					y,
 					GwtTeaming.getMessages().tagThisEntry(),
-					new TagThisDlg.TagThisDlgClient() {						
+					new TagThisDlgClient() {						
 				@Override
 				public void onUnavailable()
 				{
@@ -2492,7 +2501,7 @@ public class GwtMainPage extends Composite
 			Object obj = event.getSource();
 			
 			//call the old action handler
-			handleAction(action, obj);
+			handleActionImpl(action, obj);
 		}
 	}
 	
@@ -2517,21 +2526,69 @@ public class GwtMainPage extends Composite
 		void onUnavailable();
 	}
 
-	/**
-	 * Loads the GwtMainPage split point and returns an instance of it
-	 * via the callback.
-	 * 
-	 * @param mainPageClient
+	/*
+	 * Asynchronously loads the GwtMainPage and performs some
+	 * operation against the code.
 	 */
-	public static void createAsync( final GwtMainPageClient mainPageClient )
-	{
+	private static void doAsyncOperation(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final GwtMainPageClient mainPageClient,
+		final boolean prefetch,
+		
+		// Creation parameters (there aren't any.)
+		
+		// Teaming action parameters.
+		final GwtMainPage mainPage,
+		final TeamingAction action,
+		final Object actionParam )
+	{		
+		loadControl1(
+			// Prefetch parameters.
+			mainPageClient,
+			prefetch,
+				
+			// Creation parameters (there aren't any.)
+				
+			// Teaming action parameters.
+			mainPage,
+			action,
+			actionParam );
+	}// end doAsyncOperation()
+	
+	/*
+	 * Various control loaders used to load the split points containing
+	 * the code for the controls by the GwtMainPage.
+	 * 
+	 * Loads the split point for the GwtMainPage.
+	 */
+	private static void loadControl1(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final GwtMainPageClient mainPageClient,
+		final boolean prefetch,
+		
+		// Creation parameters (there aren't any.)
+		
+		// Teaming action parameters.
+		final GwtMainPage mainPage,
+		final TeamingAction action,
+		final Object actionParam )
+	{		
 		GWT.runAsync( GwtMainPage.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				GwtMainPage mainPage = new GwtMainPage();
-				mainPageClient.onSuccess( mainPage );
+				initMainPage_Finish(
+					// Prefetch parameters.
+					mainPageClient,
+					prefetch,
+						
+					// Creation parameters (there aren't any.)
+						
+					// Teaming action parameters.
+					mainPage,
+					action,
+					actionParam );
 			}// end onSuccess()
 			
 			@Override
@@ -2541,5 +2598,161 @@ public class GwtMainPage extends Composite
 				mainPageClient.onUnavailable();
 			}// end onFailure()
 		} );
-	}// end createAsync()
+	}// end doAsyncOperation()
+		
+	/*
+	 * Finishes the initialization of the GwtMainPage object.
+	 */
+	private static void initMainPage_Finish(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final GwtMainPageClient mainPageClient,
+		final boolean prefetch,
+		
+		// Creation parameters (there aren't any.)
+		
+		// Teaming action parameters.
+		final GwtMainPage mainPage,
+		final TeamingAction action,
+		final Object actionParam )
+	{		
+		if (prefetch)
+		{
+			mainPageClient.onSuccess( null );
+		}
+		
+		else if ( null == mainPage )
+		{
+			GwtMainPage newMainPage = new GwtMainPage();
+			mainPageClient.onSuccess( newMainPage );
+		}
+		
+		else
+		{
+			mainPage.handleActionImpl( action, actionParam );
+			mainPageClient.onSuccess( mainPage );
+		}
+	}// end initMainPage_Finish()
+			
+	/**
+	 * Loads the GwtMainPage split point and returns an instance of it
+	 * via the callback.
+	 * 
+	 * @param mainPageClient
+	 */
+	public static void createAsync( final GwtMainPageClient mainPageClient )
+	{
+		doAsyncOperation(
+			// Prefetch parameters.  false -> Not a prefetch.  
+			mainPageClient,
+			false,
+			
+			// Creation parameters (there aren't any.)
+			
+			// Teaming action parameters ignored.
+			null,
+			null,
+			null );
+	}// end createAsync()	
+
+	/**
+	 * Handle the action that was requested by the user somewhere in
+	 * the main page.  For example, the user clicked on "My Workspace"
+	 * in the masthead.
+	 * 
+	 * @param mainPageClient
+	 * @param mainPage
+	 * @param action
+	 * @param actionParam
+	 */
+	public static void handleAction(
+		GwtMainPageClient mainPageClient,
+		final GwtMainPage mainPage,
+		final TeamingAction action,
+		final Object actionParam )
+	{
+		if ( null == mainPageClient )
+		{
+			mainPageClient = new GwtMainPageClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Unused.
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( GwtMainPage mainPage )
+				{
+					// Unused.
+				}// end onSuccess()
+			};
+		}
+		
+		doAsyncOperation(
+			// Prefetch parameters.  false -> Not a prefetch.  
+			mainPageClient,
+			false,
+			
+			// Creation parameters (there aren't any.)
+			
+			// Teaming action parameters.
+			mainPage,
+			action,
+			actionParam);
+	}// end handleAction()
+
+	public static void handleAction(
+		final GwtMainPage mainPage,
+		final TeamingAction action,
+		final Object actionParam )
+	{
+		// Always use the initial form of the method.
+		handleAction( null, mainPage, action, actionParam );
+	}// end handleAction()
+	
+	/**
+	 * Causes the split point for the GwtMainPage to be fetched.
+	 * 
+	 * @param mainPageClient
+	 */
+	public static void prefetch ( GwtMainPageClient mainPageClient )
+	{
+		// If we weren't given a GwtMainPageClient...
+		if ( null == mainPageClient )
+		{
+			// ...create one we can use.
+			mainPageClient = new GwtMainPageClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Unused.
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( GwtMainPage mainPage )
+				{
+					// Unused.
+				}// end onSuccess()
+			};
+		}
+		
+		doAsyncOperation(
+			// Prefetch parameters.  true -> Prefetch only.  
+			mainPageClient,
+			true,
+			
+			// Creation parameters (there aren't any.)
+			
+			// Teaming action parameters ignored.
+			null,
+			null,
+			null );
+	}// end prefetch()
+	
+	public static void prefetch()
+	{
+		// Always use the initial form of the method.
+		prefetch(null);
+	}// end prefetch()
 }// end GwtMainPage

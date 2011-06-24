@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,6 +40,8 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
@@ -61,6 +63,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
@@ -71,6 +74,7 @@ import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
  * @author jwootton
  *
  */
+@SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
 {
 	private FormPanel m_formPanel = null;
@@ -99,10 +103,14 @@ public class LoginDlg extends DlgBox
 	}
 	
 	
-	/**
+	/*
+	 * Class constructor.
 	 * 
+	 * Note that the class constructor is private to facilitate code
+	 * splitting.  All instantiations of this object must be done
+	 * through its createAsync().
 	 */
-	public LoginDlg(
+	private LoginDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -513,7 +521,6 @@ public class LoginDlg extends DlgBox
 	{
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
-
 	
 	/**
 	 * Show or hide the controls dealing with self registration depending on the values in
@@ -536,4 +543,316 @@ public class LoginDlg extends DlgBox
 			m_selfRegLink.setVisible( false );
 		}
 	}// end updateSelfRegistrationControls()
+	
+	/**
+	 * Callback interface to interact with the dialog asynchronously
+	 * after it loads. 
+	 */
+	public interface LoginDlgClient
+	{
+		void onSuccess( LoginDlg dlg );
+		void onUnavailable();
+	}
+	
+	/*
+	 * Asynchronously loads the LoginDlg and performs some operation
+	 * against the code.
+	 */
+	private static void doAsyncOperation(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final LoginDlgClient dlgClient,
+		final boolean prefetch,
+		
+		// Creation parameters.
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final Object properties,
+		final String loginUrl,
+		final String springSecurityRedirect,
+		
+		// initAndShow parameters.
+		final LoginDlg show_loginDlg,
+		final boolean show_allowCancel,
+		final boolean show_showLoginFailedMsg )
+	{
+		loadControl1(
+			// Prefetch parameters.
+			dlgClient,
+			prefetch,
+			
+			// Creation parameters.
+			autoHide,
+			modal,
+			xPos,
+			yPos,
+			properties,
+			loginUrl,
+			springSecurityRedirect,
+			
+			// initAndShow parameters.
+			show_loginDlg,
+			show_allowCancel,
+			show_showLoginFailedMsg );
+	}// doAsyncOperation
+
+	/*
+	 * Various control loaders used to load the split points containing
+	 * the code for the controls by the LoginDlg object.
+	 * 
+	 * Loads the split point for the LoginDlg.
+	 */
+	private static void loadControl1(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final LoginDlgClient dlgClient,
+		final boolean prefetch,
+		
+		// Creation parameters.
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final Object properties,
+		final String loginUrl,
+		final String springSecurityRedirect,
+		
+		// initAndShow parameters.
+		final LoginDlg show_loginDlg,
+		final boolean show_allowCancel,
+		final boolean show_showLoginFailedMsg )
+	{
+		GWT.runAsync( LoginDlg.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onSuccess()
+			{
+				initLoginDlg_Finish(
+					// Prefetch parameters.
+					dlgClient,
+					prefetch,
+					
+					// Creation parameters.
+					autoHide,
+					modal,
+					xPos,
+					yPos,
+					properties,
+					loginUrl,
+					springSecurityRedirect,
+					
+					// initAndShow parameters.
+					show_loginDlg,
+					show_allowCancel,
+					show_showLoginFailedMsg );
+			}// end onSuccess()
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_LoginDlg() );
+				dlgClient.onUnavailable();
+			}// end onFailure()
+		});
+	}
+	
+	/*
+	 * Finishes the initialization of the LoginDlg object.
+	 */
+	private static void initLoginDlg_Finish(
+		// Prefetch parameters.  true -> Prefetch only.  false -> Something else.
+		final LoginDlgClient dlgClient,
+		final boolean prefetch,
+		
+		// Creation parameters.
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final Object properties,
+		final String loginUrl,
+		final String springSecurityRedirect,
+		
+		// initAndShow parameters.
+		final LoginDlg show_loginDlg,
+		final boolean show_allowCancel,
+		final boolean show_showLoginFailedMsg )
+	{
+		// On a prefetch...
+		if ( prefetch )
+		{
+			// ...we simply call the success handler with null for the
+			// ...parameter.
+			dlgClient.onSuccess( null );
+		}
+
+		// If we weren't given a LoginDlg...
+		else if ( null == show_loginDlg )
+		{
+			// ...we assume we're to create one.
+			LoginDlg dlg = new LoginDlg(
+				autoHide,
+				modal,
+				xPos,
+				yPos,
+				properties,
+				loginUrl,
+				springSecurityRedirect );
+			
+			dlgClient.onSuccess( dlg );
+		}
+		
+		else
+		{
+			// Otherwise, we assume we're to initialize and show the
+			// LoginDlg we were given!  Initialize...
+			show_loginDlg.setAllowCancel( show_allowCancel );
+			if ( show_showLoginFailedMsg )
+			     show_loginDlg.showLoginFailedMsg();
+			else show_loginDlg.hideLoginFailedMsg();
+			show_loginDlg.hideAuthenticatingMsg();
+			
+			// ...and show it.
+			show_loginDlg.setPopupPositionAndShow( new PopupPanel.PositionCallback()
+			{
+				@Override
+				public void setPosition(int offsetWidth, int offsetHeight)
+				{
+					int x = ( ( Window.getClientWidth()  - offsetWidth  ) / 2 );
+					int y = ( ( Window.getClientHeight() - offsetHeight ) / 3 );
+					
+					show_loginDlg.setPopupPosition( x, y );
+				}// end setPosition()
+			} );
+		}
+	}
+	
+	/**
+	 * Loads the LoginDlg split point and returns an instance of it via
+	 * the callback.
+	 * 
+	 * @param autoHide
+	 * @param modal
+	 * @param xPos
+	 * @param yPos
+	 * @param properties
+	 * @param loginUrl	The URL we should use when we post the request to log in.
+	 * @param springSecurityRedirect
+	 * @param dlgClient
+	 */
+	public static void createAsync(
+		final boolean autoHide,
+		final boolean modal,
+		final int xPos,
+		final int yPos,
+		final Object properties,
+		final String loginUrl,
+		final String springSecurityRedirect,
+		final LoginDlgClient dlgClient )
+	{
+		doAsyncOperation(
+			// Prefetch parameters.  false -> Not a prefetch.
+			dlgClient,
+			false,
+			
+			// Creation parameters.
+			autoHide,
+			modal,
+			xPos,
+			yPos,
+			properties,
+			loginUrl,
+			springSecurityRedirect,
+			
+			// initAndShow parameters ignored.
+			null,
+			false,
+			false );
+	}// end createAsync()
+
+	/**
+	 * Initialize and show the dialog.
+	 * 
+	 * @param loginDlg
+	 * @param allowCancel
+	 * @param showLoginFailedMsg
+	 */
+	public static void initAndShow(
+		final LoginDlg loginDlg,
+		final boolean allowCancel,
+		final boolean showLoginFailedMsg )
+	{
+		doAsyncOperation(
+			// Prefetch parameters.  false -> Not a prefetch.
+			null,
+			false,
+			
+			// Creation parameters ignored.
+			false,
+			false,
+			-1,
+			-1,
+			null,
+			null,
+			null,
+			
+			// initAndShow parameters.
+			loginDlg,
+			allowCancel,
+			showLoginFailedMsg );
+	}// end initAndShow()
+	
+	/**
+	 * Causes the split point for the LoginDlg to be fetched.
+	 * 
+	 * @param dlgClient
+	 */
+	public static void prefetch( LoginDlgClient dlgClient )
+	{
+		// If we weren't give a LoginDlgClient...
+		if ( null == dlgClient )
+		{
+			// ...create a dummy one...
+			dlgClient = new LoginDlgClient()
+			{				
+				@Override
+				public void onUnavailable()
+				{
+					// Unused.
+				}// end onUnavailable()
+				
+				@Override
+				public void onSuccess( LoginDlg dlg )
+				{
+					// Unused.
+				}// end onSuccess()
+			};
+		}
+
+		// ...and perform the prefetch.
+		doAsyncOperation(
+			// Prefetch parameters.  true -> Prefetch only.
+			dlgClient,
+			true,
+			
+			// Creation parameters ignored.
+			false,
+			false,
+			-1,
+			-1,
+			null,
+			null,
+			null,
+			
+			// initAndShow parameters ignored.
+			null,
+			false,
+			false );
+	}// end prefetch()
+	
+	public static void prefetch()
+	{
+		// Always use the initial form of the method.
+		prefetch( null );
+	}// end prefetch()
 }// end LoginDlg

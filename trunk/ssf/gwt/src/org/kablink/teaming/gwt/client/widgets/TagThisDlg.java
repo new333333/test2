@@ -2069,7 +2069,7 @@ public class TagThisDlg extends DlgBox
 	}
 	
 	/**
-	 * Causes the code split for the TagThisDlg to be fetched.
+	 * Causes the split point for the TagThisDlg to be fetched.
 	 * 
 	 * @param dlgClient
 	 */
