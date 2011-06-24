@@ -35,7 +35,14 @@
 
 <%@ page import="org.kablink.teaming.util.NLT,org.kablink.util.PropsUtil" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions") %>' scope="request"/>
+<c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions.workspace") %>' scope="request"/>
+<c:if test="${ssBinder.entityType == 'folder' }">
+  <c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions.folder") %>' scope="request"/>
+</c:if>
+<c:set var="ss_tabTitle" value="${ss_windowTitle}" scope="request"/>
+<c:if test="${ssOperation == 'simpleUrls'}">
+  <c:set var="ss_windowTitle" value='<%= NLT.get("binder.configure.definitions.simpleUrls") %>' scope="request"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
 <body class="ss_style_body tundra">
@@ -59,11 +66,60 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 }
 </script>
 
-<div class="ss_portlet">
+<div class="ss_style ss_portlet">
+	<div style="padding:10px;">
+		<br>
+		
+		<c:if test="${!empty ssException}">
+		  <font color="red">
+		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
+		  </font>
+		  <br/>
+		</c:if>
+	
+		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+		  class="wg-tabs margintop3 marginbottom2">
+		  <table>
+		    <tr>
+			  <td>
+				  <div 
+				    <c:if test="${ssOperation != 'simpleUrls'}"> class="wg-tab roundcornerSM on" </c:if>
+				    <c:if test="${ssOperation == 'simpleUrls'}"> class="wg-tab roundcornerSM" </c:if>
+				  >
+					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+					  >${ss_tabTitle}</a>
+				  </div>
+			  </td>
+			  <td>
+				  <div 
+				    <c:if test="${ssOperation == 'simpleUrls'}"> class="wg-tab roundcornerSM on" </c:if>
+				    <c:if test="${ssOperation != 'simpleUrls'}"> class="wg-tab roundcornerSM" </c:if>
+				  >
+					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="binderType" value="${ssBinder.entityType}"/><ssf:param 
+						name="operation" value="simpleUrls"/></ssf:url>"
+					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
+				  </div>
+			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM" >
+					  <a href="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/></ssf:url>"
+					  ><ssf:nlt tag="folder.manageFolderVersionControls"/></a>
+				  </div>
+			  </td>
+		    </tr>
+		  </table>
+		</div>
+		<div class="ss_clear"></div>
+
+<div style="display:block;" class="wg-tab-content marginbottom3">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
 
-<ssf:form title='<%= NLT.get("binder.configure.definitions") %>'>
 
 <br/>
 <br/>
@@ -91,10 +147,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 <br/>
+<c:if test="${ssOperation == 'simpleUrls'}">
 <c:if test="${ssSimpleUrlChangeAccess}">
 <form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
-		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="operation" value="simpleUrls"/></ssf:url>" >
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defineSimpleUrl"/>  
     	<ssf:showHelp guideName="user" pageId="workspace_mnggeneral" sectionId="workspace_mnggeneral_simpleurl" />
@@ -182,6 +240,12 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	</c:if>
   </fieldset>
   <br>
+<div class="ss_formBreak"/>
+
+<div class="ss_buttonBarLeft">
+<br/>
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
 </form>
 </c:if>
 <c:if test="${!ssSimpleUrlChangeAccess}">
@@ -190,7 +254,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </fieldset>
 <br/>
 </c:if>
+</c:if>
 
+<c:if test="${ssOperation != 'simpleUrls'}">
 <c:set var="allDefinitionsMap" value="${ssBinder.definitionMap}"/>
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
@@ -677,11 +743,11 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </td>
 </tr>
 </table>
-
-</ssf:form>
-
+</c:if>
 </div>
 </div>
+</div>
+
 </div>
 
 <ssf:ifadapter>

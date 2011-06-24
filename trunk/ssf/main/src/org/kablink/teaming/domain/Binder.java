@@ -99,7 +99,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean versionsEnabled;
 	protected Integer versionsToKeep;
     protected Integer maxVersionAge;
-    protected Integer maxFileSize;
+    protected Integer maxFileSize;	//MB
     protected Boolean fileEncryptionEnabled;
     public Binder() {
     }
@@ -802,27 +802,37 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
     /*****************File Related Stuff***********/	
     public Boolean isVersionsEnabled() {
-    	return versionsEnabled != null && versionsEnabled;
+    	if (versionsEnabled == null) return true;		//Default is that versions are enabled
+    	return versionsEnabled;
+	}
+	public void setVersionsInherited() {
+		this.versionsEnabled = null;
+		this.versionsToKeep = null;
+		this.maxFileSize = null;
+		this.maxVersionAge = null;
+	}
+	public Boolean getVersionsEnabled() {
+		return versionsEnabled;
 	}
 	public void setVersionsEnabled(Boolean versionsEnabled) {
 		this.versionsEnabled = versionsEnabled;
 	}
-	public int getVersionsToKeep() {
+	public Integer getVersionsToKeep() {
 		return versionsToKeep;
 	}
-	public void setVersionsToKeep(int versionsToKeep) {
+	public void setVersionsToKeep(Integer versionsToKeep) {
 		this.versionsToKeep = versionsToKeep;
 	}
-	public int getMaxVersionAge() {
+	public Integer getMaxVersionAge() {
 		return maxVersionAge;
 	}
-	public void setMaxVersionAge(int maxVersionAge) {
+	public void setMaxVersionAge(Integer maxVersionAge) {
 		this.maxVersionAge = maxVersionAge;
 	}
-	public int getMaxFileSize() {
+	public Integer getMaxFileSize() {
 		return maxFileSize;
 	}
-	public void setMaxFileSize(int maxFileSize) {
+	public void setMaxFileSize(Integer maxFileSize) {
 		this.maxFileSize = maxFileSize;
 	}
 	public Boolean isFileEncryptionEnabled() {

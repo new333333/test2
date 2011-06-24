@@ -75,6 +75,58 @@ public class ManageVersionControlsController extends AbstractBinderController {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				//Save the settings
+				//Are versions enabled
+				Boolean enableBinderVersions = PortletRequestUtils.getBooleanParameter(request, "enableBinderVersions", Boolean.FALSE);
+				getBinderModule().setBinderVersionsEnabled(binderId, enableBinderVersions);
+				
+				// Get the maximum number of versions.
+				String s_versionsToKeep;
+				Integer versionsToKeep = null;
+				try {
+					s_versionsToKeep = PortletRequestUtils.getStringParameter(request, "versionsToKeep", "");
+					if (!s_versionsToKeep.equals("")) {
+						versionsToKeep = Integer.valueOf(s_versionsToKeep);
+					}
+					getBinderModule().setBinderVersionsToKeep(binderId, versionsToKeep);
+				} catch (Exception ex) {
+					// The value entered by the user must not be valid, don't set it.
+				}
+				
+				// Get the maximum age of versions.
+				String s_maxVersionAge;
+				Integer maxVersionAge = null;
+				try {
+					s_maxVersionAge = PortletRequestUtils.getStringParameter(request, "maxVersionAge", "");
+					if (!s_maxVersionAge.equals("")) {
+						maxVersionAge = Integer.valueOf(s_maxVersionAge);
+					}
+					getBinderModule().setBinderMaxVersionAge(binderId, maxVersionAge);
+				} catch (Exception ex) {
+					// The value entered by the user must not be valid, don't set it.
+				}
+				
+				// Get the maximum file size.
+				String s_maxFileSize;
+				Integer maxFileSize = null;
+				try {
+					//The file size is specified in GB on the form and translated to bytes for the database
+					s_maxFileSize = PortletRequestUtils.getStringParameter(request, "maxFileSize", "");
+					if (!s_maxFileSize.equals("")) {
+						maxFileSize = Integer.valueOf(s_maxFileSize);
+					}
+					getBinderModule().setBinderMaxFileSize(binderId, maxFileSize);
+				} catch (Exception ex) {
+					// The value entered by the user must not be valid, don't set it.
+				}
+				
+				//Should we inherit everything from the parent?
+				Boolean inheritBinderVersions = PortletRequestUtils.getBooleanParameter(request, "inheritBinderVersionControls", Boolean.FALSE);
+				getBinderModule().setBinderVersionsInherited(binderId, inheritBinderVersions);
+
+				//Is encryption enabled
+				Boolean fileEncryptionEnabled = PortletRequestUtils.getBooleanParameter(request, "enableFileEncryption", Boolean.FALSE);
+				getBinderModule().setBinderFileEncryptionEnabled(binderId, fileEncryptionEnabled);
+				
 			}
 			if (binder instanceof TemplateBinder) {
 				setupViewTemplateBinder(response, binderId, binder.getEntityType().name());
@@ -95,6 +147,12 @@ public class ManageVersionControlsController extends AbstractBinderController {
 				WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
+		
+		model.put(WebKeys.BINDER_VERSIONS_ENABLED, binder.isVersionsEnabled());
+		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, binder.getVersionsToKeep());
+		model.put(WebKeys.BINDER_VERSIONS_MAX_AGE, binder.getMaxVersionAge());
+		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, binder.getMaxFileSize());
+		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
 
 		//Set up navigation beans
 		model.put(WebKeys.DEFINITION_ENTRY, binder);

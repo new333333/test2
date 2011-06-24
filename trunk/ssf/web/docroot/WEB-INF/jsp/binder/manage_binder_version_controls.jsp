@@ -43,6 +43,20 @@
 
 <script type="text/javascript">
 
+function ss_checkIfDecimalNumberValid(s) {
+	if (ss_trim(s) == '') return true;   //Blank is ok
+	if (!ss_checkIfNumber(s) || s.indexOf("-") >= 0) {
+		alert("<ssf:escapeJavaScript><ssf:nlt tag="error.mustBeANumber"/></ssf:escapeJavaScript>");
+		return false;
+	}
+	
+	if (ss_trim(s).length >= 12) {
+		alert("<ssf:escapeJavaScript><ssf:nlt tag="error.numberTooBig"/></ssf:escapeJavaScript>");
+		return false;
+	}
+	return true;
+}
+
 function ss_checkIfNumberValid(s) {
 	if (ss_trim(s) == '') return true;   //Blank is ok
 	
@@ -61,7 +75,53 @@ function ss_checkIfNumberValid(s) {
 </script>
 
 <div class="ss_style ss_portlet">
-<ssf:form titleTag="${tag}">
+	<div style="padding:10px;">
+		<br>
+		
+		<c:if test="${!empty ssException}">
+		  <font color="red">
+		    <span class="ss_largerprint"><c:out value="${ssException}"/></span>
+		  </font>
+		  <br/>
+		</c:if>
+	
+		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
+		  class="wg-tabs margintop3 marginbottom2">
+		  <table>
+		    <tr>
+			  <td>
+				  <div class="wg-tab roundcornerSM">
+					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+					  >${ss_windowTitle}</a>
+				  </div>
+			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM">
+					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/><ssf:param 
+						name="binderType" value="${ssBinder.entityType}"/><ssf:param 
+						name="operation" value="simpleUrls"/></ssf:url>"
+					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
+				  </div>
+			  </td>
+			  <td>
+				  <div class="wg-tab roundcornerSM on" >
+					  <a href="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
+						name="binderId" value="${ssBinder.id}"/></ssf:url>"
+					  ><ssf:nlt tag="folder.manageFolderVersionControls"/></a>
+				  </div>
+			  </td>
+		    </tr>
+		  </table>
+		</div>
+		<div class="ss_clear"></div>
+
+<div id="manageIndexDiv" style="display:block;" class="wg-tab-content marginbottom3">
+<form class="ss_form" method="post" 
+	action="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 <br/>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="access.currentFolder"/></span>
@@ -72,28 +132,85 @@ function ss_checkIfNumberValid(s) {
 <% //need to check tags for templates %>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <div align="right">
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url action="manage_binder_quota" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />" >
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close"/>" onClick="ss_cancelButtonCloseWindow();return false;">
-</form>
 </div>
 
 <br/>
-<form class="ss_form" method="post" style="display:inline;" 
-	action="<ssf:url action="manage_binder_version_controls" actionUrl="true"><ssf:param 
-	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 	
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="versions.enableDisable"/></legend>
+	  <legend class="ss_legend">
+	    <input type="checkbox" name="enableBinderVersions" 
+		  <c:if test="${ss_binder_versions_enabled}">checked=checked</c:if>
+		/>
+		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
+	  </legend>
       
-      <div style="padding:10px 10px 0px 10px;">
-        The checkbox for turning on and off versions goes here...
-      </div>
+      <c:if test="${ss_binder_versions_enabled}">
+       <div style="padding:10px 10px 0px 10px;">
+        <c:if test="${empty ss_binder_versions_to_keep}">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep"/></span>
+          <input type="text" name="versionsToKeep" value="" 
+            style="width:80px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+          >
+        </c:if>
+        <c:if test="${!empty ss_binder_versions_to_keep}">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep"/></span>
+          <input type="text" name="versionsToKeep" value="${ss_binder_versions_to_keep}" 
+            style="width:80px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+            />
+        </c:if>
+       </div>
+      
+       <div style="padding:10px 10px 0px 10px;">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxAge"/></span>
+          <input type="text" name="maxVersionAge" 
+            value="${ss_binder_versions_max_age}"
+            style="width:80px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+          >
+       </div>
+      
+       <div style="padding:10px 10px 0px 10px;">
+          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsMaxFileSize"/></span>
+          <input type="text" name="maxFileSize" 
+            value="${ss_binder_versions_max_file_size}"
+            style="width:80px; text-align:right;"
+            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+          ><ssf:nlt tag="file.sizeMB"/>
+       </div>
+      
+       <div style="padding:10px 10px 0px 10px;">
+		<input type="checkbox" name="inheritBinderVersionControls" 
+		  <c:if test="${ss_binder_version_controls_inherited}">checked=checked</c:if>
+		/>
+		<span class="ss_bold"><ssf:nlt tag="binder.versions.inheritVersionControls" /></span>
+       </div>
+      </c:if>
+
+      <c:if test="${!ss_binder_versions_enabled}">
+       <div style="padding:10px 10px 0px 10px;">
+        <span><ssf:nlt tag="binder.versions.versionsDisabled"/></span>
+       </div>
+      </c:if>
+      
     </fieldset>
+    
+    <br/>
+    
+    <fieldset class="ss_fieldset">
+	  <legend class="ss_legend">
+	    <input type="checkbox" name="enableFileEncryption" 
+		  <c:if test="${ss_binder_file_encryption_enabled}">checked=checked</c:if>
+		/><span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>
+	  </legend>
+		<c:if test="${ss_binder_file_encryption_enabled}">
+	      <span><ssf:nlt tag="binder.fileEncryptionEnabled"/></span>
+	    </c:if>
+	</fieldset>
 <br/>
 <br/>
 
@@ -101,7 +218,7 @@ function ss_checkIfNumberValid(s) {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
-</ssf:form>
+</div>
 </div>
 
 </body>
