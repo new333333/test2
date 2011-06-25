@@ -77,44 +77,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		  <br/>
 		</c:if>
 	
-		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
-		  class="wg-tabs margintop3 marginbottom2">
-		  <table>
-		    <tr>
-			  <td>
-				  <div 
-				    <c:if test="${ssOperation != 'simpleUrls'}"> class="wg-tab roundcornerSM on" </c:if>
-				    <c:if test="${ssOperation == 'simpleUrls'}"> class="wg-tab roundcornerSM" </c:if>
-				  >
-					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/><ssf:param 
-						name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-					  >${ss_tabTitle}</a>
-				  </div>
-			  </td>
-			  <td>
-				  <div 
-				    <c:if test="${ssOperation == 'simpleUrls'}"> class="wg-tab roundcornerSM on" </c:if>
-				    <c:if test="${ssOperation != 'simpleUrls'}"> class="wg-tab roundcornerSM" </c:if>
-				  >
-					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/><ssf:param 
-						name="binderType" value="${ssBinder.entityType}"/><ssf:param 
-						name="operation" value="simpleUrls"/></ssf:url>"
-					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
-				  </div>
-			  </td>
-			  <td>
-				  <div class="wg-tab roundcornerSM" >
-					  <a href="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/></ssf:url>"
-					  ><ssf:nlt tag="folder.manageFolderVersionControls"/></a>
-				  </div>
-			  </td>
-		    </tr>
-		  </table>
-		</div>
-		<div class="ss_clear"></div>
+<c:if test="${ssOperation != 'simpleUrls'}"><c:set var="ss_tab_definitions" value="on"/></c:if>
+<c:if test="${ssOperation == 'simpleUrls'}"><c:set var="ss_tab_simpleUrls" value="on"/></c:if>
+<%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
 
 <div style="display:block;" class="wg-tab-content marginbottom3">
 <div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
@@ -748,6 +713,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </div>
 </div>
 
+</div>
 </div>
 
 <ssf:ifadapter>

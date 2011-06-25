@@ -71,7 +71,17 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Map formData = request.getParameterMap();
 
-		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		if (formData.containsKey("inheritBtn") && WebHelper.isMethodPost(request)) {
+			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				getBinderModule().setBinderVersionsInherited(binderId, Boolean.TRUE);
+			}
+		} else if (formData.containsKey("stopInheritBtn") && WebHelper.isMethodPost(request)) {
+			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
+					getAdminModule().testAccess(AdminOperation.manageFunction)) {
+				getBinderModule().setBinderVersionsEnabled(binderId, Boolean.TRUE);
+			}
+		} else if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 			if (getBinderModule().testAccess(binder, BinderOperation.manageConfiguration) ||
 					getAdminModule().testAccess(AdminOperation.manageFunction)) {
 				//Save the settings
@@ -119,10 +129,6 @@ public class ManageVersionControlsController extends AbstractBinderController {
 					// The value entered by the user must not be valid, don't set it.
 				}
 				
-				//Should we inherit everything from the parent?
-				Boolean inheritBinderVersions = PortletRequestUtils.getBooleanParameter(request, "inheritBinderVersionControls", Boolean.FALSE);
-				getBinderModule().setBinderVersionsInherited(binderId, inheritBinderVersions);
-
 				//Is encryption enabled
 				Boolean fileEncryptionEnabled = PortletRequestUtils.getBooleanParameter(request, "enableFileEncryption", Boolean.FALSE);
 				getBinderModule().setBinderFileEncryptionEnabled(binderId, fileEncryptionEnabled);
@@ -136,7 +142,12 @@ public class ManageVersionControlsController extends AbstractBinderController {
 
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewBinder(response, binderId, binder.getEntityType().name());
+			if (binder instanceof TemplateBinder) {
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			} else {
+				setupViewBinder(response, binderId, binder.getEntityType().name());
+			}
 		}
 	}
 
@@ -148,10 +159,15 @@ public class ManageVersionControlsController extends AbstractBinderController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
 		
-		model.put(WebKeys.BINDER_VERSIONS_ENABLED, binder.isVersionsEnabled());
-		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, binder.getVersionsToKeep());
-		model.put(WebKeys.BINDER_VERSIONS_MAX_AGE, binder.getMaxVersionAge());
-		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, binder.getMaxFileSize());
+		model.put(WebKeys.BINDER_VERSIONS_INHERITED, Boolean.FALSE);
+		if (binder.getVersionsEnabled() == null && binder.getMaxVersionAge() == null && 
+				binder.getVersionsToKeep() == null) {
+			model.put(WebKeys.BINDER_VERSIONS_INHERITED, Boolean.TRUE);
+		}
+		model.put(WebKeys.BINDER_VERSIONS_ENABLED, getBinderModule().getBinderVersionsEnabled(binder));
+		model.put(WebKeys.BINDER_VERSIONS_TO_KEEP, getBinderModule().getBinderVersionsToKeep(binder));
+		model.put(WebKeys.BINDER_VERSIONS_MAX_AGE, getBinderModule().getBinderMaxVersionAge(binder));
+		model.put(WebKeys.BINDER_VERSIONS_MAX_FILE_SIZE, getBinderModule().getBinderMaxFileSize(binder));
 		model.put(WebKeys.BINDER_FILE_ENCRYPTION_ENABLED, binder.isFileEncryptionEnabled());
 
 		//Set up navigation beans

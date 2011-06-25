@@ -85,40 +85,10 @@ function ss_checkIfNumberValid(s) {
 		  <br/>
 		</c:if>
 	
-		<div style="text-align: left; margin: 0px 10px; border: 0pt none;" 
-		  class="wg-tabs margintop3 marginbottom2">
-		  <table>
-		    <tr>
-			  <td>
-				  <div class="wg-tab roundcornerSM">
-					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/><ssf:param 
-						name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-					  >${ss_windowTitle}</a>
-				  </div>
-			  </td>
-			  <td>
-				  <div class="wg-tab roundcornerSM">
-					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/><ssf:param 
-						name="binderType" value="${ssBinder.entityType}"/><ssf:param 
-						name="operation" value="simpleUrls"/></ssf:url>"
-					  ><ssf:nlt tag="binder.configure.definitions.simpleUrls"/></a>
-				  </div>
-			  </td>
-			  <td>
-				  <div class="wg-tab roundcornerSM on" >
-					  <a href="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
-						name="binderId" value="${ssBinder.id}"/></ssf:url>"
-					  ><ssf:nlt tag="folder.manageFolderVersionControls"/></a>
-				  </div>
-			  </td>
-		    </tr>
-		  </table>
-		</div>
-		<div class="ss_clear"></div>
+<c:set var="ss_tab_versionControls" value="on"/>
+<%@ include file="/WEB-INF/jsp/binder/configure_tabs.jsp" %>
 
-<div id="manageIndexDiv" style="display:block;" class="wg-tab-content marginbottom3">
+<div style="display:block;" class="wg-tab-content marginbottom3">
 <form class="ss_form" method="post" 
 	action="<ssf:url action="manage_version_controls" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/></ssf:url>">
@@ -143,26 +113,24 @@ function ss_checkIfNumberValid(s) {
 	  <legend class="ss_legend">
 	    <input type="checkbox" name="enableBinderVersions" 
 		  <c:if test="${ss_binder_versions_enabled}">checked=checked</c:if>
+		  <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
 		/>
 		<span class="ss_bold"><ssf:nlt tag="binder.versions.enableVersionsForFolder" /></span>
+		<c:if test="${ss_binder_versions_inherited}">
+		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		</c:if>
 	  </legend>
       
-      <c:if test="${ss_binder_versions_enabled}">
        <div style="padding:10px 10px 0px 10px;">
-        <c:if test="${empty ss_binder_versions_to_keep}">
-          <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep"/></span>
-          <input type="text" name="versionsToKeep" value="" 
-            style="width:80px; text-align:right;"
-            onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-          >
-        </c:if>
-        <c:if test="${!empty ss_binder_versions_to_keep}">
           <span class="ss_bold"><ssf:nlt tag="binder.versions.versionsToKeep"/></span>
           <input type="text" name="versionsToKeep" value="${ss_binder_versions_to_keep}" 
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
-            />
-        </c:if>
+		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
+          >
+        <c:if test="${ss_binder_versions_inherited}">
+		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		</c:if>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
@@ -171,7 +139,11 @@ function ss_checkIfNumberValid(s) {
             value="${ss_binder_versions_max_age}"
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           >
+        <c:if test="${ss_binder_versions_inherited}">
+		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		</c:if>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
@@ -180,22 +152,25 @@ function ss_checkIfNumberValid(s) {
             value="${ss_binder_versions_max_file_size}"
             style="width:80px; text-align:right;"
             onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}'
+		    <c:if test="${ss_binder_versions_inherited}">disabled=disabled</c:if>
           ><ssf:nlt tag="file.sizeMB"/>
+        <c:if test="${ss_binder_versions_inherited}">
+		  <span style="padding-right:10px;">(<ssf:nlt tag="general.Inherited" />)</span>
+		</c:if>
        </div>
       
        <div style="padding:10px 10px 0px 10px;">
-		<input type="checkbox" name="inheritBinderVersionControls" 
-		  <c:if test="${ss_binder_version_controls_inherited}">checked=checked</c:if>
-		/>
-		<span class="ss_bold"><ssf:nlt tag="binder.versions.inheritVersionControls" /></span>
+		<c:if test="${ss_binder_versions_inherited}">
+		  <input type="submit" name="stopInheritBtn" 
+		    value="<ssf:nlt tag='binder.versions.inheritVersionControlsStop'/>"
+		  />
+		</c:if>
+		<c:if test="${!ss_binder_versions_inherited}">
+		  <input type="submit" name="inheritBtn" 
+		    value="<ssf:nlt tag='binder.versions.inheritVersionControls'/>"
+		  />
+		</c:if>
        </div>
-      </c:if>
-
-      <c:if test="${!ss_binder_versions_enabled}">
-       <div style="padding:10px 10px 0px 10px;">
-        <span><ssf:nlt tag="binder.versions.versionsDisabled"/></span>
-       </div>
-      </c:if>
       
     </fieldset>
     
@@ -218,6 +193,7 @@ function ss_checkIfNumberValid(s) {
 <input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;">
 </form>
+</div>
 </div>
 </div>
 
