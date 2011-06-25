@@ -335,65 +335,71 @@ public class AuthenticationModuleImpl extends BaseAuthenticationModule
 	 */
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
-		// The following hack(?) is necessary to handle the pre-authentication situation where
-		// initial authentication request is made in the context of no user, yet at least one
-		// of the interceptors associated with this method invocation relies on such context
-		// being there. To work around that, we simply set up guest context and leave it until
-		// after returning from this method.
-		if(RequestContextHolder.getRequestContext() == null) {
-			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
-			String guestUserName = SZoneConfig.getGuestUserName(zoneName);
-			RequestContextHolder.setRequestContext(new RequestContext(zoneName, guestUserName, null).resolve());
-		}
- 				
-		String enableKey = AuthenticationContextHolder.getEnableKey();
-		boolean enable = true;
-		if(Validator.isNotNull(enableKey)) {
-			enable = SPropsUtil.getBoolean(enableKey, true);
-		}
-		if(!enable) {
-			if(logger.isDebugEnabled())
-				logger.debug("Rejecting " + getAuthenticator() + " authentication request from " + authentication.getName() + ": It is disabled");
-			throw new AuthenticationServiceException("The service is disabled");
-		}
+		long begin = System.nanoTime();
 		
 		try {
-			boolean hadSession = SessionUtil.sessionActive();
+			// The following hack(?) is necessary to handle the pre-authentication situation where
+			// initial authentication request is made in the context of no user, yet at least one
+			// of the interceptors associated with this method invocation relies on such context
+			// being there. To work around that, we simply set up guest context and leave it until
+			// after returning from this method.
+			if(RequestContextHolder.getRequestContext() == null) {
+				String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+				String guestUserName = SZoneConfig.getGuestUserName(zoneName);
+				RequestContextHolder.setRequestContext(new RequestContext(zoneName, guestUserName, null).resolve());
+			}
+	 				
+			String enableKey = AuthenticationContextHolder.getEnableKey();
+			boolean enable = true;
+			if(Validator.isNotNull(enableKey)) {
+				enable = SPropsUtil.getBoolean(enableKey, true);
+			}
+			if(!enable) {
+				if(logger.isDebugEnabled())
+					logger.debug("Rejecting " + getAuthenticator() + " authentication request from " + authentication.getName() + ": It is disabled");
+				throw new AuthenticationServiceException("The service is disabled");
+			}
+			
 			try {
-				if (!hadSession) SessionUtil.sessionStartup();
-				
-				SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
-				Authentication retVal = doAuthenticate(authentication);
-				SimpleProfiler.stop( "1-AuthenticationModuleImpl.doAuthenticate()");
-				SimpleProfiler.dumpToLog();
-				
-				return retVal;
+				boolean hadSession = SessionUtil.sessionActive();
+				try {
+					if (!hadSession) SessionUtil.sessionStartup();
+					
+					SimpleProfiler.start( "1-AuthenticationModuleImpl.doAuthenticate()");
+					Authentication retVal = doAuthenticate(authentication);
+					SimpleProfiler.stop( "1-AuthenticationModuleImpl.doAuthenticate()");
+					SimpleProfiler.dumpToLog();
+					
+					return retVal;
+				}
+				finally {
+					if (!hadSession) SessionUtil.sessionStop();
+				}
 			}
-			finally {
-				if (!hadSession) SessionUtil.sessionStop();
+			catch(AuthenticationServiceException e) {
+				Throwable t = e.getCause();
+				logger.error(e.getMessage() + ((t != null)? ": " + t.toString() : ""));
+				throw e;
+			}
+			catch(AuthenticationException e) {
+				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+				logger.warn("Authentication failure for zone " + zone + ": " + e.toString());
+				throw e;
+			}
+			catch(RuntimeException e) {
+				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
+				logger.error("Authentication failure for zone " + zone, e);
+				throw e;	
 			}
 		}
-		catch(AuthenticationServiceException e) {
-			Throwable t = e.getCause();
-			logger.error(e.getMessage() + ((t != null)? ": " + t.toString() : ""));
-			throw e;
-		}
-		catch(AuthenticationException e) {
-			Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-			logger.warn("Authentication failure for zone " + zone + ": " + e.toString());
-			throw e;
-		}
-		catch(RuntimeException e) {
-			Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-			logger.error("Authentication failure for zone " + zone, e);
-			throw e;	
+		finally {
+			if(logger.isDebugEnabled())
+				logger.debug("Authenticating '" + authentication.getName() + "' - " +
+					((System.nanoTime() - begin)/1000000.0) + " ms");
 		}
     }
 
 	protected Authentication doAuthenticate(Authentication authentication) throws AuthenticationException {
-		if(logger.isDebugEnabled())
-			logger.debug("Authenticating '" + authentication.getName() + "'");
-		
 		AuthenticationException exc = null;
     	Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
     	try {
