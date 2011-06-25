@@ -724,7 +724,9 @@ public class WebKeys {
 	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BINDER_FILE_ENCRYPTION_ENABLED = "ss_binder_file_encryption_enabled";
+	public static final String BINDER_VERSIONS_INHERITED = "ss_binder_versions_inherited";
 	public static final String BINDER_VERSIONS_ENABLED = "ss_binder_versions_enabled";
+	public static final String BINDER_VERSIONS_ENABLED_INHERITED = "ss_binder_versions_enabled_inherited";
 	public static final String BINDER_VERSIONS_TO_KEEP = "ss_binder_versions_to_keep";
 	public static final String BINDER_VERSIONS_MAX_FILE_SIZE = "ss_binder_versions_max_file_size";
 	public static final String BINDER_VERSIONS_MAX_AGE = "ss_binder_versions_max_age";
