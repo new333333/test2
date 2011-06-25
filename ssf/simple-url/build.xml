@@ -19,6 +19,7 @@
 
 	<target name="clean" depends="build-common.clean">
 		<delete>
+			<fileset dir="." includes="${jar.file}" />
 			<fileset dir="." includes="${teaming.war.file}" />
 			<fileset dir="." includes="${vibe.war.file}" />
 		</delete>

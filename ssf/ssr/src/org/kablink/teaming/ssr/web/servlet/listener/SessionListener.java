@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,71 +30,30 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.web.servlet.listener;
+package org.kablink.teaming.ssr.web.servlet.listener;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.kablink.teaming.asmodule.bridge.BridgeUtil;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
-import org.kablink.teaming.security.accesstoken.AccessTokenManager;
-import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.util.Tabs;
-
 
 public class SessionListener implements HttpSessionListener {
 
 	private static Log logger = LogFactory.getLog(SessionListener.class);
-	
+
 	public void sessionCreated(HttpSessionEvent se) {
+		// NOTE: The whole purpose of having this method is to verify that this method is NEVER called.
+		// We designed "ssf" web app to be stateless in that it should never create sessions for
+		// both web services clients and web clients. If this method is every executed, it means
+		// that there is a fault in the design.
 		if(logger.isDebugEnabled())
 			logger.debug("Creating session: " + se.getSession().getId());
 	}
 
 	public void sessionDestroyed(HttpSessionEvent se) {
+		// NOTE: This method is NEVER invoked.
 		if(logger.isDebugEnabled())
 			logger.debug("Destroying session: " + se.getSession().getId());
-
-		// This listener is invoked in the same thread executing portal-side code
-		// as side effect of the portal session being invalidated. Consequently,
-		// the context class loader is that of the portal web application, which is
-		// inappropriate for executing Teaming side code. Therefore, we need
-		// to switch the context class loader for the duration of this call.
-		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
-		
-		try {
-			Thread.currentThread().setContextClassLoader(BridgeUtil.getClassLoader());
-			doSessionDestroyed(se);
-		}
-		finally {
-			Thread.currentThread().setContextClassLoader(clSave);
-		}
-	}
-		
-	private void doSessionDestroyed(HttpSessionEvent se) {
-		final HttpSession ses = se.getSession();
-		
-		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
-		final Long   userId = (Long)   ses.getAttribute(WebKeys.USER_ID);
-		final Long   zoneId = (Long)   ses.getAttribute(WebKeys.ZONE_ID);
-		
-		if(userId != null && zoneId != null) {
-			// Make sure to run it in the user's context.	
-			RunasTemplate.runas(new RunasCallback() {
-				public Object doAs() {
-					Tabs.saveUserTabs(ses, userId);
-					if(infoId != null) {
-						AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
-						accessTokenManager.destroyTokenInfoSession(infoId);
-					}
-					return null;
-				}
-			}, zoneId, userId);
-		}
 	}
 }

@@ -132,12 +132,16 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 			Document queryDoc = getDocument(query);
 			Map entries = bm.executeSearchQuery(queryDoc, offset, maxResults);
 			double duration = elapsedTimeInMs(startTime);
-			
+
+			Integer total = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("<html><head></head><body>").
-			append("Search query = [" + qry + "]<p>").
+			append("Search query = [" + qry + "]<br>").
+			append("Total count = " + total + "<p>").
 			append("BinderModule.executeSearchQuery(Document,int,int) took ").append(duration).append(" milliseconds to execute<p>");
 			List entrylist = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+			
 			Iterator entryIterator = entrylist.listIterator();
 			int i = 1;
 			while (entryIterator.hasNext()) {
