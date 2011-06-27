@@ -91,8 +91,17 @@
 <span class="ss_smallprint"style="padding-left:10px;"><ssf:nlt tag="file.revertConfirm2"/></span>
 </div>
 <br/>
+
+<c:if test="${ss_fileQuotaWouldBeExceeded}">
+  <div class="ss_bold" style="padding:16px;">
+    <ssf:nlt tag="file.quotaWouldBeExceeded"/>
+  </div>
+</c:if>
+
+<c:if test="${!ss_fileQuotaWouldBeExceeded}">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"
 />
+</c:if>
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
   onClick="ss_cancelButtonCloseWindow();return false;"/>
 </form>

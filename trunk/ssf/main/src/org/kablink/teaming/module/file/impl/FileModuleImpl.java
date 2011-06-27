@@ -126,6 +126,7 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -135,6 +136,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sun.corba.se.impl.orbutil.closure.Constant;
 
@@ -680,7 +682,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
-		throws UncheckedIOException, RepositoryServiceException {
+		throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
+		//First, check to see if there is quota enough for this
+		User user = RequestContextHolder.getRequestContext().getUser();
+		checkQuota(user, va.getFileItem().getLength(), va.getFileItem().getName());
+		checkBinderQuota(entity.getParentBinder(), va.getFileItem().getLength(), va.getFileItem().getName());
+
 		Binder binder = entity.getParentBinder();
 		if (EntityType.folder.equals(entity.getEntityType()) || 
 				EntityType.workspace.equals(entity.getEntityType())) {
@@ -758,6 +765,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
+		//First, make a copy of the higest version (if there is quota)
+		revertFileVersion(entity, fileAtt.getHighestVersion());
+		fileAtt = fileAtt.getHighestVersion().getParentAttachment();
 		fileAtt.setMajorVersion(fileAtt.getMajorVersion() + 1);
 		fileAtt.setMinorVersion(0);
 		VersionAttachment hVer = fileAtt.getHighestVersion();
@@ -1868,6 +1878,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 
 		return fAtt;
+	}
+	
+	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName) {
+		//Check to see if adding a file of this size would exceed quota
+		//Return true = quota would be exceeded
+		User user = RequestContextHolder.getRequestContext().getUser();
+		try {
+			checkQuota(user, fileSize,fileName);
+			checkBinderQuota(binder, fileSize, fileName);
+		} catch(DataQuotaException e) {
+			return true;
+		}
+		return false;
 	}
 	
 	private void checkQuota(User user, long fileSize, String fileName) throws DataQuotaException {

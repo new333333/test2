@@ -48,9 +48,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.springframework.web.portlet.ModelAndView;
 
+import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -286,8 +288,14 @@ public class ModifyFileController extends SAbstractController {
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			return new ModelAndView("forum/delete_file_version", model);
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_REVERT)) {
+			model.put(WebKeys.FILE_QUOTA_WOULD_BE_EXCEEDED, 
+					getFileModule().checkIfQuotaWouldBeExceeded(entity.getParentBinder(), 
+							fileAtt.getFileItem().getLength(), fileAtt.getFileItem().getName()));
 			return new ModelAndView("forum/revert_file_version", model); 
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_MAJOR_VERSION)) {
+			model.put(WebKeys.FILE_QUOTA_WOULD_BE_EXCEEDED, 
+					getFileModule().checkIfQuotaWouldBeExceeded(entity.getParentBinder(), 
+							fileAtt.getFileItem().getLength(), fileAtt.getFileItem().getName()));
 			return new ModelAndView("forum/increment_major_file_version", model); 
 		} else {
 			return new ModelAndView("forum/modify_file_description", model);
