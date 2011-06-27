@@ -199,9 +199,16 @@ function ss_checkIfNumberValid(s) {
 		  <c:if test="${ss_binder_file_encryption_enabled}">checked=checked</c:if>
 		/><span class="ss_bold"><ssf:nlt tag="binder.enableFileEncryption" /></span>
 	  </legend>
+	  <div style="padding:10px;">
 		<c:if test="${ss_binder_file_encryption_enabled}">
 	      <span><ssf:nlt tag="binder.fileEncryptionEnabled"/></span>
+	      <br/>
+	      <br/>
 	    </c:if>
+	    <div class="ss_smallprint">
+	      <ssf:nlt tag="binder.fileEncryptionInheritanceHint"/>
+	    </div>
+	  </div>
 	</fieldset>
 <br/>
 </c:if>
